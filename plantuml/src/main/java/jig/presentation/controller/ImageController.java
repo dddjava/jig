@@ -5,6 +5,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayOutputStream;
@@ -16,11 +18,16 @@ public class ImageController {
 
     @GetMapping("image")
     public ResponseEntity<byte[]> image() {
-        try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
-            String source = "@startuml\n" +
-                    "hoge ..> fuga\n" +
-                    "@enduml\n";
+        String source = "@startuml\n" +
+                "hoge ..> fuga\n" +
+                "@enduml\n";
 
+        return image(source);
+    }
+
+    @PostMapping("image")
+    public ResponseEntity<byte[]> image(@RequestBody String source) {
+        try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
             SourceStringReader reader = new SourceStringReader(source);
             String desc = reader.generateImage(image);
 

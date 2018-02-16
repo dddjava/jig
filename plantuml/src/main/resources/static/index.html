@@ -5,11 +5,31 @@
     <title>Title</title>
 </head>
 <body>
-<form action="./image" method="post">
-    @startuml
-    <textarea cols="80" rows="30" name="source">a ..> b</textarea>
-    @enduml
+<h1>今すぐ作る</h1>
+<form action="browser" method="post">
+    @startuml<br/>
+    <textarea cols="80" rows="30" name="source">a ..> b</textarea><br/>
+    @enduml<br/>
     <input type="submit"/>
 </form>
+
+<hr/>
+
+<h1>作成済みの画像を表示する</h1>
+<form action="browser" method="get">
+    Identifier: <input type="text" name="identifier"/>
+    <input type="submit"/>
+</form>
+
+<hr/>
+
+<h1>作成リクエストを送る</h1>
+
+<pre>
+curl -D - -X POST -H "Content-Type: text/plain" --data-raw "@startuml
+hoge ..> fuga
+@enduml" http://localhost:8080/image
+</pre>
+
 </body>
 </html>

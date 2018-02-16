@@ -12,10 +12,10 @@ public class DiagramService {
     @Autowired
     DiagramMaker maker;
 
-    public Diagram generateImmediately(DiagramSource source) {
+    public DiagramIdentifier generateImmediately(DiagramSource source) {
         DiagramIdentifier identifier = repository.register(source);
         maker.make(identifier);
-        return repository.get(identifier);
+        return identifier;
     }
 
     public DiagramIdentifier request(DiagramSource source) {

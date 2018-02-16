@@ -1,15 +1,10 @@
 package jig.domain.model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class DiagramIdentifier {
 
     private final String identifier;
-
-    public DiagramIdentifier() {
-        this(UUID.randomUUID().toString());
-    }
 
     public DiagramIdentifier(String identifier) {
         this.identifier = identifier;

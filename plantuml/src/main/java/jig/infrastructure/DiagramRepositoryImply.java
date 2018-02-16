@@ -19,7 +19,7 @@ public class DiagramRepositoryImply implements DiagramRepository {
 
     @Override
     public DiagramIdentifier register(DiagramSource source) {
-        DiagramIdentifier identifier = new DiagramIdentifier();
+        DiagramIdentifier identifier = source.getIdentifier();
         map.put(identifier, source);
         return identifier;
     }

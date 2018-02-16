@@ -2,30 +2,23 @@ package jig.infrastructure;
 
 import jig.domain.model.*;
 import net.sourceforge.plantuml.SourceStringReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class DiagramMakerImpl implements DiagramMaker, DiagramRepository {
+public class DiagramMakerImpl implements DiagramMaker {
 
-    private Map<DiagramIdentifier, DiagramSource> map = new ConcurrentHashMap<>();
-    private Map<DiagramIdentifier, Diagram> diagrams = new ConcurrentHashMap<>();
-
-    @Override
-    public DiagramIdentifier register(DiagramSource source) {
-        DiagramIdentifier identifier = new DiagramIdentifier();
-        map.put(identifier, source);
-        return identifier;
-    }
+    @Autowired
+    DiagramRepository repository;
 
     @Override
     public void make(DiagramIdentifier identifier) {
-        DiagramSource source = map.get(identifier);
+        DiagramSource source = repository.getSource(identifier);
         String source1 = source.value();
         try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
             SourceStringReader reader = new SourceStringReader(source1);
@@ -34,15 +27,16 @@ public class DiagramMakerImpl implements DiagramMaker, DiagramRepository {
             if (desc == null) {
                 throw new IllegalArgumentException(source1);
             }
-            Diagram diagram = new Diagram(image.toByteArray());
-            diagrams.put(identifier, diagram);
+            Diagram diagram = new Diagram(identifier, image.toByteArray());
+            repository.register(diagram);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
+    @Async
     @Override
-    public Diagram get(DiagramIdentifier identifier) {
-        return diagrams.get(identifier);
+    public void makeAsync(DiagramIdentifier identifier) {
+        make(identifier);
     }
 }

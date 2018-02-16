@@ -19,12 +19,12 @@ public class DiagramService {
     }
 
     public DiagramIdentifier request(DiagramSource source) {
-        return repository.register(source);
+        DiagramIdentifier identifier = repository.register(source);
+        maker.makeAsync(identifier);
+        return identifier;
     }
 
     public Diagram get(DiagramIdentifier identifier) {
-        // TODO 作成を別のタイミングで行う
-        maker.make(identifier);
         return repository.get(identifier);
     }
 }

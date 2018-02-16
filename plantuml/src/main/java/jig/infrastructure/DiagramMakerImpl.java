@@ -1,9 +1,6 @@
 package jig.infrastructure;
 
-import jig.domain.model.Diagram;
-import jig.domain.model.DiagramIdentifier;
-import jig.domain.model.DiagramMaker;
-import jig.domain.model.DiagramSource;
+import jig.domain.model.*;
 import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.stereotype.Component;
 
@@ -14,13 +11,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class DiagramMakerImpl implements DiagramMaker {
+public class DiagramMakerImpl implements DiagramMaker, DiagramRepository {
 
     private Map<DiagramIdentifier, DiagramSource> map = new ConcurrentHashMap<>();
     private Map<DiagramIdentifier, Diagram> diagrams = new ConcurrentHashMap<>();
 
     @Override
-    public DiagramIdentifier request(DiagramSource source) {
+    public DiagramIdentifier register(DiagramSource source) {
         DiagramIdentifier identifier = new DiagramIdentifier();
         map.put(identifier, source);
         return identifier;

@@ -4,10 +4,7 @@ import net.sourceforge.plantuml.SourceStringReader;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +20,11 @@ public class ImageController {
                 "@enduml\n";
 
         return image(source);
+    }
+
+    @PostMapping(value = "image", params = "source")
+    public ResponseEntity<byte[]> submit(@RequestParam("source") String source) {
+        return image("@startuml\n" + source + "\n@enduml");
     }
 
     @PostMapping("image")

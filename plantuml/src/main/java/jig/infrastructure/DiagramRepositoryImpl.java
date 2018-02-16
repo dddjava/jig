@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-public class DiagramRepositoryImply implements DiagramRepository {
+public class DiagramRepositoryImpl implements DiagramRepository {
 
     private Map<DiagramIdentifier, DiagramSource> map = new ConcurrentHashMap<>();
     private Set<Diagram> diagrams = ConcurrentHashMap.newKeySet();

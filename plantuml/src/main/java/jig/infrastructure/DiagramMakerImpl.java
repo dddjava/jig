@@ -18,14 +18,13 @@ public class DiagramMakerImpl implements DiagramMaker {
 
     @Override
     public void make(DiagramIdentifier identifier) {
-        DiagramSource source = repository.getSource(identifier);
-        String source1 = source.value();
+        String source = repository.getSource(identifier).value();
         try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
-            SourceStringReader reader = new SourceStringReader(source1);
+            SourceStringReader reader = new SourceStringReader(source);
             String desc = reader.generateImage(image);
 
             if (desc == null) {
-                throw new IllegalArgumentException(source1);
+                throw new IllegalArgumentException(source);
             }
             repository.register(new Diagram(identifier, image.toByteArray()));
         } catch (IOException e) {

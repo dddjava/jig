@@ -4,10 +4,14 @@ import jig.domain.model.Diagram;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramRepository;
 import jig.domain.model.DiagramSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +38,14 @@ public class DiagramRepositoryImply implements DiagramRepository {
         return diagrams.stream()
                 .filter(diagram -> diagram.matches(identifier))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .orElseGet(() -> {
+                    try (InputStream inputStream = new ClassPathResource("notfound.png").getInputStream()) {
+                        byte[] bytes = StreamUtils.copyToByteArray(inputStream);
+                        return new Diagram(DiagramIdentifier.notFound(), bytes);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
     }
 
     @Override

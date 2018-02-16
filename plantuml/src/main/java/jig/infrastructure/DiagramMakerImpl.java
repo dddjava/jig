@@ -27,8 +27,7 @@ public class DiagramMakerImpl implements DiagramMaker {
             if (desc == null) {
                 throw new IllegalArgumentException(source1);
             }
-            Diagram diagram = new Diagram(identifier, image.toByteArray());
-            repository.register(diagram);
+            repository.register(new Diagram(identifier, image.toByteArray()));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

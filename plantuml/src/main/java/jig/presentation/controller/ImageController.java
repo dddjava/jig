@@ -1,17 +1,20 @@
 package jig.presentation.controller;
 
-import net.sourceforge.plantuml.SourceStringReader;
+import jig.domain.model.Diagram;
+import jig.domain.model.DiagramIdentifier;
+import jig.domain.model.DiagramMaker;
+import jig.domain.model.DiagramSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 @RestController
 public class ImageController {
+
+    @Autowired
+    DiagramMaker maker;
 
     @GetMapping("image")
     public ResponseEntity<byte[]> image() {
@@ -29,21 +32,15 @@ public class ImageController {
 
     @PostMapping("image")
     public ResponseEntity<byte[]> image(@RequestBody String source) {
-        try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
-            SourceStringReader reader = new SourceStringReader(source);
-            String desc = reader.generateImage(image);
-
-            if (desc == null) {
-                throw new IllegalArgumentException(source);
-            }
-
-            return ResponseEntity.ok()
-                    .cacheControl(CacheControl.noCache())
-                    .contentLength(image.size())
-                    .contentType(MediaType.IMAGE_PNG)
-                    .body(image.toByteArray());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        DiagramSource diagramSource = new DiagramSource(source);
+        DiagramIdentifier identifier = maker.request(diagramSource);
+        maker.make(identifier);
+        Diagram diagram = maker.get(identifier);
+        byte[] bytes = diagram.getBytes();
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noCache())
+                .contentLength(bytes.length)
+                .contentType(MediaType.IMAGE_PNG)
+                .body(bytes);
     }
 }

@@ -8,7 +8,11 @@ public class DiagramIdentifier {
     private final String identifier;
 
     public DiagramIdentifier() {
-        this.identifier = UUID.randomUUID().toString();
+        this(UUID.randomUUID().toString());
+    }
+
+    public DiagramIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
@@ -22,5 +26,9 @@ public class DiagramIdentifier {
     @Override
     public int hashCode() {
         return Objects.hash(identifier);
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 }

@@ -1,8 +1,7 @@
 package jig.presentation.controller;
 
+import jig.application.service.DiagramService;
 import jig.domain.model.Diagram;
-import jig.domain.model.DiagramIdentifier;
-import jig.domain.model.DiagramMaker;
 import jig.domain.model.DiagramSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class ImageController {
 
     @Autowired
-    DiagramMaker maker;
+    DiagramService service;
 
     @GetMapping("image")
     public ResponseEntity<byte[]> image() {
@@ -33,9 +32,7 @@ public class ImageController {
     @PostMapping("image")
     public ResponseEntity<byte[]> image(@RequestBody String source) {
         DiagramSource diagramSource = new DiagramSource(source);
-        DiagramIdentifier identifier = maker.request(diagramSource);
-        maker.make(identifier);
-        Diagram diagram = maker.get(identifier);
+        Diagram diagram = service.generateImmediately(diagramSource);
         byte[] bytes = diagram.getBytes();
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.noCache())

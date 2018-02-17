@@ -1,0 +1,44 @@
+plugins {
+    id 'org.springframework.boot' version '1.5.10.RELEASE'
+}
+
+repositories {
+    jcenter()
+}
+subprojects {
+    apply plugin: "java"
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+
+    def defaultEncoding = 'UTF-8'
+    tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        testCompile "junit:junit:4.12"
+    }
+}
+
+project(':web') {
+    apply plugin: "org.springframework.boot"
+
+    ext['thymeleaf.version'] = '3.0.9.RELEASE'
+    ext['thymeleaf-layout-dialect.version'] = '2.2.2'
+    ext['thymeleaf-extras-springsecurity4.version'] = '3.0.2.RELEASE'
+    ext['thymeleaf-extras-java8time.version'] = '3.0.1.RELEASE'
+
+    dependencies {
+        compile "org.springframework.boot:spring-boot-starter-web"
+        compile(project(':diagram'))
+    }
+}
+
+project(':diagram') {
+    dependencies {
+        compile 'net.sourceforge.plantuml:plantuml:8059'
+    }
+}
+

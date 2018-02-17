@@ -1,4 +1,4 @@
 rootProject.name = 'jig'
 
-include 'diagram', 'web'
+include 'diagram', 'web', 'analyzer'
 

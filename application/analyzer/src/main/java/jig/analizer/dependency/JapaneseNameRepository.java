@@ -1,0 +1,21 @@
+package jig.analizer.dependency;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class JapaneseNameRepository {
+
+    final Map<FullQualifiedName, JapaneseName> map;
+
+    public JapaneseNameRepository() {
+        this.map = new HashMap<>();
+    }
+
+    public boolean exists(FullQualifiedName fullQualifiedName) {
+        return map.containsKey(fullQualifiedName);
+    }
+
+    public JapaneseName get(FullQualifiedName fullQualifiedName) {
+        return map.get(fullQualifiedName);
+    }
+}

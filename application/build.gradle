@@ -42,3 +42,9 @@ project(':diagram') {
     }
 }
 
+project(':analyzer') {
+    dependencies {
+        compile 'com.github.javaparser:javaparser-core:3.5.6'
+        compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+    }
+}

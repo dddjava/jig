@@ -33,6 +33,7 @@ project(':web') {
     dependencies {
         compile "org.springframework.boot:spring-boot-starter-web"
         compile(project(':diagram'))
+        compile(project(':analyzer'))
     }
 }
 

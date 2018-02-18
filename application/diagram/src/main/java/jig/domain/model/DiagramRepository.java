@@ -2,11 +2,11 @@ package jig.domain.model;
 
 public interface DiagramRepository {
 
-    DiagramIdentifier register(DiagramSource source);
-
-    void register(Diagram source);
-
-    Diagram get(DiagramIdentifier identifier);
+    DiagramIdentifier registerSource(DiagramSource source);
 
     DiagramSource getSource(DiagramIdentifier identifier);
+
+    void register(DiagramIdentifier identifier, Diagram source);
+
+    Diagram get(DiagramIdentifier identifier);
 }

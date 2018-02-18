@@ -16,7 +16,9 @@ public class ImageController {
 
     @PostMapping
     public DiagramIdentifier request(@RequestBody String source) {
-        return service.request(new DiagramSource(source));
+        DiagramIdentifier identifier = service.request(new DiagramSource(source));
+        service.generateAsync(identifier);
+        return identifier;
     }
 
     @GetMapping("{identifier}")

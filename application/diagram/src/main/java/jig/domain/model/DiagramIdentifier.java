@@ -26,8 +26,4 @@ public class DiagramIdentifier {
     public String getIdentifier() {
         return identifier;
     }
-
-    public static DiagramIdentifier notFound() {
-        return new DiagramIdentifier("NOTFOUND");
-    }
 }

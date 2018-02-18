@@ -20,7 +20,8 @@ public class BrowserController {
     @PostMapping
     public String submit(@RequestParam("source") String source) {
         DiagramSource diagramSource = new DiagramSource("@startuml\n" + source + "\n@enduml");
-        DiagramIdentifier identifier = service.generateImmediately(diagramSource);
+        DiagramIdentifier identifier = service.request(diagramSource);
+        service.generate(identifier);
         return "redirect:/image/" + identifier.getIdentifier();
     }
 

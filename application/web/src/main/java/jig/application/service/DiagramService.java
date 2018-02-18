@@ -2,7 +2,10 @@ package jig.application.service;
 
 import jig.domain.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DiagramService {
@@ -12,16 +15,20 @@ public class DiagramService {
     @Autowired
     DiagramMaker maker;
 
-    public DiagramIdentifier generateImmediately(DiagramSource source) {
-        DiagramIdentifier identifier = repository.register(source);
-        maker.make(identifier);
-        return identifier;
+    public void generate(DiagramIdentifier identifier) {
+        DiagramSource source = repository.getSource(identifier);
+        Diagram diagram = maker.make(source);
+        repository.register(identifier, diagram);
     }
 
     public DiagramIdentifier request(DiagramSource source) {
-        DiagramIdentifier identifier = repository.register(source);
-        maker.makeAsync(identifier);
-        return identifier;
+        return repository.registerSource(source);
+    }
+
+    @Async
+    public CompletableFuture<DiagramIdentifier> generateAsync(DiagramIdentifier identifier) {
+        generate(identifier);
+        return CompletableFuture.completedFuture(identifier);
     }
 
     public Diagram get(DiagramIdentifier identifier) {

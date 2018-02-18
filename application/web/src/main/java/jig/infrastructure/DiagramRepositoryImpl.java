@@ -5,43 +5,59 @@ import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramRepository;
 import jig.domain.model.DiagramSource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StreamUtils;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+@Repository
 public class DiagramRepositoryImpl implements DiagramRepository {
 
     private Map<DiagramIdentifier, DiagramSource> map = new ConcurrentHashMap<>();
-    private Set<Diagram> diagrams = ConcurrentHashMap.newKeySet();
+    private Map<DiagramIdentifier, Diagram> diagrams = new ConcurrentHashMap<>();
 
     @Override
-    public DiagramIdentifier register(DiagramSource source) {
-        DiagramIdentifier identifier = source.getIdentifier();
+    public DiagramIdentifier registerSource(DiagramSource source) {
+        DiagramIdentifier identifier = getDiagramIdentifier(source);
         map.put(identifier, source);
         return identifier;
     }
 
+    private DiagramIdentifier getDiagramIdentifier(DiagramSource source) {
+        try {
+            String value = source.value();
+            MessageDigest msdDigest = MessageDigest.getInstance("SHA-1");
+            msdDigest.update(value.getBytes("UTF-8"), 0, value.length());
+            String sha1 = DatatypeConverter.printHexBinary(msdDigest.digest());
+            return new DiagramIdentifier(sha1);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            throw new IllegalStateException();
+        }
+    }
+
     @Override
-    public void register(Diagram diagram) {
-        diagrams.add(diagram);
+    public void register(DiagramIdentifier identifier, Diagram diagram) {
+        diagrams.put(identifier, diagram);
     }
 
     @Override
     public Diagram get(DiagramIdentifier identifier) {
-        return diagrams.stream()
-                .filter(diagram -> diagram.matches(identifier))
+        return diagrams.entrySet().stream()
+                .filter(entry -> entry.getKey().equals(identifier))
+                .map(Map.Entry::getValue)
                 .findFirst()
                 .orElseGet(() -> {
                     try (InputStream inputStream = new ClassPathResource("notfound.png").getInputStream()) {
                         byte[] bytes = StreamUtils.copyToByteArray(inputStream);
-                        return new Diagram(DiagramIdentifier.notFound(), bytes);
+                        return new Diagram(bytes);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

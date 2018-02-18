@@ -47,7 +47,8 @@ public class Jar2ImageController {
 
             String text = models.format(new PlantUmlModelFormatter(new PlantUmlModelNameFormatter(targetPattern, japaneseNameRepository)));
             DiagramSource diagramSource = new DiagramSource("@startuml\n" + text + "\n@enduml");
-            DiagramIdentifier identifier = service.generateImmediately(diagramSource);
+            DiagramIdentifier identifier = service.request(diagramSource);
+            service.generate(identifier);
             return "redirect:/image/" + identifier.getIdentifier();
         }
     }

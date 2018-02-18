@@ -1,4 +1,4 @@
-package jig.analizer;
+package jig;
 
 import jig.analizer.dependency.JapaneseNameRepository;
 import jig.analizer.dependency.Models;
@@ -23,7 +23,7 @@ public class PackageDependency {
 
         Models models = jdepsResult.toModels();
 
-        Path sourceRootPath = Paths.get("ソースを探すディレクトリ");
+        Path sourceRootPath = Paths.get("./");
         PackageInfoParser packageInfoParser = new PackageInfoParser(sourceRootPath);
         JapaneseNameRepository japaneseNameRepository = packageInfoParser.parse();
 

@@ -32,8 +32,25 @@ project(':web') {
 
     dependencies {
         compile "org.springframework.boot:spring-boot-starter-web"
+        compile(project(':application'))
+    }
+}
+
+project(":application") {
+    apply plugin: "org.springframework.boot"
+
+    dependencies {
+        compile "org.springframework.boot:spring-boot-starter"
         compile(project(':diagram'))
         compile(project(':analyzer'))
+    }
+}
+
+project(':cli') {
+    apply plugin: "org.springframework.boot"
+
+    dependencies {
+        compile(project(':application'))
     }
 }
 

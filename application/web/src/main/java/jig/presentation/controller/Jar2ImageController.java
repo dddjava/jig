@@ -21,8 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import static jig.analizer.PackageDependency.DEFAULT_TARGET_PREFIX;
-
 @Controller
 @RequestMapping("jar2image")
 public class Jar2ImageController {
@@ -36,7 +34,7 @@ public class Jar2ImageController {
             Path tempFile = Files.createTempFile("jar2imagecontroller", ".jar");
             Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            String targetPattern = DEFAULT_TARGET_PREFIX + "\\.(.*)";
+            String targetPattern = ".*.domain.model" + "\\.(.*)";
 
             JdepsExecutor jdepsExecutor = new JdepsExecutor(targetPattern, targetPattern, tempFile.toAbsolutePath().toString());
             JdepsResult jdepsResult = jdepsExecutor.execute();

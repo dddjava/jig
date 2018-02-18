@@ -33,10 +33,10 @@ public class JdepsResult {
                 model = models.get(modelName);
                 continue;
             }
-            if (model == null) throw new NullPointerException();
 
             Matcher toMatcher = to.matcher(line);
             if (toMatcher.find()) {
+                if (model == null) throw new NullPointerException();
                 FullQualifiedName modelName = new FullQualifiedName(toMatcher.group(1));
                 if (models.notExists(modelName)) {
                     models.register(new Model(modelName));

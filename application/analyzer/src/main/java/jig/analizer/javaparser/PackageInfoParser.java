@@ -24,8 +24,12 @@ public class PackageInfoParser {
     private Path rootPath;
 
     public JapaneseNameRepository parse() {
+        JapaneseNameRepository repository = new JapaneseNameRepository();
+        if (Files.notExists(rootPath)) {
+            return repository;
+        }
+
         try (Stream<Path> walk = Files.walk(rootPath)) {
-            JapaneseNameRepository repository = new JapaneseNameRepository();
 
             walk.filter(path -> path.toFile().getName().equals("package-info.java"))
                     .forEach(path -> {

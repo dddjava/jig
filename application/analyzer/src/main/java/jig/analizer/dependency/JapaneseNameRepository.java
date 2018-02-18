@@ -18,4 +18,8 @@ public class JapaneseNameRepository {
     public JapaneseName get(FullQualifiedName fullQualifiedName) {
         return map.get(fullQualifiedName);
     }
+
+    public void register(FullQualifiedName fqn, JapaneseName japaneseName) {
+        map.put(fqn, japaneseName);
+    }
 }

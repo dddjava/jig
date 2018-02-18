@@ -2,10 +2,14 @@ package jig.analizer;
 
 import jig.analizer.dependency.JapaneseNameRepository;
 import jig.analizer.dependency.Models;
+import jig.analizer.javaparser.PackageInfoParser;
 import jig.analizer.jdeps.JdepsExecutor;
 import jig.analizer.jdeps.JdepsResult;
 import jig.analizer.plantuml.PlantUmlModelFormatter;
 import jig.analizer.plantuml.PlantUmlModelNameFormatter;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PackageDependency {
 
@@ -19,7 +23,9 @@ public class PackageDependency {
 
         Models models = jdepsResult.toModels();
 
-        JapaneseNameRepository japaneseNameRepository = new JapaneseNameRepository();
+        Path sourceRootPath = Paths.get("ソースを探すディレクトリ");
+        PackageInfoParser packageInfoParser = new PackageInfoParser(sourceRootPath);
+        JapaneseNameRepository japaneseNameRepository = packageInfoParser.parse();
 
         String text = models.format(new PlantUmlModelFormatter(new PlantUmlModelNameFormatter(targetPattern, japaneseNameRepository)));
 

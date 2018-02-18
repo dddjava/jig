@@ -1,11 +1,8 @@
 package jig.presentation.controller;
 
-import jig.analizer.dependency.JapaneseNameRepository;
+import jig.analizer.dependency.ModelFormatter;
 import jig.analizer.dependency.Models;
-import jig.analizer.jdeps.JdepsExecutor;
-import jig.analizer.jdeps.JdepsResult;
-import jig.analizer.plantuml.PlantUmlModelFormatter;
-import jig.analizer.plantuml.PlantUmlModelNameFormatter;
+import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramSource;
@@ -19,11 +16,16 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 
 @Controller
 @RequestMapping("jar2image")
 public class Jar2ImageController {
+
+    @Autowired
+    AnalyzeService analyzeService;
 
     @Autowired
     DiagramService service;
@@ -34,17 +36,9 @@ public class Jar2ImageController {
             Path tempFile = Files.createTempFile("jar2imagecontroller", ".jar");
             Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            String targetPattern = ".*.domain.model" + "\\.(.*)";
-
-            JdepsExecutor jdepsExecutor = new JdepsExecutor(targetPattern, targetPattern, tempFile.toAbsolutePath().toString());
-            JdepsResult jdepsResult = jdepsExecutor.execute();
-
-            Models models = jdepsResult.toModels();
-
-            JapaneseNameRepository japaneseNameRepository = new JapaneseNameRepository();
-
-            String text = models.format(new PlantUmlModelFormatter(new PlantUmlModelNameFormatter(targetPattern, japaneseNameRepository)));
-            DiagramSource diagramSource = new DiagramSource("@startuml\n" + text + "\n@enduml");
+            Models models = analyzeService.toModels(Collections.singletonList(tempFile));
+            ModelFormatter modelFormatter = analyzeService.modelFormatter(Paths.get(""));
+            DiagramSource diagramSource = analyzeService.toDiagramSource(models, modelFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);
             service.generate(identifier);
             return "redirect:/image/" + identifier.getIdentifier();

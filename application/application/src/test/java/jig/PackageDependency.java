@@ -1,34 +1,29 @@
 package jig;
 
-import jig.analizer.dependency.JapaneseNameRepository;
+import jig.analizer.dependency.ModelFormatter;
 import jig.analizer.dependency.Models;
-import jig.analizer.javaparser.PackageInfoParser;
-import jig.analizer.jdeps.JdepsExecutor;
-import jig.analizer.jdeps.JdepsResult;
-import jig.analizer.plantuml.PlantUmlModelFormatter;
-import jig.analizer.plantuml.PlantUmlModelNameFormatter;
+import jig.application.service.AnalyzeService;
+import jig.domain.model.DiagramSource;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class PackageDependency {
 
-    public static final String DEFAULT_TARGET_PREFIX = ".*.domain.model";
-
     public static void main(String[] paths) {
-        String targetPattern = DEFAULT_TARGET_PREFIX + "\\.(.*)";
+        AnalyzeService analyzeService = new AnalyzeService();
 
-        JdepsExecutor jdepsExecutor = new JdepsExecutor(targetPattern, targetPattern, paths);
-        JdepsResult jdepsResult = jdepsExecutor.execute();
-
-        Models models = jdepsResult.toModels();
+        Models models = analyzeService.toModels(
+                Arrays.stream(paths).map(Paths::get).collect(Collectors.toList()));
 
         Path sourceRootPath = Paths.get("./");
-        PackageInfoParser packageInfoParser = new PackageInfoParser(sourceRootPath);
-        JapaneseNameRepository japaneseNameRepository = packageInfoParser.parse();
 
-        String text = models.format(new PlantUmlModelFormatter(new PlantUmlModelNameFormatter(targetPattern, japaneseNameRepository)));
+        ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRootPath);
 
-        System.out.println(text);
+        DiagramSource diagramSource = analyzeService.toDiagramSource(models, modelFormatter);
+
+        System.out.println(diagramSource.value());
     }
 }

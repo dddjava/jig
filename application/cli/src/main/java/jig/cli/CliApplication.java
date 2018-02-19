@@ -36,8 +36,8 @@ public class CliApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException {
         if (args.length == 0) {
-            System.out.println("usage: cli.jar <options> <jar files...>");
-            System.out.println("jarファイルは1つ以上指定してください。");
+            System.out.println("usage: cli.jar <options> <jar or classes directories...>");
+            System.out.println("ファイルは1つ以上指定してください。");
             System.out.println("  -source  ソースコードの含まれているディレクトリを指定します。");
             System.out.println("           デフォルトは ./src です。");
             System.out.println("  -output  出力ファイル名を指定します。");
@@ -51,10 +51,6 @@ public class CliApplication implements CommandLineRunner {
 
         ParameterType parameterType = ParameterType.NONE;
         for (String arg : args) {
-            if (arg.equals("-jar")) {
-                parameterType = ParameterType.JAR;
-                continue;
-            }
             if (arg.equals("-source")) {
                 parameterType = ParameterType.SOURCE;
                 continue;
@@ -66,10 +62,9 @@ public class CliApplication implements CommandLineRunner {
 
             switch (parameterType) {
                 case NONE:
-                case JAR:
                     Path jarPath = Paths.get(arg);
-                    if (Files.notExists(jarPath) || Files.isDirectory(jarPath)) {
-                        throw new IllegalArgumentException("存在するjarファイルを指定してください");
+                    if (Files.notExists(jarPath)) {
+                        throw new IllegalArgumentException("存在するパスを指定してください");
                     }
                     jarPaths.add(jarPath);
                     continue;
@@ -107,7 +102,6 @@ public class CliApplication implements CommandLineRunner {
 }
 
 enum ParameterType {
-    JAR,
     SOURCE,
     OUTPUT,
     NONE

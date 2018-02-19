@@ -24,8 +24,8 @@ public class AnalyzeService {
         this.targetPattern = DEFAULT_TARGET_PREFIX + "\\.(.*)";
     }
 
-    public Models toModels(List<Path> jarPaths) {
-        String[] paths = jarPaths.stream()
+    public Models toModels(List<Path> searchPaths) {
+        String[] paths = searchPaths.stream()
                 .map(Path::toAbsolutePath)
                 .map(Path::toString)
                 .toArray(String[]::new);

@@ -10,14 +10,14 @@ import java.util.Arrays;
 
 public class JdepsExecutor {
 
-    final String[] jarPaths;
+    final String[] searchPaths;
     final String include;
     final String dependenciesPattern;
 
-    public JdepsExecutor(String include, String dependenciesPattern, String... jarPaths) {
-        this.jarPaths = jarPaths;
+    public JdepsExecutor(String include, String dependenciesPattern, String... searchPaths) {
         this.include = include;
         this.dependenciesPattern = dependenciesPattern;
+        this.searchPaths = searchPaths;
     }
 
     public JdepsResult execute() {
@@ -29,7 +29,7 @@ public class JdepsExecutor {
             args.add(include);
             args.add("-e");
             args.add(dependenciesPattern);
-            args.addAll(Arrays.asList(jarPaths));
+            args.addAll(Arrays.asList(searchPaths));
 
             Main.run(args.toArray(new String[args.size()]), pw);
 

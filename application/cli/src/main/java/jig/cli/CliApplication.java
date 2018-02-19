@@ -37,7 +37,6 @@ public class CliApplication implements CommandLineRunner {
     public void run(String... args) throws IOException {
         if (args.length == 0) {
             System.out.println("usage: cli.jar <options> <jar or classes directories...>");
-            System.out.println("ファイルは1つ以上指定してください。");
             System.out.println("  -source  ソースコードの含まれているディレクトリを指定します。");
             System.out.println("           デフォルトは ./src です。");
             System.out.println("  -output  出力ファイル名を指定します。");
@@ -45,7 +44,7 @@ public class CliApplication implements CommandLineRunner {
             return;
         }
 
-        List<Path> jarPaths = new ArrayList<>();
+        List<Path> searchPaths = new ArrayList<>();
         Path sourceRoot = Paths.get("./src");
         Path output = Paths.get("./diagram.png");
 
@@ -66,7 +65,7 @@ public class CliApplication implements CommandLineRunner {
                     if (Files.notExists(jarPath)) {
                         throw new IllegalArgumentException("存在するパスを指定してください");
                     }
-                    jarPaths.add(jarPath);
+                    searchPaths.add(jarPath);
                     continue;
                 case SOURCE:
                     sourceRoot = Paths.get(arg);
@@ -84,11 +83,11 @@ public class CliApplication implements CommandLineRunner {
             System.err.println("ignore:" + arg);
         }
 
-        if (jarPaths.isEmpty()) {
-            throw new IllegalArgumentException("jarファイルを一つ以上指定してください");
+        if (searchPaths.isEmpty()) {
+            throw new IllegalArgumentException("検索対象パスを一つ以上指定してください");
         }
 
-        Models models = analyzeService.toModels(jarPaths);
+        Models models = analyzeService.toModels(searchPaths);
         ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRoot);
         DiagramSource diagramSource = analyzeService.toDiagramSource(models, modelFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);

@@ -9,6 +9,7 @@ import jig.analizer.jdeps.JdepsResult;
 import jig.analizer.plantuml.PlantUmlModelFormatter;
 import jig.analizer.plantuml.PlantUmlModelNameFormatter;
 import jig.domain.model.DiagramSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -17,11 +18,11 @@ import java.util.List;
 @Service
 public class AnalyzeService {
 
-    public static final String DEFAULT_TARGET_PREFIX = ".*.domain.model";
+
     private final String targetPattern;
 
-    public AnalyzeService() {
-        this.targetPattern = DEFAULT_TARGET_PREFIX + "\\.(.*)";
+    public AnalyzeService(@Value("${target.package:.*.domain.model}") String packagePattern) {
+        this.targetPattern = packagePattern + "\\.(.*)";
     }
 
     public Models toModels(List<Path> searchPaths) {

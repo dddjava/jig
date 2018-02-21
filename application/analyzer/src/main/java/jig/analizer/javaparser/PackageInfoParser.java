@@ -51,7 +51,9 @@ public class PackageInfoParser {
                                 }
                             }, null);
 
-                            repository.register(fqn, japaneseName);
+                            if (fqn != null && japaneseName != null) {
+                                repository.register(fqn, japaneseName);
+                            }
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
                         }

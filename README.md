@@ -13,7 +13,7 @@
 
 ```
 cd application
-./gradlew :cli:bootRepackage
+./gradlew :cli:build
 ```
 
 `ls cli/build/libs/cli.jar` ができる
@@ -21,6 +21,6 @@ cd application
 ### 実行
 
 ```
-./cli.jar target-application.jar
+./cli.jar -source src/main/java build/classes/java/main
 ```
 

@@ -7,8 +7,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 public class JdepsExecutor {
+
+    private static final Logger logger = Logger.getLogger(JdepsExecutor.class.getName());
 
     final String[] searchPaths;
     final String include;
@@ -32,6 +35,8 @@ public class JdepsExecutor {
             args.addAll(Arrays.asList(searchPaths));
 
             Main.run(args.toArray(new String[args.size()]), pw);
+
+            logger.info(() -> "jdeps " + args + System.lineSeparator() + writer.toString());
 
             return new JdepsResult(writer.toString());
         } catch (IOException e) {

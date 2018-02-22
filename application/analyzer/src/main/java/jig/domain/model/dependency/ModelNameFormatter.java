@@ -1,4 +1,4 @@
-package jig.analizer.dependency;
+package jig.domain.model.dependency;
 
 public interface ModelNameFormatter {
 

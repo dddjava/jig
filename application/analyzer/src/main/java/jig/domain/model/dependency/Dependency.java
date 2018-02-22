@@ -1,4 +1,4 @@
-package jig.analizer.dependency;
+package jig.domain.model.dependency;
 
 import java.util.ArrayList;
 import java.util.List;

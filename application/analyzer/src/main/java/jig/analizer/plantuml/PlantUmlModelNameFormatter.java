@@ -1,24 +1,24 @@
 package jig.analizer.plantuml;
 
-import jig.analizer.dependency.FullQualifiedName;
-import jig.analizer.dependency.JapaneseName;
-import jig.analizer.dependency.JapaneseNameRepository;
-import jig.analizer.dependency.ModelNameFormatter;
+import jig.domain.model.dependency.FullQualifiedName;
+import jig.domain.model.dependency.JapaneseName;
+import jig.domain.model.dependency.JapaneseNameRepository;
+import jig.domain.model.dependency.ModelNameFormatter;
 
 public class PlantUmlModelNameFormatter implements ModelNameFormatter {
 
-    private String targetPattern;
+    private String nameReplacePattern;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public PlantUmlModelNameFormatter(String targetPattern, JapaneseNameRepository japaneseNameRepository) {
-        this.targetPattern = targetPattern;
+    public PlantUmlModelNameFormatter(String nameReplacePattern, JapaneseNameRepository japaneseNameRepository) {
+        this.nameReplacePattern = nameReplacePattern;
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
     @Override
     public String format(FullQualifiedName fullQualifiedName) {
         String value = fullQualifiedName.value()
-                .replaceFirst(targetPattern, "$1")
+                .replaceFirst(nameReplacePattern + "\\.", "")
                 .replaceAll("\\.", "/");
         if (japaneseNameRepository.exists(fullQualifiedName)) {
             JapaneseName japaneseName = japaneseNameRepository.get(fullQualifiedName);

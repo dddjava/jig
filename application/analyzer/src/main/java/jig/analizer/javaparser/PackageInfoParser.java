@@ -5,9 +5,9 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
-import jig.analizer.dependency.FullQualifiedName;
-import jig.analizer.dependency.JapaneseName;
-import jig.analizer.dependency.JapaneseNameRepository;
+import jig.domain.model.dependency.FullQualifiedName;
+import jig.domain.model.dependency.JapaneseName;
+import jig.domain.model.dependency.JapaneseNameRepository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

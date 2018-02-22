@@ -1,13 +1,13 @@
 package jig.cli;
 
-import jig.analizer.dependency.ModelFormatter;
-import jig.analizer.dependency.Models;
 import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.Diagram;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramSource;
+import jig.domain.model.dependency.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,6 +27,9 @@ public class PackageDependencyCliApplication implements CommandLineRunner {
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         SpringApplication.run(PackageDependencyCliApplication.class, args);
     }
+
+    @Value("${target.package:.*.domain.model}")
+    String packagePattern;
 
     @Autowired
     AnalyzeService analyzeService;
@@ -87,7 +90,11 @@ public class PackageDependencyCliApplication implements CommandLineRunner {
             throw new IllegalArgumentException("検索対象パスを一つ以上指定してください");
         }
 
-        Models models = analyzeService.toModels(searchPaths);
+        Models models = analyzeService.toModels(
+                new AnalysisCriteria(
+                        new SearchPaths(searchPaths),
+                        new AnalysisClassesPattern(packagePattern + "\\..+"),
+                        new DependenciesPattern(packagePattern + "\\..+")));
         ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRoot);
         DiagramSource diagramSource = diagramService.toDiagramSource(models, modelFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);

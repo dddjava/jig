@@ -1,8 +1,8 @@
 package jig.analizer.jdeps;
 
-import jig.analizer.dependency.Model;
-import jig.analizer.dependency.FullQualifiedName;
-import jig.analizer.dependency.Models;
+import jig.domain.model.dependency.Model;
+import jig.domain.model.dependency.FullQualifiedName;
+import jig.domain.model.dependency.Models;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

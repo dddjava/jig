@@ -1,11 +1,10 @@
 package jig.presentation.controller;
 
-import jig.analizer.dependency.ModelFormatter;
-import jig.analizer.dependency.Models;
 import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramSource;
+import jig.domain.model.dependency.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +35,12 @@ public class Jar2ImageController {
             Path tempFile = Files.createTempFile("jar2imagecontroller", ".jar");
             Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            Models models = analyzeService.toModels(Collections.singletonList(tempFile));
+            String pattern = ".+\\.domain\\.model\\..+";
+            Models models = analyzeService.toModels(
+                    new AnalysisCriteria(
+                            new SearchPaths(Collections.singletonList(tempFile)),
+                            new AnalysisClassesPattern(pattern),
+                            new DependenciesPattern(pattern)));
             ModelFormatter modelFormatter = analyzeService.modelFormatter(Paths.get(""));
             DiagramSource diagramSource = service.toDiagramSource(models, modelFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);

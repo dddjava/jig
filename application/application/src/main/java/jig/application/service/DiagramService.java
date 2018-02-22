@@ -1,7 +1,7 @@
 package jig.application.service;
 
-import jig.analizer.dependency.ModelFormatter;
-import jig.analizer.dependency.Models;
+import jig.domain.model.dependency.ModelFormatter;
+import jig.domain.model.dependency.Models;
 import jig.domain.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;

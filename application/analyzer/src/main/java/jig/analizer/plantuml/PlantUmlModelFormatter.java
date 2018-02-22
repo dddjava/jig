@@ -1,7 +1,7 @@
 package jig.analizer.plantuml;
 
-import jig.analizer.dependency.Model;
-import jig.analizer.dependency.ModelFormatter;
+import jig.domain.model.dependency.Model;
+import jig.domain.model.dependency.ModelFormatter;
 
 import java.util.stream.Collectors;
 

@@ -38,7 +38,7 @@ public class Jar2ImageController {
 
             Models models = analyzeService.toModels(Collections.singletonList(tempFile));
             ModelFormatter modelFormatter = analyzeService.modelFormatter(Paths.get(""));
-            DiagramSource diagramSource = analyzeService.toDiagramSource(models, modelFormatter);
+            DiagramSource diagramSource = service.toDiagramSource(models, modelFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);
             service.generate(identifier);
             return "redirect:/image/" + identifier.getIdentifier();

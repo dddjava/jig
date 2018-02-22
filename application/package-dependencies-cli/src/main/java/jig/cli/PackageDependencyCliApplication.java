@@ -89,7 +89,7 @@ public class PackageDependencyCliApplication implements CommandLineRunner {
 
         Models models = analyzeService.toModels(searchPaths);
         ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRoot);
-        DiagramSource diagramSource = analyzeService.toDiagramSource(models, modelFormatter);
+        DiagramSource diagramSource = diagramService.toDiagramSource(models, modelFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);
         diagramService.generate(identifier);
         Diagram diagram = diagramService.get(identifier);

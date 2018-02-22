@@ -1,5 +1,7 @@
 package jig.application.service;
 
+import jig.analizer.dependency.ModelFormatter;
+import jig.analizer.dependency.Models;
 import jig.domain.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -33,5 +35,14 @@ public class DiagramService {
 
     public Diagram get(DiagramIdentifier identifier) {
         return repository.get(identifier);
+    }
+
+    public DiagramSource toDiagramSource(Models models, ModelFormatter modelFormatter) {
+        String text = "@startuml\n" +
+                "hide members\n" +
+                "hide circle\n" +
+                models.format(modelFormatter) + "\n" +
+                "@enduml";
+        return new DiagramSource(text);
     }
 }

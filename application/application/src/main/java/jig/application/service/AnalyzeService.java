@@ -8,7 +8,6 @@ import jig.analizer.jdeps.JdepsExecutor;
 import jig.analizer.jdeps.JdepsResult;
 import jig.analizer.plantuml.PlantUmlModelFormatter;
 import jig.analizer.plantuml.PlantUmlModelNameFormatter;
-import jig.domain.model.DiagramSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,6 @@ import java.util.List;
 
 @Service
 public class AnalyzeService {
-
 
     private final String targetPattern;
 
@@ -40,14 +38,5 @@ public class AnalyzeService {
         PackageInfoParser packageInfoParser = new PackageInfoParser(sourceRootPath);
         JapaneseNameRepository japaneseNameRepository = packageInfoParser.parse();
         return new PlantUmlModelFormatter(new PlantUmlModelNameFormatter(targetPattern, japaneseNameRepository));
-    }
-
-    public DiagramSource toDiagramSource(Models models, ModelFormatter modelFormatter) {
-        String text = "@startuml\n" +
-                "hide members\n" +
-                "hide circle\n" +
-                models.format(modelFormatter) + "\n" +
-                "@enduml";
-        return new DiagramSource(text);
     }
 }

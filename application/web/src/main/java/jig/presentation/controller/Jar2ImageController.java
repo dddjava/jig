@@ -40,7 +40,8 @@ public class Jar2ImageController {
                     new AnalysisCriteria(
                             new SearchPaths(Collections.singletonList(tempFile)),
                             new AnalysisClassesPattern(pattern),
-                            new DependenciesPattern(pattern)));
+                            new DependenciesPattern(pattern),
+                            AnalysisTarget.PACKAGE));
             ModelFormatter modelFormatter = analyzeService.modelFormatter(Paths.get(""));
             DiagramSource diagramSource = service.toDiagramSource(models, modelFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);

@@ -6,7 +6,6 @@ import jig.domain.model.dependency.AnalysisCriteria;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -24,12 +23,7 @@ public class JdepsExecutor {
         try (StringWriter writer = new StringWriter();
              PrintWriter pw = new PrintWriter(writer)) {
 
-            List<String> args = criteria.addAllPath(Arrays.asList(
-                    "-include",
-                    criteria.analysisClassesPattern.value(),
-                    "-e",
-                    criteria.dependenciesPattern.value()
-            ));
+            List<String> args = criteria.toJdepsArgs();
 
             Main.run(args.toArray(new String[args.size()]), pw);
 

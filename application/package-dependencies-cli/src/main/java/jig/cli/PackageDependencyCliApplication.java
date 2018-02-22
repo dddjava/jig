@@ -94,7 +94,8 @@ public class PackageDependencyCliApplication implements CommandLineRunner {
                 new AnalysisCriteria(
                         new SearchPaths(searchPaths),
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
-                        new DependenciesPattern(packagePattern + "\\..+")));
+                        new DependenciesPattern(packagePattern + "\\..+"),
+                        AnalysisTarget.PACKAGE));
         ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRoot);
         DiagramSource diagramSource = diagramService.toDiagramSource(models, modelFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);

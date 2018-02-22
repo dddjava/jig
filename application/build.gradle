@@ -47,7 +47,7 @@ project(":application") {
     }
 }
 
-project(':cli') {
+project(':package-dependencies-cli') {
     apply plugin: "org.springframework.boot"
 
     dependencies {
@@ -56,6 +56,14 @@ project(':cli') {
 
     springBoot {
         executable true
+    }
+}
+
+project(':services-cli') {
+    apply plugin: "org.springframework.boot"
+
+    dependencies {
+        compile(project(':application'))
     }
 }
 

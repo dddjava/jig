@@ -1,17 +1,19 @@
 package jig.cli;
 
-import jig.application.service.AnalyzeService;
-import jig.domain.model.dependency.*;
+import jig.domain.model.usage.ServiceClassRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.Arrays;
 
 import static java.util.stream.Collectors.joining;
 
@@ -23,44 +25,46 @@ public class ServicesCliApplication implements CommandLineRunner {
     }
 
     @Autowired
-    AnalyzeService service;
+    ServiceClassRepository repository;
+
+    @Value("${output.file.delimiter}")
+    String delimiter;
+
+    @Value("${output.file.line-separator}")
+    String lineSeparator;
 
     @Override
     public void run(String... args) throws Exception {
+
         try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("./services.tsv"), StandardCharsets.UTF_8)) {
+            repository.findAll().list().forEach(serviceClass -> {
+                serviceClass.methods().list().forEach(serviceMethod -> {
+                    try {
+                        // クラス名
+                        writer.write(serviceClass.name().value());
+                        writer.write(delimiter);
+                        // 和名
+                        writer.write(serviceClass.japaneseName().value());
+                        writer.write(delimiter);
+                        // フィールド型（列挙）
+                        writer.write(serviceClass.dependents().list().stream().map(Class::getSimpleName).collect(joining(",")));
+                        writer.write(delimiter);
+                        // メソッド名
+                        writer.write(serviceMethod.name());
+                        writer.write(delimiter);
+                        // メソッド型
+                        writer.write(serviceMethod.returnType().getSimpleName());
+                        writer.write(delimiter);
+                        // メソッドパラメータ型（列挙）
+                        writer.write(Arrays.stream(serviceMethod.parameters()).map(Class::getSimpleName).collect(joining(",")));
 
-            Models models = service.toModels(new AnalysisCriteria(
-                    new SearchPaths(
-                            Collections.singletonList(Paths.get(""))),
-                    new AnalysisClassesPattern(".*.application\\.service\\..+"),
-                    new DependenciesPattern(".*\\.(application\\.service\\..+|domain\\.model\\..+Repository)"),
-                    AnalysisTarget.CLASS));
-            String format = models.format(
-                    new ModelFormatter() {
-                        @Override
-                        public String header() {
-                            return "";
-                        }
-
-                        @Override
-                        public String format(Model model) {
-                            return model.format(
-                                    fullQualifiedName -> fullQualifiedName.value()
-                                            + "\n" + model.dependency().list().stream()
-                                            .map(m -> m.format(FullQualifiedName::value))
-                                            .map(s -> "\t" + s)
-                                            .collect(joining("\n"))
-                            );
-                        }
-
-                        @Override
-                        public String footer() {
-                            return "";
-                        }
+                        writer.write(lineSeparator);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
                     }
-            );
-
-            writer.write(format);
+                });
+            });
         }
     }
 }
+

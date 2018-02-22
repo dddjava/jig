@@ -38,11 +38,11 @@ public class DiagramService {
     }
 
     public DiagramSource toDiagramSource(Models models, ModelFormatter modelFormatter) {
-        String text = "@startuml\n" +
-                "hide members\n" +
-                "hide circle\n" +
-                models.format(modelFormatter) + "\n" +
-                "@enduml";
+        String text = getString(models, modelFormatter);
         return new DiagramSource(text);
+    }
+
+    private String getString(Models models, ModelFormatter modelFormatter) {
+        return models.format(modelFormatter);
     }
 }

@@ -25,9 +25,11 @@ public class Models {
     }
 
     public String format(ModelFormatter formatter) {
-        return models.stream()
-                .filter(Model::hasDependency)
-                .map(formatter::format)
-                .collect(Collectors.joining(System.lineSeparator()));
+        return formatter.header() +
+                models.stream()
+                        .filter(Model::hasDependency)
+                        .map(formatter::format)
+                        .collect(Collectors.joining(System.lineSeparator())) +
+                formatter.footer();
     }
 }

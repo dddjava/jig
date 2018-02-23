@@ -26,7 +26,6 @@ public class PackageInfoParser {
 
     private Path rootPath;
 
-
     public JapaneseNameRepository parseClass() {
         JapaneseNameRepository repository = new JapaneseNameRepository();
         if (Files.notExists(rootPath)) {
@@ -53,16 +52,14 @@ public class PackageInfoParser {
                                             packageName.asString() + "." + n.getNameAsString()
                                     );
 
-                                    if (n.isAnnotationPresent("Service")) {
-                                        n.accept(new VoidVisitorAdapter<FullQualifiedName>() {
-                                            @Override
-                                            public void visit(JavadocComment n, FullQualifiedName name) {
-                                                String text = n.parse().getDescription().toText();
-                                                JapaneseName japaneseName = new JapaneseName(text);
-                                                repository.register(name, japaneseName);
-                                            }
-                                        }, fullQualifiedName);
-                                    }
+                                    n.accept(new VoidVisitorAdapter<FullQualifiedName>() {
+                                        @Override
+                                        public void visit(JavadocComment n, FullQualifiedName name) {
+                                            String text = n.parse().getDescription().toText();
+                                            JapaneseName japaneseName = new JapaneseName(text);
+                                            repository.register(name, japaneseName);
+                                        }
+                                    }, fullQualifiedName);
                                 }
                             }, packageName);
                         } catch (IOException e) {

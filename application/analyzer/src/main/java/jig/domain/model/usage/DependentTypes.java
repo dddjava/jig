@@ -2,6 +2,7 @@ package jig.domain.model.usage;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,5 +23,9 @@ public class DependentTypes {
                 Arrays.stream(serviceClass.getDeclaredFields())
                         .map(Field::getType)
                         .collect(toList()));
+    }
+
+    public static DependentTypes empty() {
+        return new DependentTypes(Collections.emptyList());
     }
 }

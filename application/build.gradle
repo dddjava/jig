@@ -67,10 +67,6 @@ project(':package-diagram-cli') {
         compile 'org.springframework.boot:spring-boot-starter'
         compile project(':application')
     }
-
-    springBoot {
-        executable true
-    }
 }
 
 project(':class-list-cli') {

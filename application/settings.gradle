@@ -3,5 +3,5 @@ rootProject.name = 'jig'
 include 'diagram', 'analyzer',
         'application',
         'package-dependencies-cli',
-        'services-cli',
+        'class-list-cli',
         'web'

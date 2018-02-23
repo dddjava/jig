@@ -73,7 +73,7 @@ project(':package-dependencies-cli') {
     }
 }
 
-project(':services-cli') {
+project(':class-list-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {

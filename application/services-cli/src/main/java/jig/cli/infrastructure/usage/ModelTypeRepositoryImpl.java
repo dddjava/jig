@@ -6,6 +6,7 @@ import jig.domain.model.usage.ModelTypes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
@@ -37,7 +38,7 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
             classes = walk.filter(factory::isTargetClass)
                     .map(path::relativize)
                     .map(Path::toString)
-                    .map(str -> str.replace(".class", "").replace("/", "."))
+                    .map(str -> str.replace(".class", "").replace(File.separator, "."))
                     .map(className -> {
                         try {
                             return loader.loadClass(className);

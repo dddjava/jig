@@ -1,6 +1,6 @@
 package jig.cli;
 
-import jig.domain.model.usage.ServiceClassRepository;
+import jig.domain.model.usage.ModelTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -25,7 +25,7 @@ public class ServicesCliApplication implements CommandLineRunner {
     }
 
     @Autowired
-    ServiceClassRepository repository;
+    ModelTypeRepository repository;
 
     @Value("${output.file.delimiter}")
     String delimiter;

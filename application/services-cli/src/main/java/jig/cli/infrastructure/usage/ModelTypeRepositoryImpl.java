@@ -9,29 +9,27 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 @Repository
-public class ServiceClassRepositoryImpl implements ServiceClassRepository {
+public class ModelTypeRepositoryImpl implements ModelTypeRepository {
 
-    private List<ServiceClass> classes;
+    private List<ModelType> classes;
 
     @Override
-    public ServiceClasses findAll() {
-        return new ServiceClasses(classes);
+    public ModelTypes findAll() {
+        return new ModelTypes(classes);
     }
 
-    ServiceClassRepositoryImpl(@Value("${target.class}") String targetClasspath, @Value("${target.source}") String sourcePath) {
+    ModelTypeRepositoryImpl(@Value("${target.class}") String targetClasspath, @Value("${target.source}") String sourcePath) {
         Path path = Paths.get(targetClasspath);
 
         PackageInfoParser packageInfoParser = new PackageInfoParser(Paths.get(sourcePath));
@@ -53,24 +51,16 @@ public class ServiceClassRepositoryImpl implements ServiceClassRepository {
                     })
                     .map(serviceClass -> {
                         FullQualifiedName fullQualifiedName = new FullQualifiedName(serviceClass.getCanonicalName());
-                        return new ServiceClass(
+                        return new ModelType(
                                 fullQualifiedName,
                                 japaneseNames.get(fullQualifiedName),
-                                new ServiceMethods(
-                                        Arrays.stream(serviceClass.getDeclaredMethods())
-                                                .map(method -> new ServiceMethod(
-                                                        method.getName(),
-                                                        method.getReturnType(),
-                                                        method.getParameterTypes()))
-                                                .collect(toList())),
-                                new DependentClasses(
-                                        Arrays.stream(serviceClass.getDeclaredFields())
-                                                .map(Field::getType)
-                                                .collect(toList()))
+                                ModelMethods.from(serviceClass),
+                                DependentTypes.from(serviceClass)
                         );
                     }).collect(toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
+
 }

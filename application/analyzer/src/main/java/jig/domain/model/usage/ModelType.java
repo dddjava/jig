@@ -3,16 +3,16 @@ package jig.domain.model.usage;
 import jig.domain.model.dependency.FullQualifiedName;
 import jig.domain.model.dependency.JapaneseName;
 
-public class ServiceClass {
+public class ModelType {
 
     FullQualifiedName name;
     JapaneseName japaneseName;
 
-    ServiceMethods methods;
+    ModelMethods methods;
 
-    DependentClasses dependents;
+    DependentTypes dependents;
 
-    public ServiceClass(FullQualifiedName name, JapaneseName japaneseName, ServiceMethods methods, DependentClasses dependents) {
+    public ModelType(FullQualifiedName name, JapaneseName japaneseName, ModelMethods methods, DependentTypes dependents) {
         this.name = name;
         this.japaneseName = japaneseName;
         this.methods = methods;
@@ -27,11 +27,11 @@ public class ServiceClass {
         return japaneseName;
     }
 
-    public ServiceMethods methods() {
+    public ModelMethods methods() {
         return methods;
     }
 
-    public DependentClasses dependents() {
+    public DependentTypes dependents() {
         return dependents;
     }
 }

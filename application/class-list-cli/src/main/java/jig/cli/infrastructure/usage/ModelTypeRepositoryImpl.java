@@ -9,11 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,9 +32,20 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
     }
 
     public ModelTypeRepositoryImpl(ModelTypeFactory factory, @Value("${target.class}") String targetClasspath) {
-        Path path = Paths.get(targetClasspath);
+        URL[] urls = Arrays.stream(targetClasspath.split(":"))
+                .map(Paths::get)
+                .map(Path::toUri)
+                .map(uri -> {
+                    try {
+                        return uri.toURL();
+                    } catch (MalformedURLException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                })
+                .toArray(URL[]::new);
+        Path path = Paths.get(targetClasspath.split(":")[0]);
 
-        try (URLClassLoader loader = new URLClassLoader(new URL[]{path.toUri().toURL()});
+        try (URLClassLoader loader = new URLClassLoader(urls);
              Stream<Path> walk = Files.walk(path)) {
 
             classes = walk.filter(factory::isTargetClass)

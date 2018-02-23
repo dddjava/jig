@@ -6,7 +6,7 @@ repositories {
     jcenter()
 }
 subprojects {
-    apply plugin: "java"
+    apply plugin: 'java'
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
@@ -23,50 +23,6 @@ subprojects {
     }
 }
 
-project(':web') {
-    apply plugin: "org.springframework.boot"
-
-    ext['thymeleaf.version'] = '3.0.9.RELEASE'
-    ext['thymeleaf-layout-dialect.version'] = '2.2.2'
-    ext['thymeleaf-extras-springsecurity4.version'] = '3.0.2.RELEASE'
-    ext['thymeleaf-extras-java8time.version'] = '3.0.1.RELEASE'
-
-    dependencies {
-        compile "org.springframework.boot:spring-boot-starter-web"
-        compile(project(':application'))
-    }
-}
-
-project(":application") {
-    apply plugin: "org.springframework.boot"
-
-    dependencies {
-        compile "org.springframework.boot:spring-boot-starter"
-        compile(project(':diagram'))
-        compile(project(':analyzer'))
-    }
-}
-
-project(':package-dependencies-cli') {
-    apply plugin: "org.springframework.boot"
-
-    dependencies {
-        compile(project(':application'))
-    }
-
-    springBoot {
-        executable true
-    }
-}
-
-project(':services-cli') {
-    apply plugin: "org.springframework.boot"
-
-    dependencies {
-        compile(project(':application'))
-    }
-}
-
 project(':diagram') {
     dependencies {
         compile 'net.sourceforge.plantuml:plantuml:8059'
@@ -78,5 +34,50 @@ project(':analyzer') {
         compile files("${System.getProperty('java.home')}/../lib/tools.jar")
         compile 'com.github.javaparser:javaparser-core:3.5.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+    }
+}
+
+project(':application') {
+
+    dependencies {
+        compile 'org.springframework:spring-context:4.3.14.RELEASE'
+        compile project(':diagram')
+        compile project(':analyzer')
+    }
+}
+
+project(':web') {
+    apply plugin: 'org.springframework.boot'
+
+    ext['thymeleaf.version'] = '3.0.9.RELEASE'
+    ext['thymeleaf-layout-dialect.version'] = '2.2.2'
+    ext['thymeleaf-extras-springsecurity4.version'] = '3.0.2.RELEASE'
+    ext['thymeleaf-extras-java8time.version'] = '3.0.1.RELEASE'
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        compile project(':application')
+    }
+}
+
+project(':package-dependencies-cli') {
+    apply plugin: 'org.springframework.boot'
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter'
+        compile project(':application')
+    }
+
+    springBoot {
+        executable true
+    }
+}
+
+project(':services-cli') {
+    apply plugin: 'org.springframework.boot'
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter'
+        compile project(':application')
     }
 }

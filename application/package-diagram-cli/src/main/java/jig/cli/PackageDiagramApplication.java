@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication(scanBasePackages = "jig")
-public class PackageDependencyCliApplication implements CommandLineRunner {
+public class PackageDiagramApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
-        SpringApplication.run(PackageDependencyCliApplication.class, args);
+        SpringApplication.run(PackageDiagramApplication.class, args);
     }
 
     @Value("${target.package:.*.domain.model}")

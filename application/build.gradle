@@ -60,7 +60,7 @@ project(':web') {
     }
 }
 
-project(':package-dependencies-cli') {
+project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {

@@ -28,10 +28,10 @@ import java.util.Arrays;
 import static java.util.stream.Collectors.joining;
 
 @SpringBootApplication(scanBasePackages = "jig")
-public class ServicesCliApplication implements CommandLineRunner {
+public class ClassListApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
-        SpringApplication.run(ServicesCliApplication.class, args);
+        SpringApplication.run(ClassListApplication.class, args);
     }
 
     @Autowired

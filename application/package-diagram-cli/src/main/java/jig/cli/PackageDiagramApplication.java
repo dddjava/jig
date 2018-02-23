@@ -17,8 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class PackageDiagramApplication implements CommandLineRunner {
@@ -28,8 +27,15 @@ public class PackageDiagramApplication implements CommandLineRunner {
         SpringApplication.run(PackageDiagramApplication.class, args);
     }
 
-    @Value("${target.package:.*.domain.model}")
+    @Value("${target.class}")
+    String targetClass;
+    @Value("${target.source}")
+    String targetSource;
+    @Value("${package.pattern}")
     String packagePattern;
+
+    @Value("${output.diagram.name}")
+    String outoutDiagramName;
 
     @Autowired
     AnalyzeService analyzeService;
@@ -38,61 +44,12 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        if (args.length == 0) {
-            System.out.println("usage: cli.jar <options> <jar or classes directories...>");
-            System.out.println("  -source  ソースコードの含まれているディレクトリを指定します。");
-            System.out.println("           デフォルトは ./src です。");
-            System.out.println("  -output  出力ファイル名を指定します。");
-            System.out.println("           デフォルトは ./diagram.png です。");
-            return;
-        }
-
-        List<Path> searchPaths = new ArrayList<>();
-        Path sourceRoot = Paths.get("./src");
-        Path output = Paths.get("./diagram.png");
-
-        ParameterType parameterType = ParameterType.NONE;
-        for (String arg : args) {
-            if (arg.equals("-source")) {
-                parameterType = ParameterType.SOURCE;
-                continue;
-            }
-            if (arg.equals("-output")) {
-                parameterType = ParameterType.OUTPUT;
-                continue;
-            }
-
-            switch (parameterType) {
-                case NONE:
-                    Path jarPath = Paths.get(arg);
-                    if (Files.notExists(jarPath)) {
-                        throw new IllegalArgumentException("存在するパスを指定してください");
-                    }
-                    searchPaths.add(jarPath);
-                    continue;
-                case SOURCE:
-                    sourceRoot = Paths.get(arg);
-                    if (!Files.isDirectory(sourceRoot)) {
-                        throw new IllegalArgumentException("-sourceはディレクトリを指定してください");
-                    }
-                    parameterType = ParameterType.NONE;
-                    continue;
-                case OUTPUT:
-                    output = Paths.get(arg);
-                    parameterType = ParameterType.NONE;
-                    continue;
-            }
-
-            System.err.println("ignore:" + arg);
-        }
-
-        if (searchPaths.isEmpty()) {
-            throw new IllegalArgumentException("検索対象パスを一つ以上指定してください");
-        }
+        Path sourceRoot = Paths.get(targetSource);
+        Path output = Paths.get(outoutDiagramName);
 
         Models models = analyzeService.toModels(
                 new AnalysisCriteria(
-                        new SearchPaths(searchPaths),
+                        new SearchPaths(Collections.singletonList(Paths.get(targetClass))),
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
                         new DependenciesPattern(packagePattern + "\\..+"),
                         AnalysisTarget.PACKAGE));
@@ -108,8 +65,3 @@ public class PackageDiagramApplication implements CommandLineRunner {
     }
 }
 
-enum ParameterType {
-    SOURCE,
-    OUTPUT,
-    NONE
-}

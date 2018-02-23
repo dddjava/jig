@@ -13,14 +13,14 @@
 
 ```
 cd application
-./gradlew :cli:build
+./gradlew clean :package-diagram-cli:build :class-list-cli:build
 ```
-
-`ls cli/build/libs/cli.jar` ができる
 
 ### 実行
 
+できたjarファイルを `java -jar` で実行。
+
 ```
-./cli.jar -source src/main/java build/classes/java/main
+./package-diagram-cli.jar --target.source=src/main/java --target.class=build/classes/java/main
 ```
 

@@ -1,17 +1,26 @@
 package jig.cli;
 
+import jig.analizer.javaparser.PackageInfoParser;
+import jig.cli.infrastructure.usage.ModelTypeFactory;
+import jig.domain.model.dependency.FullQualifiedName;
+import jig.domain.model.dependency.JapaneseNameRepository;
+import jig.domain.model.usage.DependentTypes;
+import jig.domain.model.usage.ModelMethods;
+import jig.domain.model.usage.ModelType;
 import jig.domain.model.usage.ModelTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
@@ -65,6 +74,30 @@ public class ServicesCliApplication implements CommandLineRunner {
                 });
             });
         }
+    }
+
+    @Bean
+    ModelTypeFactory serviceFilter(@Value("${target.source}") String sourcePath) {
+
+        PackageInfoParser packageInfoParser = new PackageInfoParser(Paths.get(sourcePath));
+        JapaneseNameRepository japaneseNames = packageInfoParser.parseClass();
+
+        return new ModelTypeFactory() {
+            @Override
+            public boolean isTargetClass(Path path) {
+                return path.toString().endsWith("Service.class");
+            }
+
+            @Override
+            public ModelType toModelType(Class<?> clz) {
+                FullQualifiedName fullQualifiedName = new FullQualifiedName(clz.getCanonicalName());
+                return new ModelType(
+                        fullQualifiedName,
+                        japaneseNames.get(fullQualifiedName),
+                        ModelMethods.from(clz),
+                        DependentTypes.from(clz));
+            }
+        };
     }
 }
 

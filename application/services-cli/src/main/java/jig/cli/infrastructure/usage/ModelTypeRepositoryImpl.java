@@ -1,9 +1,8 @@
 package jig.cli.infrastructure.usage;
 
-import jig.analizer.javaparser.PackageInfoParser;
-import jig.domain.model.dependency.FullQualifiedName;
-import jig.domain.model.dependency.JapaneseNameRepository;
-import jig.domain.model.usage.*;
+import jig.domain.model.usage.ModelType;
+import jig.domain.model.usage.ModelTypeRepository;
+import jig.domain.model.usage.ModelTypes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -29,16 +28,13 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
         return new ModelTypes(classes);
     }
 
-    ModelTypeRepositoryImpl(@Value("${target.class}") String targetClasspath, @Value("${target.source}") String sourcePath) {
+    public ModelTypeRepositoryImpl(ModelTypeFactory factory, @Value("${target.class}") String targetClasspath) {
         Path path = Paths.get(targetClasspath);
-
-        PackageInfoParser packageInfoParser = new PackageInfoParser(Paths.get(sourcePath));
-        JapaneseNameRepository japaneseNames = packageInfoParser.parseClass();
 
         try (URLClassLoader loader = new URLClassLoader(new URL[]{path.toUri().toURL()});
              Stream<Path> walk = Files.walk(path)) {
 
-            classes = walk.filter(p -> p.toString().endsWith("Service.class"))
+            classes = walk.filter(factory::isTargetClass)
                     .map(path::relativize)
                     .map(Path::toString)
                     .map(str -> str.replace(".class", "").replace("/", "."))
@@ -49,15 +45,8 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
                             throw new IllegalStateException(e);
                         }
                     })
-                    .map(serviceClass -> {
-                        FullQualifiedName fullQualifiedName = new FullQualifiedName(serviceClass.getCanonicalName());
-                        return new ModelType(
-                                fullQualifiedName,
-                                japaneseNames.get(fullQualifiedName),
-                                ModelMethods.from(serviceClass),
-                                DependentTypes.from(serviceClass)
-                        );
-                    }).collect(toList());
+                    .map(factory::toModelType)
+                    .collect(toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

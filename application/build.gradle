@@ -75,5 +75,7 @@ project(':class-list-cli') {
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter'
         compile project(':application')
+
+        compile 'com.fasterxml.jackson.core:jackson-core'
     }
 }

@@ -45,7 +45,7 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
                 .toArray(URL[]::new);
         Path path = Paths.get(targetClasspath.split(":")[0]);
 
-        try (URLClassLoader loader = new URLClassLoader(urls);
+        try (URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader());
              Stream<Path> walk = Files.walk(path)) {
 
             classes = walk.filter(factory::isTargetClass)

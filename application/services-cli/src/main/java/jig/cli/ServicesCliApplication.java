@@ -39,9 +39,6 @@ public class ServicesCliApplication implements CommandLineRunner {
     @Value("${output.file.delimiter}")
     String delimiter;
 
-    @Value("${output.file.line-separator}")
-    String lineSeparator;
-
     @Override
     public void run(String... args) throws Exception {
 
@@ -67,7 +64,7 @@ public class ServicesCliApplication implements CommandLineRunner {
                         // メソッドパラメータ型（列挙）
                         writer.write(Arrays.stream(serviceMethod.parameters()).map(Class::getSimpleName).collect(joining(",")));
 
-                        writer.write(lineSeparator);
+                        writer.newLine();
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

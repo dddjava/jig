@@ -77,5 +77,20 @@ project(':class-list-cli') {
         compile project(':application')
 
         compile 'com.fasterxml.jackson.core:jackson-core'
+
+        compile 'org.springframework.boot:spring-boot-starter-test'
     }
 }
+
+project(':sut') {
+    apply plugin: 'org.springframework.boot'
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1")
+    }
+
+    bootRepackage {
+        enabled = false
+    }
+}
+

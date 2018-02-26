@@ -4,4 +4,5 @@ include 'diagram', 'analyzer',
         'application',
         'package-diagram-cli',
         'class-list-cli',
-        'web'
+        'web',
+        'sut'

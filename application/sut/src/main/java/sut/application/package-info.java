@@ -1,0 +1,4 @@
+/**
+ * アプリケーション
+ */
+package sut.application;

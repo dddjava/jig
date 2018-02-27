@@ -1,17 +1,11 @@
-import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
+import jig.infrastructure.plantuml.DiagramMakerImpl;
 import org.junit.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnvironmentTest {
 
     @Test
-    public void test() throws Exception {
-        List<String> testDotStrings = GraphvizUtils.getTestDotStrings(false);
-
-        assertThat(testDotStrings)
-                .contains("Installation seems OK. File generation OK");
+    public void 必要な環境が満たされていること() throws Exception {
+        // コンストラクタで検証しているのでインスタンス生成が成功すればOK
+        new DiagramMakerImpl();
     }
 }

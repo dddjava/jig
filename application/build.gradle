@@ -26,8 +26,9 @@ subprojects {
 project(':model') {
 }
 
-project(':infrastructure-plantuml') {
+project(':diagram-plantuml') {
     dependencies {
+        compile 'org.springframework:spring-context:4.3.14.RELEASE'
         compile 'net.sourceforge.plantuml:plantuml:8059'
         compile project(':model')
     }
@@ -50,7 +51,6 @@ project(':application') {
 
     dependencies {
         compile 'org.springframework:spring-context:4.3.14.RELEASE'
-        compile project(':infrastructure-plantuml')
         compile project(':infrastructure-jdeps')
         compile project(':infrastructure-javaparser')
         compile project(':model')
@@ -67,6 +67,7 @@ project(':web') {
 
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'
+        compile project(':diagram-plantuml')
         compile project(':application')
     }
 }
@@ -76,6 +77,7 @@ project(':package-diagram-cli') {
 
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter'
+        compile project(':diagram-plantuml')
         compile project(':application')
     }
 }

@@ -1,8 +1,8 @@
 package jig.infrastructure.plantuml;
 
-import jig.model.diagram.Diagram;
-import jig.model.diagram.DiagramMaker;
-import jig.model.diagram.DiagramSource;
+import jig.domain.model.diagram.Diagram;
+import jig.domain.model.diagram.DiagramMaker;
+import jig.domain.model.diagram.DiagramSource;
 import net.sourceforge.plantuml.SourceStringReader;
 
 import java.io.ByteArrayOutputStream;

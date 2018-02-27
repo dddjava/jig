@@ -1,7 +1,7 @@
 rootProject.name = 'jig'
 
 include 'model',
-        'infrastructure-plantuml',
+        'diagram-plantuml',
         'infrastructure-jdeps',
         'infrastructure-javaparser',
         'application',

@@ -1,4 +1,4 @@
 /**
  * TODO 実装技術を含んでしまっている
  */
-package jig.model.diagram;
+package jig.domain.model.diagram;

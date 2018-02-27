@@ -1,9 +1,9 @@
-package jig.infrastructure;
+package jig.infrastructure.plantuml;
 
-import jig.model.diagram.Diagram;
-import jig.model.diagram.DiagramIdentifier;
-import jig.model.diagram.DiagramRepository;
-import jig.model.diagram.DiagramSource;
+import jig.domain.model.diagram.Diagram;
+import jig.domain.model.diagram.DiagramIdentifier;
+import jig.domain.model.diagram.DiagramRepository;
+import jig.domain.model.diagram.DiagramSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StreamUtils;

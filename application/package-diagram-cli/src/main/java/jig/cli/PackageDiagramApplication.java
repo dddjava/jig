@@ -2,10 +2,10 @@ package jig.cli;
 
 import jig.application.service.DiagramService;
 import jig.application.service.ThingService;
+import jig.domain.model.diagram.Diagram;
+import jig.domain.model.diagram.DiagramIdentifier;
+import jig.domain.model.diagram.DiagramSource;
 import jig.infrastructure.javaparser.PackageInfoLibrary;
-import jig.model.diagram.Diagram;
-import jig.model.diagram.DiagramIdentifier;
-import jig.model.diagram.DiagramSource;
 import jig.model.jdeps.*;
 import jig.model.tag.JapaneseNameDictionaryLibrary;
 import jig.model.thing.ThingFormatter;
@@ -58,7 +58,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
                         new DependenciesPattern(packagePattern + "\\..+"),
                         AnalysisTarget.PACKAGE));
-        ThingFormatter thingFormatter = thingService.modelFormatter(library.borrow());
+        ThingFormatter thingFormatter = diagramService.modelFormatter(library.borrow());
         DiagramSource diagramSource = diagramService.toDiagramSource(things, thingFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);
         diagramService.generate(identifier);

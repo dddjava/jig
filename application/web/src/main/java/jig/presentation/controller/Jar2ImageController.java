@@ -2,8 +2,8 @@ package jig.presentation.controller;
 
 import jig.application.service.DiagramService;
 import jig.application.service.ThingService;
-import jig.model.diagram.DiagramIdentifier;
-import jig.model.diagram.DiagramSource;
+import jig.domain.model.diagram.DiagramIdentifier;
+import jig.domain.model.diagram.DiagramSource;
 import jig.model.jdeps.*;
 import jig.model.tag.JapaneseNameDictionary;
 import jig.model.thing.ThingFormatter;
@@ -44,7 +44,7 @@ public class Jar2ImageController {
                             new AnalysisClassesPattern(pattern),
                             new DependenciesPattern(pattern),
                             AnalysisTarget.PACKAGE));
-            ThingFormatter thingFormatter = thingService.modelFormatter(new JapaneseNameDictionary());
+            ThingFormatter thingFormatter = service.modelFormatter(new JapaneseNameDictionary());
             DiagramSource diagramSource = service.toDiagramSource(things, thingFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);
             service.generate(identifier);

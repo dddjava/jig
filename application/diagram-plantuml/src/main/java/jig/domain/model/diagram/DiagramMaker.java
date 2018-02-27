@@ -1,4 +1,4 @@
-package jig.model.diagram;
+package jig.domain.model.diagram;
 
 public interface DiagramMaker {
 

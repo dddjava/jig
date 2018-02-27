@@ -1,7 +1,6 @@
-package jig.infrastructure;
+package jig.infrastructure.plantuml;
 
-import jig.infrastructure.plantuml.DiagramMakerImpl;
-import jig.model.diagram.DiagramMaker;
+import jig.domain.model.diagram.DiagramMaker;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

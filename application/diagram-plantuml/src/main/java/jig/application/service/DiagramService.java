@@ -1,9 +1,13 @@
 package jig.application.service;
 
-import jig.model.diagram.*;
+import jig.domain.model.diagram.*;
+import jig.infrastructure.plantuml.PlantUmlNameFormatter;
+import jig.infrastructure.plantuml.PlantUmlThingFormatter;
+import jig.model.tag.JapaneseNameDictionary;
 import jig.model.thing.ThingFormatter;
 import jig.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,9 @@ public class DiagramService {
     DiagramRepository repository;
     @Autowired
     DiagramMaker maker;
+
+    @Value("${target.package:.*.domain.model}")
+    private String prefix;
 
     public void generate(DiagramIdentifier identifier) {
         DiagramSource source = repository.getSource(identifier);
@@ -44,5 +51,9 @@ public class DiagramService {
 
     private String getString(Things things, ThingFormatter thingFormatter) {
         return things.format(thingFormatter);
+    }
+
+    public ThingFormatter modelFormatter(JapaneseNameDictionary japaneseNameDictionary) {
+        return new PlantUmlThingFormatter(new PlantUmlNameFormatter(prefix, japaneseNameDictionary));
     }
 }

@@ -9,6 +9,7 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.model.tag.JapaneseName;
 import jig.model.tag.JapaneseNameDictionary;
+import jig.model.tag.JapaneseNameDictionaryLibrary;
 import jig.model.thing.Name;
 
 import java.io.IOException;
@@ -17,15 +18,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class PackageInfoParser {
+public class ClassCommentLibrary implements JapaneseNameDictionaryLibrary {
 
-    public PackageInfoParser(Path rootPath) {
+    public ClassCommentLibrary(Path rootPath) {
         this.rootPath = rootPath;
     }
 
     private Path rootPath;
 
-    public JapaneseNameDictionary parseClass() {
+    @Override
+    public JapaneseNameDictionary borrow() {
         JapaneseNameDictionary repository = new JapaneseNameDictionary();
         if (Files.notExists(rootPath)) {
             return repository;
@@ -61,48 +63,6 @@ public class PackageInfoParser {
                                     }, fullQualifiedName);
                                 }
                             }, packageName);
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    });
-
-            return repository;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public JapaneseNameDictionary parse() {
-        JapaneseNameDictionary repository = new JapaneseNameDictionary();
-        if (Files.notExists(rootPath)) {
-            return repository;
-        }
-
-        try (Stream<Path> walk = Files.walk(rootPath)) {
-
-            walk.filter(path -> path.toFile().getName().equals("package-info.java"))
-                    .forEach(path -> {
-                        try {
-                            CompilationUnit cu = JavaParser.parse(path);
-                            Name fqn = cu.accept(new GenericVisitorAdapter<Name, Void>() {
-                                @Override
-                                public Name visit(PackageDeclaration n, Void arg) {
-                                    String name = n.getNameAsString();
-                                    return new Name(name);
-                                }
-                            }, null);
-
-                            JapaneseName japaneseName = cu.accept(new GenericVisitorAdapter<JapaneseName, Void>() {
-                                @Override
-                                public JapaneseName visit(JavadocComment n, Void arg) {
-                                    String text = n.parse().getDescription().toText();
-                                    return new JapaneseName(text);
-                                }
-                            }, null);
-
-                            if (fqn != null && japaneseName != null) {
-                                repository.register(fqn, japaneseName);
-                            }
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
                         }

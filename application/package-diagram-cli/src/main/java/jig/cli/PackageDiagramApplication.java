@@ -1,12 +1,13 @@
 package jig.cli;
 
 import jig.application.service.DiagramService;
-import jig.application.service.JapaneseNameService;
 import jig.application.service.ThingService;
+import jig.infrastructure.javaparser.PackageInfoLibrary;
 import jig.model.diagram.Diagram;
 import jig.model.diagram.DiagramIdentifier;
 import jig.model.diagram.DiagramSource;
 import jig.model.jdeps.*;
+import jig.model.tag.JapaneseNameDictionaryLibrary;
 import jig.model.thing.ThingFormatter;
 import jig.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -32,8 +34,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     @Value("${target.class}")
     String targetClass;
-    @Value("${target.source}")
-    String targetSource;
+
     @Value("${package.pattern}")
     String packagePattern;
 
@@ -45,11 +46,10 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Autowired
     DiagramService diagramService;
     @Autowired
-    JapaneseNameService japaneseNameService;
+    JapaneseNameDictionaryLibrary library;
 
     @Override
     public void run(String... args) throws IOException {
-        Path sourceRoot = Paths.get(targetSource);
         Path output = Paths.get(outoutDiagramName);
 
         Things things = thingService.toModels(
@@ -58,7 +58,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
                         new DependenciesPattern(packagePattern + "\\..+"),
                         AnalysisTarget.PACKAGE));
-        ThingFormatter thingFormatter = thingService.modelFormatter(japaneseNameService.dictionaryFrom(sourceRoot));
+        ThingFormatter thingFormatter = thingService.modelFormatter(library.borrow());
         DiagramSource diagramSource = diagramService.toDiagramSource(things, thingFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);
         diagramService.generate(identifier);
@@ -67,6 +67,12 @@ public class PackageDiagramApplication implements CommandLineRunner {
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());
         }
+    }
+
+    @Bean
+    public JapaneseNameDictionaryLibrary library(@Value("${target.source}") String targetSource) {
+        Path sourceRoot = Paths.get(targetSource);
+        return new PackageInfoLibrary(sourceRoot);
     }
 }
 

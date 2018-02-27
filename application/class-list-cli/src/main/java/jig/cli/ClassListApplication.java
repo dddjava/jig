@@ -1,8 +1,9 @@
 package jig.cli;
 
 import jig.cli.infrastructure.usage.ModelTypeFactory;
-import jig.infrastructure.javaparser.PackageInfoParser;
+import jig.infrastructure.javaparser.ClassCommentLibrary;
 import jig.model.tag.JapaneseNameDictionary;
+import jig.model.tag.JapaneseNameDictionaryLibrary;
 import jig.model.thing.Name;
 import jig.model.usage.DependentTypes;
 import jig.model.usage.ModelMethods;
@@ -90,14 +91,14 @@ public class ClassListApplication implements CommandLineRunner {
     }
 
     @Bean
-    JapaneseNameDictionary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
-        PackageInfoParser packageInfoParser = new PackageInfoParser(Paths.get(sourcePath));
-        return packageInfoParser.parseClass();
+    JapaneseNameDictionaryLibrary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
+        return new ClassCommentLibrary(Paths.get(sourcePath));
     }
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "service")
     @Bean
-    ModelTypeFactory serviceMethod(JapaneseNameDictionary japaneseNames) {
+    ModelTypeFactory serviceMethod(JapaneseNameDictionaryLibrary library) {
+        JapaneseNameDictionary japaneseNameDictionary = library.borrow();
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -109,7 +110,7 @@ public class ClassListApplication implements CommandLineRunner {
                 Name name = new Name(clz.getCanonicalName());
                 return new ModelType(
                         name,
-                        japaneseNames.get(name),
+                        japaneseNameDictionary.get(name),
                         ModelMethods.from(clz),
                         DependentTypes.from(clz));
             }
@@ -118,7 +119,8 @@ public class ClassListApplication implements CommandLineRunner {
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "repository")
     @Bean
-    ModelTypeFactory serviceRepository(JapaneseNameDictionary japaneseNames) {
+    ModelTypeFactory serviceRepository(JapaneseNameDictionaryLibrary library) {
+        JapaneseNameDictionary japaneseNameDictionary = library.borrow();
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -130,7 +132,7 @@ public class ClassListApplication implements CommandLineRunner {
                 Name name = new Name(clz.getCanonicalName());
                 return new ModelType(
                         name,
-                        japaneseNames.get(name),
+                        japaneseNameDictionary.get(name),
                         ModelMethods.from(clz),
                         DependentTypes.empty());
             }

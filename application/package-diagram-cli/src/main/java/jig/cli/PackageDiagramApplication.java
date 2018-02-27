@@ -1,13 +1,14 @@
 package jig.cli;
 
-import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
-import jig.domain.model.Diagram;
-import jig.domain.model.DiagramIdentifier;
-import jig.domain.model.DiagramSource;
-import jig.domain.model.jdeps.*;
-import jig.domain.model.thing.ThingFormatter;
-import jig.domain.model.thing.Things;
+import jig.application.service.JapaneseNameService;
+import jig.application.service.ThingService;
+import jig.model.diagram.Diagram;
+import jig.model.diagram.DiagramIdentifier;
+import jig.model.diagram.DiagramSource;
+import jig.model.jdeps.*;
+import jig.model.thing.ThingFormatter;
+import jig.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -40,22 +41,24 @@ public class PackageDiagramApplication implements CommandLineRunner {
     String outoutDiagramName;
 
     @Autowired
-    AnalyzeService analyzeService;
+    ThingService thingService;
     @Autowired
     DiagramService diagramService;
+    @Autowired
+    JapaneseNameService japaneseNameService;
 
     @Override
     public void run(String... args) throws IOException {
         Path sourceRoot = Paths.get(targetSource);
         Path output = Paths.get(outoutDiagramName);
 
-        Things things = analyzeService.toModels(
+        Things things = thingService.toModels(
                 new AnalysisCriteria(
                         new SearchPaths(Collections.singletonList(Paths.get(targetClass))),
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
                         new DependenciesPattern(packagePattern + "\\..+"),
                         AnalysisTarget.PACKAGE));
-        ThingFormatter thingFormatter = analyzeService.modelFormatter(sourceRoot);
+        ThingFormatter thingFormatter = thingService.modelFormatter(japaneseNameService.dictionaryFrom(sourceRoot));
         DiagramSource diagramSource = diagramService.toDiagramSource(things, thingFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);
         diagramService.generate(identifier);

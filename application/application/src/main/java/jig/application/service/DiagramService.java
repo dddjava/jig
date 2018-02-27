@@ -1,8 +1,8 @@
 package jig.application.service;
 
-import jig.domain.model.thing.ThingFormatter;
-import jig.domain.model.thing.Things;
-import jig.domain.model.*;
+import jig.model.diagram.*;
+import jig.model.thing.ThingFormatter;
+import jig.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

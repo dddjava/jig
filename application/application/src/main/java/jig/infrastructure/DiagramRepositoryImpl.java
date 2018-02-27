@@ -1,9 +1,9 @@
 package jig.infrastructure;
 
-import jig.domain.model.Diagram;
-import jig.domain.model.DiagramIdentifier;
-import jig.domain.model.DiagramRepository;
-import jig.domain.model.DiagramSource;
+import jig.model.diagram.Diagram;
+import jig.model.diagram.DiagramIdentifier;
+import jig.model.diagram.DiagramRepository;
+import jig.model.diagram.DiagramSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StreamUtils;

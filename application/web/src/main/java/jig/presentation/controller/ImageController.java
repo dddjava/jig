@@ -1,8 +1,8 @@
 package jig.presentation.controller;
 
 import jig.application.service.DiagramService;
-import jig.domain.model.DiagramIdentifier;
-import jig.domain.model.DiagramSource;
+import jig.model.diagram.DiagramIdentifier;
+import jig.model.diagram.DiagramSource;
 import jig.presentation.view.DiagramView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

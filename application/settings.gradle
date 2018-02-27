@@ -1,8 +1,12 @@
 rootProject.name = 'jig'
 
-include 'diagram', 'analyzer',
+include 'model',
+        'infrastructure-plantuml',
+        'infrastructure-jdeps',
+        'infrastructure-javaparser',
         'application',
         'package-diagram-cli',
         'class-list-cli',
         'web',
+        'experimental',
         'sut'

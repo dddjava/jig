@@ -1,13 +1,13 @@
 package jig.cli;
 
-import jig.analizer.javaparser.PackageInfoParser;
 import jig.cli.infrastructure.usage.ModelTypeFactory;
-import jig.domain.model.thing.Name;
-import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.usage.DependentTypes;
-import jig.domain.model.usage.ModelMethods;
-import jig.domain.model.usage.ModelType;
-import jig.domain.model.usage.ModelTypeRepository;
+import jig.infrastructure.javaparser.PackageInfoParser;
+import jig.model.tag.JapaneseNameDictionary;
+import jig.model.thing.Name;
+import jig.model.usage.DependentTypes;
+import jig.model.usage.ModelMethods;
+import jig.model.usage.ModelType;
+import jig.model.usage.ModelTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;

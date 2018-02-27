@@ -1,6 +1,6 @@
 package jig.presentation.view;
 
-import jig.domain.model.Diagram;
+import jig.model.diagram.Diagram;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.View;
 

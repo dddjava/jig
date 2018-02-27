@@ -39,7 +39,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
     String packagePattern;
 
     @Value("${output.diagram.name}")
-    String outoutDiagramName;
+    String outputDiagramName;
 
     @Autowired
     ThingService thingService;
@@ -50,7 +50,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        Path output = Paths.get(outoutDiagramName);
+        Path output = Paths.get(outputDiagramName);
 
         Things things = thingService.toModels(
                 new AnalysisCriteria(

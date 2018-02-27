@@ -1,10 +1,10 @@
-package jig.domain.model.dependency;
+package jig.domain.model.jdeps;
 
-public class JapaneseName {
+public class DependenciesPattern {
 
     final String value;
 
-    public JapaneseName(String value) {
+    public DependenciesPattern(String value) {
         this.value = value;
     }
 

@@ -1,25 +1,25 @@
 package jig.domain.model.usage;
 
-import jig.domain.model.dependency.FullQualifiedName;
-import jig.domain.model.dependency.JapaneseName;
+import jig.domain.model.thing.Name;
+import jig.domain.model.tag.JapaneseName;
 
 public class ModelType {
 
-    FullQualifiedName name;
+    Name name;
     JapaneseName japaneseName;
 
     ModelMethods methods;
 
     DependentTypes dependents;
 
-    public ModelType(FullQualifiedName name, JapaneseName japaneseName, ModelMethods methods, DependentTypes dependents) {
+    public ModelType(Name name, JapaneseName japaneseName, ModelMethods methods, DependentTypes dependents) {
         this.name = name;
         this.japaneseName = japaneseName;
         this.methods = methods;
         this.dependents = dependents;
     }
 
-    public FullQualifiedName name() {
+    public Name name() {
         return name;
     }
 

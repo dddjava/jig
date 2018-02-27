@@ -1,7 +1,7 @@
 package jig.application.service;
 
-import jig.domain.model.dependency.ModelFormatter;
-import jig.domain.model.dependency.Models;
+import jig.domain.model.thing.ThingFormatter;
+import jig.domain.model.thing.Things;
 import jig.domain.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -37,12 +37,12 @@ public class DiagramService {
         return repository.get(identifier);
     }
 
-    public DiagramSource toDiagramSource(Models models, ModelFormatter modelFormatter) {
-        String text = getString(models, modelFormatter);
+    public DiagramSource toDiagramSource(Things things, ThingFormatter thingFormatter) {
+        String text = getString(things, thingFormatter);
         return new DiagramSource(text);
     }
 
-    private String getString(Models models, ModelFormatter modelFormatter) {
-        return models.format(modelFormatter);
+    private String getString(Things things, ThingFormatter thingFormatter) {
+        return things.format(thingFormatter);
     }
 }

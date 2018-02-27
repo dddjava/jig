@@ -1,12 +1,12 @@
-package jig.domain.model.dependency;
+package jig.domain.model.thing;
 
 import java.util.Objects;
 
-public class FullQualifiedName {
+public class Name {
 
     String value;
 
-    public FullQualifiedName(String value) {
+    public Name(String value) {
         this.value = value;
     }
 
@@ -18,7 +18,7 @@ public class FullQualifiedName {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FullQualifiedName that = (FullQualifiedName) o;
+        Name that = (Name) o;
         return Objects.equals(value, that.value);
     }
 

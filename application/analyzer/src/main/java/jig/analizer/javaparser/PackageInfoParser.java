@@ -5,12 +5,11 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
-import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import jig.domain.model.dependency.FullQualifiedName;
-import jig.domain.model.dependency.JapaneseName;
-import jig.domain.model.dependency.JapaneseNameRepository;
+import jig.domain.model.thing.Name;
+import jig.domain.model.tag.JapaneseName;
+import jig.domain.model.tag.JapaneseNameDictionary;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -26,8 +25,8 @@ public class PackageInfoParser {
 
     private Path rootPath;
 
-    public JapaneseNameRepository parseClass() {
-        JapaneseNameRepository repository = new JapaneseNameRepository();
+    public JapaneseNameDictionary parseClass() {
+        JapaneseNameDictionary repository = new JapaneseNameDictionary();
         if (Files.notExists(rootPath)) {
             return repository;
         }
@@ -38,23 +37,23 @@ public class PackageInfoParser {
                     .forEach(path -> {
                         try {
                             CompilationUnit cu = JavaParser.parse(path);
-                            Name packageName = cu.accept(new GenericVisitorAdapter<Name, Void>() {
+                            com.github.javaparser.ast.expr.Name packageName = cu.accept(new GenericVisitorAdapter<com.github.javaparser.ast.expr.Name, Void>() {
                                 @Override
-                                public Name visit(PackageDeclaration n, Void arg) {
+                                public com.github.javaparser.ast.expr.Name visit(PackageDeclaration n, Void arg) {
                                     return n.getName();
                                 }
                             }, null);
 
-                            cu.accept(new VoidVisitorAdapter<Name>() {
+                            cu.accept(new VoidVisitorAdapter<com.github.javaparser.ast.expr.Name>() {
                                 @Override
-                                public void visit(ClassOrInterfaceDeclaration n, Name packageName) {
-                                    FullQualifiedName fullQualifiedName = new FullQualifiedName(
+                                public void visit(ClassOrInterfaceDeclaration n, com.github.javaparser.ast.expr.Name packageName) {
+                                    Name fullQualifiedName = new Name(
                                             packageName.asString() + "." + n.getNameAsString()
                                     );
 
-                                    n.accept(new VoidVisitorAdapter<FullQualifiedName>() {
+                                    n.accept(new VoidVisitorAdapter<Name>() {
                                         @Override
-                                        public void visit(JavadocComment n, FullQualifiedName name) {
+                                        public void visit(JavadocComment n, Name name) {
                                             String text = n.parse().getDescription().toText();
                                             JapaneseName japaneseName = new JapaneseName(text);
                                             repository.register(name, japaneseName);
@@ -73,8 +72,8 @@ public class PackageInfoParser {
         }
     }
 
-    public JapaneseNameRepository parse() {
-        JapaneseNameRepository repository = new JapaneseNameRepository();
+    public JapaneseNameDictionary parse() {
+        JapaneseNameDictionary repository = new JapaneseNameDictionary();
         if (Files.notExists(rootPath)) {
             return repository;
         }
@@ -85,11 +84,11 @@ public class PackageInfoParser {
                     .forEach(path -> {
                         try {
                             CompilationUnit cu = JavaParser.parse(path);
-                            FullQualifiedName fqn = cu.accept(new GenericVisitorAdapter<FullQualifiedName, Void>() {
+                            Name fqn = cu.accept(new GenericVisitorAdapter<Name, Void>() {
                                 @Override
-                                public FullQualifiedName visit(PackageDeclaration n, Void arg) {
+                                public Name visit(PackageDeclaration n, Void arg) {
                                     String name = n.getNameAsString();
-                                    return new FullQualifiedName(name);
+                                    return new Name(name);
                                 }
                             }, null);
 

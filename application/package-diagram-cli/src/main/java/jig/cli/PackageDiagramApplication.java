@@ -5,7 +5,9 @@ import jig.application.service.DiagramService;
 import jig.domain.model.Diagram;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramSource;
-import jig.domain.model.dependency.*;
+import jig.domain.model.jdeps.*;
+import jig.domain.model.thing.ThingFormatter;
+import jig.domain.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -47,14 +49,14 @@ public class PackageDiagramApplication implements CommandLineRunner {
         Path sourceRoot = Paths.get(targetSource);
         Path output = Paths.get(outoutDiagramName);
 
-        Models models = analyzeService.toModels(
+        Things things = analyzeService.toModels(
                 new AnalysisCriteria(
                         new SearchPaths(Collections.singletonList(Paths.get(targetClass))),
                         new AnalysisClassesPattern(packagePattern + "\\..+"),
                         new DependenciesPattern(packagePattern + "\\..+"),
                         AnalysisTarget.PACKAGE));
-        ModelFormatter modelFormatter = analyzeService.modelFormatter(sourceRoot);
-        DiagramSource diagramSource = diagramService.toDiagramSource(models, modelFormatter);
+        ThingFormatter thingFormatter = analyzeService.modelFormatter(sourceRoot);
+        DiagramSource diagramSource = diagramService.toDiagramSource(things, thingFormatter);
         DiagramIdentifier identifier = diagramService.request(diagramSource);
         diagramService.generate(identifier);
         Diagram diagram = diagramService.get(identifier);

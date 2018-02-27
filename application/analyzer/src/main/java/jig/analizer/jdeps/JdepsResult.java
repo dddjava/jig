@@ -1,8 +1,8 @@
 package jig.analizer.jdeps;
 
-import jig.domain.model.dependency.Model;
-import jig.domain.model.dependency.FullQualifiedName;
-import jig.domain.model.dependency.Models;
+import jig.domain.model.thing.Thing;
+import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Things;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,39 +15,39 @@ public class JdepsResult {
         this.result = result;
     }
 
-    public Models toModels() {
-        Models models = new Models();
+    public Things toModels() {
+        Things things = new Things();
 
         String packagePattern = "([\\w.]+)";
         Pattern from = Pattern.compile("^ +" + packagePattern + " \\(.+\\)");
         Pattern to = Pattern.compile("^ +-> " + packagePattern + " ");
 
-        Model model = null;
+        Thing thing = null;
         for (String line : result.split(System.lineSeparator())) {
             Matcher fromMatcher = from.matcher(line);
             if (fromMatcher.find()) {
-                FullQualifiedName modelName = new FullQualifiedName(fromMatcher.group(1));
-                if (models.notExists(modelName)) {
-                    models.register(new Model(modelName));
+                Name modelName = new Name(fromMatcher.group(1));
+                if (things.notExists(modelName)) {
+                    things.register(new Thing(modelName));
                 }
-                model = models.get(modelName);
+                thing = things.get(modelName);
                 continue;
             }
 
             Matcher toMatcher = to.matcher(line);
             if (toMatcher.find()) {
-                if (model == null) throw new NullPointerException();
-                FullQualifiedName modelName = new FullQualifiedName(toMatcher.group(1));
-                if (models.notExists(modelName)) {
-                    models.register(new Model(modelName));
+                if (thing == null) throw new NullPointerException();
+                Name modelName = new Name(toMatcher.group(1));
+                if (things.notExists(modelName)) {
+                    things.register(new Thing(modelName));
                 }
-                model.dependsOn(models.get(modelName));
+                thing.dependsOn(things.get(modelName));
                 continue;
             }
 
             System.err.println(line);
         }
 
-        return models;
+        return things;
     }
 }

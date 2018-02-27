@@ -4,7 +4,9 @@ import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.DiagramIdentifier;
 import jig.domain.model.DiagramSource;
-import jig.domain.model.dependency.*;
+import jig.domain.model.jdeps.*;
+import jig.domain.model.thing.ThingFormatter;
+import jig.domain.model.thing.Things;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,14 +38,14 @@ public class Jar2ImageController {
             Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             String pattern = ".+\\.domain\\.model\\..+";
-            Models models = analyzeService.toModels(
+            Things things = analyzeService.toModels(
                     new AnalysisCriteria(
                             new SearchPaths(Collections.singletonList(tempFile)),
                             new AnalysisClassesPattern(pattern),
                             new DependenciesPattern(pattern),
                             AnalysisTarget.PACKAGE));
-            ModelFormatter modelFormatter = analyzeService.modelFormatter(Paths.get(""));
-            DiagramSource diagramSource = service.toDiagramSource(models, modelFormatter);
+            ThingFormatter thingFormatter = analyzeService.modelFormatter(Paths.get(""));
+            DiagramSource diagramSource = service.toDiagramSource(things, thingFormatter);
             DiagramIdentifier identifier = service.request(diagramSource);
             service.generate(identifier);
             return "redirect:/image/" + identifier.getIdentifier();

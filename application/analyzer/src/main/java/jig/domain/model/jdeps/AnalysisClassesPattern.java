@@ -1,4 +1,4 @@
-package jig.domain.model.dependency;
+package jig.domain.model.jdeps;
 
 public class AnalysisClassesPattern {
 

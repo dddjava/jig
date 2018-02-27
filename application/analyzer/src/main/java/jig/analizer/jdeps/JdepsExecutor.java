@@ -1,7 +1,7 @@
 package jig.analizer.jdeps;
 
 import com.sun.tools.jdeps.Main;
-import jig.domain.model.dependency.AnalysisCriteria;
+import jig.domain.model.jdeps.AnalysisCriteria;
 
 import java.io.IOException;
 import java.io.PrintWriter;

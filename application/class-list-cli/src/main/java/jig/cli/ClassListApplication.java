@@ -2,8 +2,8 @@ package jig.cli;
 
 import jig.analizer.javaparser.PackageInfoParser;
 import jig.cli.infrastructure.usage.ModelTypeFactory;
-import jig.domain.model.dependency.FullQualifiedName;
-import jig.domain.model.dependency.JapaneseNameRepository;
+import jig.domain.model.thing.Name;
+import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.usage.DependentTypes;
 import jig.domain.model.usage.ModelMethods;
 import jig.domain.model.usage.ModelType;
@@ -90,14 +90,14 @@ public class ClassListApplication implements CommandLineRunner {
     }
 
     @Bean
-    JapaneseNameRepository japaneseNameRepository(@Value("${target.source}") String sourcePath) {
+    JapaneseNameDictionary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
         PackageInfoParser packageInfoParser = new PackageInfoParser(Paths.get(sourcePath));
         return packageInfoParser.parseClass();
     }
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "service")
     @Bean
-    ModelTypeFactory serviceMethod(JapaneseNameRepository japaneseNames) {
+    ModelTypeFactory serviceMethod(JapaneseNameDictionary japaneseNames) {
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -106,10 +106,10 @@ public class ClassListApplication implements CommandLineRunner {
 
             @Override
             public ModelType toModelType(Class<?> clz) {
-                FullQualifiedName fullQualifiedName = new FullQualifiedName(clz.getCanonicalName());
+                Name name = new Name(clz.getCanonicalName());
                 return new ModelType(
-                        fullQualifiedName,
-                        japaneseNames.get(fullQualifiedName),
+                        name,
+                        japaneseNames.get(name),
                         ModelMethods.from(clz),
                         DependentTypes.from(clz));
             }
@@ -118,7 +118,7 @@ public class ClassListApplication implements CommandLineRunner {
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "repository")
     @Bean
-    ModelTypeFactory serviceRepository(JapaneseNameRepository japaneseNames) {
+    ModelTypeFactory serviceRepository(JapaneseNameDictionary japaneseNames) {
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -127,10 +127,10 @@ public class ClassListApplication implements CommandLineRunner {
 
             @Override
             public ModelType toModelType(Class<?> clz) {
-                FullQualifiedName fullQualifiedName = new FullQualifiedName(clz.getCanonicalName());
+                Name name = new Name(clz.getCanonicalName());
                 return new ModelType(
-                        fullQualifiedName,
-                        japaneseNames.get(fullQualifiedName),
+                        name,
+                        japaneseNames.get(name),
                         ModelMethods.from(clz),
                         DependentTypes.empty());
             }

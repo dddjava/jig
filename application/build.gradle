@@ -47,16 +47,6 @@ project(':infrastructure-javaparser') {
     }
 }
 
-project(':application') {
-
-    dependencies {
-        compile 'org.springframework:spring-context:4.3.14.RELEASE'
-        compile project(':infrastructure-jdeps')
-        compile project(':infrastructure-javaparser')
-        compile project(':model')
-    }
-}
-
 project(':web') {
     apply plugin: 'org.springframework.boot'
 
@@ -68,7 +58,6 @@ project(':web') {
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'
         compile project(':diagram-plantuml')
-        compile project(':application')
     }
 }
 
@@ -76,9 +65,11 @@ project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
-        compile 'org.springframework.boot:spring-boot-starter'
+        compile project(':model')
         compile project(':diagram-plantuml')
-        compile project(':application')
+        compile project(':infrastructure-jdeps')
+        compile project(':infrastructure-javaparser')
+        compile 'org.springframework.boot:spring-boot-starter'
     }
 }
 
@@ -86,11 +77,10 @@ project(':class-list-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
+        compile project(':model')
+        compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
-        compile project(':application')
-
         compile 'com.fasterxml.jackson.core:jackson-core'
-
         compile 'org.springframework.boot:spring-boot-starter-test'
     }
 }

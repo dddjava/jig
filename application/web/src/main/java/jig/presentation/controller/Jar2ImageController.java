@@ -1,13 +1,10 @@
 package jig.presentation.controller;
 
 import jig.application.service.DiagramService;
-import jig.application.service.ThingService;
 import jig.domain.model.diagram.DiagramIdentifier;
 import jig.domain.model.diagram.DiagramSource;
 import jig.model.jdeps.*;
-import jig.model.tag.JapaneseNameDictionary;
-import jig.model.thing.ThingFormatter;
-import jig.model.thing.Things;
+import jig.model.relation.Relations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +23,7 @@ import java.util.Collections;
 public class Jar2ImageController {
 
     @Autowired
-    ThingService thingService;
+    RelationAnalyzer relationAnalyzer;
 
     @Autowired
     DiagramService service;
@@ -38,14 +35,12 @@ public class Jar2ImageController {
             Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             String pattern = ".+\\.domain\\.model\\..+";
-            Things things = thingService.toModels(
-                    new AnalysisCriteria(
-                            new SearchPaths(Collections.singletonList(tempFile)),
-                            new AnalysisClassesPattern(pattern),
-                            new DependenciesPattern(pattern),
-                            AnalysisTarget.PACKAGE));
-            ThingFormatter thingFormatter = service.modelFormatter(new JapaneseNameDictionary());
-            DiagramSource diagramSource = service.toDiagramSource(things, thingFormatter);
+            Relations relations = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
+                    new SearchPaths(Collections.singletonList(tempFile)),
+                    new AnalysisClassesPattern(pattern),
+                    new DependenciesPattern(pattern),
+                    AnalysisTarget.PACKAGE));
+            DiagramSource diagramSource = service.toDiagramSource(relations);
             DiagramIdentifier identifier = service.request(diagramSource);
             service.generate(identifier);
             return "redirect:/image/" + identifier.getIdentifier();

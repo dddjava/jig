@@ -5,20 +5,19 @@ import jig.model.tag.JapaneseNameDictionary;
 import jig.model.thing.Name;
 import jig.model.thing.NameFormatter;
 
-public class PlantUmlNameFormatter implements NameFormatter {
+public class PlantumlNameFormatter implements NameFormatter {
 
-    private String nameReplacePattern;
+    private String nameReplacePattern = "";
     private JapaneseNameDictionary japaneseNameDictionary;
 
-    public PlantUmlNameFormatter(String nameReplacePattern, JapaneseNameDictionary japaneseNameDictionary) {
-        this.nameReplacePattern = nameReplacePattern;
+    public PlantumlNameFormatter(JapaneseNameDictionary japaneseNameDictionary) {
         this.japaneseNameDictionary = japaneseNameDictionary;
     }
 
     @Override
     public String format(Name fullQualifiedName) {
         String value = fullQualifiedName.value()
-                .replaceFirst(nameReplacePattern + "\\.", "")
+                .replaceFirst(nameReplacePattern, "")
                 .replaceAll("\\.", "/");
         if (japaneseNameDictionary.exists(fullQualifiedName)) {
             JapaneseName japaneseName = japaneseNameDictionary.get(fullQualifiedName);
@@ -27,5 +26,9 @@ public class PlantUmlNameFormatter implements NameFormatter {
             return s + "\\n" + value;
         }
         return value;
+    }
+
+    public void setNameShortenPattern(String pattern) {
+        nameReplacePattern = pattern;
     }
 }

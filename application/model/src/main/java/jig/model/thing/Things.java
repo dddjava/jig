@@ -3,7 +3,6 @@ package jig.model.thing;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Things {
 
@@ -22,14 +21,5 @@ public class Things {
                 .filter(model -> model.matches(name))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
-    }
-
-    public String format(ThingFormatter formatter) {
-        return formatter.header() +
-                things.stream()
-                        .filter(Thing::hasDependency)
-                        .map(formatter::format)
-                        .collect(Collectors.joining(System.lineSeparator())) +
-                formatter.footer();
     }
 }

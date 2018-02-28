@@ -1,13 +1,8 @@
 package jig.application.service;
 
 import jig.domain.model.diagram.*;
-import jig.infrastructure.plantuml.PlantUmlNameFormatter;
-import jig.infrastructure.plantuml.PlantUmlThingFormatter;
-import jig.model.tag.JapaneseNameDictionary;
-import jig.model.thing.ThingFormatter;
-import jig.model.thing.Things;
+import jig.model.relation.Relations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +15,8 @@ public class DiagramService {
     DiagramRepository repository;
     @Autowired
     DiagramMaker maker;
-
-    @Value("${target.package:.*.domain.model}")
-    private String prefix;
+    @Autowired
+    DiagramConverter diagramConverter;
 
     public void generate(DiagramIdentifier identifier) {
         DiagramSource source = repository.getSource(identifier);
@@ -44,16 +38,7 @@ public class DiagramService {
         return repository.get(identifier);
     }
 
-    public DiagramSource toDiagramSource(Things things, ThingFormatter thingFormatter) {
-        String text = getString(things, thingFormatter);
-        return new DiagramSource(text);
-    }
-
-    private String getString(Things things, ThingFormatter thingFormatter) {
-        return things.format(thingFormatter);
-    }
-
-    public ThingFormatter modelFormatter(JapaneseNameDictionary japaneseNameDictionary) {
-        return new PlantUmlThingFormatter(new PlantUmlNameFormatter(prefix, japaneseNameDictionary));
+    public DiagramSource toDiagramSource(Relations things) {
+        return diagramConverter.toDiagramSource(things);
     }
 }

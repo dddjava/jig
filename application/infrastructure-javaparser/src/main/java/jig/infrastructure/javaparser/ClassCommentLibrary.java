@@ -7,10 +7,10 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import jig.model.tag.JapaneseName;
-import jig.model.tag.JapaneseNameDictionary;
-import jig.model.tag.JapaneseNameDictionaryLibrary;
-import jig.model.thing.Name;
+import jig.domain.model.tag.JapaneseName;
+import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
+import jig.domain.model.thing.Name;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

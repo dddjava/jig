@@ -2,9 +2,9 @@ package jig.infrastructure.plantuml;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
-import jig.model.relation.Relation;
-import jig.model.relation.Relations;
-import jig.model.thing.NameFormatter;
+import jig.domain.model.relation.Relation;
+import jig.domain.model.relation.Relations;
+import jig.domain.model.thing.NameFormatter;
 
 import java.util.stream.Collectors;
 

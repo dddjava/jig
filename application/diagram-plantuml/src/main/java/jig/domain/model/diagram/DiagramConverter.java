@@ -1,6 +1,6 @@
 package jig.domain.model.diagram;
 
-import jig.model.relation.Relations;
+import jig.domain.model.relation.Relations;
 
 public interface DiagramConverter {
 

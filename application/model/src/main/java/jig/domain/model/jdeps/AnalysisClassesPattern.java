@@ -1,10 +1,10 @@
-package jig.model.jdeps;
+package jig.domain.model.jdeps;
 
-public class DependenciesPattern {
+public class AnalysisClassesPattern {
 
     final String value;
 
-    public DependenciesPattern(String value) {
+    public AnalysisClassesPattern(String value) {
         this.value = value;
     }
 

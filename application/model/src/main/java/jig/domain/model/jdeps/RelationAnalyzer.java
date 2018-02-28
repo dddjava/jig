@@ -1,6 +1,6 @@
-package jig.model.jdeps;
+package jig.domain.model.jdeps;
 
-import jig.model.relation.Relations;
+import jig.domain.model.relation.Relations;
 
 public interface RelationAnalyzer {
 

@@ -1,4 +1,4 @@
-package jig.model.jdeps;
+package jig.domain.model.jdeps;
 
 import java.nio.file.Path;
 import java.util.List;

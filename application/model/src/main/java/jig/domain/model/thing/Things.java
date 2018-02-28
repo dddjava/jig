@@ -1,4 +1,4 @@
-package jig.model.thing;
+package jig.domain.model.thing;
 
 import java.util.HashSet;
 import java.util.NoSuchElementException;

@@ -1,4 +1,4 @@
-package jig.model.usage;
+package jig.domain.model.usage;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

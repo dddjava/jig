@@ -1,6 +1,6 @@
-package jig.model.tag;
+package jig.domain.model.tag;
 
-import jig.model.thing.Name;
+import jig.domain.model.thing.Name;
 
 import java.util.HashMap;
 import java.util.Map;

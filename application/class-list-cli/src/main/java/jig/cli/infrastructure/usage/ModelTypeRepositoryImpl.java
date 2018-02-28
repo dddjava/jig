@@ -1,8 +1,8 @@
 package jig.cli.infrastructure.usage;
 
-import jig.model.usage.ModelType;
-import jig.model.usage.ModelTypeRepository;
-import jig.model.usage.ModelTypes;
+import jig.domain.model.usage.ModelType;
+import jig.domain.model.usage.ModelTypeRepository;
+import jig.domain.model.usage.ModelTypes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 

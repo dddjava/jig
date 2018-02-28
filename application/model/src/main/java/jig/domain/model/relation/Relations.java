@@ -1,4 +1,4 @@
-package jig.model.relation;
+package jig.domain.model.relation;
 
 import java.util.List;
 

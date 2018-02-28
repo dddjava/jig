@@ -1,10 +1,10 @@
-package jig.model.jdeps;
+package jig.domain.model.tag;
 
-public class AnalysisClassesPattern {
+public class JapaneseName {
 
     final String value;
 
-    public AnalysisClassesPattern(String value) {
+    public JapaneseName(String value) {
         this.value = value;
     }
 

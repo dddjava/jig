@@ -1,8 +1,8 @@
 package jig.infrastructure.jdeps;
 
-import jig.model.relation.Relation;
-import jig.model.relation.RelationRepository;
-import jig.model.relation.Relations;
+import jig.domain.model.relation.Relation;
+import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.Relations;
 
 import java.util.ArrayList;
 import java.util.List;

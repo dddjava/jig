@@ -1,4 +1,4 @@
-package jig.model.jdeps;
+package jig.domain.model.jdeps;
 
 public enum AnalysisTarget {
     PACKAGE,

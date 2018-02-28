@@ -1,7 +1,7 @@
-package jig.model.usage;
+package jig.domain.model.usage;
 
-import jig.model.tag.JapaneseName;
-import jig.model.thing.Name;
+import jig.domain.model.tag.JapaneseName;
+import jig.domain.model.thing.Name;
 
 public class ModelType {
 

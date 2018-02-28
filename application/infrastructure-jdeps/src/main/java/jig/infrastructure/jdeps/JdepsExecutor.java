@@ -1,14 +1,14 @@
 package jig.infrastructure.jdeps;
 
 import com.sun.tools.jdeps.Main;
-import jig.model.jdeps.AnalysisCriteria;
-import jig.model.jdeps.RelationAnalyzer;
-import jig.model.relation.Relation;
-import jig.model.relation.RelationRepository;
-import jig.model.relation.Relations;
-import jig.model.thing.Name;
-import jig.model.thing.Thing;
-import jig.model.thing.ThingRepository;
+import jig.domain.model.jdeps.AnalysisCriteria;
+import jig.domain.model.jdeps.RelationAnalyzer;
+import jig.domain.model.relation.Relation;
+import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.Relations;
+import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Thing;
+import jig.domain.model.thing.ThingRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;

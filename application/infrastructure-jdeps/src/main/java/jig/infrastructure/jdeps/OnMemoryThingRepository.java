@@ -1,8 +1,8 @@
 package jig.infrastructure.jdeps;
 
-import jig.model.thing.Name;
-import jig.model.thing.Thing;
-import jig.model.thing.ThingRepository;
+import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Thing;
+import jig.domain.model.thing.ThingRepository;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package jig.application.service;
 
 import jig.domain.model.diagram.*;
-import jig.model.relation.Relations;
+import jig.domain.model.relation.Relations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

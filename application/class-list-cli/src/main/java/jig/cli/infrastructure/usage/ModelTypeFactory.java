@@ -1,6 +1,6 @@
 package jig.cli.infrastructure.usage;
 
-import jig.model.usage.ModelType;
+import jig.domain.model.usage.ModelType;
 
 import java.nio.file.Path;
 

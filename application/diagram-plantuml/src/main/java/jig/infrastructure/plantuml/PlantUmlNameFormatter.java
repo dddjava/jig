@@ -1,9 +1,9 @@
 package jig.infrastructure.plantuml;
 
-import jig.model.tag.JapaneseName;
-import jig.model.tag.JapaneseNameDictionary;
-import jig.model.thing.Name;
-import jig.model.thing.NameFormatter;
+import jig.domain.model.tag.JapaneseName;
+import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.thing.Name;
+import jig.domain.model.thing.NameFormatter;
 
 public class PlantumlNameFormatter implements NameFormatter {
 

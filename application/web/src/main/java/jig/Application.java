@@ -1,9 +1,9 @@
 package jig;
 
 import jig.domain.model.diagram.DiagramConverter;
+import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
-import jig.model.tag.JapaneseNameDictionary;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

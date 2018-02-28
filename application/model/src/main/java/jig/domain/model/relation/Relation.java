@@ -1,6 +1,6 @@
-package jig.model.relation;
+package jig.domain.model.relation;
 
-import jig.model.thing.Thing;
+import jig.domain.model.thing.Thing;
 
 public class Relation {
     Thing from;

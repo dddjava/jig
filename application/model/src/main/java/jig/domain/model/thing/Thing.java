@@ -12,10 +12,6 @@ public class Thing {
         return this.name.equals(name);
     }
 
-    public String format(NameFormatter formatter) {
-        return formatter.format(name);
-    }
-
     public Name name() {
         return name;
     }

@@ -3,11 +3,11 @@ package jig.model.thing;
 public class Thing {
 
     private final Name name;
-    private final Relationship relationship;
+    private final Dependency dependency;
 
     public Thing(Name name) {
         this.name = name;
-        this.relationship = new Relationship();
+        this.dependency = new Dependency();
     }
 
     boolean matches(Name name) {
@@ -15,15 +15,15 @@ public class Thing {
     }
 
     public void dependsOn(Thing thing) {
-        relationship.add(thing);
+        dependency.add(thing);
     }
 
     public boolean hasDependency() {
-        return !relationship.empty();
+        return !dependency.empty();
     }
 
-    public Relationship dependency() {
-        return relationship;
+    public Dependency dependency() {
+        return dependency;
     }
 
     public String format(NameFormatter formatter) {

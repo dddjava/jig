@@ -3,7 +3,7 @@ package jig.model.thing;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relationship {
+public class Dependency {
 
     final List<Thing> things = new ArrayList<>();
 

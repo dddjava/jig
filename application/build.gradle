@@ -1,12 +1,16 @@
 plugins {
-    id 'org.springframework.boot' version '1.5.10.RELEASE'
+    id 'org.springframework.boot' version '1.5.10.RELEASE' apply false
+    id 'io.spring.dependency-management' version '1.0.4.RELEASE' apply false
 }
 
 repositories {
     jcenter()
 }
+
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
@@ -15,6 +19,12 @@ subprojects {
 
     repositories {
         jcenter()
+    }
+
+    dependencyManagement {
+         imports {
+              mavenBom 'org.springframework.boot:spring-boot-starter-parent:1.5.10.RELEASE'
+         }
     }
 
     dependencies {
@@ -28,17 +38,19 @@ project(':model') {
 
 project(':diagram-plantuml') {
     dependencies {
-        compile 'org.springframework:spring-context:4.3.14.RELEASE'
+        compile 'org.springframework:spring-context'
         compile 'net.sourceforge.plantuml:plantuml:8059'
         compile project(':model')
     }
 }
+
 project(':infrastructure-jdeps') {
     dependencies {
         compile files("${System.getProperty('java.home')}/../lib/tools.jar")
         compile project(':model')
     }
 }
+
 project(':infrastructure-javaparser') {
     dependencies {
         compile 'com.github.javaparser:javaparser-core:3.5.6'
@@ -86,15 +98,9 @@ project(':class-list-cli') {
 }
 
 project(':sut') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'
-        compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1")
-    }
-
-    bootRepackage {
-        enabled = false
+        compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1'
     }
 }
 

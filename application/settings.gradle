@@ -7,5 +7,4 @@ include 'model',
         'package-diagram-cli',
         'class-list-cli',
         'web',
-        'experimental',
         'sut'

@@ -25,9 +25,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class PackageDiagramApplication implements CommandLineRunner {
+
+    private static final Logger logger = Logger.getLogger(PackageDiagramApplication.class.getName());
 
     public static void main(String[] args) {
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
@@ -65,6 +68,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());
         }
+        logger.info(output.toAbsolutePath() + "を出力しました。");
     }
 
     @Bean

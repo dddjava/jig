@@ -25,11 +25,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class ClassListApplication implements CommandLineRunner {
+
+    private static final Logger logger = Logger.getLogger(ClassListApplication.class.getName());
 
     public static void main(String[] args) {
         SpringApplication.run(ClassListApplication.class, args);
@@ -46,7 +49,8 @@ public class ClassListApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName), StandardCharsets.UTF_8)) {
+        Path output = Paths.get(outputFileName);
+        try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
             writer.write("クラス名");
             writer.write(delimiter);
             writer.write("クラス和名");
@@ -88,6 +92,7 @@ public class ClassListApplication implements CommandLineRunner {
                 });
             });
         }
+        logger.info(output.toAbsolutePath() + "を出力しました。");
     }
 
     @Bean

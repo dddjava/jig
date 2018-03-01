@@ -33,6 +33,7 @@ import static java.util.stream.Collectors.joining;
 public class ClassListApplication implements CommandLineRunner {
 
     private static final Logger logger = Logger.getLogger(ClassListApplication.class.getName());
+    private static final String delimiter = "\t";
 
     public static void main(String[] args) {
         SpringApplication.run(ClassListApplication.class, args);
@@ -41,8 +42,6 @@ public class ClassListApplication implements CommandLineRunner {
     @Autowired
     ModelTypeRepository repository;
 
-    @Value("${output.list.column.delimiter}")
-    String delimiter;
     @Value("${output.list.name}")
     String outputFileName;
 

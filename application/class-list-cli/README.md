@@ -13,7 +13,6 @@ java -jar class-list-cli.jar
 ```
 output.list.type=service # service or repository
 output.list.name=output.tsv
-output.list.column.delimiter=\t
 target.class=./sut/build/classes/java/main
 target.source=./sut/src/main/java
 ```

@@ -9,8 +9,6 @@
 ## ビルド
 
 ```
-cd application
-./gradlew clean :package-diagram-cli:build :class-list-cli:build
+./gradlew clean build
 ```
 
-詳細はそれぞれの `README.md` を参照。

@@ -36,4 +36,7 @@ jobs:
       - run: ./gradlew test
 
       - store_test_results:
-          path: ./*/build/test-results
+          path: ./class-list-cli/build/test-results
+      - store_test_results:
+          path: ./diagram-plantuml/build/test-results
+

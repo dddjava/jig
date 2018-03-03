@@ -21,13 +21,20 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.12'
+        testCompile 'org.junit.jupiter:junit-jupiter-api'
+        testRuntime 'org.junit.jupiter:junit-jupiter-engine'
         testCompile 'org.assertj:assertj-core:3.9.1'
     }
 
     dependencyManagement {
         imports {
             mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    test {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
         }
     }
 }

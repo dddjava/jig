@@ -5,15 +5,17 @@ import jig.domain.model.diagram.DiagramMaker;
 import jig.domain.model.diagram.DiagramSource;
 import net.sourceforge.plantuml.SourceStringReader;
 import net.sourceforge.plantuml.cucadiagram.dot.GraphvizUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 
-public class DiagramMakerImpl implements DiagramMaker {
+@Component
+public class PlantumlDiagramMaker implements DiagramMaker {
 
-    public DiagramMakerImpl() {
+    public PlantumlDiagramMaker() {
         List<String> testDotStrings = GraphvizUtils.getTestDotStrings(false);
         if (!testDotStrings.contains("Installation seems OK. File generation OK")) {
             throw new IllegalStateException("ダイアグラム出力に必要な環境が満たされていません。" + testDotStrings);

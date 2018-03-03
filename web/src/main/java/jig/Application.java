@@ -1,7 +1,9 @@
 package jig;
 
 import jig.domain.model.diagram.DiagramConverter;
+import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
 import org.springframework.boot.SpringApplication;
@@ -20,5 +22,10 @@ public class Application {
     public DiagramConverter diagramConverter() {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter(new JapaneseNameDictionary());
         return new PlantumlDiagramConverter(nameFormatter);
+    }
+
+    @Bean
+    public RelationAnalyzer relationAnalyzer() {
+        return new JdepsExecutor();
     }
 }

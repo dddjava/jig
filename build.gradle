@@ -68,14 +68,12 @@ project(':infrastructure-javaparser') {
 project(':web') {
     apply plugin: 'org.springframework.boot'
 
-    ext['thymeleaf.version'] = '3.0.9.RELEASE'
-    ext['thymeleaf-layout-dialect.version'] = '2.2.2'
-    ext['thymeleaf-extras-springsecurity4.version'] = '3.0.2.RELEASE'
-    ext['thymeleaf-extras-java8time.version'] = '3.0.1.RELEASE'
-
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'
         compile project(':diagram-plantuml')
+        compile project(':infrastructure-jdeps')
+
+        testCompile 'org.springframework.boot:spring-boot-starter-test'
     }
 }
 

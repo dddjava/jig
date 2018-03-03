@@ -1,8 +1,7 @@
 package jig.cli;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -11,13 +10,11 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(TemporaryFolder.class)
 public class ClassListApplicationTest {
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
     @Test
-    public void test() throws Exception {
+    public void test(Path temporaryFolder) throws Exception {
         Path sutPath = Paths.get("..", "sut").toAbsolutePath();
 
         ProcessBuilder pb = new ProcessBuilder("./gradlew", ":sut:build");
@@ -26,7 +23,7 @@ public class ClassListApplicationTest {
         int result = process.waitFor();
         assertThat(result).isEqualTo(0);
 
-        File output = new File(temporaryFolder.getRoot(), "output.tsv");
+        File output = temporaryFolder.resolve("output.tsv").toFile();
 
         ClassListApplication.main(new String[]{
                 "--target.class=" + sutPath.resolve("build/classes/java/main"),

@@ -39,4 +39,6 @@ jobs:
           path: ./class-list-cli/build/test-results
       - store_test_results:
           path: ./diagram-plantuml/build/test-results
+      - store_test_results:
+          path: ./web/build/test-results
 

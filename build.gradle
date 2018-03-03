@@ -47,6 +47,8 @@ project(':diagram-plantuml') {
         compile 'org.springframework:spring-context'
         compile 'net.sourceforge.plantuml:plantuml:8059'
         compile project(':model')
+
+        testCompile 'org.springframework:spring-test'
     }
 }
 

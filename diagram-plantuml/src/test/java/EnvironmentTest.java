@@ -1,11 +1,29 @@
-import jig.infrastructure.plantuml.PlantumlDiagramMaker;
+import jig.domain.model.diagram.DiagramConverter;
+import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+@SpringJUnitConfig
+@ExtendWith(SpringExtension.class)
 public class EnvironmentTest {
 
     @Test
-    public void 必要な環境が満たされていること() throws Exception {
-        // コンストラクタで検証しているのでインスタンス生成が成功すればOK
-        new PlantumlDiagramMaker();
+    public void 必要な環境が満たされていること() {
+        // 起動できればOK
+    }
+
+    @Configuration
+    @ComponentScan("jig")
+    static class TestConfig {
+
+        @Bean
+        DiagramConverter diagramConverter() {
+            return new PlantumlDiagramConverter(null);
+        }
     }
 }

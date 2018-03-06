@@ -2,7 +2,6 @@ package jig.application.service;
 
 import jig.domain.model.diagram.*;
 import jig.domain.model.relation.Relations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +10,15 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class DiagramService {
 
-    @Autowired
     DiagramRepository repository;
-    @Autowired
     DiagramMaker maker;
-    @Autowired
     DiagramConverter diagramConverter;
+
+    public DiagramService(DiagramRepository repository, DiagramMaker maker, DiagramConverter diagramConverter) {
+        this.repository = repository;
+        this.maker = maker;
+        this.diagramConverter = diagramConverter;
+    }
 
     public void generate(DiagramIdentifier identifier) {
         DiagramSource source = repository.getSource(identifier);

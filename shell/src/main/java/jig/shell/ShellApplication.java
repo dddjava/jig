@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Primary;
 public class ShellApplication {
 
     public static void main(String[] args) {
+        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         SpringApplication.run(ShellApplication.class, args);
     }
 

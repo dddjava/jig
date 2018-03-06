@@ -76,6 +76,11 @@ public class JigCommands {
         dictionary.merge(packageInfoLibrary.borrow());
     }
 
+    @ShellMethod("日本語辞書表示")
+    public String showJapaneseDictionary() {
+        return dictionary.asText();
+    }
+
     private Relations analyzeRelations(String classDir, String pattern, AnalysisTarget target) {
         AnalysisCriteria criteria = new AnalysisCriteria(
                 new SearchPaths(Collections.singletonList(Paths.get(classDir))),

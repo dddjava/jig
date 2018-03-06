@@ -2,8 +2,6 @@ package jig.shell;
 
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
-import jig.domain.model.diagram.DiagramIdentifier;
-import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
 import org.springframework.shell.standard.ShellComponent;
@@ -38,10 +36,7 @@ public class JigCommands {
     public void packageDiagram(String classDir, String pattern, String outputPath) throws Exception {
         Relations relations = analyzeRelations(classDir, pattern, AnalysisTarget.PACKAGE);
 
-        DiagramSource diagramSource = diagramService.toDiagramSource(relations);
-        DiagramIdentifier identifier = diagramService.request(diagramSource);
-        diagramService.generate(identifier);
-        Diagram diagram = diagramService.get(identifier);
+        Diagram diagram = diagramService.generateFrom(relations);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             outputStream.write(diagram.getBytes());

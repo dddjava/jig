@@ -3,8 +3,6 @@ package jig.cli;
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
-import jig.domain.model.diagram.DiagramIdentifier;
-import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
@@ -60,10 +58,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 new AnalysisClassesPattern(packagePattern + "\\..+"),
                 new DependenciesPattern(packagePattern + "\\..+"),
                 AnalysisTarget.PACKAGE));
-        DiagramSource diagramSource = diagramService.toDiagramSource(relations);
-        DiagramIdentifier identifier = diagramService.request(diagramSource);
-        diagramService.generate(identifier);
-        Diagram diagram = diagramService.get(identifier);
+        Diagram diagram = diagramService.generateFrom(relations);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());

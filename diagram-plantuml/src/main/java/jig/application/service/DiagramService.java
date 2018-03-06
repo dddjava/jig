@@ -43,4 +43,11 @@ public class DiagramService {
     public DiagramSource toDiagramSource(Relations things) {
         return diagramConverter.toDiagramSource(things);
     }
+
+    public Diagram generateFrom(Relations relations) {
+        DiagramSource diagramSource = toDiagramSource(relations);
+        DiagramIdentifier identifier = request(diagramSource);
+        generate(identifier);
+        return get(identifier);
+    }
 }

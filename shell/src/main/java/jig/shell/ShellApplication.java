@@ -1,14 +1,18 @@
 package jig.shell;
 
+import jig.application.service.DiagramService;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.infrastructure.jdeps.JdepsExecutor;
+import jig.infrastructure.plantuml.DiagramRepositoryImpl;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
+import jig.infrastructure.plantuml.PlantumlDiagramMaker;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class ShellApplication {
@@ -25,9 +29,15 @@ public class ShellApplication {
     @Bean
     public DiagramConverter diagramConverter() {
         return new PlantumlDiagramConverter(
-                new PlantumlNameFormatter(
-                        new JapaneseNameDictionary()
-                )
-        );
+                new PlantumlNameFormatter(new JapaneseNameDictionary()));
+    }
+
+    @Bean
+    @Primary
+    public DiagramService getDiagramService() {
+        return new DiagramService(
+                new DiagramRepositoryImpl(),
+                new PlantumlDiagramMaker(),
+                diagramConverter());
     }
 }

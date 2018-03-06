@@ -24,10 +24,6 @@ public class JigCommands {
         this.diagramService = diagramService;
     }
 
-    @ShellMethod("環境テスト用")
-    public void test() {
-    }
-
     @ShellMethod("読み取りディレクトリ、解析対象パターン、CLASS/PACKAGEを指定してjdepsを実行します")
     public void jdeps(String classDir, String pattern, AnalysisTarget target) {
         analyzeRelations(classDir, pattern, target);

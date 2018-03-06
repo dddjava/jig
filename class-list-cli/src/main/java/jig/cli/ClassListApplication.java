@@ -4,10 +4,7 @@ import jig.cli.infrastructure.usage.ModelTypeFactory;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
 import jig.domain.model.thing.Name;
-import jig.domain.model.usage.DependentTypes;
-import jig.domain.model.usage.ModelMethods;
-import jig.domain.model.usage.ModelType;
-import jig.domain.model.usage.ModelTypeRepository;
+import jig.domain.model.usage.*;
 import jig.infrastructure.javaparser.ClassCommentLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,47 +45,19 @@ public class ClassListApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputFileName);
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            writer.write("クラス名");
-            writer.write(delimiter);
-            writer.write("クラス和名");
-            writer.write(delimiter);
-            writer.write("メソッド名");
-            writer.write(delimiter);
-            writer.write("メソッド戻り値の型");
-            writer.write(delimiter);
-            writer.write("メソッド引数型");
-            writer.write(delimiter);
-            writer.write("保持しているフィールドの型");
+            writer.write(Arrays.stream(ModelConcern.values())
+                    .map(Enum::name)
+                    .collect(joining(delimiter)));
             writer.newLine();
 
-            repository.findAll().list().forEach(modelType -> {
-                modelType.methods().list().forEach(serviceMethod -> {
-                    try {
-                        // クラス名
-                        writer.write(modelType.name().value());
-                        writer.write(delimiter);
-                        // 和名
-                        writer.write(modelType.japaneseName().value());
-                        writer.write(delimiter);
-                        // メソッド名
-                        writer.write(serviceMethod.name());
-                        writer.write(delimiter);
-                        // メソッド型
-                        writer.write(serviceMethod.returnType().getSimpleName());
-                        writer.write(delimiter);
-                        // メソッドパラメータ型（列挙）
-                        writer.write(Arrays.stream(serviceMethod.parameters()).map(Class::getSimpleName).collect(joining(",")));
-                        writer.write(delimiter);
-                        // フィールド型（列挙）
-                        writer.write(modelType.dependents().list().stream().map(Class::getSimpleName).collect(joining(",")));
-                        writer.write(delimiter);
-
-                        writer.newLine();
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
-                });
-            });
+            for (ModelType modelType : repository.findAll().list()) {
+                for (ModelMethod method : modelType.methods().list()) {
+                    writer.write(Arrays.stream(ModelConcern.values())
+                            .map(modelConcern -> modelConcern.apply(modelType, method))
+                            .collect(joining(delimiter)));
+                    writer.newLine();
+                }
+            }
         }
         logger.info(output.toAbsolutePath() + "を出力しました。");
     }

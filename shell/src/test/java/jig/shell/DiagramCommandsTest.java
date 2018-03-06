@@ -8,13 +8,13 @@ import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JigCommandsTest {
+class DiagramCommandsTest {
 
     ShellApplication application = new ShellApplication();
-    JigCommands sut = initJigCommands();
+    DiagramCommands sut = initJigCommands();
 
-    private JigCommands initJigCommands() {
-        return new JigCommands(
+    private DiagramCommands initJigCommands() {
+        return new DiagramCommands(
                 application.relationAnalyzer(),
                 application.getDiagramService());
     }

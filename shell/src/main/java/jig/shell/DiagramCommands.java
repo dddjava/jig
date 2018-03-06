@@ -14,12 +14,12 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 @ShellComponent
-public class JigCommands {
+public class DiagramCommands {
 
     RelationAnalyzer relationAnalyzer;
     DiagramService diagramService;
 
-    public JigCommands(RelationAnalyzer relationAnalyzer, DiagramService diagramService) {
+    public DiagramCommands(RelationAnalyzer relationAnalyzer, DiagramService diagramService) {
         this.relationAnalyzer = relationAnalyzer;
         this.diagramService = diagramService;
     }

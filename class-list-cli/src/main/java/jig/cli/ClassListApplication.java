@@ -80,6 +80,7 @@ public class ClassListApplication implements CommandLineRunner {
                         writer.write(delimiter);
                         // メソッドパラメータ型（列挙）
                         writer.write(Arrays.stream(serviceMethod.parameters()).map(Class::getSimpleName).collect(joining(",")));
+                        writer.write(delimiter);
                         // フィールド型（列挙）
                         writer.write(modelType.dependents().list().stream().map(Class::getSimpleName).collect(joining(",")));
                         writer.write(delimiter);

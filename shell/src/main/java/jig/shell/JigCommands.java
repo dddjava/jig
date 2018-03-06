@@ -4,6 +4,10 @@ import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
+import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.infrastructure.javaparser.ClassCommentLibrary;
+import jig.infrastructure.javaparser.PackageInfoLibrary;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -55,6 +59,21 @@ public class JigCommands {
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             outputStream.write(diagram.getBytes());
         }
+    }
+
+    @Autowired
+    JapaneseNameDictionary dictionary;
+
+    @ShellMethod("日本語読み込み（package-info Javadoc）")
+    public void readPackageInfoJavadoc(@ShellOption(defaultValue = "./src/main/java") String sourceDirectory) {
+        PackageInfoLibrary packageInfoLibrary = new PackageInfoLibrary(Paths.get(sourceDirectory));
+        dictionary.merge(packageInfoLibrary.borrow());
+    }
+
+    @ShellMethod("日本語読み込み（class Javadoc）")
+    public void readClassJavadoc(@ShellOption(defaultValue = "./src/main/java") String sourceDirectory) {
+        ClassCommentLibrary packageInfoLibrary = new ClassCommentLibrary(Paths.get(sourceDirectory));
+        dictionary.merge(packageInfoLibrary.borrow());
     }
 
     private Relations analyzeRelations(String classDir, String pattern, AnalysisTarget target) {

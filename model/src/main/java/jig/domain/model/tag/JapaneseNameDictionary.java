@@ -24,4 +24,8 @@ public class JapaneseNameDictionary {
     public void register(Name fqn, JapaneseName japaneseName) {
         map.put(fqn, japaneseName);
     }
+
+    public void merge(JapaneseNameDictionary other) {
+        map.putAll(other.map);
+    }
 }

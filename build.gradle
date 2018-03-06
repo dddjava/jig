@@ -100,7 +100,7 @@ project(':class-list-cli') {
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'com.fasterxml.jackson.core:jackson-core'
         compile('org.springframework.boot:spring-boot-starter-test') {
-            exclude group:'junit'
+            exclude group: 'junit'
         }
     }
 }
@@ -112,3 +112,20 @@ project(':sut') {
     }
 }
 
+project(':shell') {
+    apply plugin: 'org.springframework.boot'
+
+    dependencies {
+        compile project(':model')
+        compile project(':diagram-plantuml')
+        compile project(':infrastructure-jdeps')
+        compile project(':infrastructure-javaparser')
+        compile 'org.springframework.boot:spring-boot-starter'
+        compile 'org.springframework.shell:spring-shell-starter:2.0.0.RELEASE'
+
+        compile 'com.fasterxml.jackson.core:jackson-core'
+        compile('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'junit'
+        }
+    }
+}

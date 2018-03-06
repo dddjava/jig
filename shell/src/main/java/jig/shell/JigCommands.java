@@ -6,6 +6,7 @@ import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
+import org.springframework.shell.standard.ShellOption;
 
 import java.io.BufferedOutputStream;
 import java.nio.file.Files;
@@ -33,8 +34,21 @@ public class JigCommands {
     }
 
     @ShellMethod("パッケージ依存図")
-    public void packageDiagram(String classDir, String pattern, String outputPath) throws Exception {
+    public void packageDiagram(String classDir, String pattern,
+                               @ShellOption(defaultValue = "package-diagram.png") String outputPath) throws Exception {
         Relations relations = analyzeRelations(classDir, pattern, AnalysisTarget.PACKAGE);
+
+        Diagram diagram = diagramService.generateFrom(relations);
+
+        try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
+            outputStream.write(diagram.getBytes());
+        }
+    }
+
+    @ShellMethod("クラス依存図")
+    public void classDiagram(String classDir, String pattern,
+                             @ShellOption(defaultValue = "class-diagram.png") String outputPath) throws Exception {
+        Relations relations = analyzeRelations(classDir, pattern, AnalysisTarget.CLASS);
 
         Diagram diagram = diagramService.generateFrom(relations);
 

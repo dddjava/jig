@@ -1,7 +1,4 @@
-package jig.cli;
-
-import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelType;
+package jig.domain.model.usage;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;

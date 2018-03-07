@@ -1,6 +1,7 @@
 package jig.cli;
 
 import jig.cli.infrastructure.usage.ModelTypeFactory;
+import jig.domain.model.usage.ModelConcern;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
 import jig.domain.model.thing.Name;

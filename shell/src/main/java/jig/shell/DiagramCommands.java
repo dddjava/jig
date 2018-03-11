@@ -7,17 +7,28 @@ import jig.domain.model.relation.Relations;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import org.springframework.shell.table.BorderStyle;
+import org.springframework.shell.table.Table;
+import org.springframework.shell.table.TableBuilder;
+import org.springframework.shell.table.TableModelBuilder;
 
 import java.io.BufferedOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 @ShellComponent
 public class DiagramCommands {
 
+    private static final Logger LOGGER = Logger.getLogger(DiagramCommands.class.getName());
+
     RelationAnalyzer relationAnalyzer;
     DiagramService diagramService;
+
+    private String classDir = "build/classes/java/main";
+    private String pattern = ".+\\.model\\..+";
+    private AnalysisTarget kind = AnalysisTarget.PACKAGE;
 
     public DiagramCommands(RelationAnalyzer relationAnalyzer, DiagramService diagramService) {
         this.relationAnalyzer = relationAnalyzer;
@@ -29,28 +40,44 @@ public class DiagramCommands {
         analyzeRelations(classDir, pattern, target);
     }
 
-    @ShellMethod("パッケージ依存図")
-    public void packageDiagram(String classDir, String pattern,
-                               @ShellOption(defaultValue = "package-diagram.png") String outputPath) throws Exception {
-        Relations relations = analyzeRelations(classDir, pattern, AnalysisTarget.PACKAGE);
-
-        Diagram diagram = diagramService.generateFrom(relations);
-
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
-            outputStream.write(diagram.getBytes());
+    @ShellMethod("設定の確認と上書き")
+    public Table diagramSetting(@ShellOption(defaultValue = ShellOption.NULL) String classDir,
+                                @ShellOption(defaultValue = ShellOption.NULL) String pattern,
+                                @ShellOption(defaultValue = ShellOption.NULL) String kind) {
+        if (classDir != null) {
+            this.classDir = classDir;
         }
+        if (pattern != null) {
+            this.pattern = pattern;
+        }
+        if (kind != null) {
+            this.kind = AnalysisTarget.valueOf(kind.toUpperCase());
+        }
+
+        return new TableBuilder(
+                new TableModelBuilder<>()
+                        .addRow().addValue("class directory").addValue(this.classDir)
+                        .addRow().addValue("target pattern").addValue(this.pattern)
+                        .addRow().addValue("output kind").addValue(this.kind)
+                        .build())
+                .addFullBorder(BorderStyle.fancy_light)
+                .build();
     }
 
-    @ShellMethod("クラス依存図")
-    public void classDiagram(String classDir, String pattern,
-                             @ShellOption(defaultValue = "class-diagram.png") String outputPath) throws Exception {
-        Relations relations = analyzeRelations(classDir, pattern, AnalysisTarget.CLASS);
+    @ShellMethod("ダイアグラムを出力")
+    public void diagramOutput(@ShellOption(defaultValue = "diagram.png") String outputPath) throws Exception {
+        LOGGER.info("classDir: " + classDir);
+        LOGGER.info("pattern : " + pattern);
+        LOGGER.info("kind    : " + kind);
 
+        Relations relations = analyzeRelations(classDir, pattern, kind);
         Diagram diagram = diagramService.generateFrom(relations);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             outputStream.write(diagram.getBytes());
         }
+
+        LOGGER.info(outputPath + " を出力しました。");
     }
 
     private Relations analyzeRelations(String classDir, String pattern, AnalysisTarget target) {

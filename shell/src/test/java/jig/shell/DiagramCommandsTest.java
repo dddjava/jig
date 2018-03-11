@@ -29,7 +29,8 @@ class DiagramCommandsTest {
     void packageDiagram() throws Exception {
         File file = new File(Files.newTemporaryFolder(), "temp.png");
         file.deleteOnExit();
-        sut.packageDiagram("../sut", "sut.*", file.toString());
+        sut.diagramSetting("../sut", "sut.+", null);
+        sut.diagramOutput(file.toString());
 
         // 出力対象がない場合のPNGファイルが411byteなのでそれ以上で
         assertThat(file.length()).isGreaterThan(411);

@@ -1,11 +1,14 @@
-package jig.domain.model.usage;
+package jig.domain.model.list;
+
+import jig.domain.model.usage.ModelMethod;
+import jig.domain.model.usage.ModelType;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import static java.util.stream.Collectors.joining;
 
-public enum ModelConcern {
+public enum ServiceModelConcern implements Converter {
     クラス名((modelType, m) ->
             modelType.name().value()),
     クラス和名((modelType, m) ->
@@ -25,11 +28,11 @@ public enum ModelConcern {
 
     private final BiFunction<ModelType, ModelMethod, String> function;
 
-    ModelConcern(BiFunction<ModelType, ModelMethod, String> function) {
+    ServiceModelConcern(BiFunction<ModelType, ModelMethod, String> function) {
         this.function = function;
     }
 
-    public String apply(ModelType type, ModelMethod method) {
+    public String convert(ModelType type, ModelMethod method) {
         return function.apply(type, method);
     }
 }

@@ -1,7 +1,7 @@
 package jig.cli;
 
 import jig.cli.infrastructure.usage.ModelTypeFactory;
-import jig.domain.model.usage.ModelConcern;
+import jig.domain.model.list.ModelKind;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
 import jig.domain.model.thing.Name;
@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
@@ -41,21 +40,21 @@ public class ClassListApplication implements CommandLineRunner {
     @Value("${output.list.name}")
     String outputFileName;
 
+    @Value("${output.list.type}")
+    String modelKind;
+
     @Override
     public void run(String... args) throws Exception {
+        ModelKind modelKind = ModelKind.valueOf(this.modelKind.toUpperCase());
 
         Path output = Paths.get(outputFileName);
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            writer.write(Arrays.stream(ModelConcern.values())
-                    .map(Enum::name)
-                    .collect(joining(delimiter)));
+            writer.write(modelKind.headerLabel().stream().collect(joining(delimiter)));
             writer.newLine();
 
             for (ModelType modelType : repository.findAll().list()) {
                 for (ModelMethod method : modelType.methods().list()) {
-                    writer.write(Arrays.stream(ModelConcern.values())
-                            .map(modelConcern -> modelConcern.apply(modelType, method))
-                            .collect(joining(delimiter)));
+                    writer.write(modelKind.row(modelType, method).stream().collect(joining(delimiter)));
                     writer.newLine();
                 }
             }

@@ -5,9 +5,7 @@ import jig.domain.model.list.ConverterCondition;
 import jig.domain.model.list.ModelKind;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.thing.Name;
 import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelMethods;
 import jig.domain.model.usage.ModelType;
 import jig.domain.model.usage.ModelTypeRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
@@ -92,15 +90,6 @@ public class ClassListApplication implements CommandLineRunner {
             public boolean isTargetClass(Path path) {
                 return path.toString().endsWith("Service.class");
             }
-
-            @Override
-            public ModelType toModelType(Class<?> clz) {
-                Name name = new Name(clz);
-                return new ModelType(
-                        name,
-                        ModelMethods.from(clz)
-                );
-            }
         };
     }
 
@@ -111,15 +100,6 @@ public class ClassListApplication implements CommandLineRunner {
             @Override
             public boolean isTargetClass(Path path) {
                 return path.toString().endsWith("Repository.class");
-            }
-
-            @Override
-            public ModelType toModelType(Class<?> clz) {
-                Name name = new Name(clz);
-                return new ModelType(
-                        name,
-                        ModelMethods.from(clz)
-                );
             }
         };
     }

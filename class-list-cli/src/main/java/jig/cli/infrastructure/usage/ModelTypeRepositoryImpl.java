@@ -4,6 +4,7 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
+import jig.domain.model.usage.ModelMethods;
 import jig.domain.model.usage.ModelType;
 import jig.domain.model.usage.ModelTypeRepository;
 import jig.domain.model.usage.ModelTypes;
@@ -68,7 +69,7 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
                         }
                     })
                     .peek(this::registerRelation)
-                    .map(factory::toModelType)
+                    .map(clz -> new ModelType(new Name(clz), ModelMethods.from(clz)))
                     .collect(toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);

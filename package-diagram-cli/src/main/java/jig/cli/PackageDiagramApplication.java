@@ -69,11 +69,12 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Bean
     public DiagramConverter diagramConverter(@Value("${package.pattern}") String packageNamePattern,
                                              @Value("${target.source}") String targetSource) {
-        Path sourceRoot = Paths.get(targetSource);
-        JapaneseNameDictionaryLibrary library = new PackageInfoLibrary(sourceRoot);
-        PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter(library.borrow());
+        PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
-        return new PlantumlDiagramConverter(nameFormatter);
+
+        JapaneseNameDictionaryLibrary library = new PackageInfoLibrary(Paths.get(targetSource));
+
+        return new PlantumlDiagramConverter(nameFormatter, library.borrow());
     }
 
     @Bean

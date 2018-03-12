@@ -4,16 +4,23 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.Relations;
+import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.thing.NameFormatter;
+import jig.domain.model.thing.Thing;
 
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 public class PlantumlDiagramConverter implements DiagramConverter {
 
     NameFormatter nameFormatter;
+    JapaneseNameDictionary dictionary;
 
-    public PlantumlDiagramConverter(NameFormatter nameFormatter) {
+    public PlantumlDiagramConverter(NameFormatter nameFormatter,
+                                    JapaneseNameDictionary dictionary) {
         this.nameFormatter = nameFormatter;
+        this.dictionary = dictionary;
     }
 
     @Override
@@ -21,13 +28,29 @@ public class PlantumlDiagramConverter implements DiagramConverter {
         String source = "@startuml\n" +
                 "hide members\n" +
                 "hide circle\n" +
+                "\n" +
+                classes(relations) +
+                "\n" +
                 relations.list().stream()
                         .map(this::relationToString)
-                        .collect(Collectors.joining(System.lineSeparator())) +
+                        .collect(joining("\n")) +
                 "\n" +
                 "footer %date%\n" +
                 "@enduml";
         return new DiagramSource(source);
+    }
+
+    private String classes(Relations relations) {
+        return Stream.concat(
+                relations.list().stream().map(Relation::from),
+                relations.list().stream().map(Relation::to))
+                .map(Thing::name)
+                .distinct()
+                .map(name -> "class " + nameFormatter.format(name) +
+                        (dictionary.exists(name)
+                                ? "<<" + dictionary.get(name).value() + ">>"
+                                : ""))
+                .collect(joining("\n"));
     }
 
     String relationToString(Relation relation) {

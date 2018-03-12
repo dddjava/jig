@@ -1,5 +1,4 @@
 import jig.domain.model.diagram.DiagramConverter;
-import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +22,7 @@ public class EnvironmentTest {
 
         @Bean
         DiagramConverter diagramConverter() {
-            return new PlantumlDiagramConverter(null);
+            return relations -> null;
         }
     }
 }

@@ -20,8 +20,9 @@ public class Application {
 
     @Bean
     public DiagramConverter diagramConverter() {
-        PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter(new JapaneseNameDictionary());
-        return new PlantumlDiagramConverter(nameFormatter);
+        return new PlantumlDiagramConverter(
+                new PlantumlNameFormatter(),
+                new JapaneseNameDictionary());
     }
 
     @Bean

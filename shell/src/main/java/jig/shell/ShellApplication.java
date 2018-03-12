@@ -30,7 +30,8 @@ public class ShellApplication {
     @Bean
     public DiagramConverter diagramConverter() {
         return new PlantumlDiagramConverter(
-                new PlantumlNameFormatter(getJapaneseNameDictionary()));
+                new PlantumlNameFormatter(),
+                getJapaneseNameDictionary());
     }
 
     @Bean

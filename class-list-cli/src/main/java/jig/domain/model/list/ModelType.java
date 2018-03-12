@@ -1,4 +1,4 @@
-package jig.domain.model.usage;
+package jig.domain.model.list;
 
 import jig.domain.model.thing.Name;
 

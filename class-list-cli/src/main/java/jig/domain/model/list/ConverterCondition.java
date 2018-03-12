@@ -3,8 +3,6 @@ package jig.domain.model.list;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseName;
 import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelType;
 
 public class ConverterCondition {
     private final ModelType type;

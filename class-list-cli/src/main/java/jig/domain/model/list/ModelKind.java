@@ -7,12 +7,14 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public enum ModelKind {
-    SERVICE(ServiceModelConcern.class),
-    REPOSITORY(RepositoryModelConcern.class),;
+    SERVICE("Service", ServiceModelConcern.class),
+    REPOSITORY("Repository", RepositoryModelConcern.class),;
 
+    private final String suffix;
     private final Class<? extends Enum> concern;
 
-    ModelKind(Class<? extends Enum> concern) {
+    ModelKind(String suffix, Class<? extends Enum> concern) {
+        this.suffix = suffix;
         this.concern = concern;
     }
 
@@ -38,5 +40,9 @@ public enum ModelKind {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean correct(ModelType modelType) {
+        return modelType.name().value().endsWith(suffix);
     }
 }

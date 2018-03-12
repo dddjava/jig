@@ -1,13 +1,10 @@
 package jig.cli.infrastructure.usage;
 
+import jig.domain.model.list.*;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
-import jig.domain.model.usage.ModelMethods;
-import jig.domain.model.usage.ModelType;
-import jig.domain.model.usage.ModelTypeRepository;
-import jig.domain.model.usage.ModelTypes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -35,11 +32,11 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
     RelationRepository relationRepository;
 
     @Override
-    public ModelTypes findAll() {
-        return new ModelTypes(classes);
+    public ModelTypes find(ModelKind modelKind) {
+        return new ModelTypes(classes.stream().filter(modelKind::correct).collect(toList()));
     }
 
-    public ModelTypeRepositoryImpl(ModelTypeFactory factory, @Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
+    public ModelTypeRepositoryImpl(@Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
         this.relationRepository = relationRepository;
         URL[] urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)
@@ -57,7 +54,8 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
         try (URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader());
              Stream<Path> walk = Files.walk(path)) {
 
-            classes = walk.filter(factory::isTargetClass)
+            classes = walk
+                    .filter(p -> p.toString().endsWith(".class"))
                     .map(path::relativize)
                     .map(Path::toString)
                     .map(str -> str.replace(".class", "").replace(File.separator, "."))

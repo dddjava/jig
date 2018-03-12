@@ -1,13 +1,12 @@
 package jig.cli;
 
-import jig.cli.infrastructure.usage.ModelTypeFactory;
 import jig.domain.model.list.ConverterCondition;
 import jig.domain.model.list.ModelKind;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelType;
-import jig.domain.model.usage.ModelTypeRepository;
+import jig.domain.model.list.ModelMethod;
+import jig.domain.model.list.ModelType;
+import jig.domain.model.list.ModelTypeRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.javaparser.ClassCommentLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 
 import java.io.BufferedWriter;
@@ -66,7 +64,7 @@ public class ClassListApplication implements CommandLineRunner {
             writer.write(modelKind.headerLabel().stream().collect(joining(delimiter)));
             writer.newLine();
 
-            for (ModelType modelType : repository.findAll().list()) {
+            for (ModelType modelType : repository.find(modelKind).list()) {
                 for (ModelMethod method : modelType.methods().list()) {
                     ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository, japaneseNameRepository);
                     writer.write(modelKind.row(condition).stream().collect(joining(delimiter)));
@@ -80,28 +78,6 @@ public class ClassListApplication implements CommandLineRunner {
     @Bean
     JapaneseNameDictionary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
         return new ClassCommentLibrary(Paths.get(sourcePath)).borrow();
-    }
-
-    @ConditionalOnProperty(name = "output.list.type", havingValue = "service")
-    @Bean
-    ModelTypeFactory serviceMethod() {
-        return new ModelTypeFactory() {
-            @Override
-            public boolean isTargetClass(Path path) {
-                return path.toString().endsWith("Service.class");
-            }
-        };
-    }
-
-    @ConditionalOnProperty(name = "output.list.type", havingValue = "repository")
-    @Bean
-    ModelTypeFactory serviceRepository() {
-        return new ModelTypeFactory() {
-            @Override
-            public boolean isTargetClass(Path path) {
-                return path.toString().endsWith("Repository.class");
-            }
-        };
     }
 }
 

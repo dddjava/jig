@@ -1,6 +1,7 @@
 package jig.cli;
 
 import jig.cli.infrastructure.usage.ModelTypeFactory;
+import jig.domain.model.list.ConverterCondition;
 import jig.domain.model.list.ModelKind;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
@@ -67,7 +68,8 @@ public class ClassListApplication implements CommandLineRunner {
 
             for (ModelType modelType : repository.findAll().list()) {
                 for (ModelMethod method : modelType.methods().list()) {
-                    writer.write(modelKind.row(modelType, method, relationRepository).stream().collect(joining(delimiter)));
+                    ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository);
+                    writer.write(modelKind.row(condition).stream().collect(joining(delimiter)));
                     writer.newLine();
                 }
             }

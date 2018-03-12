@@ -1,9 +1,5 @@
 package jig.domain.model.list;
 
-import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelType;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +23,10 @@ public enum ModelKind {
                 .collect(toList());
     }
 
-    public List<String> row(ModelType modelType, ModelMethod method, RelationRepository registerRelation) {
+    public List<String> row(ConverterCondition converterCondition) {
         Converter[] arr = concernValues();
         return Arrays.stream(arr)
-                .map(converter -> converter.convert(modelType, method, registerRelation))
+                .map(converter -> converter.convert(converterCondition))
                 .collect(toList());
     }
 

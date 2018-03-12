@@ -1,35 +1,31 @@
 package jig.domain.model.list;
 
-import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.usage.ModelMethod;
-import jig.domain.model.usage.ModelType;
-
 import java.util.Arrays;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
 
 public enum RepositoryModelConcern implements Converter {
-    クラス名((modelType, m) ->
-            modelType.name().value()),
-    クラス和名((modelType, m) ->
-            modelType.japaneseName().value()),
-    メソッド名((t, method) ->
-            method.name()),
-    メソッド戻り値の型((t, method) ->
-            method.returnType().getSimpleName()),
-    メソッド引数型((t, method) ->
-            Arrays.stream(method.parameters())
+    クラス名(condition ->
+            condition.getType().name().value()),
+    クラス和名(condition ->
+            condition.getType().japaneseName().value()),
+    メソッド名(condition ->
+            condition.getMethod().name()),
+    メソッド戻り値の型(condition ->
+            condition.getMethod().returnType().getSimpleName()),
+    メソッド引数型(condition ->
+            Arrays.stream(condition.getMethod().parameters())
                     .map(Class::getSimpleName)
                     .collect(joining(",")));
 
-    private final BiFunction<ModelType, ModelMethod, String> function;
+    private final Function<ConverterCondition, String> function;
 
-    RepositoryModelConcern(BiFunction<ModelType, ModelMethod, String> function) {
+    RepositoryModelConcern(Function<ConverterCondition, String> function) {
         this.function = function;
     }
 
-    public String convert(ModelType type, ModelMethod method, RelationRepository relationRepository) {
-        return function.apply(type, method);
+    public String convert(ConverterCondition converterCondition) {
+        return function.apply(converterCondition);
     }
 }

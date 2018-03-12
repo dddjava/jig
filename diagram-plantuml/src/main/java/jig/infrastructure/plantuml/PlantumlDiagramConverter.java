@@ -25,6 +25,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
                         .map(this::relationToString)
                         .collect(Collectors.joining(System.lineSeparator())) +
                 "\n" +
+                "footer %date%\n" +
                 "@enduml";
         return new DiagramSource(source);
     }

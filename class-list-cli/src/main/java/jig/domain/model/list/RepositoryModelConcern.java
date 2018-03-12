@@ -9,7 +9,7 @@ public enum RepositoryModelConcern implements Converter {
     クラス名(condition ->
             condition.getType().name().value()),
     クラス和名(condition ->
-            condition.getType().japaneseName().value()),
+            condition.japaneseName().value()),
     メソッド名(condition ->
             condition.getMethod().name()),
     メソッド戻り値の型(condition ->

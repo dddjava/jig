@@ -5,7 +5,6 @@ import jig.domain.model.list.ConverterCondition;
 import jig.domain.model.list.ModelKind;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
 import jig.domain.model.thing.Name;
 import jig.domain.model.usage.ModelMethod;
 import jig.domain.model.usage.ModelMethods;
@@ -52,6 +51,9 @@ public class ClassListApplication implements CommandLineRunner {
     @Autowired
     RelationRepository relationRepository;
 
+    @Autowired
+    JapaneseNameDictionary japaneseNameRepository;
+
     @Bean
     RelationRepository relationRepository() {
         return new OnMemoryRelationRepository();
@@ -68,7 +70,7 @@ public class ClassListApplication implements CommandLineRunner {
 
             for (ModelType modelType : repository.findAll().list()) {
                 for (ModelMethod method : modelType.methods().list()) {
-                    ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository);
+                    ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository, japaneseNameRepository);
                     writer.write(modelKind.row(condition).stream().collect(joining(delimiter)));
                     writer.newLine();
                 }
@@ -78,14 +80,13 @@ public class ClassListApplication implements CommandLineRunner {
     }
 
     @Bean
-    JapaneseNameDictionaryLibrary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
-        return new ClassCommentLibrary(Paths.get(sourcePath));
+    JapaneseNameDictionary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
+        return new ClassCommentLibrary(Paths.get(sourcePath)).borrow();
     }
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "service")
     @Bean
-    ModelTypeFactory serviceMethod(JapaneseNameDictionaryLibrary library) {
-        JapaneseNameDictionary japaneseNameDictionary = library.borrow();
+    ModelTypeFactory serviceMethod() {
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -97,7 +98,6 @@ public class ClassListApplication implements CommandLineRunner {
                 Name name = new Name(clz);
                 return new ModelType(
                         name,
-                        japaneseNameDictionary.get(name),
                         ModelMethods.from(clz)
                 );
             }
@@ -106,8 +106,7 @@ public class ClassListApplication implements CommandLineRunner {
 
     @ConditionalOnProperty(name = "output.list.type", havingValue = "repository")
     @Bean
-    ModelTypeFactory serviceRepository(JapaneseNameDictionaryLibrary library) {
-        JapaneseNameDictionary japaneseNameDictionary = library.borrow();
+    ModelTypeFactory serviceRepository() {
         return new ModelTypeFactory() {
             @Override
             public boolean isTargetClass(Path path) {
@@ -119,7 +118,6 @@ public class ClassListApplication implements CommandLineRunner {
                 Name name = new Name(clz);
                 return new ModelType(
                         name,
-                        japaneseNameDictionary.get(name),
                         ModelMethods.from(clz)
                 );
             }

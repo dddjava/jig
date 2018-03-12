@@ -1,4 +1,4 @@
-package jig.infrastructure.jdeps;
+package jig.infrastructure;
 
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;

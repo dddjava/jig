@@ -9,6 +9,8 @@ import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
 import jig.domain.model.thing.ThingRepository;
+import jig.infrastructure.OnMemoryRelationRepository;
+import jig.infrastructure.OnMemoryThingRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;

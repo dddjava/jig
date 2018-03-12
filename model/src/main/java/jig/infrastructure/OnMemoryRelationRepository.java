@@ -1,4 +1,4 @@
-package jig.infrastructure.jdeps;
+package jig.infrastructure;
 
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;

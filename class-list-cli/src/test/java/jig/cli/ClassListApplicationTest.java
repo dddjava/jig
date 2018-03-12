@@ -14,20 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClassListApplicationTest {
 
     @Test
-    public void test(Path temporaryFolder) throws Exception {
-        Path sutPath = Paths.get("..", "sut").toAbsolutePath();
-
-        ProcessBuilder pb = new ProcessBuilder("./gradlew", ":sut:build");
-        pb.directory(sutPath.getParent().toFile());
-        Process process = pb.start();
-        int result = process.waitFor();
-        assertThat(result).isEqualTo(0);
-
+    public void testService(Path temporaryFolder) throws Exception {
         File output = temporaryFolder.resolve("output.tsv").toFile();
 
+        Path sutPath = Paths.get("..", "sut").toAbsolutePath();
         ClassListApplication.main(new String[]{
                 "--target.class=" + sutPath.resolve("build/classes/java/main"),
                 "--target.source=" + sutPath.resolve("src/main/java"),
+                "--output.list.type=" + "service",
                 "--output.list.name=" + output.toString()
         });
 
@@ -40,5 +34,26 @@ public class ClassListApplicationTest {
                         "sut.application.CanonicalService")
                 .doesNotContain(
                         "sut.application.ThrowsUnknownExceptionService");
+    }
+
+    @Test
+    public void testRepository(Path temporaryFolder) throws Exception {
+        File output = temporaryFolder.resolve("output.tsv").toFile();
+
+        Path sutPath = Paths.get("..", "sut").toAbsolutePath();
+        ClassListApplication.main(new String[]{
+                "--target.class=" + sutPath.resolve("build/classes/java/main"),
+                "--target.source=" + sutPath.resolve("src/main/java"),
+                "--output.list.type=" + "repository",
+                "--output.list.name=" + output.toString()
+        });
+
+        assertThat(Files.readAllLines(output.toPath()))
+                .hasSize(3)
+                .extracting(value -> value.split("\t")[0])
+                .containsExactlyInAnyOrder(
+                        "クラス名",
+                        "sut.domain.model.hoge.HogeRepository",
+                        "sut.domain.model.fuga.FugaRepository");
     }
 }

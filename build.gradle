@@ -103,6 +103,10 @@ project(':class-list-cli') {
             exclude group: 'junit'
         }
     }
+
+    test {
+        dependsOn ':sut:compileJava'
+    }
 }
 
 project(':sut') {

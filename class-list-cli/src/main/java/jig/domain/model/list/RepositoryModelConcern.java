@@ -1,5 +1,6 @@
 package jig.domain.model.list;
 
+import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.usage.ModelMethod;
 import jig.domain.model.usage.ModelType;
 
@@ -20,10 +21,6 @@ public enum RepositoryModelConcern implements Converter {
     メソッド引数型((t, method) ->
             Arrays.stream(method.parameters())
                     .map(Class::getSimpleName)
-                    .collect(joining(","))),
-    保持しているフィールドの型((modelType, m) ->
-            modelType.dependents().list().stream()
-                    .map(Class::getSimpleName)
                     .collect(joining(",")));
 
     private final BiFunction<ModelType, ModelMethod, String> function;
@@ -32,7 +29,7 @@ public enum RepositoryModelConcern implements Converter {
         this.function = function;
     }
 
-    public String convert(ModelType type, ModelMethod method) {
+    public String convert(ModelType type, ModelMethod method, RelationRepository relationRepository) {
         return function.apply(type, method);
     }
 }

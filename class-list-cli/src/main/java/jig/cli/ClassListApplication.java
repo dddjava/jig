@@ -2,10 +2,15 @@ package jig.cli;
 
 import jig.cli.infrastructure.usage.ModelTypeFactory;
 import jig.domain.model.list.ModelKind;
+import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
 import jig.domain.model.thing.Name;
-import jig.domain.model.usage.*;
+import jig.domain.model.usage.ModelMethod;
+import jig.domain.model.usage.ModelMethods;
+import jig.domain.model.usage.ModelType;
+import jig.domain.model.usage.ModelTypeRepository;
+import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.javaparser.ClassCommentLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +48,14 @@ public class ClassListApplication implements CommandLineRunner {
     @Value("${output.list.type}")
     String modelKind;
 
+    @Autowired
+    RelationRepository relationRepository;
+
+    @Bean
+    RelationRepository relationRepository() {
+        return new OnMemoryRelationRepository();
+    }
+
     @Override
     public void run(String... args) throws Exception {
         ModelKind modelKind = ModelKind.valueOf(this.modelKind.toUpperCase());
@@ -54,7 +67,7 @@ public class ClassListApplication implements CommandLineRunner {
 
             for (ModelType modelType : repository.findAll().list()) {
                 for (ModelMethod method : modelType.methods().list()) {
-                    writer.write(modelKind.row(modelType, method).stream().collect(joining(delimiter)));
+                    writer.write(modelKind.row(modelType, method, relationRepository).stream().collect(joining(delimiter)));
                     writer.newLine();
                 }
             }
@@ -83,8 +96,8 @@ public class ClassListApplication implements CommandLineRunner {
                 return new ModelType(
                         name,
                         japaneseNameDictionary.get(name),
-                        ModelMethods.from(clz),
-                        DependentTypes.from(clz));
+                        ModelMethods.from(clz)
+                );
             }
         };
     }
@@ -105,8 +118,8 @@ public class ClassListApplication implements CommandLineRunner {
                 return new ModelType(
                         name,
                         japaneseNameDictionary.get(name),
-                        ModelMethods.from(clz),
-                        DependentTypes.empty());
+                        ModelMethods.from(clz)
+                );
             }
         };
     }

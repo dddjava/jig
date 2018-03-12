@@ -1,5 +1,9 @@
 package jig.cli.infrastructure.usage;
 
+import jig.domain.model.relation.Relation;
+import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Thing;
 import jig.domain.model.usage.ModelType;
 import jig.domain.model.usage.ModelTypeRepository;
 import jig.domain.model.usage.ModelTypes;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -26,12 +31,15 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
 
     private List<ModelType> classes;
 
+    RelationRepository relationRepository;
+
     @Override
     public ModelTypes findAll() {
         return new ModelTypes(classes);
     }
 
-    public ModelTypeRepositoryImpl(ModelTypeFactory factory, @Value("${target.class}") String targetClasspath) {
+    public ModelTypeRepositoryImpl(ModelTypeFactory factory, @Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
+        this.relationRepository = relationRepository;
         URL[] urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)
                 .map(Path::toUri)
@@ -59,6 +67,7 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
                             throw new IllegalStateException(e);
                         }
                     })
+                    .peek(this::registerRelation)
                     .map(factory::toModelType)
                     .collect(toList());
         } catch (IOException e) {
@@ -66,4 +75,13 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
         }
     }
 
+    public void registerRelation(Class<?> clz) {
+        for (Field field : clz.getDeclaredFields()) {
+            Relation relation = new Relation(
+                    new Thing(new Name(clz.getCanonicalName())),
+                    new Thing(new Name(field.getType().getCanonicalName()))
+            );
+            relationRepository.persist(relation);
+        }
+    }
 }

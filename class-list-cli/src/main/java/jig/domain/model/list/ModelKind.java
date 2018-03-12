@@ -1,5 +1,6 @@
 package jig.domain.model.list;
 
+import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.usage.ModelMethod;
 import jig.domain.model.usage.ModelType;
 
@@ -26,10 +27,10 @@ public enum ModelKind {
                 .collect(toList());
     }
 
-    public List<String> row(ModelType modelType, ModelMethod method) {
+    public List<String> row(ModelType modelType, ModelMethod method, RelationRepository registerRelation) {
         Converter[] arr = concernValues();
         return Arrays.stream(arr)
-                .map(converter -> converter.convert(modelType, method))
+                .map(converter -> converter.convert(modelType, method, registerRelation))
                 .collect(toList());
     }
 

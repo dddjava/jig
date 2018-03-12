@@ -10,13 +10,10 @@ public class ModelType {
 
     ModelMethods methods;
 
-    DependentTypes dependents;
-
-    public ModelType(Name name, JapaneseName japaneseName, ModelMethods methods, DependentTypes dependents) {
+    public ModelType(Name name, JapaneseName japaneseName, ModelMethods methods) {
         this.name = name;
         this.japaneseName = japaneseName;
         this.methods = methods;
-        this.dependents = dependents;
     }
 
     public Name name() {
@@ -29,9 +26,5 @@ public class ModelType {
 
     public ModelMethods methods() {
         return methods;
-    }
-
-    public DependentTypes dependents() {
-        return dependents;
     }
 }

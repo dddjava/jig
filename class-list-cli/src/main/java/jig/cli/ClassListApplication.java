@@ -92,7 +92,7 @@ public class ClassListApplication implements CommandLineRunner {
 
             @Override
             public ModelType toModelType(Class<?> clz) {
-                Name name = new Name(clz.getCanonicalName());
+                Name name = new Name(clz);
                 return new ModelType(
                         name,
                         japaneseNameDictionary.get(name),
@@ -114,7 +114,7 @@ public class ClassListApplication implements CommandLineRunner {
 
             @Override
             public ModelType toModelType(Class<?> clz) {
-                Name name = new Name(clz.getCanonicalName());
+                Name name = new Name(clz);
                 return new ModelType(
                         name,
                         japaneseNameDictionary.get(name),

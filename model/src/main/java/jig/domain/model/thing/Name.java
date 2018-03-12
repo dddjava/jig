@@ -6,6 +6,10 @@ public class Name {
 
     String value;
 
+    public Name(Class<?> clz) {
+        this(clz.getCanonicalName());
+    }
+
     public Name(String value) {
         this.value = value;
     }

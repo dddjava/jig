@@ -78,8 +78,8 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
     public void registerRelation(Class<?> clz) {
         for (Field field : clz.getDeclaredFields()) {
             Relation relation = new Relation(
-                    new Thing(new Name(clz.getCanonicalName())),
-                    new Thing(new Name(field.getType().getCanonicalName()))
+                    new Thing(new Name(clz)),
+                    new Thing(new Name(field.getType()))
             );
             relationRepository.persist(relation);
         }

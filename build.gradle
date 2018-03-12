@@ -98,8 +98,8 @@ project(':class-list-cli') {
         compile project(':model')
         compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
-        compile 'com.fasterxml.jackson.core:jackson-core'
-        compile('org.springframework.boot:spring-boot-starter-test') {
+
+        testCompile('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'junit'
         }
     }

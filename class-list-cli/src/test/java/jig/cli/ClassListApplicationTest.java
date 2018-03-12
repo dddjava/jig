@@ -32,12 +32,13 @@ public class ClassListApplicationTest {
         });
 
         assertThat(Files.readAllLines(output.toPath()))
-                .hasSize(4)
+                .hasSize(3)
                 .extracting(value -> value.split("\t")[0])
                 .containsExactlyInAnyOrder(
                         "クラス名",
                         "sut.application.CanonicalService",
-                        "sut.application.CanonicalService",
+                        "sut.application.CanonicalService")
+                .doesNotContain(
                         "sut.application.ThrowsUnknownExceptionService");
     }
 }

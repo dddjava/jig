@@ -121,12 +121,16 @@ public class ModelTypeClassLoader {
     }
 
     private void registerRelation(Class<?> clz) {
-        for (Field field : clz.getDeclaredFields()) {
-            Relation relation = new Relation(
-                    new Thing(new Name(clz)),
-                    new Thing(new Name(field.getType()))
-            );
-            relationRepository.persist(relation);
+        try {
+            for (Field field : clz.getDeclaredFields()) {
+                Relation relation = new Relation(
+                        new Thing(new Name(clz)),
+                        new Thing(new Name(field.getType()))
+                );
+                relationRepository.persist(relation);
+            }
+        } catch (NoClassDefFoundError e) {
+            LOGGER.warning("依存クラスが見つからないためフィールドが取得できませんでした。 class:" + clz + " message:" + e.getMessage());
         }
     }
 }

@@ -6,7 +6,6 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.thing.NameFormatter;
-import jig.domain.model.thing.Thing;
 
 import java.util.stream.Stream;
 
@@ -44,7 +43,6 @@ public class PlantumlDiagramConverter implements DiagramConverter {
         return Stream.concat(
                 relations.list().stream().map(Relation::from),
                 relations.list().stream().map(Relation::to))
-                .map(Thing::name)
                 .distinct()
                 .map(name -> "class " + nameFormatter.format(name) +
                         (dictionary.exists(name)
@@ -55,8 +53,8 @@ public class PlantumlDiagramConverter implements DiagramConverter {
 
     String relationToString(Relation relation) {
         return String.format("\"%s\" ..> \"%s\"",
-                nameFormatter.format(relation.from().name()),
-                nameFormatter.format(relation.to().name())
+                nameFormatter.format(relation.from()),
+                nameFormatter.format(relation.to())
         );
     }
 }

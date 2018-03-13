@@ -9,6 +9,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
+import jig.domain.model.thing.ThingRepository;
 import jig.domain.model.thing.ThingType;
 
 import java.io.File;
@@ -36,11 +37,13 @@ public class ModelTypeClassLoader {
     private static final Logger LOGGER = Logger.getLogger(ModelTypeClassLoader.class.getName());
 
     private final URL[] urls;
+    private final ThingRepository thingRepository;
     private final ModelTypeRepository modelTypeRepository;
 
     RelationRepository relationRepository;
 
-    public ModelTypeClassLoader(String targetClasspath, RelationRepository relationRepository, ModelTypeRepository modelTypeRepository) {
+    public ModelTypeClassLoader(String targetClasspath, ThingRepository thingRepository, RelationRepository relationRepository, ModelTypeRepository modelTypeRepository) {
+        this.thingRepository = thingRepository;
         this.modelTypeRepository = modelTypeRepository;
         this.relationRepository = relationRepository;
         this.urls = Arrays.stream(targetClasspath.split(":"))
@@ -64,8 +67,10 @@ public class ModelTypeClassLoader {
                         .map(path::relativize)
                         .map(Path::toString)
                         .map(str -> str.replace(".class", "").replace(File.separator, "."))
-                        .map(this::toModelType)
-                        .forEach(modelTypeRepository::register);
+                        .forEach(className -> {
+                            ModelType modelType = toModelType(className);
+                            modelTypeRepository.register(modelType);
+                        });
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -86,7 +91,10 @@ public class ModelTypeClassLoader {
                     .collect(toList());
             ModelMethods methods = new ModelMethods(list);
 
-            return new ModelType(new Name(clz), methods);
+            Name name = new Name(clz);
+            thingRepository.register(new Thing(name, ThingType.CLASS));
+
+            return new ModelType(name, methods);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
@@ -125,10 +133,13 @@ public class ModelTypeClassLoader {
     private void registerRelation(Class<?> clz) {
         try {
             for (Field field : clz.getDeclaredFields()) {
-                Relation relation = RelationType.FIELD.create(
-                        new Thing(new Name(clz), ThingType.CLASS),
-                        new Thing(new Name(field.getType()), ThingType.CLASS));
-                relationRepository.persist(relation);
+                Thing from = new Thing(new Name(clz), ThingType.CLASS);
+                Thing to = new Thing(new Name(field.getType()), ThingType.CLASS);
+                thingRepository.register(from);
+                thingRepository.register(to);
+
+                Relation relation = RelationType.FIELD.create(from.name(), to.name());
+                relationRepository.regisger(relation);
             }
         } catch (NoClassDefFoundError e) {
             LOGGER.warning("依存クラスが見つからないためフィールドが取得できませんでした。 class:" + clz + " message:" + e.getMessage());

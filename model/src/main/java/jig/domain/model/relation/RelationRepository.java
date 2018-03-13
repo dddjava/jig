@@ -4,7 +4,7 @@ import jig.domain.model.thing.Name;
 
 public interface RelationRepository {
 
-    void persist(Relation relation);
+    void regisger(Relation relation);
 
     Relations all();
 

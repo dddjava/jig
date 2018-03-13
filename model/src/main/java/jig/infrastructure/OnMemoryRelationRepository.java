@@ -15,7 +15,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     List<Relation> list = new ArrayList<>();
 
     @Override
-    public void persist(Relation relation) {
+    public void regisger(Relation relation) {
         list.add(relation);
     }
 
@@ -27,7 +27,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public Relations findDependency(Name name) {
         List<Relation> relations = list.stream()
-                .filter(relation -> relation.from().name().equals(name))
+                .filter(relation -> relation.from().equals(name))
                 .collect(toList());
         return new Relations(relations);
     }

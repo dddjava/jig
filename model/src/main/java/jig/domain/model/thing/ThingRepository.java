@@ -2,7 +2,9 @@ package jig.domain.model.thing;
 
 public interface ThingRepository {
 
-    void persist(Thing thing);
+    boolean exists(Name name);
 
-    Thing resolve(Name name, ThingType type);
+    void register(Thing thing);
+
+    Thing get(Name name);
 }

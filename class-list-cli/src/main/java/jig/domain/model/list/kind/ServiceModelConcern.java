@@ -3,7 +3,6 @@ package jig.domain.model.list.kind;
 import jig.domain.model.list.ConverterCondition;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.thing.Name;
-import jig.domain.model.thing.Thing;
 
 import java.util.function.Function;
 
@@ -23,7 +22,6 @@ public enum ServiceModelConcern implements Converter {
     保持しているフィールドの型(condition ->
             condition.getRegisterRelation().findDependency(condition.getType().name()).list().stream()
                     .map(Relation::to)
-                    .map(Thing::name)
                     .map(Name::value)
                     .collect(joining(",")));
 

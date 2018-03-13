@@ -62,7 +62,10 @@ public class JdepsExecutor implements RelationAnalyzer {
             Matcher fromMatcher = from.matcher(line);
             if (fromMatcher.find()) {
                 Name modelName = new Name(fromMatcher.group(1));
-                thing = thingRepository.resolve(modelName, ThingType.ANY);
+                if (!thingRepository.exists(modelName)) {
+                    thingRepository.register(new Thing(modelName, ThingType.ANY));
+                }
+                thing = thingRepository.get(modelName);
                 continue;
             }
 
@@ -70,7 +73,10 @@ public class JdepsExecutor implements RelationAnalyzer {
             if (toMatcher.find()) {
                 if (thing == null) throw new NullPointerException();
                 Name modelName = new Name(toMatcher.group(1));
-                relationRepository.persist(RelationType.DEPENDENCY.create(thing, thingRepository.resolve(modelName, ThingType.ANY)));
+                if (!thingRepository.exists(modelName)) {
+                    thingRepository.register(new Thing(modelName, ThingType.ANY));
+                }
+                relationRepository.regisger(RelationType.DEPENDENCY.create(thing.name(), modelName));
                 continue;
             }
 

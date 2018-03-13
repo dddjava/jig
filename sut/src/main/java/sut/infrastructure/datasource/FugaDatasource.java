@@ -9,13 +9,16 @@ import sut.domain.model.fuga.FugaRepository;
 public class FugaDatasource implements FugaRepository {
 
     FugaMapper mapper;
+    private final PiyoMapper piyoMapper;
 
-    public FugaDatasource(FugaMapper mapper) {
+    public FugaDatasource(FugaMapper mapper, PiyoMapper piyoMapper) {
         this.mapper = mapper;
+        this.piyoMapper = piyoMapper;
     }
 
     @Override
     public Fuga get(FugaIdentifier identifier) {
+        piyoMapper.register();
         return mapper.get(identifier);
     }
 }

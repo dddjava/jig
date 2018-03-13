@@ -5,11 +5,18 @@
 <mapper namespace="sut.infrastructure.datasource.FugaMapper">
 
     <resultMap id="fuga" type="sut.domain.model.fuga.Fuga">
-        <result property="identifier.value" column="identifier" />
+        <result property="identifier.value" column="identifier"/>
         <result property="name.value" column="name"/>
     </resultMap>
 
     <select id="get" resultMap="fuga">
-        SELECT identifier, name FROM fuga WHERE identifier = #{value}
+        SELECT identifier, name
+        FROM fuga
+        WHERE identifier = #{value}
+        <include refid="include"/>
     </select>
+
+    <sql id="include">
+        AND 1 = 1
+    </sql>
 </mapper>

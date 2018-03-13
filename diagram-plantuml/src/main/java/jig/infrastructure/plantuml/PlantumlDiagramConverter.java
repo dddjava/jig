@@ -4,7 +4,7 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.NameFormatter;
 
 import java.util.stream.Stream;
@@ -14,12 +14,12 @@ import static java.util.stream.Collectors.joining;
 public class PlantumlDiagramConverter implements DiagramConverter {
 
     NameFormatter nameFormatter;
-    JapaneseNameDictionary dictionary;
+    JapaneseNameRepository repository;
 
     public PlantumlDiagramConverter(NameFormatter nameFormatter,
-                                    JapaneseNameDictionary dictionary) {
+                                    JapaneseNameRepository repository) {
         this.nameFormatter = nameFormatter;
-        this.dictionary = dictionary;
+        this.repository = repository;
     }
 
     @Override
@@ -45,8 +45,8 @@ public class PlantumlDiagramConverter implements DiagramConverter {
                 relations.list().stream().map(Relation::to))
                 .distinct()
                 .map(name -> "class " + nameFormatter.format(name) +
-                        (dictionary.exists(name)
-                                ? "<<" + dictionary.get(name).value() + ">>"
+                        (repository.exists(name)
+                                ? "<<" + repository.get(name).value() + ">>"
                                 : ""))
                 .collect(joining("\n"));
     }

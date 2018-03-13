@@ -1,11 +1,12 @@
 package jig.classlist;
 
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.ThingRepository;
+import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryThingRepository;
-import jig.infrastructure.javaparser.ClassCommentLibrary;
+import jig.infrastructure.javaparser.ClassCommentReader;
 import jig.infrastructure.reflection.ModelTypeClassLoader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +28,11 @@ public class ClassListConfig {
     }
 
     @Bean
-    JapaneseNameDictionary japaneseNameRepository(@Value("${target.source}") String sourcePath) {
-        return new ClassCommentLibrary(Paths.get(sourcePath)).borrow();
+    JapaneseNameRepository japaneseNameRepository(@Value("${target.source}") String sourcePath) {
+        JapaneseNameRepository repository = new OnMemoryJapanaseNameRepository();
+        ClassCommentReader classCommentReader = new ClassCommentReader(Paths.get(sourcePath));
+        classCommentReader.registerTo(repository);
+        return repository;
     }
 
     @Bean

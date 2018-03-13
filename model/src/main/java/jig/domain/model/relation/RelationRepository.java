@@ -4,11 +4,9 @@ import jig.domain.model.thing.Name;
 
 public interface RelationRepository {
 
-    void regisger(Relation relation);
+    void register(Relation relation);
 
     Relations all();
-
-    Relations findDependency(Name name);
 
     Relations allMethods();
 

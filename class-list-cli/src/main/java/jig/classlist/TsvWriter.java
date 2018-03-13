@@ -5,7 +5,7 @@ import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class TsvWriter {
     RelationRepository relationRepository;
 
     @Autowired
-    JapaneseNameDictionary japaneseNameRepository;
+    JapaneseNameRepository japaneseNameRepository;
 
     public void writeTo(Path output) {
         ModelKind modelKind = ModelKind.valueOf(this.modelKind.toUpperCase());

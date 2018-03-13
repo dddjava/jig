@@ -6,8 +6,7 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.tag.JapaneseName;
-import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
 
 import java.io.IOException;
@@ -16,23 +15,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class PackageInfoLibrary implements JapaneseNameDictionaryLibrary {
-
-    public PackageInfoLibrary(Path rootPath) {
-        this.rootPath = rootPath;
-    }
+public class PackageInfoReader {
 
     private Path rootPath;
 
-    @Override
-    public JapaneseNameDictionary borrow() {
-        JapaneseNameDictionary dictionary = new JapaneseNameDictionary();
+    public PackageInfoReader(Path rootPath) {
+        this.rootPath = rootPath;
+    }
+
+    public void registerTo(JapaneseNameRepository repository) {
         if (Files.notExists(rootPath)) {
-            return dictionary;
+            return;
         }
 
         try (Stream<Path> walk = Files.walk(rootPath)) {
-
             walk.filter(path -> path.toFile().getName().equals("package-info.java"))
                     .forEach(path -> {
                         try {
@@ -54,14 +50,12 @@ public class PackageInfoLibrary implements JapaneseNameDictionaryLibrary {
                             }, null);
 
                             if (name != null && japaneseName != null) {
-                                dictionary.register(name, japaneseName);
+                                repository.register(name, japaneseName);
                             }
                         } catch (IOException e) {
                             throw new UncheckedIOException(e);
                         }
                     });
-
-            return dictionary;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

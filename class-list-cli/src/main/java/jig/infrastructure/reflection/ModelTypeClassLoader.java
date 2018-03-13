@@ -89,14 +89,14 @@ public class ModelTypeClassLoader {
                 Name methodName = new Name(className + "." + method.getName());
 
                 thingRepository.register(new Thing(methodName, ThingType.METHOD));
-                relationRepository.regisger(RelationType.METHOD.create(name, methodName));
+                relationRepository.register(RelationType.METHOD.create(name, methodName));
 
                 Name returnTypeName = new Name(method.getReturnType());
                 thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
-                relationRepository.regisger(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
+                relationRepository.register(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
                 parameterNames(method).forEach(parameterName -> {
                     thingRepository.register(new Thing(parameterName, ThingType.TYPE));
-                    relationRepository.regisger(RelationType.METHOD_PARAMETER.create(methodName, parameterName));
+                    relationRepository.register(RelationType.METHOD_PARAMETER.create(methodName, parameterName));
                 });
             }
 
@@ -129,7 +129,7 @@ public class ModelTypeClassLoader {
                 thingRepository.register(to);
 
                 Relation relation = RelationType.FIELD.create(from.name(), to.name());
-                relationRepository.regisger(relation);
+                relationRepository.register(relation);
             }
         } catch (NoClassDefFoundError e) {
             LOGGER.warning("依存クラスが見つからないためフィールドが取得できませんでした。 class:" + clz + " message:" + e.getMessage());

@@ -5,7 +5,7 @@ import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -35,7 +35,7 @@ public class ExcelWriter {
     RelationRepository relationRepository;
 
     @Autowired
-    JapaneseNameDictionary japaneseNameRepository;
+    JapaneseNameRepository japaneseNameRepository;
 
     public void writeTo(Path output) {
         ModelKind modelKind = ModelKind.valueOf(this.modelKind.toUpperCase());

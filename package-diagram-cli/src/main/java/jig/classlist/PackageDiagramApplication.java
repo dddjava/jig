@@ -5,8 +5,9 @@ import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
-import jig.infrastructure.javaparser.PackageInfoLibrary;
+import jig.domain.model.tag.JapaneseNameRepository;
+import jig.infrastructure.OnMemoryJapanaseNameRepository;
+import jig.infrastructure.javaparser.PackageInfoReader;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -72,9 +73,11 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        JapaneseNameDictionaryLibrary library = new PackageInfoLibrary(Paths.get(targetSource));
+        PackageInfoReader packageInfoReader = new PackageInfoReader(Paths.get(targetSource));
+        JapaneseNameRepository repository = new OnMemoryJapanaseNameRepository();
+        packageInfoReader.registerTo(repository);
 
-        return new PlantumlDiagramConverter(nameFormatter, library.borrow());
+        return new PlantumlDiagramConverter(nameFormatter, repository);
     }
 
     @Bean

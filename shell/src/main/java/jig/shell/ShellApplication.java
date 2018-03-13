@@ -3,7 +3,8 @@ package jig.shell;
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.tag.JapaneseNameRepository;
+import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.DiagramRepositoryImpl;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
@@ -31,12 +32,12 @@ public class ShellApplication {
     public DiagramConverter diagramConverter() {
         return new PlantumlDiagramConverter(
                 new PlantumlNameFormatter(),
-                getJapaneseNameDictionary());
+                getJapaneseNameRepository());
     }
 
     @Bean
-    public JapaneseNameDictionary getJapaneseNameDictionary() {
-        return new JapaneseNameDictionary();
+    public JapaneseNameRepository getJapaneseNameRepository() {
+        return new OnMemoryJapanaseNameRepository();
     }
 
     @Bean

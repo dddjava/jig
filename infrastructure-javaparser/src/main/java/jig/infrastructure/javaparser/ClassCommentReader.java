@@ -8,8 +8,7 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.domain.model.tag.JapaneseName;
-import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.tag.JapaneseNameDictionaryLibrary;
+import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
 
 import java.io.IOException;
@@ -18,23 +17,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class ClassCommentLibrary implements JapaneseNameDictionaryLibrary {
-
-    public ClassCommentLibrary(Path rootPath) {
-        this.rootPath = rootPath;
-    }
+public class ClassCommentReader {
 
     private Path rootPath;
 
-    @Override
-    public JapaneseNameDictionary borrow() {
-        JapaneseNameDictionary repository = new JapaneseNameDictionary();
+    public ClassCommentReader(Path rootPath) {
+        this.rootPath = rootPath;
+    }
+
+    public void registerTo(JapaneseNameRepository repository) {
         if (Files.notExists(rootPath)) {
-            return repository;
+            return;
         }
 
         try (Stream<Path> walk = Files.walk(rootPath)) {
-
             walk.filter(path -> path.toFile().getName().endsWith(".java"))
                     .forEach(path -> {
                         try {
@@ -67,8 +63,6 @@ public class ClassCommentLibrary implements JapaneseNameDictionaryLibrary {
                             throw new UncheckedIOException(e);
                         }
                     });
-
-            return repository;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -5,8 +5,6 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-@Repository
 public class ModelTypeClassLoader implements ModelTypeRepository {
 
     private static final Logger LOGGER = Logger.getLogger(ModelTypeClassLoader.class.getName());
@@ -40,7 +37,7 @@ public class ModelTypeClassLoader implements ModelTypeRepository {
         return new ModelTypes(classes.stream().filter(modelKind::correct).collect(toList()));
     }
 
-    public ModelTypeClassLoader(@Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
+    public ModelTypeClassLoader(String targetClasspath, RelationRepository relationRepository) {
         this.relationRepository = relationRepository;
         URL[] urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)

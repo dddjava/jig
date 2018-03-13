@@ -1,4 +1,4 @@
-package jig.cli;
+package jig.classlist;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

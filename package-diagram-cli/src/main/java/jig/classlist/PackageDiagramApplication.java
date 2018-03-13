@@ -1,4 +1,4 @@
-package jig.cli;
+package jig.classlist;
 
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;

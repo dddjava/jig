@@ -53,19 +53,27 @@ public class ModelTypeClassLoader {
     }
 
     public void load() {
-        try {
-            Path path = Paths.get(urls[0].toURI());
-            try (Stream<Path> walk = Files.walk(path)) {
-                walk.filter(p -> p.toString().endsWith(".class"))
-                        .map(path::relativize)
-                        .map(Path::toString)
-                        .map(str -> str.replace(".class", "").replace(File.separator, "."))
-                        .forEach(this::analyze);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        Arrays.stream(urls)
+                .map(url -> {
+                    try {
+                        return url.toURI();
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(Paths::get)
+                .forEach(this::load);
+    }
+
+    private void load(Path path) {
+        try (Stream<Path> walk = Files.walk(path)) {
+            walk.filter(p -> p.toString().endsWith(".class"))
+                    .map(path::relativize)
+                    .map(Path::toString)
+                    .map(str -> str.replace(".class", "").replace(File.separator, "."))
+                    .forEach(this::analyze);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

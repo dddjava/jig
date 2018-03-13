@@ -9,6 +9,7 @@ import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
 import jig.domain.model.thing.ThingRepository;
+import jig.domain.model.thing.ThingType;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryThingRepository;
 
@@ -61,7 +62,7 @@ public class JdepsExecutor implements RelationAnalyzer {
             Matcher fromMatcher = from.matcher(line);
             if (fromMatcher.find()) {
                 Name modelName = new Name(fromMatcher.group(1));
-                thing = thingRepository.resolve(modelName);
+                thing = thingRepository.resolve(modelName, ThingType.ANY);
                 continue;
             }
 
@@ -69,7 +70,7 @@ public class JdepsExecutor implements RelationAnalyzer {
             if (toMatcher.find()) {
                 if (thing == null) throw new NullPointerException();
                 Name modelName = new Name(toMatcher.group(1));
-                relationRepository.persist(RelationType.DEPENDENCY.create(thing, thingRepository.resolve(modelName)));
+                relationRepository.persist(RelationType.DEPENDENCY.create(thing, thingRepository.resolve(modelName, ThingType.ANY)));
                 continue;
             }
 

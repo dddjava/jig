@@ -4,5 +4,5 @@ public interface ThingRepository {
 
     void persist(Thing thing);
 
-    Thing resolve(Name name);
+    Thing resolve(Name name, ThingType type);
 }

@@ -7,7 +7,7 @@ public class Name {
     String value;
 
     public Name(Class<?> clz) {
-        this(clz.getCanonicalName());
+        this(clz.getName());
     }
 
     public Name(String value) {

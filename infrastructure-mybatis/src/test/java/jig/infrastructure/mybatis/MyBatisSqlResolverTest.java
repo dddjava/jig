@@ -12,14 +12,18 @@ class MyBatisSqlResolverTest {
     MyBatisSqlResolver sut = new MyBatisSqlResolver();
 
     @Test
-    void test() throws Exception {
-        // Mapper.classとMapper.xmlのあるディレクトリ
+    void SQLのテーブル名とCRUDを取得する() throws Exception {
         URL[] urls = {
                 Paths.get("../sut/build/classes/java/main").toUri().toURL(),
-                Paths.get("../sut/build/resources/main").toUri().toURL(),
-        };
-        Sqls actual = sut.collectSqls(urls);
+                Paths.get("../sut/build/resources/main").toUri().toURL()};
+        Sqls sqls = sut.collectSqls(urls);
 
-        assertThat(actual).isNotNull();
+        assertThat(sqls.get(new SqlIdentifier("sut.infrastructure.datasource.FugaMapper.get")))
+                .extracting(Sql::tableName, Sql::sqlType)
+                .containsExactly("fuga", SqlType.SELECT);
+
+        assertThat(sqls.get(new SqlIdentifier("sut.infrastructure.datasource.PiyoMapper.register")))
+                .extracting(Sql::tableName, Sql::sqlType)
+                .containsExactly("piyo", SqlType.INSERT);
     }
 }

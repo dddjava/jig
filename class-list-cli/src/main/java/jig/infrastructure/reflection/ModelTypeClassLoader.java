@@ -82,18 +82,31 @@ public class ModelTypeClassLoader {
     private ModelType toModelType(String className) {
         try (URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader())) {
             Class<?> clz = loader.loadClass(className);
+            Name name = new Name(clz);
+            thingRepository.register(new Thing(name, ThingType.TYPE));
 
             registerRelation(clz);
 
             List<ModelMethod> list = Arrays.stream(getDeclaredMethods(clz))
                     .map(this::toModelMethod)
                     .sorted(Comparator.comparing(ModelMethod::name))
+                    .peek(modelMethod -> {
+                        Name methodName = new Name(className + "." + modelMethod.name());
+
+                        thingRepository.register(new Thing(methodName, ThingType.METHOD));
+                        relationRepository.regisger(RelationType.METHOD.create(name, methodName));
+
+                        Name returnTypeName = modelMethod.returnTypeName();
+                        thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
+                        relationRepository.regisger(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
+                        modelMethod.parameters().forEach(parameterName -> {
+                            thingRepository.register(new Thing(parameterName, ThingType.TYPE));
+                            relationRepository.regisger(RelationType.METHOD_PARAMETER.create(methodName, parameterName));
+                        });
+                    })
                     .collect(toList());
+
             ModelMethods methods = new ModelMethods(list);
-
-            Name name = new Name(clz);
-            thingRepository.register(new Thing(name, ThingType.CLASS));
-
             return new ModelType(name, methods);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
@@ -133,8 +146,8 @@ public class ModelTypeClassLoader {
     private void registerRelation(Class<?> clz) {
         try {
             for (Field field : clz.getDeclaredFields()) {
-                Thing from = new Thing(new Name(clz), ThingType.CLASS);
-                Thing to = new Thing(new Name(field.getType()), ThingType.CLASS);
+                Thing from = new Thing(new Name(clz), ThingType.TYPE);
+                Thing to = new Thing(new Name(field.getType()), ThingType.TYPE);
                 thingRepository.register(from);
                 thingRepository.register(to);
 

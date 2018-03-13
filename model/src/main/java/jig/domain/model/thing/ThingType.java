@@ -2,7 +2,7 @@ package jig.domain.model.thing;
 
 public enum ThingType {
     PACKAGE,
-    CLASS,
+    TYPE,
     ANY,
     METHOD
 }

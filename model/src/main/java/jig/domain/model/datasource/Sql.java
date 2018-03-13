@@ -1,4 +1,4 @@
-package jig.infrastructure.mybatis;
+package jig.domain.model.datasource;
 
 public class Sql {
 
@@ -19,5 +19,9 @@ public class Sql {
     public String tableName() {
         return sqlType.extractTable(sql.replaceAll("\n", " "));
 
+    }
+
+    public SqlIdentifier identifier() {
+        return identifier;
     }
 }

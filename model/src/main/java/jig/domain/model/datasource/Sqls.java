@@ -1,4 +1,4 @@
-package jig.infrastructure.mybatis;
+package jig.domain.model.datasource;
 
 import java.util.List;
 import java.util.NoSuchElementException;

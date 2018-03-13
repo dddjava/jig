@@ -70,6 +70,7 @@ project(':infrastructure-javaparser') {
 project(':infrastructure-mybatis') {
     dependencies {
         compile 'org.mybatis:mybatis:3.4.5'
+        compile project(':model')
     }
 
     test {

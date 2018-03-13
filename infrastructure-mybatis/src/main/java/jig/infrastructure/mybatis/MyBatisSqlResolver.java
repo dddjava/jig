@@ -1,5 +1,9 @@
 package jig.infrastructure.mybatis;
 
+import jig.domain.model.datasource.Sql;
+import jig.domain.model.datasource.SqlIdentifier;
+import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.datasource.SqlType;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -12,13 +16,18 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 public class MyBatisSqlResolver {
 
-    public Sqls collectSqls(URL[] urls) {
+    SqlRepository sqlRepository;
+
+    public MyBatisSqlResolver(SqlRepository sqlRepository) {
+        this.sqlRepository = sqlRepository;
+    }
+
+    public void resolve(URL... urls) {
         try (URLClassLoader classLoader = new URLClassLoader(urls)) {
             Resources.setDefaultClassLoader(classLoader);
             Configuration config = new Configuration();
@@ -43,7 +52,6 @@ public class MyBatisSqlResolver {
                 }
             }
 
-            ArrayList<Sql> list = new ArrayList<>();
             Collection<?> mappedStatements = config.getMappedStatements();
             for (Object obj : mappedStatements) {
                 // Ambiguityが入っていることがあるので型を確認する
@@ -53,10 +61,9 @@ public class MyBatisSqlResolver {
                             new SqlIdentifier(mappedStatement.getId()),
                             mappedStatement.getBoundSql(null).getSql(),
                             SqlType.valueOf(mappedStatement.getSqlCommandType().name()));
-                    list.add(sql);
+                    sqlRepository.register(sql);
                 }
             }
-            return new Sqls(list);
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }

@@ -43,13 +43,13 @@ public class ExcelWriter {
         try (Workbook book = new XSSFWorkbook();
              OutputStream os = Files.newOutputStream(output)) {
             Sheet sheet = book.createSheet();
-            writeTsvRow(modelKind.headerLabel(), sheet.createRow(0));
+            writeRow(modelKind.headerLabel(), sheet.createRow(0));
 
             Relations methods = relationRepository.allMethods();
             for (Relation methodRelation : methods.list()) {
                 if (modelKind.correct(methodRelation.from())) {
                     ConverterCondition condition = new ConverterCondition(methodRelation, relationRepository, japaneseNameRepository);
-                    writeTsvRow(modelKind.row(condition), sheet.createRow(sheet.getLastRowNum() + 1));
+                    writeRow(modelKind.row(condition), sheet.createRow(sheet.getLastRowNum() + 1));
                 }
             }
 
@@ -60,7 +60,7 @@ public class ExcelWriter {
         }
     }
 
-    private void writeTsvRow(List<String> list, Row row) {
+    private void writeRow(List<String> list, Row row) {
         list.forEach(item -> {
             short lastCellNum = row.getLastCellNum();
             Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);

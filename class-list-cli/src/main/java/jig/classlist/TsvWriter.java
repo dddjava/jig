@@ -6,7 +6,6 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.JapaneseNameDictionary;
-import jig.domain.model.thing.ThingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,9 +31,6 @@ public class TsvWriter {
 
     @Autowired
     RelationRepository relationRepository;
-
-    @Autowired
-    ThingRepository thingRepository;
 
     @Autowired
     JapaneseNameDictionary japaneseNameRepository;

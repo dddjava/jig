@@ -8,7 +8,7 @@
  */
 
 // 状態enumのクラス
-def state = 
+def state =
 // イベントenumのクラス（複数可）
 def events = []
 

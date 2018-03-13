@@ -1,0 +1,1 @@
+CREATE TABLE fuga(identifier varchar, name varchar);

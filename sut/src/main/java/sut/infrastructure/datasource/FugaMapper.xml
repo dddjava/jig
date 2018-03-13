@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sut.infrastructure.datasource.FugaMapper">
+
+    <resultMap id="fuga" type="sut.domain.model.fuga.Fuga">
+        <result property="identifier.value" column="identifier" />
+        <result property="name.value" column="name"/>
+    </resultMap>
+
+    <select id="get" resultMap="fuga">
+        SELECT identifier, name FROM fuga WHERE identifier = #{value}
+    </select>
+</mapper>

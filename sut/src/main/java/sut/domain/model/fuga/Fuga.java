@@ -4,4 +4,8 @@ public class Fuga {
 
     FugaIdentifier identifier;
     FugaName name;
+
+    public FugaName name() {
+        return name;
+    }
 }

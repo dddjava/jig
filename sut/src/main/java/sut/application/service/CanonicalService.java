@@ -16,6 +16,11 @@ public class CanonicalService {
     HogeRepository hogeRepository;
     FugaRepository fugaRepository;
 
+    public CanonicalService(HogeRepository hogeRepository, FugaRepository fugaRepository) {
+        this.hogeRepository = hogeRepository;
+        this.fugaRepository = fugaRepository;
+    }
+
     public Hoges allHoges() {
         return hogeRepository.all();
     }

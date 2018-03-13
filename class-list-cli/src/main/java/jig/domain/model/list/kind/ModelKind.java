@@ -1,4 +1,6 @@
-package jig.domain.model.list;
+package jig.domain.model.list.kind;
+
+import jig.domain.model.list.*;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

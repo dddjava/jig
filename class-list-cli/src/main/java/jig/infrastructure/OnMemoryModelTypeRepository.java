@@ -1,6 +1,6 @@
 package jig.infrastructure;
 
-import jig.domain.model.list.ModelKind;
+import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.list.ModelType;
 import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.list.ModelTypes;

@@ -1,6 +1,7 @@
 package jig.classlist;
 
 import jig.domain.model.list.*;
+import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import org.springframework.beans.factory.annotation.Autowired;

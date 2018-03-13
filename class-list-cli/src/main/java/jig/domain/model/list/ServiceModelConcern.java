@@ -4,7 +4,6 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
 
-import java.util.Arrays;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
@@ -17,11 +16,9 @@ public enum ServiceModelConcern implements Converter {
     メソッド名(condition ->
             condition.getMethod().name()),
     メソッド戻り値の型(condition ->
-            condition.getMethod().returnType().getSimpleName()),
+            condition.getMethod().returnTypeName().value()),
     メソッド引数型(condition ->
-            Arrays.stream(condition.getMethod().parameters())
-                    .map(Class::getSimpleName)
-                    .collect(joining(","))),
+            condition.getMethod().returnTypeName().toString()),
     保持しているフィールドの型(condition ->
             condition.getRegisterRelation().findDependency(condition.getType().name()).list().stream()
                     .map(Relation::to)

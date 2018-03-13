@@ -1,4 +1,4 @@
-package jig.cli.infrastructure.usage;
+package jig.infrastructure.reflection;
 
 import jig.domain.model.list.*;
 import jig.domain.model.relation.Relation;
@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -20,12 +21,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 @Repository
-public class ModelTypeRepositoryImpl implements ModelTypeRepository {
+public class ModelTypeClassLoader implements ModelTypeRepository {
+
+    private static final Logger LOGGER = Logger.getLogger(ModelTypeClassLoader.class.getName());
 
     private List<ModelType> classes;
 
@@ -36,7 +40,7 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
         return new ModelTypes(classes.stream().filter(modelKind::correct).collect(toList()));
     }
 
-    public ModelTypeRepositoryImpl(@Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
+    public ModelTypeClassLoader(@Value("${target.class}") String targetClasspath, RelationRepository relationRepository) {
         this.relationRepository = relationRepository;
         URL[] urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)
@@ -67,10 +71,35 @@ public class ModelTypeRepositoryImpl implements ModelTypeRepository {
                         }
                     })
                     .peek(this::registerRelation)
-                    .map(clz -> new ModelType(new Name(clz), ModelMethods.from(clz)))
+                    .map(clz -> new ModelType(new Name(clz), toModelMethod(clz)))
                     .collect(toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private ModelMethods toModelMethod(Class<?> clz) {
+        return new ModelMethods(
+                Arrays.stream(getDeclaredMethods(clz))
+                        .map(this::getModelMethod)
+                        .collect(toList()));
+    }
+
+    private ModelMethod getModelMethod(Method method) {
+        return new ModelMethod(
+                method.getName(),
+                new Name(method.getReturnType()),
+                Arrays.stream(method.getParameterTypes())
+                        .map(Name::new)
+                        .collect(toList()));
+    }
+
+    private static Method[] getDeclaredMethods(Class<?> clz) {
+        try {
+            return clz.getDeclaredMethods();
+        } catch (NoClassDefFoundError e) {
+            LOGGER.warning("依存クラスが見つからないためメソッドが取得できませんでした。 class:" + clz + " message:" + e.getMessage());
+            return new Method[0];
         }
     }
 

@@ -1,24 +1,30 @@
 package jig.domain.model.list;
 
-import java.lang.reflect.Method;
+import jig.domain.model.thing.Name;
+
+import java.util.List;
 
 public class ModelMethod {
 
-    private final Method method;
+    private final String methodName;
+    private final Name returnTypeName;
+    private final List<Name> parameterTypeNames;
 
-    public ModelMethod(Method method) {
-        this.method = method;
+    public ModelMethod(String methodName, Name returnTypeName, List<Name> parameterTypeNames) {
+        this.methodName = methodName;
+        this.returnTypeName = returnTypeName;
+        this.parameterTypeNames = parameterTypeNames;
     }
 
     public String name() {
-        return method.getName();
+        return methodName;
     }
 
-    public Class<?> returnType() {
-        return method.getReturnType();
+    public List<Name> parameters() {
+        return parameterTypeNames;
     }
 
-    public Class<?>[] parameters() {
-        return method.getParameterTypes();
+    public Name returnTypeName() {
+        return returnTypeName;
     }
 }

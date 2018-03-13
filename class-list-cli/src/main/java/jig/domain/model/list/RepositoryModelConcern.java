@@ -1,9 +1,6 @@
 package jig.domain.model.list;
 
-import java.util.Arrays;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.joining;
 
 public enum RepositoryModelConcern implements Converter {
     クラス名(condition ->
@@ -13,11 +10,9 @@ public enum RepositoryModelConcern implements Converter {
     メソッド名(condition ->
             condition.getMethod().name()),
     メソッド戻り値の型(condition ->
-            condition.getMethod().returnType().getSimpleName()),
+            condition.getMethod().returnTypeName().value()),
     メソッド引数型(condition ->
-            Arrays.stream(condition.getMethod().parameters())
-                    .map(Class::getSimpleName)
-                    .collect(joining(",")));
+            condition.getMethod().parameters().toString());
 
     private final Function<ConverterCondition, String> function;
 

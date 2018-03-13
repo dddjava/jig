@@ -1,5 +1,6 @@
 package jig.classlist;
 
+import jig.infrastructure.reflection.ModelTypeClassLoader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,6 +13,8 @@ public class ClassListApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ClassListApplication.class, args);
+
+        context.getBean(ModelTypeClassLoader.class).load();
 
         Path path = Paths.get(context.getEnvironment().getProperty("output.list.name", "class-list.tsv"));
 

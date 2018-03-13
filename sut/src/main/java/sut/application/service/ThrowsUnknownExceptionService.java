@@ -1,17 +1,18 @@
-package sut.application;
+package sut.application.service;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import org.apache.ibatis.exceptions.PersistenceException;
+import org.springframework.stereotype.Service;
 
 /**
  * メソッドシグネチャにクラスパスに存在しない例外を含むサービス
  */
+@Service
 public class ThrowsUnknownExceptionService {
 
     public void jackson() throws JsonParseException {
     }
 
-
-    // リフレクションで取得しようとすると、使用側のクラスパスにmybatisがないと失敗する
-    // public void mybatis() throws PersistenceException {
-    // }
+    public void mybatis() throws PersistenceException {
+    }
 }

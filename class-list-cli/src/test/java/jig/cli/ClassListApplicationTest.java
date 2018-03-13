@@ -30,8 +30,8 @@ public class ClassListApplicationTest {
                 .extracting(value -> value.split("\t")[0])
                 .containsExactlyInAnyOrder(
                         "クラス名",
-                        "sut.application.CanonicalService",
-                        "sut.application.CanonicalService")
+                        "sut.application.service.CanonicalService",
+                        "sut.application.service.CanonicalService")
                 .doesNotContain(
                         "sut.application.ThrowsUnknownExceptionService");
     }

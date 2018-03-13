@@ -6,6 +6,7 @@ import jig.domain.model.list.ModelType;
 import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.RelationType;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
 
@@ -123,10 +124,9 @@ public class ModelTypeClassLoader {
     private void registerRelation(Class<?> clz) {
         try {
             for (Field field : clz.getDeclaredFields()) {
-                Relation relation = new Relation(
+                Relation relation = RelationType.FIELD.create(
                         new Thing(new Name(clz)),
-                        new Thing(new Name(field.getType()))
-                );
+                        new Thing(new Name(field.getType())));
                 relationRepository.persist(relation);
             }
         } catch (NoClassDefFoundError e) {

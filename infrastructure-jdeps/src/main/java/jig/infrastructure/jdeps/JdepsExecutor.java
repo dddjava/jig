@@ -3,8 +3,8 @@ package jig.infrastructure.jdeps;
 import com.sun.tools.jdeps.Main;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
@@ -69,8 +69,7 @@ public class JdepsExecutor implements RelationAnalyzer {
             if (toMatcher.find()) {
                 if (thing == null) throw new NullPointerException();
                 Name modelName = new Name(toMatcher.group(1));
-                Relation relation = new Relation(thing, thingRepository.resolve(modelName));
-                relationRepository.persist(relation);
+                relationRepository.persist(RelationType.DEPENDENCY.create(thing, thingRepository.resolve(modelName)));
                 continue;
             }
 

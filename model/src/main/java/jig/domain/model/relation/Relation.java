@@ -5,12 +5,12 @@ import jig.domain.model.thing.Thing;
 public class Relation {
     Thing from;
     Thing to;
+    RelationType relationType;
 
-    RelationType type = RelationType.DEPENDENCY;
-
-    public Relation(Thing from, Thing to) {
+    public Relation(Thing from, Thing to, RelationType relationType) {
         this.from = from;
         this.to = to;
+        this.relationType = relationType;
     }
 
     public Thing from() {

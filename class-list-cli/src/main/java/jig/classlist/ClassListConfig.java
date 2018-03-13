@@ -29,9 +29,4 @@ public class ClassListConfig {
     ModelTypeRepository modelTypeRepository(@Value("${target.class}") String targetClasspath) {
         return new ModelTypeClassLoader(targetClasspath, relationRepository());
     }
-
-    @Bean
-    TsvWriter tsvWriter() {
-        return new TsvWriter();
-    }
 }

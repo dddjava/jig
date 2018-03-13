@@ -99,6 +99,8 @@ project(':class-list-cli') {
         compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.ow2.asm:asm:6.1'
+        compile 'org.apache.poi:poi:3.17'
+        compile 'org.apache.poi:poi-ooxml:3.17'
 
         testCompile('org.springframework.boot:spring-boot-starter-test') {
             exclude group: 'junit'

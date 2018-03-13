@@ -12,8 +12,14 @@ public class ClassListApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(ClassListApplication.class, args);
+
         Path path = Paths.get(context.getEnvironment().getProperty("output.list.name", "class-list.tsv"));
-        context.getBean(TsvWriter.class).writeTo(path);
+
+        if (path.toString().endsWith(".tsv")) {
+            context.getBean(TsvWriter.class).writeTo(path);
+        } else if (path.toString().endsWith(".xlsx")) {
+            context.getBean(ExcelWriter.class).writeTo(path);
+        }
     }
 }
 

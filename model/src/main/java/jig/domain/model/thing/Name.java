@@ -18,6 +18,10 @@ public class Name {
         return value;
     }
 
+    public String shortValue() {
+        return value.substring(value.lastIndexOf('.') + 1);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

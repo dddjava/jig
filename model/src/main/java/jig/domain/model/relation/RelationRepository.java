@@ -9,4 +9,10 @@ public interface RelationRepository {
     Relations all();
 
     Relations findDependency(Name name);
+
+    Relations allMethods();
+
+    Relation get(Name name, RelationType type);
+
+    Relations find(Name name, RelationType type);
 }

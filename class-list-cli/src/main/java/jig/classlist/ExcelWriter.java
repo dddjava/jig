@@ -1,8 +1,11 @@
 package jig.classlist;
 
-import jig.domain.model.list.*;
+import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.list.kind.ModelKind;
+import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -46,12 +49,14 @@ public class ExcelWriter {
             Sheet sheet = book.createSheet();
             writeTsvRow(modelKind.headerLabel(), sheet.createRow(0));
 
-            for (ModelType modelType : modelTypeRepository.find(modelKind).list()) {
-                for (ModelMethod method : modelType.methods().list()) {
-                    ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository, japaneseNameRepository);
+            Relations methods = relationRepository.allMethods();
+            for (Relation methodRelation : methods.list()) {
+                if (modelKind.correct(methodRelation.from())) {
+                    ConverterCondition condition = new ConverterCondition(methodRelation, relationRepository, japaneseNameRepository);
                     writeTsvRow(modelKind.row(condition), sheet.createRow(sheet.getLastRowNum() + 1));
                 }
             }
+
             book.write(os);
             logger.info(output.toAbsolutePath() + "を出力しました。");
         } catch (IOException e) {

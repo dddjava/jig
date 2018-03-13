@@ -38,13 +38,11 @@ public class ModelTypeClassLoader {
 
     private final URL[] urls;
     private final ThingRepository thingRepository;
-    private final ModelTypeRepository modelTypeRepository;
 
     RelationRepository relationRepository;
 
     public ModelTypeClassLoader(String targetClasspath, ThingRepository thingRepository, RelationRepository relationRepository, ModelTypeRepository modelTypeRepository) {
         this.thingRepository = thingRepository;
-        this.modelTypeRepository = modelTypeRepository;
         this.relationRepository = relationRepository;
         this.urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)
@@ -69,7 +67,6 @@ public class ModelTypeClassLoader {
                         .map(str -> str.replace(".class", "").replace(File.separator, "."))
                         .forEach(className -> {
                             ModelType modelType = toModelType(className);
-                            modelTypeRepository.register(modelType);
                         });
             } catch (IOException e) {
                 throw new UncheckedIOException(e);

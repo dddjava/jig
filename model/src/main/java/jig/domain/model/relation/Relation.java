@@ -20,4 +20,8 @@ public class Relation {
     public Name to() {
         return to;
     }
+
+    public RelationType relationType() {
+        return relationType;
+    }
 }

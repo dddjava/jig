@@ -1,6 +1,7 @@
 package jig.domain.model.list.kind;
 
-import jig.domain.model.list.*;
+import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.thing.Name;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public enum ModelKind {
         }
     }
 
-    public boolean correct(ModelType modelType) {
-        return modelType.name().value().endsWith(suffix);
+    public boolean correct(Name name) {
+        return name.value().endsWith(suffix);
     }
 }

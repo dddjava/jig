@@ -1,9 +1,13 @@
 package jig.classlist;
 
-import jig.domain.model.list.*;
+import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.list.kind.ModelKind;
+import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.JapaneseNameDictionary;
+import jig.domain.model.thing.ThingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,6 +38,9 @@ public class TsvWriter {
     RelationRepository relationRepository;
 
     @Autowired
+    ThingRepository thingRepository;
+
+    @Autowired
     JapaneseNameDictionary japaneseNameRepository;
 
     public void writeTo(Path output) {
@@ -42,12 +49,14 @@ public class TsvWriter {
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
             writeTsvRow(writer, modelKind.headerLabel());
 
-            for (ModelType modelType : modelTypeRepository.find(modelKind).list()) {
-                for (ModelMethod method : modelType.methods().list()) {
-                    ConverterCondition condition = new ConverterCondition(modelType, method, relationRepository, japaneseNameRepository);
+            Relations methods = relationRepository.allMethods();
+            for (Relation methodRelation : methods.list()) {
+                if (modelKind.correct(methodRelation.from())) {
+                    ConverterCondition condition = new ConverterCondition(methodRelation, relationRepository, japaneseNameRepository);
                     writeTsvRow(writer, modelKind.row(condition));
                 }
             }
+
             logger.info(output.toAbsolutePath() + "を出力しました。");
         } catch (IOException e) {
             throw new UncheckedIOException(e);

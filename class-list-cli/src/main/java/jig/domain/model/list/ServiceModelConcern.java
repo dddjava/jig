@@ -18,7 +18,7 @@ public enum ServiceModelConcern implements Converter {
     メソッド戻り値の型(condition ->
             condition.getMethod().returnTypeName().value()),
     メソッド引数型(condition ->
-            condition.getMethod().returnTypeName().toString()),
+            condition.getMethod().parameters().stream().map(Name::value).collect(joining(","))),
     保持しているフィールドの型(condition ->
             condition.getRegisterRelation().findDependency(condition.getType().name()).list().stream()
                     .map(Relation::to)

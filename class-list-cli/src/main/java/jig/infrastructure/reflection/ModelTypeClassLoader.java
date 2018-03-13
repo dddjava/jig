@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -79,6 +80,7 @@ public class ModelTypeClassLoader implements ModelTypeRepository {
         return new ModelMethods(
                 Arrays.stream(getDeclaredMethods(clz))
                         .map(this::getModelMethod)
+                        .sorted(Comparator.comparing(ModelMethod::name))
                         .collect(toList()));
     }
 

@@ -34,6 +34,8 @@ public class ClassListApplicationTest {
                         "sut.application.service.CanonicalService")
                 .doesNotContain(
                         "sut.application.ThrowsUnknownExceptionService");
+        assertThat(Files.readAllLines(output.toPath()).get(2))
+                .containsSubsequence("CanonicalService", "典型的なサービス", "fuga", "Fuga", "FugaIdentifier", "FugaRepository");
     }
 
     @Test

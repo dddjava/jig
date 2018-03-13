@@ -1,6 +1,10 @@
 package jig.domain.model.list;
 
+import jig.domain.model.thing.Name;
+
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.joining;
 
 public enum RepositoryModelConcern implements Converter {
     クラス名(condition ->
@@ -12,7 +16,7 @@ public enum RepositoryModelConcern implements Converter {
     メソッド戻り値の型(condition ->
             condition.getMethod().returnTypeName().value()),
     メソッド引数型(condition ->
-            condition.getMethod().parameters().toString());
+            condition.getMethod().parameters().stream().map(Name::value).collect(joining(",")));
 
     private final Function<ConverterCondition, String> function;
 

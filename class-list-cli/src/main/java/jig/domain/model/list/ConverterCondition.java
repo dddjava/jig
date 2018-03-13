@@ -13,39 +13,15 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class ConverterCondition {
-    private ModelType type;
-    private ModelMethod method;
-    private RelationRepository registerRelation;
 
     private Relation methodRelation;
     private RelationRepository relationRepository;
     private JapaneseNameDictionary japaneseNameRepository;
 
-    public ConverterCondition(ModelType type, ModelMethod method, RelationRepository registerRelation, JapaneseNameDictionary japaneseNameRepository) {
-        this.type = type;
-        this.method = method;
-        this.registerRelation = registerRelation;
-        this.japaneseNameRepository = japaneseNameRepository;
-    }
-
     public ConverterCondition(Relation methodRelation, RelationRepository relationRepository, JapaneseNameDictionary japaneseNameRepository) {
         this.methodRelation = methodRelation;
         this.relationRepository = relationRepository;
         this.japaneseNameRepository = japaneseNameRepository;
-
-        Name methodName = methodRelation.to();
-    }
-
-    public ModelType getType() {
-        return type;
-    }
-
-    public ModelMethod getMethod() {
-        return method;
-    }
-
-    public RelationRepository getRegisterRelation() {
-        return registerRelation;
     }
 
     public Name className() {

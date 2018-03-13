@@ -1,10 +1,8 @@
 package jig.classlist;
 
-import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameDictionary;
 import jig.domain.model.thing.ThingRepository;
-import jig.infrastructure.OnMemoryModelTypeRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryThingRepository;
 import jig.infrastructure.javaparser.ClassCommentLibrary;
@@ -24,11 +22,6 @@ public class ClassListConfig {
     }
 
     @Bean
-    ModelTypeRepository modelTypeRepository() {
-        return new OnMemoryModelTypeRepository();
-    }
-
-    @Bean
     RelationRepository relationRepository() {
         return new OnMemoryRelationRepository();
     }
@@ -40,6 +33,6 @@ public class ClassListConfig {
 
     @Bean
     ModelTypeClassLoader modelTypeClassLoader(@Value("${target.class}") String targetClasspath) {
-        return new ModelTypeClassLoader(targetClasspath, thingRepository(), relationRepository(), modelTypeRepository());
+        return new ModelTypeClassLoader(targetClasspath, thingRepository(), relationRepository());
     }
 }

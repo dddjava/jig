@@ -39,7 +39,9 @@ public class OnMemoryRelationRepository implements RelationRepository {
     public Relations allMethods() {
         List<Relation> relations = list.stream()
                 .filter(relation -> relation.relationType() == RelationType.METHOD)
-                .sorted(Comparator.comparing(relation -> relation.from().value()))
+                // クラス名昇順、メソッド名昇順
+                .sorted(Comparator.<Relation, String>comparing(relation -> relation.from().value())
+                        .thenComparing(relation -> relation.to().value()))
                 .collect(toList());
         return new Relations(relations);
     }

@@ -1,9 +1,5 @@
 package jig.infrastructure.reflection;
 
-import jig.domain.model.list.ModelMethod;
-import jig.domain.model.list.ModelMethods;
-import jig.domain.model.list.ModelType;
-import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
@@ -25,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -36,14 +31,14 @@ public class ModelTypeClassLoader {
 
     private static final Logger LOGGER = Logger.getLogger(ModelTypeClassLoader.class.getName());
 
-    private final URL[] urls;
-    private final ThingRepository thingRepository;
-
+    URL[] urls;
+    ThingRepository thingRepository;
     RelationRepository relationRepository;
 
-    public ModelTypeClassLoader(String targetClasspath, ThingRepository thingRepository, RelationRepository relationRepository, ModelTypeRepository modelTypeRepository) {
+    public ModelTypeClassLoader(String targetClasspath, ThingRepository thingRepository, RelationRepository relationRepository) {
         this.thingRepository = thingRepository;
         this.relationRepository = relationRepository;
+
         this.urls = Arrays.stream(targetClasspath.split(":"))
                 .map(Paths::get)
                 .map(Path::toUri)
@@ -65,9 +60,7 @@ public class ModelTypeClassLoader {
                         .map(path::relativize)
                         .map(Path::toString)
                         .map(str -> str.replace(".class", "").replace(File.separator, "."))
-                        .forEach(className -> {
-                            ModelType modelType = toModelType(className);
-                        });
+                        .forEach(this::analyze);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -76,7 +69,7 @@ public class ModelTypeClassLoader {
         }
     }
 
-    private ModelType toModelType(String className) {
+    private void analyze(String className) {
         try (URLClassLoader loader = new URLClassLoader(urls, this.getClass().getClassLoader())) {
             Class<?> clz = loader.loadClass(className);
             Name name = new Name(clz);
@@ -84,27 +77,21 @@ public class ModelTypeClassLoader {
 
             registerRelation(clz);
 
-            List<ModelMethod> list = Arrays.stream(getDeclaredMethods(clz))
-                    .map(this::toModelMethod)
-                    .sorted(Comparator.comparing(ModelMethod::name))
-                    .peek(modelMethod -> {
-                        Name methodName = new Name(className + "." + modelMethod.name());
+            for (Method method : getDeclaredMethods(clz)) {
+                Name methodName = new Name(className + "." + method.getName());
 
-                        thingRepository.register(new Thing(methodName, ThingType.METHOD));
-                        relationRepository.regisger(RelationType.METHOD.create(name, methodName));
+                thingRepository.register(new Thing(methodName, ThingType.METHOD));
+                relationRepository.regisger(RelationType.METHOD.create(name, methodName));
 
-                        Name returnTypeName = modelMethod.returnTypeName();
-                        thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
-                        relationRepository.regisger(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
-                        modelMethod.parameters().forEach(parameterName -> {
-                            thingRepository.register(new Thing(parameterName, ThingType.TYPE));
-                            relationRepository.regisger(RelationType.METHOD_PARAMETER.create(methodName, parameterName));
-                        });
-                    })
-                    .collect(toList());
+                Name returnTypeName = new Name(method.getReturnType());
+                thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
+                relationRepository.regisger(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
+                parameterNames(method).forEach(parameterName -> {
+                    thingRepository.register(new Thing(parameterName, ThingType.TYPE));
+                    relationRepository.regisger(RelationType.METHOD_PARAMETER.create(methodName, parameterName));
+                });
+            }
 
-            ModelMethods methods = new ModelMethods(list);
-            return new ModelType(name, methods);
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
@@ -112,23 +99,8 @@ public class ModelTypeClassLoader {
         }
     }
 
-    private ModelMethod toModelMethod(Method method) {
-        return new ModelMethod(
-                methodName(method),
-                getReturnTypeName(method),
-                parameterNames(method));
-    }
-
     private List<Name> parameterNames(Method method) {
         return Arrays.stream(method.getParameterTypes()).map(Name::new).collect(toList());
-    }
-
-    private Name getReturnTypeName(Method method) {
-        return new Name(method.getReturnType());
-    }
-
-    private String methodName(Method method) {
-        return method.getName();
     }
 
     private static Method[] getDeclaredMethods(Class<?> clz) {

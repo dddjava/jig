@@ -1,7 +1,6 @@
 package jig.classlist;
 
 import jig.domain.model.list.ConverterCondition;
-import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -28,9 +27,6 @@ import java.util.logging.Logger;
 public class ExcelWriter {
 
     private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
-
-    @Autowired
-    ModelTypeRepository modelTypeRepository;
 
     @Value("${output.list.type}")
     String modelKind;

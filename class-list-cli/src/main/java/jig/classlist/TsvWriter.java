@@ -1,7 +1,6 @@
 package jig.classlist;
 
 import jig.domain.model.list.ConverterCondition;
-import jig.domain.model.list.ModelTypeRepository;
 import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -27,9 +26,6 @@ import static java.util.stream.Collectors.joining;
 public class TsvWriter {
 
     private static final Logger logger = Logger.getLogger(TsvWriter.class.getName());
-
-    @Autowired
-    ModelTypeRepository modelTypeRepository;
 
     @Value("${output.list.type}")
     String modelKind;

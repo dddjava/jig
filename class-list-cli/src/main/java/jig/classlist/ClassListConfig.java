@@ -5,9 +5,10 @@ import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
+import jig.infrastructure.OnMemoryTagRepository;
 import jig.infrastructure.OnMemoryThingRepository;
+import jig.infrastructure.asm.AsmExecutor;
 import jig.infrastructure.javaparser.ClassCommentReader;
-import jig.infrastructure.reflection.ModelTypeClassLoader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,7 @@ public class ClassListConfig {
     }
 
     @Bean
-    ModelTypeClassLoader modelTypeClassLoader(@Value("${target.class}") String targetClasspath) {
-        return new ModelTypeClassLoader(targetClasspath, thingRepository(), relationRepository());
+    AsmExecutor asmExecutor() {
+        return new AsmExecutor(new OnMemoryTagRepository(), thingRepository(), relationRepository());
     }
 }

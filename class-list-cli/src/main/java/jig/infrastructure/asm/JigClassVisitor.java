@@ -99,9 +99,8 @@ public class JigClassVisitor extends ClassVisitor {
             Type[] argumentTypes = Type.getArgumentTypes(descriptor);
             for (Type type : argumentTypes) {
                 Name argumentTypeName = new Name(type.getClassName());
-                thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
-
-                relationRepository.register(RelationType.METHOD_PARAMETER.create(methodName, returnTypeName));
+                thingRepository.register(new Thing(argumentTypeName, ThingType.TYPE));
+                relationRepository.register(RelationType.METHOD_PARAMETER.create(methodName, argumentTypeName));
             }
         }
 

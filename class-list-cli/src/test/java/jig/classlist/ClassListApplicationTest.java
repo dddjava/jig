@@ -26,14 +26,14 @@ public class ClassListApplicationTest {
         });
 
         assertThat(Files.readAllLines(output.toPath()))
-                .hasSize(3)
+                .hasSize(5)
                 .extracting(value -> value.split("\t")[0])
                 .containsExactlyInAnyOrder(
                         "クラス名",
                         "sut.application.service.CanonicalService",
-                        "sut.application.service.CanonicalService")
-                .doesNotContain(
-                        "sut.application.ThrowsUnknownExceptionService");
+                        "sut.application.service.CanonicalService",
+                        "sut.application.service.ThrowsUnknownExceptionService",
+                        "sut.application.service.ThrowsUnknownExceptionService");
         assertThat(Files.readAllLines(output.toPath()).get(2))
                 .containsSubsequence("CanonicalService", "典型的なサービス", "fuga", "Fuga", "FugaIdentifier", "FugaRepository");
     }

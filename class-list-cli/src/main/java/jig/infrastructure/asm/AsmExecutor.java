@@ -20,7 +20,7 @@ public class AsmExecutor {
     private final ThingRepository thingRepository;
     private final RelationRepository relationRepository;
 
-    AsmExecutor(TagRepository tagRepository, ThingRepository thingRepository, RelationRepository relationRepository) {
+    public AsmExecutor(TagRepository tagRepository, ThingRepository thingRepository, RelationRepository relationRepository) {
         this.tagRepository = tagRepository;
         this.thingRepository = thingRepository;
         this.relationRepository = relationRepository;

@@ -40,7 +40,13 @@ public class ExcelWriter implements ReportWriter {
         list.forEach(item -> {
             short lastCellNum = row.getLastCellNum();
             Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
-            cell.setCellValue(item);
+
+            if (item.length() > 10000) {
+                logger.info("10,000文字を超えたので切り詰めます。");
+                cell.setCellValue(item.substring(0, 10000) + "...(省略されました）");
+            } else {
+                cell.setCellValue(item);
+            }
         });
     }
 }

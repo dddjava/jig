@@ -21,6 +21,6 @@ public class ThingTag {
     }
 
     public boolean matches(Tag tag) {
-        return this.tag == tag;
+        return this.tag.matches(tag);
     }
 }

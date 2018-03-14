@@ -14,4 +14,6 @@ public interface RelationRepository {
     Relations find(Name name, RelationType type);
 
     Relations methodsOf(Names names);
+
+    Relations findTo(Name toName, RelationType type);
 }

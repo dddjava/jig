@@ -4,12 +4,31 @@ public enum Tag {
     SERVICE,
     REPOSITORY,
     ENUM,
-    ENUM_PARAMETERIZED,
-    ENUM_POLYMORPHISM,
+    ENUM_PARAMETERIZED {
+        @Override
+        public boolean matches(Tag tag) {
+            return ENUM == tag || super.matches(tag);
+        }
+    },
+    ENUM_POLYMORPHISM {
+        @Override
+        public boolean matches(Tag tag) {
+            return ENUM == tag || super.matches(tag);
+        }
+    },
+    ENUM_BEHAVIOUR {
+        @Override
+        public boolean matches(Tag tag) {
+            return ENUM == tag || super.matches(tag);
+        }
+    },
     IDENTIFIER,
     NUMBER,
     DATE,
     TERM,
-    ENUM_BEHAVIOUR,
-    FIRST_CLASS_COLLECTION
+    COLLECTION;
+
+    public boolean matches(Tag tag) {
+        return this == tag;
+    }
 }

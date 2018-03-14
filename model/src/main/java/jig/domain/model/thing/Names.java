@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
+
 public class Names {
 
     List<Name> list;
@@ -22,5 +24,9 @@ public class Names {
 
     public boolean contains(Name name) {
         return list.contains(name);
+    }
+
+    public String asText() {
+        return list.stream().map(Name::value).collect(joining(",", "[", "]"));
     }
 }

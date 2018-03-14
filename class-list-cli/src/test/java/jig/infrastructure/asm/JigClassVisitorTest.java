@@ -1,8 +1,8 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
-import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
@@ -35,8 +35,7 @@ public class JigClassVisitorTest {
                         "sut.application.service.CanonicalService",
                         "sut.application.service.ThrowsUnknownExceptionService");
 
-        assertThat(tagRepository.find(Tag.ENUM).list()).extracting(Name::value)
-                .containsExactly("sut.domain.model.kind.SimpleEnum");
+        assertThat(tagRepository.find(Tag.ENUM).list()).hasSize(4);
         assertThat(tagRepository.find(Tag.ENUM_BEHAVIOUR).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.BehaviourEnum");
         assertThat(tagRepository.find(Tag.ENUM_PARAMETERIZED).list()).extracting(Name::value)

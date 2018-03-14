@@ -42,6 +42,15 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
+    public Relations findTo(Name toName, RelationType type) {
+        List<Relation> relations = list.stream()
+                .filter(relation -> relation.relationType() == type)
+                .filter(relation -> toName.equals(relation.to()))
+                .collect(toList());
+        return new Relations(relations);
+    }
+
+    @Override
     public Relation get(Name name, RelationType type) {
         return list.stream()
                 .filter(relation -> relation.from().equals(name))

@@ -6,5 +6,5 @@ public interface TagRepository {
 
     void register(ThingTag thingTag);
 
-    Names find(Tag anEnum);
+    Names find(Tag tag);
 }

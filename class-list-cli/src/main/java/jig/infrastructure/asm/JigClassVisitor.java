@@ -160,7 +160,7 @@ public class JigClassVisitor extends ClassVisitor {
                     tagRepository.register(new ThingTag(className, Tag.NUMBER));
                     break;
                 case "Ljava/util/List;":
-                    tagRepository.register(new ThingTag(className, Tag.FIRST_CLASS_COLLECTION));
+                    tagRepository.register(new ThingTag(className, Tag.COLLECTION));
                     break;
                 case "Ljava/time/LocalDate;":
                     tagRepository.register(new ThingTag(className, Tag.DATE));

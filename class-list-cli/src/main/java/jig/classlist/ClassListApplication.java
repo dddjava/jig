@@ -1,5 +1,8 @@
 package jig.classlist;
 
+import jig.classlist.classlist.TypeListService;
+import jig.classlist.classlist.TypeListType;
+import jig.classlist.classlist.TypeReportFactory;
 import jig.classlist.methodlist.MethodListService;
 import jig.classlist.methodlist.MethodListType;
 import jig.classlist.methodlist.MethodReportFactory;
@@ -35,6 +38,8 @@ public class ClassListApplication {
     AsmExecutor asmExecutor;
     @Autowired
     MethodListService methodListService;
+    @Autowired
+    TypeListService typeListService;
 
     public void output() {
         Path[] paths = Arrays.stream(targetClasses.split(":"))
@@ -59,7 +64,7 @@ public class ClassListApplication {
             return new MethodReportFactory(MethodListType.valueOf(tag.name()), methodListService.list(tag));
         }
 
-        throw new IllegalArgumentException(tag.name());
+        return new TypeReportFactory(TypeListType.valueOf(tag.name()), typeListService.list(tag));
     }
 }
 

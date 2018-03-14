@@ -1,4 +1,4 @@
-package jig.domain.model.list;
+package jig.classlist.methodlist;
 
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;

@@ -1,8 +1,5 @@
 package jig.classlist;
 
-import jig.domain.model.list.MethodRelationNavigator;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -14,18 +11,16 @@ import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
 
-@Component
-public class TsvWriter extends AbstractListWriter {
+public class TsvWriter {
 
     private static final Logger logger = Logger.getLogger(TsvWriter.class.getName());
 
-    public void writeTo(Path output) {
-
+    public <T> void writeTo(ReportFactory<T> factory, Path output) {
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            writeTsvRow(writer, modelKind.headerLabel());
+            writeTsvRow(writer, factory.headerLabel());
 
-            for (MethodRelationNavigator condition : list()) {
-                writeTsvRow(writer, modelKind.row(condition));
+            for (List<String> row : factory.rowList()) {
+                writeTsvRow(writer, row);
             }
 
             logger.info(output.toAbsolutePath() + "を出力しました。");

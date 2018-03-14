@@ -1,12 +1,10 @@
 package jig.classlist;
 
-import jig.domain.model.list.MethodRelationNavigator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,20 +14,18 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Component
-public class ExcelWriter extends AbstractListWriter {
+public class ExcelWriter {
 
     private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
 
-    public void writeTo(Path output) {
-
+    public <T> void writeTo(ReportFactory<T> factory, Path output) {
         try (Workbook book = new XSSFWorkbook();
              OutputStream os = Files.newOutputStream(output)) {
             Sheet sheet = book.createSheet();
-            writeRow(modelKind.headerLabel(), sheet.createRow(0));
+            writeRow(factory.headerLabel(), sheet.createRow(0));
 
-            for (MethodRelationNavigator condition : list()) {
-                writeRow(modelKind.row(condition), sheet.createRow(sheet.getLastRowNum() + 1));
+            for (List<String> row : factory.rowList()) {
+                writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
             }
 
             book.write(os);

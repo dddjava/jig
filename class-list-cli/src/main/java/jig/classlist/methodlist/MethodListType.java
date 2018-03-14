@@ -1,13 +1,11 @@
-package jig.domain.model.list.kind;
-
-import jig.domain.model.list.MethodRelationNavigator;
+package jig.classlist.methodlist;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public enum ModelKind {
+public enum MethodListType {
     SERVICE(new MethodRelationNavigator.Concern[]{
             MethodRelationNavigator.Concern.クラス名,
             MethodRelationNavigator.Concern.クラス和名,
@@ -24,7 +22,7 @@ public enum ModelKind {
 
     private final MethodRelationNavigator.Concern[] concerns;
 
-    ModelKind(MethodRelationNavigator.Concern[] concerns) {
+    MethodListType(MethodRelationNavigator.Concern[] concerns) {
         this.concerns = concerns;
     }
 

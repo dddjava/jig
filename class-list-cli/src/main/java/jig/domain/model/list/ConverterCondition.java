@@ -50,4 +50,9 @@ public class ConverterCondition {
         Relations relations = relationRepository.find(methodRelation.from(), RelationType.FIELD);
         return relations.list().stream().map(Relation::to).collect(toList());
     }
+
+    public List<Name> instructFields() {
+        Relations relations = relationRepository.find(methodRelation.to(), RelationType.METHOD_USE_TYPE);
+        return relations.list().stream().map(Relation::to).collect(toList());
+    }
 }

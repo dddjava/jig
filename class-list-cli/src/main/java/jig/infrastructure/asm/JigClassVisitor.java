@@ -102,16 +102,22 @@ public class JigClassVisitor extends ClassVisitor {
                 thingRepository.register(new Thing(argumentTypeName, ThingType.TYPE));
                 relationRepository.register(RelationType.METHOD_PARAMETER.create(methodName, argumentTypeName));
             }
+
+            return new MethodVisitor(api) {
+
+                @Override
+                public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                    Type fieldType = Type.getType(descriptor);
+                    Name fieldTypeName = new Name(fieldType.getClassName());
+                    thingRepository.register(new Thing(fieldTypeName, ThingType.TYPE));
+                    relationRepository.register(RelationType.METHOD_USE_TYPE.create(methodName, fieldTypeName));
+
+                    super.visitFieldInsn(opcode, owner, name, descriptor);
+                }
+            };
         }
 
-        return new MethodVisitor(api) {
-
-            @Override
-            public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                // メソッドで使用しているフィールドがわかる
-                super.visitFieldInsn(opcode, owner, name, descriptor);
-            }
-        };
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
     @Override

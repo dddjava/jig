@@ -13,7 +13,7 @@ public enum ServiceModelConcern implements Converter {
     メソッド名(condition -> condition.methodName().shortValue()),
     メソッド戻り値の型(condition -> condition.returnTypeName().value()),
     メソッド引数型(condition -> condition.parameterTypeNames().stream().map(Name::value).collect(joining(","))),
-    保持しているフィールドの型(condition -> condition.fieldTypeNames().stream().map(Name::value).collect(joining(",")));
+    使用しているフィールドの型(condition -> condition.instructFields().stream().map(Name::value).collect(joining(",")));
 
     private final Function<ConverterCondition, String> function;
 

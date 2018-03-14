@@ -19,6 +19,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void register(Relation relation) {
+        if (list.contains(relation)) return;
         list.add(relation);
     }
 

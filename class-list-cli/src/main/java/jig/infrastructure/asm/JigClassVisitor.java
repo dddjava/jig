@@ -12,8 +12,10 @@ import jig.domain.model.thing.ThingType;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class JigClassVisitor extends ClassVisitor {
 
@@ -85,8 +87,12 @@ public class JigClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
             methodDescriptors.add(descriptor);
 
+            // パラメーターの型
+            Type[] argumentTypes = Type.getArgumentTypes(descriptor);
+            String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
+
             // メソッド
-            Name methodName = new Name(className.value() + "." + name);
+            Name methodName = new Name(className.value() + "." + name + argumentsString);
             thingRepository.register(new Thing(methodName, ThingType.METHOD));
             relationRepository.register(RelationType.METHOD.create(className, methodName));
 
@@ -95,8 +101,6 @@ public class JigClassVisitor extends ClassVisitor {
             thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
             relationRepository.register(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
 
-            // パラメーターの型
-            Type[] argumentTypes = Type.getArgumentTypes(descriptor);
             for (Type type : argumentTypes) {
                 Name argumentTypeName = new Name(type.getClassName());
                 thingRepository.register(new Thing(argumentTypeName, ThingType.TYPE));

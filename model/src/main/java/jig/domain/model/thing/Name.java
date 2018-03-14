@@ -18,8 +18,8 @@ public class Name {
         return value;
     }
 
-    public String shortValue() {
-        return value.substring(value.lastIndexOf('.') + 1);
+    public String shortText() {
+        return value.replaceAll("([\\w]+\\.)*(\\w+)", "$2");
     }
 
     @Override
@@ -32,7 +32,6 @@ public class Name {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(value);
     }
 }

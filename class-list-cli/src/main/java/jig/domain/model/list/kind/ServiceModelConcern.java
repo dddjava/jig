@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.joining;
 public enum ServiceModelConcern implements Converter {
     クラス名(condition -> condition.className().value()),
     クラス和名(condition -> condition.japaneseName().value()),
-    メソッド名(condition -> condition.methodName().shortValue()),
+    メソッド名(condition -> condition.methodName().shortText()),
     メソッド戻り値の型(condition -> condition.returnTypeName().value()),
     メソッド引数型(condition -> condition.parameterTypeNames().stream().map(Name::value).collect(joining(","))),
     使用しているフィールドの型(condition -> condition.instructFields().stream().map(Name::value).collect(joining(",")));

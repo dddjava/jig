@@ -1,4 +1,4 @@
-package jig.classlist;
+package jig.classlist.report;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,17 +14,18 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class ExcelWriter {
+public class ExcelWriter implements ReportWriter {
 
     private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
 
-    public <T> void writeTo(ReportFactory<T> factory, Path output) {
+    @Override
+    public void writeTo(Report report, Path output) {
         try (Workbook book = new XSSFWorkbook();
              OutputStream os = Files.newOutputStream(output)) {
             Sheet sheet = book.createSheet();
-            writeRow(factory.headerLabel(), sheet.createRow(0));
+            writeRow(report.headerLabel(), sheet.createRow(0));
 
-            for (List<String> row : factory.rowList()) {
+            for (List<String> row : report.rowList()) {
                 writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
             }
 

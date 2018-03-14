@@ -1,4 +1,4 @@
-package jig.classlist;
+package jig.classlist.report;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,15 +11,16 @@ import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
 
-public class TsvWriter {
+public class TsvWriter implements ReportWriter {
 
     private static final Logger logger = Logger.getLogger(TsvWriter.class.getName());
 
-    public <T> void writeTo(ReportFactory<T> factory, Path output) {
+    @Override
+    public void writeTo(Report report, Path output) {
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            writeTsvRow(writer, factory.headerLabel());
+            writeTsvRow(writer, report.headerLabel());
 
-            for (List<String> row : factory.rowList()) {
+            for (List<String> row : report.rowList()) {
                 writeTsvRow(writer, row);
             }
 

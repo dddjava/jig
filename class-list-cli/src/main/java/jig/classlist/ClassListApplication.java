@@ -1,11 +1,9 @@
 package jig.classlist;
 
-import jig.classlist.classlist.TypeListService;
-import jig.classlist.classlist.TypeListType;
-import jig.classlist.classlist.TypeReportFactory;
-import jig.classlist.methodlist.MethodListService;
-import jig.classlist.methodlist.MethodListType;
-import jig.classlist.methodlist.MethodReportFactory;
+import jig.classlist.report.Report;
+import jig.classlist.report.ReportFormat;
+import jig.classlist.report.ReportPerspective;
+import jig.classlist.report.ReportService;
 import jig.domain.model.tag.Tag;
 import jig.infrastructure.asm.AsmExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +35,7 @@ public class ClassListApplication {
     @Autowired
     AsmExecutor asmExecutor;
     @Autowired
-    MethodListService methodListService;
-    @Autowired
-    TypeListService typeListService;
+    ReportService reportService;
 
     public void output() {
         Path[] paths = Arrays.stream(targetClasses.split(":"))
@@ -49,22 +45,12 @@ public class ClassListApplication {
 
         Tag tag = Tag.valueOf(listType.toUpperCase());
 
-        ReportFactory<?> factory = getFactory(tag);
+        ReportPerspective perspective = ReportPerspective.from(tag);
+        Report report = perspective.getReport(tag, reportService);
 
-        Path path = Paths.get(outputPath);
-        if (path.toString().endsWith(".tsv")) {
-            new TsvWriter().writeTo(factory, path);
-        } else if (path.toString().endsWith(".xlsx")) {
-            new ExcelWriter().writeTo(factory, path);
-        }
-    }
-
-    private ReportFactory<?> getFactory(Tag tag) {
-        if (tag == Tag.SERVICE || tag == Tag.REPOSITORY) {
-            return new MethodReportFactory(MethodListType.valueOf(tag.name()), methodListService.list(tag));
-        }
-
-        return new TypeReportFactory(TypeListType.valueOf(tag.name()), typeListService.list(tag));
+        ReportFormat.from(outputPath)
+                .writer()
+                .writeTo(report, Paths.get(outputPath));
     }
 }
 

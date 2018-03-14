@@ -12,19 +12,37 @@ class NameTest {
 
     @ParameterizedTest
     @MethodSource
-    void shortText(String fullName, String shortText) {
+    void asSimpleText(String fullName, String shortText) {
         Name hoge = new Name(fullName);
 
-        assertThat(hoge.shortText()).isEqualTo(shortText);
+        assertThat(hoge.asSimpleText()).isEqualTo(shortText);
     }
 
-    static Stream<Arguments> shortText() {
+    static Stream<Arguments> asSimpleText() {
         return Stream.of(
                 Arguments.of("hoge", "hoge"),
                 Arguments.of("hoge.fuga", "fuga"),
                 Arguments.of("hoge.fuga.Piyo", "Piyo"),
                 Arguments.of("hoge.fuga$foo", "fuga$foo"),
                 Arguments.of("hoge.fuga(aaa.bbb.ccc,hoge.fuga)", "fuga(ccc,fuga)")
+        );
+    }
+
+    @ParameterizedTest()
+    @MethodSource
+    void asCompressText(String fullName, String text) {
+        Name hoge = new Name(fullName);
+
+        assertThat(hoge.asCompressText()).isEqualTo(text);
+    }
+
+    static Stream<Arguments> asCompressText() {
+        return Stream.of(
+                Arguments.of("hoge", "hoge"),
+                Arguments.of("hoge.fuga", "h.fuga"),
+                Arguments.of("hoge.fuga.Piyo", "h.f.Piyo"),
+                Arguments.of("hoge.fuga$foo", "h.fuga$foo"),
+                Arguments.of("hoge.fuga(aaa.bbb.ccc,hoge.fuga)", "h.fuga(a.b.ccc,h.fuga)")
         );
     }
 }

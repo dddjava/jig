@@ -11,9 +11,6 @@ import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
-import java.util.List;
-import java.util.stream.Stream;
-
 public class TypeDetail {
 
     private ThingTag thingTag;
@@ -36,14 +33,12 @@ public class TypeDetail {
 
     public Names usage() {
         Relations fieldRelation = relationRepository.findTo(name(), RelationType.FIELD);
-        Relations methodReturnRelation = relationRepository.findTo(name(), RelationType.METHOD_RETURN_TYPE);
-        Relations methodParameterRelation = relationRepository.findTo(name(), RelationType.METHOD_PARAMETER);
 
-        return Stream.of(
-                fieldRelation.list(),
-                methodReturnRelation.list(),
-                methodParameterRelation.list()
-        ).flatMap(List::stream).map(Relation::from).collect(Names.collector());
+        // TODO メソッドでの使用をどのように扱うか
+        // Relations methodReturnRelation = relationRepository.findTo(name(), RelationType.METHOD_RETURN_TYPE);
+        // Relations methodParameterRelation = relationRepository.findTo(name(), RelationType.METHOD_PARAMETER);
+
+        return fieldRelation.list().stream().map(Relation::from).collect(Names.collector());
     }
 
     public boolean isTag(Tag tag) {

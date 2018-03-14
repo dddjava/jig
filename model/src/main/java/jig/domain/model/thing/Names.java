@@ -26,7 +26,11 @@ public class Names {
         return list.contains(name);
     }
 
-    public String asText() {
-        return list.stream().map(Name::value).collect(joining(",", "[", "]"));
+    public String asCompressText() {
+        return list.stream().map(Name::asCompressText).collect(joining(",", "[", "]"));
+    }
+
+    public String asSimpleText() {
+        return list.stream().map(Name::asSimpleText).collect(joining(",", "[", "]"));
     }
 }

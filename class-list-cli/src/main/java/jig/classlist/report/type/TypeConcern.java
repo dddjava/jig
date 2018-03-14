@@ -7,7 +7,7 @@ import java.util.function.Function;
 public enum TypeConcern {
     クラス名(detail -> detail.name().value()),
     クラス和名(detail -> detail.japaneseName().value()),
-    使用箇所(detail -> detail.usage().asText()),
+    使用箇所(detail -> detail.usage().asCompressText()),
     振る舞い有り(detail -> Boolean.toString(detail.isTag(Tag.ENUM_BEHAVIOUR))),
     パラメーター有り(detail -> Boolean.toString(detail.isTag(Tag.ENUM_PARAMETERIZED))),
     多態(detail -> Boolean.toString(detail.isTag(Tag.ENUM_POLYMORPHISM))),;

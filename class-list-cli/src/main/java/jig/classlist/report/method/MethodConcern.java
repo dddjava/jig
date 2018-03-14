@@ -5,9 +5,9 @@ import java.util.function.Function;
 public enum MethodConcern {
     クラス名(detail -> detail.name().value()),
     クラス和名(detail -> detail.japaneseName().value()),
-    メソッド(detail -> detail.methodName().shortText()),
+    メソッド(detail -> detail.methodName().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnTypeName().value()),
-    使用しているフィールドの型(detail -> detail.instructFields().asText());
+    使用しているフィールドの型(detail -> detail.instructFields().asCompressText());
 
     private final Function<MethodDetail, String> function;
 

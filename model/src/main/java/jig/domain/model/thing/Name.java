@@ -18,7 +18,11 @@ public class Name {
         return value;
     }
 
-    public String shortText() {
+    public String asCompressText() {
+        return value.replaceAll("(\\w)\\w+\\.", "$1.");
+    }
+
+    public String asSimpleText() {
         return value.replaceAll("([\\w]+\\.)*(\\w+)", "$2");
     }
 

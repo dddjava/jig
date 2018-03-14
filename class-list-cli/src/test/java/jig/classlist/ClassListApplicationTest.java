@@ -35,7 +35,7 @@ public class ClassListApplicationTest {
                         "sut.application.service.ThrowsUnknownExceptionService",
                         "sut.application.service.ThrowsUnknownExceptionService");
         assertThat(Files.readAllLines(output.toPath()).get(2))
-                .containsSubsequence("CanonicalService", "典型的なサービス", "fuga", "Fuga", "FugaIdentifier", "FugaRepository");
+                .containsSubsequence("CanonicalService", "典型的なサービス", "fuga(FugaIdentifier)", "Fuga", "FugaRepository");
     }
 
     @Test

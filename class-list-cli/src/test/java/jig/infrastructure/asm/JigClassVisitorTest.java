@@ -42,6 +42,23 @@ public class JigClassVisitorTest {
                 .containsExactly("sut.domain.model.kind.ParameterizedEnum");
         assertThat(tagRepository.find(Tag.ENUM_POLYMORPHISM).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.PolymorphismEnum");
+
+        assertThat(tagRepository.find(Tag.IDENTIFIER).list()).extracting(Name::value)
+                .containsExactlyInAnyOrder(
+                        "sut.domain.model.fuga.FugaIdentifier",
+                        "sut.domain.model.fuga.FugaName");
+
+        assertThat(tagRepository.find(Tag.NUMBER).list()).extracting(Name::value)
+                .containsExactly("sut.domain.model.hoge.hogera.HogeraAmount");
+
+        assertThat(tagRepository.find(Tag.DATE).list()).extracting(Name::value)
+                .containsExactly("sut.domain.model.hoge.hogera.HogeraDate");
+
+        assertThat(tagRepository.find(Tag.TERM).list()).extracting(Name::value)
+                .containsExactly("sut.domain.model.hoge.hogera.HogeraTerm");
+
+        assertThat(tagRepository.find(Tag.COLLECTION).list()).extracting(Name::value)
+                .containsExactly("sut.domain.model.hoge.Hoges");
     }
 
 }

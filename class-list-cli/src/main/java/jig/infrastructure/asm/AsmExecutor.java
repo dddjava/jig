@@ -37,6 +37,7 @@ public class AsmExecutor {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (!file.toString().endsWith(".class")) return FileVisitResult.CONTINUE;
 
                     try (InputStream inputStream = Files.newInputStream(file)) {
                         ClassReader classReader = new ClassReader(inputStream);

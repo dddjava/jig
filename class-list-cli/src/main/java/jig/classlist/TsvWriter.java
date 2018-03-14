@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.MethodRelationNavigator;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -24,7 +24,7 @@ public class TsvWriter extends AbstractListWriter {
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
             writeTsvRow(writer, modelKind.headerLabel());
 
-            for (ConverterCondition condition : list()) {
+            for (MethodRelationNavigator condition : list()) {
                 writeTsvRow(writer, modelKind.row(condition));
             }
 

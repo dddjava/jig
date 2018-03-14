@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.MethodRelationNavigator;
 import jig.domain.model.list.kind.ModelKind;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -24,13 +24,13 @@ public abstract class AbstractListWriter implements InitializingBean {
     @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
-    List<ConverterCondition> list() {
+    List<MethodRelationNavigator> list() {
 
-        List<ConverterCondition> list = new ArrayList<>();
+        List<MethodRelationNavigator> list = new ArrayList<>();
         Relations methods = relationRepository.allMethods();
         for (Relation methodRelation : methods.list()) {
             if (modelKind.correct(methodRelation.from())) {
-                ConverterCondition condition = new ConverterCondition(methodRelation, relationRepository, japaneseNameRepository);
+                MethodRelationNavigator condition = new MethodRelationNavigator(methodRelation, relationRepository, japaneseNameRepository);
                 list.add(condition);
             }
         }

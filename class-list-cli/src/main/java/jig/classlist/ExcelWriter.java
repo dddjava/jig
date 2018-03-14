@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.MethodRelationNavigator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,7 +28,7 @@ public class ExcelWriter extends AbstractListWriter {
             Sheet sheet = book.createSheet();
             writeRow(modelKind.headerLabel(), sheet.createRow(0));
 
-            for (ConverterCondition condition : list()) {
+            for (MethodRelationNavigator condition : list()) {
                 writeRow(modelKind.row(condition), sheet.createRow(sheet.getLastRowNum() + 1));
             }
 

@@ -1,48 +1,46 @@
 package jig.domain.model.list.kind;
 
-import jig.domain.model.list.ConverterCondition;
+import jig.domain.model.list.MethodRelationNavigator;
 import jig.domain.model.thing.Name;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 public enum ModelKind {
-    SERVICE("Service", ServiceModelConcern.class),
-    REPOSITORY("Repository", RepositoryModelConcern.class),;
+    SERVICE("Service", new MethodRelationNavigator.Concern[]{
+            MethodRelationNavigator.Concern.クラス名,
+            MethodRelationNavigator.Concern.クラス和名,
+            MethodRelationNavigator.Concern.メソッド,
+            MethodRelationNavigator.Concern.メソッド戻り値の型,
+            MethodRelationNavigator.Concern.使用しているフィールドの型
+    }),
+    REPOSITORY("Repository", new MethodRelationNavigator.Concern[]{
+            MethodRelationNavigator.Concern.クラス名,
+            MethodRelationNavigator.Concern.クラス和名,
+            MethodRelationNavigator.Concern.メソッド,
+            MethodRelationNavigator.Concern.メソッド戻り値の型
+    });
 
     private final String suffix;
-    private final Class<? extends Enum> concern;
+    private final MethodRelationNavigator.Concern[] concerns;
 
-    ModelKind(String suffix, Class<? extends Enum> concern) {
+    ModelKind(String suffix, MethodRelationNavigator.Concern[] concerns) {
         this.suffix = suffix;
-        this.concern = concern;
+        this.concerns = concerns;
     }
 
     public List<String> headerLabel() {
-        Enum[] arr = concernValues();
-        return Arrays.stream(arr)
+        return Arrays.stream(concerns)
                 .map(Enum::name)
                 .collect(toList());
     }
 
-    public List<String> row(ConverterCondition converterCondition) {
-        Converter[] arr = concernValues();
-        return Arrays.stream(arr)
-                .map(converter -> converter.convert(converterCondition))
+    public List<String> row(MethodRelationNavigator methodRelationNavigator) {
+        return Arrays.stream(concerns)
+                .map(concern -> concern.apply(methodRelationNavigator))
                 .collect(toList());
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T[] concernValues() {
-        try {
-            Method values = concern.getMethod("values");
-            return (T[]) values.invoke(null);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public boolean correct(Name name) {

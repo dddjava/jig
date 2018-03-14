@@ -1,8 +1,8 @@
 package jig.infrastructure;
 
-import jig.domain.model.tag.JapaneseName;
-import jig.domain.model.tag.JapaneseNameRepository;
-import jig.domain.model.tag.JapaneseNames;
+import jig.domain.model.japanasename.JapaneseName;
+import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.japanasename.JapaneseNames;
 import jig.domain.model.thing.Name;
 
 import java.util.HashMap;

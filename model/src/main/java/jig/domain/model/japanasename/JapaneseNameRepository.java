@@ -1,4 +1,4 @@
-package jig.domain.model.tag;
+package jig.domain.model.japanasename;
 
 import jig.domain.model.thing.Name;
 

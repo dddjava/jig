@@ -2,8 +2,8 @@ package jig.shell;
 
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.DiagramConverter;
+import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.domain.model.tag.JapaneseNameRepository;
 import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.DiagramRepositoryImpl;

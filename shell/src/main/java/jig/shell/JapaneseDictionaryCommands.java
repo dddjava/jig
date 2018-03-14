@@ -1,6 +1,6 @@
 package jig.shell;
 
-import jig.domain.model.tag.JapaneseNameRepository;
+import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.infrastructure.javaparser.ClassCommentReader;
 import jig.infrastructure.javaparser.PackageInfoReader;
 import org.springframework.beans.factory.annotation.Autowired;

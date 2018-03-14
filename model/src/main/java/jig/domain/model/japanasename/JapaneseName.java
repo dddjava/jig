@@ -1,4 +1,4 @@
-package jig.domain.model.tag;
+package jig.domain.model.japanasename;
 
 public class JapaneseName {
 

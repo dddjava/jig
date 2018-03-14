@@ -7,8 +7,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import jig.domain.model.tag.JapaneseName;
-import jig.domain.model.tag.JapaneseNameRepository;
+import jig.domain.model.japanasename.JapaneseName;
+import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
 
 import java.io.IOException;

@@ -1,11 +1,11 @@
 package jig.classlist.methodlist;
 
+import jig.domain.model.japanasename.JapaneseName;
+import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseName;
-import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
 
 import java.util.List;

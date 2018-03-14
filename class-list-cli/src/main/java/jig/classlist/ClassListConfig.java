@@ -1,7 +1,7 @@
 package jig.classlist;
 
+import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.tag.JapaneseNameRepository;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryJapanaseNameRepository;

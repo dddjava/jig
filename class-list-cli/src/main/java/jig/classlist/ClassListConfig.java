@@ -2,6 +2,7 @@ package jig.classlist;
 
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.JapaneseNameRepository;
+import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
@@ -29,6 +30,11 @@ public class ClassListConfig {
     }
 
     @Bean
+    TagRepository tagRepository() {
+        return new OnMemoryTagRepository();
+    }
+
+    @Bean
     JapaneseNameRepository japaneseNameRepository(@Value("${target.source}") String sourcePath) {
         JapaneseNameRepository repository = new OnMemoryJapanaseNameRepository();
         ClassCommentReader classCommentReader = new ClassCommentReader(Paths.get(sourcePath));
@@ -38,6 +44,6 @@ public class ClassListConfig {
 
     @Bean
     AsmExecutor asmExecutor() {
-        return new AsmExecutor(new OnMemoryTagRepository(), thingRepository(), relationRepository());
+        return new AsmExecutor(tagRepository(), thingRepository(), relationRepository());
     }
 }

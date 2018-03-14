@@ -1,6 +1,6 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.list.kind.TagRepository;
+import jig.domain.model.tag.TagRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.ThingRepository;
 import org.objectweb.asm.ClassReader;

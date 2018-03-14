@@ -1,8 +1,8 @@
-package jig.domain.model.list.kind;
+package jig.domain.model.tag;
 
 public enum Tag {
     SERVICE,
-    DATASOURCE,
+    REPOSITORY,
     ENUM,
     ENUM_PARAMETERIZED,
     ENUM_POLYMORPHISM,
@@ -10,5 +10,6 @@ public enum Tag {
     NUMBER,
     DATE,
     TERM,
-    ENUM_BEHAVIOUR, FIRST_CLASS_COLLECTION
+    ENUM_BEHAVIOUR,
+    FIRST_CLASS_COLLECTION
 }

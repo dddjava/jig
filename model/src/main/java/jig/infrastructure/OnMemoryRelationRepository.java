@@ -5,6 +5,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Names;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,9 +30,10 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Relations allMethods() {
+    public Relations methodsOf(Names names) {
         List<Relation> relations = list.stream()
                 .filter(relation -> relation.relationType() == RelationType.METHOD)
+                .filter(relation -> names.contains(relation.from()))
                 // クラス名昇順、メソッド名昇順
                 .sorted(Comparator.<Relation, String>comparing(relation -> relation.from().value())
                         .thenComparing(relation -> relation.to().value()))

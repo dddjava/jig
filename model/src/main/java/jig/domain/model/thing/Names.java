@@ -19,4 +19,8 @@ public class Names {
     public static Collector<Name, ?, Names> collector() {
         return Collectors.collectingAndThen(Collectors.toList(), Names::new);
     }
+
+    public boolean contains(Name name) {
+        return list.contains(name);
+    }
 }

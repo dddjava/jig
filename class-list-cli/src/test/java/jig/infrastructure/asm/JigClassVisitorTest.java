@@ -1,7 +1,7 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.list.kind.Tag;
-import jig.domain.model.list.kind.TagRepository;
+import jig.domain.model.tag.Tag;
+import jig.domain.model.tag.TagRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.ThingRepository;

@@ -1,10 +1,10 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.list.kind.Tag;
-import jig.domain.model.list.kind.TagRepository;
-import jig.domain.model.list.kind.ThingTag;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
+import jig.domain.model.tag.Tag;
+import jig.domain.model.tag.TagRepository;
+import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Thing;
 import jig.domain.model.thing.ThingRepository;
@@ -46,6 +46,11 @@ public class JigClassVisitor extends ClassVisitor {
 
         thingRepository.register(new Thing(className, ThingType.TYPE));
 
+        // TODO RepositoryインタフェースとDatasourceの関連
+        if (className.value().endsWith("Repository")) {
+            tagRepository.register(new ThingTag(className, Tag.REPOSITORY));
+        }
+
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
@@ -56,7 +61,8 @@ public class JigClassVisitor extends ClassVisitor {
                 tagRepository.register(new ThingTag(className, Tag.SERVICE));
                 break;
             case "Lorg/springframework/stereotype/Repository;":
-                tagRepository.register(new ThingTag(className, Tag.DATASOURCE));
+                // TODO RepositoryインタフェースとDatasourceの関連
+                //tagRepository.register(new ThingTag(className, Tag.REPOSITORY));
                 break;
             default:
                 LOGGER.info(className.value() + "のアノテーションをスキップしました。: " + descriptor);

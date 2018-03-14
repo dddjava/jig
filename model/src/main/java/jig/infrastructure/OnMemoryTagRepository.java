@@ -1,8 +1,8 @@
 package jig.infrastructure;
 
-import jig.domain.model.list.kind.Tag;
-import jig.domain.model.list.kind.TagRepository;
-import jig.domain.model.list.kind.ThingTag;
+import jig.domain.model.tag.Tag;
+import jig.domain.model.tag.TagRepository;
+import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Names;
 
 import java.util.ArrayList;

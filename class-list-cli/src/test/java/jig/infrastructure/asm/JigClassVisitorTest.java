@@ -2,39 +2,33 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.list.kind.Tag;
 import jig.domain.model.list.kind.TagRepository;
+import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.thing.Name;
+import jig.domain.model.thing.ThingRepository;
+import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryTagRepository;
+import jig.infrastructure.OnMemoryThingRepository;
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.ClassReader;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JigClassVisitorTest {
 
+
     @Test
     void test() throws IOException {
         TagRepository tagRepository = new OnMemoryTagRepository();
+        ThingRepository thingRepository = new OnMemoryThingRepository();
+        RelationRepository relationRepository = new OnMemoryRelationRepository();
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-
-                try (InputStream inputStream = Files.newInputStream(file)) {
-                    ClassReader classReader = new ClassReader(inputStream);
-
-                    classReader.accept(new JigClassVisitor(tagRepository), ClassReader.SKIP_DEBUG);
-                }
-
-                return super.visitFile(file, attrs);
-            }
-        });
+        AsmExecutor asmExecutor = new AsmExecutor(tagRepository, thingRepository, relationRepository);
+        asmExecutor.load(path);
 
         assertThat(tagRepository.find(Tag.SERVICE).list()).extracting(Name::value)
                 .containsExactlyInAnyOrder(
@@ -50,4 +44,5 @@ public class JigClassVisitorTest {
         assertThat(tagRepository.find(Tag.ENUM_POLYMORPHISM).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.PolymorphismEnum");
     }
+
 }

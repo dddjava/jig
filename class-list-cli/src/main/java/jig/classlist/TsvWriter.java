@@ -1,13 +1,6 @@
 package jig.classlist;
 
 import jig.domain.model.list.ConverterCondition;
-import jig.domain.model.list.kind.ModelKind;
-import jig.domain.model.relation.Relation;
-import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.JapaneseNameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -22,31 +15,17 @@ import java.util.logging.Logger;
 import static java.util.stream.Collectors.joining;
 
 @Component
-public class TsvWriter {
+public class TsvWriter extends AbstractListWriter {
 
     private static final Logger logger = Logger.getLogger(TsvWriter.class.getName());
 
-    @Value("${output.list.type}")
-    String modelKind;
-
-    @Autowired
-    RelationRepository relationRepository;
-
-    @Autowired
-    JapaneseNameRepository japaneseNameRepository;
-
     public void writeTo(Path output) {
-        ModelKind modelKind = ModelKind.valueOf(this.modelKind.toUpperCase());
 
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
             writeTsvRow(writer, modelKind.headerLabel());
 
-            Relations methods = relationRepository.allMethods();
-            for (Relation methodRelation : methods.list()) {
-                if (modelKind.correct(methodRelation.from())) {
-                    ConverterCondition condition = new ConverterCondition(methodRelation, relationRepository, japaneseNameRepository);
-                    writeTsvRow(writer, modelKind.row(condition));
-                }
+            for (ConverterCondition condition : list()) {
+                writeTsvRow(writer, modelKind.row(condition));
             }
 
             logger.info(output.toAbsolutePath() + "を出力しました。");

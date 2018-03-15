@@ -1,11 +1,9 @@
 package jig.classlist.report.type;
 
+import jig.classlist.report.ReportRow;
 import jig.domain.model.tag.Tag;
 
 import java.util.Arrays;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public enum TypePerspective {
     IDENTIFIER(
@@ -42,16 +40,16 @@ public enum TypePerspective {
         this.concerns = concerns;
     }
 
-    public List<String> headerLabel() {
+    public ReportRow headerLabel() {
         return Arrays.stream(concerns)
                 .map(Enum::name)
-                .collect(toList());
+                .collect(ReportRow.collector());
     }
 
-    public List<String> row(TypeDetail detail) {
+    public ReportRow row(TypeDetail detail) {
         return Arrays.stream(concerns)
                 .map(concern -> concern.apply(detail))
-                .collect(toList());
+                .collect(ReportRow.collector());
     }
 
     public static TypePerspective from(Tag tag) {

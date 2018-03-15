@@ -1,6 +1,7 @@
 package jig.classlist.report.method;
 
 import jig.classlist.report.Report;
+import jig.classlist.report.ReportRow;
 
 import java.util.List;
 
@@ -17,12 +18,12 @@ public class MethodReport implements Report {
     }
 
     @Override
-    public List<String> headerLabel() {
+    public ReportRow headerRow() {
         return perspective.headerLabel();
     }
 
     @Override
-    public List<List<String>> rowList() {
+    public List<ReportRow> rows() {
         return list.stream().map(perspective::row).collect(toList());
     }
 }

@@ -6,7 +6,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
@@ -18,9 +17,9 @@ public class TsvWriter implements ReportWriter {
     @Override
     public void writeTo(Report report, Path output) {
         try (BufferedWriter writer = Files.newBufferedWriter(output, StandardCharsets.UTF_8)) {
-            writeTsvRow(writer, report.headerLabel());
+            writeTsvRow(writer, report.headerRow());
 
-            for (List<String> row : report.rowList()) {
+            for (ReportRow row : report.rows()) {
                 writeTsvRow(writer, row);
             }
 
@@ -30,8 +29,8 @@ public class TsvWriter implements ReportWriter {
         }
     }
 
-    private void writeTsvRow(BufferedWriter writer, List<String> list) throws IOException {
-        writer.write(list.stream().collect(joining("\t")));
+    private void writeTsvRow(BufferedWriter writer, ReportRow reportRow) throws IOException {
+        writer.write(reportRow.list().stream().collect(joining("\t")));
         writer.newLine();
     }
 }

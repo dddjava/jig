@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface Report {
 
-    List<String> headerLabel();
+    ReportRow headerRow();
 
-    List<List<String>> rowList();
+    List<ReportRow> rows();
 }

@@ -1,11 +1,9 @@
 package jig.classlist.report.method;
 
+import jig.classlist.report.ReportRow;
 import jig.domain.model.tag.Tag;
 
 import java.util.Arrays;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public enum MethodPerspective {
     SERVICE(new MethodConcern[]{
@@ -28,16 +26,16 @@ public enum MethodPerspective {
         this.concerns = concerns;
     }
 
-    public List<String> headerLabel() {
+    public ReportRow headerLabel() {
         return Arrays.stream(concerns)
                 .map(Enum::name)
-                .collect(toList());
+                .collect(ReportRow.collector());
     }
 
-    public List<String> row(MethodDetail methodDetail) {
+    public ReportRow row(MethodDetail methodDetail) {
         return Arrays.stream(concerns)
                 .map(concern -> concern.apply(methodDetail))
-                .collect(toList());
+                .collect(ReportRow.collector());
     }
 
     public static MethodPerspective from(Tag tag) {

@@ -11,7 +11,6 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class ExcelWriter implements ReportWriter {
@@ -23,9 +22,9 @@ public class ExcelWriter implements ReportWriter {
         try (Workbook book = new XSSFWorkbook();
              OutputStream os = Files.newOutputStream(output)) {
             Sheet sheet = book.createSheet();
-            writeRow(report.headerLabel(), sheet.createRow(0));
+            writeRow(report.headerRow(), sheet.createRow(0));
 
-            for (List<String> row : report.rowList()) {
+            for (ReportRow row : report.rows()) {
                 writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
             }
 
@@ -36,8 +35,8 @@ public class ExcelWriter implements ReportWriter {
         }
     }
 
-    private void writeRow(List<String> list, Row row) {
-        list.forEach(item -> {
+    private void writeRow(ReportRow reportRow, Row row) {
+        reportRow.list().forEach(item -> {
             short lastCellNum = row.getLastCellNum();
             Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
 

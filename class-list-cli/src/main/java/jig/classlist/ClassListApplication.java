@@ -4,7 +4,8 @@ import jig.application.service.report.ReportService;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.report.Report;
 import jig.domain.model.tag.Tag;
-import jig.infrastructure.asm.AsmExecutor;
+import jig.infrastructure.RecursiveFileVisitor;
+import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.ClassCommentReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +36,7 @@ public class ClassListApplication {
     String sourcePath;
 
     @Autowired
-    AsmExecutor asmExecutor;
+    AsmClassFileReader asmClassFileReader;
     @Autowired
     ReportService reportService;
     @Autowired
@@ -45,7 +46,9 @@ public class ClassListApplication {
         Path[] paths = Arrays.stream(targetClasses.split(":"))
                 .map(Paths::get)
                 .toArray(Path[]::new);
-        asmExecutor.load(paths);
+
+        RecursiveFileVisitor fileVisitor = new RecursiveFileVisitor(asmClassFileReader::execute);
+        fileVisitor.visitAllDirectories(paths);
 
         ClassCommentReader classCommentReader = new ClassCommentReader(Paths.get(sourcePath));
         classCommentReader.registerTo(japaneseNameRepository);

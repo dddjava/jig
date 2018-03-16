@@ -1,29 +1,20 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
-import jig.domain.model.thing.Thing;
-import jig.domain.model.thing.ThingRepository;
-import jig.domain.model.thing.ThingType;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
-public class JigClassVisitor extends ClassVisitor {
+public class TagReadingVisitor extends ClassVisitor {
 
-    private static final Logger LOGGER = Logger.getLogger(JigClassVisitor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TagReadingVisitor.class.getName());
 
     private final TagRepository tagRepository;
-    private final ThingRepository thingRepository;
-    private final RelationRepository relationRepository;
 
     private Name className;
     private int classAccess;
@@ -31,11 +22,9 @@ public class JigClassVisitor extends ClassVisitor {
     private final List<String> fieldDescriptors = new ArrayList<>();
     private final List<String> methodDescriptors = new ArrayList<>();
 
-    public JigClassVisitor(TagRepository tagRepository, ThingRepository thingRepository, RelationRepository relationRepository) {
+    public TagReadingVisitor(TagRepository tagRepository) {
         super(Opcodes.ASM6);
         this.tagRepository = tagRepository;
-        this.thingRepository = thingRepository;
-        this.relationRepository = relationRepository;
     }
 
     @Override
@@ -43,8 +32,6 @@ public class JigClassVisitor extends ClassVisitor {
         this.className = new Name(name.replace('/', '.'));
         this.classAccess = access;
         this.classSuperName = superName;
-
-        thingRepository.register(new Thing(className, ThingType.TYPE));
 
         // TODO RepositoryインタフェースとDatasourceの関連
         if (className.value().endsWith("Repository")) {
@@ -74,14 +61,9 @@ public class JigClassVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        // インスタンスフィールドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            // インスタンスフィールドだけ相手にする
             fieldDescriptors.add(descriptor);
-
-            Type fieldType = Type.getType(descriptor);
-            Name fieldTypeName = new Name(fieldType.getClassName());
-            thingRepository.register(new Thing(fieldTypeName, ThingType.TYPE));
-            relationRepository.register(RelationType.FIELD.create(className, fieldTypeName));
         }
 
         return super.visitField(access, name, descriptor, signature, value);
@@ -92,39 +74,6 @@ public class JigClassVisitor extends ClassVisitor {
         // インスタンスメソッドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
             methodDescriptors.add(descriptor);
-
-            // パラメーターの型
-            Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-            String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
-
-            // メソッド
-            Name methodName = new Name(className.value() + "." + name + argumentsString);
-            thingRepository.register(new Thing(methodName, ThingType.METHOD));
-            relationRepository.register(RelationType.METHOD.create(className, methodName));
-
-            // 戻り値の型
-            Name returnTypeName = new Name(Type.getReturnType(descriptor).getClassName());
-            thingRepository.register(new Thing(returnTypeName, ThingType.TYPE));
-            relationRepository.register(RelationType.METHOD_RETURN_TYPE.create(methodName, returnTypeName));
-
-            for (Type type : argumentTypes) {
-                Name argumentTypeName = new Name(type.getClassName());
-                thingRepository.register(new Thing(argumentTypeName, ThingType.TYPE));
-                relationRepository.register(RelationType.METHOD_PARAMETER.create(methodName, argumentTypeName));
-            }
-
-            return new MethodVisitor(api) {
-
-                @Override
-                public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                    Type fieldType = Type.getType(descriptor);
-                    Name fieldTypeName = new Name(fieldType.getClassName());
-                    thingRepository.register(new Thing(fieldTypeName, ThingType.TYPE));
-                    relationRepository.register(RelationType.METHOD_USE_TYPE.create(methodName, fieldTypeName));
-
-                    super.visitFieldInsn(opcode, owner, name, descriptor);
-                }
-            };
         }
 
         return super.visitMethod(access, name, descriptor, signature, exceptions);

@@ -8,6 +8,7 @@ import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryTagRepository;
 import jig.infrastructure.OnMemoryThingRepository;
+import jig.infrastructure.RecursiveFileVisitor;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,8 +17,7 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JigClassVisitorTest {
-
+public class AsmClassFileReaderTest {
 
     @Test
     void test() throws IOException {
@@ -27,8 +27,9 @@ public class JigClassVisitorTest {
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
-        AsmExecutor asmExecutor = new AsmExecutor(tagRepository, thingRepository, relationRepository);
-        asmExecutor.load(path);
+        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, thingRepository, relationRepository);
+        RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
+        recursiveFileVisitor.visitAllDirectories(path);
 
         assertThat(tagRepository.find(Tag.SERVICE).list()).extracting(Name::value)
                 .containsExactlyInAnyOrder(

@@ -10,7 +10,7 @@ public enum RelationType {
     METHOD_PARAMETER,
     METHOD_USE_TYPE;
 
-    public Relation create(Name from, Name to) {
+    public Relation of(Name from, Name to) {
         return new Relation(from, to, this);
     }
 }

@@ -76,7 +76,7 @@ public class JdepsExecutor implements RelationAnalyzer {
                 if (!thingRepository.exists(modelName)) {
                     thingRepository.register(new Thing(modelName, ThingType.ANY));
                 }
-                relationRepository.register(RelationType.DEPENDENCY.create(thing.name(), modelName));
+                relationRepository.register(RelationType.DEPENDENCY.of(thing.name(), modelName));
                 continue;
             }
 

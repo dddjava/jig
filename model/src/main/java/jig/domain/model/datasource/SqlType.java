@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 
 public enum SqlType {
     INSERT("insert +into +([\\w.]+).+"),
-    SELECT("select.+ from +([\\w]+) .+"),
+    SELECT("select.+ from +([\\w.]+)\\b.*"),
     UPDATE("update +([\\w.]+) .+"),
-    DELETE("delete +from +([\\w.]+) .+");
+    DELETE("delete +from +([\\w.]+)\\b.*");
 
     private static final Logger LOGGER = Logger.getLogger(SqlType.class.getName());
     private final Pattern pattern;
@@ -18,7 +18,7 @@ public enum SqlType {
     }
 
     public String extractTable(String sql) {
-        Matcher matcher = pattern.matcher(sql);
+        Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
         if (matcher.matches()) {
             return matcher.group(1);
         }

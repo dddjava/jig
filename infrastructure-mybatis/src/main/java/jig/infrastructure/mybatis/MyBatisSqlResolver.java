@@ -1,9 +1,6 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.datasource.Sql;
-import jig.domain.model.datasource.SqlIdentifier;
-import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.datasource.SqlType;
+import jig.domain.model.datasource.*;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -16,7 +13,6 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.stream.Stream;
 
 public class MyBatisSqlResolver {
@@ -30,9 +26,10 @@ public class MyBatisSqlResolver {
     public void resolve(URL... urls) {
         try (URLClassLoader classLoader = new URLClassLoader(urls)) {
             Resources.setDefaultClassLoader(classLoader);
-            Configuration config = new Configuration();
-            MapperRegistry mapperRegistry = new MapperRegistry(config);
 
+            Configuration config = new Configuration();
+
+            MapperRegistry mapperRegistry = new MapperRegistry(config);
             for (URL url : classLoader.getURLs()) {
                 Path rootPath = Paths.get(url.toURI());
                 try (Stream<Path> walk = Files.walk(rootPath)) {
@@ -52,15 +49,16 @@ public class MyBatisSqlResolver {
                 }
             }
 
-            Collection<?> mappedStatements = config.getMappedStatements();
-            for (Object obj : mappedStatements) {
+            for (Object obj : config.getMappedStatements()) {
                 // Ambiguityが入っていることがあるので型を確認する
                 if (obj instanceof MappedStatement) {
                     MappedStatement mappedStatement = (MappedStatement) obj;
-                    Sql sql = new Sql(
-                            new SqlIdentifier(mappedStatement.getId()),
-                            mappedStatement.getBoundSql(null).getSql(),
-                            SqlType.valueOf(mappedStatement.getSqlCommandType().name()));
+
+                    SqlIdentifier identifier = new SqlIdentifier(mappedStatement.getId());
+                    Query query = new Query(mappedStatement.getBoundSql(null).getSql());
+                    SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
+
+                    Sql sql = new Sql(identifier, query, sqlType);
                     sqlRepository.register(sql);
                 }
             }

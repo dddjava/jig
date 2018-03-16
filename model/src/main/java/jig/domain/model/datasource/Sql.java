@@ -3,12 +3,12 @@ package jig.domain.model.datasource;
 public class Sql {
 
     SqlIdentifier identifier;
-    String sql;
+    Query query;
     SqlType sqlType;
 
-    public Sql(SqlIdentifier identifier, String sql, SqlType sqlType) {
+    public Sql(SqlIdentifier identifier, Query query, SqlType sqlType) {
         this.identifier = identifier;
-        this.sql = sql;
+        this.query = query;
         this.sqlType = sqlType;
     }
 
@@ -17,11 +17,20 @@ public class Sql {
     }
 
     public String tableName() {
-        return sqlType.extractTable(sql.replaceAll("\n", " "));
+        return query.extractTable(sqlType);
 
     }
 
     public SqlIdentifier identifier() {
         return identifier;
+    }
+
+    @Override
+    public String toString() {
+        return "Sql{" +
+                "identifier=" + identifier +
+                ", query=" + query +
+                ", sqlType=" + sqlType +
+                '}';
     }
 }

@@ -26,8 +26,17 @@ class MyBatisSqlResolverTest {
                 .extracting(Sql::tableName, Sql::sqlType)
                 .containsExactly("fuga", SqlType.SELECT);
 
-        assertThat(repository.get(new SqlIdentifier("sut.infrastructure.datasource.PiyoMapper.register")))
+        assertThat(repository.get(new SqlIdentifier("sut.infrastructure.datasource.AnnotationMapper.select")))
                 .extracting(Sql::tableName, Sql::sqlType)
-                .containsExactly("piyo", SqlType.INSERT);
+                .containsExactly("sut.piyo", SqlType.SELECT);
+        assertThat(repository.get(new SqlIdentifier("sut.infrastructure.datasource.AnnotationMapper.insert")))
+                .extracting(Sql::tableName, Sql::sqlType)
+                .containsExactly("sut.piyo", SqlType.INSERT);
+        assertThat(repository.get(new SqlIdentifier("sut.infrastructure.datasource.AnnotationMapper.update")))
+                .extracting(Sql::tableName, Sql::sqlType)
+                .containsExactly("sut.piyo", SqlType.UPDATE);
+        assertThat(repository.get(new SqlIdentifier("sut.infrastructure.datasource.AnnotationMapper.delete")))
+                .extracting(Sql::tableName, Sql::sqlType)
+                .containsExactly("sut.piyo", SqlType.DELETE);
     }
 }

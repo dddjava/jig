@@ -7,6 +7,5 @@ import sut.domain.model.fuga.FugaIdentifier;
 @Mapper
 public interface FugaMapper {
 
-
     Fuga get(FugaIdentifier identifier);
 }

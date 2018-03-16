@@ -4,10 +4,8 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
-import jig.domain.model.thing.ThingRepository;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryTagRepository;
-import jig.infrastructure.OnMemoryThingRepository;
 import jig.infrastructure.RecursiveFileVisitor;
 import org.junit.jupiter.api.Test;
 
@@ -22,12 +20,11 @@ public class AsmClassFileReaderTest {
     @Test
     void test() throws IOException {
         TagRepository tagRepository = new OnMemoryTagRepository();
-        ThingRepository thingRepository = new OnMemoryThingRepository();
         RelationRepository relationRepository = new OnMemoryRelationRepository();
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
-        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, thingRepository, relationRepository);
+        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, relationRepository);
         RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
         recursiveFileVisitor.visitAllDirectories(path);
 

@@ -7,11 +7,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
-import jig.domain.model.thing.Thing;
-import jig.domain.model.thing.ThingRepository;
-import jig.domain.model.thing.ThingType;
 import jig.infrastructure.OnMemoryRelationRepository;
-import jig.infrastructure.OnMemoryThingRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,7 +21,6 @@ public class JdepsExecutor implements RelationAnalyzer {
 
     private static final Logger logger = Logger.getLogger(JdepsExecutor.class.getName());
 
-    ThingRepository thingRepository = new OnMemoryThingRepository();
     RelationRepository relationRepository = new OnMemoryRelationRepository();
 
     @Override
@@ -54,29 +49,22 @@ public class JdepsExecutor implements RelationAnalyzer {
 
     void parse(String string) {
         String packagePattern = "([\\w.]+)";
-        Pattern from = Pattern.compile("^ +" + packagePattern + " \\(.+\\)");
-        Pattern to = Pattern.compile("^ +-> " + packagePattern + " ");
+        Pattern fromPattern = Pattern.compile("^ +" + packagePattern + " \\(.+\\)");
+        Pattern toPattern = Pattern.compile("^ +-> " + packagePattern + " ");
 
-        Thing thing = null;
+        Name from = null;
         for (String line : string.split(System.lineSeparator())) {
-            Matcher fromMatcher = from.matcher(line);
+            Matcher fromMatcher = fromPattern.matcher(line);
             if (fromMatcher.find()) {
-                Name modelName = new Name(fromMatcher.group(1));
-                if (!thingRepository.exists(modelName)) {
-                    thingRepository.register(new Thing(modelName, ThingType.ANY));
-                }
-                thing = thingRepository.get(modelName);
+                from = new Name(fromMatcher.group(1));
                 continue;
             }
 
-            Matcher toMatcher = to.matcher(line);
+            Matcher toMatcher = toPattern.matcher(line);
             if (toMatcher.find()) {
-                if (thing == null) throw new NullPointerException();
-                Name modelName = new Name(toMatcher.group(1));
-                if (!thingRepository.exists(modelName)) {
-                    thingRepository.register(new Thing(modelName, ThingType.ANY));
-                }
-                relationRepository.register(RelationType.DEPENDENCY.of(thing.name(), modelName));
+                if (from == null) throw new NullPointerException();
+                Name to = new Name(toMatcher.group(1));
+                relationRepository.register(RelationType.DEPENDENCY.of(from, to));
                 continue;
             }
 

@@ -3,7 +3,6 @@ rootProject.name = 'jig'
 include 'model',
         'diagram-plantuml',
         'infrastructure-jdeps',
-        'infrastructure-javaparser',
         'infrastructure-mybatis',
         'package-diagram-cli',
         'class-list-cli',

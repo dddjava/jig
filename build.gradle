@@ -41,6 +41,11 @@ subprojects {
 }
 
 project(':model') {
+    dependencies {
+        compile 'org.ow2.asm:asm:6.1'
+        compile 'com.github.javaparser:javaparser-core:3.5.6'
+        compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+    }
 }
 
 project(':diagram-plantuml') {
@@ -56,14 +61,6 @@ project(':diagram-plantuml') {
 project(':infrastructure-jdeps') {
     dependencies {
         compile files("${System.getProperty('java.home')}/../lib/tools.jar")
-        compile project(':model')
-    }
-}
-
-project(':infrastructure-javaparser') {
-    dependencies {
-        compile 'com.github.javaparser:javaparser-core:3.5.6'
-        compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         compile project(':model')
     }
 }
@@ -98,7 +95,6 @@ project(':package-diagram-cli') {
         compile project(':model')
         compile project(':diagram-plantuml')
         compile project(':infrastructure-jdeps')
-        compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
     }
 }
@@ -108,9 +104,7 @@ project(':class-list-cli') {
 
     dependencies {
         compile project(':model')
-        compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
-        compile 'org.ow2.asm:asm:6.1'
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'
 
@@ -145,7 +139,6 @@ project(':shell') {
         compile project(':model')
         compile project(':diagram-plantuml')
         compile project(':infrastructure-jdeps')
-        compile project(':infrastructure-javaparser')
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.springframework.shell:spring-shell-starter:2.0.0.RELEASE'
 

@@ -1,4 +1,8 @@
-package jig.classlist.report;
+package jig.classlist.infrastructure.writer;
+
+import jig.classlist.ReportWriter;
+import jig.classlist.report.Report;
+import jig.classlist.report.ReportRow;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

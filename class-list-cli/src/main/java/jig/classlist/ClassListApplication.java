@@ -1,7 +1,6 @@
 package jig.classlist;
 
 import jig.classlist.report.Report;
-import jig.classlist.report.ReportFormat;
 import jig.classlist.report.ReportPerspective;
 import jig.classlist.report.ReportService;
 import jig.domain.model.tag.Tag;

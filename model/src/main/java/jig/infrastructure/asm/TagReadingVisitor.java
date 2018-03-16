@@ -2,7 +2,6 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
-import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
 import org.objectweb.asm.*;
 
@@ -35,7 +34,7 @@ public class TagReadingVisitor extends ClassVisitor {
 
         // TODO RepositoryインタフェースとDatasourceの関連
         if (className.value().endsWith("Repository")) {
-            tagRepository.register(new ThingTag(className, Tag.REPOSITORY));
+            tagRepository.register(className, Tag.REPOSITORY);
         }
 
         super.visit(version, access, name, signature, superName, interfaces);
@@ -45,11 +44,11 @@ public class TagReadingVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         switch (descriptor) {
             case "Lorg/springframework/stereotype/Service;":
-                tagRepository.register(new ThingTag(className, Tag.SERVICE));
+                tagRepository.register(className, Tag.SERVICE);
                 break;
             case "Lorg/springframework/stereotype/Repository;":
                 // TODO RepositoryインタフェースとDatasourceの関連
-                //tagRepository.register(new ThingTag(className, Tag.REPOSITORY));
+                //tagRepository.register(className, Tag.REPOSITORY);
                 break;
             default:
                 LOGGER.info(className.value() + "のアノテーションをスキップしました。: " + descriptor);
@@ -85,14 +84,14 @@ public class TagReadingVisitor extends ClassVisitor {
         if (classSuperName.equals("java/lang/Enum")) {
             if ((classAccess & Opcodes.ACC_FINAL) == 0) {
                 // finalでないenumは多態
-                tagRepository.register(new ThingTag(className, Tag.ENUM_POLYMORPHISM));
+                tagRepository.register(className, Tag.ENUM_POLYMORPHISM);
             } else if (!fieldDescriptors.isEmpty()) {
                 // フィールドがあるenum
-                tagRepository.register(new ThingTag(className, Tag.ENUM_PARAMETERIZED));
+                tagRepository.register(className, Tag.ENUM_PARAMETERIZED);
             } else if (!methodDescriptors.isEmpty()) {
-                tagRepository.register(new ThingTag(className, Tag.ENUM_BEHAVIOUR));
+                tagRepository.register(className, Tag.ENUM_BEHAVIOUR);
             } else {
-                tagRepository.register(new ThingTag(className, Tag.ENUM));
+                tagRepository.register(className, Tag.ENUM);
             }
 
             return;
@@ -103,23 +102,23 @@ public class TagReadingVisitor extends ClassVisitor {
 
             switch (descriptor) {
                 case "Ljava/lang/String;":
-                    tagRepository.register(new ThingTag(className, Tag.IDENTIFIER));
+                    tagRepository.register(className, Tag.IDENTIFIER);
                     break;
                 case "Ljava/math/BigDecimal;":
-                    tagRepository.register(new ThingTag(className, Tag.NUMBER));
+                    tagRepository.register(className, Tag.NUMBER);
                     break;
                 case "Ljava/util/List;":
-                    tagRepository.register(new ThingTag(className, Tag.COLLECTION));
+                    tagRepository.register(className, Tag.COLLECTION);
                     break;
                 case "Ljava/time/LocalDate;":
-                    tagRepository.register(new ThingTag(className, Tag.DATE));
+                    tagRepository.register(className, Tag.DATE);
                     break;
             }
         } else if (fieldDescriptors.size() == 2) {
             String field1 = fieldDescriptors.get(0);
             String field2 = fieldDescriptors.get(1);
             if (field1.equals(field2) && field1.equals("Ljava/time/LocalDate;")) {
-                tagRepository.register(new ThingTag(className, Tag.TERM));
+                tagRepository.register(className, Tag.TERM);
             }
         }
 

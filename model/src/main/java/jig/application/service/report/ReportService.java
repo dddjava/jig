@@ -13,7 +13,6 @@ import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
-import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ public class ReportService {
         List<TypeDetail> list = new ArrayList<>();
         Names names = tagRepository.find(tag);
         for (Name name : names.list()) {
-            TypeDetail detail = new TypeDetail(new ThingTag(name, tag), relationRepository, japaneseNameRepository);
+            TypeDetail detail = new TypeDetail(name, tag, relationRepository, japaneseNameRepository);
             list.add(detail);
         }
         return new TypeReport(TypePerspective.from(tag), list);

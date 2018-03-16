@@ -63,7 +63,7 @@ public class MyBatisSqlResolver {
                     MappedStatement mappedStatement = (MappedStatement) obj;
 
                     Name name = new Name(mappedStatement.getId());
-                    tagRepository.register(Tag.MAPPER_METHOD, name);
+                    tagRepository.register(name, Tag.MAPPER_METHOD);
 
                     Query query = new Query(mappedStatement.getBoundSql(null).getSql());
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());

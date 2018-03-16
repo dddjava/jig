@@ -7,24 +7,25 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.ThingTag;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
 public class TypeDetail {
 
-    private ThingTag thingTag;
+    private final Name name;
+    private final Tag tag;
     private RelationRepository relationRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public TypeDetail(ThingTag thingTag, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
-        this.thingTag = thingTag;
+    public TypeDetail(Name name, Tag tag, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
+        this.name = name;
+        this.tag = tag;
         this.relationRepository = relationRepository;
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
     public Name name() {
-        return thingTag.name();
+        return name;
     }
 
     public JapaneseName japaneseName() {
@@ -42,6 +43,6 @@ public class TypeDetail {
     }
 
     public boolean isTag(Tag tag) {
-        return thingTag.matches(tag);
+        return this.tag.matches(tag);
     }
 }

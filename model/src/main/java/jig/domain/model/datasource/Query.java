@@ -11,11 +11,4 @@ public class Query {
     public String extractTable(SqlType sqlType) {
         return sqlType.extractTable(text);
     }
-
-    @Override
-    public String toString() {
-        return "Query{" +
-                "text='" + text + '\'' +
-                '}';
-    }
 }

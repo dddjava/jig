@@ -26,7 +26,8 @@ public enum Tag {
     NUMBER,
     DATE,
     TERM,
-    COLLECTION;
+    COLLECTION,
+    MAPPER_METHOD;
 
     public boolean matches(Tag tag) {
         return this == tag;

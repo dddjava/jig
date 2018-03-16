@@ -1,6 +1,12 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.datasource.*;
+import jig.domain.model.datasource.Query;
+import jig.domain.model.datasource.Sql;
+import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.datasource.SqlType;
+import jig.domain.model.tag.Tag;
+import jig.domain.model.tag.TagRepository;
+import jig.domain.model.thing.Name;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -18,9 +24,11 @@ import java.util.stream.Stream;
 public class MyBatisSqlResolver {
 
     SqlRepository sqlRepository;
+    TagRepository tagRepository;
 
-    public MyBatisSqlResolver(SqlRepository sqlRepository) {
+    public MyBatisSqlResolver(SqlRepository sqlRepository, TagRepository tagRepository) {
         this.sqlRepository = sqlRepository;
+        this.tagRepository = tagRepository;
     }
 
     public void resolve(URL... urls) {
@@ -54,11 +62,13 @@ public class MyBatisSqlResolver {
                 if (obj instanceof MappedStatement) {
                     MappedStatement mappedStatement = (MappedStatement) obj;
 
-                    SqlIdentifier identifier = new SqlIdentifier(mappedStatement.getId());
+                    Name name = new Name(mappedStatement.getId());
+                    tagRepository.register(Tag.MAPPER_METHOD, name);
+
                     Query query = new Query(mappedStatement.getBoundSql(null).getSql());
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
 
-                    Sql sql = new Sql(identifier, query, sqlType);
+                    Sql sql = new Sql(name, query, sqlType);
                     sqlRepository.register(sql);
                 }
             }

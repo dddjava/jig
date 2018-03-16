@@ -1,8 +1,8 @@
 package jig.infrastructure;
 
 import jig.domain.model.datasource.Sql;
-import jig.domain.model.datasource.SqlIdentifier;
 import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.thing.Name;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class OnMemorySqlRepository implements SqlRepository {
     List<Sql> list = new ArrayList<>();
 
     @Override
-    public Sql get(SqlIdentifier sqlIdentifier) {
+    public Sql get(Name name) {
         return list.stream()
-                .filter(s -> s.identifier().equals(sqlIdentifier))
+                .filter(s -> s.name().equals(name))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }

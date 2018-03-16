@@ -1,5 +1,7 @@
 package jig.domain.model.datasource;
 
+import jig.domain.model.thing.Name;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -11,9 +13,9 @@ public class Sqls {
         this.list = list;
     }
 
-    public Sql get(SqlIdentifier sqlIdentifier) {
+    public Sql get(Name name) {
         return list.stream()
-                .filter(s -> s.identifier.equals(sqlIdentifier))
+                .filter(s -> s.name().equals(name))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
     }

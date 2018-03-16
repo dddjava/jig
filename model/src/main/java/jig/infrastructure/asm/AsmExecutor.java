@@ -4,6 +4,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.ThingRepository;
 import org.objectweb.asm.ClassReader;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
+@Component
 public class AsmExecutor {
 
     private final TagRepository tagRepository;

@@ -1,4 +1,4 @@
-package jig.classlist.report.type;
+package jig.domain.model.report.type;
 
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;

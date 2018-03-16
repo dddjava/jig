@@ -1,8 +1,8 @@
 package jig.classlist.infrastructure.writer;
 
 import jig.classlist.ReportWriter;
-import jig.classlist.report.Report;
-import jig.classlist.report.ReportRow;
+import jig.domain.model.report.Report;
+import jig.domain.model.report.ReportRow;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

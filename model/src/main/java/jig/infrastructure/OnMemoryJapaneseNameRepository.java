@@ -4,15 +4,17 @@ import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.japanasename.JapaneseNames;
 import jig.domain.model.thing.Name;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class OnMemoryJapanaseNameRepository implements JapaneseNameRepository {
+@Repository
+public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
 
     final Map<Name, JapaneseName> map;
 
-    public OnMemoryJapanaseNameRepository() {
+    public OnMemoryJapaneseNameRepository() {
         this.map = new HashMap<>();
     }
 

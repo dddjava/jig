@@ -1,4 +1,4 @@
-package jig.classlist.report;
+package jig.domain.model.report;
 
 import java.util.List;
 import java.util.stream.Collector;

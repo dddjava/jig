@@ -1,7 +1,7 @@
-package jig.classlist.report.type;
+package jig.domain.model.report.type;
 
-import jig.classlist.report.Report;
-import jig.classlist.report.ReportRow;
+import jig.domain.model.report.Report;
+import jig.domain.model.report.ReportRow;
 
 import java.util.List;
 

@@ -42,7 +42,10 @@ subprojects {
 
 project(':model') {
     dependencies {
+        compile 'org.springframework:spring-context'
+
         compile 'org.ow2.asm:asm:6.1'
+
         compile 'com.github.javaparser:javaparser-core:3.5.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
     }

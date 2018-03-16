@@ -1,6 +1,7 @@
 package jig.shell;
 
 import jig.domain.model.jdeps.AnalysisTarget;
+import jig.infrastructure.OnMemoryJapaneseNameRepository;
 import org.assertj.core.util.Files;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,9 @@ class DiagramCommandsTest {
     private DiagramCommands initJigCommands() {
         return new DiagramCommands(
                 application.relationAnalyzer(),
-                application.getDiagramService());
+                application.getDiagramService(
+                        application.diagramConverter(
+                                new OnMemoryJapaneseNameRepository())));
     }
 
     @Test

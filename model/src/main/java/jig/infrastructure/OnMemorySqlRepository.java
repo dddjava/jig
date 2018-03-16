@@ -3,11 +3,13 @@ package jig.infrastructure;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlIdentifier;
 import jig.domain.model.datasource.SqlRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Repository
 public class OnMemorySqlRepository implements SqlRepository {
 
     List<Sql> list = new ArrayList<>();

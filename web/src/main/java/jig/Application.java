@@ -2,7 +2,7 @@ package jig;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.infrastructure.OnMemoryJapanaseNameRepository;
+import jig.infrastructure.OnMemoryJapaneseNameRepository;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -22,7 +22,7 @@ public class Application {
     public DiagramConverter diagramConverter() {
         return new PlantumlDiagramConverter(
                 new PlantumlNameFormatter(),
-                new OnMemoryJapanaseNameRepository());
+                new OnMemoryJapaneseNameRepository());
     }
 
     @Bean

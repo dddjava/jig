@@ -4,7 +4,6 @@ import jig.application.service.DiagramService;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.infrastructure.OnMemoryJapanaseNameRepository;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.DiagramRepositoryImpl;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
@@ -29,23 +28,18 @@ public class ShellApplication {
     }
 
     @Bean
-    public DiagramConverter diagramConverter() {
+    public DiagramConverter diagramConverter(JapaneseNameRepository japaneseNameRepository) {
         return new PlantumlDiagramConverter(
                 new PlantumlNameFormatter(),
-                getJapaneseNameRepository());
-    }
-
-    @Bean
-    public JapaneseNameRepository getJapaneseNameRepository() {
-        return new OnMemoryJapanaseNameRepository();
+                japaneseNameRepository);
     }
 
     @Bean
     @Primary
-    public DiagramService getDiagramService() {
+    public DiagramService getDiagramService(DiagramConverter diagramConverter) {
         return new DiagramService(
                 new DiagramRepositoryImpl(),
                 new PlantumlDiagramMaker(),
-                diagramConverter());
+                diagramConverter);
     }
 }

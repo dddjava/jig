@@ -6,6 +6,7 @@ import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 
 import static java.util.stream.Collectors.toList;
 
+@Repository
 public class OnMemoryRelationRepository implements RelationRepository {
 
     List<Relation> list = new ArrayList<>();

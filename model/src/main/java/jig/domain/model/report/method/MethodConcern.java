@@ -1,4 +1,4 @@
-package jig.classlist.report.method;
+package jig.domain.model.report.method;
 
 import java.util.function.Function;
 

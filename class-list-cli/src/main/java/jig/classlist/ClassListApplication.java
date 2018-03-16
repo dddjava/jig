@@ -1,9 +1,11 @@
 package jig.classlist;
 
-import jig.classlist.report.Report;
-import jig.classlist.report.ReportService;
+import jig.application.service.report.ReportService;
+import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.report.Report;
 import jig.domain.model.tag.Tag;
 import jig.infrastructure.asm.AsmExecutor;
+import jig.infrastructure.javaparser.ClassCommentReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -29,17 +31,24 @@ public class ClassListApplication {
     String outputPath;
     @Value("${output.list.type}")
     String listType;
+    @Value("${target.source}")
+    String sourcePath;
 
     @Autowired
     AsmExecutor asmExecutor;
     @Autowired
     ReportService reportService;
+    @Autowired
+    JapaneseNameRepository japaneseNameRepository;
 
     public void output() {
         Path[] paths = Arrays.stream(targetClasses.split(":"))
                 .map(Paths::get)
                 .toArray(Path[]::new);
         asmExecutor.load(paths);
+
+        ClassCommentReader classCommentReader = new ClassCommentReader(Paths.get(sourcePath));
+        classCommentReader.registerTo(japaneseNameRepository);
 
         Tag tag = Tag.valueOf(listType.toUpperCase());
 

@@ -1,15 +1,16 @@
-package jig.classlist.report;
+package jig.application.service.report;
 
-import jig.classlist.report.method.MethodDetail;
-import jig.classlist.report.method.MethodPerspective;
-import jig.classlist.report.method.MethodReport;
-import jig.classlist.report.type.TypeDetail;
-import jig.classlist.report.type.TypePerspective;
-import jig.classlist.report.type.TypeReport;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.Relations;
+import jig.domain.model.report.Report;
+import jig.domain.model.report.method.MethodDetail;
+import jig.domain.model.report.method.MethodPerspective;
+import jig.domain.model.report.method.MethodReport;
+import jig.domain.model.report.type.TypeDetail;
+import jig.domain.model.report.type.TypePerspective;
+import jig.domain.model.report.type.TypeReport;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.tag.ThingTag;

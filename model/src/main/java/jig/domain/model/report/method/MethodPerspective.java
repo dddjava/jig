@@ -1,6 +1,6 @@
-package jig.classlist.report.method;
+package jig.domain.model.report.method;
 
-import jig.classlist.report.ReportRow;
+import jig.domain.model.report.ReportRow;
 import jig.domain.model.tag.Tag;
 
 import java.util.Arrays;

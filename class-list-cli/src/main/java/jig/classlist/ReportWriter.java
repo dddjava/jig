@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.classlist.report.Report;
+import jig.domain.model.report.Report;
 
 import java.nio.file.Path;
 

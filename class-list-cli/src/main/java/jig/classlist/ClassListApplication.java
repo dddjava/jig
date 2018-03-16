@@ -1,7 +1,6 @@
 package jig.classlist;
 
 import jig.application.service.report.ReportService;
-import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.report.Report;
 import jig.domain.model.tag.Tag;
 import jig.infrastructure.RecursiveFileVisitor;
@@ -40,18 +39,18 @@ public class ClassListApplication {
     @Autowired
     ReportService reportService;
     @Autowired
-    JapaneseNameRepository japaneseNameRepository;
+    ClassCommentReader classCommentReader;
 
     public void output() {
         Path[] paths = Arrays.stream(targetClasses.split(":"))
                 .map(Paths::get)
                 .toArray(Path[]::new);
 
-        RecursiveFileVisitor fileVisitor = new RecursiveFileVisitor(asmClassFileReader::execute);
-        fileVisitor.visitAllDirectories(paths);
+        RecursiveFileVisitor classVisitor = new RecursiveFileVisitor(asmClassFileReader::execute);
+        classVisitor.visitAllDirectories(paths);
 
-        ClassCommentReader classCommentReader = new ClassCommentReader(Paths.get(sourcePath));
-        classCommentReader.registerTo(japaneseNameRepository);
+        RecursiveFileVisitor commentVisitor = new RecursiveFileVisitor(classCommentReader::execute);
+        commentVisitor.visitAllDirectories(Paths.get(sourcePath));
 
         Tag tag = Tag.valueOf(listType.toUpperCase());
 

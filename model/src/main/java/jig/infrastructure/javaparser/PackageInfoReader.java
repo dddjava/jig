@@ -8,54 +8,47 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
+@Component
 public class PackageInfoReader {
 
-    private Path rootPath;
+    private final JapaneseNameRepository repository;
 
-    public PackageInfoReader(Path rootPath) {
-        this.rootPath = rootPath;
+    public PackageInfoReader(JapaneseNameRepository repository) {
+        this.repository = repository;
     }
 
-    public void registerTo(JapaneseNameRepository repository) {
-        if (Files.notExists(rootPath)) {
+    public void execute(Path path) {
+        if (!path.toString().endsWith("package-info.java")) {
             return;
         }
 
-        try (Stream<Path> walk = Files.walk(rootPath)) {
-            walk.filter(path -> path.toFile().getName().equals("package-info.java"))
-                    .forEach(path -> {
-                        try {
-                            CompilationUnit cu = JavaParser.parse(path);
-                            Name name = cu.accept(new GenericVisitorAdapter<Name, Void>() {
-                                @Override
-                                public Name visit(PackageDeclaration n, Void arg) {
-                                    String name = n.getNameAsString();
-                                    return new Name(name);
-                                }
-                            }, null);
+        try {
+            CompilationUnit cu = JavaParser.parse(path);
+            Name name = cu.accept(new GenericVisitorAdapter<Name, Void>() {
+                @Override
+                public Name visit(PackageDeclaration n, Void arg) {
+                    String name = n.getNameAsString();
+                    return new Name(name);
+                }
+            }, null);
 
-                            JapaneseName japaneseName = cu.accept(new GenericVisitorAdapter<JapaneseName, Void>() {
-                                @Override
-                                public JapaneseName visit(JavadocComment n, Void arg) {
-                                    String text = n.parse().getDescription().toText();
-                                    return new JapaneseName(text);
-                                }
-                            }, null);
+            JapaneseName japaneseName = cu.accept(new GenericVisitorAdapter<JapaneseName, Void>() {
+                @Override
+                public JapaneseName visit(JavadocComment n, Void arg) {
+                    String text = n.parse().getDescription().toText();
+                    return new JapaneseName(text);
+                }
+            }, null);
 
-                            if (name != null && japaneseName != null) {
-                                repository.register(name, japaneseName);
-                            }
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    });
+            if (name != null && japaneseName != null) {
+                repository.register(name, japaneseName);
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

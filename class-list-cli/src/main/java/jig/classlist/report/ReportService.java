@@ -1,7 +1,11 @@
 package jig.classlist.report;
 
 import jig.classlist.report.method.MethodDetail;
+import jig.classlist.report.method.MethodPerspective;
+import jig.classlist.report.method.MethodReport;
 import jig.classlist.report.type.TypeDetail;
+import jig.classlist.report.type.TypePerspective;
+import jig.classlist.report.type.TypeReport;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -27,7 +31,15 @@ public class ReportService {
     @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
-    public List<MethodDetail> methodDetails(Tag tag) {
+    public Report getReport(Tag tag) {
+        if (tag.architecture()) {
+            return getMethodReport(tag);
+        } else {
+            return getTypeReport(tag);
+        }
+    }
+
+    private Report getMethodReport(Tag tag) {
         List<MethodDetail> list = new ArrayList<>();
         Names names = tagRepository.find(tag);
         Relations methods = relationRepository.methodsOf(names);
@@ -35,15 +47,16 @@ public class ReportService {
             MethodDetail condition = new MethodDetail(methodRelation, relationRepository, japaneseNameRepository);
             list.add(condition);
         }
-        return list;
+        return new MethodReport(MethodPerspective.from(tag), list);
     }
 
-    public List<TypeDetail> typeDetails(Tag tag) {
+    private Report getTypeReport(Tag tag) {
         List<TypeDetail> list = new ArrayList<>();
         Names names = tagRepository.find(tag);
         for (Name name : names.list()) {
-            list.add(new TypeDetail(new ThingTag(name, tag), relationRepository, japaneseNameRepository));
+            TypeDetail detail = new TypeDetail(new ThingTag(name, tag), relationRepository, japaneseNameRepository);
+            list.add(detail);
         }
-        return list;
+        return new TypeReport(TypePerspective.from(tag), list);
     }
 }

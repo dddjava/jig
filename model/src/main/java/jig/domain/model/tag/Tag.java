@@ -31,4 +31,8 @@ public enum Tag {
     public boolean matches(Tag tag) {
         return this == tag;
     }
+
+    public boolean architecture() {
+        return this == SERVICE || this == REPOSITORY;
+    }
 }

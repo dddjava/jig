@@ -1,7 +1,6 @@
 package jig.classlist;
 
 import jig.classlist.report.Report;
-import jig.classlist.report.ReportPerspective;
 import jig.classlist.report.ReportService;
 import jig.domain.model.tag.Tag;
 import jig.infrastructure.asm.AsmExecutor;
@@ -44,8 +43,7 @@ public class ClassListApplication {
 
         Tag tag = Tag.valueOf(listType.toUpperCase());
 
-        ReportPerspective perspective = ReportPerspective.from(tag);
-        Report report = perspective.getReport(tag, reportService);
+        Report report = reportService.getReport(tag);
 
         ReportFormat.from(outputPath)
                 .writer()

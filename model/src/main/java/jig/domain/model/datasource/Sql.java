@@ -18,6 +18,7 @@ public class Sql {
         return sqlType;
     }
 
+    // TODO tableの型
     public String tableName() {
         return query.extractTable(sqlType);
 

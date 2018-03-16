@@ -3,6 +3,8 @@ package jig.domain.model.relation;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
+import java.util.Optional;
+
 public interface RelationRepository {
 
     void register(Relation relation);
@@ -16,4 +18,8 @@ public interface RelationRepository {
     Relations methodsOf(Names names);
 
     Relations findTo(Name toName, RelationType type);
+
+    Optional<Relation> findOne(Name from, RelationType implementation);
+
+    Optional<Relation> findToOne(Name to, RelationType type);
 }

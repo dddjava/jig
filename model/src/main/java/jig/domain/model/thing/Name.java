@@ -38,4 +38,10 @@ public class Name {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    public Name concat(Name other) {
+        // カッコより手前のドット以降
+        String substring = other.value.substring(other.value.lastIndexOf(".", other.value.lastIndexOf("(")));
+        return new Name(value + substring);
+    }
 }

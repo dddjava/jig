@@ -8,15 +8,15 @@ import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.toList;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
+
+    private static final Logger LOGGER = Logger.getLogger(OnMemoryRelationRepository.class.getName());
 
     List<Relation> list = new ArrayList<>();
 
@@ -53,12 +53,29 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Relation get(Name name, RelationType type) {
+    public Optional<Relation> findToOne(Name toName, RelationType type) {
+        return list.stream()
+                .filter(relation -> relation.relationType() == type)
+                .filter(relation -> toName.equals(relation.to()))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Relation> findOne(Name name, RelationType type) {
         return list.stream()
                 .filter(relation -> relation.from().equals(name))
                 .filter(relation -> relation.relationType() == type)
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                // 複数あった時にどうする？
+                .findFirst();
+    }
+
+    @Override
+    public Relation get(Name name, RelationType type) {
+        return findOne(name, type)
+                .orElseThrow(() -> {
+                    LOGGER.warning("関連が見当たらない。 " + "name = " + name.value() + ", type = " + type);
+                    return new NoSuchElementException();
+                });
     }
 
     @Override

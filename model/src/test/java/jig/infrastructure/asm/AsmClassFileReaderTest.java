@@ -1,15 +1,17 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.RelationType;
+import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryTagRepository;
 import jig.infrastructure.RecursiveFileVisitor;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -17,17 +19,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmClassFileReaderTest {
 
-    @Test
-    void test() throws IOException {
-        TagRepository tagRepository = new OnMemoryTagRepository();
-        RelationRepository relationRepository = new OnMemoryRelationRepository();
+    static TagRepository tagRepository = new OnMemoryTagRepository();
+    static RelationRepository relationRepository = new OnMemoryRelationRepository();
+
+    @BeforeAll
+    static void before() {
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
         AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, relationRepository);
         RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
         recursiveFileVisitor.visitAllDirectories(path);
+    }
 
+    @Test
+    void 関連() {
+        Relations datasources = relationRepository.findTo(new Name("sut.domain.model.hoge.HogeRepository"), RelationType.IMPLEMENT);
+        assertThat(datasources.list()).isNotEmpty();
+
+        Relations method = relationRepository.findTo(new Name("sut.domain.model.hoge.HogeRepository.all()"), RelationType.IMPLEMENT);
+        assertThat(method.list()).isNotEmpty();
+    }
+
+    @Test
+    void タグ() {
         assertThat(tagRepository.find(Tag.SERVICE).list()).extracting(Name::value)
                 .containsExactlyInAnyOrder(
                         "sut.application.service.CanonicalService",

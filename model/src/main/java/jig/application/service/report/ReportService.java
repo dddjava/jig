@@ -1,5 +1,6 @@
 package jig.application.service.report;
 
+import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -29,6 +30,8 @@ public class ReportService {
     @Autowired
     RelationRepository relationRepository;
     @Autowired
+    SqlRepository sqlRepository;
+    @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
     public Report getReport(Tag tag) {
@@ -44,7 +47,7 @@ public class ReportService {
         Names names = tagRepository.find(tag);
         Relations methods = relationRepository.methodsOf(names);
         for (Relation methodRelation : methods.list()) {
-            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, japaneseNameRepository);
+            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, sqlRepository, japaneseNameRepository);
             list.add(condition);
         }
         return new MethodReport(MethodPerspective.from(tag), list);

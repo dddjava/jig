@@ -3,6 +3,7 @@ package jig.infrastructure.asm;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Names;
 import org.objectweb.asm.*;
 
 import java.util.Arrays;
@@ -16,6 +17,7 @@ public class RelationReadingVisitor extends ClassVisitor {
     private final RelationRepository relationRepository;
 
     private Name className;
+    private Names interfaceNames;
 
     public RelationReadingVisitor(RelationRepository relationRepository) {
         super(Opcodes.ASM6);
@@ -25,6 +27,12 @@ public class RelationReadingVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         this.className = new Name(name.replace('/', '.'));
+
+        this.interfaceNames = Arrays.stream(interfaces)
+                .map(n -> n.replace('/', '.'))
+                .map(Name::new)
+                .peek(n -> relationRepository.register(RelationType.IMPLEMENT.of(className, n)))
+                .collect(Names.collector());
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -59,6 +67,10 @@ public class RelationReadingVisitor extends ClassVisitor {
             for (Type type : argumentTypes) {
                 Name argumentTypeName = new Name(type.getClassName());
                 relationRepository.register(RelationType.METHOD_PARAMETER.of(methodName, argumentTypeName));
+            }
+
+            for (Name interfaceName : interfaceNames.list()) {
+                relationRepository.register(RelationType.IMPLEMENT.of(methodName, interfaceName.concat(methodName)));
             }
 
             return new MethodVisitor(api) {

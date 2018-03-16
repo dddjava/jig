@@ -7,7 +7,11 @@ public enum MethodConcern {
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.methodName().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnTypeName().value()),
-    使用しているフィールドの型(detail -> detail.instructFields().asCompressText());
+    使用しているフィールドの型(detail -> detail.instructFields().asCompressText()),
+    データソースメソッド(detail -> detail.datasourceMethod().value()),
+    使用しているMapperメソッド(detail -> detail.instructMapperMethodNames().asCompressText()),
+    使用しているテーブル(detail -> detail.useTableNames()),
+    CRUD(detail -> detail.crud());
 
     private final Function<MethodDetail, String> function;
 

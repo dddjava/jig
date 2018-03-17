@@ -3,7 +3,10 @@ package jig.domain.model.datasource;
 import jig.domain.model.thing.Name;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Sqls {
 
@@ -18,5 +21,14 @@ public class Sqls {
                 .filter(s -> s.name().equals(name))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    public String crud() {
+        Map<String, Set<SqlType>> collected = list.stream()
+                .collect(Collectors.groupingBy(Sql::tableName,
+                        Collectors.mapping(
+                                Sql::sqlType,
+                                Collectors.toSet())));
+        return collected.toString();
     }
 }

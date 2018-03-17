@@ -2,7 +2,7 @@ package jig.domain.model.report.method;
 
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.datasource.SqlType;
+import jig.domain.model.datasource.Sqls;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
@@ -14,7 +14,8 @@ import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MethodDetail {
 
@@ -78,21 +79,12 @@ public class MethodDetail {
                 .collect(Names.collector());
     }
 
-    public String useTableNames() {
-        StringBuilder sb = new StringBuilder();
+    public Sqls sqls() {
+        List<Sql> sqls = new ArrayList<>();
         for (Name name : instructMapperMethodNames().list()) {
             Sql sql = sqlRepository.get(name);
-            sb.append(sql.tableName());
+            sqls.add(sql);
         }
-        return sb.toString();
-    }
-
-    public String crud() {
-        return instructMapperMethodNames()
-                .list().stream()
-                .map(sqlRepository::get)
-                .map(Sql::sqlType)
-                .map(SqlType::name)
-                .collect(Collectors.joining(","));
+        return new Sqls(sqls);
     }
 }

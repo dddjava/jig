@@ -20,8 +20,7 @@ public enum MethodPerspective {
             MethodConcern.メソッド戻り値の型,
             MethodConcern.データソースメソッド,
             MethodConcern.使用しているMapperメソッド,
-            MethodConcern.使用しているテーブル,
-            MethodConcern.CRUD,
+            MethodConcern.データベース操作
     });
 
     private final MethodConcern[] concerns;

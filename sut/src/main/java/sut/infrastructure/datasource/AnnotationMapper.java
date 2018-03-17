@@ -10,7 +10,7 @@ public interface AnnotationMapper {
     @Select("SELECT value from sut.piyo")
     List<String> select();
 
-    @Insert("INSERT into sut.piyo(id, value) values(1)")
+    @Insert("INSERT into sut.piyo(id, value) values(1, 'x')")
     void insert();
 
     @Update("UPDATE sut.piyo SET value = 'a'")

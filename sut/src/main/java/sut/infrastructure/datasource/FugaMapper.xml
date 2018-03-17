@@ -14,8 +14,8 @@
         FROM fuga
         WHERE identifier = #{value}
         <include refid="include"/>
-        <if test="value = 1">AND 2 = 2</if>
-        <if test="value = 2">AND 3 = 3</if>
+        <if test="value != null">AND 2 = 2</if>
+        <if test="value == 'ID-1'">AND 3 = 3</if>
     </select>
 
     <sql id="include">

@@ -26,10 +26,9 @@ public class RelationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.className = new Name(name.replace('/', '.'));
+        this.className = new Name(name);
 
         this.interfaceNames = Arrays.stream(interfaces)
-                .map(n -> n.replace('/', '.'))
                 .map(Name::new)
                 .peek(n -> relationRepository.register(RelationType.IMPLEMENT.of(className, n)))
                 .collect(Names.collector());
@@ -80,6 +79,14 @@ public class RelationReadingVisitor extends ClassVisitor {
                     relationRepository.register(RelationType.METHOD_USE_TYPE.of(methodName, toName(descriptor)));
 
                     super.visitFieldInsn(opcode, owner, name, descriptor);
+                }
+
+                @Override
+                public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+                    relationRepository.register(RelationType.METHOD_USE_METHOD.of(methodName,
+                            new Name(owner + "." + name)));
+
+                    super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
                 }
             };
         }

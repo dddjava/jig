@@ -107,6 +107,7 @@ project(':class-list-cli') {
 
     dependencies {
         compile project(':model')
+        compile project(':infrastructure-mybatis')
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'

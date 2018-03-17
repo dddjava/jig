@@ -9,6 +9,8 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
+import jig.domain.model.tag.Tag;
+import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
@@ -18,15 +20,18 @@ public class MethodDetail {
 
     private Relation methodRelation;
     private RelationRepository relationRepository;
+    private TagRepository tagRepository;
     private SqlRepository sqlRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
     public MethodDetail(Relation methodRelation,
                         RelationRepository relationRepository,
+                        TagRepository tagRepository,
                         SqlRepository sqlRepository,
                         JapaneseNameRepository japaneseNameRepository) {
         this.methodRelation = methodRelation;
         this.relationRepository = relationRepository;
+        this.tagRepository = tagRepository;
         this.sqlRepository = sqlRepository;
         this.japaneseNameRepository = japaneseNameRepository;
     }
@@ -64,7 +69,13 @@ public class MethodDetail {
 
     public Names instructMapperMethodNames() {
         Relations relations = relationRepository.find(datasourceMethod(), RelationType.METHOD_USE_METHOD);
-        return relations.list().stream().map(Relation::to).collect(Names.collector());
+        return relations.list().stream()
+                .map(Relation::to)
+                .filter(mapperMethod -> {
+                    Names names = tagRepository.find(Tag.MAPPER_METHOD);
+                    return names.contains(mapperMethod);
+                })
+                .collect(Names.collector());
     }
 
     public String useTableNames() {

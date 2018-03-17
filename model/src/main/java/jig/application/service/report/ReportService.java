@@ -47,7 +47,7 @@ public class ReportService {
         Names names = tagRepository.find(tag);
         Relations methods = relationRepository.methodsOf(names);
         for (Relation methodRelation : methods.list()) {
-            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, sqlRepository, japaneseNameRepository);
+            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, tagRepository, sqlRepository, japaneseNameRepository);
             list.add(condition);
         }
         return new MethodReport(MethodPerspective.from(tag), list);

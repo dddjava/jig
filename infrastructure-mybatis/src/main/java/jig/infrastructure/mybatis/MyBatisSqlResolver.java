@@ -32,7 +32,7 @@ public class MyBatisSqlResolver {
     }
 
     public void resolve(URL... urls) {
-        try (URLClassLoader classLoader = new URLClassLoader(urls)) {
+        try (URLClassLoader classLoader = new URLClassLoader(urls, MapperRegistry.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
             Configuration config = new Configuration();

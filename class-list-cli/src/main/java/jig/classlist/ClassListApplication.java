@@ -15,10 +15,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class ClassListApplication {
@@ -29,14 +27,13 @@ public class ClassListApplication {
         context.getBean(ClassListApplication.class).output();
     }
 
-    @Value("${target.class}")
-    String targetClasses;
     @Value("${output.list.name}")
     String outputPath;
     @Value("${output.list.type}")
     String listType;
-    @Value("${target.source}")
-    String sourcePath;
+
+    @Value("${project.path}")
+    String projectPath;
 
     @Autowired
     AsmClassFileReader asmClassFileReader;
@@ -46,23 +43,16 @@ public class ClassListApplication {
     ClassCommentReader classCommentReader;
 
     public void output() {
-        Path[] paths = Arrays.stream(targetClasses.split(":"))
-                .map(Paths::get)
-                .toArray(Path[]::new);
+        Path path = Paths.get(projectPath);
 
         RecursiveFileVisitor classVisitor = new RecursiveFileVisitor(asmClassFileReader::execute);
-        classVisitor.visitAllDirectories(paths);
+        classVisitor.visitAllDirectories(path);
 
         RecursiveFileVisitor commentVisitor = new RecursiveFileVisitor(classCommentReader::execute);
-        Path path = Paths.get(sourcePath);
         commentVisitor.visitAllDirectories(path);
 
         MyBatisSqlResolver myBatisSqlResolver = new MyBatisSqlResolver(sqlRepository, tagRepository);
-        try {
-            myBatisSqlResolver.resolve(path.toUri().toURL(), paths[0].toUri().toURL());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        myBatisSqlResolver.resolve(path);
 
         Tag tag = Tag.valueOf(listType.toUpperCase());
 

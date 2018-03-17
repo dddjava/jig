@@ -13,6 +13,8 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,6 +31,28 @@ public class MyBatisSqlResolver {
     public MyBatisSqlResolver(SqlRepository sqlRepository, TagRepository tagRepository) {
         this.sqlRepository = sqlRepository;
         this.tagRepository = tagRepository;
+    }
+
+    public void resolve(Path projectPath) {
+        try (Stream<Path> walk = Files.walk(projectPath)) {
+            URL[] urls = walk.filter(Files::isDirectory)
+                    .filter(path -> path.endsWith(Paths.get("build", "classes", "java", "main"))
+                            || path.endsWith(Paths.get("build", "resources", "main"))
+                    )
+                    .map(Path::toAbsolutePath)
+                    .map(path1 -> {
+                        try {
+                            return path1.toUri().toURL();
+                        } catch (MalformedURLException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    })
+                    .toArray(URL[]::new);
+
+            resolve(urls);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public void resolve(URL... urls) {

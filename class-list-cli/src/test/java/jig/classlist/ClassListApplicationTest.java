@@ -84,10 +84,8 @@ public class ClassListApplicationTest {
     }
 
     private void runApplication(File output, String listType) {
-        Path sutPath = Paths.get("..", "sut").toAbsolutePath();
         ClassListApplication.main(new String[]{
-                "--target.class=" + sutPath.resolve("build/classes/java/main"),
-                "--target.source=" + sutPath.resolve("src/main/java"),
+                "--project.path=" + Paths.get("..", "sut").toAbsolutePath(),
                 "--output.list.type=" + listType,
                 "--output.list.name=" + output.toString()
         });

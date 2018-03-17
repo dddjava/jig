@@ -118,7 +118,7 @@ project(':class-list-cli') {
     }
 
     test {
-        dependsOn ':sut:compileJava'
+        dependsOn ':sut:compileJava', ':sut:processResources'
     }
 }
 

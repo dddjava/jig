@@ -23,9 +23,7 @@ class MyBatisSqlResolverTest {
 
     @Test
     void SQLのテーブル名とCRUDを取得する() throws Exception {
-        sut.resolve(
-                Paths.get("../sut/build/classes/java/main").toUri().toURL(),
-                Paths.get("../sut/build/resources/main").toUri().toURL());
+        sut.resolve(Paths.get("../sut"));
 
         assertThat(repository.get(new Name("sut.infrastructure.datasource.FugaMapper.get")))
                 .extracting(Sql::tableName, Sql::sqlType)
@@ -47,9 +45,7 @@ class MyBatisSqlResolverTest {
 
     @Test
     void TAGが登録されている() throws Exception {
-        sut.resolve(
-                Paths.get("../sut/build/classes/java/main").toUri().toURL(),
-                Paths.get("../sut/build/resources/main").toUri().toURL());
+        sut.resolve(Paths.get("../sut"));
 
         Names names = tagRepository.find(Tag.MAPPER_METHOD);
 

@@ -21,4 +21,9 @@ public class FugaDatasource implements FugaRepository {
         annotationMapper.insert();
         return mapper.get(identifier);
     }
+
+    @Override
+    public void register(Fuga fuga) {
+        // no-op
+    }
 }

@@ -1,6 +1,7 @@
 package sut.infrastructure.datasource;
 
 import org.springframework.stereotype.Repository;
+import sut.domain.model.hoge.Hoge;
 import sut.domain.model.hoge.HogeRepository;
 import sut.domain.model.hoge.Hoges;
 
@@ -17,6 +18,7 @@ public class HogeDatasource implements HogeRepository {
 
     @Override
     public Hoges all() {
-        return new Hoges(Collections.emptyList());
+        Hoge one = mapper.findOne();
+        return new Hoges(Collections.singletonList(one));
     }
 }

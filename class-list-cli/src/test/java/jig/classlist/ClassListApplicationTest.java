@@ -37,12 +37,18 @@ public class ClassListApplicationTest {
         runApplication(output, "repository");
 
         assertThat(Files.readAllLines(output.toPath()))
-                .hasSize(3)
+                .hasSize(4)
                 .extracting(value -> value.split("\t")[0])
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         "クラス名",
-                        "sut.domain.model.hoge.HogeRepository",
-                        "sut.domain.model.fuga.FugaRepository");
+                        "sut.domain.model.fuga.FugaRepository",
+                        "sut.domain.model.fuga.FugaRepository",
+                        "sut.domain.model.hoge.HogeRepository");
+
+        assertThat(Files.readAllLines(output.toPath()).get(3))
+                .containsSubsequence("HogeRepository", "ほげリポジトリ",
+                        "all()", "Hoges", "HogeDatasource.all()"
+                );
     }
 
     @Test

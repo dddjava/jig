@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
@@ -31,9 +32,11 @@ public class AsmClassFileReader {
         }
 
         try (InputStream inputStream = Files.newInputStream(file)) {
+            SpecificationBuilder specificationBuilder = new SpecificationBuilder();
             ClassReader classReader = new ClassReader(inputStream);
             classReader.accept(new RelationReadingVisitor(relationRepository), ClassReader.SKIP_DEBUG);
-            classReader.accept(new CharacteristicClassVisitor(characteristicRepository), ClassReader.SKIP_DEBUG);
+            classReader.accept(new SpecificationReadingVisiter(specificationBuilder), ClassReader.SKIP_DEBUG);
+            Characteristic.register(characteristicRepository, specificationBuilder.build());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -1,6 +1,9 @@
 package jig.domain.model.characteristic;
 
+import jig.domain.model.specification.ClassDescriptor;
+import jig.domain.model.specification.Specification;
 import jig.domain.model.thing.Name;
+import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
@@ -68,10 +71,10 @@ public enum Characteristic {
         }
     }
 
-    public static void registerTag(CharacteristicRepository characteristicRepository, Name className, List<String> fieldDescriptors) {
+    public static void registerTag(CharacteristicRepository characteristicRepository, Name className, List<ClassDescriptor> fieldDescriptors) {
         // TODO 各々のenumに判定させる
         if (fieldDescriptors.size() == 1) {
-            String descriptor = fieldDescriptors.get(0);
+            String descriptor = fieldDescriptors.get(0).toString();
 
             switch (descriptor) {
                 case "Ljava/lang/String;":
@@ -88,11 +91,35 @@ public enum Characteristic {
                     break;
             }
         } else if (fieldDescriptors.size() == 2) {
-            String field1 = fieldDescriptors.get(0);
-            String field2 = fieldDescriptors.get(1);
+            String field1 = fieldDescriptors.get(0).toString();
+            String field2 = fieldDescriptors.get(1).toString();
             if (field1.equals(field2) && field1.equals("Ljava/time/LocalDate;")) {
                 characteristicRepository.register(className, TERM);
             }
+        }
+    }
+
+    public static void register(CharacteristicRepository characteristicRepository, Specification specification) {
+
+        registerTag(characteristicRepository, specification.name);
+        specification.annotationDescriptors.forEach(descriptor ->
+                registerTag(characteristicRepository, specification.name, descriptor.toString()));
+
+
+        if (specification.parentName.equals(new Name(Enum.class))) {
+            if ((specification.classAccess & Opcodes.ACC_FINAL) == 0) {
+                // finalでないenumは多態
+                characteristicRepository.register(specification.name, Characteristic.ENUM_POLYMORPHISM);
+            } else if (!specification.fieldDescriptors.isEmpty()) {
+                // フィールドがあるenum
+                characteristicRepository.register(specification.name, Characteristic.ENUM_PARAMETERIZED);
+            } else if (!specification.methodDescriptors.isEmpty()) {
+                characteristicRepository.register(specification.name, Characteristic.ENUM_BEHAVIOUR);
+            } else {
+                characteristicRepository.register(specification.name, Characteristic.ENUM);
+            }
+        } else {
+            registerTag(characteristicRepository, specification.name, specification.fieldDescriptors);
         }
     }
 }

@@ -2,6 +2,7 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.tag.TagRepository;
+import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +17,16 @@ public class AsmClassFileReader {
 
     private final TagRepository tagRepository;
     private final RelationRepository relationRepository;
+    private final JigPaths jigPaths;
 
-    public AsmClassFileReader(TagRepository tagRepository, RelationRepository relationRepository) {
+    public AsmClassFileReader(TagRepository tagRepository, RelationRepository relationRepository, JigPaths jigPaths) {
         this.tagRepository = tagRepository;
         this.relationRepository = relationRepository;
+        this.jigPaths = jigPaths;
     }
 
     public void execute(Path file) {
-        if (!file.toString().endsWith(".class")) {
+        if (!jigPaths.isClassFile(file)) {
             return;
         }
 

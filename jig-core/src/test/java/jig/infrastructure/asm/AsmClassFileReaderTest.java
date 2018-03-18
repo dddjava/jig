@@ -6,6 +6,7 @@ import jig.domain.model.relation.Relations;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
+import jig.infrastructure.JigPaths;
 import jig.infrastructure.OnMemoryRelationRepository;
 import jig.infrastructure.OnMemoryTagRepository;
 import jig.infrastructure.RecursiveFileVisitor;
@@ -27,7 +28,7 @@ public class AsmClassFileReaderTest {
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
-        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, relationRepository);
+        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, relationRepository, new JigPaths());
         RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
         recursiveFileVisitor.visitAllDirectories(path);
     }

@@ -12,6 +12,10 @@ public class JigPaths {
         return path.toString().endsWith(".java");
     }
 
+    public boolean isClassFile(Path path) {
+        return path.toString().endsWith(".class");
+    }
+
     public boolean isPackageInfoFile(Path path) {
         return path.toString().endsWith("package-info.java");
     }

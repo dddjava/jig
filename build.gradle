@@ -40,7 +40,7 @@ subprojects {
     }
 }
 
-project(':model') {
+project(':jig-core') {
     dependencies {
         compile 'org.springframework:spring-context'
         compile 'org.slf4j:slf4j-api'
@@ -63,7 +63,7 @@ project(':diagram-plantuml') {
     dependencies {
         compile 'org.springframework:spring-context'
         compile 'net.sourceforge.plantuml:plantuml:8059'
-        compile project(':model')
+        compile project(':jig-core')
 
         testCompile 'org.springframework:spring-test'
     }
@@ -72,7 +72,7 @@ project(':diagram-plantuml') {
 project(':infrastructure-jdeps') {
     dependencies {
         compile files("${System.getProperty('java.home')}/../lib/tools.jar")
-        compile project(':model')
+        compile project(':jig-core')
     }
 }
 
@@ -92,7 +92,7 @@ project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
-        compile project(':model')
+        compile project(':jig-core')
         compile project(':diagram-plantuml')
         compile project(':infrastructure-jdeps')
         compile 'org.springframework.boot:spring-boot-starter'
@@ -103,7 +103,7 @@ project(':class-list-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
-        compile project(':model')
+        compile project(':jig-core')
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'
@@ -136,7 +136,7 @@ project(':shell') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
-        compile project(':model')
+        compile project(':jig-core')
         compile project(':diagram-plantuml')
         compile project(':infrastructure-jdeps')
         compile 'org.springframework.boot:spring-boot-starter'

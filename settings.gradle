@@ -1,6 +1,6 @@
 rootProject.name = 'jig'
 
-include 'model',
+include 'jig-core',
         'diagram-plantuml',
         'infrastructure-jdeps',
         'package-diagram-cli',

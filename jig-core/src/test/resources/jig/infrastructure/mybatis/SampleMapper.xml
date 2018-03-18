@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jig.infrastructure.mybatis.SampleMapper">
+
+    <select id="exists" resultType="boolean">
+        SELECT true
+        FROM dual
+        WHERE identifier = #{key}
+        <include refid="include"/>
+    </select>
+
+    <sql id="include">
+        AND 1 = 1
+    </sql>
+</mapper>

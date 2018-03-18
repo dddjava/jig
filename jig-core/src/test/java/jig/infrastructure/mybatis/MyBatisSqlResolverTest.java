@@ -11,7 +11,10 @@ import jig.infrastructure.OnMemorySqlRepository;
 import jig.infrastructure.OnMemoryTagRepository;
 import org.junit.jupiter.api.Test;
 
+import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,6 +23,16 @@ class MyBatisSqlResolverTest {
     SqlRepository repository = new OnMemorySqlRepository();
     TagRepository tagRepository = new OnMemoryTagRepository();
     MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, tagRepository);
+
+    @Test
+    void test() throws Exception {
+        ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
+        URL[] urls = list.toArray(new URL[list.size()]);
+        sut.resolve(urls);
+
+        Sql sql = repository.get(new Name("jig.infrastructure.mybatis.SampleMapper.exists"));
+        assertThat(sql.tableName()).isEqualTo("dual");
+    }
 
     @Test
     void SQLのテーブル名とCRUDを取得する() throws Exception {

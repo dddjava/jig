@@ -1,25 +1,25 @@
 package jig.domain.model.report.type;
 
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.Tag;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
 public class TypeDetail {
 
     private final Name name;
-    private final Tag tag;
+    private final Characteristic characteristic;
     private RelationRepository relationRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public TypeDetail(Name name, Tag tag, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
+    public TypeDetail(Name name, Characteristic characteristic, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
         this.name = name;
-        this.tag = tag;
+        this.characteristic = characteristic;
         this.relationRepository = relationRepository;
         this.japaneseNameRepository = japaneseNameRepository;
     }
@@ -42,7 +42,7 @@ public class TypeDetail {
         return fieldRelation.list().stream().map(Relation::from).collect(Names.collector());
     }
 
-    public boolean isTag(Tag tag) {
-        return this.tag.matches(tag);
+    public boolean isTag(Characteristic characteristic) {
+        return this.characteristic.matches(characteristic);
     }
 }

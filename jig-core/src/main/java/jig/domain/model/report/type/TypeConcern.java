@@ -1,6 +1,6 @@
 package jig.domain.model.report.type;
 
-import jig.domain.model.tag.Tag;
+import jig.domain.model.characteristic.Characteristic;
 
 import java.util.function.Function;
 
@@ -8,9 +8,9 @@ public enum TypeConcern {
     クラス名(detail -> detail.name().value()),
     クラス和名(detail -> detail.japaneseName().value()),
     使用箇所(detail -> detail.usage().asCompressText()),
-    振る舞い有り(detail -> Boolean.toString(detail.isTag(Tag.ENUM_BEHAVIOUR))),
-    パラメーター有り(detail -> Boolean.toString(detail.isTag(Tag.ENUM_PARAMETERIZED))),
-    多態(detail -> Boolean.toString(detail.isTag(Tag.ENUM_POLYMORPHISM))),;
+    振る舞い有り(detail -> Boolean.toString(detail.isTag(Characteristic.ENUM_BEHAVIOUR))),
+    パラメーター有り(detail -> Boolean.toString(detail.isTag(Characteristic.ENUM_PARAMETERIZED))),
+    多態(detail -> Boolean.toString(detail.isTag(Characteristic.ENUM_POLYMORPHISM))),;
 
     private final Function<TypeDetail, String> function;
 

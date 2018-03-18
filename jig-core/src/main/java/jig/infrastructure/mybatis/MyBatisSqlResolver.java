@@ -1,11 +1,11 @@
 package jig.infrastructure.mybatis;
 
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Query;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.SqlType;
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
@@ -33,12 +33,12 @@ public class MyBatisSqlResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlResolver.class);
 
     SqlRepository sqlRepository;
-    TagRepository tagRepository;
+    CharacteristicRepository characteristicRepository;
     JigPaths jigPaths;
 
-    public MyBatisSqlResolver(SqlRepository sqlRepository, TagRepository tagRepository, JigPaths jigPaths) {
+    public MyBatisSqlResolver(SqlRepository sqlRepository, CharacteristicRepository characteristicRepository, JigPaths jigPaths) {
         this.sqlRepository = sqlRepository;
-        this.tagRepository = tagRepository;
+        this.characteristicRepository = characteristicRepository;
         this.jigPaths = jigPaths;
     }
 
@@ -96,7 +96,7 @@ public class MyBatisSqlResolver {
                     MappedStatement mappedStatement = (MappedStatement) obj;
 
                     Name name = new Name(mappedStatement.getId());
-                    tagRepository.register(name, Tag.MAPPER_METHOD);
+                    characteristicRepository.register(name, Characteristic.MAPPER_METHOD);
 
                     Query query = new Query(mappedStatement.getBoundSql(null).getSql());
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());

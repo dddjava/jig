@@ -1,7 +1,7 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.thing.Name;
 import org.objectweb.asm.*;
 
@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class TagReadingVisitor extends ClassVisitor {
+public class CharacteristicClassVisitor extends ClassVisitor {
 
-    private static final Logger LOGGER = Logger.getLogger(TagReadingVisitor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CharacteristicClassVisitor.class.getName());
 
-    private final TagRepository tagRepository;
+    private final CharacteristicRepository characteristicRepository;
 
     private Name className;
     private int classAccess;
@@ -21,9 +21,9 @@ public class TagReadingVisitor extends ClassVisitor {
     private final List<String> fieldDescriptors = new ArrayList<>();
     private final List<String> methodDescriptors = new ArrayList<>();
 
-    public TagReadingVisitor(TagRepository tagRepository) {
+    public CharacteristicClassVisitor(CharacteristicRepository characteristicRepository) {
         super(Opcodes.ASM6);
-        this.tagRepository = tagRepository;
+        this.characteristicRepository = characteristicRepository;
     }
 
     @Override
@@ -32,13 +32,13 @@ public class TagReadingVisitor extends ClassVisitor {
         this.classAccess = access;
         this.classSuperName = superName;
 
-        Tag.registerTag(tagRepository, className);
+        Characteristic.registerTag(characteristicRepository, className);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        Tag.registerTag(tagRepository, className, descriptor);
+        Characteristic.registerTag(characteristicRepository, className, descriptor);
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -68,21 +68,21 @@ public class TagReadingVisitor extends ClassVisitor {
         if (classSuperName.equals("java/lang/Enum")) {
             if ((classAccess & Opcodes.ACC_FINAL) == 0) {
                 // finalでないenumは多態
-                tagRepository.register(className, Tag.ENUM_POLYMORPHISM);
+                characteristicRepository.register(className, Characteristic.ENUM_POLYMORPHISM);
             } else if (!fieldDescriptors.isEmpty()) {
                 // フィールドがあるenum
-                tagRepository.register(className, Tag.ENUM_PARAMETERIZED);
+                characteristicRepository.register(className, Characteristic.ENUM_PARAMETERIZED);
             } else if (!methodDescriptors.isEmpty()) {
-                tagRepository.register(className, Tag.ENUM_BEHAVIOUR);
+                characteristicRepository.register(className, Characteristic.ENUM_BEHAVIOUR);
             } else {
-                tagRepository.register(className, Tag.ENUM);
+                characteristicRepository.register(className, Characteristic.ENUM);
             }
 
             super.visitEnd();
             return;
         }
 
-        Tag.registerTag(tagRepository, className, fieldDescriptors);
+        Characteristic.registerTag(characteristicRepository, className, fieldDescriptors);
         super.visitEnd();
     }
 }

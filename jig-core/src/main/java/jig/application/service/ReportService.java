@@ -1,5 +1,7 @@
 package jig.application.service;
 
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
@@ -12,8 +14,6 @@ import jig.domain.model.report.method.MethodReport;
 import jig.domain.model.report.type.TypeDetail;
 import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import java.util.List;
 public class ReportService {
 
     @Autowired
-    TagRepository tagRepository;
+    CharacteristicRepository characteristicRepository;
     @Autowired
     RelationRepository relationRepository;
     @Autowired
@@ -34,32 +34,32 @@ public class ReportService {
     @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
-    public Report getReport(Tag tag) {
-        if (tag.architecture()) {
-            return getMethodReport(tag);
+    public Report getReport(Characteristic characteristic) {
+        if (characteristic.architecture()) {
+            return getMethodReport(characteristic);
         } else {
-            return getTypeReport(tag);
+            return getTypeReport(characteristic);
         }
     }
 
-    private Report getMethodReport(Tag tag) {
+    private Report getMethodReport(Characteristic characteristic) {
         List<MethodDetail> list = new ArrayList<>();
-        Names names = tagRepository.find(tag);
+        Names names = characteristicRepository.find(characteristic);
         Relations methods = relationRepository.methodsOf(names);
         for (Relation methodRelation : methods.list()) {
-            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, tagRepository, sqlRepository, japaneseNameRepository);
+            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
             list.add(condition);
         }
-        return new MethodReport(MethodPerspective.from(tag), list);
+        return new MethodReport(MethodPerspective.from(characteristic), list);
     }
 
-    private Report getTypeReport(Tag tag) {
+    private Report getTypeReport(Characteristic characteristic) {
         List<TypeDetail> list = new ArrayList<>();
-        Names names = tagRepository.find(tag);
+        Names names = characteristicRepository.find(characteristic);
         for (Name name : names.list()) {
-            TypeDetail detail = new TypeDetail(name, tag, relationRepository, japaneseNameRepository);
+            TypeDetail detail = new TypeDetail(name, characteristic, relationRepository, japaneseNameRepository);
             list.add(detail);
         }
-        return new TypeReport(TypePerspective.from(tag), list);
+        return new TypeReport(TypePerspective.from(characteristic), list);
     }
 }

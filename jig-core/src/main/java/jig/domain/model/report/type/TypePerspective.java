@@ -1,7 +1,7 @@
 package jig.domain.model.report.type;
 
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.report.ReportRow;
-import jig.domain.model.tag.Tag;
 
 import java.util.Arrays;
 
@@ -52,8 +52,8 @@ public enum TypePerspective {
                 .collect(ReportRow.collector());
     }
 
-    public static TypePerspective from(Tag tag) {
-        if (tag.matches(Tag.ENUM)) return ENUM;
-        return valueOf(tag.name());
+    public static TypePerspective from(Characteristic characteristic) {
+        if (characteristic.matches(Characteristic.ENUM)) return ENUM;
+        return valueOf(characteristic.name());
     }
 }

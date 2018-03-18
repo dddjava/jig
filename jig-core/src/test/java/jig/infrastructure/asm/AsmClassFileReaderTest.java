@@ -1,15 +1,15 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
-import jig.infrastructure.onmemoryrepository.OnMemoryTagRepository;
 import jig.infrastructure.RecursiveFileVisitor;
+import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmClassFileReaderTest {
 
-    static TagRepository tagRepository = new OnMemoryTagRepository();
+    static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
 
     @BeforeAll
@@ -28,7 +28,7 @@ public class AsmClassFileReaderTest {
 
         Path path = Paths.get("../sut/build/classes/java/main");
 
-        AsmClassFileReader analyzer = new AsmClassFileReader(tagRepository, relationRepository, new JigPaths());
+        AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository, new JigPaths());
         RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
         recursiveFileVisitor.visitAllDirectories(path);
     }
@@ -44,34 +44,34 @@ public class AsmClassFileReaderTest {
 
     @Test
     void タグ() {
-        assertThat(tagRepository.find(Tag.SERVICE).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(Name::value)
                 .containsExactlyInAnyOrder(
                         "sut.application.service.CanonicalService",
                         "sut.application.service.ThrowsUnknownExceptionService");
 
-        assertThat(tagRepository.find(Tag.ENUM).list()).hasSize(4);
-        assertThat(tagRepository.find(Tag.ENUM_BEHAVIOUR).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(4);
+        assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.BehaviourEnum");
-        assertThat(tagRepository.find(Tag.ENUM_PARAMETERIZED).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.ParameterizedEnum");
-        assertThat(tagRepository.find(Tag.ENUM_POLYMORPHISM).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.kind.PolymorphismEnum");
 
-        assertThat(tagRepository.find(Tag.IDENTIFIER).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(Name::value)
                 .containsExactlyInAnyOrder(
                         "sut.domain.model.fuga.FugaIdentifier",
                         "sut.domain.model.fuga.FugaName");
 
-        assertThat(tagRepository.find(Tag.NUMBER).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.hoge.hogera.HogeraAmount");
 
-        assertThat(tagRepository.find(Tag.DATE).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.hoge.hogera.HogeraDate");
 
-        assertThat(tagRepository.find(Tag.TERM).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.hoge.hogera.HogeraTerm");
 
-        assertThat(tagRepository.find(Tag.COLLECTION).list()).extracting(Name::value)
+        assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(Name::value)
                 .containsExactly("sut.domain.model.hoge.Hoges");
     }
 

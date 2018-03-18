@@ -1,15 +1,15 @@
 package jig.infrastructure.mybatis;
 
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.SqlType;
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 import jig.infrastructure.JigPaths;
+import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
-import jig.infrastructure.onmemoryrepository.OnMemoryTagRepository;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyBatisSqlResolverTest {
 
     SqlRepository repository = new OnMemorySqlRepository();
-    TagRepository tagRepository = new OnMemoryTagRepository();
-    MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, tagRepository, new JigPaths());
+    CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
+    MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, characteristicRepository, new JigPaths());
 
     @Test
     void test() throws Exception {
@@ -61,7 +61,7 @@ class MyBatisSqlResolverTest {
     void TAGが登録されている() throws Exception {
         sut.resolve(Paths.get("../sut"));
 
-        Names names = tagRepository.find(Tag.MAPPER_METHOD);
+        Names names = characteristicRepository.find(Characteristic.MAPPER_METHOD);
 
         assertThat(names.list())
                 .extracting(Name::value)

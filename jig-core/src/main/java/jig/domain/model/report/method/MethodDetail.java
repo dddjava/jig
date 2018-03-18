@@ -1,5 +1,7 @@
 package jig.domain.model.report.method;
 
+import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
@@ -9,8 +11,6 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.tag.Tag;
-import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 
@@ -21,18 +21,18 @@ public class MethodDetail {
 
     private Relation methodRelation;
     private RelationRepository relationRepository;
-    private TagRepository tagRepository;
+    private CharacteristicRepository characteristicRepository;
     private SqlRepository sqlRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
     public MethodDetail(Relation methodRelation,
                         RelationRepository relationRepository,
-                        TagRepository tagRepository,
+                        CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
                         JapaneseNameRepository japaneseNameRepository) {
         this.methodRelation = methodRelation;
         this.relationRepository = relationRepository;
-        this.tagRepository = tagRepository;
+        this.characteristicRepository = characteristicRepository;
         this.sqlRepository = sqlRepository;
         this.japaneseNameRepository = japaneseNameRepository;
     }
@@ -73,7 +73,7 @@ public class MethodDetail {
         return relations.list().stream()
                 .map(Relation::to)
                 .filter(mapperMethod -> {
-                    Names names = tagRepository.find(Tag.MAPPER_METHOD);
+                    Names names = characteristicRepository.find(Characteristic.MAPPER_METHOD);
                     return names.contains(mapperMethod);
                 })
                 .collect(Names.collector());

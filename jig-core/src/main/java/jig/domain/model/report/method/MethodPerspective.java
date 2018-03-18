@@ -1,7 +1,7 @@
 package jig.domain.model.report.method;
 
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.report.ReportRow;
-import jig.domain.model.tag.Tag;
 
 import java.util.Arrays;
 
@@ -41,9 +41,9 @@ public enum MethodPerspective {
                 .collect(ReportRow.collector());
     }
 
-    public static MethodPerspective from(Tag tag) {
-        if (tag == Tag.SERVICE) return SERVICE;
-        if (tag == Tag.REPOSITORY) return REPOSITORY;
-        throw new IllegalArgumentException(tag.toString());
+    public static MethodPerspective from(Characteristic characteristic) {
+        if (characteristic == Characteristic.SERVICE) return SERVICE;
+        if (characteristic == Characteristic.REPOSITORY) return REPOSITORY;
+        throw new IllegalArgumentException(characteristic.toString());
     }
 }

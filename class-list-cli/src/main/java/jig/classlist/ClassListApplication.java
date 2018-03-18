@@ -2,8 +2,8 @@ package jig.classlist;
 
 import jig.application.service.AnalyzeService;
 import jig.application.service.ReportService;
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.report.Report;
-import jig.domain.model.tag.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -39,8 +39,8 @@ public class ClassListApplication {
         Path path = Paths.get(projectPath);
         analyzeService.analyze(path);
 
-        Tag tag = Tag.valueOf(listType.toUpperCase());
-        Report report = reportService.getReport(tag);
+        Characteristic characteristic = Characteristic.valueOf(listType.toUpperCase());
+        Report report = reportService.getReport(characteristic);
 
         ReportFormat.from(outputPath)
                 .writer()

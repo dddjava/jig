@@ -10,6 +10,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
+import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,13 +21,15 @@ import java.nio.file.Path;
 public class ClassCommentReader {
 
     private final JapaneseNameRepository repository;
+    private final JigPaths jigPaths;
 
-    public ClassCommentReader(JapaneseNameRepository repository) {
+    public ClassCommentReader(JapaneseNameRepository repository, JigPaths jigPaths) {
         this.repository = repository;
+        this.jigPaths = jigPaths;
     }
 
     public void execute(Path path) {
-        if (!path.toString().endsWith(".java")) {
+        if (!jigPaths.isJavaFile(path)) {
             return;
         }
 

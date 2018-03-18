@@ -7,6 +7,7 @@ import jig.domain.model.datasource.SqlType;
 import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
+import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -33,22 +34,22 @@ public class MyBatisSqlResolver {
 
     SqlRepository sqlRepository;
     TagRepository tagRepository;
+    JigPaths jigPaths;
 
-    public MyBatisSqlResolver(SqlRepository sqlRepository, TagRepository tagRepository) {
+    public MyBatisSqlResolver(SqlRepository sqlRepository, TagRepository tagRepository, JigPaths jigPaths) {
         this.sqlRepository = sqlRepository;
         this.tagRepository = tagRepository;
+        this.jigPaths = jigPaths;
     }
 
     public void resolve(Path projectPath) {
         try (Stream<Path> walk = Files.walk(projectPath)) {
             URL[] urls = walk.filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(Paths.get("build", "classes", "java", "main"))
-                            || path.endsWith(Paths.get("build", "resources", "main"))
-                    )
+                    .filter(jigPaths::isGradleClassPathRootDirectory)
                     .map(Path::toAbsolutePath)
-                    .map(path1 -> {
+                    .map(path -> {
                         try {
-                            return path1.toUri().toURL();
+                            return path.toUri().toURL();
                         } catch (MalformedURLException e) {
                             throw new UncheckedIOException(e);
                         }
@@ -74,11 +75,10 @@ public class MyBatisSqlResolver {
                 try (Stream<Path> walk = Files.walk(rootPath)) {
                     walk.filter(path -> path.toFile().isFile())
                             .map(rootPath::relativize)
-                            .map(Path::toString)
-                            .filter(path -> path.endsWith("Mapper.class"))
+                            .filter(jigPaths::isMapperClassFile)
                             .forEach(path -> {
                                 try {
-                                    String className = path.substring(0, path.length() - 6).replace('/', '.');
+                                    String className = jigPaths.toClassName(path);
                                     Class<?> mapperClass = classLoader.loadClass(className);
                                     mapperRegistry.addMapper(mapperClass);
                                 } catch (ClassNotFoundException | NoClassDefFoundError e) {

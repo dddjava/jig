@@ -8,6 +8,7 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.thing.Name;
+import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,13 +19,15 @@ import java.nio.file.Path;
 public class PackageInfoReader {
 
     private final JapaneseNameRepository repository;
+    private final JigPaths jigPaths;
 
-    public PackageInfoReader(JapaneseNameRepository repository) {
+    public PackageInfoReader(JapaneseNameRepository repository, JigPaths jigPaths) {
         this.repository = repository;
+        this.jigPaths = jigPaths;
     }
 
     public void execute(Path path) {
-        if (!path.toString().endsWith("package-info.java")) {
+        if (!jigPaths.isPackageInfoFile(path)) {
             return;
         }
 

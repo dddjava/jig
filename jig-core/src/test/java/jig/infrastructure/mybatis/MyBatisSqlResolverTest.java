@@ -7,6 +7,7 @@ import jig.domain.model.tag.Tag;
 import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
+import jig.infrastructure.JigPaths;
 import jig.infrastructure.OnMemorySqlRepository;
 import jig.infrastructure.OnMemoryTagRepository;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class MyBatisSqlResolverTest {
 
     SqlRepository repository = new OnMemorySqlRepository();
     TagRepository tagRepository = new OnMemoryTagRepository();
-    MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, tagRepository);
+    MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, tagRepository, new JigPaths());
 
     @Test
     void test() throws Exception {

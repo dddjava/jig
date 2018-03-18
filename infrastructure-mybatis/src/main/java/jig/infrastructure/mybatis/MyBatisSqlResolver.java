@@ -11,6 +11,8 @@ import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,6 +26,8 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class MyBatisSqlResolver {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlResolver.class);
 
     SqlRepository sqlRepository;
     TagRepository tagRepository;
@@ -63,19 +67,22 @@ public class MyBatisSqlResolver {
 
             MapperRegistry mapperRegistry = new MapperRegistry(config);
             for (URL url : classLoader.getURLs()) {
+                LOGGER.info("Mapper取り込み: " + url);
                 Path rootPath = Paths.get(url.toURI());
                 try (Stream<Path> walk = Files.walk(rootPath)) {
                     walk.filter(path -> path.toFile().isFile())
                             .map(rootPath::relativize)
                             .map(Path::toString)
-                            .filter(path -> path.endsWith(".class"))
-                            .forEach(name -> {
+                            .filter(path -> path.endsWith("Mapper.class"))
+                            .forEach(path -> {
                                 try {
-                                    Class<?> mapperClass = classLoader.loadClass(
-                                            name.substring(0, name.length() - 6).replace('/', '.'));
+                                    String className = path.substring(0, path.length() - 6).replace('/', '.');
+                                    Class<?> mapperClass = classLoader.loadClass(className);
                                     mapperRegistry.addMapper(mapperClass);
-                                } catch (ClassNotFoundException e) {
-                                    throw new RuntimeException(e);
+                                } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                                    LOGGER.warn("クラスロードに失敗: path:{}", path, e);
+                                } catch (Exception e) {
+                                    LOGGER.warn("Mapperの取り込みに失敗", e);
                                 }
                             });
                 }

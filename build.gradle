@@ -43,6 +43,8 @@ subprojects {
 project(':model') {
     dependencies {
         compile 'org.springframework:spring-context'
+        compile 'org.slf4j:slf4j-api'
+        compile 'ch.qos.logback:logback-classic'
 
         compile 'org.ow2.asm:asm:6.1'
 

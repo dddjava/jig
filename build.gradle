@@ -48,8 +48,14 @@ project(':model') {
 
         compile 'org.ow2.asm:asm:6.1'
 
+        compile 'org.mybatis:mybatis:3.4.5'
+
         compile 'com.github.javaparser:javaparser-core:3.5.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+    }
+
+    test {
+        dependsOn ':sut:compileJava', ':sut:processResources'
     }
 }
 
@@ -67,17 +73,6 @@ project(':infrastructure-jdeps') {
     dependencies {
         compile files("${System.getProperty('java.home')}/../lib/tools.jar")
         compile project(':model')
-    }
-}
-
-project(':infrastructure-mybatis') {
-    dependencies {
-        compile 'org.mybatis:mybatis:3.4.5'
-        compile project(':model')
-    }
-
-    test {
-        dependsOn ':sut:compileJava', ':sut:processResources'
     }
 }
 
@@ -109,7 +104,6 @@ project(':class-list-cli') {
 
     dependencies {
         compile project(':model')
-        compile project(':infrastructure-mybatis')
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'

@@ -1,7 +1,7 @@
 package jig.shell;
 
 import jig.domain.model.jdeps.AnalysisTarget;
-import jig.infrastructure.OnMemoryJapaneseNameRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.assertj.core.util.Files;
 import org.junit.jupiter.api.Test;
 

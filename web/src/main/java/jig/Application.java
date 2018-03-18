@@ -2,7 +2,7 @@ package jig;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.infrastructure.OnMemoryJapaneseNameRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;

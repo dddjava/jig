@@ -1,4 +1,4 @@
-package jig.infrastructure;
+package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;

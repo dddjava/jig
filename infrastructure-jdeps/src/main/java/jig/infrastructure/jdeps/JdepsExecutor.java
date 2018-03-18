@@ -7,7 +7,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Name;
-import jig.infrastructure.OnMemoryRelationRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;

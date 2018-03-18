@@ -8,8 +8,8 @@ import jig.domain.model.tag.TagRepository;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.OnMemorySqlRepository;
-import jig.infrastructure.OnMemoryTagRepository;
+import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryTagRepository;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;

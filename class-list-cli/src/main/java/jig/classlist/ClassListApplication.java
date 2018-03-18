@@ -1,7 +1,7 @@
 package jig.classlist;
 
 import jig.application.service.AnalyzeService;
-import jig.application.service.report.ReportService;
+import jig.application.service.ReportService;
 import jig.domain.model.report.Report;
 import jig.domain.model.tag.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

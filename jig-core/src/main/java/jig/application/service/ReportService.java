@@ -1,4 +1,4 @@
-package jig.application.service.report;
+package jig.application.service;
 
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.japanasename.JapaneseNameRepository;

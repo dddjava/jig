@@ -32,30 +32,13 @@ public class TagReadingVisitor extends ClassVisitor {
         this.classAccess = access;
         this.classSuperName = superName;
 
-        if (className.value().endsWith("Repository")) {
-            tagRepository.register(className, Tag.REPOSITORY);
-        }
-
+        Tag.registerTag(tagRepository, className);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        switch (descriptor) {
-            case "Lorg/springframework/stereotype/Service;":
-                tagRepository.register(className, Tag.SERVICE);
-                break;
-            case "Lorg/springframework/stereotype/Repository;":
-                tagRepository.register(className, Tag.DATASOURCE);
-                break;
-            case "Lorg/apache/ibatis/annotations/Mapper;":
-                tagRepository.register(className, Tag.MAPPER);
-                break;
-            default:
-                LOGGER.info(className.value() + "のアノテーションをスキップしました。: " + descriptor);
-                break;
-        }
-
+        Tag.registerTag(tagRepository, className, descriptor);
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -95,34 +78,11 @@ public class TagReadingVisitor extends ClassVisitor {
                 tagRepository.register(className, Tag.ENUM);
             }
 
+            super.visitEnd();
             return;
         }
 
-        if (fieldDescriptors.size() == 1) {
-            String descriptor = fieldDescriptors.get(0);
-
-            switch (descriptor) {
-                case "Ljava/lang/String;":
-                    tagRepository.register(className, Tag.IDENTIFIER);
-                    break;
-                case "Ljava/math/BigDecimal;":
-                    tagRepository.register(className, Tag.NUMBER);
-                    break;
-                case "Ljava/util/List;":
-                    tagRepository.register(className, Tag.COLLECTION);
-                    break;
-                case "Ljava/time/LocalDate;":
-                    tagRepository.register(className, Tag.DATE);
-                    break;
-            }
-        } else if (fieldDescriptors.size() == 2) {
-            String field1 = fieldDescriptors.get(0);
-            String field2 = fieldDescriptors.get(1);
-            if (field1.equals(field2) && field1.equals("Ljava/time/LocalDate;")) {
-                tagRepository.register(className, Tag.TERM);
-            }
-        }
-
+        Tag.registerTag(tagRepository, className, fieldDescriptors);
         super.visitEnd();
     }
 }

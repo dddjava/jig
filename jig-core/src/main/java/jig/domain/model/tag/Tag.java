@@ -3,6 +3,8 @@ package jig.domain.model.tag;
 public enum Tag {
     SERVICE,
     REPOSITORY,
+    DATASOURCE,
+    MAPPER,
     ENUM,
     ENUM_PARAMETERIZED {
         @Override

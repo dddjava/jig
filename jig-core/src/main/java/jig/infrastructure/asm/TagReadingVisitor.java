@@ -32,7 +32,6 @@ public class TagReadingVisitor extends ClassVisitor {
         this.classAccess = access;
         this.classSuperName = superName;
 
-        // TODO RepositoryインタフェースとDatasourceの関連
         if (className.value().endsWith("Repository")) {
             tagRepository.register(className, Tag.REPOSITORY);
         }
@@ -47,8 +46,10 @@ public class TagReadingVisitor extends ClassVisitor {
                 tagRepository.register(className, Tag.SERVICE);
                 break;
             case "Lorg/springframework/stereotype/Repository;":
-                // TODO RepositoryインタフェースとDatasourceの関連
-                //tagRepository.register(className, Tag.REPOSITORY);
+                tagRepository.register(className, Tag.DATASOURCE);
+                break;
+            case "Lorg/apache/ibatis/annotations/Mapper;":
+                tagRepository.register(className, Tag.MAPPER);
                 break;
             default:
                 LOGGER.info(className.value() + "のアノテーションをスキップしました。: " + descriptor);

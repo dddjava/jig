@@ -41,17 +41,24 @@ public class ClassListApplication {
 
     public void output() {
         long startTime = System.currentTimeMillis();
+
+        LOGGER.info("解析をはじめます");
+
         Path path = Paths.get(projectPath);
         analyzeService.analyze(path);
 
+        LOGGER.info("レポートデータの準備をはじめます");
+
         Characteristic characteristic = Characteristic.valueOf(listType.toUpperCase());
         Report report = reportService.getReport(characteristic);
+
+        LOGGER.info("ファイルに書き出します");
 
         ReportFormat.from(outputPath)
                 .writer()
                 .writeTo(report, Paths.get(outputPath));
 
-        LOGGER.info("所用時間: {} ms", System.currentTimeMillis() - startTime);
+        LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 }
 

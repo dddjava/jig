@@ -1,5 +1,6 @@
 package jig.domain.model.relation;
 
+import jig.domain.model.specification.MethodDescriptor;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.thing.Name;
 import org.objectweb.asm.Type;
@@ -34,7 +35,7 @@ public enum RelationType {
 
         specification.methodDescriptors.forEach(methodDescriptor -> {
             String descriptor = methodDescriptor.descriptor;
-            String name = methodDescriptor.name;
+            String name = methodDescriptor.methodName;
             Name className = specification.name;
 
             // パラメーターの型
@@ -57,6 +58,18 @@ public enum RelationType {
             for (Name interfaceName : specification.interfaceNames.list()) {
                 repository.register(RelationType.IMPLEMENT.of(methodName, interfaceName.concat(methodName)));
             }
+
+            registerMethodInstruction(repository, methodDescriptor);
+        });
+    }
+
+    private static void registerMethodInstruction(RelationRepository repository, MethodDescriptor methodDescriptor) {
+        methodDescriptor.usingFieldTypeNames.forEach(fieldTypeName -> {
+            repository.register(RelationType.METHOD_USE_TYPE.of(methodDescriptor.name, fieldTypeName));
+        });
+
+        methodDescriptor.usingMethodNames.forEach(methodName -> {
+            repository.register(RelationType.METHOD_USE_METHOD.of(methodDescriptor.name, methodName));
         });
     }
 }

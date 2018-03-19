@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.specification.MethodDescriptor;
 import org.objectweb.asm.*;
 
 public class SpecificationReadingVisitor extends ClassVisitor {
@@ -41,7 +42,9 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         // インスタンスメソッドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
-            this.specificationBuilder.withInstanceMethod(name, descriptor);
+            MethodDescriptor methodDescriptor = this.specificationBuilder.newInstanceMethod(name, descriptor);
+
+            return new SpecificationReadingMethodVisitor(this.api, methodDescriptor);
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }

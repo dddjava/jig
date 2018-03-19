@@ -51,9 +51,11 @@ public class SpecificationBuilder {
         return this;
     }
 
-    public SpecificationBuilder withInstanceMethod(String name, String descriptor) {
-        this.methodDescriptors.add(new MethodDescriptor(name, descriptor));
-        return this;
+    public MethodDescriptor newInstanceMethod(String methodName, String descriptor) {
+        MethodDescriptor methodDescriptor = new MethodDescriptor(name, methodName, descriptor);
+
+        this.methodDescriptors.add(methodDescriptor);
+        return methodDescriptor;
     }
 
     public Specification build() {

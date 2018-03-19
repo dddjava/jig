@@ -2,6 +2,7 @@ package jig.domain.model.report.type;
 
 import jig.domain.model.report.Report;
 import jig.domain.model.report.ReportRow;
+import jig.domain.model.report.Title;
 
 import java.util.List;
 
@@ -15,6 +16,11 @@ public class TypeReport implements Report {
     public TypeReport(TypePerspective perspective, List<TypeDetail> list) {
         this.perspective = perspective;
         this.list = list;
+    }
+
+    @Override
+    public Title title() {
+        return new Title(perspective.name());
     }
 
     @Override

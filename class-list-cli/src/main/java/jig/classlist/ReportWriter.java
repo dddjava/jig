@@ -1,9 +1,10 @@
 package jig.classlist;
 
-import jig.domain.model.report.Report;
+import jig.domain.model.report.Reports;
 
 import java.nio.file.Path;
 
 public interface ReportWriter {
-    void writeTo(Report report, Path output);
+
+    void writeTo(Reports reports, Path output);
 }

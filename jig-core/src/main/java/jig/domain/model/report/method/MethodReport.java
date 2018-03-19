@@ -2,6 +2,7 @@ package jig.domain.model.report.method;
 
 import jig.domain.model.report.Report;
 import jig.domain.model.report.ReportRow;
+import jig.domain.model.report.Title;
 
 import java.util.List;
 
@@ -15,6 +16,11 @@ public class MethodReport implements Report {
     public MethodReport(MethodPerspective perspective, List<MethodDetail> list) {
         this.perspective = perspective;
         this.list = list;
+    }
+
+    @Override
+    public Title title() {
+        return new Title(perspective.name());
     }
 
     @Override

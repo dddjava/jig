@@ -1,8 +1,8 @@
 package jig.classlist.infrastructure.writer;
 
 import jig.classlist.ReportWriter;
-import jig.domain.model.report.Report;
 import jig.domain.model.report.ReportRow;
+import jig.domain.model.report.Reports;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -21,15 +21,18 @@ public class ExcelWriter implements ReportWriter {
     private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
 
     @Override
-    public void writeTo(Report report, Path output) {
+    public void writeTo(Reports reports, Path output) {
         try (Workbook book = new XSSFWorkbook();
              OutputStream os = Files.newOutputStream(output)) {
-            Sheet sheet = book.createSheet();
-            writeRow(report.headerRow(), sheet.createRow(0));
 
-            for (ReportRow row : report.rows()) {
-                writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
-            }
+            reports.each(report -> {
+                Sheet sheet = book.createSheet(report.title().value());
+                writeRow(report.headerRow(), sheet.createRow(0));
+
+                for (ReportRow row : report.rows()) {
+                    writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
+                }
+            });
 
             book.write(os);
             logger.info(output.toAbsolutePath() + "を出力しました。");

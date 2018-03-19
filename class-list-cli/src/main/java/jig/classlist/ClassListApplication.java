@@ -3,7 +3,7 @@ package jig.classlist;
 import jig.application.service.AnalyzeService;
 import jig.application.service.ReportService;
 import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.report.Report;
+import jig.domain.model.report.Reports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +28,6 @@ public class ClassListApplication {
 
     @Value("${output.list.name}")
     String outputPath;
-    @Value("${output.list.type}")
-    String listType;
 
     @Value("${project.path}")
     String projectPath;
@@ -49,16 +47,27 @@ public class ClassListApplication {
 
         LOGGER.info("レポートデータの準備をはじめます");
 
-        Characteristic characteristic = Characteristic.valueOf(listType.toUpperCase());
-        Report report = reportService.getReport(characteristic);
+        Reports reports = getReports();
 
         LOGGER.info("ファイルに書き出します");
 
         ReportFormat.from(outputPath)
                 .writer()
-                .writeTo(report, Paths.get(outputPath));
+                .writeTo(reports, Paths.get(outputPath));
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    private Reports getReports() {
+        return new Reports(
+                reportService.getReport(Characteristic.SERVICE),
+                reportService.getReport(Characteristic.REPOSITORY),
+                reportService.getReport(Characteristic.ENUM),
+                reportService.getReport(Characteristic.COLLECTION),
+                reportService.getReport(Characteristic.IDENTIFIER),
+                reportService.getReport(Characteristic.NUMBER),
+                reportService.getReport(Characteristic.DATE),
+                reportService.getReport(Characteristic.TERM));
     }
 }
 

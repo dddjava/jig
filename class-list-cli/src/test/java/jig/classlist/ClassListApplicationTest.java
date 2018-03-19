@@ -18,6 +18,7 @@ public class ClassListApplicationTest {
         File output = temporaryFolder.resolve("output.tsv").toFile();
         runApplication(output, "service");
 
+        output = new File(output.getParentFile(), "SERVICE_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
                 .hasSize(5)
                 .extracting(value -> value.split("\t")[0])
@@ -36,6 +37,7 @@ public class ClassListApplicationTest {
         File output = temporaryFolder.resolve("output.tsv").toFile();
         runApplication(output, "repository");
 
+        output = new File(output.getParentFile(), "REPOSITORY_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
                 .hasSize(4)
                 .extracting(value -> value.split("\t")[0])
@@ -60,6 +62,7 @@ public class ClassListApplicationTest {
         File output = temporaryFolder.resolve("output.tsv").toFile();
         runApplication(output, "identifier");
 
+        output = new File(output.getParentFile(), "IDENTIFIER_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
                 .extracting(value -> value.split("\t")[0])
                 .containsExactlyInAnyOrder(
@@ -73,6 +76,7 @@ public class ClassListApplicationTest {
         File output = temporaryFolder.resolve("output.tsv").toFile();
         runApplication(output, "enum");
 
+        output = new File(output.getParentFile(), "ENUM_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
                 .extracting(value -> value.split("\t")[0])
                 .containsExactlyInAnyOrder(

@@ -1,6 +1,6 @@
 # class-list-cli
 
-クラスの情報をテキスト出力します。
+クラスの情報を出力します。
 
 ## 実行
 
@@ -11,8 +11,11 @@ java -jar class-list-cli.jar
 ## プロパティ
 
 ```
-output.list.type=service # service or repository
 output.list.name=output.tsv
-target.class=./sut/build/classes/java/main
-target.source=./sut/src/main/java
+project.path=./sut
 ```
+
+出力形式はtsvとxlsx。
+
+GradleのJavaプロジェクトに対応。
+`project.path` 配下の `src/main/java`, `build/classes/java/main`, `build/resources/main` ディレクトリから情報を取得します。

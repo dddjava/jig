@@ -67,7 +67,6 @@ public class MyBatisSqlResolver {
 
             Configuration config = new Configuration();
 
-            MapperRegistry mapperRegistry = new MapperRegistry(config);
             for (URL url : classLoader.getURLs()) {
                 LOGGER.info("Mapper取り込み: " + url);
                 Path rootPath = Paths.get(url.toURI());
@@ -79,7 +78,7 @@ public class MyBatisSqlResolver {
                                 try {
                                     String className = jigPaths.toClassName(path);
                                     Class<?> mapperClass = classLoader.loadClass(className);
-                                    mapperRegistry.addMapper(mapperClass);
+                                    config.addMapper(mapperClass);
                                 } catch (ClassNotFoundException | NoClassDefFoundError e) {
                                     LOGGER.warn("クラスロードに失敗: path:{}", path, e);
                                 } catch (Exception e) {
@@ -94,7 +93,7 @@ public class MyBatisSqlResolver {
                 if (obj instanceof MappedStatement) {
                     MappedStatement mappedStatement = (MappedStatement) obj;
 
-                    SqlIdentifier sqlIdentifier= new SqlIdentifier(mappedStatement.getId());
+                    SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
 
                     Query query = getQuery(mappedStatement);
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());

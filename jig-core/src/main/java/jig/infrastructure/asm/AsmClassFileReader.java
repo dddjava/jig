@@ -36,7 +36,7 @@ public class AsmClassFileReader {
             SpecificationBuilder specificationBuilder = new SpecificationBuilder();
             ClassReader classReader = new ClassReader(inputStream);
             classReader.accept(new RelationReadingVisitor(relationRepository), ClassReader.SKIP_DEBUG);
-            classReader.accept(new SpecificationReadingVisiter(specificationBuilder), ClassReader.SKIP_DEBUG);
+            classReader.accept(new SpecificationReadingVisitor(specificationBuilder), ClassReader.SKIP_DEBUG);
 
             Characteristic.register(characteristicRepository, specificationBuilder.build());
             RelationType.register(relationRepository, specificationBuilder.build());

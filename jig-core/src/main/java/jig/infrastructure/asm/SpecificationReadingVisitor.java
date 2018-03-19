@@ -4,13 +4,13 @@ import org.objectweb.asm.*;
 
 import java.util.logging.Logger;
 
-public class SpecificationReadingVisiter extends ClassVisitor {
+public class SpecificationReadingVisitor extends ClassVisitor {
 
-    private static final Logger LOGGER = Logger.getLogger(SpecificationReadingVisiter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SpecificationReadingVisitor.class.getName());
 
     private final SpecificationBuilder specificationBuilder;
 
-    public SpecificationReadingVisiter(SpecificationBuilder specificationBuilder) {
+    public SpecificationReadingVisitor(SpecificationBuilder specificationBuilder) {
         super(Opcodes.ASM6);
         this.specificationBuilder = specificationBuilder;
     }

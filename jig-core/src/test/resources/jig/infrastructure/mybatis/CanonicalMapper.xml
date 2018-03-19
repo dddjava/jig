@@ -26,7 +26,7 @@
     </insert>
 
     <select id="sequence_postgresql">
-        select nextval('seq_test')
+        select nextval('seq_test');
     </select>
 
 </mapper>

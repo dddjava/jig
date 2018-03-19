@@ -36,6 +36,16 @@ class MyBatisSqlResolverTest {
     }
 
     @Test
+    void 日本語テーブル名() throws Exception {
+        ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
+        URL[] urls = list.toArray(new URL[list.size()]);
+        sut.resolve(urls);
+
+        Sql sql = repository.get(new Name("jig.infrastructure.mybatis.SampleMapper.japanese"));
+        assertThat(sql.tableName()).isEqualTo("あのスキーマ.このテーブル");
+    }
+
+    @Test
     void 解析に失敗してもテーブル不明として出力できる() throws Exception {
         ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
         URL[] urls = list.toArray(new URL[list.size()]);

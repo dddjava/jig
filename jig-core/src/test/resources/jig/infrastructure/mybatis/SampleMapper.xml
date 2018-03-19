@@ -18,6 +18,12 @@
         WHERE identifier = #{key}
     </select>
 
+    <select id="japanese" resultType="string">
+        SELECT そのカラム
+        FROM あのスキーマ.このテーブル
+        WHERE キー = #{key}
+    </select>
+
     <sql id="include">
         AND 1 = 1
     </sql>

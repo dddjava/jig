@@ -1,5 +1,7 @@
 package jig.domain.model.report.method;
 
+import jig.domain.model.datasource.SqlType;
+
 import java.util.function.Function;
 
 public enum MethodConcern {
@@ -10,7 +12,10 @@ public enum MethodConcern {
     使用しているフィールドの型(detail -> detail.instructFields().asCompressText()),
     データソースメソッド(detail -> detail.datasourceMethod().value()),
     使用しているMapperメソッド(detail -> detail.instructMapperMethodNames().asCompressText()),
-    データベース操作(detail -> detail.sqls().crud());
+    DB_C(detail -> detail.sqls().tables(SqlType.INSERT)),
+    DB_R(detail -> detail.sqls().tables(SqlType.SELECT)),
+    DB_U(detail -> detail.sqls().tables(SqlType.UPDATE)),
+    DB_D(detail -> detail.sqls().tables(SqlType.DELETE));
 
     private final Function<MethodDetail, String> function;
 

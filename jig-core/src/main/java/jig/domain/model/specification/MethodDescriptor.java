@@ -19,9 +19,12 @@ public class MethodDescriptor {
         this.methodName = name;
         this.descriptor = descriptor;
 
+        this.name = new Name(className + "." + name + toArgumentSignatureString(descriptor));
+    }
+
+    private static String toArgumentSignatureString(String descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-        String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
-        this.name = new Name(className + "." + name + argumentsString);
+        return Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
     }
 
     public final List<Name> usingFieldTypeNames = new ArrayList<>();
@@ -36,7 +39,7 @@ public class MethodDescriptor {
     public void addMethodInstruction(String owner, String name, String descriptor) {
         // 使ってるメソッドがわかりたい
         Name ownerTypeName = new Name(owner);
-        String methodName = ownerTypeName.value() + "." + name;
+        String methodName = ownerTypeName.value() + "." + name + toArgumentSignatureString(descriptor);
         usingMethodNames.add(new Name(methodName));
     }
 }

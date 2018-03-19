@@ -72,17 +72,14 @@ public class MethodDetail {
         Relations relations = relationRepository.find(datasourceMethod(), RelationType.METHOD_USE_METHOD);
         return relations.list().stream()
                 .map(Relation::to)
-                .filter(mapperMethod -> {
-                    Names names = characteristicRepository.find(Characteristic.MAPPER_METHOD);
-                    return names.contains(mapperMethod);
-                })
+                .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD))
                 .collect(Names.collector());
     }
 
     public Sqls sqls() {
         List<Sql> sqls = new ArrayList<>();
         for (Name name : instructMapperMethodNames().list()) {
-            Sql sql = sqlRepository.get(name);
+            Sql sql = sqlRepository.find(name);
             sqls.add(sql);
         }
         return new Sqls(sqls);

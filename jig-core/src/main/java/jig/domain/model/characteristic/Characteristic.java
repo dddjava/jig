@@ -105,6 +105,11 @@ public enum Characteristic {
         specification.annotationDescriptors.forEach(descriptor ->
                 registerTag(characteristicRepository, specification.name, descriptor.toString()));
 
+        specification.methodDescriptors.forEach(methodDescriptor -> {
+            if (characteristicRepository.has(specification.name, MAPPER)) {
+                characteristicRepository.register(methodDescriptor.name, MAPPER_METHOD);
+            }
+        });
 
         if (specification.parentName.equals(new Name(Enum.class))) {
             if ((specification.classAccess & Opcodes.ACC_FINAL) == 0) {

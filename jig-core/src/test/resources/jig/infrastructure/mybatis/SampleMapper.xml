@@ -4,24 +4,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="jig.infrastructure.mybatis.SampleMapper">
 
-    <select id="simple" resultType="boolean">
-        SELECT true
-        FROM hoge
-        WHERE identifier = #{key}
-        <include refid="include"/>
-    </select>
-
     <select id="binding" resultType="boolean">
         <bind name="keyLength" value="key.length()"/>
         SELECT true
         FROM fuga
         WHERE identifier = #{key}
-    </select>
-
-    <select id="japanese" resultType="string">
-        SELECT そのカラム
-        FROM あのスキーマ.このテーブル
-        WHERE キー = #{key}
+        <include refid="include"/>
     </select>
 
     <sql id="include">

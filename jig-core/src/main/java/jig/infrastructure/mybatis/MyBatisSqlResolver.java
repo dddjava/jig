@@ -1,12 +1,6 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.datasource.Query;
-import jig.domain.model.datasource.Sql;
-import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.datasource.SqlType;
-import jig.domain.model.thing.Name;
+import jig.domain.model.datasource.*;
 import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
@@ -40,12 +34,10 @@ public class MyBatisSqlResolver {
     private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlResolver.class);
 
     SqlRepository sqlRepository;
-    CharacteristicRepository characteristicRepository;
     JigPaths jigPaths;
 
-    public MyBatisSqlResolver(SqlRepository sqlRepository, CharacteristicRepository characteristicRepository, JigPaths jigPaths) {
+    public MyBatisSqlResolver(SqlRepository sqlRepository, JigPaths jigPaths) {
         this.sqlRepository = sqlRepository;
-        this.characteristicRepository = characteristicRepository;
         this.jigPaths = jigPaths;
     }
 
@@ -102,13 +94,12 @@ public class MyBatisSqlResolver {
                 if (obj instanceof MappedStatement) {
                     MappedStatement mappedStatement = (MappedStatement) obj;
 
-                    Name name = new Name(mappedStatement.getId());
-                    characteristicRepository.register(name, Characteristic.MAPPER_METHOD);
+                    SqlIdentifier sqlIdentifier= new SqlIdentifier(mappedStatement.getId());
 
                     Query query = getQuery(mappedStatement);
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
 
-                    Sql sql = new Sql(name, query, sqlType);
+                    Sql sql = new Sql(sqlIdentifier, query, sqlType);
                     sqlRepository.register(sql);
                 }
             }

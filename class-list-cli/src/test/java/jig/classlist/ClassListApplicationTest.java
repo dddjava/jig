@@ -48,7 +48,7 @@ public class ClassListApplicationTest {
         assertThat(Files.readAllLines(output.toPath()).get(3))
                 .containsSubsequence("HogeRepository", "ほげリポジトリ",
                         "all()", "Hoges", "HogeDatasource.all()",
-                        "[s.i.d.H.findOne]", "HOGE");
+                        "[s.i.d.H.findOne()]", "HOGE");
         assertThat(Files.readAllLines(output.toPath()).get(1))
                 .containsSubsequence("FugaRepository", "",
                         "get", "Fuga", "FugaDatasource",

@@ -8,4 +8,6 @@ public interface CharacteristicRepository {
     Names find(Characteristic characteristic);
 
     void register(Name name, Characteristic characteristic);
+
+    boolean has(Name name, Characteristic mapper);
 }

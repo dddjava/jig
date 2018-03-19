@@ -1,15 +1,13 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.thing.Name;
-
 public class Sql {
 
-    Name name;
+    SqlIdentifier identifier;
     Query query;
     SqlType sqlType;
 
-    public Sql(Name name, Query query, SqlType sqlType) {
-        this.name = name;
+    public Sql(SqlIdentifier identifier, Query query, SqlType sqlType) {
+        this.identifier = identifier;
         this.query = query;
         this.sqlType = sqlType;
     }
@@ -24,7 +22,7 @@ public class Sql {
 
     }
 
-    public Name name() {
-        return name;
+    public SqlIdentifier identifier() {
+        return identifier;
     }
 }

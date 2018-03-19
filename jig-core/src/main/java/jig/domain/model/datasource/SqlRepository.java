@@ -4,7 +4,9 @@ import jig.domain.model.thing.Name;
 
 public interface SqlRepository {
 
-    Sql get(Name name);
+    Sql get(SqlIdentifier identifier);
 
     void register(Sql sql);
+
+    Sql find(Name name);
 }

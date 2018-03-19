@@ -1,14 +1,10 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
+import jig.domain.model.datasource.SqlIdentifier;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.SqlType;
-import jig.domain.model.thing.Name;
-import jig.domain.model.thing.Names;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,21 +23,16 @@ class MyBatisSqlResolverParameterizedTest {
     @MethodSource
     void test(String methodName, String tableName, SqlType sqlType) throws Exception {
         SqlRepository repository = new OnMemorySqlRepository();
-        CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
-        MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, characteristicRepository, new JigPaths());
+        MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, new JigPaths());
 
         ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
         URL[] urls = list.toArray(new URL[list.size()]);
         sut.resolve(urls);
 
-        Name sqlName = new Name("jig.infrastructure.mybatis.CanonicalMapper." + methodName);
-        Sql sql = repository.get(sqlName);
+        SqlIdentifier sqlIdentifier = new SqlIdentifier("jig.infrastructure.mybatis.CanonicalMapper." + methodName);
+        Sql sql = repository.get(sqlIdentifier);
         assertThat(sql.tableName()).isEqualTo(tableName);
         assertThat(sql.sqlType()).isEqualTo(sqlType);
-
-
-        Names names = characteristicRepository.find(Characteristic.MAPPER_METHOD);
-        assertThat(names.contains(sqlName)).isTrue();
     }
 
     static Stream<Arguments> test() {

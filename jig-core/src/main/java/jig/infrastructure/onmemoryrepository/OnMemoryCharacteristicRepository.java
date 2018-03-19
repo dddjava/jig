@@ -22,6 +22,11 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
+    public boolean has(Name name, Characteristic characteristic) {
+        return map.containsKey(characteristic) && map.get(characteristic).contains(name);
+    }
+
+    @Override
     public Names find(Characteristic characteristic) {
         return map.entrySet().stream()
                 .filter(e -> e.getKey().matches(characteristic))

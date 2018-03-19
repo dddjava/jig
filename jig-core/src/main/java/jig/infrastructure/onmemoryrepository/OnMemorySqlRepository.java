@@ -6,33 +6,30 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.thing.Name;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class OnMemorySqlRepository implements SqlRepository {
 
-    List<Sql> list = new ArrayList<>();
+    Map<SqlIdentifier, Sql> map = new HashMap<>();
 
     @Override
-    public Sql find(Name name) {
-        return list.stream()
-                .filter(sql -> sql.identifier().matches(name))
+    public Optional<Sql> find(Name name) {
+        return map.keySet().stream()
+                .filter(i -> i.matches(name))
                 .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+                .map(map::get);
     }
 
     @Override
     public Sql get(SqlIdentifier identifier) {
-        return list.stream()
-                .filter(sql -> sql.identifier().equals(identifier))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+        return map.get(identifier);
     }
 
     @Override
     public void register(Sql sql) {
-        list.add(sql);
+        map.put(sql.identifier(), sql);
     }
 }

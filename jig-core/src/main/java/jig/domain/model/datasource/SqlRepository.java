@@ -2,11 +2,13 @@ package jig.domain.model.datasource;
 
 import jig.domain.model.thing.Name;
 
+import java.util.Optional;
+
 public interface SqlRepository {
 
-    Sql get(SqlIdentifier identifier);
+    Optional<Sql> find(Name name);
 
     void register(Sql sql);
 
-    Sql find(Name name);
+    Sql get(SqlIdentifier identifier);
 }

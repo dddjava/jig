@@ -79,8 +79,7 @@ public class MethodDetail {
     public Sqls sqls() {
         List<Sql> sqls = new ArrayList<>();
         for (Name name : instructMapperMethodNames().list()) {
-            Sql sql = sqlRepository.find(name);
-            sqls.add(sql);
+            sqlRepository.find(name).ifPresent(sqls::add);
         }
         return new Sqls(sqls);
     }

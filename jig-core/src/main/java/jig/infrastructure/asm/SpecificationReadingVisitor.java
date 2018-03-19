@@ -2,11 +2,7 @@ package jig.infrastructure.asm;
 
 import org.objectweb.asm.*;
 
-import java.util.logging.Logger;
-
 public class SpecificationReadingVisitor extends ClassVisitor {
-
-    private static final Logger LOGGER = Logger.getLogger(SpecificationReadingVisitor.class.getName());
 
     private final SpecificationBuilder specificationBuilder;
 
@@ -48,11 +44,5 @@ public class SpecificationReadingVisitor extends ClassVisitor {
             this.specificationBuilder.withInstanceMethod(name, descriptor);
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
-    }
-
-    @Override
-    public void visitEnd() {
-
-        super.visitEnd();
     }
 }

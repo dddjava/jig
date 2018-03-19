@@ -16,7 +16,7 @@ public class SpecificationBuilder {
     private String name;
     private String parent;
     private List<String> annotationDescriptors = new ArrayList<>();
-    private List<String> methodDescriptors = new ArrayList<>();
+    private List<MethodDescriptor> methodDescriptors = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
     private List<String> interfaceNames = new ArrayList<>();
     private int accessor;
@@ -51,8 +51,8 @@ public class SpecificationBuilder {
         return this;
     }
 
-    public SpecificationBuilder withInstanceMethod(String descriptor) {
-        this.methodDescriptors.add(descriptor);
+    public SpecificationBuilder withInstanceMethod(String name, String descriptor) {
+        this.methodDescriptors.add(new MethodDescriptor(name, descriptor));
         return this;
     }
 
@@ -63,7 +63,7 @@ public class SpecificationBuilder {
                 accessor,
                 interfaceNames.stream().map(Name::new).collect(Names.collector()),
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
-                methodDescriptors.stream().map(MethodDescriptor::new).collect(Collectors.toList()),
+                methodDescriptors,
                 fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
     }
 }

@@ -45,7 +45,7 @@ public class SpecificationReadingVisiter extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         // インスタンスメソッドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
-            this.specificationBuilder.withInstanceMethod(descriptor);
+            this.specificationBuilder.withInstanceMethod(name, descriptor);
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }

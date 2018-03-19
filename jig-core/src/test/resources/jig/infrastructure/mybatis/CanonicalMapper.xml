@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jig.infrastructure.mybatis.CanonicalMapper">
+
+    <insert id="insert">
+        insert into crud_test(a) values('a')
+    </insert>
+    <select id="select" resultType="string">
+        select * from crud_test
+    </select>
+    <update id="update">
+        update crud_test set a = 'a'
+    </update>
+    <delete id="delete">
+        delete from crud_test
+    </delete>
+
+</mapper>

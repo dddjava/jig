@@ -16,6 +16,7 @@ import jig.domain.model.thing.Names;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MethodDetail {
 
@@ -59,21 +60,20 @@ public class MethodDetail {
         return relations.list().stream().map(Relation::to).collect(Names.collector());
     }
 
-    public Name datasourceMethod() {
-        return relationRepository.findToOne(methodName(), RelationType.IMPLEMENT)
-                .map(Relation::from)
-                .orElseGet(() -> {
-                    // TODO ログ？
-                    return new Name("---");
-                });
+    public Optional<Name> datasourceMethod() {
+        return relationRepository
+                .findToOne(methodName(), RelationType.IMPLEMENT)
+                .map(Relation::from);
     }
 
     public Names instructMapperMethodNames() {
-        Relations relations = relationRepository.find(datasourceMethod(), RelationType.METHOD_USE_METHOD);
-        return relations.list().stream()
-                .map(Relation::to)
-                .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD))
-                .collect(Names.collector());
+        return datasourceMethod().map(name -> {
+            Relations relations = relationRepository.find(name, RelationType.METHOD_USE_METHOD);
+            return relations.list().stream()
+                    .map(Relation::to)
+                    .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD))
+                    .collect(Names.collector());
+        }).orElse(Names.empty());
     }
 
     public Sqls sqls() {

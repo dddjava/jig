@@ -1,5 +1,6 @@
 package jig.domain.model.thing;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -32,5 +33,9 @@ public class Names {
 
     public String asSimpleText() {
         return list.stream().map(Name::asSimpleText).collect(joining(",", "[", "]"));
+    }
+
+    public static Names empty() {
+        return new Names(Collections.emptyList());
     }
 }

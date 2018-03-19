@@ -1,6 +1,7 @@
 package jig.domain.model.report.method;
 
 import jig.domain.model.datasource.SqlType;
+import jig.domain.model.thing.Name;
 
 import java.util.function.Function;
 
@@ -9,9 +10,16 @@ public enum MethodConcern {
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.methodName().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnTypeName().value()),
-    使用しているフィールドの型(detail -> detail.instructFields().asCompressText()),
-    データソースメソッド(detail -> detail.datasourceMethod().value()),
-    使用しているMapperメソッド(detail -> detail.instructMapperMethodNames().asCompressText()),
+    使用しているフィールドの型(detail -> detail
+            .instructFields().asCompressText()),
+
+    // TODO Repositoryだけの関心ごとなので移動
+    データソースメソッド(detail -> detail
+            .datasourceMethod().map(Name::value)
+            // 実装しているDatasourceが見つからない場合
+            .orElse("---")),
+    使用しているMapperメソッド(detail -> detail
+            .instructMapperMethodNames().asCompressText()),
     DB_C(detail -> detail.sqls().tables(SqlType.INSERT)),
     DB_R(detail -> detail.sqls().tables(SqlType.SELECT)),
     DB_U(detail -> detail.sqls().tables(SqlType.UPDATE)),

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -18,35 +19,40 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     private static final Logger LOGGER = Logger.getLogger(OnMemoryRelationRepository.class.getName());
 
-    List<Relation> list = new ArrayList<>();
+    final EnumMap<RelationType, Set<Relation>> map;
+
+    public OnMemoryRelationRepository() {
+        map = new EnumMap<>(RelationType.class);
+        for (RelationType relationType : RelationType.values()) {
+            map.put(relationType, new HashSet<>());
+        }
+    }
 
     @Override
     public void register(Relation relation) {
-        if (list.contains(relation)) return;
-        list.add(relation);
+        map.get(relation.relationType()).add(relation);
     }
 
     @Override
     public Relations all() {
-        return new Relations(list);
+        return new Relations(map.values().stream().flatMap(Set::stream).collect(toList()));
     }
 
     @Override
     public Relations methodsOf(Names names) {
-        List<Relation> relations = list.stream()
-                .filter(relation -> relation.relationType() == RelationType.METHOD)
+        List<Relation> relations = stream(RelationType.METHOD)
                 .filter(relation -> names.contains(relation.from()))
-                // クラス名昇順、メソッド名昇順
-                .sorted(Comparator.<Relation, String>comparing(relation -> relation.from().value())
-                        .thenComparing(relation -> relation.to().value()))
                 .collect(toList());
         return new Relations(relations);
     }
 
+    private Stream<Relation> stream(RelationType relationType) {
+        return map.get(relationType).stream();
+    }
+
     @Override
     public Relations findTo(Name toName, RelationType type) {
-        List<Relation> relations = list.stream()
-                .filter(relation -> relation.relationType() == type)
+        List<Relation> relations = stream(type)
                 .filter(relation -> toName.equals(relation.to()))
                 .collect(toList());
         return new Relations(relations);
@@ -54,18 +60,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public Optional<Relation> findToOne(Name toName, RelationType type) {
-        return list.stream()
-                .filter(relation -> relation.relationType() == type)
+        return stream(type)
                 .filter(relation -> toName.equals(relation.to()))
-                .findFirst();
-    }
-
-    @Override
-    public Optional<Relation> findOne(Name name, RelationType type) {
-        return list.stream()
-                .filter(relation -> relation.from().equals(name))
-                .filter(relation -> relation.relationType() == type)
-                // 複数あった時にどうする？
                 .findFirst();
     }
 
@@ -80,10 +76,18 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public Relations find(Name name, RelationType type) {
-        List<Relation> relations = list.stream()
+        List<Relation> relations = stream(type)
                 .filter(relation -> relation.from().equals(name))
-                .filter(relation -> relation.relationType() == type)
                 .collect(toList());
         return new Relations(relations);
     }
+
+    @Override
+    public Optional<Relation> findOne(Name name, RelationType type) {
+        return stream(type)
+                .filter(relation -> relation.from().equals(name))
+                // 複数あった時にどうする？
+                .findFirst();
+    }
+
 }

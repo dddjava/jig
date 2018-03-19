@@ -5,5 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SampleMapper {
 
-    boolean exists(String key);
+    boolean simple(String key);
+
+    boolean binding(String key);
 }

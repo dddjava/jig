@@ -23,7 +23,11 @@ public enum SqlType {
             return matcher.group(1);
         }
 
-        LOGGER.warning("テーブル名がわかりません。 " + sql);
-        return "(不明)";
+        LOGGER.warning("テーブル名が解析できないSQLです。 " + sql);
+        return unexpectedTable();
+    }
+
+    public String unexpectedTable() {
+        return "（解析失敗）";
     }
 }

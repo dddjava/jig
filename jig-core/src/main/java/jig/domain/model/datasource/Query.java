@@ -9,6 +9,13 @@ public class Query {
     }
 
     public String extractTable(SqlType sqlType) {
+        if (text == null) {
+            return sqlType.unexpectedTable();
+        }
         return sqlType.extractTable(text);
+    }
+
+    public static Query unsupported() {
+        return new Query(null);
     }
 }

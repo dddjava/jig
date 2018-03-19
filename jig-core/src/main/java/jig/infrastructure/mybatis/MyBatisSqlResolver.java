@@ -98,7 +98,7 @@ public class MyBatisSqlResolver {
                     Name name = new Name(mappedStatement.getId());
                     characteristicRepository.register(name, Characteristic.MAPPER_METHOD);
 
-                    Query query = new Query(mappedStatement.getBoundSql(null).getSql());
+                    Query query = getQuery(mappedStatement);
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
 
                     Sql sql = new Sql(name, query, sqlType);
@@ -107,6 +107,15 @@ public class MyBatisSqlResolver {
             }
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private Query getQuery(MappedStatement mappedStatement) {
+        try {
+            return new Query(mappedStatement.getBoundSql(null).getSql());
+        } catch (Exception e) {
+            LOGGER.warn("クエリの取得に失敗しました", e);
+            return Query.unsupported();
         }
     }
 }

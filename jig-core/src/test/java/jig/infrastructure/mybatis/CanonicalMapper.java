@@ -25,9 +25,9 @@ public interface CanonicalMapper {
     @Delete("delete from crud_test")
     void annotationDelete();
 
-    @Select("select * from あのスキーマ.このテーブル")
-    void japanese();
+    String japanese();
 
-    @Select("SQLじゃない何かが入っているとか")
     void illegal();
+
+    int sequence_postgresql();
 }

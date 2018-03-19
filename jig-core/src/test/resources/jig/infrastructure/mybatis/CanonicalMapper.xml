@@ -17,4 +17,16 @@
         delete from crud_test
     </delete>
 
+    <select id="japanese">
+        select * from あのスキーマ.このテーブル
+    </select>
+
+    <insert id="illegal">
+        SQLじゃない何かが入っているとか
+    </insert>
+
+    <select id="sequence_postgresql">
+        select nextval('seq_test')
+    </select>
+
 </mapper>

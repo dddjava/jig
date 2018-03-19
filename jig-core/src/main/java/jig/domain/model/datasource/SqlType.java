@@ -5,10 +5,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum SqlType {
-    INSERT("insert +into +([\\w.]+).+"),
-    SELECT("select.+ from +([\\w.]+)\\b.*"),
-    UPDATE("update +([\\w.]+) .+"),
-    DELETE("delete +from +([\\w.]+)\\b.*");
+    INSERT("insert +into +([^\\s(]+).+"),
+    SELECT("select.+ from +([^\\s(]+)\\b.*"),
+    UPDATE("update +([^\\s(]+) .+"),
+    DELETE("delete +from +([^\\s(]+)\\b.*");
 
     private static final Logger LOGGER = Logger.getLogger(SqlType.class.getName());
     private final Pattern pattern;

@@ -136,8 +136,9 @@ public class MyBatisSqlResolver {
                         }
                     }
 
-                    LOGGER.warn("DynamicSqlSourceを組み立て: " + mappedStatement.getId());
-                    return new Query(sql.toString().trim());
+                    String sqlText = sql.toString().trim();
+                    LOGGER.debug("DynamicSqlSource: {} [{}]", mappedStatement.getId(), sqlText);
+                    return new Query(sqlText);
                 }
             } else {
                 return new Query(mappedStatement.getBoundSql(null).getSql());

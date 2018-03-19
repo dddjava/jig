@@ -32,12 +32,12 @@ class MyBatisSqlResolverTest {
     }
 
     @Test
-    void 解析に失敗してもテーブル不明として出力できる() throws Exception {
+    void bindを使ってても解析できる() throws Exception {
         ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
         URL[] urls = list.toArray(new URL[list.size()]);
         sut.resolve(urls);
 
         Sql sql = repository.get(new Name("jig.infrastructure.mybatis.SampleMapper.binding"));
-        assertThat(sql.tableName()).isEqualTo("（解析失敗）");
+        assertThat(sql.tableName()).isEqualTo("fuga");
     }
 }

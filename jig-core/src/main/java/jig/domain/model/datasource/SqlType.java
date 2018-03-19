@@ -1,7 +1,9 @@
 package jig.domain.model.datasource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -9,12 +11,13 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public enum SqlType {
-    INSERT("insert +into +([^\\s(]+).+"),
-    SELECT("select.+ from +([^\\s(]+)\\b.*", "select +(nextval\\('.+'\\)).*"),
-    UPDATE("update +([^\\s(]+) .+"),
-    DELETE("delete +from +([^\\s(]+)\\b.*");
+    INSERT("insert\\s+into\\s+([^\\s(]+).+"),
+    SELECT("select.+\\sfrom\\s+([^\\s(]+)\\b.*",
+            "select\\s+(nextval\\('.+'\\)).*"),
+    UPDATE("update\\s+([^\\s(]+)\\s.+"),
+    DELETE("delete\\s+from\\s+([^\\s(]+)\\b.*");
 
-    private static final Logger LOGGER = Logger.getLogger(SqlType.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlType.class);
     private final List<Pattern> patterns;
 
     SqlType(String... patterns) {
@@ -31,7 +34,7 @@ public enum SqlType {
             }
         }
 
-        LOGGER.warning("テーブル名が解析できませんでした。 [" + sql + "]");
+        LOGGER.warn("{} としてテーブル名が解析できませんでした。 [{}]", this, sql);
         return unexpectedTable();
     }
 

@@ -45,6 +45,10 @@ class MyBatisSqlResolverParameterizedTest {
                 Arguments.of("annotationSelect", "crud_test", SqlType.SELECT),
                 Arguments.of("annotationUpdate", "crud_test", SqlType.UPDATE),
                 Arguments.of("annotationDelete", "crud_test", SqlType.DELETE),
+                Arguments.of("tabInsert", "tab_test", SqlType.INSERT),
+                Arguments.of("tabSelect", "tab_test", SqlType.SELECT),
+                Arguments.of("tabUpdate", "tab_test", SqlType.UPDATE),
+                Arguments.of("tabDelete", "tab_test", SqlType.DELETE),
                 Arguments.of("japanese", "あのスキーマ.このテーブル", SqlType.SELECT),
                 Arguments.of("illegal", "（解析失敗）", SqlType.INSERT),
                 Arguments.of("sequence_postgresql", "nextval('seq_test')", SqlType.SELECT)

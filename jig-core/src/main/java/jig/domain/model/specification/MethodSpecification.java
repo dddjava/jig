@@ -15,11 +15,11 @@ public class MethodSpecification {
     public final Name name;
     public final String descriptor;
 
-    public MethodSpecification(String className, String name, String descriptor) {
+    public MethodSpecification(Name className, String name, String descriptor) {
         this.methodName = name;
         this.descriptor = descriptor;
 
-        this.name = new Name(className + "." + name + toArgumentSignatureString(descriptor));
+        this.name = new Name(className.value() + "." + name + toArgumentSignatureString(descriptor));
     }
 
     private static String toArgumentSignatureString(String descriptor) {

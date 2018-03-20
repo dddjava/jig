@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 
 public class SpecificationReadingVisitor extends ClassVisitor {
 
-    private String name;
-    private String parent;
+    private Name name;
+    private Name parent;
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
-    private List<String> interfaceNames = new ArrayList<>();
+    private Names interfaceNames;
     private int accessor;
 
     public SpecificationReadingVisitor() {
@@ -28,10 +28,10 @@ public class SpecificationReadingVisitor extends ClassVisitor {
 
     public Specification specification() {
         return new Specification(
-                new Name(name),
-                new Name(parent),
+                name,
+                parent,
                 accessor,
-                interfaceNames.stream().map(Name::new).collect(Names.collector()),
+                interfaceNames,
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
                 methodSpecifications,
                 fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
@@ -39,10 +39,10 @@ public class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.name = name;
-        this.interfaceNames.addAll(Arrays.asList(interfaces));
-        this.parent = superName;
+        this.name = new Name(name);
+        this.parent = new Name(superName);
         this.accessor = access;
+        this.interfaceNames = Arrays.stream(interfaces).map(Name::new).collect(Names.collector());
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

@@ -2,7 +2,7 @@ package jig.domain.model.characteristic;
 
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.Specification;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import org.objectweb.asm.Opcodes;
 
 import java.util.Arrays;
@@ -16,8 +16,8 @@ public enum Characteristic {
     },
     REPOSITORY {
         @Override
-        boolean isClassName(Name name) {
-            return name.value().endsWith("Repository");
+        boolean isClassName(Identifier identifier) {
+            return identifier.value().endsWith("Repository");
         }
     },
     DATASOURCE {
@@ -54,22 +54,22 @@ public enum Characteristic {
         });
 
         specification.methodSpecifications.forEach(methodDescriptor -> {
-            if (repository.has(specification.name, MAPPER)) {
-                repository.register(methodDescriptor.name, MAPPER_METHOD);
+            if (repository.has(specification.identifier, MAPPER)) {
+                repository.register(methodDescriptor.identifier, MAPPER_METHOD);
             }
         });
 
-        if (specification.parentName.equals(new Name(Enum.class))) {
+        if (specification.parentIdentifier.equals(new Identifier(Enum.class))) {
             if ((specification.classAccess & Opcodes.ACC_FINAL) == 0) {
                 // finalでないenumは多態
-                repository.register(specification.name, Characteristic.ENUM_POLYMORPHISM);
+                repository.register(specification.identifier, Characteristic.ENUM_POLYMORPHISM);
             } else if (!specification.fieldDescriptors.isEmpty()) {
                 // フィールドがあるenum
-                repository.register(specification.name, Characteristic.ENUM_PARAMETERIZED);
+                repository.register(specification.identifier, Characteristic.ENUM_PARAMETERIZED);
             } else if (!specification.methodSpecifications.isEmpty()) {
-                repository.register(specification.name, Characteristic.ENUM_BEHAVIOUR);
+                repository.register(specification.identifier, Characteristic.ENUM_BEHAVIOUR);
             }
-            repository.register(specification.name, Characteristic.ENUM);
+            repository.register(specification.identifier, Characteristic.ENUM);
         } else {
             // TODO 各々のenumに判定させる
             if (specification.fieldDescriptors.size() == 1) {
@@ -77,38 +77,38 @@ public enum Characteristic {
 
                 switch (descriptor) {
                     case "Ljava/lang/String;":
-                        repository.register(specification.name, IDENTIFIER);
+                        repository.register(specification.identifier, IDENTIFIER);
                         break;
                     case "Ljava/math/BigDecimal;":
-                        repository.register(specification.name, NUMBER);
+                        repository.register(specification.identifier, NUMBER);
                         break;
                     case "Ljava/util/List;":
-                        repository.register(specification.name, COLLECTION);
+                        repository.register(specification.identifier, COLLECTION);
                         break;
                     case "Ljava/time/LocalDate;":
-                        repository.register(specification.name, DATE);
+                        repository.register(specification.identifier, DATE);
                         break;
                 }
             } else if (specification.fieldDescriptors.size() == 2) {
                 String field1 = specification.fieldDescriptors.get(0).toString();
                 String field2 = specification.fieldDescriptors.get(1).toString();
                 if (field1.equals(field2) && field1.equals("Ljava/time/LocalDate;")) {
-                    repository.register(specification.name, TERM);
+                    repository.register(specification.identifier, TERM);
                 }
             }
         }
     }
 
     private void className(Specification specification, CharacteristicRepository repository) {
-        if (isClassName(specification.name)) repository.register(specification.name, this);
+        if (isClassName(specification.identifier)) repository.register(specification.identifier, this);
     }
 
-    boolean isClassName(Name name) {
+    boolean isClassName(Identifier identifier) {
         return false;
     }
 
     private void annotation(ClassDescriptor descriptor, Specification specification, CharacteristicRepository repository) {
-        if (isAnnotation(descriptor)) repository.register(specification.name, this);
+        if (isAnnotation(descriptor)) repository.register(specification.identifier, this);
     }
 
     boolean isAnnotation(ClassDescriptor descriptor) {

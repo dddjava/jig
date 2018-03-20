@@ -13,7 +13,7 @@ class NameTest {
     @ParameterizedTest
     @MethodSource
     void asSimpleText(String fullName, String shortText) {
-        Name hoge = new Name(fullName);
+        Identifier hoge = new Identifier(fullName);
 
         assertThat(hoge.asSimpleText()).isEqualTo(shortText);
     }
@@ -31,7 +31,7 @@ class NameTest {
     @ParameterizedTest()
     @MethodSource
     void asCompressText(String fullName, String text) {
-        Name hoge = new Name(fullName);
+        Identifier hoge = new Identifier(fullName);
 
         assertThat(hoge.asCompressText()).isEqualTo(text);
     }

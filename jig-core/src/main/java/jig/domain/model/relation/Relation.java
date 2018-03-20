@@ -1,25 +1,25 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 
 import java.util.Objects;
 
 public class Relation {
-    Name from;
-    Name to;
+    Identifier from;
+    Identifier to;
     RelationType relationType;
 
-    public Relation(Name from, Name to, RelationType relationType) {
+    public Relation(Identifier from, Identifier to, RelationType relationType) {
         this.from = from;
         this.to = to;
         this.relationType = relationType;
     }
 
-    public Name from() {
+    public Identifier from() {
         return from;
     }
 
-    public Name to() {
+    public Identifier to() {
         return to;
     }
 

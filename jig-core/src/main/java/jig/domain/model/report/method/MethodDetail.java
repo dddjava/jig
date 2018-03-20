@@ -11,7 +11,7 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.domain.model.thing.Names;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class MethodDetail {
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
-    public Name name() {
+    public Identifier name() {
         return methodRelation.from();
     }
 
@@ -46,11 +46,11 @@ public class MethodDetail {
         return japaneseNameRepository.get(name());
     }
 
-    public Name methodName() {
+    public Identifier methodName() {
         return methodRelation.to();
     }
 
-    public Name returnTypeName() {
+    public Identifier returnTypeName() {
         Relation relation = relationRepository.get(methodName(), RelationType.METHOD_RETURN_TYPE);
         return relation.to();
     }
@@ -60,7 +60,7 @@ public class MethodDetail {
         return relations.list().stream().map(Relation::to).collect(Names.collector());
     }
 
-    public Optional<Name> datasourceMethod() {
+    public Optional<Identifier> datasourceMethod() {
         return relationRepository
                 .findToOne(methodName(), RelationType.IMPLEMENT)
                 .map(Relation::from);
@@ -78,8 +78,8 @@ public class MethodDetail {
 
     public Sqls sqls() {
         List<Sql> sqls = new ArrayList<>();
-        for (Name name : instructMapperMethodNames().list()) {
-            sqlRepository.find(name).ifPresent(sqls::add);
+        for (Identifier identifier : instructMapperMethodNames().list()) {
+            sqlRepository.find(identifier).ifPresent(sqls::add);
         }
         return new Sqls(sqls);
     }

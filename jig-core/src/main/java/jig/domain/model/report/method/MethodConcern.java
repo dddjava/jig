@@ -1,7 +1,7 @@
 package jig.domain.model.report.method;
 
 import jig.domain.model.datasource.SqlType;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 
 import java.util.function.Function;
 
@@ -15,7 +15,7 @@ public enum MethodConcern {
 
     // TODO Repositoryだけの関心ごとなので移動
     データソースメソッド(detail -> detail
-            .datasourceMethod().map(Name::value)
+            .datasourceMethod().map(Identifier::value)
             // 実装しているDatasourceが見つからない場合
             .orElse("---")),
     使用しているMapperメソッド(detail -> detail

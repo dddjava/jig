@@ -2,7 +2,7 @@ package jig.domain.model.relation;
 
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import org.objectweb.asm.Type;
 
 import java.util.Arrays;
@@ -18,45 +18,45 @@ public enum RelationType {
     IMPLEMENT,
     METHOD_USE_METHOD;
 
-    public Relation of(Name from, Name to) {
+    public Relation of(Identifier from, Identifier to) {
         return new Relation(from, to, this);
     }
 
     public static void register(RelationRepository repository, Specification specification) {
 
         specification.interfaceNames.list().forEach(name -> {
-            repository.register(new Relation(specification.name, name, IMPLEMENT));
+            repository.register(new Relation(specification.identifier, name, IMPLEMENT));
         });
 
         specification.fieldDescriptors.forEach(descriptor -> {
             Type fieldType = Type.getType(descriptor.toString());
-            repository.register(RelationType.FIELD.of(specification.name, new Name(fieldType.getClassName())));
+            repository.register(RelationType.FIELD.of(specification.identifier, new Identifier(fieldType.getClassName())));
         });
 
         specification.methodSpecifications.forEach(methodDescriptor -> {
             String descriptor = methodDescriptor.descriptor;
             String name = methodDescriptor.methodName;
-            Name className = specification.name;
+            Identifier classIdentifier = specification.identifier;
 
             // パラメーターの型
             Type[] argumentTypes = Type.getArgumentTypes(descriptor);
 
             // メソッド
             String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
-            Name methodName = new Name(className.value() + "." + name + argumentsString);
-            repository.register(RelationType.METHOD.of(className, methodName));
+            Identifier methodIdentifier = new Identifier(classIdentifier.value() + "." + name + argumentsString);
+            repository.register(RelationType.METHOD.of(classIdentifier, methodIdentifier));
 
             // 戻り値の型
-            Name returnTypeName = methodDescriptor.getReturnTypeName();
-            repository.register(RelationType.METHOD_RETURN_TYPE.of(methodName, returnTypeName));
+            Identifier returnTypeIdentifier = methodDescriptor.getReturnTypeName();
+            repository.register(RelationType.METHOD_RETURN_TYPE.of(methodIdentifier, returnTypeIdentifier));
 
             for (Type type : argumentTypes) {
-                Name argumentTypeName = new Name(type.getClassName());
-                repository.register(RelationType.METHOD_PARAMETER.of(methodName, argumentTypeName));
+                Identifier argumentTypeIdentifier = new Identifier(type.getClassName());
+                repository.register(RelationType.METHOD_PARAMETER.of(methodIdentifier, argumentTypeIdentifier));
             }
 
-            for (Name interfaceName : specification.interfaceNames.list()) {
-                repository.register(RelationType.IMPLEMENT.of(methodName, interfaceName.concat(methodName)));
+            for (Identifier interfaceIdentifier : specification.interfaceNames.list()) {
+                repository.register(RelationType.IMPLEMENT.of(methodIdentifier, interfaceIdentifier.concat(methodIdentifier)));
             }
 
             registerMethodInstruction(repository, methodDescriptor);
@@ -64,12 +64,12 @@ public enum RelationType {
     }
 
     private static void registerMethodInstruction(RelationRepository repository, MethodSpecification methodSpecification) {
-        methodSpecification.usingFieldTypeNames.forEach(fieldTypeName -> {
-            repository.register(RelationType.METHOD_USE_TYPE.of(methodSpecification.name, fieldTypeName));
+        methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName -> {
+            repository.register(RelationType.METHOD_USE_TYPE.of(methodSpecification.identifier, fieldTypeName));
         });
 
-        methodSpecification.usingMethodNames.forEach(methodName -> {
-            repository.register(RelationType.METHOD_USE_METHOD.of(methodSpecification.name, methodName));
+        methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
+            repository.register(RelationType.METHOD_USE_METHOD.of(methodSpecification.identifier, methodName));
         });
     }
 }

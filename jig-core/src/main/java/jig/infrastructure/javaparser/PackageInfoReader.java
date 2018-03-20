@@ -7,7 +7,7 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Component;
 
@@ -33,11 +33,11 @@ public class PackageInfoReader {
 
         try {
             CompilationUnit cu = JavaParser.parse(path);
-            Name name = cu.accept(new GenericVisitorAdapter<Name, Void>() {
+            Identifier identifier = cu.accept(new GenericVisitorAdapter<Identifier, Void>() {
                 @Override
-                public Name visit(PackageDeclaration n, Void arg) {
+                public Identifier visit(PackageDeclaration n, Void arg) {
                     String name = n.getNameAsString();
-                    return new Name(name);
+                    return new Identifier(name);
                 }
             }, null);
 
@@ -49,8 +49,8 @@ public class PackageInfoReader {
                 }
             }, null);
 
-            if (name != null && japaneseName != null) {
-                repository.register(name, japaneseName);
+            if (identifier != null && japaneseName != null) {
+                repository.register(identifier, japaneseName);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

@@ -1,6 +1,6 @@
 package jig.infrastructure.plantuml;
 
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.domain.model.thing.NameFormatter;
 
 public class PlantumlNameFormatter implements NameFormatter {
@@ -8,8 +8,8 @@ public class PlantumlNameFormatter implements NameFormatter {
     private String nameReplacePattern = "";
 
     @Override
-    public String format(Name fullQualifiedName) {
-        String value = fullQualifiedName.value()
+    public String format(Identifier fullQualifiedIdentifier) {
+        String value = fullQualifiedIdentifier.value()
                 .replaceFirst(nameReplacePattern, "")
                 .replaceAll("\\.", "/");
         return value;

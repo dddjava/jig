@@ -1,6 +1,6 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 
 import java.util.Objects;
 
@@ -25,9 +25,9 @@ public class SqlIdentifier {
         return Objects.hash(value);
     }
 
-    public boolean matches(Name name) {
+    public boolean matches(Identifier identifier) {
         // メソッド名から引数部分を除去してマッチングする
-        String nameString = name.value();
+        String nameString = identifier.value();
         String substring = nameString.substring(0, nameString.indexOf('('));
         return substring.equals(value);
     }

@@ -2,15 +2,15 @@ package jig.domain.model.thing;
 
 import java.util.Objects;
 
-public class Name {
+public class Identifier {
 
     String value;
 
-    public Name(Class<?> clz) {
+    public Identifier(Class<?> clz) {
         this(clz.getName());
     }
 
-    public Name(String value) {
+    public Identifier(String value) {
         this.value = value.replace('/', '.');
     }
 
@@ -30,7 +30,7 @@ public class Name {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Name that = (Name) o;
+        Identifier that = (Identifier) o;
         return Objects.equals(value, that.value);
     }
 
@@ -39,9 +39,9 @@ public class Name {
         return Objects.hash(value);
     }
 
-    public Name concat(Name other) {
+    public Identifier concat(Identifier other) {
         // カッコより手前のドット以降
         String substring = other.value.substring(other.value.lastIndexOf(".", other.value.lastIndexOf("(")));
-        return new Name(value + substring);
+        return new Identifier(value + substring);
     }
 }

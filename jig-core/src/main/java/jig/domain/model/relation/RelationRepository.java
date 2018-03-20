@@ -1,6 +1,6 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.domain.model.thing.Names;
 
 import java.util.Optional;
@@ -11,13 +11,13 @@ public interface RelationRepository {
 
     Relations all();
 
-    Relation get(Name name, RelationType type);
+    Relation get(Identifier identifier, RelationType type);
 
-    Relations find(Name name, RelationType type);
+    Relations find(Identifier identifier, RelationType type);
 
     Relations methodsOf(Names names);
 
-    Relations findTo(Name toName, RelationType type);
+    Relations findTo(Identifier toIdentifier, RelationType type);
 
-    Optional<Relation> findToOne(Name to, RelationType type);
+    Optional<Relation> findToOne(Identifier to, RelationType type);
 }

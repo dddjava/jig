@@ -6,7 +6,7 @@ import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 
 import java.io.IOException;
@@ -52,18 +52,18 @@ public class JdepsExecutor implements RelationAnalyzer {
         Pattern fromPattern = Pattern.compile("^ +" + packagePattern + " \\(.+\\)");
         Pattern toPattern = Pattern.compile("^ +-> " + packagePattern + " ");
 
-        Name from = null;
+        Identifier from = null;
         for (String line : string.split(System.lineSeparator())) {
             Matcher fromMatcher = fromPattern.matcher(line);
             if (fromMatcher.find()) {
-                from = new Name(fromMatcher.group(1));
+                from = new Identifier(fromMatcher.group(1));
                 continue;
             }
 
             Matcher toMatcher = toPattern.matcher(line);
             if (toMatcher.find()) {
                 if (from == null) throw new NullPointerException();
-                Name to = new Name(toMatcher.group(1));
+                Identifier to = new Identifier(toMatcher.group(1));
                 relationRepository.register(RelationType.DEPENDENCY.of(from, to));
                 continue;
             }

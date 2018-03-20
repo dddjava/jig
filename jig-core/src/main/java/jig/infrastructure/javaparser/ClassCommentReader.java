@@ -9,7 +9,7 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Component;
 
@@ -45,18 +45,18 @@ public class ClassCommentReader {
             cu.accept(new VoidVisitorAdapter<com.github.javaparser.ast.expr.Name>() {
                 @Override
                 public void visit(ClassOrInterfaceDeclaration n, com.github.javaparser.ast.expr.Name packageName) {
-                    Name fullQualifiedName = new Name(
+                    Identifier fullQualifiedIdentifier = new Identifier(
                             packageName.asString() + "." + n.getNameAsString()
                     );
 
-                    n.accept(new VoidVisitorAdapter<Name>() {
+                    n.accept(new VoidVisitorAdapter<Identifier>() {
                         @Override
-                        public void visit(JavadocComment n, Name name) {
+                        public void visit(JavadocComment n, Identifier identifier) {
                             String text = n.parse().getDescription().toText();
                             JapaneseName japaneseName = new JapaneseName(text);
-                            repository.register(name, japaneseName);
+                            repository.register(identifier, japaneseName);
                         }
-                    }, fullQualifiedName);
+                    }, fullQualifiedIdentifier);
                 }
             }, packageName);
         } catch (IOException e) {

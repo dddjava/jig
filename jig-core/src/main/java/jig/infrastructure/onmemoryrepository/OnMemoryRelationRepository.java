@@ -4,7 +4,7 @@ import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.domain.model.thing.Names;
 import org.springframework.stereotype.Repository;
 
@@ -51,40 +51,40 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Relations findTo(Name toName, RelationType type) {
+    public Relations findTo(Identifier toIdentifier, RelationType type) {
         List<Relation> relations = stream(type)
-                .filter(relation -> toName.equals(relation.to()))
+                .filter(relation -> toIdentifier.equals(relation.to()))
                 .collect(toList());
         return new Relations(relations);
     }
 
     @Override
-    public Optional<Relation> findToOne(Name toName, RelationType type) {
+    public Optional<Relation> findToOne(Identifier toIdentifier, RelationType type) {
         return stream(type)
-                .filter(relation -> toName.equals(relation.to()))
+                .filter(relation -> toIdentifier.equals(relation.to()))
                 .findFirst();
     }
 
     @Override
-    public Relation get(Name name, RelationType type) {
-        return findOne(name, type)
+    public Relation get(Identifier identifier, RelationType type) {
+        return findOne(identifier, type)
                 .orElseThrow(() -> {
-                    LOGGER.warning("関連が見当たらない。 " + "name = " + name.value() + ", type = " + type);
+                    LOGGER.warning("関連が見当たらない。 " + "identifier = " + identifier.value() + ", type = " + type);
                     return new NoSuchElementException();
                 });
     }
 
     @Override
-    public Relations find(Name name, RelationType type) {
+    public Relations find(Identifier identifier, RelationType type) {
         List<Relation> relations = stream(type)
-                .filter(relation -> relation.from().equals(name))
+                .filter(relation -> relation.from().equals(identifier))
                 .collect(toList());
         return new Relations(relations);
     }
 
-    Optional<Relation> findOne(Name name, RelationType type) {
+    Optional<Relation> findOne(Identifier identifier, RelationType type) {
         return stream(type)
-                .filter(relation -> relation.from().equals(name))
+                .filter(relation -> relation.from().equals(identifier))
                 // 複数あった時にどうする？
                 .findFirst();
     }

@@ -9,26 +9,26 @@ import static java.util.stream.Collectors.joining;
 
 public class Names {
 
-    List<Name> list;
+    List<Identifier> list;
 
-    public Names(List<Name> list) {
+    public Names(List<Identifier> list) {
         this.list = list;
     }
 
-    public List<Name> list() {
+    public List<Identifier> list() {
         return list;
     }
 
-    public static Collector<Name, ?, Names> collector() {
+    public static Collector<Identifier, ?, Names> collector() {
         return Collectors.collectingAndThen(Collectors.toList(), Names::new);
     }
 
-    public boolean contains(Name name) {
-        return list.contains(name);
+    public boolean contains(Identifier identifier) {
+        return list.contains(identifier);
     }
 
     public String asCompressText() {
-        return list.stream().map(Name::asCompressText).collect(joining(",", "[", "]"));
+        return list.stream().map(Identifier::asCompressText).collect(joining(",", "[", "]"));
     }
 
     public static Names empty() {

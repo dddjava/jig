@@ -16,7 +16,7 @@ import jig.domain.model.report.method.MethodReport;
 import jig.domain.model.report.type.TypeDetail;
 import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
-import jig.domain.model.thing.Name;
+import jig.domain.model.thing.Identifier;
 import jig.domain.model.thing.Names;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,8 +64,8 @@ public class ReportService {
         Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
         Names names = characteristicRepository.find(characteristic);
-        for (Name name : names.list()) {
-            TypeDetail detail = new TypeDetail(name, characteristic, relationRepository, japaneseNameRepository);
+        for (Identifier identifier : names.list()) {
+            TypeDetail detail = new TypeDetail(identifier, characteristic, relationRepository, japaneseNameRepository);
             list.add(detail);
         }
         return new TypeReport(perspective, list);

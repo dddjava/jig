@@ -57,7 +57,7 @@ public class ReportService {
             MethodDetail condition = new MethodDetail(methodRelation, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
             list.add(condition);
         }
-        return new MethodReport(MethodPerspective.from(characteristic), list);
+        return new MethodReport(perspective, list);
     }
 
     private Report getTypeReport(TypePerspective perspective) {
@@ -68,6 +68,6 @@ public class ReportService {
             TypeDetail detail = new TypeDetail(name, characteristic, relationRepository, japaneseNameRepository);
             list.add(detail);
         }
-        return new TypeReport(TypePerspective.from(characteristic), list);
+        return new TypeReport(perspective, list);
     }
 }

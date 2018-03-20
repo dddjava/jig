@@ -44,12 +44,6 @@ public enum MethodPerspective {
                 .collect(ReportRow.collector());
     }
 
-    public static MethodPerspective from(Characteristic characteristic) {
-        if (characteristic == Characteristic.SERVICE) return SERVICE;
-        if (characteristic == Characteristic.REPOSITORY) return REPOSITORY;
-        throw new IllegalArgumentException(characteristic.toString());
-    }
-
     public Characteristic characteristic() {
         return Characteristic.valueOf(name());
     }

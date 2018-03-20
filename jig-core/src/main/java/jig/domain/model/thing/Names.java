@@ -31,10 +31,6 @@ public class Names {
         return list.stream().map(Name::asCompressText).collect(joining(",", "[", "]"));
     }
 
-    public String asSimpleText() {
-        return list.stream().map(Name::asSimpleText).collect(joining(",", "[", "]"));
-    }
-
     public static Names empty() {
         return new Names(Collections.emptyList());
     }

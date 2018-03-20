@@ -82,8 +82,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
         return new Relations(relations);
     }
 
-    @Override
-    public Optional<Relation> findOne(Name name, RelationType type) {
+    Optional<Relation> findOne(Name name, RelationType type) {
         return stream(type)
                 .filter(relation -> relation.from().equals(name))
                 // 複数あった時にどうする？

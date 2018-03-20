@@ -19,7 +19,5 @@ public interface RelationRepository {
 
     Relations findTo(Name toName, RelationType type);
 
-    Optional<Relation> findOne(Name from, RelationType implementation);
-
     Optional<Relation> findToOne(Name to, RelationType type);
 }

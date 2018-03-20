@@ -52,11 +52,6 @@ public enum TypePerspective {
                 .collect(ReportRow.collector());
     }
 
-    public static TypePerspective from(Characteristic characteristic) {
-        if (characteristic.matches(Characteristic.ENUM)) return ENUM;
-        return valueOf(characteristic.name());
-    }
-
     public Characteristic characteristic() {
         return Characteristic.valueOf(name());
     }

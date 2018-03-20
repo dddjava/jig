@@ -47,7 +47,7 @@ public enum RelationType {
             repository.register(RelationType.METHOD.of(className, methodName));
 
             // 戻り値の型
-            Name returnTypeName = new Name(Type.getReturnType(descriptor).getClassName());
+            Name returnTypeName = methodDescriptor.getReturnTypeName();
             repository.register(RelationType.METHOD_RETURN_TYPE.of(methodName, returnTypeName));
 
             for (Type type : argumentTypes) {

@@ -30,6 +30,10 @@ public class MethodDescriptor {
     public final List<Name> usingFieldTypeNames = new ArrayList<>();
     public final List<Name> usingMethodNames = new ArrayList<>();
 
+    public Name getReturnTypeName() {
+        return new Name(Type.getReturnType(descriptor).getClassName());
+    }
+
     public void addFieldInstruction(String owner, String name, String descriptor) {
         // 使っているフィールドの型がわかればOK
         Type type = Type.getType(descriptor);

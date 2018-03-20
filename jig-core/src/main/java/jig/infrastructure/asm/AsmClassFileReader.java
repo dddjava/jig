@@ -4,6 +4,7 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
+import jig.domain.model.specification.Specification;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Component;
@@ -37,8 +38,9 @@ public class AsmClassFileReader {
             ClassReader classReader = new ClassReader(inputStream);
             classReader.accept(classVisitor, ClassReader.SKIP_DEBUG);
 
-            Characteristic.register(characteristicRepository, classVisitor.specification());
-            RelationType.register(relationRepository, classVisitor.specification());
+            Specification specification = classVisitor.specification();
+            Characteristic.register(characteristicRepository, specification);
+            RelationType.register(relationRepository, specification);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

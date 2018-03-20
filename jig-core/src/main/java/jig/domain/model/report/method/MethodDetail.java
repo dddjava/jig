@@ -5,14 +5,14 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Identifiers;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package jig.infrastructure.plantuml;
 
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.NameFormatter;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.NameFormatter;
 
 public class PlantumlNameFormatter implements NameFormatter {
 

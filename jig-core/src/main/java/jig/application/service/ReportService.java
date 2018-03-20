@@ -3,6 +3,8 @@ package jig.application.service;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
@@ -16,8 +18,6 @@ import jig.domain.model.report.method.MethodReport;
 import jig.domain.model.report.type.TypeDetail;
 import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Identifiers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

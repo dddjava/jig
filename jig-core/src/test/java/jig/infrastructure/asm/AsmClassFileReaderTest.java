@@ -2,10 +2,10 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.identifier.Identifier;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Identifier;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.RecursiveFileVisitor;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;

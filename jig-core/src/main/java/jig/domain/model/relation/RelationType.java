@@ -1,8 +1,8 @@
 package jig.domain.model.relation;
 
+import jig.domain.model.identifier.Identifier;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
-import jig.domain.model.thing.Identifier;
 import org.objectweb.asm.Type;
 
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.thing.Identifier;
+import jig.domain.model.identifier.Identifier;
 
 import java.util.Objects;
 

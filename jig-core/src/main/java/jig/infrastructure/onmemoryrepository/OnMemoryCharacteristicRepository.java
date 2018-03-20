@@ -2,8 +2,8 @@ package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Identifiers;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

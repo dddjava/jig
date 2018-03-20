@@ -1,14 +1,14 @@
 package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Identifiers;
 
 public class TypeDetail {
 

@@ -2,10 +2,10 @@ package jig.infrastructure.plantuml;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
+import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.NameFormatter;
 
 import java.util.stream.Stream;
 

@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.thing.Identifier;
+import jig.domain.model.identifier.Identifier;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;

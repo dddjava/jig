@@ -1,7 +1,7 @@
 package jig.domain.model.report.method;
 
 import jig.domain.model.datasource.SqlType;
-import jig.domain.model.thing.Identifier;
+import jig.domain.model.identifier.Identifier;
 
 import java.util.function.Function;
 

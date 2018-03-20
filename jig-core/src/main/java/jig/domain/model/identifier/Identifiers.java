@@ -1,4 +1,4 @@
-package jig.domain.model.thing;
+package jig.domain.model.identifier;
 
 import java.util.Collections;
 import java.util.List;

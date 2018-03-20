@@ -3,7 +3,7 @@ package jig.infrastructure.onmemoryrepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlIdentifier;
 import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.thing.Identifier;
+import jig.domain.model.identifier.Identifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

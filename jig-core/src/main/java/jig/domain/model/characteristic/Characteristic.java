@@ -1,8 +1,8 @@
 package jig.domain.model.characteristic;
 
+import jig.domain.model.identifier.Identifier;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.Specification;
-import jig.domain.model.thing.Identifier;
 import org.objectweb.asm.Opcodes;
 
 import java.util.Arrays;

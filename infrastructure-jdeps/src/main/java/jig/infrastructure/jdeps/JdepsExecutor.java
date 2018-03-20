@@ -1,12 +1,12 @@
 package jig.infrastructure.jdeps;
 
 import com.sun.tools.jdeps.Main;
+import jig.domain.model.identifier.Identifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
-import jig.domain.model.thing.Identifier;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 
 import java.io.IOException;

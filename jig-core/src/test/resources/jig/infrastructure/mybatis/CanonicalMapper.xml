@@ -29,8 +29,8 @@
         select nextval('seq_test');
     </select>
 
-    <insert id="tabInsert">INSERT	INTO	tab_test	(	a	)	values	('a')</insert>
-    <select id="tabSelect">SELECT	*	FROM	tab_test	WHERE	1	=	1</select>
-    <update id="tabUpdate">UPDATE	tab_test	SET	a	=	'a'</update>
-    <delete id="tabDelete">DELETE	FROM	tab_test	WHERE	true</delete>
+    <insert id="tabInsert">INSERT INTO tab_test ( a ) values ('a')</insert>
+    <select id="tabSelect">SELECT * FROM tab_test WHERE 1 = 1</select>
+    <update id="tabUpdate">UPDATE tab_test SET a = 'a'</update>
+    <delete id="tabDelete">DELETE FROM tab_test WHERE true</delete>
 </mapper>

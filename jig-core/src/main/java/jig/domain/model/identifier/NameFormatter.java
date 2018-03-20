@@ -1,4 +1,4 @@
-package jig.domain.model.thing;
+package jig.domain.model.identifier;
 
 public interface NameFormatter {
 

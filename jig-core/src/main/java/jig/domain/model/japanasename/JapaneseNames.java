@@ -1,6 +1,6 @@
 package jig.domain.model.japanasename;
 
-import jig.domain.model.thing.Identifier;
+import jig.domain.model.identifier.Identifier;
 
 import java.util.Comparator;
 import java.util.Map;

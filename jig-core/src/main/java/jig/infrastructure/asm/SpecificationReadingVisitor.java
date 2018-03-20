@@ -1,10 +1,10 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
-import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Identifiers;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;

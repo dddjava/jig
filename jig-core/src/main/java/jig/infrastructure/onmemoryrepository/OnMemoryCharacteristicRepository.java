@@ -28,9 +28,8 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
 
     @Override
     public Names find(Characteristic characteristic) {
-        return map.entrySet().stream()
-                .filter(e -> e.getKey().matches(characteristic))
-                .flatMap(e -> e.getValue().stream())
+        return map.get(characteristic)
+                .stream()
                 .collect(Names.collector());
     }
 }

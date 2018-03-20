@@ -34,22 +34,10 @@ public enum Characteristic {
     },
     ENUM,
     ENUM_PARAMETERIZED {
-        @Override
-        public boolean matches(Characteristic characteristic) {
-            return ENUM == characteristic || super.matches(characteristic);
-        }
     },
     ENUM_POLYMORPHISM {
-        @Override
-        public boolean matches(Characteristic characteristic) {
-            return ENUM == characteristic || super.matches(characteristic);
-        }
     },
     ENUM_BEHAVIOUR {
-        @Override
-        public boolean matches(Characteristic characteristic) {
-            return ENUM == characteristic || super.matches(characteristic);
-        }
     },
     IDENTIFIER,
     NUMBER,
@@ -57,11 +45,6 @@ public enum Characteristic {
     TERM,
     COLLECTION,
     MAPPER_METHOD;
-
-
-    public boolean matches(Characteristic characteristic) {
-        return this == characteristic;
-    }
 
     public static void register(CharacteristicRepository repository, Specification specification) {
         Arrays.stream(values()).forEach(c -> c.className(specification, repository));
@@ -85,9 +68,8 @@ public enum Characteristic {
                 repository.register(specification.name, Characteristic.ENUM_PARAMETERIZED);
             } else if (!specification.methodDescriptors.isEmpty()) {
                 repository.register(specification.name, Characteristic.ENUM_BEHAVIOUR);
-            } else {
-                repository.register(specification.name, Characteristic.ENUM);
             }
+            repository.register(specification.name, Characteristic.ENUM);
         } else {
             // TODO 各々のenumに判定させる
             if (specification.fieldDescriptors.size() == 1) {

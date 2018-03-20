@@ -42,7 +42,7 @@ public class TypeDetail {
         return fieldRelation.list().stream().map(Relation::from).collect(Names.collector());
     }
 
-    public boolean isTag(Characteristic characteristic) {
-        return this.characteristic.matches(characteristic);
+    public boolean is(Characteristic characteristic) {
+        return this.characteristic == characteristic;
     }
 }

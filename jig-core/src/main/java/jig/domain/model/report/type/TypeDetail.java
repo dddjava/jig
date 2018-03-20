@@ -8,7 +8,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Names;
+import jig.domain.model.thing.Identifiers;
 
 public class TypeDetail {
 
@@ -32,14 +32,14 @@ public class TypeDetail {
         return japaneseNameRepository.get(name());
     }
 
-    public Names usage() {
+    public Identifiers usage() {
         Relations fieldRelation = relationRepository.findTo(name(), RelationType.FIELD);
 
         // TODO メソッドでの使用をどのように扱うか
         // Relations methodReturnRelation = relationRepository.findTo(identifier(), RelationType.METHOD_RETURN_TYPE);
         // Relations methodParameterRelation = relationRepository.findTo(identifier(), RelationType.METHOD_PARAMETER);
 
-        return fieldRelation.list().stream().map(Relation::from).collect(Names.collector());
+        return fieldRelation.list().stream().map(Relation::from).collect(Identifiers.collector());
     }
 
     public boolean is(Characteristic characteristic) {

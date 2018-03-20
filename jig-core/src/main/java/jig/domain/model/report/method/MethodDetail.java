@@ -12,7 +12,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Names;
+import jig.domain.model.thing.Identifiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +55,9 @@ public class MethodDetail {
         return relation.to();
     }
 
-    public Names instructFields() {
+    public Identifiers instructFields() {
         Relations relations = relationRepository.find(methodName(), RelationType.METHOD_USE_TYPE);
-        return relations.list().stream().map(Relation::to).collect(Names.collector());
+        return relations.list().stream().map(Relation::to).collect(Identifiers.collector());
     }
 
     public Optional<Identifier> datasourceMethod() {
@@ -66,14 +66,14 @@ public class MethodDetail {
                 .map(Relation::from);
     }
 
-    public Names instructMapperMethodNames() {
+    public Identifiers instructMapperMethodNames() {
         return datasourceMethod().map(name -> {
             Relations relations = relationRepository.find(name, RelationType.METHOD_USE_METHOD);
             return relations.list().stream()
                     .map(Relation::to)
                     .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD))
-                    .collect(Names.collector());
-        }).orElse(Names.empty());
+                    .collect(Identifiers.collector());
+        }).orElse(Identifiers.empty());
     }
 
     public Sqls sqls() {

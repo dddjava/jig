@@ -24,7 +24,7 @@ public enum RelationType {
 
     public static void register(RelationRepository repository, Specification specification) {
 
-        specification.interfaceNames.list().forEach(name -> {
+        specification.interfaceIdentifiers.list().forEach(name -> {
             repository.register(new Relation(specification.identifier, name, IMPLEMENT));
         });
 
@@ -55,7 +55,7 @@ public enum RelationType {
                 repository.register(RelationType.METHOD_PARAMETER.of(methodIdentifier, argumentTypeIdentifier));
             }
 
-            for (Identifier interfaceIdentifier : specification.interfaceNames.list()) {
+            for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
                 repository.register(RelationType.IMPLEMENT.of(methodIdentifier, interfaceIdentifier.concat(methodIdentifier)));
             }
 

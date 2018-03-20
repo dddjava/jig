@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
-public class Names {
+public class Identifiers {
 
     List<Identifier> list;
 
-    public Names(List<Identifier> list) {
+    public Identifiers(List<Identifier> list) {
         this.list = list;
     }
 
@@ -19,8 +19,8 @@ public class Names {
         return list;
     }
 
-    public static Collector<Identifier, ?, Names> collector() {
-        return Collectors.collectingAndThen(Collectors.toList(), Names::new);
+    public static Collector<Identifier, ?, Identifiers> collector() {
+        return Collectors.collectingAndThen(Collectors.toList(), Identifiers::new);
     }
 
     public boolean contains(Identifier identifier) {
@@ -31,7 +31,7 @@ public class Names {
         return list.stream().map(Identifier::asCompressText).collect(joining(",", "[", "]"));
     }
 
-    public static Names empty() {
-        return new Names(Collections.emptyList());
+    public static Identifiers empty() {
+        return new Identifiers(Collections.emptyList());
     }
 }

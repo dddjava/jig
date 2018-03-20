@@ -5,7 +5,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Names;
+import jig.domain.model.thing.Identifiers;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -39,9 +39,9 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Relations methodsOf(Names names) {
+    public Relations methodsOf(Identifiers identifiers) {
         List<Relation> relations = stream(RelationType.METHOD)
-                .filter(relation -> names.contains(relation.from()))
+                .filter(relation -> identifiers.contains(relation.from()))
                 .collect(toList());
         return new Relations(relations);
     }

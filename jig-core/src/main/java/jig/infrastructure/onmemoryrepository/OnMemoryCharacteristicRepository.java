@@ -3,7 +3,7 @@ package jig.infrastructure.onmemoryrepository;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Names;
+import jig.domain.model.thing.Identifiers;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -33,9 +33,9 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
-    public Names find(Characteristic characteristic) {
+    public Identifiers find(Characteristic characteristic) {
         return map.get(characteristic)
                 .stream()
-                .collect(Names.collector());
+                .collect(Identifiers.collector());
     }
 }

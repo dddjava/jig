@@ -4,7 +4,7 @@ import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.thing.Identifier;
-import jig.domain.model.thing.Names;
+import jig.domain.model.thing.Identifiers;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
-    private Names interfaceNames;
+    private Identifiers interfaceIdentifiers;
     private int accessor;
 
     public SpecificationReadingVisitor() {
@@ -31,7 +31,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
                 identifier,
                 parent,
                 accessor,
-                interfaceNames,
+                interfaceIdentifiers,
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
                 methodSpecifications,
                 fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
@@ -42,7 +42,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
         this.identifier = new Identifier(name);
         this.parent = new Identifier(superName);
         this.accessor = access;
-        this.interfaceNames = Arrays.stream(interfaces).map(Identifier::new).collect(Names.collector());
+        this.interfaceIdentifiers = Arrays.stream(interfaces).map(Identifier::new).collect(Identifiers.collector());
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

@@ -1,7 +1,7 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.specification.ClassDescriptor;
-import jig.domain.model.specification.MethodDescriptor;
+import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.thing.Name;
 import jig.domain.model.thing.Names;
@@ -16,7 +16,7 @@ public class SpecificationBuilder {
     private String name;
     private String parent;
     private List<String> annotationDescriptors = new ArrayList<>();
-    private List<MethodDescriptor> methodDescriptors = new ArrayList<>();
+    private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
     private List<String> interfaceNames = new ArrayList<>();
     private int accessor;
@@ -51,11 +51,11 @@ public class SpecificationBuilder {
         return this;
     }
 
-    public MethodDescriptor newInstanceMethod(String methodName, String descriptor) {
-        MethodDescriptor methodDescriptor = new MethodDescriptor(name, methodName, descriptor);
+    public MethodSpecification newInstanceMethod(String methodName, String descriptor) {
+        MethodSpecification methodSpecification = new MethodSpecification(name, methodName, descriptor);
 
-        this.methodDescriptors.add(methodDescriptor);
-        return methodDescriptor;
+        this.methodSpecifications.add(methodSpecification);
+        return methodSpecification;
     }
 
     public Specification build() {
@@ -65,7 +65,7 @@ public class SpecificationBuilder {
                 accessor,
                 interfaceNames.stream().map(Name::new).collect(Names.collector()),
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
-                methodDescriptors,
+                methodSpecifications,
                 fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
     }
 }

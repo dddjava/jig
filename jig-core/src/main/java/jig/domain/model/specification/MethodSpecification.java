@@ -8,14 +8,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MethodDescriptor {
+public class MethodSpecification {
 
     // TODO 名前の混乱をなんとかする
     public final String methodName;
     public final Name name;
     public final String descriptor;
 
-    public MethodDescriptor(String className, String name, String descriptor) {
+    public MethodSpecification(String className, String name, String descriptor) {
         this.methodName = name;
         this.descriptor = descriptor;
 

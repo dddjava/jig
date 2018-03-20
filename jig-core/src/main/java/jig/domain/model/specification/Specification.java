@@ -12,7 +12,7 @@ public class Specification {
     public int classAccess;
     public Names interfaceNames;
     public List<ClassDescriptor> annotationDescriptors;
-    public List<MethodDescriptor> methodDescriptors;
+    public List<MethodSpecification> methodSpecifications;
     public List<ClassDescriptor> fieldDescriptors;
 
     public Specification(Name name,
@@ -20,14 +20,14 @@ public class Specification {
                          int classAccess,
                          Names interfaceNames,
                          List<ClassDescriptor> annotationDescriptors,
-                         List<MethodDescriptor> methodDescriptors,
+                         List<MethodSpecification> methodSpecifications,
                          List<ClassDescriptor> fieldDescriptors) {
         this.name = name;
         this.parentName = parentName;
         this.classAccess = classAccess;
         this.interfaceNames = interfaceNames;
         this.annotationDescriptors = annotationDescriptors;
-        this.methodDescriptors = methodDescriptors;
+        this.methodSpecifications = methodSpecifications;
         this.fieldDescriptors = fieldDescriptors;
     }
 }

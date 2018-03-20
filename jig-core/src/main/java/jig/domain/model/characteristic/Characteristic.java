@@ -53,7 +53,7 @@ public enum Characteristic {
             Arrays.stream(values()).forEach(c -> c.annotation(descriptor, specification, repository));
         });
 
-        specification.methodDescriptors.forEach(methodDescriptor -> {
+        specification.methodSpecifications.forEach(methodDescriptor -> {
             if (repository.has(specification.name, MAPPER)) {
                 repository.register(methodDescriptor.name, MAPPER_METHOD);
             }
@@ -66,7 +66,7 @@ public enum Characteristic {
             } else if (!specification.fieldDescriptors.isEmpty()) {
                 // フィールドがあるenum
                 repository.register(specification.name, Characteristic.ENUM_PARAMETERIZED);
-            } else if (!specification.methodDescriptors.isEmpty()) {
+            } else if (!specification.methodSpecifications.isEmpty()) {
                 repository.register(specification.name, Characteristic.ENUM_BEHAVIOUR);
             }
             repository.register(specification.name, Characteristic.ENUM);

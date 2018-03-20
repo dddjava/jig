@@ -33,12 +33,12 @@ public class AsmClassFileReader {
         }
 
         try (InputStream inputStream = Files.newInputStream(file)) {
-            SpecificationBuilder specificationBuilder = new SpecificationBuilder();
+            SpecificationReadingVisitor classVisitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);
-            classReader.accept(new SpecificationReadingVisitor(specificationBuilder), ClassReader.SKIP_DEBUG);
+            classReader.accept(classVisitor, ClassReader.SKIP_DEBUG);
 
-            Characteristic.register(characteristicRepository, specificationBuilder.build());
-            RelationType.register(relationRepository, specificationBuilder.build());
+            Characteristic.register(characteristicRepository, classVisitor.specification());
+            RelationType.register(relationRepository, classVisitor.specification());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

@@ -1,15 +1,20 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.specification.MethodSpecification;
+import jig.domain.model.specification.Specification;
 import org.objectweb.asm.*;
 
 public class SpecificationReadingVisitor extends ClassVisitor {
 
     private final SpecificationBuilder specificationBuilder;
 
-    public SpecificationReadingVisitor(SpecificationBuilder specificationBuilder) {
+    public SpecificationReadingVisitor() {
         super(Opcodes.ASM6);
-        this.specificationBuilder = specificationBuilder;
+        this.specificationBuilder = new SpecificationBuilder();
+    }
+
+    public Specification specification() {
+        return specificationBuilder.build();
     }
 
     @Override

@@ -2,6 +2,7 @@ package jig.infrastructure;
 
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -31,6 +32,6 @@ public class JigPaths {
 
     public String toClassName(Path path) {
         String pathStr = path.toString();
-        return pathStr.substring(0, pathStr.length() - 6).replace('/', '.');
+        return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 }

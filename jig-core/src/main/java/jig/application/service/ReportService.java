@@ -7,7 +7,9 @@ import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.Relations;
+import jig.domain.model.report.Perspective;
 import jig.domain.model.report.Report;
+import jig.domain.model.report.Reports;
 import jig.domain.model.report.method.MethodDetail;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.method.MethodReport;
@@ -20,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -34,15 +38,18 @@ public class ReportService {
     @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
-    public Report getReport(Characteristic characteristic) {
-        if (characteristic.architecture()) {
-            return getMethodReport(characteristic);
-        } else {
-            return getTypeReport(characteristic);
-        }
+    public Reports reports() {
+        List<Report> list = Arrays.stream(Perspective.values())
+                .map(perspective -> {
+                    if (perspective.isMethod()) return getMethodReport(perspective.getMethodPerspective());
+                    return getTypeReport(perspective.getTypePerspective());
+                })
+                .collect(Collectors.toList());
+        return new Reports(list);
     }
 
-    private Report getMethodReport(Characteristic characteristic) {
+    private Report getMethodReport(MethodPerspective perspective) {
+        Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         Names names = characteristicRepository.find(characteristic);
         Relations methods = relationRepository.methodsOf(names);
@@ -53,7 +60,8 @@ public class ReportService {
         return new MethodReport(MethodPerspective.from(characteristic), list);
     }
 
-    private Report getTypeReport(Characteristic characteristic) {
+    private Report getTypeReport(TypePerspective perspective) {
+        Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
         Names names = characteristicRepository.find(characteristic);
         for (Name name : names.list()) {

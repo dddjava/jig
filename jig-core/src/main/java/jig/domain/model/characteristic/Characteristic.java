@@ -63,10 +63,6 @@ public enum Characteristic {
         return this == characteristic;
     }
 
-    public boolean architecture() {
-        return this == SERVICE || this == REPOSITORY;
-    }
-
     public static void register(CharacteristicRepository repository, Specification specification) {
         Arrays.stream(values()).forEach(c -> c.className(specification, repository));
 

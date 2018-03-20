@@ -2,7 +2,6 @@ package jig.classlist;
 
 import jig.application.service.AnalyzeService;
 import jig.application.service.ReportService;
-import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.report.Reports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,7 @@ public class ClassListApplication {
 
         LOGGER.info("レポートデータの準備をはじめます");
 
-        Reports reports = getReports();
+        Reports reports = reportService.reports();
 
         LOGGER.info("ファイルに書き出します");
 
@@ -56,18 +55,6 @@ public class ClassListApplication {
                 .writeTo(reports, Paths.get(outputPath));
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
-    }
-
-    private Reports getReports() {
-        return new Reports(
-                reportService.getReport(Characteristic.SERVICE),
-                reportService.getReport(Characteristic.REPOSITORY),
-                reportService.getReport(Characteristic.ENUM),
-                reportService.getReport(Characteristic.COLLECTION),
-                reportService.getReport(Characteristic.IDENTIFIER),
-                reportService.getReport(Characteristic.NUMBER),
-                reportService.getReport(Characteristic.DATE),
-                reportService.getReport(Characteristic.TERM));
     }
 }
 

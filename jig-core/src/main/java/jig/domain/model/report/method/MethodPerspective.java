@@ -49,4 +49,8 @@ public enum MethodPerspective {
         if (characteristic == Characteristic.REPOSITORY) return REPOSITORY;
         throw new IllegalArgumentException(characteristic.toString());
     }
+
+    public Characteristic characteristic() {
+        return Characteristic.valueOf(name());
+    }
 }

@@ -56,4 +56,8 @@ public enum TypePerspective {
         if (characteristic.matches(Characteristic.ENUM)) return ENUM;
         return valueOf(characteristic.name());
     }
+
+    public Characteristic characteristic() {
+        return Characteristic.valueOf(name());
+    }
 }

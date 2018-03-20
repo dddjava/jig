@@ -13,17 +13,23 @@ import java.util.List;
 @Repository
 public class OnMemoryCharacteristicRepository implements CharacteristicRepository {
 
-    EnumMap<Characteristic, List<Name>> map = new EnumMap<>(Characteristic.class);
+    final EnumMap<Characteristic, List<Name>> map;
+
+    public OnMemoryCharacteristicRepository() {
+        map = new EnumMap<>(Characteristic.class);
+        for (Characteristic characteristic : Characteristic.values()) {
+            map.put(characteristic, new ArrayList<>());
+        }
+    }
 
     @Override
     public void register(Name name, Characteristic characteristic) {
-        map.computeIfAbsent(characteristic, t -> new ArrayList<>());
         map.get(characteristic).add(name);
     }
 
     @Override
     public boolean has(Name name, Characteristic characteristic) {
-        return map.containsKey(characteristic) && map.get(characteristic).contains(name);
+        return map.get(characteristic).contains(name);
     }
 
     @Override

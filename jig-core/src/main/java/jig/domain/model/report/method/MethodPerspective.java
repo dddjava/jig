@@ -18,8 +18,6 @@ public enum MethodPerspective {
             MethodConcern.クラス和名,
             MethodConcern.メソッド,
             MethodConcern.メソッド戻り値の型,
-            MethodConcern.データソースメソッド,
-            MethodConcern.使用しているMapperメソッド,
             MethodConcern.DB_C,
             MethodConcern.DB_R,
             MethodConcern.DB_U,

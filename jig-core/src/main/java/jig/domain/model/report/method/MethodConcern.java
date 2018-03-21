@@ -12,7 +12,6 @@ public enum MethodConcern {
     メソッド戻り値の型(detail -> detail.returnTypeName().asSimpleText()),
     使用しているフィールドの型(detail -> detail.instructFields().asSimpleText()),
 
-    // TODO Repositoryだけの関心ごとなので移動
     データソースメソッド(detail -> detail
             .datasourceMethod().map(Identifier::value)
             // 実装しているDatasourceが見つからない場合

@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
@@ -36,6 +37,10 @@ public class ExcelWriter implements ReportWriter {
                 for (int i = 0; i < report.headerRow().list().size(); i++) {
                     sheet.autoSizeColumn(i);
                 }
+                sheet.setAutoFilter(new CellRangeAddress(
+                        0, sheet.getLastRowNum(),
+                        0, sheet.getRow(0).getLastCellNum()
+                ));
             });
 
             book.write(os);

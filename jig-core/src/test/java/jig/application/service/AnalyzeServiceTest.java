@@ -1,18 +1,18 @@
 package jig.application.service;
 
 import jig.domain.model.identifier.Identifier;
-import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import stub.ClassCommentStub;
+import stub.ClassJavadocStub;
+import stub.MethodJavadocStub;
+import stub.NotJavadocStub;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,31 +22,41 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AnalyzeServiceTest {
 
     @Autowired
-    AnalyzeService sut;
-
-    @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
     @Test
-    void test() {
-        Path path = Paths.get("");
-        sut.analyze(path);
+    void 通常のJavadocを拾う() {
+        assertThat(japaneseNameRepository.get(new Identifier(ClassJavadocStub.class)).value())
+                .isEqualTo("クラスのJavadoc");
+    }
 
-        JapaneseName japaneseName = japaneseNameRepository.get(new Identifier(ClassCommentStub.class));
-        assertThat(japaneseName.value()).isEqualTo("クラスコメントスタブ");
+    @Test
+    void メソッドのJavadocを拾わない() {
+        assertThat(japaneseNameRepository.get(new Identifier(MethodJavadocStub.class)).value())
+                .isEqualTo("");
+    }
+
+    @Test
+    void Javadocじゃないコメントを拾わない() {
+        assertThat(japaneseNameRepository.get(new Identifier(NotJavadocStub.class)).value())
+                .isEqualTo("");
     }
 
     @Test
     void defaultPackageClass() {
-        Path path = Paths.get("");
-        sut.analyze(path);
-
-        JapaneseName japaneseName = japaneseNameRepository.get(new Identifier("DefaultPackageClass"));
-        assertThat(japaneseName.value()).isEqualTo("デフォルトパッケージの扱いが特殊なのでテスト用に置いておく");
+        assertThat(japaneseNameRepository.get(new Identifier("DefaultPackageClass")).value())
+                .isEqualTo("デフォルトパッケージにあるクラス");
     }
 
-    @ComponentScan("jig")
-    @Configuration
+    @TestConfiguration
     static class Config {
+
+        @Autowired
+        AnalyzeService sut;
+
+        @EventListener
+        void hoge(ContextRefreshedEvent event) {
+            sut.analyze(Paths.get(""));
+        }
     }
 }

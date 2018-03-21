@@ -1,5 +1,5 @@
 /**
- * デフォルトパッケージの扱いが特殊なのでテスト用に置いておく
+ * デフォルトパッケージにあるクラス
  */
 public class DefaultPackageClass {
 }

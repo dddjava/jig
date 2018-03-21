@@ -46,7 +46,6 @@ public class ClassCommentReader {
 
                 @Override
                 public void visit(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, Void arg) {
-
                     String className = classOrInterfaceDeclaration.getNameAsString();
                     if (packageDeclaration != null) {
                         className = packageDeclaration.getNameAsString() + "." + className;
@@ -55,11 +54,17 @@ public class ClassCommentReader {
                     Identifier identifier = new Identifier(className);
 
                     classOrInterfaceDeclaration.accept(new VoidVisitorAdapter<Identifier>() {
+
                         @Override
                         public void visit(JavadocComment n, Identifier identifier) {
-                            String text = n.parse().getDescription().toText();
-                            JapaneseName japaneseName = new JapaneseName(text);
-                            repository.register(identifier, japaneseName);
+                            n.getCommentedNode()
+                                    .filter(node -> node instanceof ClassOrInterfaceDeclaration)
+                                    .ifPresent(node -> {
+                                        String text = n.parse().getDescription().toText();
+                                        JapaneseName japaneseName = new JapaneseName(text);
+
+                                        repository.register(identifier, japaneseName);
+                                    });
                         }
                     }, identifier);
                 }

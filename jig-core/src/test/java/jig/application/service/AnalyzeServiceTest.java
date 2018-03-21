@@ -2,8 +2,10 @@ package jig.application.service;
 
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -14,6 +16,7 @@ import stub.MethodJavadocStub;
 import stub.NotJavadocStub;
 
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,28 +27,20 @@ class AnalyzeServiceTest {
     @Autowired
     JapaneseNameRepository japaneseNameRepository;
 
-    @Test
-    void 通常のJavadocを拾う() {
-        assertThat(japaneseNameRepository.get(new Identifier(ClassJavadocStub.class)).value())
-                .isEqualTo("クラスのJavadoc");
+    @ParameterizedTest
+    @MethodSource
+    void test(Identifier identifier, String comment) {
+        assertThat(japaneseNameRepository.get(identifier).value())
+                .isEqualTo(comment);
     }
 
-    @Test
-    void メソッドのJavadocを拾わない() {
-        assertThat(japaneseNameRepository.get(new Identifier(MethodJavadocStub.class)).value())
-                .isEqualTo("");
-    }
-
-    @Test
-    void Javadocじゃないコメントを拾わない() {
-        assertThat(japaneseNameRepository.get(new Identifier(NotJavadocStub.class)).value())
-                .isEqualTo("");
-    }
-
-    @Test
-    void defaultPackageClass() {
-        assertThat(japaneseNameRepository.get(new Identifier("DefaultPackageClass")).value())
-                .isEqualTo("デフォルトパッケージにあるクラス");
+    static Stream<Arguments> test() {
+        return Stream.of(
+                Arguments.of(new Identifier(ClassJavadocStub.class), "クラスのJavadoc"),
+                Arguments.of(new Identifier(MethodJavadocStub.class), ""),
+                Arguments.of(new Identifier(NotJavadocStub.class), ""),
+                Arguments.of(new Identifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
+        );
     }
 
     @TestConfiguration

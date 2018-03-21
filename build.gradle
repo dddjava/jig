@@ -25,6 +25,10 @@ subprojects {
         testCompile 'org.junit.jupiter:junit-jupiter-params:5.1.0'
         testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
         testCompile 'org.assertj:assertj-core:3.9.1'
+
+        testCompile('org.springframework:spring-test') {
+            exclude group: 'junit'
+        }
     }
 
     dependencyManagement {
@@ -64,8 +68,6 @@ project(':diagram-plantuml') {
         compile 'org.springframework:spring-context'
         compile 'net.sourceforge.plantuml:plantuml:8059'
         compile project(':jig-core')
-
-        testCompile 'org.springframework:spring-test'
     }
 }
 
@@ -84,7 +86,9 @@ project(':web') {
         compile project(':diagram-plantuml')
         compile project(':infrastructure-jdeps')
 
-        testCompile 'org.springframework.boot:spring-boot-starter-test'
+        testCompile('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'junit'
+        }
     }
 }
 
@@ -107,10 +111,6 @@ project(':class-list-cli') {
         compile 'org.springframework.boot:spring-boot-starter'
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'
-
-        testCompile('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'junit'
-        }
     }
 
     test {
@@ -143,8 +143,5 @@ project(':shell') {
         compile 'org.springframework.shell:spring-shell-starter:2.0.0.RELEASE'
 
         compile 'com.fasterxml.jackson.core:jackson-core'
-        compile('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'junit'
-        }
     }
 }

@@ -36,6 +36,15 @@ class AnalyzeServiceTest {
         assertThat(japaneseName.value()).isEqualTo("クラスコメントスタブ");
     }
 
+    @Test
+    void defaultPackageClass() {
+        Path path = Paths.get("");
+        sut.analyze(path);
+
+        JapaneseName japaneseName = japaneseNameRepository.get(new Identifier("DefaultPackageClass"));
+        assertThat(japaneseName.value()).isEqualTo("デフォルトパッケージの扱いが特殊なのでテスト用に置いておく");
+    }
+
     @ComponentScan("jig")
     @Configuration
     static class Config {

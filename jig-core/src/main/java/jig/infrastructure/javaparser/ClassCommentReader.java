@@ -5,7 +5,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
-import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.japanasename.JapaneseName;
@@ -35,30 +34,36 @@ public class ClassCommentReader {
 
         try {
             CompilationUnit cu = JavaParser.parse(path);
-            com.github.javaparser.ast.expr.Name packageName = cu.accept(new GenericVisitorAdapter<com.github.javaparser.ast.expr.Name, Void>() {
+
+            cu.accept(new VoidVisitorAdapter<Void>() {
+
+                private PackageDeclaration packageDeclaration = null;
+
                 @Override
-                public com.github.javaparser.ast.expr.Name visit(PackageDeclaration n, Void arg) {
-                    return n.getName();
+                public void visit(PackageDeclaration packageDeclaration, Void arg) {
+                    this.packageDeclaration = packageDeclaration;
                 }
-            }, null);
 
-            cu.accept(new VoidVisitorAdapter<com.github.javaparser.ast.expr.Name>() {
                 @Override
-                public void visit(ClassOrInterfaceDeclaration n, com.github.javaparser.ast.expr.Name packageName) {
-                    Identifier fullQualifiedIdentifier = new Identifier(
-                            packageName.asString() + "." + n.getNameAsString()
-                    );
+                public void visit(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, Void arg) {
 
-                    n.accept(new VoidVisitorAdapter<Identifier>() {
+                    String className = classOrInterfaceDeclaration.getNameAsString();
+                    if (packageDeclaration != null) {
+                        className = packageDeclaration.getNameAsString() + "." + className;
+                    }
+
+                    Identifier identifier = new Identifier(className);
+
+                    classOrInterfaceDeclaration.accept(new VoidVisitorAdapter<Identifier>() {
                         @Override
                         public void visit(JavadocComment n, Identifier identifier) {
                             String text = n.parse().getDescription().toText();
                             JapaneseName japaneseName = new JapaneseName(text);
                             repository.register(identifier, japaneseName);
                         }
-                    }, fullQualifiedIdentifier);
+                    }, identifier);
                 }
-            }, packageName);
+            }, null);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

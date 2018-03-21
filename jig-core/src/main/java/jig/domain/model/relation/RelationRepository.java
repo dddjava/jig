@@ -5,21 +5,15 @@ import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
 
-import java.util.Optional;
-
 public interface RelationRepository {
 
     Relations all();
-
-    Relation get(Identifier identifier, RelationType type);
 
     Relations find(Identifier identifier, RelationType type);
 
     Relations methodsOf(Identifiers identifiers);
 
     Relations findTo(Identifier toIdentifier, RelationType type);
-
-    Optional<Relation> findToOne(Identifier to, RelationType type);
 
     void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier);
 

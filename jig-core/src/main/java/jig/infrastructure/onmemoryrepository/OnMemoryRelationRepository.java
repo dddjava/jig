@@ -57,13 +57,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Optional<Relation> findToOne(Identifier toIdentifier, RelationType type) {
-        return stream(type)
-                .filter(relation -> toIdentifier.equals(relation.to()))
-                .findFirst();
-    }
-
-    @Override
     public void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier) {
         register(RelationType.METHOD.of(classIdentifier, methodIdentifier.toIdentifier()));
     }
@@ -111,7 +104,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public Identifier getReturnTypeOf(MethodIdentifier methodIdentifier) {
-        return get(methodIdentifier.toIdentifier(), RelationType.METHOD_RETURN_TYPE).to();
+        return stream(RelationType.METHOD_RETURN_TYPE)
+                .filter(relation -> relation.from().equals(methodIdentifier.toIdentifier()))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(methodIdentifier.asFullText()))
+                .to();
     }
 
     @Override
@@ -135,27 +132,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Relation get(Identifier identifier, RelationType type) {
-        return findOne(identifier, type)
-                .orElseThrow(() -> {
-                    LOGGER.warning("関連が見当たらない。 " + "identifier = " + identifier.value() + ", type = " + type);
-                    return new NoSuchElementException();
-                });
-    }
-
-    @Override
     public Relations find(Identifier identifier, RelationType type) {
         List<Relation> relations = stream(type)
                 .filter(relation -> relation.from().equals(identifier))
                 .collect(toList());
         return new Relations(relations);
-    }
-
-    Optional<Relation> findOne(Identifier identifier, RelationType type) {
-        return stream(type)
-                .filter(relation -> relation.from().equals(identifier))
-                // 複数あった時にどうする？
-                .findFirst();
     }
 
     private Stream<Relation> stream(RelationType relationType) {

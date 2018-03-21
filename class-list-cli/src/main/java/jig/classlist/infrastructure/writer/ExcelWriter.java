@@ -32,6 +32,10 @@ public class ExcelWriter implements ReportWriter {
                 for (ReportRow row : report.rows()) {
                     writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
                 }
+
+                for (int i = 0; i < report.headerRow().list().size(); i++) {
+                    sheet.autoSizeColumn(i);
+                }
             });
 
             book.write(os);

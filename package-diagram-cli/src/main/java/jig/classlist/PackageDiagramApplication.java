@@ -1,13 +1,12 @@
 package jig.classlist;
 
+import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.relation.Relations;
-import jig.infrastructure.RecursiveFileVisitor;
-import jig.infrastructure.javaparser.PackageInfoReader;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -48,7 +47,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Autowired
     RelationAnalyzer relationAnalyzer;
     @Autowired
-    PackageInfoReader packageInfoReader;
+    AnalyzeService analyzeService;
     @Autowired
     DiagramService diagramService;
 
@@ -76,8 +75,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        RecursiveFileVisitor fileVisitor = new RecursiveFileVisitor(packageInfoReader::execute);
-        fileVisitor.visitAllDirectories(Paths.get(targetSource));
+        analyzeService.readJavadoc(Paths.get(targetSource));
 
         return new PlantumlDiagramConverter(nameFormatter, repository);
     }

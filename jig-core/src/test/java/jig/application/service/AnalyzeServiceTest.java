@@ -29,17 +29,18 @@ class AnalyzeServiceTest {
 
     @ParameterizedTest
     @MethodSource
-    void test(Identifier identifier, String comment) {
+    void 和名取得(Identifier identifier, String comment) {
         assertThat(japaneseNameRepository.get(identifier).value())
                 .isEqualTo(comment);
     }
 
-    static Stream<Arguments> test() {
+    static Stream<Arguments> 和名取得() {
         return Stream.of(
                 Arguments.of(new Identifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new Identifier(MethodJavadocStub.class), ""),
                 Arguments.of(new Identifier(NotJavadocStub.class), ""),
-                Arguments.of(new Identifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
+                Arguments.of(new Identifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
+                Arguments.of(new Identifier("stub"), "テストで使用するスタブたち")
         );
     }
 

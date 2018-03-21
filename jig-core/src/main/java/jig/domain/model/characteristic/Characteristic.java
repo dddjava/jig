@@ -16,8 +16,8 @@ public enum Characteristic {
     },
     REPOSITORY {
         @Override
-        boolean isClassName(Identifier identifier) {
-            return identifier.value().endsWith("Repository");
+        boolean matches(Specification specification) {
+            return specification.identifier.value().endsWith("Repository");
         }
     },
     DATASOURCE {
@@ -32,22 +32,52 @@ public enum Characteristic {
             return "Lorg/apache/ibatis/annotations/Mapper;".equals(descriptor.toString());
         }
     },
-    ENUM,
+    ENUM {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.isEnum();
+        }
+    },
     ENUM_PARAMETERIZED {
     },
     ENUM_POLYMORPHISM {
     },
     ENUM_BEHAVIOUR {
     },
-    IDENTIFIER,
-    NUMBER,
-    DATE,
-    TERM,
-    COLLECTION,
+    IDENTIFIER {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/lang/String;");
+        }
+    },
+    NUMBER {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/math/BigDecimal;");
+        }
+    },
+    DATE {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/time/LocalDate;");
+        }
+    },
+    TERM {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasTwoFieldsAndFieldTypeAre("Ljava/time/LocalDate;");
+        }
+    },
+    COLLECTION {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/util/List;");
+        }
+    },
     MAPPER_METHOD;
 
     public static void register(CharacteristicRepository repository, Specification specification) {
-        Arrays.stream(values()).forEach(c -> c.className(specification, repository));
+        Arrays.stream(values()).forEach(c -> c.registerSpecific(specification, repository));
 
         specification.annotationDescriptors.forEach(descriptor -> {
             Arrays.stream(values()).forEach(c -> c.annotation(descriptor, specification, repository));
@@ -69,42 +99,15 @@ public enum Characteristic {
             } else if (!specification.methodSpecifications.isEmpty()) {
                 repository.register(specification.identifier, Characteristic.ENUM_BEHAVIOUR);
             }
-            repository.register(specification.identifier, Characteristic.ENUM);
-        } else {
-            // TODO 各々のenumに判定させる
-            if (specification.fieldDescriptors.size() == 1) {
-                String descriptor = specification.fieldDescriptors.get(0).toString();
-
-                switch (descriptor) {
-                    case "Ljava/lang/String;":
-                        repository.register(specification.identifier, IDENTIFIER);
-                        break;
-                    case "Ljava/math/BigDecimal;":
-                        repository.register(specification.identifier, NUMBER);
-                        break;
-                    case "Ljava/util/List;":
-                        repository.register(specification.identifier, COLLECTION);
-                        break;
-                    case "Ljava/time/LocalDate;":
-                        repository.register(specification.identifier, DATE);
-                        break;
-                }
-            } else if (specification.fieldDescriptors.size() == 2) {
-                String field1 = specification.fieldDescriptors.get(0).toString();
-                String field2 = specification.fieldDescriptors.get(1).toString();
-                if (field1.equals(field2) && field1.equals("Ljava/time/LocalDate;")) {
-                    repository.register(specification.identifier, TERM);
-                }
-            }
         }
     }
 
-    private void className(Specification specification, CharacteristicRepository repository) {
-        if (isClassName(specification.identifier)) repository.register(specification.identifier, this);
+    boolean matches(Specification specification) {
+        return false;
     }
 
-    boolean isClassName(Identifier identifier) {
-        return false;
+    private void registerSpecific(Specification specification, CharacteristicRepository repository) {
+        if (matches(specification)) repository.register(specification.identifier, this);
     }
 
     private void annotation(ClassDescriptor descriptor, Specification specification, CharacteristicRepository repository) {

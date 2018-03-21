@@ -30,4 +30,22 @@ public class Specification {
         this.methodSpecifications = methodSpecifications;
         this.fieldDescriptors = fieldDescriptors;
     }
+
+    public boolean isEnum() {
+        return parentIdentifier.equals(new Identifier(Enum.class));
+    }
+
+    public boolean hasOnlyOneFieldAndFieldTypeIs(String classDescriptor) {
+        if (isEnum()) return false;
+        if (fieldDescriptors.size() != 1) return false;
+        return fieldDescriptors.get(0).value.equals(classDescriptor);
+    }
+
+    public boolean hasTwoFieldsAndFieldTypeAre(String classDescriptor) {
+        if (isEnum()) return false;
+        if (fieldDescriptors.size() != 2) return false;
+        String field1 = fieldDescriptors.get(0).toString();
+        String field2 = fieldDescriptors.get(1).toString();
+        return (field1.equals(field2) && field1.equals(classDescriptor));
+    }
 }

@@ -7,26 +7,25 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.Relation;
+import jig.domain.model.relation.GenericRelation;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
-import jig.domain.model.relation.Relations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class MethodDetail {
 
-    private Relation methodRelation;
+    private GenericRelation<Identifier, MethodIdentifier> methodRelation;
     private RelationRepository relationRepository;
     private CharacteristicRepository characteristicRepository;
     private SqlRepository sqlRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public MethodDetail(Relation methodRelation,
+    public MethodDetail(GenericRelation<Identifier, MethodIdentifier> methodRelation,
                         RelationRepository relationRepository,
                         CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
@@ -46,39 +45,27 @@ public class MethodDetail {
         return japaneseNameRepository.get(name());
     }
 
-    public Identifier methodName() {
+    public MethodIdentifier methodName() {
         return methodRelation.to();
     }
 
     public Identifier returnTypeName() {
-        Relation relation = relationRepository.get(methodName(), RelationType.METHOD_RETURN_TYPE);
-        return relation.to();
+        return relationRepository.getReturnTypeOf(methodName());
     }
 
     public Identifiers instructFields() {
-        Relations relations = relationRepository.find(methodName(), RelationType.METHOD_USE_TYPE);
-        return relations.list().stream().map(Relation::to).collect(Identifiers.collector());
+        return relationRepository.findUseTypeOf(methodName());
     }
 
-    public Optional<Identifier> datasourceMethod() {
-        return relationRepository
-                .findToOne(methodName(), RelationType.IMPLEMENT)
-                .map(Relation::from);
-    }
-
-    public Identifiers instructMapperMethodNames() {
-        return datasourceMethod().map(name -> {
-            Relations relations = relationRepository.find(name, RelationType.METHOD_USE_METHOD);
-            return relations.list().stream()
-                    .map(Relation::to)
-                    .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD))
-                    .collect(Identifiers.collector());
-        }).orElse(Identifiers.empty());
+    public MethodIdentifiers instructMapperMethodNames() {
+        return relationRepository.findConcrete(methodName())
+                .map(relationRepository::findUseMethod)
+                .filter(mapperMethod -> characteristicRepository.has(mapperMethod, Characteristic.MAPPER_METHOD));
     }
 
     public Sqls sqls() {
         List<Sql> sqls = new ArrayList<>();
-        for (Identifier identifier : instructMapperMethodNames().list()) {
+        for (MethodIdentifier identifier : instructMapperMethodNames().list()) {
             sqlRepository.find(identifier).ifPresent(sqls::add);
         }
         return new Sqls(sqls);

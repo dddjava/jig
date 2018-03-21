@@ -1,12 +1,12 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.MethodIdentifier;
 
 import java.util.Optional;
 
 public interface SqlRepository {
 
-    Optional<Sql> find(Identifier identifier);
+    Optional<Sql> find(MethodIdentifier identifier);
 
     void register(Sql sql);
 

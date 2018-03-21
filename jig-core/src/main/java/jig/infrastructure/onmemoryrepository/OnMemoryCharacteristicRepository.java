@@ -5,6 +5,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.MethodIdentifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -31,6 +32,11 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     @Override
     public boolean has(Identifier identifier, Characteristic characteristic) {
         return map.get(characteristic).contains(identifier);
+    }
+
+    @Override
+    public boolean has(MethodIdentifier identifier, Characteristic characteristic) {
+        return has(identifier.toIdentifier(), characteristic);
     }
 
     @Override

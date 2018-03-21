@@ -3,6 +3,7 @@ package jig.domain.model.relation;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.MethodIdentifiers;
 
 import java.util.Optional;
 
@@ -37,4 +38,12 @@ public interface RelationRepository {
     void registerField(Identifier identifier, Identifier fieldClassIdentifier);
 
     void registerDependency(Identifier from, Identifier to);
+
+    Identifier getReturnTypeOf(MethodIdentifier methodIdentifier);
+
+    Identifiers findUseTypeOf(MethodIdentifier methodIdentifier);
+
+    MethodIdentifiers findConcrete(MethodIdentifier methodIdentifier);
+
+    MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier);
 }

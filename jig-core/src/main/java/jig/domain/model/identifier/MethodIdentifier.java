@@ -12,8 +12,25 @@ public class MethodIdentifier {
         this.args = args;
     }
 
+    public MethodIdentifier(Identifier identifier) {
+        String identifierText = identifier.value();
+        int argIndex = identifierText.lastIndexOf("(");
+        int index = identifierText.lastIndexOf(".", argIndex);
+        this.classIdentifier = new Identifier(identifierText.substring(0, index));
+        this.methodName = identifierText.substring(index + 1, argIndex);
+        this.args = identifierText.substring(argIndex);
+    }
+
     // TODO このままIdentifierを残すかは検討の余地あり
     public Identifier toIdentifier() {
         return new Identifier(classIdentifier.value() + "." + methodName + args);
+    }
+
+    public String asFullText() {
+        return toIdentifier().value();
+    }
+
+    public String asSimpleText() {
+        return toIdentifier().asSimpleText();
     }
 }

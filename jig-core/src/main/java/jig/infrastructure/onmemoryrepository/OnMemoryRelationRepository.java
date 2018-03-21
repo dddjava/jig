@@ -3,6 +3,7 @@ package jig.infrastructure.onmemoryrepository;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
@@ -46,9 +47,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
         return new Relations(relations);
     }
 
-    private Stream<Relation> stream(RelationType relationType) {
-        return map.get(relationType).stream();
-    }
 
     @Override
     public Relations findTo(Identifier toIdentifier, RelationType type) {
@@ -112,6 +110,31 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
+    public Identifier getReturnTypeOf(MethodIdentifier methodIdentifier) {
+        return get(methodIdentifier.toIdentifier(), RelationType.METHOD_RETURN_TYPE).to();
+    }
+
+    @Override
+    public Identifiers findUseTypeOf(MethodIdentifier methodIdentifier) {
+        return find(methodIdentifier.toIdentifier(), RelationType.METHOD_USE_TYPE)
+                .list().stream()
+                .map(Relation::to)
+                .collect(Identifiers.collector());
+    }
+
+    @Override
+    public MethodIdentifiers findConcrete(MethodIdentifier methodIdentifier) {
+        Relations relations = findTo(methodIdentifier.toIdentifier(), RelationType.IMPLEMENT);
+        return relations.list().stream().map(Relation::from).map(MethodIdentifier::new).collect(MethodIdentifiers.collector());
+    }
+
+    @Override
+    public MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier) {
+        Relations relations = find(methodIdentifier.toIdentifier(), RelationType.METHOD_USE_METHOD);
+        return relations.list().stream().map(Relation::to).map(MethodIdentifier::new).collect(MethodIdentifiers.collector());
+    }
+
+    @Override
     public Relation get(Identifier identifier, RelationType type) {
         return findOne(identifier, type)
                 .orElseThrow(() -> {
@@ -135,4 +158,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .findFirst();
     }
 
+    private Stream<Relation> stream(RelationType relationType) {
+        return map.get(relationType).stream();
+    }
 }

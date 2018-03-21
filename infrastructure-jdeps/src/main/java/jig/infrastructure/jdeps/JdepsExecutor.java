@@ -5,7 +5,6 @@ import jig.domain.model.identifier.Identifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.Relations;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 
@@ -64,7 +63,7 @@ public class JdepsExecutor implements RelationAnalyzer {
             if (toMatcher.find()) {
                 if (from == null) throw new NullPointerException();
                 Identifier to = new Identifier(toMatcher.group(1));
-                relationRepository.register(RelationType.DEPENDENCY.of(from, to));
+                relationRepository.registerDependency(from, to);
                 continue;
             }
 

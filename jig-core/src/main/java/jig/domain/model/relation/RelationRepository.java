@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public interface RelationRepository {
 
-    void register(Relation relation);
-
     Relations all();
 
     Relation get(Identifier identifier, RelationType type);
@@ -33,4 +31,10 @@ public interface RelationRepository {
     void registerMethodUseType(MethodIdentifier identifier, Identifier fieldTypeName);
 
     void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
+
+    void registerImplementation(Identifier identifier, Identifier interfaceIdentifier);
+
+    void registerField(Identifier identifier, Identifier fieldClassIdentifier);
+
+    void registerDependency(Identifier from, Identifier to);
 }

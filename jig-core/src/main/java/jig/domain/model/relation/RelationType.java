@@ -25,13 +25,13 @@ public enum RelationType {
 
     public static void register(RelationRepository repository, Specification specification) {
 
-        specification.interfaceIdentifiers.list().forEach(name -> {
-            repository.register(new Relation(specification.identifier, name, IMPLEMENT));
+        specification.interfaceIdentifiers.list().forEach(interfaceIdentifier -> {
+            repository.registerImplementation(specification.identifier, interfaceIdentifier);
         });
 
         specification.fieldDescriptors.forEach(descriptor -> {
             Type fieldType = Type.getType(descriptor.toString());
-            repository.register(RelationType.FIELD.of(specification.identifier, new Identifier(fieldType.getClassName())));
+            repository.registerField(specification.identifier, new Identifier(fieldType.getClassName()));
         });
 
         specification.methodSpecifications.forEach(methodDescriptor -> {

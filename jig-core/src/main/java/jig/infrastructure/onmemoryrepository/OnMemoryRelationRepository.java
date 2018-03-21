@@ -29,7 +29,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
         }
     }
 
-    @Override
     public void register(Relation relation) {
         map.get(relation.relationType()).add(relation);
     }
@@ -95,6 +94,21 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerImplementation(MethodIdentifier from, MethodIdentifier to) {
         register(RelationType.IMPLEMENT.of(from.toIdentifier(), to.toIdentifier()));
+    }
+
+    @Override
+    public void registerImplementation(Identifier identifier, Identifier interfaceIdentifier) {
+        register(RelationType.IMPLEMENT.of(identifier, interfaceIdentifier));
+    }
+
+    @Override
+    public void registerField(Identifier identifier, Identifier fieldClassIdentifier) {
+        register(RelationType.FIELD.of(identifier, fieldClassIdentifier));
+    }
+
+    @Override
+    public void registerDependency(Identifier from, Identifier to) {
+        register(RelationType.DEPENDENCY.of(from, to));
     }
 
     @Override

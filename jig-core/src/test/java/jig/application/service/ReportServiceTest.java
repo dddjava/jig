@@ -5,9 +5,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
 import jig.domain.model.report.Reports;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +39,7 @@ class ReportServiceTest {
         repository.register(identifier, Characteristic.ENUM_POLYMORPHISM);
 
         japaneseNameRepository.register(identifier, new JapaneseName("対応する和名"));
-        relationRepository.register(new Relation(new Identifier("test.HogeUser"), identifier, RelationType.FIELD));
+        relationRepository.registerField(new Identifier("test.HogeUser"), identifier);
 
         Reports reports = sut.reports();
         reports.each(report -> {

@@ -57,9 +57,9 @@ class ReportServiceTest {
                             "test.HogeEnum",
                             "対応する和名",
                             "[t.HogeUser]",
-                            "false",
-                            "false",
-                            "false"
+                            "true",
+                            "true",
+                            "true"
                     );
         });
     }

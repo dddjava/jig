@@ -2,13 +2,14 @@ package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
+
+import static java.util.stream.Collectors.toSet;
 
 @Repository
 public class OnMemoryCharacteristicRepository implements CharacteristicRepository {
@@ -30,6 +31,15 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     @Override
     public boolean has(Identifier identifier, Characteristic characteristic) {
         return map.get(characteristic).contains(identifier);
+    }
+
+    @Override
+    public Characteristics characteristicsOf(Identifier identifier) {
+        Set<Characteristic> set = map.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(identifier))
+                .map(Map.Entry::getKey)
+                .collect(toSet());
+        return new Characteristics(set);
     }
 
     @Override

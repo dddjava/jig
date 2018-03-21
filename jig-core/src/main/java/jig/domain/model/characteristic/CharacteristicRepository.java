@@ -10,4 +10,6 @@ public interface CharacteristicRepository {
     void register(Identifier identifier, Characteristic characteristic);
 
     boolean has(Identifier identifier, Characteristic mapper);
+
+    Characteristics characteristicsOf(Identifier identifier);
 }

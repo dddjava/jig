@@ -1,6 +1,7 @@
 package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
+import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.japanasename.JapaneseName;
@@ -13,13 +14,13 @@ import jig.domain.model.relation.Relations;
 public class TypeDetail {
 
     private final Identifier identifier;
-    private final Characteristic characteristic;
+    private final Characteristics characteristics;
     private RelationRepository relationRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public TypeDetail(Identifier identifier, Characteristic characteristic, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
+    public TypeDetail(Identifier identifier, Characteristics characteristics, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
         this.identifier = identifier;
-        this.characteristic = characteristic;
+        this.characteristics = characteristics;
         this.relationRepository = relationRepository;
         this.japaneseNameRepository = japaneseNameRepository;
     }
@@ -43,6 +44,6 @@ public class TypeDetail {
     }
 
     public boolean is(Characteristic characteristic) {
-        return this.characteristic == characteristic;
+        return characteristics.has(characteristic);
     }
 }

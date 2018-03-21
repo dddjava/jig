@@ -1,6 +1,7 @@
 package jig.domain.model.relation;
 
 import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.Type;
@@ -43,20 +44,20 @@ public enum RelationType {
 
             // メソッド
             String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
-            Identifier methodIdentifier = new Identifier(classIdentifier.value() + "." + name + argumentsString);
-            repository.register(RelationType.METHOD.of(classIdentifier, methodIdentifier));
+            MethodIdentifier methodIdentifier = new MethodIdentifier(classIdentifier, name, argumentsString);
+            repository.registerMethod(classIdentifier, methodIdentifier);
 
             // 戻り値の型
             Identifier returnTypeIdentifier = methodDescriptor.getReturnTypeName();
-            repository.register(RelationType.METHOD_RETURN_TYPE.of(methodIdentifier, returnTypeIdentifier));
+            repository.registerMethodReturnType(methodIdentifier, returnTypeIdentifier);
 
             for (Type type : argumentTypes) {
                 Identifier argumentTypeIdentifier = new Identifier(type.getClassName());
-                repository.register(RelationType.METHOD_PARAMETER.of(methodIdentifier, argumentTypeIdentifier));
+                repository.registerMethodParameter(methodIdentifier, argumentTypeIdentifier);
             }
 
             for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
-                repository.register(RelationType.IMPLEMENT.of(methodIdentifier, interfaceIdentifier.concat(methodIdentifier)));
+                repository.registerImplementation(methodIdentifier, new MethodIdentifier(interfaceIdentifier, name, argumentsString));
             }
 
             registerMethodInstruction(repository, methodDescriptor);
@@ -65,11 +66,11 @@ public enum RelationType {
 
     private static void registerMethodInstruction(RelationRepository repository, MethodSpecification methodSpecification) {
         methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName -> {
-            repository.register(RelationType.METHOD_USE_TYPE.of(methodSpecification.identifier, fieldTypeName));
+            repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName);
         });
 
         methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
-            repository.register(RelationType.METHOD_USE_METHOD.of(methodSpecification.identifier, methodName));
+            repository.registerMethodUseMethod(methodSpecification.identifier, methodName);
         });
     }
 }

@@ -55,7 +55,7 @@ public enum Characteristic {
 
         specification.methodSpecifications.forEach(methodDescriptor -> {
             if (repository.has(specification.identifier, MAPPER)) {
-                repository.register(methodDescriptor.identifier, MAPPER_METHOD);
+                repository.register(methodDescriptor.identifier.toIdentifier(), MAPPER_METHOD);
             }
         });
 

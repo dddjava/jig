@@ -2,6 +2,7 @@ package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
@@ -63,6 +64,37 @@ public class OnMemoryRelationRepository implements RelationRepository {
         return stream(type)
                 .filter(relation -> toIdentifier.equals(relation.to()))
                 .findFirst();
+    }
+
+    @Override
+    public void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier) {
+        register(RelationType.METHOD.of(classIdentifier, methodIdentifier.toIdentifier()));
+    }
+
+    @Override
+    public void registerMethodParameter(MethodIdentifier methodIdentifier, Identifier argumentTypeIdentifier) {
+        register(RelationType.METHOD_PARAMETER.of(methodIdentifier.toIdentifier(), argumentTypeIdentifier));
+    }
+
+    @Override
+    public void registerMethodReturnType(MethodIdentifier methodIdentifier, Identifier returnTypeIdentifier) {
+        register(RelationType.METHOD_RETURN_TYPE.of(methodIdentifier.toIdentifier(), returnTypeIdentifier));
+    }
+
+    @Override
+    public void registerMethodUseMethod(MethodIdentifier from, MethodIdentifier to) {
+        register(RelationType.METHOD_USE_METHOD.of(from.toIdentifier(), to.toIdentifier()));
+    }
+
+    @Override
+    public void registerMethodUseType(MethodIdentifier methodIdentifier, Identifier identifier) {
+        register(RelationType.METHOD_USE_TYPE.of(methodIdentifier.toIdentifier(), identifier));
+
+    }
+
+    @Override
+    public void registerImplementation(MethodIdentifier from, MethodIdentifier to) {
+        register(RelationType.IMPLEMENT.of(from.toIdentifier(), to.toIdentifier()));
     }
 
     @Override

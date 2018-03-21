@@ -1,5 +1,6 @@
 package jig.domain.model.identifier;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ public class Identifiers {
 
     public Identifiers(List<Identifier> list) {
         this.list = list;
+        list.sort(Comparator.comparing(Identifier::value));
     }
 
     public List<Identifier> list() {
@@ -20,10 +22,6 @@ public class Identifiers {
 
     public static Collector<Identifier, ?, Identifiers> collector() {
         return Collectors.collectingAndThen(Collectors.toList(), Identifiers::new);
-    }
-
-    public boolean contains(Identifier identifier) {
-        return list.contains(identifier);
     }
 
     public String asSimpleText() {

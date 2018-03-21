@@ -7,10 +7,9 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.GenericRelation;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.Relations;
 import jig.domain.model.report.Perspective;
 import jig.domain.model.report.Report;
 import jig.domain.model.report.Reports;
@@ -54,10 +53,12 @@ public class ReportService {
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         Identifiers identifiers = characteristicRepository.find(characteristic);
-        Relations methods = relationRepository.methodsOf(identifiers);
-        for (GenericRelation<Identifier, MethodIdentifier> methodRelation : methods.list2()) {
-            MethodDetail condition = new MethodDetail(methodRelation, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
-            list.add(condition);
+        for (Identifier identifier : identifiers.list()) {
+            MethodIdentifiers methods = relationRepository.methodsOf(identifier);
+            for (MethodIdentifier methodIdentifier : methods.list()) {
+                MethodDetail condition = new MethodDetail(identifier, methodIdentifier, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
+                list.add(condition);
+            }
         }
         return new MethodReport(perspective, list);
     }

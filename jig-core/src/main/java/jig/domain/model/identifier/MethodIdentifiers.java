@@ -1,6 +1,7 @@
 package jig.domain.model.identifier;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -13,6 +14,7 @@ public class MethodIdentifiers {
 
     public MethodIdentifiers(List<MethodIdentifier> list) {
         this.list = list;
+        list.sort(Comparator.comparing(MethodIdentifier::asFullText));
     }
 
     public List<MethodIdentifier> list() {

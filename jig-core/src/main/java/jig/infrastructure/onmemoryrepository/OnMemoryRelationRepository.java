@@ -11,15 +11,12 @@ import jig.domain.model.relation.Relations;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
-
-    private static final Logger LOGGER = Logger.getLogger(OnMemoryRelationRepository.class.getName());
 
     final EnumMap<RelationType, Set<Relation>> map;
 
@@ -38,15 +35,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     public Relations all() {
         return new Relations(map.values().stream().flatMap(Set::stream).collect(toList()));
     }
-
-    @Override
-    public Relations methodsOf(Identifiers identifiers) {
-        List<Relation> relations = stream(RelationType.METHOD)
-                .filter(relation -> identifiers.contains(relation.from()))
-                .collect(toList());
-        return new Relations(relations);
-    }
-
 
     @Override
     public Relations findTo(Identifier toIdentifier, RelationType type) {
@@ -128,6 +116,12 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier) {
         Relations relations = find(methodIdentifier.toIdentifier(), RelationType.METHOD_USE_METHOD);
+        return relations.list().stream().map(Relation::to).map(MethodIdentifier::new).collect(MethodIdentifiers.collector());
+    }
+
+    @Override
+    public MethodIdentifiers methodsOf(Identifier identifier) {
+        Relations relations = find(identifier, RelationType.METHOD);
         return relations.list().stream().map(Relation::to).map(MethodIdentifier::new).collect(MethodIdentifiers.collector());
     }
 

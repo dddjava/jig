@@ -27,11 +27,15 @@ public class Identifiers {
         return list.contains(identifier);
     }
 
+    public static Identifiers empty() {
+        return new Identifiers(Collections.emptyList());
+    }
+
     public String asCompressText() {
         return list.stream().map(Identifier::asCompressText).collect(joining(",", "[", "]"));
     }
 
-    public static Identifiers empty() {
-        return new Identifiers(Collections.emptyList());
+    public String asSimpleText() {
+        return list.stream().map(Identifier::asSimpleText).collect(joining(",", "[", "]"));
     }
 }

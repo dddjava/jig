@@ -56,7 +56,7 @@ class ReportServiceTest {
                     .containsExactly(
                             "test.HogeEnum",
                             "対応する和名",
-                            "[t.HogeUser]",
+                            "[HogeUser]",
                             "true",
                             "true",
                             "true"

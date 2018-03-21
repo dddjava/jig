@@ -9,9 +9,8 @@ public enum MethodConcern {
     クラス名(detail -> detail.name().value()),
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.methodName().asSimpleText()),
-    メソッド戻り値の型(detail -> detail.returnTypeName().value()),
-    使用しているフィールドの型(detail -> detail
-            .instructFields().asCompressText()),
+    メソッド戻り値の型(detail -> detail.returnTypeName().asSimpleText()),
+    使用しているフィールドの型(detail -> detail.instructFields().asSimpleText()),
 
     // TODO Repositoryだけの関心ごとなので移動
     データソースメソッド(detail -> detail

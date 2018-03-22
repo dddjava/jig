@@ -50,8 +50,7 @@ public enum RelationType {
             Identifier returnTypeIdentifier = methodDescriptor.getReturnTypeName();
             repository.registerMethodReturnType(methodIdentifier, returnTypeIdentifier);
 
-            for (Type type : argumentTypes) {
-                Identifier argumentTypeIdentifier = new Identifier(type.getClassName());
+            for (Identifier argumentTypeIdentifier : argumentTypeIdentifiers.list()) {
                 repository.registerMethodParameter(methodIdentifier, argumentTypeIdentifier);
             }
 

@@ -82,17 +82,10 @@ public enum Characteristic {
         boolean matches(Specification specification) {
             return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/util/List;");
         }
-    },
-    MAPPER_METHOD;
+    };
 
     public static void register(CharacteristicRepository repository, Specification specification) {
         Arrays.stream(values()).forEach(c -> c.registerSpecific(specification, repository));
-
-        specification.methodSpecifications.forEach(methodDescriptor -> {
-            if (repository.has(specification.identifier, MAPPER)) {
-                repository.register(methodDescriptor.identifier.toIdentifier(), MAPPER_METHOD);
-            }
-        });
     }
 
     boolean matches(Specification specification) {

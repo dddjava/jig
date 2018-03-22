@@ -33,4 +33,8 @@ public class MethodIdentifier {
     public String asSimpleText() {
         return toIdentifier().asSimpleText();
     }
+
+    public Identifier typeIdentifier() {
+        return classIdentifier;
+    }
 }

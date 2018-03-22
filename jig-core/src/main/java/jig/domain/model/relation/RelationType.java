@@ -1,13 +1,8 @@
 package jig.domain.model.relation;
 
 import jig.domain.model.identifier.Identifier;
-import jig.domain.model.identifier.Identifiers;
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.Type;
-
-import java.util.Arrays;
 
 public enum RelationType {
     DEPENDENCY,
@@ -30,45 +25,27 @@ public enum RelationType {
             repository.registerField(specification.identifier, new Identifier(fieldType.getClassName()));
         });
 
-        specification.methodSpecifications.forEach(methodDescriptor -> {
-            String descriptor = methodDescriptor.descriptor;
-            String name = methodDescriptor.methodName;
-            Identifier classIdentifier = specification.identifier;
+        specification.methodSpecifications.forEach(methodSpecification -> {
+            repository.registerMethod(specification.identifier, methodSpecification.identifier);
 
-            // パラメーターの型
-            Type[] argumentTypes = Type.getArgumentTypes(descriptor);
+            Identifier returnTypeIdentifier = methodSpecification.getReturnTypeName();
+            repository.registerMethodReturnType(methodSpecification.identifier, returnTypeIdentifier);
 
-            // メソッド
-            Identifiers argumentTypeIdentifiers = Arrays.stream(argumentTypes)
-                    .map(Type::getClassName)
-                    .map(Identifier::new)
-                    .collect(Identifiers.collector());
-            MethodIdentifier methodIdentifier = new MethodIdentifier(classIdentifier, name, argumentTypeIdentifiers);
-            repository.registerMethod(classIdentifier, methodIdentifier);
-
-            // 戻り値の型
-            Identifier returnTypeIdentifier = methodDescriptor.getReturnTypeName();
-            repository.registerMethodReturnType(methodIdentifier, returnTypeIdentifier);
-
-            for (Identifier argumentTypeIdentifier : argumentTypeIdentifiers.list()) {
-                repository.registerMethodParameter(methodIdentifier, argumentTypeIdentifier);
+            for (Identifier argumentTypeIdentifier : methodSpecification.argumentTypeIdentifiers().list()) {
+                repository.registerMethodParameter(methodSpecification.identifier, argumentTypeIdentifier);
             }
 
             for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
-                repository.registerImplementation(methodIdentifier, new MethodIdentifier(interfaceIdentifier, name, argumentTypeIdentifiers));
+                repository.registerImplementation(methodSpecification.identifier, methodSpecification.methodIdentifierWith(interfaceIdentifier));
             }
 
-            registerMethodInstruction(repository, methodDescriptor);
-        });
-    }
+            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName -> {
+                repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName);
+            });
 
-    private static void registerMethodInstruction(RelationRepository repository, MethodSpecification methodSpecification) {
-        methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName -> {
-            repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName);
-        });
-
-        methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
-            repository.registerMethodUseMethod(methodSpecification.identifier, methodName);
+            methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
+                repository.registerMethodUseMethod(methodSpecification.identifier, methodName);
+            });
         });
     }
 }

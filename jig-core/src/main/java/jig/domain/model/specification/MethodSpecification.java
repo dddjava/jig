@@ -31,6 +31,17 @@ public class MethodSpecification {
     public final List<Identifier> usingFieldTypeIdentifiers = new ArrayList<>();
     public final List<MethodIdentifier> usingMethodIdentifiers = new ArrayList<>();
 
+    public MethodIdentifier methodIdentifierWith(Identifier typeIdentifier) {
+        return new MethodIdentifier(typeIdentifier, this.methodName, argumentTypeIdentifiers());
+    }
+
+    public Identifiers argumentTypeIdentifiers() {
+        return Arrays.stream(Type.getArgumentTypes(this.descriptor))
+                        .map(Type::getClassName)
+                        .map(Identifier::new)
+                        .collect(Identifiers.collector());
+    }
+
     public Identifier getReturnTypeName() {
         return new Identifier(Type.getReturnType(descriptor).getClassName());
     }

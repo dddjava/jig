@@ -2,6 +2,7 @@ package jig.domain.model.specification;
 
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
+import org.objectweb.asm.Opcodes;
 
 import java.util.List;
 
@@ -29,6 +30,10 @@ public class Specification {
         this.annotationDescriptors = annotationDescriptors;
         this.methodSpecifications = methodSpecifications;
         this.fieldDescriptors = fieldDescriptors;
+    }
+
+    public boolean canExtend() {
+        return (classAccess & Opcodes.ACC_FINAL) == 0;
     }
 
     public boolean isEnum() {

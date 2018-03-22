@@ -3,7 +3,6 @@ package jig.domain.model.characteristic;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.Specification;
-import org.objectweb.asm.Opcodes;
 
 import java.util.Arrays;
 
@@ -90,7 +89,7 @@ public enum Characteristic {
         });
 
         if (specification.parentIdentifier.equals(new Identifier(Enum.class))) {
-            if ((specification.classAccess & Opcodes.ACC_FINAL) == 0) {
+            if (specification.canExtend()) {
                 // finalでないenumは多態
                 repository.register(specification.identifier, Characteristic.ENUM_POLYMORPHISM);
             } else if (specification.hasField()) {

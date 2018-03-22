@@ -9,9 +9,9 @@ public interface RelationRepository {
 
     Relations all();
 
-    void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier);
+    void registerMethod(MethodIdentifier methodIdentifier);
 
-    void registerMethodParameter(MethodIdentifier methodIdentifier, Identifier argumentTypeIdentifier);
+    void registerMethodParameter(MethodIdentifier methodIdentifier);
 
     void registerMethodReturnType(MethodIdentifier methodIdentifier, Identifier returnTypeIdentifier);
 

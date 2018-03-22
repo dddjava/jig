@@ -2,7 +2,6 @@ package jig.domain.model.relation;
 
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.specification.Specification;
-import org.objectweb.asm.Type;
 
 public enum RelationType {
     DEPENDENCY,
@@ -20,32 +19,24 @@ public enum RelationType {
 
     public static void register(RelationRepository repository, Specification specification) {
 
-        specification.fieldDescriptors.forEach(descriptor -> {
-            Type fieldType = Type.getType(descriptor.toString());
-            repository.registerField(specification.identifier, new Identifier(fieldType.getClassName()));
-        });
+        specification.fieldTypeIdentifiers().list().forEach(fieldTypeIdentifier ->
+                repository.registerField(specification.identifier, fieldTypeIdentifier));
 
         specification.methodSpecifications.forEach(methodSpecification -> {
-            repository.registerMethod(specification.identifier, methodSpecification.identifier);
+            repository.registerMethod(methodSpecification.identifier);
+            repository.registerMethodParameter(methodSpecification.identifier);
 
-            Identifier returnTypeIdentifier = methodSpecification.getReturnTypeName();
-            repository.registerMethodReturnType(methodSpecification.identifier, returnTypeIdentifier);
-
-            for (Identifier argumentTypeIdentifier : methodSpecification.argumentTypeIdentifiers().list()) {
-                repository.registerMethodParameter(methodSpecification.identifier, argumentTypeIdentifier);
-            }
+            repository.registerMethodReturnType(methodSpecification.identifier, methodSpecification.getReturnTypeName());
 
             for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
                 repository.registerImplementation(methodSpecification.identifier, methodSpecification.methodIdentifierWith(interfaceIdentifier));
             }
 
-            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName -> {
-                repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName);
-            });
+            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName ->
+                    repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName));
 
-            methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
-                repository.registerMethodUseMethod(methodSpecification.identifier, methodName);
-            });
+            methodSpecification.usingMethodIdentifiers.forEach(methodName ->
+                    repository.registerMethodUseMethod(methodSpecification.identifier, methodName));
         });
     }
 }

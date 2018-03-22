@@ -14,6 +14,7 @@ public class MethodIdentifier {
         this.typeIdentifier = typeIdentifier;
         this.methodName = methodName;
         this.argumentTypeIdentifiers = argumentTypeIdentifiers;
+
         this.fullText = typeIdentifier.value() + "." + methodName + "(" + argumentTypeIdentifiers.asText() + ")";
     }
 
@@ -27,6 +28,10 @@ public class MethodIdentifier {
 
     public Identifier typeIdentifier() {
         return typeIdentifier;
+    }
+
+    public Identifiers argumentTypeIdentifiers() {
+        return argumentTypeIdentifiers;
     }
 
     @Override

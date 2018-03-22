@@ -49,9 +49,9 @@ public class Specification {
     public boolean hasTwoFieldsAndFieldTypeAre(String classDescriptor) {
         if (isEnum()) return false;
         if (fieldDescriptors.size() != 2) return false;
-        String field1 = fieldDescriptors.get(0).toString();
-        String field2 = fieldDescriptors.get(1).toString();
-        return (field1.equals(field2) && field1.equals(classDescriptor));
+        Identifier field1 = fieldDescriptors.get(0).toTypeIdentifier();
+        Identifier field2 = fieldDescriptors.get(1).toTypeIdentifier();
+        return (field1.equals(field2) && field1.equals(new ClassDescriptor(classDescriptor).toTypeIdentifier()));
     }
 
     public boolean hasMethod() {
@@ -64,5 +64,9 @@ public class Specification {
 
     public boolean hasAnnotation(String annotation) {
         return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.value.equals(annotation));
+    }
+
+    public Identifiers fieldTypeIdentifiers() {
+        return fieldDescriptors.stream().map(ClassDescriptor::toTypeIdentifier).collect(Identifiers.collector());
     }
 }

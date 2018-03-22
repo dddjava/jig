@@ -27,13 +27,15 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final Set<MethodRelation> methodUseMethods = new HashSet<>();
 
     @Override
-    public void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier) {
-        memberMethods.add(new TypeMethodRelation(classIdentifier, methodIdentifier));
+    public void registerMethod(MethodIdentifier methodIdentifier) {
+        memberMethods.add(new TypeMethodRelation(methodIdentifier.typeIdentifier(), methodIdentifier));
     }
 
     @Override
-    public void registerMethodParameter(MethodIdentifier methodIdentifier, Identifier argumentTypeIdentifier) {
-        methodParameterTypes.add(new MethodTypeRelation(methodIdentifier, argumentTypeIdentifier));
+    public void registerMethodParameter(MethodIdentifier methodIdentifier) {
+        Identifiers identifiers = methodIdentifier.argumentTypeIdentifiers();
+        identifiers.list().forEach(argumentTypeIdentifier ->
+                methodParameterTypes.add(new MethodTypeRelation(methodIdentifier, argumentTypeIdentifier)));
     }
 
     @Override

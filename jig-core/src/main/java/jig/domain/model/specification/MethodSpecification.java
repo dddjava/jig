@@ -13,8 +13,9 @@ public class MethodSpecification {
 
     // TODO 名前の混乱をなんとかする
     public final String methodName;
-    public final MethodIdentifier identifier;
     public final String descriptor;
+
+    public final MethodIdentifier identifier;
 
     public MethodSpecification(Identifier classIdentifier, String name, String descriptor) {
         this.methodName = name;
@@ -37,9 +38,9 @@ public class MethodSpecification {
 
     public Identifiers argumentTypeIdentifiers() {
         return Arrays.stream(Type.getArgumentTypes(this.descriptor))
-                        .map(Type::getClassName)
-                        .map(Identifier::new)
-                        .collect(Identifiers.collector());
+                .map(Type::getClassName)
+                .map(Identifier::new)
+                .collect(Identifiers.collector());
     }
 
     public Identifier getReturnTypeName() {

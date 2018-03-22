@@ -1,6 +1,5 @@
 package jig.domain.model.characteristic;
 
-import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.Specification;
 
 import java.util.Arrays;
@@ -8,8 +7,8 @@ import java.util.Arrays;
 public enum Characteristic {
     SERVICE {
         @Override
-        boolean isAnnotation(ClassDescriptor descriptor) {
-            return "Lorg/springframework/stereotype/Service;".equals(descriptor.toString());
+        boolean matches(Specification specification) {
+            return specification.hasAnnotation("Lorg/springframework/stereotype/Service;");
         }
     },
     REPOSITORY {
@@ -20,14 +19,14 @@ public enum Characteristic {
     },
     DATASOURCE {
         @Override
-        boolean isAnnotation(ClassDescriptor descriptor) {
-            return "Lorg/springframework/stereotype/Repository;".equals(descriptor.toString());
+        boolean matches(Specification specification) {
+            return specification.hasAnnotation("Lorg/springframework/stereotype/Repository;");
         }
     },
     MAPPER {
         @Override
-        boolean isAnnotation(ClassDescriptor descriptor) {
-            return "Lorg/apache/ibatis/annotations/Mapper;".equals(descriptor.toString());
+        boolean matches(Specification specification) {
+            return specification.hasAnnotation("Lorg/apache/ibatis/annotations/Mapper;");
         }
     },
     ENUM {
@@ -89,10 +88,6 @@ public enum Characteristic {
     public static void register(CharacteristicRepository repository, Specification specification) {
         Arrays.stream(values()).forEach(c -> c.registerSpecific(specification, repository));
 
-        specification.annotationDescriptors.forEach(descriptor -> {
-            Arrays.stream(values()).forEach(c -> c.annotation(descriptor, specification, repository));
-        });
-
         specification.methodSpecifications.forEach(methodDescriptor -> {
             if (repository.has(specification.identifier, MAPPER)) {
                 repository.register(methodDescriptor.identifier.toIdentifier(), MAPPER_METHOD);
@@ -106,13 +101,5 @@ public enum Characteristic {
 
     private void registerSpecific(Specification specification, CharacteristicRepository repository) {
         if (matches(specification)) repository.register(specification.identifier, this);
-    }
-
-    private void annotation(ClassDescriptor descriptor, Specification specification, CharacteristicRepository repository) {
-        if (isAnnotation(descriptor)) repository.register(specification.identifier, this);
-    }
-
-    boolean isAnnotation(ClassDescriptor descriptor) {
-        return false;
     }
 }

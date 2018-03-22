@@ -61,4 +61,8 @@ public class Specification {
     public boolean hasField() {
         return !fieldDescriptors.isEmpty();
     }
+
+    public boolean hasAnnotation(String annotation) {
+        return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.value.equals(annotation));
+    }
 }

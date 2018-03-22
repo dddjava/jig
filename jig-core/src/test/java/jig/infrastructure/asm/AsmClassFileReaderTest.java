@@ -12,7 +12,14 @@ import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import stub.type.*;
+import stub.type.kind.BehaviourEnum;
+import stub.type.kind.ParameterizedEnum;
+import stub.type.kind.PolymorphismEnum;
+import stub.type.kind.RichEnum;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,9 +31,10 @@ public class AsmClassFileReaderTest {
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
 
     @BeforeAll
-    static void before() {
+    static void before() throws URISyntaxException {
 
-        Path path = Paths.get("../sut/build/classes/java/main");
+        URI location = AsmClassFileReaderTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        Path path = Paths.get(location);
 
         AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository, new JigPaths());
         RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
@@ -35,44 +43,61 @@ public class AsmClassFileReaderTest {
 
     @Test
     void 関連() {
-        Relations datasources = relationRepository.findTo(new Identifier("sut.domain.model.hoge.HogeRepository"), RelationType.IMPLEMENT);
+        Relations datasources = relationRepository.findTo(new Identifier(HogeRepository.class), RelationType.IMPLEMENT);
         assertThat(datasources.list()).isNotEmpty();
 
-        Relations method = relationRepository.findTo(new Identifier("sut.domain.model.hoge.HogeRepository.all()"), RelationType.IMPLEMENT);
+        Relations method = relationRepository.findTo(new Identifier(HogeRepository.class.getTypeName() + ".method()"), RelationType.IMPLEMENT);
         assertThat(method.list()).isNotEmpty();
     }
 
     @Test
-    void タグ() {
+    void サービス() {
         assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(Identifier::value)
-                .containsExactlyInAnyOrder(
-                        "sut.application.service.CanonicalService",
-                        "sut.application.service.ThrowsUnknownExceptionService");
+                .containsExactly(CanonicalService.class.getTypeName());
+    }
 
-        assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(4);
+    @Test
+    void 区分() {
+        assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(5);
+
         assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.kind.BehaviourEnum");
+                .containsExactly(BehaviourEnum.class.getTypeName());
         assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.kind.ParameterizedEnum");
+                .containsExactly(ParameterizedEnum.class.getTypeName());
         assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.kind.PolymorphismEnum");
+                .containsExactly(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName());
+    }
 
+    @Test
+    void 識別子() {
         assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(Identifier::value)
-                .containsExactlyInAnyOrder(
-                        "sut.domain.model.fuga.FugaIdentifier",
-                        "sut.domain.model.fuga.FugaName");
+                .containsExactly(SimpleIdentifier.class.getTypeName());
+    }
 
+    @Test
+    void 数値() {
         assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.hoge.hogera.HogeraAmount");
+                .containsExactly(SimpleNumber.class.getTypeName());
+    }
+
+    @Test
+    void 日付() {
 
         assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.hoge.hogera.HogeraDate");
+                .containsExactly(SimpleDate.class.getTypeName());
+    }
+
+    @Test
+    void 期間() {
 
         assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.hoge.hogera.HogeraTerm");
+                .containsExactly(SimpleTerm.class.getTypeName());
+    }
 
+    @Test
+    void コレクション() {
         assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(Identifier::value)
-                .containsExactly("sut.domain.model.hoge.Hoges");
+                .containsExactly(SimpleCollection.class.getTypeName());
     }
 
 }

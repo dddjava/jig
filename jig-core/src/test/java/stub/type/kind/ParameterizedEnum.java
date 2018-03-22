@@ -1,4 +1,4 @@
-package stub.type;
+package stub.type.kind;
 
 public enum ParameterizedEnum {
     A("a"),

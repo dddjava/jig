@@ -7,9 +7,9 @@ import jig.infrastructure.JigPaths;
 import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import testing.TestSupport;
 
 import java.net.URL;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +25,7 @@ class MyBatisSqlResolverTest {
         JigPaths jigPaths = new JigPaths();
 
         sut = new MyBatisSqlResolver(repository, jigPaths);
-        urls = Collections.list(MyBatisSqlResolverTest.class.getClassLoader().getResources("")).toArray(new URL[0]);
+        urls = TestSupport.getTestResourceRootURLs();
     }
 
     @Test

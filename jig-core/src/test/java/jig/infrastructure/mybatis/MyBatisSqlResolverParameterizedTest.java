@@ -9,10 +9,8 @@ import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import testing.TestSupport;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,9 +23,7 @@ class MyBatisSqlResolverParameterizedTest {
         SqlRepository repository = new OnMemorySqlRepository();
         MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, new JigPaths());
 
-        ArrayList<URL> list = Collections.list(this.getClass().getClassLoader().getResources(""));
-        URL[] urls = list.toArray(new URL[list.size()]);
-        sut.resolve(urls);
+        sut.resolve(TestSupport.getTestResourceRootURLs());
 
         SqlIdentifier sqlIdentifier = new SqlIdentifier("jig.infrastructure.mybatis.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);

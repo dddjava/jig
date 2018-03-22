@@ -1,6 +1,5 @@
 package jig.domain.model.characteristic;
 
-import jig.domain.model.identifier.Identifier;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.Specification;
 
@@ -37,11 +36,23 @@ public enum Characteristic {
             return specification.isEnum();
         }
     },
+    ENUM_BEHAVIOUR {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.isEnum() && specification.hasMethod();
+        }
+    },
     ENUM_PARAMETERIZED {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.isEnum() && specification.hasField();
+        }
     },
     ENUM_POLYMORPHISM {
-    },
-    ENUM_BEHAVIOUR {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.isEnum() && specification.canExtend();
+        }
     },
     IDENTIFIER {
         @Override
@@ -87,20 +98,6 @@ public enum Characteristic {
                 repository.register(methodDescriptor.identifier.toIdentifier(), MAPPER_METHOD);
             }
         });
-
-        if (specification.parentIdentifier.equals(new Identifier(Enum.class))) {
-            if (specification.canExtend()) {
-                // finalでないenumは多態
-                repository.register(specification.identifier, Characteristic.ENUM_POLYMORPHISM);
-            }
-            if (specification.hasField()) {
-                // フィールドがあるenum
-                repository.register(specification.identifier, Characteristic.ENUM_PARAMETERIZED);
-            }
-            if (specification.hasMethod()) {
-                repository.register(specification.identifier, Characteristic.ENUM_BEHAVIOUR);
-            }
-        }
     }
 
     boolean matches(Specification specification) {

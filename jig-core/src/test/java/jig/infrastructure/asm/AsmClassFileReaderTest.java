@@ -3,6 +3,7 @@ package jig.infrastructure.asm;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.relation.RelationRepository;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +48,7 @@ public class AsmClassFileReaderTest {
         MethodIdentifiers methods = relationRepository.findConcrete(new MethodIdentifier(
                 new Identifier(HogeRepository.class),
                 "method",
-                "()"));
+                new Identifiers(Collections.emptyList())));
         assertThat(methods.list()).isNotEmpty();
     }
 

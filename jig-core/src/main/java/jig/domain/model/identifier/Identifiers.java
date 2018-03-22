@@ -25,8 +25,12 @@ public class Identifiers {
         return Collectors.collectingAndThen(Collectors.toList(), Identifiers::new);
     }
 
+    public String asText() {
+        return list.stream().map(Identifier::value).collect(joining(","));
+    }
+
     public String asSimpleText() {
-        return list.stream().map(Identifier::asSimpleText).collect(joining(",", "[", "]"));
+        return list.stream().map(Identifier::asSimpleText).collect(joining(","));
     }
 
     public Identifiers merge(Identifiers other) {

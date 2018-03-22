@@ -1,13 +1,13 @@
 package jig.domain.model.specification;
 
 import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MethodSpecification {
 
@@ -23,9 +23,9 @@ public class MethodSpecification {
         this.identifier = new MethodIdentifier(classIdentifier, name, toArgumentSignatureString(descriptor));
     }
 
-    private static String toArgumentSignatureString(String descriptor) {
+    private static Identifiers toArgumentSignatureString(String descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-        return Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
+        return Arrays.stream(argumentTypes).map(Type::getClassName).map(Identifier::new).collect(Identifiers.collector());
     }
 
     public final List<Identifier> usingFieldTypeIdentifiers = new ArrayList<>();

@@ -4,40 +4,29 @@ import java.util.Objects;
 
 public class MethodIdentifier {
 
-    private final Identifier classIdentifier;
+    private final Identifier typeIdentifier;
     private final String methodName;
-    private final String args;
+    private final Identifiers argumentTypeIdentifiers;
 
-    public MethodIdentifier(Identifier classIdentifier, String methodName, String args) {
-        this.classIdentifier = classIdentifier;
+    private final String fullText;
+
+    public MethodIdentifier(Identifier typeIdentifier, String methodName, Identifiers argumentTypeIdentifiers) {
+        this.typeIdentifier = typeIdentifier;
         this.methodName = methodName;
-        this.args = args;
-    }
-
-    public MethodIdentifier(Identifier identifier) {
-        String identifierText = identifier.value();
-        int argIndex = identifierText.lastIndexOf("(");
-        int index = identifierText.lastIndexOf(".", argIndex);
-        this.classIdentifier = new Identifier(identifierText.substring(0, index));
-        this.methodName = identifierText.substring(index + 1, argIndex);
-        this.args = identifierText.substring(argIndex);
-    }
-
-    // TODO このままIdentifierを残すかは検討の余地あり
-    public Identifier toIdentifier() {
-        return new Identifier(classIdentifier.value() + "." + methodName + args);
+        this.argumentTypeIdentifiers = argumentTypeIdentifiers;
+        this.fullText = typeIdentifier.value() + "." + methodName + "(" + argumentTypeIdentifiers.asText() + ")";
     }
 
     public String asFullText() {
-        return toIdentifier().value();
+        return fullText;
     }
 
     public String asSimpleText() {
-        return toIdentifier().asSimpleText();
+        return methodName + "(" + argumentTypeIdentifiers.asSimpleText() + ")";
     }
 
     public Identifier typeIdentifier() {
-        return classIdentifier;
+        return typeIdentifier;
     }
 
     @Override
@@ -45,14 +34,11 @@ public class MethodIdentifier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MethodIdentifier that = (MethodIdentifier) o;
-        return Objects.equals(classIdentifier, that.classIdentifier) &&
-                Objects.equals(methodName, that.methodName) &&
-                Objects.equals(args, that.args);
+        return Objects.equals(fullText, that.fullText);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(classIdentifier, methodName, args);
+        return Objects.hash(fullText);
     }
 }

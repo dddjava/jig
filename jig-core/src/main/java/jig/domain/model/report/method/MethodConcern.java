@@ -9,7 +9,7 @@ public enum MethodConcern {
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.methodIdentifier().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnTypeIdentifier().asSimpleText()),
-    使用しているフィールドの型(detail -> detail.instructFields().asSimpleText()),
+    使用しているフィールドの型(detail -> "[" + detail.instructFields().asSimpleText() + "]"),
 
     DB_C(detail -> detail.sqls().tables(SqlType.INSERT)),
     DB_R(detail -> detail.sqls().tables(SqlType.SELECT)),

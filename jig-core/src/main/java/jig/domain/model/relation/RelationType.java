@@ -1,13 +1,13 @@
 package jig.domain.model.relation;
 
 import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.Type;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public enum RelationType {
     DEPENDENCY,
@@ -39,8 +39,11 @@ public enum RelationType {
             Type[] argumentTypes = Type.getArgumentTypes(descriptor);
 
             // メソッド
-            String argumentsString = Arrays.stream(argumentTypes).map(Type::getClassName).collect(Collectors.joining(",", "(", ")"));
-            MethodIdentifier methodIdentifier = new MethodIdentifier(classIdentifier, name, argumentsString);
+            Identifiers argumentTypeIdentifiers = Arrays.stream(argumentTypes)
+                    .map(Type::getClassName)
+                    .map(Identifier::new)
+                    .collect(Identifiers.collector());
+            MethodIdentifier methodIdentifier = new MethodIdentifier(classIdentifier, name, argumentTypeIdentifiers);
             repository.registerMethod(classIdentifier, methodIdentifier);
 
             // 戻り値の型
@@ -53,7 +56,7 @@ public enum RelationType {
             }
 
             for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
-                repository.registerImplementation(methodIdentifier, new MethodIdentifier(interfaceIdentifier, name, argumentsString));
+                repository.registerImplementation(methodIdentifier, new MethodIdentifier(interfaceIdentifier, name, argumentTypeIdentifiers));
             }
 
             registerMethodInstruction(repository, methodDescriptor);

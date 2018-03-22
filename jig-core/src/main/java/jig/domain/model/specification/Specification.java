@@ -48,4 +48,12 @@ public class Specification {
         String field2 = fieldDescriptors.get(1).toString();
         return (field1.equals(field2) && field1.equals(classDescriptor));
     }
+
+    public boolean hasMethod() {
+        return !methodSpecifications.isEmpty();
+    }
+
+    public boolean hasField() {
+        return !fieldDescriptors.isEmpty();
+    }
 }

@@ -93,10 +93,10 @@ public enum Characteristic {
             if ((specification.classAccess & Opcodes.ACC_FINAL) == 0) {
                 // finalでないenumは多態
                 repository.register(specification.identifier, Characteristic.ENUM_POLYMORPHISM);
-            } else if (!specification.fieldDescriptors.isEmpty()) {
+            } else if (specification.hasField()) {
                 // フィールドがあるenum
                 repository.register(specification.identifier, Characteristic.ENUM_PARAMETERIZED);
-            } else if (!specification.methodSpecifications.isEmpty()) {
+            } else if (specification.hasMethod()) {
                 repository.register(specification.identifier, Characteristic.ENUM_BEHAVIOUR);
             }
         }

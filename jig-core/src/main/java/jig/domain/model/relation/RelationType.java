@@ -25,10 +25,6 @@ public enum RelationType {
 
     public static void register(RelationRepository repository, Specification specification) {
 
-        specification.interfaceIdentifiers.list().forEach(interfaceIdentifier -> {
-            repository.registerImplementation(specification.identifier, interfaceIdentifier);
-        });
-
         specification.fieldDescriptors.forEach(descriptor -> {
             Type fieldType = Type.getType(descriptor.toString());
             repository.registerField(specification.identifier, new Identifier(fieldType.getClassName()));

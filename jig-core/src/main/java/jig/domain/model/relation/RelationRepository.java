@@ -9,8 +9,6 @@ public interface RelationRepository {
 
     Relations all();
 
-    Relations findTo(Identifier toIdentifier, RelationType type);
-
     void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier);
 
     void registerMethodParameter(MethodIdentifier methodIdentifier, Identifier argumentTypeIdentifier);
@@ -22,8 +20,6 @@ public interface RelationRepository {
     void registerMethodUseType(MethodIdentifier identifier, Identifier fieldTypeName);
 
     void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
-
-    void registerImplementation(Identifier identifier, Identifier interfaceIdentifier);
 
     void registerField(Identifier identifier, Identifier fieldClassIdentifier);
 

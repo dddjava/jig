@@ -7,15 +7,16 @@ import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
-
-    final EnumMap<RelationType, Set<Relation>> map;
 
     final Set<TypeRelation> memberTypes = new HashSet<>();
     final Set<TypeMethodRelation> memberMethods = new HashSet<>();
@@ -24,18 +25,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final Set<MethodTypeRelation> methodUseTypes = new HashSet<>();
     final Set<MethodRelation> methodImplementMethods = new HashSet<>();
     final Set<MethodRelation> methodUseMethods = new HashSet<>();
-
-    public OnMemoryRelationRepository() {
-        map = new EnumMap<>(RelationType.class);
-        for (RelationType relationType : RelationType.values()) {
-            map.put(relationType, new HashSet<>());
-        }
-    }
-
-    private void register(Relation relation) {
-        map.get(relation.relationType()).add(relation);
-    }
-
 
     @Override
     public void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier) {
@@ -66,11 +55,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerImplementation(MethodIdentifier from, MethodIdentifier to) {
         methodImplementMethods.add(new MethodRelation(from, to));
-    }
-
-    @Override
-    public void registerImplementation(Identifier identifier, Identifier interfaceIdentifier) {
-        register(RelationType.IMPLEMENT.of(identifier, interfaceIdentifier));
     }
 
     @Override
@@ -135,21 +119,21 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .collect(MethodIdentifiers.collector());
     }
 
+    final EnumMap<RelationType, Set<Relation>> map;
+
+    public OnMemoryRelationRepository() {
+        map = new EnumMap<>(RelationType.class);
+        map.put(RelationType.DEPENDENCY, new HashSet<>());
+    }
+
     @Override
     public void registerDependency(Identifier from, Identifier to) {
-        register(RelationType.DEPENDENCY.of(from, to));
+        Relation relation = RelationType.DEPENDENCY.of(from, to);
+        map.get(relation.relationType()).add(relation);
     }
 
     @Override
     public Relations all() {
         return new Relations(map.values().stream().flatMap(Set::stream).collect(toList()));
-    }
-
-    @Override
-    public Relations findTo(Identifier toIdentifier, RelationType type) {
-        List<Relation> relations = map.get(type).stream()
-                .filter(relation -> toIdentifier.equals(relation.to()))
-                .collect(toList());
-        return new Relations(relations);
     }
 }

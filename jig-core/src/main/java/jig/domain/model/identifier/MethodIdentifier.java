@@ -1,5 +1,7 @@
 package jig.domain.model.identifier;
 
+import java.util.Objects;
+
 public class MethodIdentifier {
 
     private final Identifier classIdentifier;
@@ -36,5 +38,21 @@ public class MethodIdentifier {
 
     public Identifier typeIdentifier() {
         return classIdentifier;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MethodIdentifier that = (MethodIdentifier) o;
+        return Objects.equals(classIdentifier, that.classIdentifier) &&
+                Objects.equals(methodName, that.methodName) &&
+                Objects.equals(args, that.args);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(classIdentifier, methodName, args);
     }
 }

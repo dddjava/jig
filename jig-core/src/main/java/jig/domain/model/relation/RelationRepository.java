@@ -9,8 +9,6 @@ public interface RelationRepository {
 
     Relations all();
 
-    Relations find(Identifier identifier, RelationType type);
-
     Relations findTo(Identifier toIdentifier, RelationType type);
 
     void registerMethod(Identifier classIdentifier, MethodIdentifier methodIdentifier);
@@ -40,4 +38,8 @@ public interface RelationRepository {
     MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier);
 
     MethodIdentifiers methodsOf(Identifier identifier);
+
+    Identifiers findFieldUsage(Identifier name);
+
+    MethodIdentifiers findMethodUsage(Identifier name);
 }

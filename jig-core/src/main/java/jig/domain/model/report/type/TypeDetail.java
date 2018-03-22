@@ -4,12 +4,10 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
-import jig.domain.model.relation.Relations;
 
 public class TypeDetail {
 
@@ -34,13 +32,12 @@ public class TypeDetail {
     }
 
     public Identifiers usage() {
-        Relations fieldRelation = relationRepository.findTo(name(), RelationType.FIELD);
+        Identifiers fields = relationRepository.findFieldUsage(name());
 
-        // TODO メソッドでの使用をどのように扱うか
-        // Relations methodReturnRelation = relationRepository.findTo(identifier(), RelationType.METHOD_RETURN_TYPE);
-        // Relations methodParameterRelation = relationRepository.findTo(identifier(), RelationType.METHOD_PARAMETER);
+        MethodIdentifiers methods = relationRepository.findMethodUsage(name());
+        Identifiers ms = methods.typeIdentifiers();
 
-        return fieldRelation.list().stream().map(Relation::from).collect(Identifiers.collector());
+        return fields.merge(ms);
     }
 
     public boolean is(Characteristic characteristic) {

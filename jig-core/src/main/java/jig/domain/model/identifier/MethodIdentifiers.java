@@ -38,4 +38,8 @@ public class MethodIdentifiers {
         // TODO 複数の場合
         return function.apply(list.get(0));
     }
+
+    public Identifiers typeIdentifiers() {
+        return list.stream().map(MethodIdentifier::typeIdentifier).collect(Identifiers.collector());
+    }
 }

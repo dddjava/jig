@@ -92,10 +92,12 @@ public enum Characteristic {
             if (specification.canExtend()) {
                 // finalでないenumは多態
                 repository.register(specification.identifier, Characteristic.ENUM_POLYMORPHISM);
-            } else if (specification.hasField()) {
+            }
+            if (specification.hasField()) {
                 // フィールドがあるenum
                 repository.register(specification.identifier, Characteristic.ENUM_PARAMETERIZED);
-            } else if (specification.hasMethod()) {
+            }
+            if (specification.hasMethod()) {
                 repository.register(specification.identifier, Characteristic.ENUM_BEHAVIOUR);
             }
         }

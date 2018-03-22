@@ -61,9 +61,9 @@ public class AsmClassFileReaderTest {
         assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(5);
 
         assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(Identifier::value)
-                .containsExactly(BehaviourEnum.class.getTypeName());
+                .containsExactly(BehaviourEnum.class.getTypeName(), RichEnum.class.getTypeName());
         assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(Identifier::value)
-                .containsExactly(ParameterizedEnum.class.getTypeName());
+                .containsExactly(ParameterizedEnum.class.getTypeName(), RichEnum.class.getTypeName());
         assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(Identifier::value)
                 .containsExactly(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName());
     }

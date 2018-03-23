@@ -2,8 +2,6 @@ package jig.domain.model.characteristic;
 
 import jig.domain.model.specification.Specification;
 
-import java.util.Arrays;
-
 public enum Characteristic {
     SERVICE {
         @Override
@@ -84,15 +82,15 @@ public enum Characteristic {
         }
     };
 
-    public static void register(CharacteristicRepository repository, Specification specification) {
-        Arrays.stream(values()).forEach(c -> c.registerSpecific(specification, repository));
-    }
-
     boolean matches(Specification specification) {
         return false;
     }
 
-    private void registerSpecific(Specification specification, CharacteristicRepository repository) {
-        if (matches(specification)) repository.register(specification.identifier, this);
+    public static void register(CharacteristicRepository repository, Specification specification) {
+        for (Characteristic characteristic : values()) {
+            if (characteristic.matches(specification)) {
+                repository.register(specification.identifier, characteristic);
+            }
+        }
     }
 }

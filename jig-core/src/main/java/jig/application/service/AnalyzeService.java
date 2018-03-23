@@ -1,6 +1,5 @@
 package jig.application.service;
 
-import jig.infrastructure.RecursiveFileVisitor;
 import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.ClassCommentReader;
 import jig.infrastructure.javaparser.PackageInfoReader;
@@ -28,8 +27,7 @@ public class AnalyzeService {
     }
 
     public void analyze(Path path) {
-        RecursiveFileVisitor classVisitor = new RecursiveFileVisitor(asmClassFileReader::execute);
-        classVisitor.visitAllDirectories(path);
+        asmClassFileReader.execute(path);
 
         myBatisSqlResolver.resolve(path);
 
@@ -37,10 +35,7 @@ public class AnalyzeService {
     }
 
     public void readJavadoc(Path path) {
-        RecursiveFileVisitor commentVisitor = new RecursiveFileVisitor(classCommentReader::execute);
-        commentVisitor.visitAllDirectories(path);
-
-        RecursiveFileVisitor fileVisitor = new RecursiveFileVisitor(packageInfoReader::execute);
-        fileVisitor.visitAllDirectories(path);
+        classCommentReader.execute(path);
+        packageInfoReader.execute(path);
     }
 }

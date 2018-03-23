@@ -8,22 +8,23 @@ import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.RecursiveFileVisitor;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
-import stub.domain.model.type.*;
 import stub.domain.model.kind.BehaviourEnum;
 import stub.domain.model.kind.ParameterizedEnum;
 import stub.domain.model.kind.PolymorphismEnum;
 import stub.domain.model.kind.RichEnum;
+import stub.domain.model.type.*;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,8 +41,18 @@ public class AsmClassFileReaderTest {
         Path path = Paths.get(location);
 
         AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository, new JigPaths());
-        RecursiveFileVisitor recursiveFileVisitor = new RecursiveFileVisitor(analyzer::execute);
-        recursiveFileVisitor.visitAllDirectories(path);
+
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    analyzer.execute(file);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Test

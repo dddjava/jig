@@ -1,4 +1,4 @@
-package stub.relation.fuga;
+package stub.relation.fuga.foo;
 
 public interface Foo {
 

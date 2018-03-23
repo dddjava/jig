@@ -46,7 +46,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
                 .distinct()
                 .map(name -> "class " + nameFormatter.format(name) +
                         (repository.exists(name)
-                                ? "<<" + repository.get(name).value() + ">>"
+                                ? "<<" + repository.get(name).summarySentence() + ">>"
                                 : ""))
                 .collect(joining("\n"));
     }

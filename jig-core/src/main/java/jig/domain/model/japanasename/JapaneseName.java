@@ -8,6 +8,10 @@ public class JapaneseName {
         this.value = value;
     }
 
+    public String summarySentence() {
+        return value;
+    }
+
     public String value() {
         return value;
     }

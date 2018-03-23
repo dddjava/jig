@@ -5,6 +5,4 @@ include 'jig-core',
         'infrastructure-jdeps',
         'package-diagram-cli',
         'class-list-cli',
-        'web',
-        'shell',
         'sut'

@@ -78,20 +78,6 @@ project(':infrastructure-jdeps') {
     }
 }
 
-project(':web') {
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        compile 'org.springframework.boot:spring-boot-starter-web'
-        compile project(':diagram-plantuml')
-        compile project(':infrastructure-jdeps')
-
-        testCompile('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'junit'
-        }
-    }
-}
-
 project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
@@ -129,19 +115,5 @@ project(':sut') {
         main {
             resources.srcDirs = ["src/main/java", "src/main/resources"]
         }
-    }
-}
-
-project(':shell') {
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        compile project(':jig-core')
-        compile project(':diagram-plantuml')
-        compile project(':infrastructure-jdeps')
-        compile 'org.springframework.boot:spring-boot-starter'
-        compile 'org.springframework.shell:spring-shell-starter:2.0.0.RELEASE'
-
-        compile 'com.fasterxml.jackson.core:jackson-core'
     }
 }

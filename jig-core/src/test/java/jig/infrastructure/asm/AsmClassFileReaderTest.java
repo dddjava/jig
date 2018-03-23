@@ -13,11 +13,12 @@ import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import stub.type.*;
-import stub.type.kind.BehaviourEnum;
-import stub.type.kind.ParameterizedEnum;
-import stub.type.kind.PolymorphismEnum;
-import stub.type.kind.RichEnum;
+import stub.application.service.CanonicalService;
+import stub.domain.model.type.*;
+import stub.domain.model.kind.BehaviourEnum;
+import stub.domain.model.kind.ParameterizedEnum;
+import stub.domain.model.kind.PolymorphismEnum;
+import stub.domain.model.kind.RichEnum;
 
 import java.net.URI;
 import java.net.URISyntaxException;

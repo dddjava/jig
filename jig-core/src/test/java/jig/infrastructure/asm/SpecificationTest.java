@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.objectweb.asm.ClassReader;
-import stub.type.kind.*;
+import stub.domain.model.kind.*;
 
 import java.io.IOException;
 import java.io.InputStream;

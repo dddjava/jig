@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="stub.infrastructure.datasource.CanonicalMapper">
+
+    <insert id="insert">
+        insert into crud_test(a) values('a')
+    </insert>
+    <select id="select" resultType="string">
+        select * from crud_test
+    </select>
+    <update id="update">
+        update crud_test set a = 'a'
+    </update>
+    <delete id="delete">
+        delete from crud_test
+    </delete>
+
+    <select id="japanese">
+        select * from あのスキーマ.このテーブル
+    </select>
+
+    <insert id="illegal">
+        SQLじゃない何かが入っているとか
+    </insert>
+
+    <select id="sequence_postgresql">
+        select nextval('seq_test');
+    </select>
+
+    <insert id="tabInsert">INSERT INTO tab_test ( a ) values ('a')</insert>
+    <select id="tabSelect">SELECT * FROM tab_test WHERE 1 = 1</select>
+    <update id="tabUpdate">UPDATE tab_test SET a = 'a'</update>
+    <delete id="tabDelete">DELETE FROM tab_test WHERE true</delete>
+</mapper>

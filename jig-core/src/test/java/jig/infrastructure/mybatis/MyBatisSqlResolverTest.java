@@ -25,7 +25,7 @@ class MyBatisSqlResolverTest {
 
         sut.resolve(TestSupport.getTestResourceRootURLs());
 
-        Sql sql = repository.get(new SqlIdentifier("stub.mapper.SampleMapper.binding"));
+        Sql sql = repository.get(new SqlIdentifier("stub.infrastructure.datasource.SampleMapper.binding"));
         assertThat(sql.tableName()).isEqualTo("fuga");
     }
 
@@ -37,7 +37,7 @@ class MyBatisSqlResolverTest {
 
         sut.resolve(TestSupport.getTestResourceRootURLs());
 
-        SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.mapper.CanonicalMapper." + methodName);
+        SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);
         assertThat(sql.tableName()).isEqualTo(tableName);
         assertThat(sql.sqlType()).isEqualTo(sqlType);

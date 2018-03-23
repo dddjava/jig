@@ -11,9 +11,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import stub.ClassJavadocStub;
-import stub.MethodJavadocStub;
-import stub.NotJavadocStub;
+import stub.domain.model.ClassJavadocStub;
+import stub.domain.model.MethodJavadocStub;
+import stub.domain.model.NotJavadocStub;
 
 import java.nio.file.Paths;
 import java.util.stream.Stream;

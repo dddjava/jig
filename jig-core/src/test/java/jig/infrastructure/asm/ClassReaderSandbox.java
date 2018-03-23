@@ -2,7 +2,7 @@ package jig.infrastructure.asm;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
-import stub.relation.fuga.Fuga;
+import stub.domain.model.relation.fuga.Fuga;
 
 import java.io.IOException;
 

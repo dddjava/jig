@@ -1,4 +1,4 @@
-package jig.infrastructure.mybatis;
+package stub.mapper;
 
 import org.apache.ibatis.annotations.*;
 

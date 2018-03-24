@@ -7,6 +7,8 @@ import jig.domain.model.relation.RelationType;
 import jig.domain.model.specification.Specification;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 @Component
 public class AsmClassFileReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsmClassFileReader.class);
 
     private final CharacteristicRepository characteristicRepository;
     private final RelationRepository relationRepository;
@@ -31,25 +34,24 @@ public class AsmClassFileReader {
         this.jigPaths = jigPaths;
     }
 
-    public void execute(Path path) {
+    public void execute(Path rootPath) {
         try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    executeInternal(file);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+            for (Path path : jigPaths.extractClassPath(rootPath)) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (jigPaths.isClassFile(file)) executeInternal(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     private void executeInternal(Path path) {
-        if (!jigPaths.isClassFile(path)) {
-            return;
-        }
-
+        LOGGER.debug("parsing: {}", path);
         try (InputStream inputStream = Files.newInputStream(path)) {
             SpecificationReadingVisitor classVisitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);

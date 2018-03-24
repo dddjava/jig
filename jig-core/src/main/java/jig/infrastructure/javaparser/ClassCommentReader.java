@@ -10,6 +10,8 @@ import jig.domain.model.identifier.Identifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.infrastructure.JigPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 @Component
 public class ClassCommentReader {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassCommentReader.class);
 
     private final JapaneseNameRepository repository;
     private final JigPaths jigPaths;
@@ -31,25 +34,24 @@ public class ClassCommentReader {
         this.jigPaths = jigPaths;
     }
 
-    public void execute(Path path) {
+    public void execute(Path rootPath) {
         try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    executeInternal(file);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
+            for (Path path : jigPaths.extractSourcePath(rootPath)) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (jigPaths.isJavaFile(file)) executeInternal(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     private void executeInternal(Path path) {
-        if (!jigPaths.isJavaFile(path)) {
-            return;
-        }
-
+        LOGGER.debug("parsing: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);
 

@@ -22,7 +22,6 @@ public class SpecificationTest {
         try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(name)) {
 
             SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
-            System.out.println(is);
             ClassReader classReader = new ClassReader(is);
             classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 

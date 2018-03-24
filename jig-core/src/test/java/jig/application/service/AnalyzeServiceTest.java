@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import stub.domain.model.ClassJavadocStub;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
+@TestPropertySource(properties = {"directory.classes=build/classes/java/test", "directory.sources=src/test/java"})
 @ExtendWith(SpringExtension.class)
 class AnalyzeServiceTest {
 

@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -25,6 +24,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -41,24 +41,16 @@ public class MyBatisSqlResolver {
         this.jigPaths = jigPaths;
     }
 
-    public void resolve(Path projectPath) {
-        try (Stream<Path> walk = Files.walk(projectPath)) {
-            URL[] urls = walk.filter(Files::isDirectory)
-                    .filter(jigPaths::isGradleClassPathRootDirectory)
-                    .map(Path::toAbsolutePath)
-                    .map(path -> {
-                        try {
-                            return path.toUri().toURL();
-                        } catch (MalformedURLException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    })
-                    .toArray(URL[]::new);
-
-            resolve(urls);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    public void resolve(Path rootPath) {
+        URL[] urls = Arrays.stream(jigPaths.extractClassPath(rootPath))
+                .map(path -> {
+                    try {
+                        return path.toUri().toURL();
+                    } catch (MalformedURLException e) {
+                        throw new IllegalArgumentException(e);
+                    }
+                }).toArray(URL[]::new);
+        resolve(urls);
     }
 
     public void resolve(URL... urls) {

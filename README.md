@@ -7,6 +7,12 @@
 - JDK(tools.jar)
   - jdepsを使ってるので
 
+### Windows
+
+graphviz-2.38.msi で動作確認しています。
+
+https://graphviz.gitlab.io/_pages/Download/Download_windows.html
+
 ## ビルド
 
 ```

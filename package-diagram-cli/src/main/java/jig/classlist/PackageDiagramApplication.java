@@ -35,8 +35,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
         SpringApplication.run(PackageDiagramApplication.class, args);
     }
 
-    @Value("${target.class}")
-    String targetClass;
+    @Value("${project.path}")
+    String projectPath;
 
     @Value("${package.pattern}")
     String packagePattern;
@@ -56,7 +56,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         Path output = Paths.get(outputDiagramName);
 
         Relations relations = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
-                new SearchPaths(Collections.singletonList(Paths.get(targetClass))),
+                new SearchPaths(Collections.singletonList(Paths.get(projectPath))),
                 new AnalysisClassesPattern(packagePattern + "\\..+"),
                 new DependenciesPattern(packagePattern + "\\..+"),
                 AnalysisTarget.PACKAGE));
@@ -70,12 +70,11 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     @Bean
     public DiagramConverter diagramConverter(@Value("${package.pattern}") String packageNamePattern,
-                                             @Value("${target.source}") String targetSource,
                                              JapaneseNameRepository repository) {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        analyzeService.readJavadoc(Paths.get(targetSource));
+        analyzeService.readJavadoc(Paths.get(projectPath));
 
         return new PlantumlDiagramConverter(nameFormatter, repository);
     }

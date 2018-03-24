@@ -24,5 +24,7 @@ public class ClassReaderSandbox {
                 System.out.println(type.getClassName());
             }
         }
+
+        // NOTE: メソッドの引数と戻り値がCONSTANT_Classでは取れない
     }
 }

@@ -3,6 +3,7 @@ package stub.domain.model.relation.fuga;
 import stub.domain.model.relation.fuga.foo.Baz;
 import stub.domain.model.relation.fuga.foo.Foo;
 import stub.domain.model.relation.fuga.qux.Qux;
+import stub.domain.model.relation.hoge.Hoge;
 
 import java.util.List;
 
@@ -26,7 +27,8 @@ public class Fuga {
                 .toBaz();
     }
 
-    void qux() {
+    // 引数
+    void qux(Hoge hoge, Hoge hogeho) {
         // ネストされたクラス
         new Qux.Quuz();
     }

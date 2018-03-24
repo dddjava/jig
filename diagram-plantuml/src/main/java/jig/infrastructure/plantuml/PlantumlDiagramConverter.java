@@ -2,6 +2,7 @@ package jig.infrastructure.plantuml;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
+import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
@@ -44,11 +45,19 @@ public class PlantumlDiagramConverter implements DiagramConverter {
                 relations.list().stream().map(Relation::from),
                 relations.list().stream().map(Relation::to))
                 .distinct()
-                .map(name -> "class " + nameFormatter.format(name) +
-                        (repository.exists(name)
-                                ? "<<" + repository.get(name).summarySentence() + ">>"
-                                : ""))
+                .map(name -> "class " + nameFormatter.format(name) + japaneseName(name))
                 .collect(joining("\n"));
+    }
+
+    private String japaneseName(Identifier name) {
+        if (!repository.exists(name)) {
+            return "";
+        }
+
+        String summary = repository.get(name).summarySentence();
+        // 改行があると出力エラーになるので、改行の手前までにする。
+        String firstLine = summary.replaceAll("(\r\n|[\n\r\u2028\u2029\u0085]).+", "");
+        return "<<" + firstLine + ">>";
     }
 
     String relationToString(Relation relation) {

@@ -7,13 +7,10 @@ import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
@@ -119,23 +116,5 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .filter(methodTypeRelation -> methodTypeRelation.typeIs(identifier))
                 .map(MethodTypeRelation::method)
                 .collect(MethodIdentifiers.collector());
-    }
-
-    final EnumMap<RelationType, Set<Relation>> map;
-
-    public OnMemoryRelationRepository() {
-        map = new EnumMap<>(RelationType.class);
-        map.put(RelationType.DEPENDENCY, new HashSet<>());
-    }
-
-    @Override
-    public void registerDependency(Identifier from, Identifier to) {
-        Relation relation = RelationType.DEPENDENCY.of(from, to);
-        map.get(relation.relationType()).add(relation);
-    }
-
-    @Override
-    public Relations all() {
-        return new Relations(map.values().stream().flatMap(Set::stream).collect(toList()));
     }
 }

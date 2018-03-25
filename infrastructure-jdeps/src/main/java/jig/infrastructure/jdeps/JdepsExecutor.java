@@ -4,9 +4,9 @@ import com.sun.tools.jdeps.Main;
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.DependencyRepository;
 import jig.domain.model.relation.Relations;
-import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
+import jig.infrastructure.onmemoryrepository.OnMemoryDependencyRepository;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,13 +20,13 @@ public class JdepsExecutor implements RelationAnalyzer {
 
     private static final Logger logger = Logger.getLogger(JdepsExecutor.class.getName());
 
-    RelationRepository relationRepository = new OnMemoryRelationRepository();
+    DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
 
     @Override
     public Relations analyzeRelations(AnalysisCriteria criteria) {
         String string = analyzeDependency(criteria);
         parse(string);
-        return relationRepository.all();
+        return dependencyRepository.all();
     }
 
     String analyzeDependency(AnalysisCriteria criteria) {
@@ -63,7 +63,7 @@ public class JdepsExecutor implements RelationAnalyzer {
             if (toMatcher.find()) {
                 if (from == null) throw new NullPointerException();
                 Identifier to = new Identifier(toMatcher.group(1));
-                relationRepository.registerDependency(from, to);
+                dependencyRepository.registerDependency(from, to);
                 continue;
             }
 

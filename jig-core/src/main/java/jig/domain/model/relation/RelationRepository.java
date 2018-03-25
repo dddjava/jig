@@ -7,8 +7,6 @@ import jig.domain.model.identifier.MethodIdentifiers;
 
 public interface RelationRepository {
 
-    Relations all();
-
     void registerMethod(MethodIdentifier methodIdentifier);
 
     void registerMethodParameter(MethodIdentifier methodIdentifier);
@@ -22,8 +20,6 @@ public interface RelationRepository {
     void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
 
     void registerField(Identifier identifier, Identifier fieldClassIdentifier);
-
-    void registerDependency(Identifier from, Identifier to);
 
     Identifier getReturnTypeOf(MethodIdentifier methodIdentifier);
 

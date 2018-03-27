@@ -11,7 +11,6 @@ import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.infrastructure.JigPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-@Component
 public class PackageInfoReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageInfoReader.class);
 

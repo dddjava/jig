@@ -4,6 +4,7 @@ import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.ClassCommentReader;
 import jig.infrastructure.javaparser.PackageInfoReader;
 import jig.infrastructure.mybatis.MyBatisSqlResolver;
+import jig.domain.model.datasource.SqlPath;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -29,7 +30,7 @@ public class AnalyzeService {
     public void analyze(Path path) {
         asmClassFileReader.execute(path);
 
-        myBatisSqlResolver.resolve(path);
+        myBatisSqlResolver.resolve(new SqlPath(path));
 
         readJavadoc(path);
     }

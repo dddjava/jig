@@ -41,8 +41,8 @@ public class MyBatisSqlResolver {
         this.jigPaths = jigPaths;
     }
 
-    public void resolve(Path rootPath) {
-        URL[] urls = Arrays.stream(jigPaths.extractClassPath(rootPath))
+    public void resolve(SqlPath sqlPath) {
+        URL[] urls = Arrays.stream(jigPaths.extractClassPath(sqlPath.getValue()))
                 .map(path -> {
                     try {
                         return path.toUri().toURL();

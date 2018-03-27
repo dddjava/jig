@@ -7,6 +7,7 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.relation.Depth;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.Relations;
 import jig.infrastructure.jdeps.JdepsExecutor;
@@ -47,6 +48,9 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Value("${output.diagram.name}")
     String outputDiagramName;
 
+    @Value("${depth}")
+    int depth;
+
     @Autowired
     RelationAnalyzer relationAnalyzer;
     @Autowired
@@ -76,7 +80,11 @@ public class PackageDiagramApplication implements CommandLineRunner {
                     logger.info("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value());
                 });
 
-        Diagram diagram = diagramService.generateFrom(jdepsRelations);
+        Depth depth = new Depth(this.depth);
+        Relations outputRelation = jdepsRelations.applyDepth(depth);
+        logger.info("出力件数: " + outputRelation.list().size());
+
+        Diagram diagram = diagramService.generateFrom(outputRelation);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());

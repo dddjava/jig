@@ -41,4 +41,12 @@ public class Relation {
     public int hashCode() {
         return Objects.hash(from, to, relationType);
     }
+
+    public Relation applyDepth(Depth depth) {
+        return new Relation(from.applyDepth(depth), to.applyDepth(depth), relationType);
+    }
+
+    public boolean notSelfRelation() {
+        return !from.equals(to);
+    }
 }

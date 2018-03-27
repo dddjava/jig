@@ -1,6 +1,9 @@
 package jig.domain.model.identifier;
 
+import jig.domain.model.relation.Depth;
+
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class Identifier {
 
@@ -42,5 +45,16 @@ public class Identifier {
     public Identifier asPackage() {
         if (!value.contains(".")) return new Identifier("(default)");
         return new Identifier(value.substring(0, value.lastIndexOf(".")));
+    }
+
+    public Identifier applyDepth(Depth depth) {
+        String[] split = value.split("\\.");
+        if (split.length < depth.value()) return this;
+
+        StringJoiner sj = new StringJoiner(".");
+        for (int i = 0; i < depth.value(); i++) {
+            sj.add(split[i]);
+        }
+        return new Identifier(sj.toString());
     }
 }

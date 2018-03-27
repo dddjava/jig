@@ -1,8 +1,10 @@
 package jig.application.service;
 
+import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.project.ProjectLocation;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,9 +44,14 @@ class AnalyzeServiceTest {
                 Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
                 Arguments.of(new TypeIdentifier(NotJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
-                Arguments.of(new TypeIdentifier("stub"), "テストで使用するスタブたち")
+                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
         );
+    }
+
+    @Test
+    void パッケージ和名() {
+        assertThat(japaneseNameRepository.get(new PackageIdentifier("stub")).value())
+                .isEqualTo("テストで使用するスタブたち");
     }
 
     @TestConfiguration

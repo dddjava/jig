@@ -5,7 +5,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.infrastructure.JigPaths;
@@ -51,11 +51,11 @@ public class PackageInfoReader {
         LOGGER.debug("parsing: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);
-            TypeIdentifier typeIdentifier = cu.accept(new GenericVisitorAdapter<TypeIdentifier, Void>() {
+            PackageIdentifier packageIdentifier = cu.accept(new GenericVisitorAdapter<PackageIdentifier, Void>() {
                 @Override
-                public TypeIdentifier visit(PackageDeclaration n, Void arg) {
+                public PackageIdentifier visit(PackageDeclaration n, Void arg) {
                     String name = n.getNameAsString();
-                    return new TypeIdentifier(name);
+                    return new PackageIdentifier(name);
                 }
             }, null);
 
@@ -67,8 +67,8 @@ public class PackageInfoReader {
                 }
             }, null);
 
-            if (typeIdentifier != null && japaneseName != null) {
-                repository.register(typeIdentifier, japaneseName);
+            if (packageIdentifier != null && japaneseName != null) {
+                repository.register(packageIdentifier, japaneseName);
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);

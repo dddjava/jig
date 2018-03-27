@@ -5,35 +5,27 @@ import jig.domain.model.relation.Depth;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class TypeIdentifier {
+public class PackageIdentifier {
 
     String value;
 
-    public TypeIdentifier(Class<?> clz) {
-        this(clz.getName());
+    public PackageIdentifier(String value) {
+        this.value = value;
     }
 
-    public TypeIdentifier(String value) {
-        this.value = value.replace('/', '.');
+    public PackageIdentifier(TypeIdentifier typeIdentifier) {
+        this(typeIdentifier.value.substring(0, typeIdentifier.value.lastIndexOf(".")));
     }
 
     public String value() {
         return value;
     }
 
-    public String asCompressText() {
-        return value.replaceAll("(\\w)\\w+\\.", "$1.");
-    }
-
-    public String asSimpleText() {
-        return value.replaceAll("([\\w]+\\.)*(\\w+)", "$2");
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TypeIdentifier that = (TypeIdentifier) o;
+        PackageIdentifier that = (PackageIdentifier) o;
         return Objects.equals(value, that.value);
     }
 
@@ -42,12 +34,7 @@ public class TypeIdentifier {
         return Objects.hash(value);
     }
 
-    public PackageIdentifier asPackage() {
-        return new PackageIdentifier(this);
-
-    }
-
-    public TypeIdentifier applyDepth(Depth depth) {
+    public PackageIdentifier applyDepth(Depth depth) {
         String[] split = value.split("\\.");
         if (split.length < depth.value()) return this;
 
@@ -55,6 +42,6 @@ public class TypeIdentifier {
         for (int i = 0; i < depth.value(); i++) {
             sj.add(split[i]);
         }
-        return new TypeIdentifier(sj.toString());
+        return new PackageIdentifier(sj.toString());
     }
 }

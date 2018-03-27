@@ -1,7 +1,7 @@
 package jig.infrastructure.jdeps;
 
 import com.sun.tools.jdeps.Main;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.DependencyRepository;
@@ -51,18 +51,18 @@ public class JdepsExecutor implements RelationAnalyzer {
         Pattern fromPattern = Pattern.compile("^ +" + packagePattern + " \\(.+\\)");
         Pattern toPattern = Pattern.compile("^ +-> " + packagePattern + " ");
 
-        TypeIdentifier from = null;
+        PackageIdentifier from = null;
         for (String line : string.split(System.lineSeparator())) {
             Matcher fromMatcher = fromPattern.matcher(line);
             if (fromMatcher.find()) {
-                from = new TypeIdentifier(fromMatcher.group(1));
+                from = new PackageIdentifier(fromMatcher.group(1));
                 continue;
             }
 
             Matcher toMatcher = toPattern.matcher(line);
             if (toMatcher.find()) {
                 if (from == null) throw new NullPointerException();
-                TypeIdentifier to = new TypeIdentifier(toMatcher.group(1));
+                PackageIdentifier to = new PackageIdentifier(toMatcher.group(1));
                 dependencyRepository.registerDependency(from, to);
                 continue;
             }

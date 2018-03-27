@@ -1,5 +1,6 @@
 package jig.domain.model.relation;
 
+import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.specification.Specification;
 
@@ -13,8 +14,8 @@ public enum RelationType {
     IMPLEMENT,
     METHOD_USE_METHOD;
 
-    public Relation of(TypeIdentifier from, TypeIdentifier to) {
-        return new Relation(from, to, this);
+    public Relation of(PackageIdentifier from, PackageIdentifier to) {
+        return new Relation(from, to);
     }
 
     public static void register(RelationRepository repository, Specification specification) {

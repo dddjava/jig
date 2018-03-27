@@ -1,8 +1,8 @@
 package jig.domain.model.diagram;
 
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.PackageDependencies;
 
 public interface DiagramConverter {
 
-    DiagramSource toDiagramSource(Relations things);
+    DiagramSource toDiagramSource(PackageDependencies things);
 }

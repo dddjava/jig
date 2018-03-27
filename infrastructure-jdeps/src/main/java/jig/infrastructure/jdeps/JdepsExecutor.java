@@ -4,8 +4,8 @@ import com.sun.tools.jdeps.Main;
 import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
-import jig.domain.model.relation.DependencyRepository;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.DependencyRepository;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.infrastructure.onmemoryrepository.OnMemoryDependencyRepository;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class JdepsExecutor implements RelationAnalyzer {
     DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
 
     @Override
-    public Relations analyzeRelations(AnalysisCriteria criteria) {
+    public PackageDependencies analyzeRelations(AnalysisCriteria criteria) {
         String string = analyzeDependency(criteria);
         parse(string);
         return dependencyRepository.all();

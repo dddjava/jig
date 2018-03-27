@@ -5,8 +5,8 @@ import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.Relation;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.PackageDependency;
+import jig.domain.model.relation.dependency.PackageDependencies;
 
 import java.util.stream.Stream;
 
@@ -24,14 +24,14 @@ public class PlantumlDiagramConverter implements DiagramConverter {
     }
 
     @Override
-    public DiagramSource toDiagramSource(Relations relations) {
+    public DiagramSource toDiagramSource(PackageDependencies packageDependencies) {
         String source = "@startuml\n" +
                 "hide members\n" +
                 "hide circle\n" +
                 "\n" +
-                classes(relations) +
+                classes(packageDependencies) +
                 "\n" +
-                relations.list().stream()
+                packageDependencies.list().stream()
                         .map(this::relationToString)
                         .collect(joining("\n")) +
                 "\n" +
@@ -40,10 +40,10 @@ public class PlantumlDiagramConverter implements DiagramConverter {
         return new DiagramSource(source);
     }
 
-    private String classes(Relations relations) {
+    private String classes(PackageDependencies packageDependencies) {
         return Stream.concat(
-                relations.list().stream().map(Relation::from),
-                relations.list().stream().map(Relation::to))
+                packageDependencies.list().stream().map(PackageDependency::from),
+                packageDependencies.list().stream().map(PackageDependency::to))
                 .distinct()
                 .map(name -> "class " + nameFormatter.format(name) + japaneseName(name))
                 .collect(joining("\n"));
@@ -60,10 +60,10 @@ public class PlantumlDiagramConverter implements DiagramConverter {
         return "<<" + firstLine + ">>";
     }
 
-    String relationToString(Relation relation) {
+    String relationToString(PackageDependency packageDependency) {
         return String.format("\"%s\" ..> \"%s\"",
-                nameFormatter.format(relation.from()),
-                nameFormatter.format(relation.to())
+                nameFormatter.format(packageDependency.from()),
+                nameFormatter.format(packageDependency.to())
         );
     }
 }

@@ -1,9 +1,9 @@
 package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.relation.DependencyRepository;
-import jig.domain.model.relation.Relation;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.DependencyRepository;
+import jig.domain.model.relation.dependency.PackageDependency;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.Set;
 @Repository
 public class OnMemoryDependencyRepository implements DependencyRepository {
 
-    final Set<Relation> set;
+    final Set<PackageDependency> set;
 
     public OnMemoryDependencyRepository() {
         this.set = new HashSet<>();
@@ -21,11 +21,11 @@ public class OnMemoryDependencyRepository implements DependencyRepository {
 
     @Override
     public void registerDependency(PackageIdentifier from, PackageIdentifier to) {
-        set.add(new Relation(from, to));
+        set.add(new PackageDependency(from, to));
     }
 
     @Override
-    public Relations all() {
-        return new Relations(new ArrayList<>(set));
+    public PackageDependencies all() {
+        return new PackageDependencies(new ArrayList<>(set));
     }
 }

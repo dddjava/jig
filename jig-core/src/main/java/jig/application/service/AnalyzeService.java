@@ -4,7 +4,7 @@ import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,7 +33,7 @@ public class AnalyzeService {
         japaneseReader.readFrom(projectLocation);
     }
 
-    public Relations relationsOf(ProjectLocation location) {
-        return modelReader.relationsOf(location);
+    public PackageDependencies dependenciesIn(ProjectLocation location) {
+        return modelReader.dependenciesIn(location);
     }
 }

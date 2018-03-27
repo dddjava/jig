@@ -7,9 +7,9 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.project.ProjectLocation;
-import jig.domain.model.relation.Depth;
-import jig.domain.model.relation.Relation;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.Depth;
+import jig.domain.model.relation.dependency.PackageDependency;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -62,16 +62,16 @@ public class PackageDiagramApplication implements CommandLineRunner {
     public void run(String... args) throws IOException {
         Path output = Paths.get(outputDiagramName);
 
-        Relations relations = analyzeService.relationsOf(new ProjectLocation(Paths.get(projectPath)));
+        PackageDependencies packageDependencies = analyzeService.dependenciesIn(new ProjectLocation(Paths.get(projectPath)));
 
-        Relations jdepsRelations = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
+        PackageDependencies jdepsPackageDependencies = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
                 new SearchPaths(Collections.singletonList(Paths.get(projectPath))),
                 new AnalysisClassesPattern(packagePattern + "\\..+"),
                 new DependenciesPattern(packagePattern + "\\..+"),
                 AnalysisTarget.PACKAGE));
 
-        List<Relation> list = relations.list();
-        List<Relation> jdepsList = jdepsRelations.list();
+        List<PackageDependency> list = packageDependencies.list();
+        List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
         logger.info("件数       : " + list.size());
         logger.info("件数(jdeps): " + jdepsList.size());
         jdepsList.stream()
@@ -81,7 +81,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 });
 
         Depth depth = new Depth(this.depth);
-        Relations outputRelation = jdepsRelations.applyDepth(depth);
+        PackageDependencies outputRelation = jdepsPackageDependencies.applyDepth(depth);
         logger.info("出力件数: " + outputRelation.list().size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);

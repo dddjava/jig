@@ -1,14 +1,14 @@
-package jig.domain.model.relation;
+package jig.domain.model.relation.dependency;
 
 import jig.domain.model.identifier.PackageIdentifier;
 
 import java.util.Objects;
 
-public class Relation {
+public class PackageDependency {
     PackageIdentifier from;
     PackageIdentifier to;
 
-    public Relation(PackageIdentifier from, PackageIdentifier to) {
+    public PackageDependency(PackageIdentifier from, PackageIdentifier to) {
         this.from = from;
         this.to = to;
     }
@@ -25,9 +25,9 @@ public class Relation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Relation relation = (Relation) o;
-        return Objects.equals(from, relation.from) &&
-                Objects.equals(to, relation.to);
+        PackageDependency packageDependency = (PackageDependency) o;
+        return Objects.equals(from, packageDependency.from) &&
+                Objects.equals(to, packageDependency.to);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class Relation {
         return Objects.hash(from, to);
     }
 
-    public Relation applyDepth(Depth depth) {
-        return new Relation(from.applyDepth(depth), to.applyDepth(depth));
+    public PackageDependency applyDepth(Depth depth) {
+        return new PackageDependency(from.applyDepth(depth), to.applyDepth(depth));
     }
 
     public boolean notSelfRelation() {

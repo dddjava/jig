@@ -1,4 +1,4 @@
-package jig.domain.model.relation;
+package jig.domain.model.relation.dependency;
 
 public class Depth {
     int value = -1;

@@ -1,7 +1,7 @@
 package jig.application.service;
 
 import jig.domain.model.diagram.*;
-import jig.domain.model.relation.Relations;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +40,12 @@ public class DiagramService {
         return repository.get(identifier);
     }
 
-    public DiagramSource toDiagramSource(Relations things) {
+    public DiagramSource toDiagramSource(PackageDependencies things) {
         return diagramConverter.toDiagramSource(things);
     }
 
-    public Diagram generateFrom(Relations relations) {
-        DiagramSource diagramSource = toDiagramSource(relations);
+    public Diagram generateFrom(PackageDependencies packageDependencies) {
+        DiagramSource diagramSource = toDiagramSource(packageDependencies);
         DiagramIdentifier identifier = request(diagramSource);
         generate(identifier);
         return get(identifier);

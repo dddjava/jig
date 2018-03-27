@@ -1,6 +1,6 @@
 package jig.domain.model.identifier;
 
-import jig.domain.model.relation.Depth;
+import jig.domain.model.relation.dependency.Depth;
 
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -42,7 +42,7 @@ public class TypeIdentifier {
         return Objects.hash(value);
     }
 
-    public PackageIdentifier asPackage() {
+    public PackageIdentifier toPackage() {
         return new PackageIdentifier(this);
 
     }

@@ -1,6 +1,7 @@
 package jig.classlist;
 
 import jig.application.service.AnalyzeService;
+import jig.domain.model.project.ProjectLocation;
 import jig.application.service.ReportService;
 import jig.domain.model.report.Reports;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class ClassListApplication {
         LOGGER.info("解析をはじめます");
 
         Path path = Paths.get(projectPath);
-        analyzeService.analyze(path);
+        analyzeService.analyze(new ProjectLocation(path));
 
         LOGGER.info("レポートデータの準備をはじめます");
 

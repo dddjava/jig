@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.relation.RelationRepository;
@@ -34,9 +35,9 @@ public class AsmClassFileReader {
         this.jigPaths = jigPaths;
     }
 
-    public void execute(Path rootPath) {
+    public void execute(ProjectLocation rootPath) {
         try {
-            for (Path path : jigPaths.extractClassPath(rootPath)) {
+            for (Path path : jigPaths.extractClassPath(rootPath.getValue())) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

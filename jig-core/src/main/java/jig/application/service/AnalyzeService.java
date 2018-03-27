@@ -1,13 +1,11 @@
 package jig.application.service;
 
+import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.ClassCommentReader;
 import jig.infrastructure.javaparser.PackageInfoReader;
 import jig.infrastructure.mybatis.MyBatisSqlResolver;
-import jig.domain.model.datasource.SqlPath;
 import org.springframework.stereotype.Service;
-
-import java.nio.file.Path;
 
 @Service
 public class AnalyzeService {
@@ -27,16 +25,16 @@ public class AnalyzeService {
         this.myBatisSqlResolver = myBatisSqlResolver;
     }
 
-    public void analyze(Path path) {
-        asmClassFileReader.execute(path);
+    public void analyze(ProjectLocation projectLocation) {
+        asmClassFileReader.execute(projectLocation);
 
-        myBatisSqlResolver.resolve(new SqlPath(path));
+        myBatisSqlResolver.resolve(projectLocation);
 
-        readJavadoc(path);
+        readJavadoc(projectLocation);
     }
 
-    public void readJavadoc(Path path) {
-        classCommentReader.execute(path);
-        packageInfoReader.execute(path);
+    public void readJavadoc(ProjectLocation projectLocation) {
+        classCommentReader.execute(projectLocation.getValue());
+        packageInfoReader.execute(projectLocation.getValue());
     }
 }

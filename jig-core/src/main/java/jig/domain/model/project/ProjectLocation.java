@@ -1,11 +1,11 @@
-package jig.domain.model.datasource;
+package jig.domain.model.project;
 
 import java.nio.file.Path;
 
-public class SqlPath {
+public class ProjectLocation {
     private final Path value;
 
-    public SqlPath(Path value) {
+    public ProjectLocation(Path value) {
         this.value = value;
     }
 

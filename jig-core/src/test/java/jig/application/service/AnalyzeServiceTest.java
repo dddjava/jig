@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.identifier.Identifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.project.ProjectLocation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,7 +55,7 @@ class AnalyzeServiceTest {
 
         @EventListener
         void hoge(ContextRefreshedEvent event) {
-            sut.analyze(Paths.get(""));
+            sut.analyze(new ProjectLocation(Paths.get("")));
         }
     }
 }

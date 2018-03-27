@@ -1,5 +1,6 @@
 package jig.infrastructure.mybatis;
 
+import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.datasource.*;
 import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
@@ -41,7 +42,7 @@ public class MyBatisSqlResolver {
         this.jigPaths = jigPaths;
     }
 
-    public void resolve(SqlPath sqlPath) {
+    public void resolve(ProjectLocation sqlPath) {
         URL[] urls = Arrays.stream(jigPaths.extractClassPath(sqlPath.getValue()))
                 .map(path -> {
                     try {

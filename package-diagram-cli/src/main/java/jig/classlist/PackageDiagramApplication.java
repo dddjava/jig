@@ -2,6 +2,7 @@ package jig.classlist;
 
 import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
+import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
@@ -74,7 +75,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        analyzeService.readJavadoc(Paths.get(projectPath));
+        analyzeService.readJavadoc(new ProjectLocation(Paths.get(projectPath)));
 
         return new PlantumlDiagramConverter(nameFormatter, repository);
     }

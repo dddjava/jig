@@ -13,6 +13,7 @@ java -jar package-diagram-cli.jar
 ```
 output.diagram.name=output.png
 package.pattern=.*.domain.model
-target.class=./sut/build/classes/java/main
-target.source=./sut/src/main/java
+project.path=./
+depth=-1
 ```
+

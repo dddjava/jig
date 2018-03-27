@@ -16,12 +16,12 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MyBatisSqlResolverTest {
+class MyBatisSqlLoaderTest {
 
     @Test
     void bindを使ってても解析できる() {
         SqlRepository repository = new OnMemorySqlRepository();
-        MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, new JigPaths("dummy", "dummy", "dummy"));
+        MyBatisSqlLoader sut = new MyBatisSqlLoader(repository, new JigPaths("dummy", "dummy", "dummy"));
 
         sut.resolve(TestSupport.getTestResourceRootURLs());
 
@@ -33,7 +33,7 @@ class MyBatisSqlResolverTest {
     @MethodSource
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType) {
         SqlRepository repository = new OnMemorySqlRepository();
-        MyBatisSqlResolver sut = new MyBatisSqlResolver(repository, new JigPaths("dummy", "dummy", "dummy"));
+        MyBatisSqlLoader sut = new MyBatisSqlLoader(repository, new JigPaths("dummy", "dummy", "dummy"));
 
         sut.resolve(TestSupport.getTestResourceRootURLs());
 

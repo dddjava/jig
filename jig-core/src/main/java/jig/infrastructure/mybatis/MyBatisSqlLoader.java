@@ -30,20 +30,21 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Component
-public class MyBatisSqlResolver {
+public class MyBatisSqlLoader implements SqlLoader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlLoader.class);
 
     SqlRepository sqlRepository;
     JigPaths jigPaths;
 
-    public MyBatisSqlResolver(SqlRepository sqlRepository, JigPaths jigPaths) {
+    public MyBatisSqlLoader(SqlRepository sqlRepository, JigPaths jigPaths) {
         this.sqlRepository = sqlRepository;
         this.jigPaths = jigPaths;
     }
 
-    public void resolve(ProjectLocation sqlPath) {
-        URL[] urls = Arrays.stream(jigPaths.extractClassPath(sqlPath.getValue()))
+    @Override
+    public void loadFrom(ProjectLocation projectLocation) {
+        URL[] urls = Arrays.stream(jigPaths.extractClassPath(projectLocation.getValue()))
                 .map(path -> {
                     try {
                         return path.toUri().toURL();

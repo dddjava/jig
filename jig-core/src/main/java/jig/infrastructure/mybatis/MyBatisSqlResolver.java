@@ -53,7 +53,7 @@ public class MyBatisSqlResolver {
         resolve(urls);
     }
 
-    public void resolve(URL... urls) {
+    void resolve(URL... urls) {
         try (URLClassLoader classLoader = new URLClassLoader(urls, MapperRegistry.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 

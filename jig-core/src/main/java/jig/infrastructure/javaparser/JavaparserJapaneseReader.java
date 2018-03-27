@@ -1,6 +1,6 @@
 package jig.infrastructure.javaparser;
 
-import jig.application.service.JapaneseReader;
+import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.JigPaths;

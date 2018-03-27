@@ -1,8 +1,9 @@
 package jig.application.service;
 
 import jig.domain.model.datasource.SqlReader;
+import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ProjectLocation;
-import jig.infrastructure.asm.ModelReader;
+import jig.domain.model.project.ModelReader;
 import org.springframework.stereotype.Service;
 
 @Service

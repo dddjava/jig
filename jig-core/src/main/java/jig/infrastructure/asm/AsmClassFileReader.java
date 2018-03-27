@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;

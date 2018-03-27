@@ -5,15 +5,15 @@ import jig.domain.model.relation.Depth;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public class Identifier {
+public class TypeIdentifier {
 
     String value;
 
-    public Identifier(Class<?> clz) {
+    public TypeIdentifier(Class<?> clz) {
         this(clz.getName());
     }
 
-    public Identifier(String value) {
+    public TypeIdentifier(String value) {
         this.value = value.replace('/', '.');
     }
 
@@ -33,7 +33,7 @@ public class Identifier {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Identifier that = (Identifier) o;
+        TypeIdentifier that = (TypeIdentifier) o;
         return Objects.equals(value, that.value);
     }
 
@@ -42,12 +42,12 @@ public class Identifier {
         return Objects.hash(value);
     }
 
-    public Identifier asPackage() {
-        if (!value.contains(".")) return new Identifier("(default)");
-        return new Identifier(value.substring(0, value.lastIndexOf(".")));
+    public TypeIdentifier asPackage() {
+        if (!value.contains(".")) return new TypeIdentifier("(default)");
+        return new TypeIdentifier(value.substring(0, value.lastIndexOf(".")));
     }
 
-    public Identifier applyDepth(Depth depth) {
+    public TypeIdentifier applyDepth(Depth depth) {
         String[] split = value.split("\\.");
         if (split.length < depth.value()) return this;
 
@@ -55,6 +55,6 @@ public class Identifier {
         for (int i = 0; i < depth.value(); i++) {
             sj.add(split[i]);
         }
-        return new Identifier(sj.toString());
+        return new TypeIdentifier(sj.toString());
     }
 }

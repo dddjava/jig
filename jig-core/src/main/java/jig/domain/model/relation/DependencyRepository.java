@@ -1,11 +1,11 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 
 public interface DependencyRepository {
 
     Relations all();
 
-    void registerDependency(Identifier from, Identifier to);
+    void registerDependency(TypeIdentifier from, TypeIdentifier to);
 
 }

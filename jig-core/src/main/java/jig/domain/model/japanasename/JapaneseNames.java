@@ -1,6 +1,6 @@
 package jig.domain.model.japanasename;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 
 public class JapaneseNames {
 
-    private final Map<Identifier, JapaneseName> map;
+    private final Map<TypeIdentifier, JapaneseName> map;
 
-    public JapaneseNames(Map<Identifier, JapaneseName> map) {
+    public JapaneseNames(Map<TypeIdentifier, JapaneseName> map) {
         this.map = map;
     }
 
     public String asText() {
         int maxLength = map.keySet().stream()
-                .map(Identifier::value)
+                .map(TypeIdentifier::value)
                 .mapToInt(String::length)
                 .max()
                 .orElseGet(() -> 0);

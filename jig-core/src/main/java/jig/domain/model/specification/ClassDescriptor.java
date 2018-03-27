@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import org.objectweb.asm.Type;
 
 public class ClassDescriptor {
@@ -11,9 +11,9 @@ public class ClassDescriptor {
         this.value = value;
     }
 
-    public Identifier toTypeIdentifier() {
+    public TypeIdentifier toTypeIdentifier() {
         Type type = Type.getType(value);
         String className = type.getClassName();
-        return new Identifier(className);
+        return new TypeIdentifier(className);
     }
 }

@@ -1,6 +1,6 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 public class SpecificationReadingVisitor extends ClassVisitor {
 
-    private Identifier identifier;
-    private Identifier parent;
+    private TypeIdentifier typeIdentifier;
+    private TypeIdentifier parent;
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
@@ -28,7 +28,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
 
     public Specification specification() {
         return new Specification(
-                identifier,
+                typeIdentifier,
                 parent,
                 accessor,
                 interfaceIdentifiers,
@@ -39,10 +39,10 @@ public class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.identifier = new Identifier(name);
-        this.parent = new Identifier(superName);
+        this.typeIdentifier = new TypeIdentifier(name);
+        this.parent = new TypeIdentifier(superName);
         this.accessor = access;
-        this.interfaceIdentifiers = Arrays.stream(interfaces).map(Identifier::new).collect(Identifiers.collector());
+        this.interfaceIdentifiers = Arrays.stream(interfaces).map(TypeIdentifier::new).collect(Identifiers.collector());
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -74,7 +74,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     }
 
     public MethodSpecification newInstanceMethod(String methodName, String descriptor) {
-        MethodSpecification methodSpecification = new MethodSpecification(identifier, methodName, descriptor);
+        MethodSpecification methodSpecification = new MethodSpecification(typeIdentifier, methodName, descriptor);
         this.methodSpecifications.add(methodSpecification);
         return methodSpecification;
     }

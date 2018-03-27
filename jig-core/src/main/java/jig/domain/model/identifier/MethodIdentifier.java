@@ -4,13 +4,13 @@ import java.util.Objects;
 
 public class MethodIdentifier {
 
-    private final Identifier typeIdentifier;
+    private final TypeIdentifier typeIdentifier;
     private final String methodName;
     private final Identifiers argumentTypeIdentifiers;
 
     private final String fullText;
 
-    public MethodIdentifier(Identifier typeIdentifier, String methodName, Identifiers argumentTypeIdentifiers) {
+    public MethodIdentifier(TypeIdentifier typeIdentifier, String methodName, Identifiers argumentTypeIdentifiers) {
         this.typeIdentifier = typeIdentifier;
         this.methodName = methodName;
         this.argumentTypeIdentifiers = argumentTypeIdentifiers;
@@ -26,7 +26,7 @@ public class MethodIdentifier {
         return methodName + "(" + argumentTypeIdentifiers.asSimpleText() + ")";
     }
 
-    public Identifier typeIdentifier() {
+    public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 

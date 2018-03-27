@@ -1,6 +1,6 @@
 package jig.application.service;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.project.ProjectLocation;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,18 +32,18 @@ class AnalyzeServiceTest {
 
     @ParameterizedTest
     @MethodSource
-    void 和名取得(Identifier identifier, String comment) {
-        assertThat(japaneseNameRepository.get(identifier).value())
+    void 和名取得(TypeIdentifier typeIdentifier, String comment) {
+        assertThat(japaneseNameRepository.get(typeIdentifier).value())
                 .isEqualTo(comment);
     }
 
     static Stream<Arguments> 和名取得() {
         return Stream.of(
-                Arguments.of(new Identifier(ClassJavadocStub.class), "クラスのJavadoc"),
-                Arguments.of(new Identifier(MethodJavadocStub.class), ""),
-                Arguments.of(new Identifier(NotJavadocStub.class), ""),
-                Arguments.of(new Identifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
-                Arguments.of(new Identifier("stub"), "テストで使用するスタブたち")
+                Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
+                Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
+                Arguments.of(new TypeIdentifier(NotJavadocStub.class), ""),
+                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
+                Arguments.of(new TypeIdentifier("stub"), "テストで使用するスタブたち")
         );
     }
 

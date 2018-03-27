@@ -1,22 +1,22 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 
 public class TypeRelation {
 
-    Identifier from;
-    Identifier to;
+    TypeIdentifier from;
+    TypeIdentifier to;
 
-    public TypeRelation(Identifier from, Identifier to) {
+    public TypeRelation(TypeIdentifier from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
     }
 
-    public boolean isTo(Identifier identifier) {
-        return to.equals(identifier);
+    public boolean isTo(TypeIdentifier typeIdentifier) {
+        return to.equals(typeIdentifier);
     }
 
-    public Identifier from() {
+    public TypeIdentifier from() {
         return from;
     }
 }

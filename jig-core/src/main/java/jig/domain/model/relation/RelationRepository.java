@@ -1,6 +1,6 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
@@ -11,17 +11,17 @@ public interface RelationRepository {
 
     void registerMethodParameter(MethodIdentifier methodIdentifier);
 
-    void registerMethodReturnType(MethodIdentifier methodIdentifier, Identifier returnTypeIdentifier);
+    void registerMethodReturnType(MethodIdentifier methodIdentifier, TypeIdentifier returnTypeIdentifier);
 
     void registerMethodUseMethod(MethodIdentifier identifier, MethodIdentifier methodName);
 
-    void registerMethodUseType(MethodIdentifier identifier, Identifier fieldTypeName);
+    void registerMethodUseType(MethodIdentifier identifier, TypeIdentifier fieldTypeName);
 
     void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
 
-    void registerField(Identifier identifier, Identifier fieldClassIdentifier);
+    void registerField(TypeIdentifier typeIdentifier, TypeIdentifier fieldClassTypeIdentifier);
 
-    Identifier getReturnTypeOf(MethodIdentifier methodIdentifier);
+    TypeIdentifier getReturnTypeOf(MethodIdentifier methodIdentifier);
 
     Identifiers findUseTypeOf(MethodIdentifier methodIdentifier);
 
@@ -29,11 +29,11 @@ public interface RelationRepository {
 
     MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier);
 
-    MethodIdentifiers methodsOf(Identifier identifier);
+    MethodIdentifiers methodsOf(TypeIdentifier typeIdentifier);
 
-    Identifiers findFieldUsage(Identifier name);
+    Identifiers findFieldUsage(TypeIdentifier name);
 
-    MethodIdentifiers findMethodUsage(Identifier name);
+    MethodIdentifiers findMethodUsage(TypeIdentifier name);
 
-    Identifiers findAllUsage(Identifier identifier);
+    Identifiers findAllUsage(TypeIdentifier typeIdentifier);
 }

@@ -1,14 +1,14 @@
 package jig.domain.model.japanasename;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 
 public interface JapaneseNameRepository {
 
-    boolean exists(Identifier identifier);
+    boolean exists(TypeIdentifier typeIdentifier);
 
-    JapaneseName get(Identifier identifier);
+    JapaneseName get(TypeIdentifier typeIdentifier);
 
-    void register(Identifier fqn, JapaneseName japaneseName);
+    void register(TypeIdentifier fqn, JapaneseName japaneseName);
 
     JapaneseNames all();
 }

@@ -4,7 +4,7 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
@@ -53,10 +53,10 @@ public class ReportService {
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         Identifiers identifiers = characteristicRepository.find(characteristic);
-        for (Identifier identifier : identifiers.list()) {
-            MethodIdentifiers methods = relationRepository.methodsOf(identifier);
+        for (TypeIdentifier typeIdentifier : identifiers.list()) {
+            MethodIdentifiers methods = relationRepository.methodsOf(typeIdentifier);
             for (MethodIdentifier methodIdentifier : methods.list()) {
-                MethodDetail condition = new MethodDetail(identifier, methodIdentifier, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
+                MethodDetail condition = new MethodDetail(typeIdentifier, methodIdentifier, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
                 list.add(condition);
             }
         }
@@ -67,9 +67,9 @@ public class ReportService {
         Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
         Identifiers identifiers = characteristicRepository.find(characteristic);
-        for (Identifier identifier : identifiers.list()) {
-            Characteristics characteristics = characteristicRepository.characteristicsOf(identifier);
-            TypeDetail detail = new TypeDetail(identifier, characteristics, relationRepository, japaneseNameRepository);
+        for (TypeIdentifier typeIdentifier : identifiers.list()) {
+            Characteristics characteristics = characteristicRepository.characteristicsOf(typeIdentifier);
+            TypeDetail detail = new TypeDetail(typeIdentifier, characteristics, relationRepository, japaneseNameRepository);
             list.add(detail);
         }
         return new TypeReport(perspective, list);

@@ -1,6 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
@@ -36,7 +36,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerMethodReturnType(MethodIdentifier methodIdentifier, Identifier returnTypeIdentifier) {
+    public void registerMethodReturnType(MethodIdentifier methodIdentifier, TypeIdentifier returnTypeIdentifier) {
         methodReturnTypes.add(new MethodTypeRelation(methodIdentifier, returnTypeIdentifier));
     }
 
@@ -46,8 +46,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerMethodUseType(MethodIdentifier methodIdentifier, Identifier identifier) {
-        methodUseTypes.add(new MethodTypeRelation(methodIdentifier, identifier));
+    public void registerMethodUseType(MethodIdentifier methodIdentifier, TypeIdentifier typeIdentifier) {
+        methodUseTypes.add(new MethodTypeRelation(methodIdentifier, typeIdentifier));
 
     }
 
@@ -57,12 +57,12 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerField(Identifier identifier, Identifier fieldClassIdentifier) {
-        memberTypes.add(new TypeRelation(identifier, fieldClassIdentifier));
+    public void registerField(TypeIdentifier typeIdentifier, TypeIdentifier fieldClassTypeIdentifier) {
+        memberTypes.add(new TypeRelation(typeIdentifier, fieldClassTypeIdentifier));
     }
 
     @Override
-    public Identifier getReturnTypeOf(MethodIdentifier methodIdentifier) {
+    public TypeIdentifier getReturnTypeOf(MethodIdentifier methodIdentifier) {
         return methodReturnTypes.stream()
                 .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodIdentifier))
                 .map(MethodTypeRelation::type)
@@ -95,33 +95,33 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public MethodIdentifiers methodsOf(Identifier identifier) {
+    public MethodIdentifiers methodsOf(TypeIdentifier typeIdentifier) {
         return memberMethods.stream()
-                .filter(typeMethodRelation -> typeMethodRelation.typeIs(identifier))
+                .filter(typeMethodRelation -> typeMethodRelation.typeIs(typeIdentifier))
                 .map(TypeMethodRelation::method)
                 .collect(MethodIdentifiers.collector());
     }
 
     @Override
-    public Identifiers findFieldUsage(Identifier identifier) {
+    public Identifiers findFieldUsage(TypeIdentifier typeIdentifier) {
         return memberTypes.stream()
-                .filter(typeRelation -> typeRelation.isTo(identifier))
+                .filter(typeRelation -> typeRelation.isTo(typeIdentifier))
                 .map(TypeRelation::from)
                 .collect(Identifiers.collector());
     }
 
     @Override
-    public MethodIdentifiers findMethodUsage(Identifier identifier) {
+    public MethodIdentifiers findMethodUsage(TypeIdentifier typeIdentifier) {
         return Stream.of(methodReturnTypes, methodParameterTypes, methodUseTypes).flatMap(Set::stream)
-                .filter(methodTypeRelation -> methodTypeRelation.typeIs(identifier))
+                .filter(methodTypeRelation -> methodTypeRelation.typeIs(typeIdentifier))
                 .map(MethodTypeRelation::method)
                 .collect(MethodIdentifiers.collector());
     }
 
     @Override
-    public Identifiers findAllUsage(Identifier identifier) {
-        Identifiers methodUsages = findMethodUsage(identifier).typeIdentifiers();
-        Identifiers fieldUsages = findFieldUsage(identifier);
+    public Identifiers findAllUsage(TypeIdentifier typeIdentifier) {
+        Identifiers methodUsages = findMethodUsage(typeIdentifier).typeIdentifiers();
+        Identifiers fieldUsages = findFieldUsage(typeIdentifier);
         return methodUsages.merge(fieldUsages);
     }
 }

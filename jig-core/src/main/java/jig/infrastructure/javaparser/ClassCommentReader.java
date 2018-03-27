@@ -6,7 +6,7 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.infrastructure.JigPaths;
@@ -69,22 +69,22 @@ public class ClassCommentReader {
                         className = packageDeclaration.getNameAsString() + "." + className;
                     }
 
-                    Identifier identifier = new Identifier(className);
+                    TypeIdentifier typeIdentifier = new TypeIdentifier(className);
 
-                    classOrInterfaceDeclaration.accept(new VoidVisitorAdapter<Identifier>() {
+                    classOrInterfaceDeclaration.accept(new VoidVisitorAdapter<TypeIdentifier>() {
 
                         @Override
-                        public void visit(JavadocComment n, Identifier identifier) {
+                        public void visit(JavadocComment n, TypeIdentifier typeIdentifier) {
                             n.getCommentedNode()
                                     .filter(node -> node instanceof ClassOrInterfaceDeclaration)
                                     .ifPresent(node -> {
                                         String text = n.parse().getDescription().toText();
                                         JapaneseName japaneseName = new JapaneseName(text);
 
-                                        repository.register(identifier, japaneseName);
+                                        repository.register(typeIdentifier, japaneseName);
                                     });
                         }
-                    }, identifier);
+                    }, typeIdentifier);
                 }
             }, null);
         } catch (IOException e) {

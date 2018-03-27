@@ -11,31 +11,31 @@ import static java.util.stream.Collectors.joining;
 
 public class Identifiers {
 
-    List<Identifier> list;
+    List<TypeIdentifier> list;
 
-    public Identifiers(List<Identifier> list) {
+    public Identifiers(List<TypeIdentifier> list) {
         this.list = list;
-        list.sort(Comparator.comparing(Identifier::value));
+        list.sort(Comparator.comparing(TypeIdentifier::value));
     }
 
-    public List<Identifier> list() {
+    public List<TypeIdentifier> list() {
         return list;
     }
 
-    public Identifiers filter(Predicate<Identifier> condition) {
+    public Identifiers filter(Predicate<TypeIdentifier> condition) {
         return list.stream().filter(condition).collect(collector());
     }
 
-    public static Collector<Identifier, ?, Identifiers> collector() {
+    public static Collector<TypeIdentifier, ?, Identifiers> collector() {
         return Collectors.collectingAndThen(Collectors.toList(), Identifiers::new);
     }
 
     public String asText() {
-        return list.stream().map(Identifier::value).collect(joining(","));
+        return list.stream().map(TypeIdentifier::value).collect(joining(","));
     }
 
     public String asSimpleText() {
-        return list.stream().map(Identifier::asSimpleText).collect(joining(","));
+        return list.stream().map(TypeIdentifier::asSimpleText).collect(joining(","));
     }
 
     public Identifiers merge(Identifiers other) {

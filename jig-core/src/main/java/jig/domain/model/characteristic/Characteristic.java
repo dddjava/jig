@@ -12,7 +12,7 @@ public enum Characteristic {
     REPOSITORY {
         @Override
         boolean matches(Specification specification) {
-            return specification.identifier.value().endsWith("Repository");
+            return specification.typeIdentifier.value().endsWith("Repository");
         }
     },
     DATASOURCE {
@@ -95,7 +95,7 @@ public enum Characteristic {
     public static void register(CharacteristicRepository repository, Specification specification) {
         for (Characteristic characteristic : values()) {
             if (characteristic.matches(specification)) {
-                repository.register(specification.identifier, characteristic);
+                repository.register(specification.typeIdentifier, characteristic);
             }
         }
     }

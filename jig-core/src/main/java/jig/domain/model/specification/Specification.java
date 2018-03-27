@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import org.objectweb.asm.Opcodes;
 
@@ -8,23 +8,23 @@ import java.util.List;
 
 public class Specification {
 
-    public Identifier identifier;
-    public Identifier parentIdentifier;
+    public TypeIdentifier typeIdentifier;
+    public TypeIdentifier parentTypeIdentifier;
     public int classAccess;
     public Identifiers interfaceIdentifiers;
     public List<ClassDescriptor> annotationDescriptors;
     public List<MethodSpecification> methodSpecifications;
     public List<ClassDescriptor> fieldDescriptors;
 
-    public Specification(Identifier identifier,
-                         Identifier parentIdentifier,
+    public Specification(TypeIdentifier typeIdentifier,
+                         TypeIdentifier parentTypeIdentifier,
                          int classAccess,
                          Identifiers interfaceIdentifiers,
                          List<ClassDescriptor> annotationDescriptors,
                          List<MethodSpecification> methodSpecifications,
                          List<ClassDescriptor> fieldDescriptors) {
-        this.identifier = identifier;
-        this.parentIdentifier = parentIdentifier;
+        this.typeIdentifier = typeIdentifier;
+        this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
         this.interfaceIdentifiers = interfaceIdentifiers;
         this.annotationDescriptors = annotationDescriptors;
@@ -37,7 +37,7 @@ public class Specification {
     }
 
     public boolean isEnum() {
-        return parentIdentifier.equals(new Identifier(Enum.class));
+        return parentTypeIdentifier.equals(new TypeIdentifier(Enum.class));
     }
 
     public boolean hasOnlyOneFieldAndFieldTypeIs(String classDescriptor) {
@@ -49,8 +49,8 @@ public class Specification {
     public boolean hasTwoFieldsAndFieldTypeAre(String classDescriptor) {
         if (isEnum()) return false;
         if (fieldDescriptors.size() != 2) return false;
-        Identifier field1 = fieldDescriptors.get(0).toTypeIdentifier();
-        Identifier field2 = fieldDescriptors.get(1).toTypeIdentifier();
+        TypeIdentifier field1 = fieldDescriptors.get(0).toTypeIdentifier();
+        TypeIdentifier field2 = fieldDescriptors.get(1).toTypeIdentifier();
         return (field1.equals(field2) && field1.equals(new ClassDescriptor(classDescriptor).toTypeIdentifier()));
     }
 
@@ -72,6 +72,6 @@ public class Specification {
 
     public boolean isModel() {
         // TODO 外部化
-        return identifier.value().contains(".domain.model.");
+        return typeIdentifier.value().contains(".domain.model.");
     }
 }

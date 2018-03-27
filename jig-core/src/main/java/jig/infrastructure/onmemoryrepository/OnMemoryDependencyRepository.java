@@ -1,6 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.relation.DependencyRepository;
 import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationType;
@@ -24,7 +24,7 @@ public class OnMemoryDependencyRepository implements DependencyRepository {
     }
 
     @Override
-    public void registerDependency(Identifier from, Identifier to) {
+    public void registerDependency(TypeIdentifier from, TypeIdentifier to) {
         Relation relation = RelationType.DEPENDENCY.of(from, to);
         map.get(relation.relationType()).add(relation);
     }

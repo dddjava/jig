@@ -2,7 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
@@ -32,14 +32,14 @@ class ReportServiceTest {
     @Test
     void test() {
 
-        Identifier identifier = new Identifier("test.HogeEnum");
-        repository.register(identifier, Characteristic.ENUM);
-        repository.register(identifier, Characteristic.ENUM_BEHAVIOUR);
-        repository.register(identifier, Characteristic.ENUM_PARAMETERIZED);
-        repository.register(identifier, Characteristic.ENUM_POLYMORPHISM);
+        TypeIdentifier typeIdentifier = new TypeIdentifier("test.HogeEnum");
+        repository.register(typeIdentifier, Characteristic.ENUM);
+        repository.register(typeIdentifier, Characteristic.ENUM_BEHAVIOUR);
+        repository.register(typeIdentifier, Characteristic.ENUM_PARAMETERIZED);
+        repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
 
-        japaneseNameRepository.register(identifier, new JapaneseName("対応する和名"));
-        relationRepository.registerField(new Identifier("test.HogeUser"), identifier);
+        japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
+        relationRepository.registerField(new TypeIdentifier("test.HogeUser"), typeIdentifier);
 
         Reports reports = sut.reports();
         reports.each(report -> {

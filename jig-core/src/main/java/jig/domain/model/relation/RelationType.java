@@ -1,6 +1,6 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.specification.Specification;
 
 public enum RelationType {
@@ -13,14 +13,14 @@ public enum RelationType {
     IMPLEMENT,
     METHOD_USE_METHOD;
 
-    public Relation of(Identifier from, Identifier to) {
+    public Relation of(TypeIdentifier from, TypeIdentifier to) {
         return new Relation(from, to, this);
     }
 
     public static void register(RelationRepository repository, Specification specification) {
 
         specification.fieldTypeIdentifiers().list().forEach(fieldTypeIdentifier ->
-                repository.registerField(specification.identifier, fieldTypeIdentifier));
+                repository.registerField(specification.typeIdentifier, fieldTypeIdentifier));
 
         specification.methodSpecifications.forEach(methodSpecification -> {
             repository.registerMethod(methodSpecification.identifier);
@@ -28,8 +28,8 @@ public enum RelationType {
 
             repository.registerMethodReturnType(methodSpecification.identifier, methodSpecification.getReturnTypeName());
 
-            for (Identifier interfaceIdentifier : specification.interfaceIdentifiers.list()) {
-                repository.registerImplementation(methodSpecification.identifier, methodSpecification.methodIdentifierWith(interfaceIdentifier));
+            for (TypeIdentifier interfaceTypeIdentifier : specification.interfaceIdentifiers.list()) {
+                repository.registerImplementation(methodSpecification.identifier, methodSpecification.methodIdentifierWith(interfaceTypeIdentifier));
             }
 
             methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName ->

@@ -1,9 +1,9 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.Identifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
@@ -48,7 +48,7 @@ public class AsmClassFileReaderTest {
     @Test
     void 関連() {
         MethodIdentifiers methods = relationRepository.findConcrete(new MethodIdentifier(
-                new Identifier(HogeRepository.class),
+                new TypeIdentifier(HogeRepository.class),
                 "method",
                 new Identifiers(Collections.emptyList())));
         assertThat(methods.list()).isNotEmpty();
@@ -56,7 +56,7 @@ public class AsmClassFileReaderTest {
 
     @Test
     void サービス() {
-        assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(TypeIdentifier::value)
                 .containsExactly(CanonicalService.class.getTypeName());
     }
 
@@ -64,43 +64,43 @@ public class AsmClassFileReaderTest {
     void 区分() {
         assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(5);
 
-        assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(TypeIdentifier::value)
                 .containsExactly(BehaviourEnum.class.getTypeName(), RichEnum.class.getTypeName());
-        assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(TypeIdentifier::value)
                 .containsExactly(ParameterizedEnum.class.getTypeName(), RichEnum.class.getTypeName());
-        assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(TypeIdentifier::value)
                 .containsExactly(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName());
     }
 
     @Test
     void 識別子() {
-        assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(TypeIdentifier::value)
                 .containsExactly(SimpleIdentifier.class.getTypeName());
     }
 
     @Test
     void 数値() {
-        assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(TypeIdentifier::value)
                 .containsExactly(SimpleNumber.class.getTypeName());
     }
 
     @Test
     void 日付() {
 
-        assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(TypeIdentifier::value)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
 
-        assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(TypeIdentifier::value)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }
 
     @Test
     void コレクション() {
-        assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(Identifier::value)
+        assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(TypeIdentifier::value)
                 .containsExactly(SimpleCollection.class.getTypeName());
     }
 

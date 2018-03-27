@@ -5,7 +5,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
@@ -18,20 +18,20 @@ import java.util.List;
 
 public class MethodDetail {
 
-    private final Identifier identifier;
+    private final TypeIdentifier typeIdentifier;
     private final MethodIdentifier methodIdentifier;
     private RelationRepository relationRepository;
     private CharacteristicRepository characteristicRepository;
     private SqlRepository sqlRepository;
     private JapaneseNameRepository japaneseNameRepository;
 
-    public MethodDetail(Identifier identifier,
+    public MethodDetail(TypeIdentifier typeIdentifier,
                         MethodIdentifier methodIdentifier,
                         RelationRepository relationRepository,
                         CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
                         JapaneseNameRepository japaneseNameRepository) {
-        this.identifier = identifier;
+        this.typeIdentifier = typeIdentifier;
         this.methodIdentifier = methodIdentifier;
         this.relationRepository = relationRepository;
         this.characteristicRepository = characteristicRepository;
@@ -39,8 +39,8 @@ public class MethodDetail {
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
-    public Identifier typeIdentifier() {
-        return identifier;
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
     }
 
     public JapaneseName japaneseName() {
@@ -51,7 +51,7 @@ public class MethodDetail {
         return methodIdentifier;
     }
 
-    public Identifier returnTypeIdentifier() {
+    public TypeIdentifier returnTypeIdentifier() {
         return relationRepository.getReturnTypeOf(methodIdentifier());
     }
 

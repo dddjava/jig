@@ -2,7 +2,7 @@ package jig.infrastructure.plantuml;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
-import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.Relation;
@@ -49,7 +49,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
                 .collect(joining("\n"));
     }
 
-    private String japaneseName(Identifier name) {
+    private String japaneseName(TypeIdentifier name) {
         if (!repository.exists(name)) {
             return "";
         }

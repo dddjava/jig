@@ -2,7 +2,7 @@ package jig.domain.model.datasource;
 
 import jig.domain.model.project.ProjectLocation;
 
-public interface SqlLoader {
+public interface SqlReader {
 
-    void loadFrom(ProjectLocation projectLocation);
+    void readFrom(ProjectLocation projectLocation);
 }

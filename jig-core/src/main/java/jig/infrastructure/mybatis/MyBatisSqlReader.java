@@ -30,20 +30,20 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Component
-public class MyBatisSqlLoader implements SqlLoader {
+public class MyBatisSqlReader implements SqlReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlReader.class);
 
     SqlRepository sqlRepository;
     JigPaths jigPaths;
 
-    public MyBatisSqlLoader(SqlRepository sqlRepository, JigPaths jigPaths) {
+    public MyBatisSqlReader(SqlRepository sqlRepository, JigPaths jigPaths) {
         this.sqlRepository = sqlRepository;
         this.jigPaths = jigPaths;
     }
 
     @Override
-    public void loadFrom(ProjectLocation projectLocation) {
+    public void readFrom(ProjectLocation projectLocation) {
         URL[] urls = Arrays.stream(jigPaths.extractClassPath(projectLocation.getValue()))
                 .map(path -> {
                     try {

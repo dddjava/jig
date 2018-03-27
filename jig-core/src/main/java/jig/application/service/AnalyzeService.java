@@ -1,6 +1,6 @@
 package jig.application.service;
 
-import jig.domain.model.datasource.SqlLoader;
+import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.asm.ModelReader;
 import org.springframework.stereotype.Service;
@@ -9,20 +9,20 @@ import org.springframework.stereotype.Service;
 public class AnalyzeService {
 
     final ModelReader modelReader;
-    final SqlLoader sqlLoader;
+    final SqlReader sqlReader;
     final JapaneseReader japaneseReader;
 
     public AnalyzeService(ModelReader modelReader,
-                          SqlLoader sqlLoader,
+                          SqlReader sqlReader,
                           JapaneseReader japaneseReader) {
         this.modelReader = modelReader;
-        this.sqlLoader = sqlLoader;
+        this.sqlReader = sqlReader;
         this.japaneseReader = japaneseReader;
     }
 
     public void analyze(ProjectLocation projectLocation) {
         modelReader.readFrom(projectLocation);
-        sqlLoader.loadFrom(projectLocation);
+        sqlReader.readFrom(projectLocation);
 
         readJavadoc(projectLocation);
     }

@@ -22,7 +22,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 @Component
-public class AsmClassFileReader {
+public class AsmClassFileReader implements ModelReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(AsmClassFileReader.class);
 
     private final CharacteristicRepository characteristicRepository;
@@ -35,7 +35,8 @@ public class AsmClassFileReader {
         this.jigPaths = jigPaths;
     }
 
-    public void execute(ProjectLocation rootPath) {
+    @Override
+    public void readFrom(ProjectLocation rootPath) {
         try {
             for (Path path : jigPaths.extractClassPath(rootPath.getValue())) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {

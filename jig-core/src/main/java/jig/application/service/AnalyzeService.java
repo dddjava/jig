@@ -2,27 +2,26 @@ package jig.application.service;
 
 import jig.domain.model.datasource.SqlLoader;
 import jig.domain.model.project.ProjectLocation;
-import jig.infrastructure.asm.AsmClassFileReader;
+import jig.infrastructure.asm.ModelReader;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnalyzeService {
 
-    final AsmClassFileReader asmClassFileReader;
+    final ModelReader modelReader;
     final SqlLoader sqlLoader;
     final JapaneseReader japaneseReader;
 
-    public AnalyzeService(AsmClassFileReader asmClassFileReader,
+    public AnalyzeService(ModelReader modelReader,
                           SqlLoader sqlLoader,
                           JapaneseReader japaneseReader) {
-        this.asmClassFileReader = asmClassFileReader;
+        this.modelReader = modelReader;
         this.sqlLoader = sqlLoader;
         this.japaneseReader = japaneseReader;
     }
 
     public void analyze(ProjectLocation projectLocation) {
-        asmClassFileReader.execute(projectLocation);
-
+        modelReader.readFrom(projectLocation);
         sqlLoader.loadFrom(projectLocation);
 
         readJavadoc(projectLocation);

@@ -80,6 +80,12 @@ public enum Characteristic {
         boolean matches(Specification specification) {
             return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/util/List;");
         }
+    },
+    MODEL {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.isModel();
+        }
     };
 
     boolean matches(Specification specification) {

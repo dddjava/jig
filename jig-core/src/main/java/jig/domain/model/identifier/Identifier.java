@@ -38,4 +38,9 @@ public class Identifier {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    public Identifier asPackage() {
+        if (!value.contains(".")) return new Identifier("(default)");
+        return new Identifier(value.substring(0, value.lastIndexOf(".")));
+    }
 }

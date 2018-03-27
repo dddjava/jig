@@ -1,11 +1,15 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.project.ModelReader;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.identifier.Identifier;
+import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.project.ModelReader;
+import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.relation.Relation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
+import jig.domain.model.relation.Relations;
 import jig.domain.model.specification.Specification;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
@@ -21,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AsmClassFileReader implements ModelReader {
@@ -51,6 +57,30 @@ public class AsmClassFileReader implements ModelReader {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Override
+    public Relations relationsOf(ProjectLocation location) {
+        readFrom(location);
+
+        Identifiers modelIdentifiers = characteristicRepository.find(Characteristic.MODEL);
+        List<Relation> list =
+                modelIdentifiers.list().stream()
+                        .flatMap(identifier -> {
+                            Identifier packageIdentifier = identifier.asPackage();
+                            return relationRepository.findAllUsage(identifier)
+                                    .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
+                                    .list().stream()
+                                    .map(Identifier::asPackage)
+                                    .filter(usagePackage -> !packageIdentifier.equals(usagePackage))
+                                    .map(usagePackage -> new Relation(usagePackage, packageIdentifier, RelationType.DEPENDENCY));
+                        })
+                        .distinct()
+                        .collect(Collectors.toList());
+
+        LOGGER.info("関連の数: {}", list.size());
+
+        return new Relations(list);
     }
 
     private void executeInternal(Path path) {

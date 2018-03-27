@@ -2,6 +2,7 @@ package jig.domain.model.identifier;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +20,10 @@ public class Identifiers {
 
     public List<Identifier> list() {
         return list;
+    }
+
+    public Identifiers filter(Predicate<Identifier> condition) {
+        return list.stream().filter(condition).collect(collector());
     }
 
     public static Collector<Identifier, ?, Identifiers> collector() {

@@ -117,4 +117,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .map(MethodTypeRelation::method)
                 .collect(MethodIdentifiers.collector());
     }
+
+    @Override
+    public Identifiers findAllUsage(Identifier identifier) {
+        Identifiers methodUsages = findMethodUsage(identifier).typeIdentifiers();
+        Identifiers fieldUsages = findFieldUsage(identifier);
+        return methodUsages.merge(fieldUsages);
+    }
 }

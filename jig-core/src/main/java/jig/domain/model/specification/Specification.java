@@ -69,4 +69,9 @@ public class Specification {
     public Identifiers fieldTypeIdentifiers() {
         return fieldDescriptors.stream().map(ClassDescriptor::toTypeIdentifier).collect(Identifiers.collector());
     }
+
+    public boolean isModel() {
+        // TODO 外部化
+        return identifier.value().contains(".domain.model.");
+    }
 }

@@ -34,4 +34,6 @@ public interface RelationRepository {
     Identifiers findFieldUsage(Identifier name);
 
     MethodIdentifiers findMethodUsage(Identifier name);
+
+    Identifiers findAllUsage(Identifier identifier);
 }

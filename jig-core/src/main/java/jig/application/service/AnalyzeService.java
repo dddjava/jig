@@ -3,7 +3,6 @@ package jig.application.service;
 import jig.domain.model.datasource.SqlLoader;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.asm.AsmClassFileReader;
-import jig.infrastructure.mybatis.MyBatisSqlLoader;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +13,7 @@ public class AnalyzeService {
     final JapaneseReader japaneseReader;
 
     public AnalyzeService(AsmClassFileReader asmClassFileReader,
-                          MyBatisSqlLoader sqlLoader,
+                          SqlLoader sqlLoader,
                           JapaneseReader japaneseReader) {
         this.asmClassFileReader = asmClassFileReader;
         this.sqlLoader = sqlLoader;

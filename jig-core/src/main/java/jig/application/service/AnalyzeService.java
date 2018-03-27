@@ -3,27 +3,22 @@ package jig.application.service;
 import jig.domain.model.datasource.SqlLoader;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.asm.AsmClassFileReader;
-import jig.infrastructure.javaparser.ClassCommentReader;
-import jig.infrastructure.javaparser.PackageInfoReader;
 import jig.infrastructure.mybatis.MyBatisSqlLoader;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AnalyzeService {
 
-    AsmClassFileReader asmClassFileReader;
-    ClassCommentReader classCommentReader;
-    PackageInfoReader packageInfoReader;
-    SqlLoader sqlLoader;
+    final AsmClassFileReader asmClassFileReader;
+    final SqlLoader sqlLoader;
+    final JapaneseReader japaneseReader;
 
     public AnalyzeService(AsmClassFileReader asmClassFileReader,
-                          ClassCommentReader classCommentReader,
-                          PackageInfoReader packageInfoReader,
-                          MyBatisSqlLoader sqlLoader) {
+                          MyBatisSqlLoader sqlLoader,
+                          JapaneseReader japaneseReader) {
         this.asmClassFileReader = asmClassFileReader;
-        this.classCommentReader = classCommentReader;
-        this.packageInfoReader = packageInfoReader;
         this.sqlLoader = sqlLoader;
+        this.japaneseReader = japaneseReader;
     }
 
     public void analyze(ProjectLocation projectLocation) {
@@ -35,7 +30,7 @@ public class AnalyzeService {
     }
 
     public void readJavadoc(ProjectLocation projectLocation) {
-        classCommentReader.execute(projectLocation.getValue());
-        packageInfoReader.execute(projectLocation.getValue());
+        japaneseReader.readFrom(projectLocation);
     }
+
 }

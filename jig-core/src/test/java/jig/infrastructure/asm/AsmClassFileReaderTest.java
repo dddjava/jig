@@ -4,8 +4,8 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
+import jig.domain.model.identifier.MethodSignature;
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
@@ -49,8 +49,7 @@ public class AsmClassFileReaderTest {
     void 関連() {
         MethodIdentifiers methods = relationRepository.findConcrete(new MethodIdentifier(
                 new TypeIdentifier(HogeRepository.class),
-                "method",
-                new TypeIdentifiers(Collections.emptyList())));
+                new MethodSignature("method", Collections.emptyList())));
         assertThat(methods.list()).isNotEmpty();
     }
 

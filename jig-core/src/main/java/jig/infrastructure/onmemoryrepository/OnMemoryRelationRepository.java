@@ -1,9 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.identifier.MethodIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.*;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 
@@ -30,8 +27,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerMethodParameter(MethodIdentifier methodIdentifier) {
-        TypeIdentifiers typeIdentifiers = methodIdentifier.argumentTypeIdentifiers();
-        typeIdentifiers.list().forEach(argumentTypeIdentifier ->
+        MethodSignature methodSignature = methodIdentifier.methodSignature();
+        methodSignature.arguments().forEach(argumentTypeIdentifier ->
                 methodParameterTypes.add(new MethodTypeRelation(methodIdentifier, argumentTypeIdentifier)));
     }
 

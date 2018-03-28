@@ -1,13 +1,14 @@
 package jig.domain.model.specification;
 
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.MethodSignature;
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MethodSpecification {
 
@@ -16,12 +17,15 @@ public class MethodSpecification {
 
     public MethodSpecification(TypeIdentifier classTypeIdentifier, String name, String descriptor) {
         this.descriptor = descriptor;
-        this.identifier = new MethodIdentifier(classTypeIdentifier, name, toArgumentSignatureString(descriptor));
+        this.identifier = new MethodIdentifier(classTypeIdentifier, methodSignature(name, descriptor));
     }
 
-    private static TypeIdentifiers toArgumentSignatureString(String descriptor) {
-        Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-        return Arrays.stream(argumentTypes).map(Type::getClassName).map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
+    private static MethodSignature methodSignature(String name, String descriptor) {
+        List<TypeIdentifier> arguments = Arrays.stream(Type.getArgumentTypes(descriptor))
+                .map(Type::getClassName)
+                .map(TypeIdentifier::new)
+                .collect(Collectors.toList());
+        return new MethodSignature(name, arguments);
     }
 
     public final List<TypeIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
@@ -40,7 +44,7 @@ public class MethodSpecification {
     public void addMethodInstruction(String owner, String name, String descriptor) {
         // 使ってるメソッドがわかりたい
         TypeIdentifier ownerTypeIdentifier = new TypeIdentifier(owner);
-        MethodIdentifier methodIdentifier = new MethodIdentifier(ownerTypeIdentifier, name, toArgumentSignatureString(descriptor));
+        MethodIdentifier methodIdentifier = new MethodIdentifier(ownerTypeIdentifier, methodSignature(name, descriptor));
         usingMethodIdentifiers.add(methodIdentifier);
     }
 }

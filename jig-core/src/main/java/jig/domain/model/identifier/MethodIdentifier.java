@@ -5,17 +5,15 @@ import java.util.Objects;
 public class MethodIdentifier {
 
     private final TypeIdentifier typeIdentifier;
-    private final String methodName;
-    private final TypeIdentifiers argumentTypeIdentifiers;
+    private final MethodSignature methodSignature;
 
     private final String fullText;
 
-    public MethodIdentifier(TypeIdentifier typeIdentifier, String methodName, TypeIdentifiers argumentTypeIdentifiers) {
+    public MethodIdentifier(TypeIdentifier typeIdentifier, MethodSignature methodSignature) {
         this.typeIdentifier = typeIdentifier;
-        this.methodName = methodName;
-        this.argumentTypeIdentifiers = argumentTypeIdentifiers;
+        this.methodSignature = methodSignature;
 
-        this.fullText = typeIdentifier.value() + "." + methodName + "(" + argumentTypeIdentifiers.asText() + ")";
+        this.fullText = typeIdentifier.value() + "." + methodSignature.asText();
     }
 
     public String asFullText() {
@@ -23,19 +21,19 @@ public class MethodIdentifier {
     }
 
     public String asSimpleText() {
-        return methodName + "(" + argumentTypeIdentifiers.asSimpleText() + ")";
+        return methodSignature.asSimpleText();
     }
 
     public TypeIdentifier declaringType() {
         return typeIdentifier;
     }
 
-    public TypeIdentifiers argumentTypeIdentifiers() {
-        return argumentTypeIdentifiers;
+    public MethodSignature methodSignature() {
+        return methodSignature;
     }
 
     public MethodIdentifier with(TypeIdentifier typeIdentifier) {
-        return new MethodIdentifier(typeIdentifier, this.methodName, this.argumentTypeIdentifiers);
+        return new MethodIdentifier(typeIdentifier, this.methodSignature);
     }
 
     @Override

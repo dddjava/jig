@@ -26,7 +26,7 @@ public class MethodIdentifier {
         return methodName + "(" + argumentTypeIdentifiers.asSimpleText() + ")";
     }
 
-    public TypeIdentifier typeIdentifier() {
+    public TypeIdentifier declaringType() {
         return typeIdentifier;
     }
 

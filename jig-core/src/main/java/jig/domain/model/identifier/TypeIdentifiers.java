@@ -1,5 +1,6 @@
 package jig.domain.model.identifier;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -11,19 +12,20 @@ import static java.util.stream.Collectors.joining;
 
 public class TypeIdentifiers {
 
-    List<TypeIdentifier> list;
+    List<TypeIdentifier> identifiers;
 
-    public TypeIdentifiers(List<TypeIdentifier> list) {
-        this.list = list;
-        list.sort(Comparator.comparing(TypeIdentifier::value));
+    public TypeIdentifiers(List<TypeIdentifier> identifiers) {
+        this.identifiers = identifiers;
     }
 
     public List<TypeIdentifier> list() {
+        ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);
+        list.sort(Comparator.comparing(TypeIdentifier::value));
         return list;
     }
 
     public TypeIdentifiers filter(Predicate<TypeIdentifier> condition) {
-        return list.stream().filter(condition).collect(collector());
+        return identifiers.stream().filter(condition).collect(collector());
     }
 
     public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {
@@ -31,14 +33,14 @@ public class TypeIdentifiers {
     }
 
     public String asText() {
-        return list.stream().map(TypeIdentifier::value).collect(joining(","));
+        return identifiers.stream().map(TypeIdentifier::value).collect(joining(","));
     }
 
     public String asSimpleText() {
-        return list.stream().map(TypeIdentifier::asSimpleText).collect(joining(","));
+        return identifiers.stream().map(TypeIdentifier::asSimpleText).collect(joining(","));
     }
 
     public TypeIdentifiers merge(TypeIdentifiers other) {
-        return Stream.concat(list.stream(), other.list.stream()).collect(TypeIdentifiers.collector());
+        return Stream.concat(identifiers.stream(), other.identifiers.stream()).collect(TypeIdentifiers.collector());
     }
 }

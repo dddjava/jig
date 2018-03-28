@@ -32,12 +32,12 @@ public class TypeDetail {
     }
 
     public TypeIdentifiers userTypes() {
-        TypeIdentifiers fields = relationRepository.findFieldUsage(type());
+        TypeIdentifiers userTypes = relationRepository.findFieldUsage(type());
 
-        MethodIdentifiers methods = relationRepository.findMethodUsage(type());
-        TypeIdentifiers ms = methods.typeIdentifiers();
+        MethodIdentifiers userMethods = relationRepository.findMethodUsage(type());
+        TypeIdentifiers methodOwners = userMethods.declaringTypes();
 
-        return fields.merge(ms);
+        return userTypes.merge(methodOwners);
     }
 
     public boolean is(Characteristic characteristic) {

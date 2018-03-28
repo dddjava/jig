@@ -62,7 +62,7 @@ public class MethodDetail {
     public MethodIdentifiers instructMapperMethodIdentifiers() {
         return relationRepository.findConcrete(method())
                 .map(relationRepository::findUseMethod)
-                .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.typeIdentifier(), Characteristic.MAPPER));
+                .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.declaringType(), Characteristic.MAPPER));
     }
 
     public Sqls sqls() {

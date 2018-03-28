@@ -25,7 +25,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerMethod(MethodIdentifier methodIdentifier) {
-        memberMethods.add(new TypeMethodRelation(methodIdentifier.typeIdentifier(), methodIdentifier));
+        memberMethods.add(new TypeMethodRelation(methodIdentifier.declaringType(), methodIdentifier));
     }
 
     @Override
@@ -120,7 +120,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier) {
-        TypeIdentifiers methodUsages = findMethodUsage(typeIdentifier).typeIdentifiers();
+        TypeIdentifiers methodUsages = findMethodUsage(typeIdentifier).declaringTypes();
         TypeIdentifiers fieldUsages = findFieldUsage(typeIdentifier);
         return methodUsages.merge(fieldUsages);
     }

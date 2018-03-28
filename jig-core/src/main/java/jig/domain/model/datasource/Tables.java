@@ -29,6 +29,7 @@ public class Tables {
     public String asText() {
         return tables.stream()
                 .map(Table::name)
+                .distinct()
                 .collect(Collectors.joining(","));
     }
 }

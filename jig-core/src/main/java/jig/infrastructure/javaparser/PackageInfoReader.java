@@ -48,7 +48,7 @@ public class PackageInfoReader {
     }
 
     private void executeInternal(Path path) {
-        LOGGER.debug("parsing: {}", path);
+        LOGGER.debug("コメント取り込み: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);
             PackageIdentifier packageIdentifier = cu.accept(new GenericVisitorAdapter<PackageIdentifier, Void>() {

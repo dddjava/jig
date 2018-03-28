@@ -1,7 +1,7 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.datasource.*;
+import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
@@ -62,7 +62,7 @@ public class MyBatisSqlReader implements SqlReader {
             Configuration config = new Configuration();
 
             for (URL url : classLoader.getURLs()) {
-                LOGGER.info("Mapper取り込み: " + url);
+                LOGGER.debug("Mapper取り込み: " + url);
                 Path rootPath = Paths.get(url.toURI());
                 try (Stream<Path> walk = Files.walk(rootPath)) {
                     walk.filter(path -> path.toFile().isFile())
@@ -73,8 +73,9 @@ public class MyBatisSqlReader implements SqlReader {
                                     String className = jigPaths.toClassName(path);
                                     Class<?> mapperClass = classLoader.loadClass(className);
                                     config.addMapper(mapperClass);
-                                } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                                    LOGGER.warn("クラスロードに失敗: path:{}", path, e);
+                                } catch (NoClassDefFoundError e) {
+                                    LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
+                                            path, e.getLocalizedMessage());
                                 } catch (Exception e) {
                                     LOGGER.warn("Mapperの取り込みに失敗", e);
                                 }
@@ -131,7 +132,8 @@ public class MyBatisSqlReader implements SqlReader {
                     }
 
                     String sqlText = sql.toString().trim();
-                    LOGGER.debug("DynamicSqlSource: {} [{}]", mappedStatement.getId(), sqlText);
+                    LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
+                    LOGGER.debug("組み立てたSQL: [{}]", sqlText);
                     return new Query(sqlText);
                 }
             } else {

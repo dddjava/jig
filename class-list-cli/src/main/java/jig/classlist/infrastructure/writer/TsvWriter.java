@@ -3,6 +3,8 @@ package jig.classlist.infrastructure.writer;
 import jig.classlist.ReportWriter;
 import jig.domain.model.report.ReportRow;
 import jig.domain.model.report.Reports;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,13 +12,12 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 import static java.util.stream.Collectors.joining;
 
 public class TsvWriter implements ReportWriter {
 
-    private static final Logger logger = Logger.getLogger(TsvWriter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(TsvWriter.class);
 
     @Override
     public void writeTo(Reports reports, Path outputBasePath) {
@@ -29,7 +30,7 @@ public class TsvWriter implements ReportWriter {
                     writeTsvRow(writer, row);
                 }
 
-                logger.info(output.toAbsolutePath() + "を出力しました。");
+                LOGGER.info(output.toAbsolutePath() + "を出力しました。");
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }

@@ -13,6 +13,8 @@ import jig.domain.model.relation.dependency.PackageDependency;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -27,12 +29,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class PackageDiagramApplication implements CommandLineRunner {
 
-    private static final Logger logger = Logger.getLogger(PackageDiagramApplication.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(PackageDiagramApplication.class);
 
     public static void main(String[] args) {
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
@@ -60,6 +61,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
+        long startTime = System.currentTimeMillis();
+
         Path output = Paths.get(outputDiagramName);
 
         PackageDependencies packageDependencies = analyzeService.dependenciesIn(new ProjectLocation(Paths.get(projectPath)));
@@ -72,22 +75,24 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         List<PackageDependency> list = packageDependencies.list();
         List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
-        logger.info("件数       : " + list.size());
-        logger.info("件数(jdeps): " + jdepsList.size());
+        LOGGER.debug("件数       : " + list.size());
+        LOGGER.debug("件数(jdeps): " + jdepsList.size());
         jdepsList.stream()
                 .filter(relation -> !list.contains(relation))
-                .forEach(relation -> logger.info("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
+                .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
 
         Depth depth = new Depth(this.depth);
         PackageDependencies outputRelation = jdepsPackageDependencies.applyDepth(depth);
-        logger.info("出力件数: " + outputRelation.list().size());
+        LOGGER.info("出力件数: " + outputRelation.list().size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());
         }
-        logger.info(output.toAbsolutePath() + "を出力しました。");
+        LOGGER.info(output.toAbsolutePath() + "を出力しました。");
+
+        LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 
     @Bean

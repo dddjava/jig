@@ -49,7 +49,7 @@ public class ClassCommentReader {
     }
 
     private void executeInternal(Path path) {
-        LOGGER.debug("parsing: {}", path);
+        LOGGER.debug("コメント取り込み: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);
 

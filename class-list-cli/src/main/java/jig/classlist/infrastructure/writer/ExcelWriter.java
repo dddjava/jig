@@ -9,17 +9,18 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 public class ExcelWriter implements ReportWriter {
 
-    private static final Logger logger = Logger.getLogger(ExcelWriter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelWriter.class);
 
     @Override
     public void writeTo(Reports reports, Path output) {
@@ -44,7 +45,7 @@ public class ExcelWriter implements ReportWriter {
             });
 
             book.write(os);
-            logger.info(output.toAbsolutePath() + "を出力しました。");
+            LOGGER.info(output.toAbsolutePath() + "を出力しました。");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -56,7 +57,7 @@ public class ExcelWriter implements ReportWriter {
             Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
 
             if (item.length() > 10000) {
-                logger.info("10,000文字を超えたので切り詰めます。");
+                LOGGER.info("10,000文字を超えたので切り詰めます。");
                 cell.setCellValue(item.substring(0, 10000) + "...(省略されました）");
             } else {
                 cell.setCellValue(item);

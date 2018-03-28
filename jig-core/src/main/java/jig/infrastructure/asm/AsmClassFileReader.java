@@ -7,10 +7,10 @@ import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
-import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.specification.Specification;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
@@ -79,13 +79,11 @@ public class AsmClassFileReader implements ModelReader {
                         .distinct()
                         .collect(Collectors.toList());
 
-        LOGGER.info("関連の数: {}", list.size());
-
         return new PackageDependencies(list);
     }
 
     private void executeInternal(Path path) {
-        LOGGER.debug("parsing: {}", path);
+        LOGGER.debug("class取り込み: {}", path);
         try (InputStream inputStream = Files.newInputStream(path)) {
             SpecificationReadingVisitor classVisitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);

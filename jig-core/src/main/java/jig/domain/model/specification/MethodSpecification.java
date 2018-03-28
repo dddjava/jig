@@ -1,8 +1,8 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.TypeIdentifier;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
@@ -11,16 +11,11 @@ import java.util.List;
 
 public class MethodSpecification {
 
-    // TODO 名前の混乱をなんとかする
-    public final String methodName;
-    public final String descriptor;
-
+    final String descriptor;
     public final MethodIdentifier identifier;
 
     public MethodSpecification(TypeIdentifier classTypeIdentifier, String name, String descriptor) {
-        this.methodName = name;
         this.descriptor = descriptor;
-
         this.identifier = new MethodIdentifier(classTypeIdentifier, name, toArgumentSignatureString(descriptor));
     }
 
@@ -33,7 +28,7 @@ public class MethodSpecification {
     public final List<MethodIdentifier> usingMethodIdentifiers = new ArrayList<>();
 
     public MethodIdentifier methodIdentifierWith(TypeIdentifier typeIdentifier) {
-        return new MethodIdentifier(typeIdentifier, this.methodName, argumentTypeIdentifiers());
+        return identifier.with(typeIdentifier);
     }
 
     public Identifiers argumentTypeIdentifiers() {

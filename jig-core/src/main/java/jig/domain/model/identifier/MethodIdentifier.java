@@ -46,4 +46,8 @@ public class MethodIdentifier {
     public int hashCode() {
         return Objects.hash(fullText);
     }
+
+    public MethodIdentifier with(TypeIdentifier typeIdentifier) {
+        return new MethodIdentifier(typeIdentifier, this.methodName, this.argumentTypeIdentifiers);
+    }
 }

@@ -29,12 +29,12 @@ public enum RelationType {
                 repository.registerImplementation(methodIdentifier, methodIdentifier.with(interfaceTypeIdentifier));
             }
 
-            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName ->
-                    repository.registerMethodUseType(methodIdentifier, fieldTypeName));
+            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeIdentifier ->
+                    repository.registerMethodUseType(methodIdentifier, fieldTypeIdentifier));
 
-            methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
-                repository.registerMethodUseMethod(methodIdentifier, methodName);
-                repository.registerMethodUseType(methodIdentifier, methodName.typeIdentifier());
+            methodSpecification.usingMethodIdentifiers.forEach(usingMethodIdentifier -> {
+                repository.registerMethodUseMethod(methodIdentifier, usingMethodIdentifier);
+                repository.registerMethodUseType(methodIdentifier, usingMethodIdentifier.typeIdentifier());
             });
         });
     }

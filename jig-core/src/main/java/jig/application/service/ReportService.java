@@ -56,8 +56,8 @@ public class ReportService {
         for (TypeIdentifier typeIdentifier : identifiers.list()) {
             MethodIdentifiers methods = relationRepository.methodsOf(typeIdentifier);
             for (MethodIdentifier methodIdentifier : methods.list()) {
-                MethodDetail condition = new MethodDetail(typeIdentifier, methodIdentifier, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
-                list.add(condition);
+                MethodDetail detail = new MethodDetail(typeIdentifier, methodIdentifier, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository);
+                list.add(detail);
             }
         }
         return new MethodReport(perspective, list);

@@ -85,7 +85,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 // class解析で取得できたModelのパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
                 .applyDepth(new Depth(this.depth));
-        LOGGER.info("出力件数: " + outputRelation.list().size());
+        LOGGER.info("関連数: " + outputRelation.list().size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);
 

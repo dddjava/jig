@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,10 +47,13 @@ class IdentifierAsTextTest {
 
     @Test
     void methodIdentifier_asText() {
-        TypeIdentifiers arguments = new TypeIdentifiers(Arrays.asList(new TypeIdentifier("foo.bar.Baz")));
+        TypeIdentifiers arguments = Stream.of("a.Aaa", "b.Bbb", "a.Aaa")
+                .map(TypeIdentifier::new)
+                .collect(TypeIdentifiers.collector());
+
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier("hoge.fuga.Piyo"), "abc", arguments);
 
-        assertThat(methodIdentifier.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(foo.bar.Baz)");
-        assertThat(methodIdentifier.asSimpleText()).isEqualTo("abc(Baz)");
+        assertThat(methodIdentifier.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa,b.Bbb,a.Aaa)");
+        assertThat(methodIdentifier.asSimpleText()).isEqualTo("abc(Aaa,Bbb,Aaa)");
     }
 }

@@ -16,6 +16,4 @@ public interface JapaneseNameRepository {
     JapaneseName get(PackageIdentifier packageIdentifier);
 
     void register(PackageIdentifier packageIdentifier, JapaneseName japaneseName);
-
-    JapaneseNames all();
 }

@@ -1,9 +1,6 @@
 package jig.domain.model.identifier;
 
-import jig.domain.model.relation.dependency.Depth;
-
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class TypeIdentifier {
 
@@ -45,16 +42,5 @@ public class TypeIdentifier {
     public PackageIdentifier toPackage() {
         return new PackageIdentifier(this);
 
-    }
-
-    public TypeIdentifier applyDepth(Depth depth) {
-        String[] split = value.split("\\.");
-        if (split.length < depth.value()) return this;
-
-        StringJoiner sj = new StringJoiner(".");
-        for (int i = 0; i < depth.value(); i++) {
-            sj.add(split[i]);
-        }
-        return new TypeIdentifier(sj.toString());
     }
 }

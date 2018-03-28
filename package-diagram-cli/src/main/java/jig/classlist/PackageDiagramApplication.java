@@ -8,8 +8,8 @@ import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.Depth;
-import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.relation.dependency.PackageDependency;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -76,9 +76,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         logger.info("件数(jdeps): " + jdepsList.size());
         jdepsList.stream()
                 .filter(relation -> !list.contains(relation))
-                .forEach(relation -> {
-                    logger.info("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value());
-                });
+                .forEach(relation -> logger.info("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
 
         Depth depth = new Depth(this.depth);
         PackageDependencies outputRelation = jdepsPackageDependencies.applyDepth(depth);

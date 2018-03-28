@@ -1,7 +1,7 @@
 package jig.domain.model.relation.dependency;
 
 public class Depth {
-    int value = -1;
+    int value;
 
     public Depth(int value) {
         this.value = value;

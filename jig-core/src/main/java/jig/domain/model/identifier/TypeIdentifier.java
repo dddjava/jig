@@ -18,12 +18,19 @@ public class TypeIdentifier {
         return value;
     }
 
-    public String asCompressText() {
-        return value.replaceAll("(\\w)\\w+\\.", "$1.");
+    public String asSimpleText() {
+        return hasPackage() ? value.substring(value.lastIndexOf(".") + 1) : value;
     }
 
-    public String asSimpleText() {
-        return value.replaceAll("([\\w]+\\.)*(\\w+)", "$2");
+    private boolean hasPackage() {
+        return value.contains(".");
+    }
+
+    public PackageIdentifier packageIdentifier() {
+        if (!hasPackage()) {
+            return PackageIdentifier.defaultPackage();
+        }
+        return new PackageIdentifier(value.substring(0, value.lastIndexOf(".")));
     }
 
     @Override
@@ -37,10 +44,5 @@ public class TypeIdentifier {
     @Override
     public int hashCode() {
         return Objects.hash(value);
-    }
-
-    public PackageIdentifier toPackage() {
-        return new PackageIdentifier(this);
-
     }
 }

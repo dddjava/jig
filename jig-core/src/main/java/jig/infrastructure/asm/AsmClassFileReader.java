@@ -69,11 +69,11 @@ public class AsmClassFileReader implements ModelReader {
         List<PackageDependency> list =
                 modelIdentifiers.list().stream()
                         .flatMap(identifier -> {
-                            PackageIdentifier packageIdentifier = identifier.toPackage();
+                            PackageIdentifier packageIdentifier = identifier.packageIdentifier();
                             return relationRepository.findAllUsage(identifier)
                                     .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
                                     .list().stream()
-                                    .map(TypeIdentifier::toPackage)
+                                    .map(TypeIdentifier::packageIdentifier)
                                     .filter(usagePackage -> !packageIdentifier.equals(usagePackage))
                                     .map(usagePackage -> new PackageDependency(usagePackage, packageIdentifier));
                         })
@@ -82,7 +82,7 @@ public class AsmClassFileReader implements ModelReader {
 
         PackageIdentifiers allPackages = new PackageIdentifiers(
                 modelIdentifiers.list().stream()
-                        .map(TypeIdentifier::toPackage)
+                        .map(TypeIdentifier::packageIdentifier)
                         .collect(Collectors.toList()));
 
         return new PackageDependencies(list, allPackages);

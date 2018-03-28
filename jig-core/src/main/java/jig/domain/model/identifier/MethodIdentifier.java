@@ -34,6 +34,10 @@ public class MethodIdentifier {
         return argumentTypeIdentifiers;
     }
 
+    public MethodIdentifier with(TypeIdentifier typeIdentifier) {
+        return new MethodIdentifier(typeIdentifier, this.methodName, this.argumentTypeIdentifiers);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,7 +51,4 @@ public class MethodIdentifier {
         return Objects.hash(fullText);
     }
 
-    public MethodIdentifier with(TypeIdentifier typeIdentifier) {
-        return new MethodIdentifier(typeIdentifier, this.methodName, this.argumentTypeIdentifiers);
-    }
 }

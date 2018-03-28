@@ -13,12 +13,23 @@ public class PackageIdentifier {
         this.value = value;
     }
 
-    public PackageIdentifier(TypeIdentifier typeIdentifier) {
-        this(typeIdentifier.value.substring(0, typeIdentifier.value.lastIndexOf(".")));
-    }
-
     public String value() {
         return value;
+    }
+
+    public PackageIdentifier applyDepth(Depth depth) {
+        String[] split = value.split("\\.");
+        if (split.length < depth.value()) return this;
+
+        StringJoiner sj = new StringJoiner(".");
+        for (int i = 0; i < depth.value(); i++) {
+            sj.add(split[i]);
+        }
+        return new PackageIdentifier(sj.toString());
+    }
+
+    public static PackageIdentifier defaultPackage() {
+        return new PackageIdentifier("(default)");
     }
 
     @Override
@@ -34,14 +45,4 @@ public class PackageIdentifier {
         return Objects.hash(value);
     }
 
-    public PackageIdentifier applyDepth(Depth depth) {
-        String[] split = value.split("\\.");
-        if (split.length < depth.value()) return this;
-
-        StringJoiner sj = new StringJoiner(".");
-        for (int i = 0; i < depth.value(); i++) {
-            sj.add(split[i]);
-        }
-        return new PackageIdentifier(sj.toString());
-    }
 }

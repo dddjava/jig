@@ -4,7 +4,7 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.TypeIdentifiers;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -43,9 +43,9 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
-    public Identifiers find(Characteristic characteristic) {
+    public TypeIdentifiers find(Characteristic characteristic) {
         return map.get(characteristic)
                 .stream()
-                .collect(Identifiers.collector());
+                .collect(TypeIdentifiers.collector());
     }
 }

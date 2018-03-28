@@ -1,7 +1,7 @@
 package jig.domain.model.specification;
 
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.TypeIdentifiers;
 import org.objectweb.asm.Opcodes;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public class Specification {
     public TypeIdentifier typeIdentifier;
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
-    public Identifiers interfaceIdentifiers;
+    public TypeIdentifiers interfaceTypeIdentifiers;
     List<ClassDescriptor> annotationDescriptors;
     public List<MethodSpecification> methodSpecifications;
     List<ClassDescriptor> fieldDescriptors;
@@ -19,14 +19,14 @@ public class Specification {
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
                          int classAccess,
-                         Identifiers interfaceIdentifiers,
+                         TypeIdentifiers interfaceTypeIdentifiers,
                          List<ClassDescriptor> annotationDescriptors,
                          List<MethodSpecification> methodSpecifications,
                          List<ClassDescriptor> fieldDescriptors) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
-        this.interfaceIdentifiers = interfaceIdentifiers;
+        this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
         this.annotationDescriptors = annotationDescriptors;
         this.methodSpecifications = methodSpecifications;
         this.fieldDescriptors = fieldDescriptors;
@@ -66,8 +66,8 @@ public class Specification {
         return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.value.equals(annotation));
     }
 
-    public Identifiers fieldTypeIdentifiers() {
-        return fieldDescriptors.stream().map(ClassDescriptor::toTypeIdentifier).collect(Identifiers.collector());
+    public TypeIdentifiers fieldTypeIdentifiers() {
+        return fieldDescriptors.stream().map(ClassDescriptor::toTypeIdentifier).collect(TypeIdentifiers.collector());
     }
 
     public boolean isModel() {

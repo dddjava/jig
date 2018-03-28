@@ -1,7 +1,7 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.TypeIdentifier;
 
 public class MethodTypeRelation {
 

@@ -2,9 +2,9 @@ package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifiers;
+import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
@@ -31,11 +31,11 @@ public class TypeDetail {
         return japaneseNameRepository.get(name());
     }
 
-    public Identifiers usage() {
-        Identifiers fields = relationRepository.findFieldUsage(name());
+    public TypeIdentifiers usage() {
+        TypeIdentifiers fields = relationRepository.findFieldUsage(name());
 
         MethodIdentifiers methods = relationRepository.findMethodUsage(name());
-        Identifiers ms = methods.typeIdentifiers();
+        TypeIdentifiers ms = methods.typeIdentifiers();
 
         return fields.merge(ms);
     }

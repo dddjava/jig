@@ -39,7 +39,7 @@ public class MethodIdentifiers {
         return function.apply(list.get(0));
     }
 
-    public Identifiers typeIdentifiers() {
-        return list.stream().map(MethodIdentifier::typeIdentifier).collect(Identifiers.collector());
+    public TypeIdentifiers typeIdentifiers() {
+        return list.stream().map(MethodIdentifier::typeIdentifier).collect(TypeIdentifiers.collector());
     }
 }

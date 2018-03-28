@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class Identifiers {
+public class TypeIdentifiers {
 
     List<TypeIdentifier> list;
 
-    public Identifiers(List<TypeIdentifier> list) {
+    public TypeIdentifiers(List<TypeIdentifier> list) {
         this.list = list;
         list.sort(Comparator.comparing(TypeIdentifier::value));
     }
@@ -22,12 +22,12 @@ public class Identifiers {
         return list;
     }
 
-    public Identifiers filter(Predicate<TypeIdentifier> condition) {
+    public TypeIdentifiers filter(Predicate<TypeIdentifier> condition) {
         return list.stream().filter(condition).collect(collector());
     }
 
-    public static Collector<TypeIdentifier, ?, Identifiers> collector() {
-        return Collectors.collectingAndThen(Collectors.toList(), Identifiers::new);
+    public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {
+        return Collectors.collectingAndThen(Collectors.toList(), TypeIdentifiers::new);
     }
 
     public String asText() {
@@ -38,7 +38,7 @@ public class Identifiers {
         return list.stream().map(TypeIdentifier::asSimpleText).collect(joining(","));
     }
 
-    public Identifiers merge(Identifiers other) {
-        return Stream.concat(list.stream(), other.list.stream()).collect(Identifiers.collector());
+    public TypeIdentifiers merge(TypeIdentifiers other) {
+        return Stream.concat(list.stream(), other.list.stream()).collect(TypeIdentifiers.collector());
     }
 }

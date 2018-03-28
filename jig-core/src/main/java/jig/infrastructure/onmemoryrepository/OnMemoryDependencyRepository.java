@@ -2,8 +2,8 @@ package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.relation.dependency.DependencyRepository;
-import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.relation.dependency.PackageDependency;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

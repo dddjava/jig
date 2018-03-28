@@ -6,11 +6,11 @@ public class MethodIdentifier {
 
     private final TypeIdentifier typeIdentifier;
     private final String methodName;
-    private final Identifiers argumentTypeIdentifiers;
+    private final TypeIdentifiers argumentTypeIdentifiers;
 
     private final String fullText;
 
-    public MethodIdentifier(TypeIdentifier typeIdentifier, String methodName, Identifiers argumentTypeIdentifiers) {
+    public MethodIdentifier(TypeIdentifier typeIdentifier, String methodName, TypeIdentifiers argumentTypeIdentifiers) {
         this.typeIdentifier = typeIdentifier;
         this.methodName = methodName;
         this.argumentTypeIdentifiers = argumentTypeIdentifiers;
@@ -30,7 +30,7 @@ public class MethodIdentifier {
         return typeIdentifier;
     }
 
-    public Identifiers argumentTypeIdentifiers() {
+    public TypeIdentifiers argumentTypeIdentifiers() {
         return argumentTypeIdentifiers;
     }
 

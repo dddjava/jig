@@ -48,7 +48,7 @@ class IdentifierAsTextTest {
 
     @Test
     void methodIdentifier_asText() {
-        Identifiers arguments = new Identifiers(Arrays.asList(new TypeIdentifier("foo.bar.Baz")));
+        TypeIdentifiers arguments = new TypeIdentifiers(Arrays.asList(new TypeIdentifier("foo.bar.Baz")));
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier("hoge.fuga.Piyo"), "abc", arguments);
 
         assertThat(methodIdentifier.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(foo.bar.Baz)");

@@ -1,7 +1,7 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
@@ -19,7 +19,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<String> fieldDescriptors = new ArrayList<>();
-    private Identifiers interfaceIdentifiers;
+    private TypeIdentifiers interfaceTypeIdentifiers;
     private int accessor;
 
     public SpecificationReadingVisitor() {
@@ -31,7 +31,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
                 typeIdentifier,
                 parent,
                 accessor,
-                interfaceIdentifiers,
+                interfaceTypeIdentifiers,
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
                 methodSpecifications,
                 fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
@@ -42,7 +42,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
         this.typeIdentifier = new TypeIdentifier(name);
         this.parent = new TypeIdentifier(superName);
         this.accessor = access;
-        this.interfaceIdentifiers = Arrays.stream(interfaces).map(TypeIdentifier::new).collect(Identifiers.collector());
+        this.interfaceTypeIdentifiers = Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

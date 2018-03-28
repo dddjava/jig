@@ -1,9 +1,9 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
+import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 
@@ -30,8 +30,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerMethodParameter(MethodIdentifier methodIdentifier) {
-        Identifiers identifiers = methodIdentifier.argumentTypeIdentifiers();
-        identifiers.list().forEach(argumentTypeIdentifier ->
+        TypeIdentifiers typeIdentifiers = methodIdentifier.argumentTypeIdentifiers();
+        typeIdentifiers.list().forEach(argumentTypeIdentifier ->
                 methodParameterTypes.add(new MethodTypeRelation(methodIdentifier, argumentTypeIdentifier)));
     }
 
@@ -71,11 +71,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Identifiers findUseTypeOf(MethodIdentifier methodIdentifier) {
+    public TypeIdentifiers findUseTypeOf(MethodIdentifier methodIdentifier) {
         return methodUseTypes.stream()
                 .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodIdentifier))
                 .map(MethodTypeRelation::type)
-                .collect(Identifiers.collector());
+                .collect(TypeIdentifiers.collector());
     }
 
     @Override
@@ -103,11 +103,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Identifiers findFieldUsage(TypeIdentifier typeIdentifier) {
+    public TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
         return memberTypes.stream()
                 .filter(typeRelation -> typeRelation.isTo(typeIdentifier))
                 .map(TypeRelation::from)
-                .collect(Identifiers.collector());
+                .collect(TypeIdentifiers.collector());
     }
 
     @Override
@@ -119,9 +119,9 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public Identifiers findAllUsage(TypeIdentifier typeIdentifier) {
-        Identifiers methodUsages = findMethodUsage(typeIdentifier).typeIdentifiers();
-        Identifiers fieldUsages = findFieldUsage(typeIdentifier);
+    public TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier) {
+        TypeIdentifiers methodUsages = findMethodUsage(typeIdentifier).typeIdentifiers();
+        TypeIdentifiers fieldUsages = findFieldUsage(typeIdentifier);
         return methodUsages.merge(fieldUsages);
     }
 }

@@ -1,11 +1,11 @@
 package jig.domain.model.characteristic;
 
 import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
+import jig.domain.model.identifier.TypeIdentifiers;
 
 public interface CharacteristicRepository {
 
-    Identifiers find(Characteristic characteristic);
+    TypeIdentifiers find(Characteristic characteristic);
 
     void register(TypeIdentifier typeIdentifier, Characteristic characteristic);
 

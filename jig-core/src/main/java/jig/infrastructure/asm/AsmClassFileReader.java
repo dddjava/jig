@@ -2,10 +2,10 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.identifier.PackageIdentifiers;
 import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
@@ -65,9 +65,9 @@ public class AsmClassFileReader implements ModelReader {
     public PackageDependencies dependenciesIn(ProjectLocation location) {
         readFrom(location);
 
-        Identifiers modelIdentifiers = characteristicRepository.find(Characteristic.MODEL);
+        TypeIdentifiers modelTypeIdentifiers = characteristicRepository.find(Characteristic.MODEL);
         List<PackageDependency> list =
-                modelIdentifiers.list().stream()
+                modelTypeIdentifiers.list().stream()
                         .flatMap(identifier -> {
                             PackageIdentifier packageIdentifier = identifier.packageIdentifier();
                             return relationRepository.findAllUsage(identifier)
@@ -81,7 +81,7 @@ public class AsmClassFileReader implements ModelReader {
                         .collect(Collectors.toList());
 
         PackageIdentifiers allPackages = new PackageIdentifiers(
-                modelIdentifiers.list().stream()
+                modelTypeIdentifiers.list().stream()
                         .map(TypeIdentifier::packageIdentifier)
                         .collect(Collectors.toList()));
 

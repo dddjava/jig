@@ -1,8 +1,8 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifiers;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ public class MethodSpecification {
         this.identifier = new MethodIdentifier(classTypeIdentifier, name, toArgumentSignatureString(descriptor));
     }
 
-    private static Identifiers toArgumentSignatureString(String descriptor) {
+    private static TypeIdentifiers toArgumentSignatureString(String descriptor) {
         Type[] argumentTypes = Type.getArgumentTypes(descriptor);
-        return Arrays.stream(argumentTypes).map(Type::getClassName).map(TypeIdentifier::new).collect(Identifiers.collector());
+        return Arrays.stream(argumentTypes).map(Type::getClassName).map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
     }
 
     public final List<TypeIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();

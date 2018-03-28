@@ -5,10 +5,10 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.MethodIdentifiers;
+import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
@@ -55,7 +55,7 @@ public class MethodDetail {
         return relationRepository.getReturnTypeOf(methodIdentifier());
     }
 
-    public Identifiers instructFields() {
+    public TypeIdentifiers instructFields() {
         return relationRepository.findUseTypeOf(methodIdentifier());
     }
 

@@ -1,8 +1,8 @@
 package jig.classlist;
 
 import jig.application.service.AnalyzeService;
-import jig.domain.model.project.ProjectLocation;
 import jig.application.service.ReportService;
+import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.Reports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

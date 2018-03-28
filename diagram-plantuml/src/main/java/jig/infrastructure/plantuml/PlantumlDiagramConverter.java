@@ -5,10 +5,8 @@ import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.identifier.PackageIdentifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.relation.dependency.PackageDependencies;
-
-import java.util.stream.Stream;
+import jig.domain.model.relation.dependency.PackageDependency;
 
 import static java.util.stream.Collectors.joining;
 
@@ -41,10 +39,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
     }
 
     private String classes(PackageDependencies packageDependencies) {
-        return Stream.concat(
-                packageDependencies.list().stream().map(PackageDependency::from),
-                packageDependencies.list().stream().map(PackageDependency::to))
-                .distinct()
+        return packageDependencies.allPackages().stream()
                 .map(name -> "class " + nameFormatter.format(name) + japaneseName(name))
                 .collect(joining("\n"));
     }

@@ -20,10 +20,10 @@ public class MethodDetail {
 
     private final TypeIdentifier typeIdentifier;
     private final MethodIdentifier methodIdentifier;
-    private RelationRepository relationRepository;
-    private CharacteristicRepository characteristicRepository;
-    private SqlRepository sqlRepository;
-    private JapaneseNameRepository japaneseNameRepository;
+    private final RelationRepository relationRepository;
+    private final CharacteristicRepository characteristicRepository;
+    private final SqlRepository sqlRepository;
+    private final JapaneseNameRepository japaneseNameRepository;
 
     public MethodDetail(TypeIdentifier typeIdentifier,
                         MethodIdentifier methodIdentifier,
@@ -39,28 +39,28 @@ public class MethodDetail {
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
-    public TypeIdentifier typeIdentifier() {
+    public TypeIdentifier type() {
         return typeIdentifier;
     }
 
     public JapaneseName japaneseName() {
-        return japaneseNameRepository.get(typeIdentifier());
+        return japaneseNameRepository.get(type());
     }
 
-    public MethodIdentifier methodIdentifier() {
+    public MethodIdentifier method() {
         return methodIdentifier;
     }
 
-    public TypeIdentifier returnTypeIdentifier() {
-        return relationRepository.getReturnTypeOf(methodIdentifier());
+    public TypeIdentifier returnType() {
+        return relationRepository.getReturnTypeOf(method());
     }
 
-    public TypeIdentifiers instructFields() {
-        return relationRepository.findUseTypeOf(methodIdentifier());
+    public TypeIdentifiers usingFieldTypes() {
+        return relationRepository.findUseTypeOf(method());
     }
 
     public MethodIdentifiers instructMapperMethodIdentifiers() {
-        return relationRepository.findConcrete(methodIdentifier())
+        return relationRepository.findConcrete(method())
                 .map(relationRepository::findUseMethod)
                 .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.typeIdentifier(), Characteristic.MAPPER));
     }

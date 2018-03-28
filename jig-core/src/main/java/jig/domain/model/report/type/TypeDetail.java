@@ -13,8 +13,8 @@ public class TypeDetail {
 
     private final TypeIdentifier typeIdentifier;
     private final Characteristics characteristics;
-    private RelationRepository relationRepository;
-    private JapaneseNameRepository japaneseNameRepository;
+    private final RelationRepository relationRepository;
+    private final JapaneseNameRepository japaneseNameRepository;
 
     public TypeDetail(TypeIdentifier typeIdentifier, Characteristics characteristics, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
         this.typeIdentifier = typeIdentifier;
@@ -23,18 +23,18 @@ public class TypeDetail {
         this.japaneseNameRepository = japaneseNameRepository;
     }
 
-    public TypeIdentifier name() {
+    public TypeIdentifier type() {
         return typeIdentifier;
     }
 
     public JapaneseName japaneseName() {
-        return japaneseNameRepository.get(name());
+        return japaneseNameRepository.get(type());
     }
 
-    public TypeIdentifiers usage() {
-        TypeIdentifiers fields = relationRepository.findFieldUsage(name());
+    public TypeIdentifiers userTypes() {
+        TypeIdentifiers fields = relationRepository.findFieldUsage(type());
 
-        MethodIdentifiers methods = relationRepository.findMethodUsage(name());
+        MethodIdentifiers methods = relationRepository.findMethodUsage(type());
         TypeIdentifiers ms = methods.typeIdentifiers();
 
         return fields.merge(ms);

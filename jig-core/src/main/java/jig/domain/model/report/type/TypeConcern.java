@@ -5,9 +5,9 @@ import jig.domain.model.characteristic.Characteristic;
 import java.util.function.Function;
 
 public enum TypeConcern {
-    クラス名(detail -> detail.name().value()),
+    クラス名(detail -> detail.type().value()),
     クラス和名(detail -> detail.japaneseName().value()),
-    使用箇所(detail -> "[" + detail.usage().asSimpleText() + "]"),
+    使用箇所(detail -> "[" + detail.userTypes().asSimpleText() + "]"),
     振る舞い有り(detail -> Boolean.toString(detail.is(Characteristic.ENUM_BEHAVIOUR))),
     パラメーター有り(detail -> Boolean.toString(detail.is(Characteristic.ENUM_PARAMETERIZED))),
     多態(detail -> Boolean.toString(detail.is(Characteristic.ENUM_POLYMORPHISM))),;

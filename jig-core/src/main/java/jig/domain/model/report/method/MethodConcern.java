@@ -5,11 +5,11 @@ import jig.domain.model.datasource.SqlType;
 import java.util.function.Function;
 
 public enum MethodConcern {
-    クラス名(detail -> detail.typeIdentifier().value()),
+    クラス名(detail -> detail.type().value()),
     クラス和名(detail -> detail.japaneseName().value()),
-    メソッド(detail -> detail.methodIdentifier().asSimpleText()),
-    メソッド戻り値の型(detail -> detail.returnTypeIdentifier().asSimpleText()),
-    使用しているフィールドの型(detail -> "[" + detail.instructFields().asSimpleText() + "]"),
+    メソッド(detail -> detail.method().asSimpleText()),
+    メソッド戻り値の型(detail -> detail.returnType().asSimpleText()),
+    使用しているフィールドの型(detail -> "[" + detail.usingFieldTypes().asSimpleText() + "]"),
 
     DB_C(detail -> detail.sqls().tables(SqlType.INSERT)),
     DB_R(detail -> detail.sqls().tables(SqlType.SELECT)),

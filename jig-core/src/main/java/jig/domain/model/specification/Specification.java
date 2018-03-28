@@ -9,12 +9,12 @@ import java.util.List;
 public class Specification {
 
     public TypeIdentifier typeIdentifier;
-    public TypeIdentifier parentTypeIdentifier;
-    public int classAccess;
+    TypeIdentifier parentTypeIdentifier;
+    int classAccess;
     public Identifiers interfaceIdentifiers;
-    public List<ClassDescriptor> annotationDescriptors;
+    List<ClassDescriptor> annotationDescriptors;
     public List<MethodSpecification> methodSpecifications;
-    public List<ClassDescriptor> fieldDescriptors;
+    List<ClassDescriptor> fieldDescriptors;
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,

@@ -1,7 +1,6 @@
 package jig.domain.model.datasource;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Sqls {
 
@@ -11,10 +10,11 @@ public class Sqls {
         this.list = list;
     }
 
-    public String tables(SqlType sqlType) {
+    public Tables tables(SqlType sqlType) {
         return list.stream()
                 .filter(sql -> sql.sqlType() == sqlType)
-                .map(Sql::tableName)
-                .collect(Collectors.joining("/"));
+                .map(Sql::tables)
+                .reduce(Tables::merge)
+                .orElse(Tables.nothing());
     }
 }

@@ -26,11 +26,11 @@ public enum SqlType {
                 .collect(toList());
     }
 
-    public String extractTable(String sql) {
+    public Table extractTable(String sql) {
         for (Pattern pattern : patterns) {
             Matcher matcher = pattern.matcher(sql.replaceAll("\n", " "));
             if (matcher.matches()) {
-                return matcher.group(1);
+                return new Table(matcher.group(1));
             }
         }
 
@@ -38,7 +38,7 @@ public enum SqlType {
         return unexpectedTable();
     }
 
-    public String unexpectedTable() {
-        return "（解析失敗）";
+    public Table unexpectedTable() {
+        return new Table("（解析失敗）");
     }
 }

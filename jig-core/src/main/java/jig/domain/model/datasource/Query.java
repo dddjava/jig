@@ -8,11 +8,9 @@ public class Query {
         this.text = text;
     }
 
-    public String extractTable(SqlType sqlType) {
-        if (text == null) {
-            return sqlType.unexpectedTable();
-        }
-        return sqlType.extractTable(text);
+    public Tables extractTable(SqlType sqlType) {
+        Table table = text == null ? sqlType.unexpectedTable() : sqlType.extractTable(text);
+        return new Tables(table);
     }
 
     public static Query unsupported() {

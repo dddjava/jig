@@ -26,7 +26,7 @@ class MyBatisSqlReaderTest {
         sut.resolve(TestSupport.getTestResourceRootURLs());
 
         Sql sql = repository.get(new SqlIdentifier("stub.infrastructure.datasource.SampleMapper.binding"));
-        assertThat(sql.tableName()).isEqualTo("fuga");
+        assertThat(sql.tables().asText()).isEqualTo("fuga");
     }
 
     @ParameterizedTest
@@ -39,7 +39,7 @@ class MyBatisSqlReaderTest {
 
         SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);
-        assertThat(sql.tableName()).isEqualTo(tableName);
+        assertThat(sql.tables().asText()).isEqualTo(tableName);
         assertThat(sql.sqlType()).isEqualTo(sqlType);
     }
 

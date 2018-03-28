@@ -1,5 +1,6 @@
 package jig.domain.model.relation;
 
+import jig.domain.model.identifier.MethodIdentifier;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.specification.Specification;
 
@@ -19,21 +20,21 @@ public enum RelationType {
                 repository.registerField(specification.typeIdentifier, fieldTypeIdentifier));
 
         specification.methodSpecifications.forEach(methodSpecification -> {
-            repository.registerMethod(methodSpecification.identifier);
-            repository.registerMethodParameter(methodSpecification.identifier);
-
-            repository.registerMethodReturnType(methodSpecification.identifier, methodSpecification.getReturnTypeName());
+            MethodIdentifier methodIdentifier = methodSpecification.identifier;
+            repository.registerMethod(methodIdentifier);
+            repository.registerMethodParameter(methodIdentifier);
+            repository.registerMethodReturnType(methodIdentifier, methodSpecification.getReturnTypeName());
 
             for (TypeIdentifier interfaceTypeIdentifier : specification.interfaceIdentifiers.list()) {
-                repository.registerImplementation(methodSpecification.identifier, methodSpecification.methodIdentifierWith(interfaceTypeIdentifier));
+                repository.registerImplementation(methodIdentifier, methodIdentifier.with(interfaceTypeIdentifier));
             }
 
             methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeName ->
-                    repository.registerMethodUseType(methodSpecification.identifier, fieldTypeName));
+                    repository.registerMethodUseType(methodIdentifier, fieldTypeName));
 
             methodSpecification.usingMethodIdentifiers.forEach(methodName -> {
-                repository.registerMethodUseMethod(methodSpecification.identifier, methodName);
-                repository.registerMethodUseType(methodSpecification.identifier, methodName.typeIdentifier());
+                repository.registerMethodUseMethod(methodIdentifier, methodName);
+                repository.registerMethodUseType(methodIdentifier, methodName.typeIdentifier());
             });
         });
     }

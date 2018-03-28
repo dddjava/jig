@@ -27,10 +27,6 @@ public class MethodSpecification {
     public final List<TypeIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
     public final List<MethodIdentifier> usingMethodIdentifiers = new ArrayList<>();
 
-    public MethodIdentifier methodIdentifierWith(TypeIdentifier typeIdentifier) {
-        return identifier.with(typeIdentifier);
-    }
-
     public TypeIdentifier getReturnTypeName() {
         return new TypeIdentifier(Type.getReturnType(descriptor).getClassName());
     }

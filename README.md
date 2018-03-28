@@ -4,7 +4,7 @@
 
 - GraphViz
   - dotを使ってるので http://plantuml.com/graphviz-dot
-- JDK(tools.jar)
+- JDK 1.8.0
   - jdepsを使ってるので
 
 ### Windows

@@ -13,6 +13,7 @@ public class PackageDependencies {
     List<PackageDependency> list;
     PackageIdentifiers allPackages;
 
+    // TODO jdepsがいらなくなったら不要になる
     public PackageDependencies(List<PackageDependency> list) {
         this.list = list;
         // クラス名昇順、メソッド名昇順
@@ -42,10 +43,15 @@ public class PackageDependencies {
                 .distinct()
                 .filter(PackageDependency::notSelfRelation)
                 .collect(toList());
-        return new PackageDependencies(list);
+        return new PackageDependencies(list, allPackages.applyDepth(depth));
     }
 
     public PackageIdentifiers allPackages() {
         return allPackages;
+    }
+
+    // TODO jdepsがいらなくなったら不要になる
+    public PackageDependencies withAllPackage(PackageIdentifiers allPackages) {
+        return new PackageDependencies(this.list, allPackages);
     }
 }

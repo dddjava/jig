@@ -4,6 +4,7 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.Identifiers;
 import jig.domain.model.identifier.PackageIdentifier;
+import jig.domain.model.identifier.PackageIdentifiers;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
@@ -79,7 +80,12 @@ public class AsmClassFileReader implements ModelReader {
                         .distinct()
                         .collect(Collectors.toList());
 
-        return new PackageDependencies(list);
+        PackageIdentifiers allPackages = new PackageIdentifiers(
+                modelIdentifiers.list().stream()
+                        .map(TypeIdentifier::toPackage)
+                        .collect(Collectors.toList()));
+
+        return new PackageDependencies(list, allPackages);
     }
 
     private void executeInternal(Path path) {

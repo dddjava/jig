@@ -81,8 +81,10 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 .filter(relation -> !list.contains(relation))
                 .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
 
-        Depth depth = new Depth(this.depth);
-        PackageDependencies outputRelation = jdepsPackageDependencies.applyDepth(depth);
+        PackageDependencies outputRelation = jdepsPackageDependencies
+                // class解析で取得できたModelのパッケージで上書きする
+                .withAllPackage(packageDependencies.allPackages())
+                .applyDepth(new Depth(this.depth));
         LOGGER.info("出力件数: " + outputRelation.list().size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);

@@ -31,13 +31,6 @@ public class MethodSpecification {
         return identifier.with(typeIdentifier);
     }
 
-    public Identifiers argumentTypeIdentifiers() {
-        return Arrays.stream(Type.getArgumentTypes(this.descriptor))
-                .map(Type::getClassName)
-                .map(TypeIdentifier::new)
-                .collect(Identifiers.collector());
-    }
-
     public TypeIdentifier getReturnTypeName() {
         return new TypeIdentifier(Type.getReturnType(descriptor).getClassName());
     }

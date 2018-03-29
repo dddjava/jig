@@ -11,6 +11,7 @@ import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.Depth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
+import jig.domain.model.specification.Specifications;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -68,7 +69,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputDiagramName);
 
-        analyzeService.analyzeModel(new ProjectLocation(Paths.get(projectPath)));
+        Specifications specifications = analyzeService.analyzeModel(new ProjectLocation(Paths.get(projectPath)));
+        dependencyService.register(specifications);
         PackageDependencies packageDependencies = dependencyService.packageDependencies();
 
         PackageDependencies jdepsPackageDependencies = relationAnalyzer.analyzeRelations(new AnalysisCriteria(

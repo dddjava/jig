@@ -8,4 +8,8 @@ public class Specifications {
     public Specifications(List<Specification> list) {
         this.list = list;
     }
+
+    public List<Specification> list() {
+        return list;
+    }
 }

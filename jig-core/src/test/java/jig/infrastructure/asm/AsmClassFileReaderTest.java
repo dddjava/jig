@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.application.service.DependencyService;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.MethodIdentifier;
@@ -9,6 +10,7 @@ import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
+import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
@@ -44,7 +46,10 @@ public class AsmClassFileReaderTest {
         AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository);
 
         SpecificationSources specificationSources = jigPaths.getSpecificationSources(new ProjectLocation(path));
-        analyzer.readFrom(specificationSources);
+        Specifications specifications = analyzer.readFrom(specificationSources);
+
+        DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository);
+        dependencyService.register(specifications);
     }
 
     @Test

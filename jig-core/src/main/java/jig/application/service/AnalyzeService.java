@@ -15,20 +15,25 @@ public class AnalyzeService {
     final ModelReader modelReader;
     final SqlReader sqlReader;
     final JapaneseReader japaneseReader;
+    final DependencyService dependencyService;
     final JigPaths jigPaths;
 
     public AnalyzeService(ModelReader modelReader,
                           SqlReader sqlReader,
                           JapaneseReader japaneseReader,
+                          DependencyService dependencyService,
                           JigPaths jigPaths) {
         this.modelReader = modelReader;
         this.sqlReader = sqlReader;
         this.japaneseReader = japaneseReader;
+        this.dependencyService = dependencyService;
         this.jigPaths = jigPaths;
     }
 
     public void analyze(ProjectLocation projectLocation) {
-        analyzeModel(projectLocation);
+        Specifications specifications = analyzeModel(projectLocation);
+        dependencyService.register(specifications);
+
         sqlReader.readFrom(projectLocation);
 
         readJavadoc(projectLocation);

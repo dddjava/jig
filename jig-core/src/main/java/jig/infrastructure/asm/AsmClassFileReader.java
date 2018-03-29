@@ -1,10 +1,8 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.relation.RelationType;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
@@ -39,14 +37,8 @@ public class AsmClassFileReader implements ModelReader {
         for (SpecificationSource source : specificationSources.list()) {
             Specification specification = readSpecification(source);
             list.add(specification);
-            register(specification);
         }
         return new Specifications(list);
-    }
-
-    private void register(Specification specification) {
-        Characteristic.register(characteristicRepository, specification);
-        RelationType.register(relationRepository, specification);
     }
 
     private Specification readSpecification(SpecificationSource specificationSource) {

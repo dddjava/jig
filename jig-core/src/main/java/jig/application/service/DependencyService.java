@@ -7,8 +7,10 @@ import jig.domain.model.identifier.PackageIdentifiers;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
+import jig.domain.model.specification.Specifications;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,5 +49,12 @@ public class DependencyService {
                         .collect(Collectors.toList()));
 
         return new PackageDependencies(list, allPackages);
+    }
+
+    public void register(Specifications specifications) {
+        specifications.list().forEach(specification -> {
+            Characteristic.register(characteristicRepository, specification);
+            RelationType.register(relationRepository, specification);
+        });
     }
 }

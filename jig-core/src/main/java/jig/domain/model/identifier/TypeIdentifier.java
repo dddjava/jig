@@ -15,11 +15,15 @@ public class TypeIdentifier {
     }
 
     public String fullQualifiedName() {
-        return value;
+        return format(value -> value);
     }
 
     public String asSimpleText() {
-        return hasPackage() ? value.substring(value.lastIndexOf(".") + 1) : value;
+        return hasPackage() ? format(value -> value.substring(value.lastIndexOf(".") + 1)) : value;
+    }
+
+    public String format(TypeIdentifierFormatter formatter) {
+        return formatter.format(value);
     }
 
     private boolean hasPackage() {

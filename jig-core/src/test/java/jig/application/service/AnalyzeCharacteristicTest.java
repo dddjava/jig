@@ -1,6 +1,5 @@
-package jig.infrastructure.asm;
+package jig.application.service;
 
-import jig.application.service.DependencyService;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.MethodIdentifier;
@@ -9,9 +8,8 @@ import jig.domain.model.identifier.MethodSignature;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
+import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,25 +29,22 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AsmClassFileReaderTest {
+public class AnalyzeCharacteristicTest {
 
     static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
 
     @BeforeAll
     static void before() throws URISyntaxException {
-
-        URI location = AsmClassFileReaderTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = AnalyzeCharacteristicTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path path = Paths.get(location);
 
         JigPaths jigPaths = new JigPaths(path.toString(), path.toString(), path.toString());
-        AsmClassFileReader analyzer = new AsmClassFileReader();
-
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources(new ProjectLocation(path));
-        Specifications specifications = analyzer.readFrom(specificationSources);
 
         DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository);
-        dependencyService.register(specifications);
+
+        new AnalyzeService(new AsmClassFileReader(), null, null, dependencyService, jigPaths)
+                .importSpecification(new ProjectLocation(path));
     }
 
     @Test
@@ -92,14 +87,12 @@ public class AsmClassFileReaderTest {
 
     @Test
     void 日付() {
-
         assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
-
         assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }

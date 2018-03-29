@@ -1,10 +1,6 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.project.ModelReader;
-import jig.domain.model.specification.Specification;
-import jig.domain.model.specification.SpecificationSource;
-import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.specification.Specifications;
+import jig.domain.model.specification.*;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Component;
 

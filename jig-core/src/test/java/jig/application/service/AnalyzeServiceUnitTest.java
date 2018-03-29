@@ -1,7 +1,7 @@
 package jig.application.service;
 
-import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.specification.ModelReader;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 

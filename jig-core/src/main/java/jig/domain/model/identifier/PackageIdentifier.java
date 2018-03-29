@@ -1,7 +1,5 @@
 package jig.domain.model.identifier;
 
-import jig.domain.model.relation.dependency.Depth;
-
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -17,12 +15,12 @@ public class PackageIdentifier {
         return value;
     }
 
-    public PackageIdentifier applyDepth(Depth depth) {
+    public PackageIdentifier applyDepth(PackageDepth packageDepth) {
         String[] split = value.split("\\.");
-        if (split.length < depth.value()) return this;
+        if (split.length < packageDepth.value()) return this;
 
         StringJoiner sj = new StringJoiner(".");
-        for (int i = 0; i < depth.value(); i++) {
+        for (int i = 0; i < packageDepth.value(); i++) {
             sj.add(split[i]);
         }
         return new PackageIdentifier(sj.toString());

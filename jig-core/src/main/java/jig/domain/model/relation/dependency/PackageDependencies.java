@@ -1,5 +1,6 @@
 package jig.domain.model.relation.dependency;
 
+import jig.domain.model.identifier.PackageDepth;
 import jig.domain.model.identifier.PackageIdentifiers;
 
 import java.util.Comparator;
@@ -36,14 +37,14 @@ public class PackageDependencies {
         return list;
     }
 
-    public PackageDependencies applyDepth(Depth depth) {
-        if (depth.unlimited()) return this;
+    public PackageDependencies applyDepth(PackageDepth packageDepth) {
+        if (packageDepth.unlimited()) return this;
         List<PackageDependency> list = this.list.stream()
-                .map(relation -> relation.applyDepth(depth))
+                .map(relation -> relation.applyDepth(packageDepth))
                 .distinct()
                 .filter(PackageDependency::notSelfRelation)
                 .collect(toList());
-        return new PackageDependencies(list, allPackages.applyDepth(depth));
+        return new PackageDependencies(list, allPackages.applyDepth(packageDepth));
     }
 
     public PackageIdentifiers allPackages() {

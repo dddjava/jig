@@ -1,7 +1,5 @@
 package jig.domain.model.identifier;
 
-import jig.domain.model.relation.dependency.Depth;
-
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,9 +17,9 @@ public class PackageIdentifiers {
         return list.stream();
     }
 
-    public PackageIdentifiers applyDepth(Depth depth) {
+    public PackageIdentifiers applyDepth(PackageDepth packageDepth) {
         List<PackageIdentifier> list = this.list.stream()
-                .map(identifier -> identifier.applyDepth(depth))
+                .map(identifier -> identifier.applyDepth(packageDepth))
                 .distinct()
                 .collect(toList());
         return new PackageIdentifiers(list);

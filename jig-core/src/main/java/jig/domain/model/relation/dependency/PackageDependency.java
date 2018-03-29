@@ -1,5 +1,6 @@
 package jig.domain.model.relation.dependency;
 
+import jig.domain.model.identifier.PackageDepth;
 import jig.domain.model.identifier.PackageIdentifier;
 
 import java.util.Objects;
@@ -35,8 +36,8 @@ public class PackageDependency {
         return Objects.hash(from, to);
     }
 
-    public PackageDependency applyDepth(Depth depth) {
-        return new PackageDependency(from.applyDepth(depth), to.applyDepth(depth));
+    public PackageDependency applyDepth(PackageDepth packageDepth) {
+        return new PackageDependency(from.applyDepth(packageDepth), to.applyDepth(packageDepth));
     }
 
     public boolean notSelfRelation() {

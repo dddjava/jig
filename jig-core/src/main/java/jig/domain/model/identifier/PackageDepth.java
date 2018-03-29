@@ -1,9 +1,9 @@
-package jig.domain.model.relation.dependency;
+package jig.domain.model.identifier;
 
-public class Depth {
+public class PackageDepth {
     int value;
 
-    public Depth(int value) {
+    public PackageDepth(int value) {
         this.value = value;
     }
 

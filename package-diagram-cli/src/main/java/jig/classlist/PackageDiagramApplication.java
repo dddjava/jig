@@ -8,7 +8,7 @@ import jig.domain.model.identifier.PackageIdentifierFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.project.ProjectLocation;
-import jig.domain.model.relation.dependency.Depth;
+import jig.domain.model.identifier.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import jig.infrastructure.jdeps.JdepsExecutor;
@@ -85,7 +85,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PackageDependencies outputRelation = jdepsPackageDependencies
                 // class解析で取得できたModelのパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
-                .applyDepth(new Depth(this.depth));
+                .applyDepth(new PackageDepth(this.depth));
         LOGGER.info("関連数: " + outputRelation.list().size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);

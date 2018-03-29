@@ -81,9 +81,7 @@ public class AsmClassFileReader implements ModelReader {
     }
 
     @Override
-    public PackageDependencies dependenciesIn(ProjectLocation location) {
-        readFrom(location);
-
+    public PackageDependencies packageDependencies() {
         TypeIdentifiers modelTypeIdentifiers = characteristicRepository.find(Characteristic.MODEL);
         List<PackageDependency> list =
                 modelTypeIdentifiers.list().stream()

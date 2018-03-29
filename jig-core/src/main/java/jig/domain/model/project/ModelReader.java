@@ -5,5 +5,5 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 public interface ModelReader {
     void readFrom(ProjectLocation rootPath);
 
-    PackageDependencies dependenciesIn(ProjectLocation location);
+    PackageDependencies packageDependencies();
 }

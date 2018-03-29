@@ -34,6 +34,7 @@ public class AnalyzeService {
     }
 
     public PackageDependencies dependenciesIn(ProjectLocation location) {
-        return modelReader.dependenciesIn(location);
+        modelReader.readFrom(location);
+        return modelReader.packageDependencies();
     }
 }

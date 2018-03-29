@@ -1,6 +1,8 @@
 package jig.application.service;
 
 import jig.domain.model.datasource.SqlReader;
+import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.datasource.Sqls;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
@@ -8,6 +10,7 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
+import jig.infrastructure.mybatis.SqlSources;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,17 +21,20 @@ public class AnalyzeService {
     final JapaneseReader japaneseReader;
     final DependencyService dependencyService;
     final JigPaths jigPaths;
+    final SqlRepository sqlRepository;
 
     public AnalyzeService(ModelReader modelReader,
                           SqlReader sqlReader,
                           JapaneseReader japaneseReader,
                           DependencyService dependencyService,
-                          JigPaths jigPaths) {
+                          JigPaths jigPaths,
+                          SqlRepository sqlRepository) {
         this.modelReader = modelReader;
         this.sqlReader = sqlReader;
         this.japaneseReader = japaneseReader;
         this.dependencyService = dependencyService;
         this.jigPaths = jigPaths;
+        this.sqlRepository = sqlRepository;
     }
 
     public PackageDependencies packageDependencies(ProjectLocation projectLocation) {
@@ -49,7 +55,9 @@ public class AnalyzeService {
     }
 
     public void importDatabaseAccess(ProjectLocation projectLocation) {
-        sqlReader.readFrom(projectLocation);
+        SqlSources sqlSources = jigPaths.getSqlSources(projectLocation);
+        Sqls sqls = sqlReader.readFrom(sqlSources);
+        sqlRepository.register(sqls);
     }
 
     public void importJapanese(ProjectLocation projectLocation) {

@@ -1,8 +1,6 @@
 package jig.infrastructure.mybatis;
 
 import jig.domain.model.datasource.*;
-import jig.domain.model.project.ProjectLocation;
-import jig.infrastructure.JigPaths;
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -18,61 +16,22 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class MyBatisSqlReader implements SqlReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlReader.class);
 
-    SqlRepository sqlRepository;
-    JigPaths jigPaths;
-
-    public MyBatisSqlReader(SqlRepository sqlRepository, JigPaths jigPaths) {
-        this.sqlRepository = sqlRepository;
-        this.jigPaths = jigPaths;
-    }
-
     @Override
-    public void readFrom(ProjectLocation projectLocation) {
-        try {
-            Path[] array = jigPaths.extractClassPath(projectLocation.getValue());
-
-            URL[] urls = new URL[array.length];
-            List<String> classNames = new ArrayList<>();
-            for (int i = 0; i < array.length; i++) {
-                Path path = array[i];
-                urls[i] = path.toUri().toURL();
-
-                try (Stream<Path> walk = Files.walk(path)) {
-                    List<String> collect = walk.filter(p -> p.toFile().isFile())
-                            .map(path::relativize)
-                            .filter(jigPaths::isMapperClassFile)
-                            .map(jigPaths::toClassName)
-                            .collect(Collectors.toList());
-                    classNames.addAll(collect);
-                }
-            }
-
-            resolve(urls, classNames);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    void resolve(URL[] urls, List<String> classNames) {
-        try (URLClassLoader classLoader = new URLClassLoader(urls, MapperRegistry.class.getClassLoader())) {
+    public Sqls readFrom(SqlSources sqlSources) {
+        try (URLClassLoader classLoader = new URLClassLoader(sqlSources.getUrls(), MapperRegistry.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
             Configuration config = new Configuration();
-            for (String className : classNames) {
+            for (String className : sqlSources.getClassNames()) {
                 try {
                     Class<?> mapperClass = classLoader.loadClass(className);
                     config.addMapper(mapperClass);
@@ -84,6 +43,7 @@ public class MyBatisSqlReader implements SqlReader {
                 }
             }
 
+            List<Sql> list = new ArrayList<>();
             for (Object obj : config.getMappedStatements()) {
                 // Ambiguityが入っていることがあるので型を確認する
                 if (obj instanceof MappedStatement) {
@@ -95,9 +55,10 @@ public class MyBatisSqlReader implements SqlReader {
                     SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
 
                     Sql sql = new Sql(sqlIdentifier, query, sqlType);
-                    sqlRepository.register(sql);
+                    list.add(sql);
                 }
             }
+            return new Sqls(list);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

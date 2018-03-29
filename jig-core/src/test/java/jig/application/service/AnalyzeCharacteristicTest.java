@@ -43,7 +43,7 @@ public class AnalyzeCharacteristicTest {
 
         DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository);
 
-        new AnalyzeService(new AsmClassFileReader(), null, null, dependencyService, jigPaths)
+        new AnalyzeService(new AsmClassFileReader(), null, null, dependencyService, jigPaths, null)
                 .importSpecification(new ProjectLocation(path));
     }
 

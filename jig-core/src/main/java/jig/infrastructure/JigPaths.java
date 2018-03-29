@@ -3,6 +3,7 @@ package jig.infrastructure;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
+import jig.infrastructure.mybatis.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -136,6 +139,32 @@ public class JigPaths {
             return paths;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    public SqlSources getSqlSources(ProjectLocation projectLocation) {
+        try {
+            Path[] array = extractClassPath(projectLocation.getValue());
+
+            URL[] urls = new URL[array.length];
+            List<String> classNames = new ArrayList<>();
+            for (int i = 0; i < array.length; i++) {
+                Path path = array[i];
+                urls[i] = path.toUri().toURL();
+
+                try (Stream<Path> walk = Files.walk(path)) {
+                    List<String> collect = walk.filter(p -> p.toFile().isFile())
+                            .map(path::relativize)
+                            .filter(this::isMapperClassFile)
+                            .map(this::toClassName)
+                            .collect(Collectors.toList());
+                    classNames.addAll(collect);
+                }
+            }
+
+            return new SqlSources(urls, classNames);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

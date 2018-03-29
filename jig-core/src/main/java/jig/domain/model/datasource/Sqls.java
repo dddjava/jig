@@ -17,4 +17,8 @@ public class Sqls {
                 .reduce(Tables::merge)
                 .orElse(Tables.nothing());
     }
+
+    public List<Sql> list() {
+        return list;
+    }
 }

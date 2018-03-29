@@ -1,10 +1,6 @@
 package jig.infrastructure.mybatis;
 
-import jig.domain.model.datasource.Sql;
-import jig.domain.model.datasource.SqlIdentifier;
-import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.datasource.SqlType;
-import jig.infrastructure.JigPaths;
+import jig.domain.model.datasource.*;
 import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,11 +18,11 @@ class MyBatisSqlReaderTest {
     @Test
     void bindを使ってても解析できる() {
         SqlRepository repository = new OnMemorySqlRepository();
-        MyBatisSqlReader sut = new MyBatisSqlReader(repository, new JigPaths("dummy", "dummy", "dummy"));
+        MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        sut.resolve(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper"));
+        Sqls sqls = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
 
-        Sql sql = repository.get(new SqlIdentifier("stub.infrastructure.datasource.SampleMapper.binding"));
+        Sql sql = sqls.list().get(0);
         assertThat(sql.tables().asText()).isEqualTo("fuga");
     }
 
@@ -34,9 +30,10 @@ class MyBatisSqlReaderTest {
     @MethodSource
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType) {
         SqlRepository repository = new OnMemorySqlRepository();
-        MyBatisSqlReader sut = new MyBatisSqlReader(repository, new JigPaths("dummy", "dummy", "dummy"));
+        MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        sut.resolve(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper"));
+        Sqls sqls = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper")));
+        repository.register(sqls);
 
         SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);

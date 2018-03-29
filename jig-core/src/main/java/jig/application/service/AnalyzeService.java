@@ -4,6 +4,7 @@ import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
+import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,17 +13,20 @@ public class AnalyzeService {
     final ModelReader modelReader;
     final SqlReader sqlReader;
     final JapaneseReader japaneseReader;
+    final JigPaths jigPaths;
 
     public AnalyzeService(ModelReader modelReader,
                           SqlReader sqlReader,
-                          JapaneseReader japaneseReader) {
+                          JapaneseReader japaneseReader,
+                          JigPaths jigPaths) {
         this.modelReader = modelReader;
         this.sqlReader = sqlReader;
         this.japaneseReader = japaneseReader;
+        this.jigPaths = jigPaths;
     }
 
     public void analyze(ProjectLocation projectLocation) {
-        modelReader.readFrom(modelReader.getSpecificationSources(projectLocation));
+        modelReader.readFrom(jigPaths.getSpecificationSources(projectLocation));
         sqlReader.readFrom(projectLocation);
 
         readJavadoc(projectLocation);
@@ -33,6 +37,6 @@ public class AnalyzeService {
     }
 
     public void analyzeModelOnly(ProjectLocation location) {
-        modelReader.readFrom(modelReader.getSpecificationSources(location));
+        modelReader.readFrom(jigPaths.getSpecificationSources(location));
     }
 }

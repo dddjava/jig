@@ -3,7 +3,6 @@ package jig.infrastructure.asm;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.project.ModelReader;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.specification.Specification;
@@ -18,12 +17,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 
 @Component
 public class AsmClassFileReader implements ModelReader {
@@ -31,34 +25,10 @@ public class AsmClassFileReader implements ModelReader {
 
     private final CharacteristicRepository characteristicRepository;
     private final RelationRepository relationRepository;
-    private final JigPaths jigPaths;
 
     public AsmClassFileReader(CharacteristicRepository characteristicRepository, RelationRepository relationRepository, JigPaths jigPaths) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
-        this.jigPaths = jigPaths;
-    }
-
-    @Override
-    public SpecificationSources getSpecificationSources(ProjectLocation rootPath) {
-        ArrayList<SpecificationSource> sources = new ArrayList<>();
-        try {
-            for (Path path : jigPaths.extractClassPath(rootPath.getValue())) {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (jigPaths.isClassFile(file)) {
-                            SpecificationSource specificationSource = new SpecificationSource(file);
-                            sources.add(specificationSource);
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return new SpecificationSources(sources);
     }
 
     @Override

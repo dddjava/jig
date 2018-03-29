@@ -43,7 +43,7 @@ public class AsmClassFileReaderTest {
         JigPaths jigPaths = new JigPaths(path.toString(), path.toString(), path.toString());
         AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository, jigPaths);
 
-        SpecificationSources specificationSources = analyzer.getSpecificationSources(new ProjectLocation(path));
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources(new ProjectLocation(path));
         analyzer.readFrom(specificationSources);
     }
 

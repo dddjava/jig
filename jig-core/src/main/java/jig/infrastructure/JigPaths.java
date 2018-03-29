@@ -1,5 +1,8 @@
 package jig.infrastructure;
 
+import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.specification.SpecificationSource;
+import jig.domain.model.specification.SpecificationSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,9 +11,9 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.stream.Stream;
 
 @Component
@@ -75,5 +78,26 @@ public class JigPaths {
     public String toClassName(Path path) {
         String pathStr = path.toString();
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
+    }
+
+    public SpecificationSources getSpecificationSources(ProjectLocation rootPath) {
+        ArrayList<SpecificationSource> sources = new ArrayList<>();
+        try {
+            for (Path path : extractClassPath(rootPath.getValue())) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (isClassFile(file)) {
+                            SpecificationSource specificationSource = new SpecificationSource(file);
+                            sources.add(specificationSource);
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return new SpecificationSources(sources);
     }
 }

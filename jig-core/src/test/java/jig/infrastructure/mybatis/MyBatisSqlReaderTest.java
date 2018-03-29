@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import testing.TestSupport;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ class MyBatisSqlReaderTest {
         SqlRepository repository = new OnMemorySqlRepository();
         MyBatisSqlReader sut = new MyBatisSqlReader(repository, new JigPaths("dummy", "dummy", "dummy"));
 
-        sut.resolve(TestSupport.getTestResourceRootURLs());
+        sut.resolve(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper"));
 
         Sql sql = repository.get(new SqlIdentifier("stub.infrastructure.datasource.SampleMapper.binding"));
         assertThat(sql.tables().asText()).isEqualTo("fuga");
@@ -35,7 +36,7 @@ class MyBatisSqlReaderTest {
         SqlRepository repository = new OnMemorySqlRepository();
         MyBatisSqlReader sut = new MyBatisSqlReader(repository, new JigPaths("dummy", "dummy", "dummy"));
 
-        sut.resolve(TestSupport.getTestResourceRootURLs());
+        sut.resolve(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper"));
 
         SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);

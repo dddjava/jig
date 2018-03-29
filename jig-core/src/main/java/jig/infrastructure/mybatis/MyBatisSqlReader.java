@@ -18,15 +18,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,36 +42,32 @@ public class MyBatisSqlReader implements SqlReader {
 
     @Override
     public void readFrom(ProjectLocation projectLocation) {
-        URL[] urls = Arrays.stream(jigPaths.extractClassPath(projectLocation.getValue()))
-                .map(path -> {
-                    try {
-                        return path.toUri().toURL();
-                    } catch (MalformedURLException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).toArray(URL[]::new);
-        resolve(urls);
-    }
+        try {
+            Path[] array = jigPaths.extractClassPath(projectLocation.getValue());
 
-    void resolve(URL... urls) {
+            URL[] urls = new URL[array.length];
+            List<String> classNames = new ArrayList<>();
+            for (int i = 0; i < array.length; i++) {
+                Path path = array[i];
+                urls[i] = path.toUri().toURL();
 
-        List<String> classNames = new ArrayList<>();
-        for (URL url : urls) {
-            try {
-                Path rootPath = Paths.get(url.toURI());
-                try (Stream<Path> walk = Files.walk(rootPath)) {
-                    List<String> collect = walk.filter(path -> path.toFile().isFile())
-                            .map(rootPath::relativize)
+                try (Stream<Path> walk = Files.walk(path)) {
+                    List<String> collect = walk.filter(p -> p.toFile().isFile())
+                            .map(path::relativize)
                             .filter(jigPaths::isMapperClassFile)
                             .map(jigPaths::toClassName)
                             .collect(Collectors.toList());
                     classNames.addAll(collect);
                 }
-            } catch (IOException | URISyntaxException e) {
-                throw new RuntimeException(e);
             }
-        }
 
+            resolve(urls, classNames);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void resolve(URL[] urls, List<String> classNames) {
         try (URLClassLoader classLoader = new URLClassLoader(urls, MapperRegistry.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 

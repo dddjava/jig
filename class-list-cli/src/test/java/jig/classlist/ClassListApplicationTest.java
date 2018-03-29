@@ -16,7 +16,7 @@ public class ClassListApplicationTest {
     @Test
     public void testService(Path temporaryFolder) throws Exception {
         File output = temporaryFolder.resolve("output.tsv").toFile();
-        runApplication(output, "service");
+        runApplication(output);
 
         output = new File(output.getParentFile(), "SERVICE_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
@@ -35,7 +35,7 @@ public class ClassListApplicationTest {
     @Test
     public void testRepository(Path temporaryFolder) throws Exception {
         File output = temporaryFolder.resolve("output.tsv").toFile();
-        runApplication(output, "repository");
+        runApplication(output);
 
         output = new File(output.getParentFile(), "REPOSITORY_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
@@ -60,7 +60,7 @@ public class ClassListApplicationTest {
     @Test
     public void identifier(Path temporaryFolder) throws Exception {
         File output = temporaryFolder.resolve("output.tsv").toFile();
-        runApplication(output, "identifier");
+        runApplication(output);
 
         output = new File(output.getParentFile(), "IDENTIFIER_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
@@ -74,7 +74,7 @@ public class ClassListApplicationTest {
     @Test
     public void enums(Path temporaryFolder) throws Exception {
         File output = temporaryFolder.resolve("output.tsv").toFile();
-        runApplication(output, "enum");
+        runApplication(output);
 
         output = new File(output.getParentFile(), "ENUM_output.tsv");
         assertThat(Files.readAllLines(output.toPath()))
@@ -87,10 +87,10 @@ public class ClassListApplicationTest {
                         "sut.domain.model.kind.PolymorphismEnum");
     }
 
-    private void runApplication(File output, String listType) {
+    private void runApplication(File output) {
         ClassListApplication.main(new String[]{
                 "--project.path=" + Paths.get("..", "sut").toAbsolutePath(),
-                "--output.list.type=" + listType,
+                "--output.omit.prefix=xxx",
                 "--output.list.name=" + output.toString()
         });
     }

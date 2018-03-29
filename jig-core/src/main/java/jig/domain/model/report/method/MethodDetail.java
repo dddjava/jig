@@ -5,10 +5,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.identifier.MethodIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.*;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
@@ -24,19 +21,23 @@ public class MethodDetail {
     private final CharacteristicRepository characteristicRepository;
     private final SqlRepository sqlRepository;
     private final JapaneseNameRepository japaneseNameRepository;
+    private final TypeIdentifierFormatter typeIdentifierFormatter;
 
+    // TODO repositoryうけとるのやめたい
     public MethodDetail(TypeIdentifier typeIdentifier,
                         MethodIdentifier methodIdentifier,
                         RelationRepository relationRepository,
                         CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
-                        JapaneseNameRepository japaneseNameRepository) {
+                        JapaneseNameRepository japaneseNameRepository,
+                        TypeIdentifierFormatter typeIdentifierFormatter) {
         this.typeIdentifier = typeIdentifier;
         this.methodIdentifier = methodIdentifier;
         this.relationRepository = relationRepository;
         this.characteristicRepository = characteristicRepository;
         this.sqlRepository = sqlRepository;
         this.japaneseNameRepository = japaneseNameRepository;
+        this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
     public TypeIdentifier type() {
@@ -74,6 +75,6 @@ public class MethodDetail {
     }
 
     public String typeName() {
-        return type().fullQualifiedName();
+        return type().format(typeIdentifierFormatter);
     }
 }

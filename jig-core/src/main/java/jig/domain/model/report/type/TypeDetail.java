@@ -4,6 +4,7 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.identifier.MethodIdentifiers;
 import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.TypeIdentifierFormatter;
 import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
@@ -15,12 +16,19 @@ public class TypeDetail {
     private final Characteristics characteristics;
     private final RelationRepository relationRepository;
     private final JapaneseNameRepository japaneseNameRepository;
+    private final TypeIdentifierFormatter typeIdentifierFormatter;
 
-    public TypeDetail(TypeIdentifier typeIdentifier, Characteristics characteristics, RelationRepository relationRepository, JapaneseNameRepository japaneseNameRepository) {
+    // TODO repositoryうけとるのやめたい
+    public TypeDetail(TypeIdentifier typeIdentifier,
+                      Characteristics characteristics,
+                      RelationRepository relationRepository,
+                      JapaneseNameRepository japaneseNameRepository,
+                      TypeIdentifierFormatter typeIdentifierFormatter) {
         this.typeIdentifier = typeIdentifier;
         this.characteristics = characteristics;
         this.relationRepository = relationRepository;
         this.japaneseNameRepository = japaneseNameRepository;
+        this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
     public TypeIdentifier type() {
@@ -45,6 +53,6 @@ public class TypeDetail {
     }
 
     public String typeName() {
-        return type().fullQualifiedName();
+        return type().format(typeIdentifierFormatter);
     }
 }

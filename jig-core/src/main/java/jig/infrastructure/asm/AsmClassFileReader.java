@@ -8,7 +8,6 @@ import jig.domain.model.relation.RelationType;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
-import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ public class AsmClassFileReader implements ModelReader {
     private final CharacteristicRepository characteristicRepository;
     private final RelationRepository relationRepository;
 
-    public AsmClassFileReader(CharacteristicRepository characteristicRepository, RelationRepository relationRepository, JigPaths jigPaths) {
+    public AsmClassFileReader(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
     }

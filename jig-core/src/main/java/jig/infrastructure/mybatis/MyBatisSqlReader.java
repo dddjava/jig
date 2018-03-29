@@ -25,8 +25,10 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
@@ -56,30 +58,37 @@ public class MyBatisSqlReader implements SqlReader {
     }
 
     void resolve(URL... urls) {
+
+        List<String> classNames = new ArrayList<>();
+        for (URL url : urls) {
+            try {
+                Path rootPath = Paths.get(url.toURI());
+                try (Stream<Path> walk = Files.walk(rootPath)) {
+                    List<String> collect = walk.filter(path -> path.toFile().isFile())
+                            .map(rootPath::relativize)
+                            .filter(jigPaths::isMapperClassFile)
+                            .map(jigPaths::toClassName)
+                            .collect(Collectors.toList());
+                    classNames.addAll(collect);
+                }
+            } catch (IOException | URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         try (URLClassLoader classLoader = new URLClassLoader(urls, MapperRegistry.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
             Configuration config = new Configuration();
-
-            for (URL url : classLoader.getURLs()) {
-                LOGGER.debug("Mapper取り込み: " + url);
-                Path rootPath = Paths.get(url.toURI());
-                try (Stream<Path> walk = Files.walk(rootPath)) {
-                    walk.filter(path -> path.toFile().isFile())
-                            .map(rootPath::relativize)
-                            .filter(jigPaths::isMapperClassFile)
-                            .forEach(path -> {
-                                try {
-                                    String className = jigPaths.toClassName(path);
-                                    Class<?> mapperClass = classLoader.loadClass(className);
-                                    config.addMapper(mapperClass);
-                                } catch (NoClassDefFoundError e) {
-                                    LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
-                                            path, e.getLocalizedMessage());
-                                } catch (Exception e) {
-                                    LOGGER.warn("Mapperの取り込みに失敗", e);
-                                }
-                            });
+            for (String className : classNames) {
+                try {
+                    Class<?> mapperClass = classLoader.loadClass(className);
+                    config.addMapper(mapperClass);
+                } catch (NoClassDefFoundError e) {
+                    LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
+                            className, e.getLocalizedMessage());
+                } catch (Exception e) {
+                    LOGGER.warn("Mapperの取り込みに失敗", e);
                 }
             }
 
@@ -97,7 +106,7 @@ public class MyBatisSqlReader implements SqlReader {
                     sqlRepository.register(sql);
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

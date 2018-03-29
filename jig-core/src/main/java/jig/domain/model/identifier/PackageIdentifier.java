@@ -28,6 +28,10 @@ public class PackageIdentifier {
         return new PackageIdentifier(sj.toString());
     }
 
+    public String format(PackageIdentifierFormatter formatter) {
+        return formatter.format(value);
+    }
+
     public static PackageIdentifier defaultPackage() {
         return new PackageIdentifier("(default)");
     }

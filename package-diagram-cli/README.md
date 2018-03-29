@@ -12,6 +12,7 @@ java -jar package-diagram-cli.jar
 
 ```
 output.diagram.name=output.png
+output.omit.prefix=.+\\.(service|domain\\.(model|basic))\\.
 package.pattern=.*.domain.model
 project.path=./
 depth=-1

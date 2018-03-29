@@ -2,8 +2,8 @@ package jig.infrastructure.plantuml;
 
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
-import jig.domain.model.identifier.NameFormatter;
 import jig.domain.model.identifier.PackageIdentifier;
+import jig.domain.model.identifier.PackageIdentifierFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
@@ -12,12 +12,11 @@ import static java.util.stream.Collectors.joining;
 
 public class PlantumlDiagramConverter implements DiagramConverter {
 
-    NameFormatter nameFormatter;
+    PackageIdentifierFormatter formatter;
     JapaneseNameRepository repository;
 
-    public PlantumlDiagramConverter(NameFormatter nameFormatter,
-                                    JapaneseNameRepository repository) {
-        this.nameFormatter = nameFormatter;
+    public PlantumlDiagramConverter(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+        this.formatter = formatter;
         this.repository = repository;
     }
 
@@ -26,6 +25,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
         String source = "@startuml\n" +
                 "hide members\n" +
                 "hide circle\n" +
+                "set namespaceSeparator none\n" +
                 "\n" +
                 classes(packageDependencies) +
                 "\n" +
@@ -40,7 +40,7 @@ public class PlantumlDiagramConverter implements DiagramConverter {
 
     private String classes(PackageDependencies packageDependencies) {
         return packageDependencies.allPackages().stream()
-                .map(name -> "class " + nameFormatter.format(name) + japaneseName(name))
+                .map(packageIdentifier -> "class " + packageIdentifier.format(formatter) + japaneseName(packageIdentifier))
                 .collect(joining("\n"));
     }
 
@@ -57,8 +57,8 @@ public class PlantumlDiagramConverter implements DiagramConverter {
 
     String relationToString(PackageDependency packageDependency) {
         return String.format("\"%s\" ..> \"%s\"",
-                nameFormatter.format(packageDependency.from()),
-                nameFormatter.format(packageDependency.to())
+                packageDependency.from().format(formatter),
+                packageDependency.to().format(formatter)
         );
     }
 }

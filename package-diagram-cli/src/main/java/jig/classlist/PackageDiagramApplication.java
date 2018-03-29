@@ -4,6 +4,7 @@ import jig.application.service.AnalyzeService;
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
+import jig.domain.model.identifier.PackageIdentifierFormatter;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.jdeps.*;
 import jig.domain.model.project.ProjectLocation;
@@ -12,7 +13,6 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
-import jig.infrastructure.plantuml.PlantumlNameFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,12 +99,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
     }
 
     @Bean
-    public DiagramConverter diagramConverter(@Value("${package.pattern}") String packageNamePattern,
-                                             JapaneseNameRepository repository) {
-        PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
-        nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
-
-        return new PlantumlDiagramConverter(nameFormatter, repository);
+    public DiagramConverter diagramConverter(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+        return new PlantumlDiagramConverter(formatter, repository);
     }
 
     @Bean

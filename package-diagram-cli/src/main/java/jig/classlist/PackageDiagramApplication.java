@@ -68,7 +68,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputDiagramName);
 
-        analyzeService.analyzeModelOnly(new ProjectLocation(Paths.get(projectPath)));
+        analyzeService.analyzeModel(new ProjectLocation(Paths.get(projectPath)));
         PackageDependencies packageDependencies = dependencyService.packageDependencies();
 
         PackageDependencies jdepsPackageDependencies = relationAnalyzer.analyzeRelations(new AnalysisCriteria(

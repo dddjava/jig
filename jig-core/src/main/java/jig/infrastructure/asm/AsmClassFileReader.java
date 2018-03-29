@@ -6,8 +6,6 @@ import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import org.objectweb.asm.ClassReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.util.List;
 
 @Component
 public class AsmClassFileReader implements ModelReader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AsmClassFileReader.class);
 
     @Override
     public Specifications readFrom(SpecificationSources specificationSources) {
@@ -32,7 +29,6 @@ public class AsmClassFileReader implements ModelReader {
     }
 
     private Specification readSpecification(SpecificationSource specificationSource) {
-        LOGGER.debug("class取り込み: {}", specificationSource.getPath());
         try (InputStream inputStream = Files.newInputStream(specificationSource.getPath())) {
             SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);

@@ -64,8 +64,8 @@ public class AnalyzeService {
         japaneseReader.readFrom(projectLocation);
     }
 
-    public Specifications readFrom(ProjectLocation location) {
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources(location);
+    public Specifications readFrom(ProjectLocation projectLocation) {
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
         if (specificationSources.notFound()) {
             throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
         }

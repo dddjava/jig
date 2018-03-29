@@ -8,15 +8,12 @@ import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 public class PackageInfoReader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PackageInfoReader.class);
 
     private final JapaneseNameRepository repository;
 
@@ -25,7 +22,6 @@ public class PackageInfoReader {
     }
 
     void execute(Path path) {
-        LOGGER.debug("コメント取り込み: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);
             PackageIdentifier packageIdentifier = cu.accept(new GenericVisitorAdapter<PackageIdentifier, Void>() {

@@ -17,6 +17,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,18 +25,6 @@ import java.util.stream.Stream;
 public class JigPaths {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JigPaths.class);
-
-    public boolean isJavaFile(Path path) {
-        return path.toString().endsWith(".java");
-    }
-
-    public boolean isClassFile(Path path) {
-        return path.toString().endsWith(".class");
-    }
-
-    public boolean isPackageInfoFile(Path path) {
-        return path.toString().endsWith("package-info.java");
-    }
 
     Path classesDirectory;
     Path resourcesDirectory;
@@ -53,42 +42,10 @@ public class JigPaths {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    public Path[] extractClassPath(Path rootPath) {
-        try (Stream<Path> walk = Files.walk(rootPath)) {
-            return walk
-                    .filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
-                    .peek(path -> LOGGER.info("classes: {}", path))
-                    .toArray(Path[]::new);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public Path[] extractSourcePath(Path rootPath) {
-        try (Stream<Path> walk = Files.walk(rootPath)) {
-            return walk.filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(sourcesDirectory))
-                    .peek(path -> LOGGER.info("sources: {}", path))
-                    .toArray(Path[]::new);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public boolean isMapperClassFile(Path path) {
-        return path.toString().endsWith("Mapper.class");
-    }
-
-    public String toClassName(Path path) {
-        String pathStr = path.toString();
-        return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
-    }
-
-    public SpecificationSources getSpecificationSources(ProjectLocation rootPath) {
+    public SpecificationSources getSpecificationSources(ProjectLocation location) {
         ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {
-            for (Path path : extractClassPath(rootPath.getValue())) {
+            for (Path path : extractClassPath(location)) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -103,17 +60,46 @@ public class JigPaths {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        LOGGER.info("*.class: {}件", sources.size());
         return new SpecificationSources(sources);
     }
 
+    private Path[] extractClassPath(ProjectLocation location) {
+        try (Stream<Path> walk = Files.walk(location.toPath())) {
+            return walk
+                    .filter(Files::isDirectory)
+                    .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
+                    .peek(path -> LOGGER.info("classes: {}", path))
+                    .toArray(Path[]::new);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private boolean isClassFile(Path path) {
+        return path.toString().endsWith(".class");
+    }
+
     public List<Path> sourcePaths(ProjectLocation location) {
+        List<Path> paths = pathsOf(location, this::isJavaFile);
+        LOGGER.info("*.java: {}件", paths.size());
+        return paths;
+    }
+
+    public List<Path> packageInfoPaths(ProjectLocation location) {
+        List<Path> paths = pathsOf(location, this::isPackageInfoFile);
+        LOGGER.info("package-info.java: {}件", paths.size());
+        return paths;
+    }
+
+    private List<Path> pathsOf(ProjectLocation location, Predicate<Path> condition) {
         try {
             List<Path> paths = new ArrayList<>();
-            for (Path path : extractSourcePath(location.getValue())) {
+            for (Path path : extractSourcePath(location)) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (isJavaFile(file)) paths.add(file);
+                        if (condition.test(file)) paths.add(file);
                         return FileVisitResult.CONTINUE;
                     }
                 });
@@ -124,27 +110,28 @@ public class JigPaths {
         }
     }
 
-    public List<Path> packageInfoPaths(ProjectLocation location) {
-        try {
-            List<Path> paths = new ArrayList<>();
-            for (Path path : extractSourcePath(location.getValue())) {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (isPackageInfoFile(file)) paths.add(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-            return paths;
+    private Path[] extractSourcePath(ProjectLocation location) {
+        try (Stream<Path> walk = Files.walk(location.toPath())) {
+            return walk.filter(Files::isDirectory)
+                    .filter(path -> path.endsWith(sourcesDirectory))
+                    .peek(path -> LOGGER.info("sources: {}", path))
+                    .toArray(Path[]::new);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private boolean isJavaFile(Path path) {
+        return path.toString().endsWith(".java");
+    }
+
+    private boolean isPackageInfoFile(Path path) {
+        return path.toString().endsWith("package-info.java");
     }
 
     public SqlSources getSqlSources(ProjectLocation projectLocation) {
         try {
-            Path[] array = extractClassPath(projectLocation.getValue());
+            Path[] array = extractClassPath(projectLocation);
 
             URL[] urls = new URL[array.length];
             List<String> classNames = new ArrayList<>();
@@ -162,9 +149,19 @@ public class JigPaths {
                 }
             }
 
+            LOGGER.info("*Mapper.class: {}件", classNames.size());
             return new SqlSources(urls, classNames);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean isMapperClassFile(Path path) {
+        return path.toString().endsWith("Mapper.class");
+    }
+
+    private String toClassName(Path path) {
+        String pathStr = path.toString();
+        return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 }

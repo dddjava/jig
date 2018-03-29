@@ -9,7 +9,7 @@ public class ProjectLocation {
         this.value = value;
     }
 
-    public Path getValue() {
+    public Path toPath() {
         return value;
     }
 }

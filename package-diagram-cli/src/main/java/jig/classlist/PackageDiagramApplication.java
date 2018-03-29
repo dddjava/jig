@@ -1,6 +1,7 @@
 package jig.classlist;
 
 import jig.application.service.AnalyzeService;
+import jig.application.service.DependencyService;
 import jig.application.service.DiagramService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.diagram.DiagramConverter;
@@ -57,6 +58,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Autowired
     AnalyzeService analyzeService;
     @Autowired
+    DependencyService dependencyService;
+    @Autowired
     DiagramService diagramService;
 
     @Override
@@ -65,7 +68,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputDiagramName);
 
-        PackageDependencies packageDependencies = analyzeService.dependenciesIn(new ProjectLocation(Paths.get(projectPath)));
+        analyzeService.analyzeModelOnly(new ProjectLocation(Paths.get(projectPath)));
+        PackageDependencies packageDependencies = dependencyService.packageDependencies();
 
         PackageDependencies jdepsPackageDependencies = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
                 new SearchPaths(Collections.singletonList(Paths.get(projectPath))),

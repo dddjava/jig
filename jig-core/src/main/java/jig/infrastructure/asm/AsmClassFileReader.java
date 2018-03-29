@@ -2,16 +2,10 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.identifier.PackageIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
-import jig.domain.model.relation.dependency.PackageDependencies;
-import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
@@ -30,8 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AsmClassFileReader implements ModelReader {
@@ -78,31 +70,6 @@ public class AsmClassFileReader implements ModelReader {
     private void register(Specification specification) {
         Characteristic.register(characteristicRepository, specification);
         RelationType.register(relationRepository, specification);
-    }
-
-    @Override
-    public PackageDependencies packageDependencies() {
-        TypeIdentifiers modelTypeIdentifiers = characteristicRepository.find(Characteristic.MODEL);
-        List<PackageDependency> list =
-                modelTypeIdentifiers.list().stream()
-                        .flatMap(identifier -> {
-                            PackageIdentifier packageIdentifier = identifier.packageIdentifier();
-                            return relationRepository.findAllUsage(identifier)
-                                    .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
-                                    .list().stream()
-                                    .map(TypeIdentifier::packageIdentifier)
-                                    .filter(usagePackage -> !packageIdentifier.equals(usagePackage))
-                                    .map(usagePackage -> new PackageDependency(usagePackage, packageIdentifier));
-                        })
-                        .distinct()
-                        .collect(Collectors.toList());
-
-        PackageIdentifiers allPackages = new PackageIdentifiers(
-                modelTypeIdentifiers.list().stream()
-                        .map(TypeIdentifier::packageIdentifier)
-                        .collect(Collectors.toList()));
-
-        return new PackageDependencies(list, allPackages);
     }
 
     private Specification readSpecification(SpecificationSource specificationSource) {

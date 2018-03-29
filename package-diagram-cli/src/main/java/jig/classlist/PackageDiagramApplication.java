@@ -104,8 +104,6 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        analyzeService.importJapanese(new ProjectLocation(Paths.get(projectPath)));
-
         return new PlantumlDiagramConverter(nameFormatter, repository);
     }
 

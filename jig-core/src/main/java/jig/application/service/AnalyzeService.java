@@ -31,8 +31,9 @@ public class AnalyzeService {
         this.jigPaths = jigPaths;
     }
 
-    public PackageDependencies packageDependencies(ProjectLocation location) {
-        importSpecification(location);
+    public PackageDependencies packageDependencies(ProjectLocation projectLocation) {
+        importSpecification(projectLocation);
+        importJapanese(projectLocation);
         return dependencyService.packageDependencies();
     }
 

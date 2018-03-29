@@ -61,6 +61,11 @@ public class AsmClassFileReader implements ModelReader {
         SpecificationSources specificationSources = new SpecificationSources(sources);
 
 
+        readFrom(specificationSources);
+    }
+
+    @Override
+    public void readFrom(SpecificationSources specificationSources) {
         for (SpecificationSource source : specificationSources.list()) {
             Specification specification = readSpecification(source);
             register(specification);

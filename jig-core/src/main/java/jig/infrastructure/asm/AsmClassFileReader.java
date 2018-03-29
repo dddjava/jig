@@ -1,8 +1,6 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.project.ModelReader;
-import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
@@ -22,14 +20,6 @@ import java.util.List;
 @Component
 public class AsmClassFileReader implements ModelReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(AsmClassFileReader.class);
-
-    private final CharacteristicRepository characteristicRepository;
-    private final RelationRepository relationRepository;
-
-    public AsmClassFileReader(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
-        this.characteristicRepository = characteristicRepository;
-        this.relationRepository = relationRepository;
-    }
 
     @Override
     public Specifications readFrom(SpecificationSources specificationSources) {

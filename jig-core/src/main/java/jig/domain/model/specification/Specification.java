@@ -1,5 +1,7 @@
 package jig.domain.model.specification;
 
+import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.objectweb.asm.Opcodes;
@@ -14,7 +16,7 @@ public class Specification {
     public TypeIdentifiers interfaceTypeIdentifiers;
     List<ClassDescriptor> annotationDescriptors;
     public List<MethodSpecification> methodSpecifications;
-    List<ClassDescriptor> fieldDescriptors;
+    List<FieldIdentifier> fieldIdentifiers;
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
@@ -22,14 +24,14 @@ public class Specification {
                          TypeIdentifiers interfaceTypeIdentifiers,
                          List<ClassDescriptor> annotationDescriptors,
                          List<MethodSpecification> methodSpecifications,
-                         List<ClassDescriptor> fieldDescriptors) {
+                         List<FieldIdentifier> fieldIdentifiers) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
         this.annotationDescriptors = annotationDescriptors;
         this.methodSpecifications = methodSpecifications;
-        this.fieldDescriptors = fieldDescriptors;
+        this.fieldIdentifiers = fieldIdentifiers;
     }
 
     public boolean canExtend() {
@@ -40,18 +42,18 @@ public class Specification {
         return parentTypeIdentifier.equals(new TypeIdentifier(Enum.class));
     }
 
-    public boolean hasOnlyOneFieldAndFieldTypeIs(String classDescriptor) {
+    public boolean hasOnlyOneFieldAndFieldTypeIs(Class<?> clz) {
         if (isEnum()) return false;
-        if (fieldDescriptors.size() != 1) return false;
-        return fieldDescriptors.get(0).value.equals(classDescriptor);
+        if (fieldIdentifiers.size() != 1) return false;
+        return fieldIdentifiers.get(0).typeIdentifier().fullQualifiedName().equals(clz.getName());
     }
 
-    public boolean hasTwoFieldsAndFieldTypeAre(String classDescriptor) {
+    public boolean hasTwoFieldsAndFieldTypeAre(Class<?> clz) {
         if (isEnum()) return false;
-        if (fieldDescriptors.size() != 2) return false;
-        TypeIdentifier field1 = fieldDescriptors.get(0).toTypeIdentifier();
-        TypeIdentifier field2 = fieldDescriptors.get(1).toTypeIdentifier();
-        return (field1.equals(field2) && field1.equals(new ClassDescriptor(classDescriptor).toTypeIdentifier()));
+        if (fieldIdentifiers.size() != 2) return false;
+        TypeIdentifier field1 = fieldIdentifiers.get(0).typeIdentifier();
+        TypeIdentifier field2 = fieldIdentifiers.get(1).typeIdentifier();
+        return (field1.equals(field2) && field1.fullQualifiedName().equals(clz.getName()));
     }
 
     public boolean hasMethod() {
@@ -59,15 +61,15 @@ public class Specification {
     }
 
     public boolean hasField() {
-        return !fieldDescriptors.isEmpty();
+        return !fieldIdentifiers.isEmpty();
     }
 
     public boolean hasAnnotation(String annotation) {
         return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.value.equals(annotation));
     }
 
-    public TypeIdentifiers fieldTypeIdentifiers() {
-        return fieldDescriptors.stream().map(ClassDescriptor::toTypeIdentifier).collect(TypeIdentifiers.collector());
+    public FieldIdentifiers fieldIdentifiers() {
+        return new FieldIdentifiers(fieldIdentifiers);
     }
 
     public boolean isModel() {

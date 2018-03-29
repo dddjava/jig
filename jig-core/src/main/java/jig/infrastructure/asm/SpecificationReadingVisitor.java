@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.ClassDescriptor;
@@ -18,7 +19,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     private TypeIdentifier parent;
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
-    private List<String> fieldDescriptors = new ArrayList<>();
+    private List<FieldIdentifier> fieldDescriptors = new ArrayList<>();
     private TypeIdentifiers interfaceTypeIdentifiers;
     private int accessor;
 
@@ -34,7 +35,7 @@ public class SpecificationReadingVisitor extends ClassVisitor {
                 interfaceTypeIdentifiers,
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
                 methodSpecifications,
-                fieldDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()));
+                fieldDescriptors);
     }
 
     @Override
@@ -57,7 +58,8 @@ public class SpecificationReadingVisitor extends ClassVisitor {
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         // インスタンスフィールドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            fieldDescriptors.add(descriptor);
+            TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
+            fieldDescriptors.add(new FieldIdentifier(name, typeIdentifier));
         }
         return super.visitField(access, name, descriptor, signature, value);
     }

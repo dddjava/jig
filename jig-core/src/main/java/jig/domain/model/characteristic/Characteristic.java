@@ -2,6 +2,10 @@ package jig.domain.model.characteristic;
 
 import jig.domain.model.specification.Specification;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
 public enum Characteristic {
     SERVICE {
         @Override
@@ -54,31 +58,31 @@ public enum Characteristic {
     IDENTIFIER {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/lang/String;");
+            return specification.hasOnlyOneFieldAndFieldTypeIs(String.class);
         }
     },
     NUMBER {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/math/BigDecimal;");
+            return specification.hasOnlyOneFieldAndFieldTypeIs(BigDecimal.class);
         }
     },
     DATE {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/time/LocalDate;");
+            return specification.hasOnlyOneFieldAndFieldTypeIs(LocalDate.class);
         }
     },
     TERM {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasTwoFieldsAndFieldTypeAre("Ljava/time/LocalDate;");
+            return specification.hasTwoFieldsAndFieldTypeAre(LocalDate.class);
         }
     },
     COLLECTION {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs("Ljava/util/List;");
+            return specification.hasOnlyOneFieldAndFieldTypeIs(List.class);
         }
     },
     MODEL {

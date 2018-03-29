@@ -1,5 +1,6 @@
 package jig.domain.model.specification;
 
+import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -28,7 +29,7 @@ public class MethodSpecification {
         return new MethodSignature(name, arguments);
     }
 
-    public final List<TypeIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
+    public final List<FieldIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
     public final List<MethodIdentifier> usingMethodIdentifiers = new ArrayList<>();
 
     public TypeIdentifier getReturnTypeName() {
@@ -38,7 +39,8 @@ public class MethodSpecification {
     public void addFieldInstruction(String owner, String name, String descriptor) {
         // 使っているフィールドの型がわかればOK
         Type type = Type.getType(descriptor);
-        usingFieldTypeIdentifiers.add(new TypeIdentifier(type.getClassName()));
+        TypeIdentifier fieldType = new TypeIdentifier(type.getClassName());
+        usingFieldTypeIdentifiers.add(new FieldIdentifier(name, fieldType));
     }
 
     public void addMethodInstruction(String owner, String name, String descriptor) {

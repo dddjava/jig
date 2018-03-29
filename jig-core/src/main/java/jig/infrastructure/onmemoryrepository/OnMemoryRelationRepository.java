@@ -1,5 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
+import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.method.MethodSignature;
@@ -58,8 +59,15 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerField(TypeIdentifier typeIdentifier, TypeIdentifier fieldClassTypeIdentifier) {
-        memberTypes.add(new TypeRelation(typeIdentifier, fieldClassTypeIdentifier));
+    public void registerField(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier) {
+        // TODO とりあえず名前はわすれる
+        memberTypes.add(new TypeRelation(typeIdentifier, fieldIdentifier.typeIdentifier()));
+    }
+
+    @Override
+    public void registerMethodUseField(MethodIdentifier methodIdentifier, FieldIdentifier fieldIdentifier) {
+        // TODO とりあえず名前はわすれる
+        registerMethodUseType(methodIdentifier, fieldIdentifier.typeIdentifier());
     }
 
     @Override

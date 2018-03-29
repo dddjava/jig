@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
@@ -39,7 +40,7 @@ class ReportServiceTest {
         repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
 
         japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
-        relationRepository.registerField(new TypeIdentifier("test.HogeUser"), typeIdentifier);
+        relationRepository.registerField(new TypeIdentifier("test.HogeUser"), new FieldIdentifier("hogera", typeIdentifier));
 
         Reports reports = sut.reports();
         reports.each(report -> {

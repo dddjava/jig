@@ -16,8 +16,8 @@ public enum RelationType {
 
     public static void register(RelationRepository repository, Specification specification) {
 
-        specification.fieldTypeIdentifiers().list().forEach(fieldTypeIdentifier ->
-                repository.registerField(specification.typeIdentifier, fieldTypeIdentifier));
+        specification.fieldIdentifiers().list().forEach(fieldIdentifier->
+                repository.registerField(specification.typeIdentifier, fieldIdentifier));
 
         specification.methodSpecifications.forEach(methodSpecification -> {
             MethodIdentifier methodIdentifier = methodSpecification.identifier;
@@ -29,8 +29,8 @@ public enum RelationType {
                 repository.registerImplementation(methodIdentifier, methodIdentifier.with(interfaceTypeIdentifier));
             }
 
-            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldTypeIdentifier ->
-                    repository.registerMethodUseType(methodIdentifier, fieldTypeIdentifier));
+            methodSpecification.usingFieldTypeIdentifiers.forEach(fieldIdentifier ->
+                    repository.registerMethodUseField(methodIdentifier, fieldIdentifier));
 
             methodSpecification.usingMethodIdentifiers.forEach(usingMethodIdentifier -> {
                 repository.registerMethodUseMethod(methodIdentifier, usingMethodIdentifier);

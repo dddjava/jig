@@ -30,20 +30,26 @@ public class AnalyzeService {
         this.jigPaths = jigPaths;
     }
 
-    public void analyze(ProjectLocation projectLocation) {
-        Specifications specifications = analyzeModel(projectLocation);
-        dependencyService.register(specifications);
-
-        sqlReader.readFrom(projectLocation);
-
-        readJavadoc(projectLocation);
+    public void importProject(ProjectLocation projectLocation) {
+        importSpecification(projectLocation);
+        importDatabaseAccess(projectLocation);
+        importJapanese(projectLocation);
     }
 
-    public void readJavadoc(ProjectLocation projectLocation) {
+    public void importSpecification(ProjectLocation projectLocation) {
+        Specifications specifications = readFrom(projectLocation);
+        dependencyService.register(specifications);
+    }
+
+    public void importDatabaseAccess(ProjectLocation projectLocation) {
+        sqlReader.readFrom(projectLocation);
+    }
+
+    public void importJapanese(ProjectLocation projectLocation) {
         japaneseReader.readFrom(projectLocation);
     }
 
-    public Specifications analyzeModel(ProjectLocation location) {
+    public Specifications readFrom(ProjectLocation location) {
         SpecificationSources specificationSources = jigPaths.getSpecificationSources(location);
         if (specificationSources.notFound()) {
             throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");

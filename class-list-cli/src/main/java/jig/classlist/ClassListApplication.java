@@ -43,7 +43,7 @@ public class ClassListApplication {
         LOGGER.info("解析をはじめます");
 
         Path path = Paths.get(projectPath);
-        analyzeService.analyze(new ProjectLocation(path));
+        analyzeService.importProject(new ProjectLocation(path));
 
         LOGGER.info("レポートデータの準備をはじめます");
 

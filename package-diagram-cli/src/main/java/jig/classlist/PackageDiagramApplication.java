@@ -11,7 +11,6 @@ import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.Depth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
-import jig.domain.model.specification.Specifications;
 import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlNameFormatter;
@@ -69,8 +68,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputDiagramName);
 
-        Specifications specifications = analyzeService.analyzeModel(new ProjectLocation(Paths.get(projectPath)));
-        dependencyService.register(specifications);
+        analyzeService.importSpecification(new ProjectLocation(Paths.get(projectPath)));
+
         PackageDependencies packageDependencies = dependencyService.packageDependencies();
 
         PackageDependencies jdepsPackageDependencies = relationAnalyzer.analyzeRelations(new AnalysisCriteria(
@@ -109,7 +108,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         PlantumlNameFormatter nameFormatter = new PlantumlNameFormatter();
         nameFormatter.setNameShortenPattern(packageNamePattern + "\\.");
 
-        analyzeService.readJavadoc(new ProjectLocation(Paths.get(projectPath)));
+        analyzeService.importJapanese(new ProjectLocation(Paths.get(projectPath)));
 
         return new PlantumlDiagramConverter(nameFormatter, repository);
     }

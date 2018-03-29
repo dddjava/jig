@@ -25,7 +25,7 @@ public class AnalyzeServiceUnitTest {
 
         ProjectLocation location = new ProjectLocation(Paths.get(""));
 
-        assertThatThrownBy(() -> sut.analyze(location))
+        assertThatThrownBy(() -> sut.importProject(location))
                 .isInstanceOf(RuntimeException.class);
         verifyZeroInteractions(modelReaderMock);
     }

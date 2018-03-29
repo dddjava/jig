@@ -62,7 +62,7 @@ class AnalyzeServiceTest {
 
         @EventListener
         void hoge(ContextRefreshedEvent event) {
-            sut.analyze(new ProjectLocation(Paths.get("")));
+            sut.importProject(new ProjectLocation(Paths.get("")));
         }
     }
 }

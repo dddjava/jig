@@ -51,7 +51,11 @@ public class AsmClassFileReader implements ModelReader {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (jigPaths.isClassFile(file)) executeInternal(file);
+                        if (jigPaths.isClassFile(file)) {
+                            Specification specification = readSpecification(file);
+                            Characteristic.register(characteristicRepository, specification);
+                            RelationType.register(relationRepository, specification);
+                        }
                         return FileVisitResult.CONTINUE;
                     }
                 });
@@ -88,16 +92,14 @@ public class AsmClassFileReader implements ModelReader {
         return new PackageDependencies(list, allPackages);
     }
 
-    private void executeInternal(Path path) {
+    private Specification readSpecification(Path path) {
         LOGGER.debug("class取り込み: {}", path);
         try (InputStream inputStream = Files.newInputStream(path)) {
-            SpecificationReadingVisitor classVisitor = new SpecificationReadingVisitor();
+            SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);
-            classReader.accept(classVisitor, ClassReader.SKIP_DEBUG);
+            classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 
-            Specification specification = classVisitor.specification();
-            Characteristic.register(characteristicRepository, specification);
-            RelationType.register(relationRepository, specification);
+            return visitor.specification();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

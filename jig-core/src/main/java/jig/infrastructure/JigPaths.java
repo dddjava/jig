@@ -53,7 +53,6 @@ public class JigPaths {
     public Path[] extractClassPath(Path rootPath) {
         try (Stream<Path> walk = Files.walk(rootPath)) {
             return walk
-                    .peek(path -> LOGGER.info("classes: {}", path))
                     .filter(Files::isDirectory)
                     .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
                     .peek(path -> LOGGER.info("classes: {}", path))

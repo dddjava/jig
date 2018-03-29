@@ -6,8 +6,8 @@ import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
-import jig.domain.model.japanasename.JapaneseName;
-import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.japanese.JapaneseName;
+import jig.domain.model.japanese.JapaneseNameRepository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

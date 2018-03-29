@@ -4,7 +4,7 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 

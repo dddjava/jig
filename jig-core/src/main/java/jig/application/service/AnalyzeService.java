@@ -4,7 +4,7 @@ import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.SqlSources;
 import jig.domain.model.datasource.Sqls;
-import jig.domain.model.japanasename.JapaneseReader;
+import jig.domain.model.japanese.JapaneseReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.ModelReader;

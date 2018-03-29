@@ -1,4 +1,4 @@
-package jig.domain.model.japanasename;
+package jig.domain.model.japanese;
 
 import jig.domain.model.project.ProjectLocation;
 

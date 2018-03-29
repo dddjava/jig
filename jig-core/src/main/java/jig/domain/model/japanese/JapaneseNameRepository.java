@@ -1,4 +1,4 @@
-package jig.domain.model.japanasename;
+package jig.domain.model.japanese;
 
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;

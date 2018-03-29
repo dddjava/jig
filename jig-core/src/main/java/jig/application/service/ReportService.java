@@ -9,7 +9,7 @@ import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import jig.domain.model.japanasename.JapaneseNameRepository;
+import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.Perspective;
 import jig.domain.model.report.method.MethodDetail;

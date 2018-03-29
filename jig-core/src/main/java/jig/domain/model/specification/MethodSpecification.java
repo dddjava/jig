@@ -1,8 +1,8 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.identifier.MethodSignature;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;

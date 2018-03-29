@@ -1,6 +1,6 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.identifier.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifier;
 
 import java.util.Objects;
 

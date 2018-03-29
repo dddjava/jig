@@ -1,6 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.PackageIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.relation.dependency.DependencyRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;

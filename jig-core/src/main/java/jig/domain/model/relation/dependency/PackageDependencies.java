@@ -1,7 +1,7 @@
 package jig.domain.model.relation.dependency;
 
-import jig.domain.model.identifier.PackageDepth;
-import jig.domain.model.identifier.PackageIdentifiers;
+import jig.domain.model.identifier.namespace.PackageDepth;
+import jig.domain.model.identifier.namespace.PackageIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;

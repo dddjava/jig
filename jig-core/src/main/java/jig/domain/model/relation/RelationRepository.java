@@ -1,9 +1,9 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.identifier.MethodIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 
 public interface RelationRepository {
 

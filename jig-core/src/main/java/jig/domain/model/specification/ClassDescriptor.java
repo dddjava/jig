@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import org.objectweb.asm.Type;
 
 public class ClassDescriptor {

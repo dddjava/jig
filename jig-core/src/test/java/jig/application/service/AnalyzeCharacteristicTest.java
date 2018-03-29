@@ -2,10 +2,10 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.MethodIdentifier;
-import jig.domain.model.identifier.MethodIdentifiers;
-import jig.domain.model.identifier.MethodSignature;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;

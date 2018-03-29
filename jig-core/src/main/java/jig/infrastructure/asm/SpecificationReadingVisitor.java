@@ -1,7 +1,7 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;

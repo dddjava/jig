@@ -1,4 +1,4 @@
-package jig.domain.model.identifier;
+package jig.domain.model.identifier.namespace;
 
 import java.util.List;
 import java.util.stream.Stream;

@@ -1,7 +1,7 @@
 package jig.domain.model.characteristic;
 
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 
 public interface CharacteristicRepository {
 

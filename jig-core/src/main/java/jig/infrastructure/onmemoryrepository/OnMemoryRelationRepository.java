@@ -1,6 +1,10 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.*;
+import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 

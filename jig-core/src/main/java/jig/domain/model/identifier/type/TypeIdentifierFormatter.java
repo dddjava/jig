@@ -1,4 +1,4 @@
-package jig.domain.model.identifier;
+package jig.domain.model.identifier.type;
 
 public interface TypeIdentifierFormatter {
 

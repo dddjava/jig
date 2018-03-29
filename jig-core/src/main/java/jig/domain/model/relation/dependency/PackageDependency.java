@@ -1,7 +1,7 @@
 package jig.domain.model.relation.dependency;
 
-import jig.domain.model.identifier.PackageDepth;
-import jig.domain.model.identifier.PackageIdentifier;
+import jig.domain.model.identifier.namespace.PackageDepth;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
 
 import java.util.Objects;
 

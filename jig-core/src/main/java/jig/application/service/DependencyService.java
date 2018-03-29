@@ -2,10 +2,10 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.identifier.PackageIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.dependency.PackageDependencies;

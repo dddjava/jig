@@ -1,4 +1,6 @@
-package jig.domain.model.identifier;
+package jig.domain.model.identifier.method;
+
+import jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Objects;
 

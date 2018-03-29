@@ -2,10 +2,10 @@ package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
-import jig.domain.model.identifier.MethodIdentifiers;
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifierFormatter;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;

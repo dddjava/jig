@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.datasource.SqlSources;
 import jig.domain.model.datasource.Sqls;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
@@ -10,7 +11,6 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
-import jig.domain.model.datasource.SqlSources;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,9 +1,9 @@
 package jig.infrastructure;
 
+import jig.domain.model.datasource.SqlSources;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.datasource.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

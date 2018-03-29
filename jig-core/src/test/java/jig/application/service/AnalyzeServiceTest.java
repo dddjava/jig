@@ -1,7 +1,7 @@
 package jig.application.service;
 
-import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.project.ProjectLocation;
 import org.junit.jupiter.api.Test;

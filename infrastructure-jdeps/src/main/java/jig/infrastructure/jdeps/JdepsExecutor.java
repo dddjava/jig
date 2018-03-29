@@ -1,7 +1,7 @@
 package jig.infrastructure.jdeps;
 
 import com.sun.tools.jdeps.Main;
-import jig.domain.model.identifier.PackageIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.jdeps.AnalysisCriteria;
 import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.dependency.DependencyRepository;

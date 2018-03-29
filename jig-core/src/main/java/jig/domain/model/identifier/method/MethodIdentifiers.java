@@ -1,4 +1,6 @@
-package jig.domain.model.identifier;
+package jig.domain.model.identifier.method;
+
+import jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.Collections;
 import java.util.Comparator;

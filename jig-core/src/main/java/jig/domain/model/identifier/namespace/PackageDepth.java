@@ -1,4 +1,4 @@
-package jig.domain.model.identifier;
+package jig.domain.model.identifier.namespace;
 
 public class PackageDepth {
     int value;

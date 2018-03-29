@@ -1,7 +1,7 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import org.springframework.stereotype.Repository;

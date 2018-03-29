@@ -1,7 +1,7 @@
 package jig.domain.model.japanasename;
 
-import jig.domain.model.identifier.PackageIdentifier;
-import jig.domain.model.identifier.TypeIdentifier;
+import jig.domain.model.identifier.namespace.PackageIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifier;
 
 public interface JapaneseNameRepository {
 

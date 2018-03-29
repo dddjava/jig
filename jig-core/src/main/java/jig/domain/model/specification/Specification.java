@@ -1,7 +1,7 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.identifier.TypeIdentifier;
-import jig.domain.model.identifier.TypeIdentifiers;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.objectweb.asm.Opcodes;
 
 import java.util.List;

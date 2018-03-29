@@ -7,7 +7,7 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.report.Reports;
+import jig.domain.model.report.template.Reports;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

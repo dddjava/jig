@@ -1,7 +1,7 @@
 package jig.domain.model.report.method;
 
 import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.report.ReportRow;
+import jig.domain.model.report.template.ReportRow;
 
 import java.util.Arrays;
 

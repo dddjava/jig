@@ -1,8 +1,8 @@
 package jig.domain.model.report.method;
 
-import jig.domain.model.report.Report;
-import jig.domain.model.report.ReportRow;
-import jig.domain.model.report.Title;
+import jig.domain.model.report.template.Report;
+import jig.domain.model.report.template.ReportRow;
+import jig.domain.model.report.template.Title;
 
 import java.util.List;
 

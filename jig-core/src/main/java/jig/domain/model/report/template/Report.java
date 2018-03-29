@@ -1,4 +1,4 @@
-package jig.domain.model.report;
+package jig.domain.model.report.template;
 
 import java.util.List;
 

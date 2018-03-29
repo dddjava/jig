@@ -12,4 +12,8 @@ public class SpecificationSources {
     public List<SpecificationSource> list() {
         return sources;
     }
+
+    public boolean notFound() {
+        return sources.isEmpty();
+    }
 }

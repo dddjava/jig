@@ -4,6 +4,7 @@ import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.specification.SpecificationSources;
 import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class AnalyzeService {
     }
 
     public void analyze(ProjectLocation projectLocation) {
-        modelReader.readFrom(jigPaths.getSpecificationSources(projectLocation));
+        analyzeModelOnly(projectLocation);
         sqlReader.readFrom(projectLocation);
 
         readJavadoc(projectLocation);
@@ -37,6 +38,11 @@ public class AnalyzeService {
     }
 
     public void analyzeModelOnly(ProjectLocation location) {
-        modelReader.readFrom(jigPaths.getSpecificationSources(location));
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources(location);
+        if (specificationSources.notFound()) {
+            throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
+        }
+
+        modelReader.readFrom(specificationSources);
     }
 }

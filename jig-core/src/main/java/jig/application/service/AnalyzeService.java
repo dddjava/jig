@@ -10,7 +10,7 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.mybatis.SqlSources;
+import jig.domain.model.datasource.SqlSources;
 import org.springframework.stereotype.Service;
 
 @Service

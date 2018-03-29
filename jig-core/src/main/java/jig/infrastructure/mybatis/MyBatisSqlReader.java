@@ -1,7 +1,6 @@
 package jig.infrastructure.mybatis;
 
 import jig.domain.model.datasource.*;
-import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
@@ -27,41 +26,49 @@ public class MyBatisSqlReader implements SqlReader {
 
     @Override
     public Sqls readFrom(SqlSources sqlSources) {
-        try (URLClassLoader classLoader = new URLClassLoader(sqlSources.getUrls(), MapperRegistry.class.getClassLoader())) {
+        try (URLClassLoader classLoader = new URLClassLoader(sqlSources.urls(), Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
-            Configuration config = new Configuration();
-            for (String className : sqlSources.getClassNames()) {
-                try {
-                    Class<?> mapperClass = classLoader.loadClass(className);
-                    config.addMapper(mapperClass);
-                } catch (NoClassDefFoundError e) {
-                    LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
-                            className, e.getLocalizedMessage());
-                } catch (Exception e) {
-                    LOGGER.warn("Mapperの取り込みに失敗", e);
-                }
-            }
-
-            List<Sql> list = new ArrayList<>();
-            for (Object obj : config.getMappedStatements()) {
-                // Ambiguityが入っていることがあるので型を確認する
-                if (obj instanceof MappedStatement) {
-                    MappedStatement mappedStatement = (MappedStatement) obj;
-
-                    SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
-
-                    Query query = getQuery(mappedStatement);
-                    SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
-
-                    Sql sql = new Sql(sqlIdentifier, query, sqlType);
-                    list.add(sql);
-                }
-            }
-            return new Sqls(list);
+            Configuration config = configuration(sqlSources, classLoader);
+            return extractSql(config);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Configuration configuration(SqlSources sqlSources, URLClassLoader classLoader) {
+        Configuration config = new Configuration();
+        for (String className : sqlSources.classNames()) {
+            try {
+                Class<?> mapperClass = classLoader.loadClass(className);
+                config.addMapper(mapperClass);
+            } catch (NoClassDefFoundError e) {
+                LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
+                        className, e.getLocalizedMessage());
+            } catch (Exception e) {
+                LOGGER.warn("Mapperの取り込みに失敗", e);
+            }
+        }
+        return config;
+    }
+
+    private Sqls extractSql(Configuration config) {
+        List<Sql> list = new ArrayList<>();
+        for (Object obj : config.getMappedStatements()) {
+            // Ambiguityが入っていることがあるので型を確認する
+            if (obj instanceof MappedStatement) {
+                MappedStatement mappedStatement = (MappedStatement) obj;
+
+                SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
+
+                Query query = getQuery(mappedStatement);
+                SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
+
+                Sql sql = new Sql(sqlIdentifier, query, sqlType);
+                list.add(sql);
+            }
+        }
+        return new Sqls(list);
     }
 
     private Query getQuery(MappedStatement mappedStatement) {

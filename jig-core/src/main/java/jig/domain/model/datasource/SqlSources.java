@@ -1,4 +1,4 @@
-package jig.infrastructure.mybatis;
+package jig.domain.model.datasource;
 
 import java.net.URL;
 import java.util.List;
@@ -12,11 +12,11 @@ public class SqlSources {
         this.classNames = classNames;
     }
 
-    public URL[] getUrls() {
+    public URL[] urls() {
         return urls;
     }
 
-    public List<String> getClassNames() {
+    public List<String> classNames() {
         return classNames;
     }
 }

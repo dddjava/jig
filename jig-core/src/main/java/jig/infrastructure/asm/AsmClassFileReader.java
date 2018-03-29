@@ -13,6 +13,7 @@ import jig.domain.model.relation.RelationType;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.specification.Specification;
+import jig.domain.model.specification.SpecificationSource;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -52,9 +53,9 @@ public class AsmClassFileReader implements ModelReader {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (jigPaths.isClassFile(file)) {
-                            Specification specification = readSpecification(file);
-                            Characteristic.register(characteristicRepository, specification);
-                            RelationType.register(relationRepository, specification);
+                            SpecificationSource specificationSource = new SpecificationSource(file);
+                            Specification specification = readSpecification(specificationSource);
+                            register(specification);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -63,6 +64,11 @@ public class AsmClassFileReader implements ModelReader {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    private void register(Specification specification) {
+        Characteristic.register(characteristicRepository, specification);
+        RelationType.register(relationRepository, specification);
     }
 
     @Override
@@ -92,9 +98,9 @@ public class AsmClassFileReader implements ModelReader {
         return new PackageDependencies(list, allPackages);
     }
 
-    private Specification readSpecification(Path path) {
-        LOGGER.debug("class取り込み: {}", path);
-        try (InputStream inputStream = Files.newInputStream(path)) {
+    private Specification readSpecification(SpecificationSource specificationSource) {
+        LOGGER.debug("class取り込み: {}", specificationSource.getPath());
+        try (InputStream inputStream = Files.newInputStream(specificationSource.getPath())) {
             SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);
             classReader.accept(visitor, ClassReader.SKIP_DEBUG);

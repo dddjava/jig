@@ -40,12 +40,6 @@ public class AsmClassFileReader implements ModelReader {
     }
 
     @Override
-    public void readFrom(ProjectLocation rootPath) {
-        SpecificationSources specificationSources = getSpecificationSources(rootPath);
-        readFrom(specificationSources);
-    }
-
-    @Override
     public SpecificationSources getSpecificationSources(ProjectLocation rootPath) {
         ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {

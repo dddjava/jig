@@ -22,7 +22,7 @@ public class AnalyzeService {
     }
 
     public void analyze(ProjectLocation projectLocation) {
-        modelReader.readFrom(projectLocation);
+        modelReader.readFrom(modelReader.getSpecificationSources(projectLocation));
         sqlReader.readFrom(projectLocation);
 
         readJavadoc(projectLocation);
@@ -33,6 +33,6 @@ public class AnalyzeService {
     }
 
     public void analyzeModelOnly(ProjectLocation location) {
-        modelReader.readFrom(location);
+        modelReader.readFrom(modelReader.getSpecificationSources(location));
     }
 }

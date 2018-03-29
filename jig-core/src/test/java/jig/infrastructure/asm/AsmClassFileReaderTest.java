@@ -8,6 +8,7 @@ import jig.domain.model.identifier.MethodSignature;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.specification.SpecificationSources;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
@@ -42,7 +43,8 @@ public class AsmClassFileReaderTest {
         JigPaths jigPaths = new JigPaths(path.toString(), path.toString(), path.toString());
         AsmClassFileReader analyzer = new AsmClassFileReader(characteristicRepository, relationRepository, jigPaths);
 
-        analyzer.readFrom(new ProjectLocation(path));
+        SpecificationSources specificationSources = analyzer.getSpecificationSources(new ProjectLocation(path));
+        analyzer.readFrom(specificationSources);
     }
 
     @Test

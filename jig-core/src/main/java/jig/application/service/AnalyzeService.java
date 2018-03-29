@@ -4,6 +4,7 @@ import jig.domain.model.datasource.SqlReader;
 import jig.domain.model.japanasename.JapaneseReader;
 import jig.domain.model.project.ModelReader;
 import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
@@ -28,6 +29,11 @@ public class AnalyzeService {
         this.japaneseReader = japaneseReader;
         this.dependencyService = dependencyService;
         this.jigPaths = jigPaths;
+    }
+
+    public PackageDependencies packageDependencies(ProjectLocation location) {
+        importSpecification(location);
+        return dependencyService.packageDependencies();
     }
 
     public void importProject(ProjectLocation projectLocation) {
@@ -57,4 +63,5 @@ public class AnalyzeService {
 
         return modelReader.readFrom(specificationSources);
     }
+
 }

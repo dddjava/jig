@@ -6,24 +6,25 @@ import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.JigPaths;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Path;
-
 @Component
 public class JavaparserJapaneseReader implements JapaneseReader {
 
-    ClassCommentReader classCommentReader;
-    PackageInfoReader packageInfoReader;
+    JapaneseNameRepository repository;
+    JigPaths jigPaths;
 
     public JavaparserJapaneseReader(JapaneseNameRepository repository, JigPaths jigPaths) {
-        this.classCommentReader = new ClassCommentReader(repository, jigPaths);
-        this.packageInfoReader = new PackageInfoReader(repository, jigPaths);
+        this.repository = repository;
+        this.jigPaths = jigPaths;
     }
 
     @Override
     public void readFrom(ProjectLocation projectLocation) {
-        Path path = projectLocation.getValue();
+        ClassCommentReader classCommentReader = new ClassCommentReader(repository);
+        jigPaths.sourcePaths(projectLocation)
+                .forEach(classCommentReader::execute);
 
-        classCommentReader.execute(path);
-        packageInfoReader.execute(path);
+        PackageInfoReader packageInfoReader = new PackageInfoReader(repository);
+        jigPaths.packageInfoPaths(projectLocation)
+                .forEach(packageInfoReader::execute);
     }
 }

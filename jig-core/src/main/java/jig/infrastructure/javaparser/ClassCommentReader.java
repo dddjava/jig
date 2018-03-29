@@ -9,46 +9,23 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import jig.domain.model.identifier.TypeIdentifier;
 import jig.domain.model.japanasename.JapaneseName;
 import jig.domain.model.japanasename.JapaneseNameRepository;
-import jig.infrastructure.JigPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
 public class ClassCommentReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassCommentReader.class);
 
     private final JapaneseNameRepository repository;
-    private final JigPaths jigPaths;
 
-    public ClassCommentReader(JapaneseNameRepository repository, JigPaths jigPaths) {
+    public ClassCommentReader(JapaneseNameRepository repository) {
         this.repository = repository;
-        this.jigPaths = jigPaths;
     }
 
-    public void execute(Path rootPath) {
-        try {
-            for (Path path : jigPaths.extractSourcePath(rootPath)) {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (jigPaths.isJavaFile(file)) executeInternal(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    private void executeInternal(Path path) {
+    void execute(Path path) {
         LOGGER.debug("コメント取り込み: {}", path);
         try {
             CompilationUnit cu = JavaParser.parse(path);

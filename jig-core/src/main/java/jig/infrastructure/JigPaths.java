@@ -14,6 +14,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Component
@@ -101,5 +102,41 @@ public class JigPaths {
             throw new UncheckedIOException(e);
         }
         return new SpecificationSources(sources);
+    }
+
+    public List<Path> sourcePaths(ProjectLocation location) {
+        try {
+            List<Path> paths = new ArrayList<>();
+            for (Path path : extractSourcePath(location.getValue())) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (isJavaFile(file)) paths.add(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+            return paths;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public List<Path> packageInfoPaths(ProjectLocation location) {
+        try {
+            List<Path> paths = new ArrayList<>();
+            for (Path path : extractSourcePath(location.getValue())) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (isPackageInfoFile(file)) paths.add(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+            return paths;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

@@ -5,7 +5,7 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 
 public interface CharacteristicRepository {
 
-    TypeIdentifiers find(Characteristic characteristic);
+    TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic);
 
     void register(TypeIdentifier typeIdentifier, Characteristic characteristic);
 

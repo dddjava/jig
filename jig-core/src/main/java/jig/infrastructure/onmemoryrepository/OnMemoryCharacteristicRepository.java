@@ -43,9 +43,7 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
-    public TypeIdentifiers find(Characteristic characteristic) {
-        return map.get(characteristic)
-                .stream()
-                .collect(TypeIdentifiers.collector());
+    public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
+        return new TypeIdentifiers(map.get(characteristic));
     }
 }

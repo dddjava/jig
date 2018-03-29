@@ -55,7 +55,7 @@ public class ReportService {
     private Report getMethodReport(MethodPerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
-        TypeIdentifiers typeIdentifiers = characteristicRepository.find(characteristic);
+        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
         for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
             MethodIdentifiers methods = relationRepository.methodsOf(typeIdentifier);
             for (MethodIdentifier methodIdentifier : methods.list()) {
@@ -69,7 +69,7 @@ public class ReportService {
     private Report getTypeReport(TypePerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
-        TypeIdentifiers typeIdentifiers = characteristicRepository.find(characteristic);
+        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
         for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
             Characteristics characteristics = characteristicRepository.characteristicsOf(typeIdentifier);
             TypeDetail detail = new TypeDetail(typeIdentifier, characteristics, relationRepository, japaneseNameRepository, typeIdentifierFormatter);

@@ -28,9 +28,9 @@ public class DependencyService {
     }
 
     public PackageDependencies packageDependencies() {
-        TypeIdentifiers modelTypeIdentifiers = characteristicRepository.find(Characteristic.MODEL);
+        TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
         List<PackageDependency> list =
-                modelTypeIdentifiers.list().stream()
+                modelTypes.list().stream()
                         .flatMap(identifier -> {
                             PackageIdentifier packageIdentifier = identifier.packageIdentifier();
                             return relationRepository.findAllUsage(identifier)
@@ -44,7 +44,7 @@ public class DependencyService {
                         .collect(Collectors.toList());
 
         PackageIdentifiers allPackages = new PackageIdentifiers(
-                modelTypeIdentifiers.list().stream()
+                modelTypes.list().stream()
                         .map(TypeIdentifier::packageIdentifier)
                         .collect(Collectors.toList()));
 

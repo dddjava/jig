@@ -14,6 +14,7 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
+import jig.domain.model.specification.SpecificationSources;
 import jig.infrastructure.JigPaths;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,7 @@ public class AsmClassFileReader implements ModelReader {
 
     @Override
     public void readFrom(ProjectLocation rootPath) {
+        ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {
             for (Path path : jigPaths.extractClassPath(rootPath.getValue())) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -54,8 +57,7 @@ public class AsmClassFileReader implements ModelReader {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (jigPaths.isClassFile(file)) {
                             SpecificationSource specificationSource = new SpecificationSource(file);
-                            Specification specification = readSpecification(specificationSource);
-                            register(specification);
+                            sources.add(specificationSource);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -63,6 +65,13 @@ public class AsmClassFileReader implements ModelReader {
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+        SpecificationSources specificationSources = new SpecificationSources(sources);
+
+
+        for (SpecificationSource source : specificationSources.list()) {
+            Specification specification = readSpecification(source);
+            register(specification);
         }
     }
 

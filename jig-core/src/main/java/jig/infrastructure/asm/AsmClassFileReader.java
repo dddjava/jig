@@ -41,6 +41,12 @@ public class AsmClassFileReader implements ModelReader {
 
     @Override
     public void readFrom(ProjectLocation rootPath) {
+        SpecificationSources specificationSources = getSpecificationSources(rootPath);
+        readFrom(specificationSources);
+    }
+
+    @Override
+    public SpecificationSources getSpecificationSources(ProjectLocation rootPath) {
         ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {
             for (Path path : jigPaths.extractClassPath(rootPath.getValue())) {
@@ -58,10 +64,7 @@ public class AsmClassFileReader implements ModelReader {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        SpecificationSources specificationSources = new SpecificationSources(sources);
-
-
-        readFrom(specificationSources);
+        return new SpecificationSources(sources);
     }
 
     @Override

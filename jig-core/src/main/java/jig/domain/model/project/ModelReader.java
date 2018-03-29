@@ -5,5 +5,7 @@ import jig.domain.model.specification.SpecificationSources;
 public interface ModelReader {
     void readFrom(ProjectLocation rootPath);
 
+    SpecificationSources getSpecificationSources(ProjectLocation rootPath);
+
     void readFrom(SpecificationSources specificationSources);
 }

@@ -43,4 +43,8 @@ public class TypeDetail {
     public boolean is(Characteristic characteristic) {
         return characteristics.has(characteristic);
     }
+
+    public String typeName() {
+        return type().fullQualifiedName();
+    }
 }

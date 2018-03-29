@@ -5,7 +5,7 @@ import jig.domain.model.datasource.SqlType;
 import java.util.function.Function;
 
 public enum MethodConcern {
-    クラス名(detail -> detail.type().fullQualifiedName()),
+    クラス名(MethodDetail::typeName),
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.method().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnType().asSimpleText()),

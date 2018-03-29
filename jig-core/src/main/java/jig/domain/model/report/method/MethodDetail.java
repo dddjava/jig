@@ -72,4 +72,8 @@ public class MethodDetail {
         }
         return new Sqls(sqls);
     }
+
+    public String typeName() {
+        return type().fullQualifiedName();
+    }
 }

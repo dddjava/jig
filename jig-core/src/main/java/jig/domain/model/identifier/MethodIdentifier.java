@@ -13,7 +13,7 @@ public class MethodIdentifier {
         this.typeIdentifier = typeIdentifier;
         this.methodSignature = methodSignature;
 
-        this.fullText = typeIdentifier.value() + "." + methodSignature.asText();
+        this.fullText = typeIdentifier.fullQualifiedName() + "." + methodSignature.asText();
     }
 
     public String asFullText() {

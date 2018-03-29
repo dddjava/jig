@@ -20,7 +20,7 @@ public class TypeIdentifiers {
 
     public List<TypeIdentifier> list() {
         ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);
-        list.sort(Comparator.comparing(TypeIdentifier::value));
+        list.sort(Comparator.comparing(TypeIdentifier::fullQualifiedName));
         return list;
     }
 
@@ -33,7 +33,7 @@ public class TypeIdentifiers {
     }
 
     public String asText() {
-        return identifiers.stream().map(TypeIdentifier::value).distinct().collect(joining(","));
+        return identifiers.stream().map(TypeIdentifier::fullQualifiedName).distinct().collect(joining(","));
     }
 
     public String asSimpleText() {

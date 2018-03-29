@@ -14,7 +14,7 @@ public class TypeIdentifier {
         this.value = value.replace('/', '.');
     }
 
-    public String value() {
+    public String fullQualifiedName() {
         return value;
     }
 

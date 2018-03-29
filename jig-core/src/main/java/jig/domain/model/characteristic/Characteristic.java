@@ -12,7 +12,7 @@ public enum Characteristic {
     REPOSITORY {
         @Override
         boolean matches(Specification specification) {
-            return specification.typeIdentifier.value().endsWith("Repository");
+            return specification.typeIdentifier.fullQualifiedName().endsWith("Repository");
         }
     },
     DATASOURCE {

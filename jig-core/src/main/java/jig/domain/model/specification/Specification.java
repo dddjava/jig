@@ -72,6 +72,6 @@ public class Specification {
 
     public boolean isModel() {
         // TODO 外部化
-        return typeIdentifier.value().contains(".domain.model.");
+        return typeIdentifier.fullQualifiedName().contains(".domain.model.");
     }
 }

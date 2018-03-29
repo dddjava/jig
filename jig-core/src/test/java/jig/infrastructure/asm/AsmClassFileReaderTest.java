@@ -57,7 +57,7 @@ public class AsmClassFileReaderTest {
 
     @Test
     void サービス() {
-        assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.SERVICE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(CanonicalService.class.getTypeName());
     }
 
@@ -65,43 +65,43 @@ public class AsmClassFileReaderTest {
     void 区分() {
         assertThat(characteristicRepository.find(Characteristic.ENUM).list()).hasSize(5);
 
-        assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_BEHAVIOUR).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(BehaviourEnum.class.getTypeName(), RichEnum.class.getTypeName());
-        assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_PARAMETERIZED).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(ParameterizedEnum.class.getTypeName(), RichEnum.class.getTypeName());
-        assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.ENUM_POLYMORPHISM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName());
     }
 
     @Test
     void 識別子() {
-        assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.IDENTIFIER).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleIdentifier.class.getTypeName());
     }
 
     @Test
     void 数値() {
-        assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleNumber.class.getTypeName());
     }
 
     @Test
     void 日付() {
 
-        assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
 
-        assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }
 
     @Test
     void コレクション() {
-        assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(TypeIdentifier::value)
+        assertThat(characteristicRepository.find(Characteristic.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleCollection.class.getTypeName());
     }
 

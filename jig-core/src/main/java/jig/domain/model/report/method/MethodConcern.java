@@ -14,7 +14,9 @@ public enum MethodConcern {
     DB_C(detail -> detail.sqls().tables(SqlType.INSERT).asText()),
     DB_R(detail -> detail.sqls().tables(SqlType.SELECT).asText()),
     DB_U(detail -> detail.sqls().tables(SqlType.UPDATE).asText()),
-    DB_D(detail -> detail.sqls().tables(SqlType.DELETE).asText());
+    DB_D(detail -> detail.sqls().tables(SqlType.DELETE).asText()),
+
+    使用しているリポジトリのメソッド(detail -> detail.repositoryMethods());
 
     private final Function<MethodDetail, String> function;
 

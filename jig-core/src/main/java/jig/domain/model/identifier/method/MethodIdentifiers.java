@@ -44,4 +44,10 @@ public class MethodIdentifiers {
     public TypeIdentifiers declaringTypes() {
         return list.stream().map(MethodIdentifier::declaringType).collect(TypeIdentifiers.collector());
     }
+
+    public String asSimpleText() {
+        return list.stream().map(methodIdentifier ->
+                methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText()
+        ).collect(Collectors.joining(","));
+    }
 }

@@ -81,4 +81,10 @@ public class MethodDetail {
     public String typeName() {
         return type().format(typeIdentifierFormatter);
     }
+
+    public String repositoryMethods() {
+        return relationRepository.findUseMethod(methodIdentifier)
+                .filter(useMethod -> characteristicRepository.has(useMethod.declaringType(), Characteristic.REPOSITORY))
+                .asSimpleText();
+    }
 }

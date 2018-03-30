@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
-public class PackageInfoReader {
+class PackageInfoReader {
 
     private final JapaneseNameRepository repository;
 

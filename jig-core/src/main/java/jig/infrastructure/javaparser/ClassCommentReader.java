@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
-public class ClassCommentReader {
+class ClassCommentReader {
 
     private final JapaneseNameRepository repository;
 

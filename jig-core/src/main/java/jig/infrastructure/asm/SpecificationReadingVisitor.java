@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SpecificationReadingVisitor extends ClassVisitor {
+class SpecificationReadingVisitor extends ClassVisitor {
 
     private TypeIdentifier typeIdentifier;
     private TypeIdentifier parent;

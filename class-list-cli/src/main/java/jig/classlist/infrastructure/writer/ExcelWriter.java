@@ -40,7 +40,7 @@ public class ExcelWriter implements ReportWriter {
                 }
                 sheet.setAutoFilter(new CellRangeAddress(
                         0, sheet.getLastRowNum(),
-                        0, sheet.getRow(0).getLastCellNum()
+                        0, sheet.getRow(0).getLastCellNum() - 1
                 ));
             });
 

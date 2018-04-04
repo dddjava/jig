@@ -1,6 +1,7 @@
 package jig.domain.model.relation;
 
 import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -22,6 +23,8 @@ public interface RelationRepository {
 
     void registerField(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier);
 
+    void registerConstants(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier);
+
     void registerMethodUseField(MethodIdentifier methodIdentifier, FieldIdentifier fieldIdentifier);
 
     TypeIdentifier getReturnTypeOf(MethodIdentifier methodIdentifier);
@@ -39,4 +42,6 @@ public interface RelationRepository {
     MethodIdentifiers findMethodUsage(TypeIdentifier name);
 
     TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier);
+
+    FieldIdentifiers findConstants(TypeIdentifier type);
 }

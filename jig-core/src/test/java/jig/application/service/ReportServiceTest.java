@@ -41,6 +41,8 @@ class ReportServiceTest {
 
         japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
         relationRepository.registerField(new TypeIdentifier("test.HogeUser"), new FieldIdentifier("hogera", typeIdentifier));
+        relationRepository.registerConstants(typeIdentifier, new FieldIdentifier("A", typeIdentifier));
+        relationRepository.registerConstants(typeIdentifier, new FieldIdentifier("B", typeIdentifier));
 
         Reports reports = sut.reports();
         reports.each(report -> {
@@ -56,7 +58,8 @@ class ReportServiceTest {
                             "[HogeUser]",
                             "true",
                             "true",
-                            "true"
+                            "true",
+                            "[A,B]"
                     );
         });
     }

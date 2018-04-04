@@ -2,6 +2,7 @@ package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
+import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
@@ -54,5 +55,9 @@ public class TypeDetail {
 
     public String typeName() {
         return type().format(typeIdentifierFormatter);
+    }
+
+    public FieldIdentifiers constants() {
+        return relationRepository.findConstants(type());
     }
 }

@@ -1,6 +1,7 @@
 package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.method.MethodSignature;
@@ -9,15 +10,15 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.*;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
 
-    final Set<TypeRelation> memberTypes = new HashSet<>();
+    final List<TypeRelation> memberTypes = new ArrayList<>();
+    final List<TypeRelation> constants = new ArrayList<>();
+
     final Set<TypeMethodRelation> memberMethods = new HashSet<>();
     final Set<MethodTypeRelation> methodReturnTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodParameterTypes = new HashSet<>();
@@ -60,8 +61,12 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerField(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier) {
-        // TODO とりあえず名前はわすれる
-        memberTypes.add(new TypeRelation(typeIdentifier, fieldIdentifier.typeIdentifier()));
+        memberTypes.add(new TypeRelation(typeIdentifier, fieldIdentifier));
+    }
+
+    @Override
+    public void registerConstants(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier) {
+        constants.add(new TypeRelation(typeIdentifier, fieldIdentifier));
     }
 
     @Override
@@ -132,5 +137,13 @@ public class OnMemoryRelationRepository implements RelationRepository {
         TypeIdentifiers methodUsages = findMethodUsage(typeIdentifier).declaringTypes();
         TypeIdentifiers fieldUsages = findFieldUsage(typeIdentifier);
         return methodUsages.merge(fieldUsages);
+    }
+
+    @Override
+    public FieldIdentifiers findConstants(TypeIdentifier type) {
+        return constants.stream()
+                .filter(typeRelation -> typeRelation.from().equals(type))
+                .map(TypeRelation::field)
+                .collect(FieldIdentifiers.collector());
     }
 }

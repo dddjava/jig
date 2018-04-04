@@ -15,4 +15,8 @@ public class FieldIdentifier {
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
+
+    public String name() {
+        return name;
+    }
 }

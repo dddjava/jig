@@ -20,7 +20,8 @@ public enum TypePerspective {
             TypeConcern.使用箇所,
             TypeConcern.パラメーター有り,
             TypeConcern.振る舞い有り,
-            TypeConcern.多態),
+            TypeConcern.多態,
+            TypeConcern.定数宣言),
     TERM(
             TypeConcern.クラス名,
             TypeConcern.クラス和名,

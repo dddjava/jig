@@ -17,6 +17,7 @@ public class Specification {
     List<ClassDescriptor> annotationDescriptors;
     public List<MethodSpecification> methodSpecifications;
     List<FieldIdentifier> fieldIdentifiers;
+    List<FieldIdentifier> constantIdentifiers;
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
@@ -24,7 +25,8 @@ public class Specification {
                          TypeIdentifiers interfaceTypeIdentifiers,
                          List<ClassDescriptor> annotationDescriptors,
                          List<MethodSpecification> methodSpecifications,
-                         List<FieldIdentifier> fieldIdentifiers) {
+                         List<FieldIdentifier> fieldIdentifiers,
+                         List<FieldIdentifier> constantIdentifiers) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
@@ -32,6 +34,7 @@ public class Specification {
         this.annotationDescriptors = annotationDescriptors;
         this.methodSpecifications = methodSpecifications;
         this.fieldIdentifiers = fieldIdentifiers;
+        this.constantIdentifiers = constantIdentifiers;
     }
 
     public boolean canExtend() {
@@ -70,6 +73,10 @@ public class Specification {
 
     public FieldIdentifiers fieldIdentifiers() {
         return new FieldIdentifiers(fieldIdentifiers);
+    }
+
+    public FieldIdentifiers constantIdentifiers() {
+        return new FieldIdentifiers(constantIdentifiers);
     }
 
     public boolean isModel() {

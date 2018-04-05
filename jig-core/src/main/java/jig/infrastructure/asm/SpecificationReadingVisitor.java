@@ -20,6 +20,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     private List<String> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<FieldIdentifier> fieldDescriptors = new ArrayList<>();
+    private List<FieldIdentifier> constantDescriptors = new ArrayList<>();
     private TypeIdentifiers interfaceTypeIdentifiers;
     private int accessor;
 
@@ -35,7 +36,8 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 interfaceTypeIdentifiers,
                 annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
                 methodSpecifications,
-                fieldDescriptors);
+                fieldDescriptors,
+                constantDescriptors);
     }
 
     @Override
@@ -56,10 +58,16 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        // インスタンスフィールドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0) {
+            // インスタンスフィールドだけ相手にする
             TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
             fieldDescriptors.add(new FieldIdentifier(name, typeIdentifier));
+        } else {
+            if (!name.equals("$VALUES")) {
+                // 定数だけどenumの $VALUES は除く
+                TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
+                constantDescriptors.add(new FieldIdentifier(name, typeIdentifier));
+            }
         }
         return super.visitField(access, name, descriptor, signature, value);
     }

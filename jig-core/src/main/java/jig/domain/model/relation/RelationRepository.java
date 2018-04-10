@@ -44,4 +44,6 @@ public interface RelationRepository {
     TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier);
 
     FieldIdentifiers findConstants(TypeIdentifier type);
+
+    FieldIdentifiers findFieldsOf(TypeIdentifier typeIdentifier);
 }

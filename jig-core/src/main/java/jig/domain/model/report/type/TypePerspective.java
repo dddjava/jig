@@ -17,11 +17,13 @@ public enum TypePerspective {
     ENUM(
             TypeConcern.クラス名,
             TypeConcern.クラス和名,
+            TypeConcern.フィールド,
             TypeConcern.使用箇所,
             TypeConcern.パラメーター有り,
             TypeConcern.振る舞い有り,
             TypeConcern.多態,
-            TypeConcern.定数宣言),
+            TypeConcern.定数宣言
+            ),
     TERM(
             TypeConcern.クラス名,
             TypeConcern.クラス和名,

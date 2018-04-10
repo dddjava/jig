@@ -25,4 +25,10 @@ public class FieldIdentifiers {
                 .map(FieldIdentifier::name)
                 .collect(Collectors.joining(","));
     }
+
+    public String toTypeAndNameText() {
+        return list.stream()
+                .map(FieldIdentifier::typeAndNameText)
+                .collect(Collectors.joining(", "));
+    }
 }

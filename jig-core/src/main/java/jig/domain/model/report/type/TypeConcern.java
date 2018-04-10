@@ -11,7 +11,8 @@ public enum TypeConcern {
     振る舞い有り(detail -> Boolean.toString(detail.is(Characteristic.ENUM_BEHAVIOUR))),
     パラメーター有り(detail -> Boolean.toString(detail.is(Characteristic.ENUM_PARAMETERIZED))),
     多態(detail -> Boolean.toString(detail.is(Characteristic.ENUM_POLYMORPHISM))),
-    定数宣言(detail -> "[" + detail.constants().toNameText() + "]");
+    定数宣言(detail -> "[" + detail.constants().toNameText() + "]"),
+    フィールド(TypeDetail::fieldIdentifiersText);
 
     private final Function<TypeDetail, String> function;
 

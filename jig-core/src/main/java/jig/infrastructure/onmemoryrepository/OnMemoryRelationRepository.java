@@ -146,4 +146,12 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .map(TypeRelation::field)
                 .collect(FieldIdentifiers.collector());
     }
+
+    @Override
+    public FieldIdentifiers findFieldsOf(TypeIdentifier type) {
+        return memberTypes.stream()
+                .filter(typeRelation -> typeRelation.from().equals(type))
+                .map(TypeRelation::field)
+                .collect(FieldIdentifiers.collector());
+    }
 }

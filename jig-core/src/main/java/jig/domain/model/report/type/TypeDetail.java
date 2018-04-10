@@ -60,4 +60,8 @@ public class TypeDetail {
     public FieldIdentifiers constants() {
         return relationRepository.findConstants(type());
     }
+
+    public String fieldIdentifiersText() {
+        return relationRepository.findFieldsOf(typeIdentifier).toTypeAndNameText();
+    }
 }

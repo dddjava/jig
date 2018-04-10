@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -39,6 +39,9 @@ class ReportServiceTest {
         repository.register(typeIdentifier, Characteristic.ENUM_PARAMETERIZED);
         repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
 
+        relationRepository.registerField(typeIdentifier, new FieldIdentifier("fugaText", new TypeIdentifier(("java.lang.String"))));
+        relationRepository.registerField(typeIdentifier, new FieldIdentifier("fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
+
         japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
         relationRepository.registerField(new TypeIdentifier("test.HogeUser"), new FieldIdentifier("hogera", typeIdentifier));
         relationRepository.registerConstants(typeIdentifier, new FieldIdentifier("A", typeIdentifier));
@@ -55,6 +58,7 @@ class ReportServiceTest {
                     .containsExactly(
                             "test.HogeEnum",
                             "対応する和名",
+                            "String fugaText, Integer fugaInteger",
                             "[HogeUser]",
                             "true",
                             "true",

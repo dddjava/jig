@@ -19,4 +19,8 @@ public class FieldIdentifier {
     public String name() {
         return name;
     }
+
+    public String typeAndNameText() {
+        return String.format("%s %s", typeIdentifier.asSimpleText() ,name);
+    }
 }

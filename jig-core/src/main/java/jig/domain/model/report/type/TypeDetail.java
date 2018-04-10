@@ -61,7 +61,7 @@ public class TypeDetail {
         return relationRepository.findConstants(type());
     }
 
-    public String fieldIdentifiersText() {
-        return relationRepository.findFieldsOf(typeIdentifier).toTypeAndNameText();
+    public FieldIdentifiers fieldIdentifiers() {
+        return relationRepository.findFieldsOf(typeIdentifier);
     }
 }

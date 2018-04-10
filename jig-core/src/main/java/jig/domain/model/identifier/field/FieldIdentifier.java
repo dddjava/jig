@@ -20,7 +20,7 @@ public class FieldIdentifier {
         return name;
     }
 
-    public String typeAndNameText() {
+    public String signatureText() {
         return String.format("%s %s", typeIdentifier.asSimpleText() ,name);
     }
 }

@@ -26,9 +26,9 @@ public class FieldIdentifiers {
                 .collect(Collectors.joining(","));
     }
 
-    public String toTypeAndNameText() {
+    public String toSignatureText() {
         return list.stream()
-                .map(FieldIdentifier::typeAndNameText)
+                .map(FieldIdentifier::signatureText)
                 .collect(Collectors.joining(", "));
     }
 }

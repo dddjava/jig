@@ -22,7 +22,7 @@ public class FieldIdentifiers {
 
     public String toNameText() {
         return list.stream()
-                .map(FieldIdentifier::name)
+                .map(FieldIdentifier::nameText)
                 .collect(Collectors.joining(","));
     }
 

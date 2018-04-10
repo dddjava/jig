@@ -16,7 +16,7 @@ public class FieldIdentifier {
         return typeIdentifier;
     }
 
-    public String name() {
+    public String nameText() {
         return name;
     }
 

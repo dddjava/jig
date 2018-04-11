@@ -13,10 +13,6 @@ public class TypeRelation {
         this.to = to;
     }
 
-    public boolean isTo(TypeIdentifier typeIdentifier) {
-        return to.typeIdentifier().equals(typeIdentifier);
-    }
-
     public TypeIdentifier from() {
         return from;
     }

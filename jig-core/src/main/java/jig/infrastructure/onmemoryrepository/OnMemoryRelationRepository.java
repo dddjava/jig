@@ -119,7 +119,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
         return memberTypes.stream()
-                .filter(typeRelation -> typeRelation.isTo(typeIdentifier))
+                .filter(typeRelation -> typeRelation.field().typeIdentifier().equals(typeIdentifier))
                 .map(TypeRelation::from)
                 .collect(TypeIdentifiers.collector());
     }

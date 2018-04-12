@@ -105,6 +105,29 @@ project(':class-list-cli') {
     }
 }
 
+project(':gradle-plugin') {
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+
+    repositories {
+        jcenter()
+
+    }
+    dependencies {
+        compile 'org.apache.poi:poi:3.17'
+        compile 'org.apache.poi:poi-ooxml:3.17'
+        compile gradleApi()
+        compile localGroovy()
+        compile project(':jig-core')
+    }
+    jar {
+        baseName = 'gradle-jig-plugin'
+        from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+}
+
 project(':sut') {
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'

@@ -2,6 +2,7 @@ package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
+import jig.domain.model.characteristic.Satisfaction;
 import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.method.MethodIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -49,7 +50,7 @@ public class TypeDetail {
         return userTypes.merge(methodOwners);
     }
 
-    public boolean is(Characteristic characteristic) {
+    public Satisfaction satisfied(Characteristic characteristic) {
         return characteristics.has(characteristic);
     }
 

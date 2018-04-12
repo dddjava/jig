@@ -10,7 +10,7 @@ public class Characteristics {
         this.set = set;
     }
 
-    public boolean has(Characteristic characteristic) {
-        return set.contains(characteristic);
+    public Satisfaction has(Characteristic characteristic) {
+        return Satisfaction.getSatisfaction(set.contains(characteristic));
     }
 }

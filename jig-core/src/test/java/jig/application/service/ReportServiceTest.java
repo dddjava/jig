@@ -60,9 +60,9 @@ class ReportServiceTest {
                             "対応する和名",
                             "String fugaText, Integer fugaInteger",
                             "[HogeUser]",
-                            "true",
-                            "true",
-                            "true",
+                            "◯",
+                            "◯",
+                            "◯",
                             "[A,B]"
                     );
         });

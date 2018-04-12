@@ -11,6 +11,6 @@ public class Characteristics {
     }
 
     public Satisfaction has(Characteristic characteristic) {
-        return Satisfaction.getSatisfaction(set.contains(characteristic));
+        return Satisfaction.of(set.contains(characteristic));
     }
 }

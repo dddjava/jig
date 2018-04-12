@@ -10,7 +10,7 @@ public enum Satisfaction {
         this.symbol = symbol;
     }
 
-    public static Satisfaction getSatisfaction(boolean satisfied) {
+    public static Satisfaction of(boolean satisfied) {
         return satisfied ? SATISFY : NOT_SATISFY;
     }
 

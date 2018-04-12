@@ -11,18 +11,18 @@ public class TestSupport {
 
     public static URL[] getTestResourceRootURLs() {
         try {
-            URL classRootUrl = TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./").toURL();
-            URL resourceRootUrl = TestSupport.class.getResource("/marker.properties").toURI().resolve("./").toURL();
+            URL classRootUrl = defaultPackageClassURI().resolve("./").toURL();
+            URL resourceRootUrl = resourceRootURI().resolve("./").toURL();
             return new URL[]{classRootUrl, resourceRootUrl};
-        } catch (URISyntaxException | MalformedURLException e) {
+        } catch (MalformedURLException e) {
             throw new AssertionError(e);
         }
     }
 
     public static Path getModuleRootPath() {
-        Path defaultPackageClassPath = defaultPackageClassPath();
+        URI uri = defaultPackageClassURI();
+        Path path = Paths.get(uri).toAbsolutePath();
 
-        Path path = defaultPackageClassPath.toAbsolutePath();
         while (!path.endsWith("jig-core")) {
             path = path.getParent();
             if (path == null) {
@@ -33,12 +33,19 @@ public class TestSupport {
     }
 
 
-    private static Path defaultPackageClassPath() {
+    private static URI defaultPackageClassURI() {
         try {
-            URI uri = TestSupport.class.getResource("/DefaultPackageClass.class").toURI();
-            return Paths.get(uri);
+            return TestSupport.class.getResource("/DefaultPackageClass.class").toURI();
         } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+            throw new AssertionError(e);
+        }
+    }
+
+    private static URI resourceRootURI() {
+        try {
+            return TestSupport.class.getResource("/marker.properties").toURI();
+        } catch (URISyntaxException e) {
+            throw new AssertionError(e);
         }
     }
 }

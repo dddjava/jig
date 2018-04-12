@@ -21,11 +21,6 @@ public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
     }
 
     @Override
-    public boolean exists(TypeIdentifier typeIdentifier) {
-        return map.containsKey(typeIdentifier);
-    }
-
-    @Override
     public JapaneseName get(TypeIdentifier typeIdentifier) {
         return map.getOrDefault(typeIdentifier, new JapaneseName(""));
     }

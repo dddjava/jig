@@ -5,8 +5,6 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 
 public interface JapaneseNameRepository {
 
-    boolean exists(TypeIdentifier typeIdentifier);
-
     JapaneseName get(TypeIdentifier typeIdentifier);
 
     void register(TypeIdentifier typeIdentifier, JapaneseName japaneseName);

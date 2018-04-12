@@ -1,6 +1,7 @@
 package testing;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -19,7 +20,7 @@ public class TestSupport {
     }
 
     public static Path getModuleRootPath() {
-        Path defaultPackageClassPath = Paths.get(TestSupport.class.getResource("/DefaultPackageClass.class").getPath());
+        Path defaultPackageClassPath = defaultPackageClassPath();
 
         Path path = defaultPackageClassPath.toAbsolutePath();
         while (!path.endsWith("jig-core")) {
@@ -29,5 +30,15 @@ public class TestSupport {
             }
         }
         return path;
+    }
+
+
+    private static Path defaultPackageClassPath() {
+        try {
+            URI uri = TestSupport.class.getResource("/DefaultPackageClass.class").toURI();
+            return Paths.get(uri);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

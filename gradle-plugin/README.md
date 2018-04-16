@@ -18,6 +18,7 @@ apply plugin: 'com.github.irof.Jig'
 ```
 jigList {
     outputPath = 'build/reports/output.xlsx' //出力ディレクトリ
+    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
 }
 ```
 

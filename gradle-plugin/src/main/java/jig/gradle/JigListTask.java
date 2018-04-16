@@ -28,10 +28,10 @@ import java.nio.file.Paths;
 
 public class JigListTask extends DefaultTask {
 
-
     @TaskAction
     public void apply() {
-        String outputOmitPrefix ="";
+        JigListExtension extension = getProject().getExtensions().findByType(JigListExtension.class);
+
         JigPaths jigPaths = new JigPaths(
                 "build/classes/main",
                 "build/resources/main",
@@ -54,12 +54,13 @@ public class JigListTask extends DefaultTask {
                 jigPaths,
                 sqlRepository
         );
+
         ReportService reportService = new ReportService(
                 characteristicRepository,
                 relationRepository,
                 sqlRepository,
                 new OnMemoryJapaneseNameRepository(),
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefix)
+                new PrefixRemoveIdentifierFormatter(extension.getOutputOmitPrefix())
         );
 
         Path path = getProject().getProjectDir().toPath();
@@ -67,7 +68,6 @@ public class JigListTask extends DefaultTask {
 
         Reports reports = reportService.reports();
 
-        JigListExtension extension = getProject().getExtensions().findByType(JigListExtension.class);
         Path outputDirPath = Paths.get(extension.getOutputPath()).getParent();
         try {
             Files.createDirectories(outputDirPath);

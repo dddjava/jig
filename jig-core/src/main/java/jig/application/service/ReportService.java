@@ -20,7 +20,6 @@ import jig.domain.model.report.template.Reports;
 import jig.domain.model.report.type.TypeDetail;
 import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,16 +30,23 @@ import java.util.stream.Collectors;
 @Service
 public class ReportService {
 
-    @Autowired
-    CharacteristicRepository characteristicRepository;
-    @Autowired
-    RelationRepository relationRepository;
-    @Autowired
-    SqlRepository sqlRepository;
-    @Autowired
-    JapaneseNameRepository japaneseNameRepository;
-    @Autowired
-    TypeIdentifierFormatter typeIdentifierFormatter;
+    final CharacteristicRepository characteristicRepository;
+    final RelationRepository relationRepository;
+    final SqlRepository sqlRepository;
+    final JapaneseNameRepository japaneseNameRepository;
+    final TypeIdentifierFormatter typeIdentifierFormatter;
+
+    public ReportService(CharacteristicRepository characteristicRepository,
+                  RelationRepository relationRepository,
+                  SqlRepository sqlRepository,
+                  JapaneseNameRepository japaneseNameRepository,
+                  TypeIdentifierFormatter typeIdentifierFormatter) {
+        this.characteristicRepository = characteristicRepository;
+        this.relationRepository = relationRepository;
+        this.sqlRepository = sqlRepository;
+        this.japaneseNameRepository = japaneseNameRepository;
+        this.typeIdentifierFormatter = typeIdentifierFormatter;
+    }
 
     public Reports reports() {
         List<Report> list = Arrays.stream(Perspective.values())

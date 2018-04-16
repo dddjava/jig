@@ -1,6 +1,8 @@
 plugins {
     id 'org.springframework.boot' version '2.0.0.RELEASE' apply false
+    id "eu.appsatori.fatjar" version "0.3" apply false
 }
+
 
 repositories {
     jcenter()
@@ -106,12 +108,18 @@ project(':class-list-cli') {
 }
 
 project(':gradle-plugin') {
-    apply plugin: 'groovy'
-    apply plugin: 'java'
-
+    apply plugin: "java-gradle-plugin"
+    apply plugin: "eu.appsatori.fatjar"
+    gradlePlugin {
+        plugins {
+            jigGradlePlugin {
+                id = 'com.github.irof.Jig'
+                implementationClass = 'jig.gradle.JigGradlePlugin'
+            }
+        }
+    }
     repositories {
         jcenter()
-
     }
     dependencies {
         compile 'org.apache.poi:poi:3.17'
@@ -120,11 +128,16 @@ project(':gradle-plugin') {
         compile localGroovy()
         compile project(':jig-core')
     }
+
     jar {
         baseName = 'gradle-jig-plugin'
-        from {
-            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-        }
+    }
+
+    fatJar {
+        baseName = 'gradle-jig-plugin-all'
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
 }
 

@@ -77,7 +77,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         debugUntilRemoveJdeps(packageDependencies, jdepsPackageDependencies);
 
         PackageDependencies outputRelation = jdepsPackageDependencies
-                // class解析で取得できたModelのパッケージで上書きする
+                // jdepsは関連のないパッケージを検出しないので、class解析で検出したパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
                 .applyDepth(new PackageDepth(this.depth));
         LOGGER.info("関連数: " + outputRelation.list().size());

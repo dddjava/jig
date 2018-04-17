@@ -26,24 +26,22 @@ public class JigPackageDiagramTask extends DefaultTask {
 
     @TaskAction
     public void apply() throws IOException {
+
+        JigPackageDiagramExtension extension = getProject().getExtensions().findByType(JigPackageDiagramExtension.class);
+
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         long startTime = System.currentTimeMillis();
 
-        String packagePattern = ".*.domain.model";
-        String outputDiagramName = "build/reports/output.png";
-        String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
-        int depth = -1;
-
         Path projectPath = getProject().getProjectDir().toPath();
-        Path output = Paths.get(outputDiagramName);
+        Path output = Paths.get(extension.getOutputDiagramName());
         ensureExists(output);
 
         PackageDependencies packageDependencies = serviceFactory.analyzeService().packageDependencies(new ProjectLocation(projectPath));
 
         PackageDependencies jdepsPackageDependencies = serviceFactory.relationAnalyzer().analyzeRelations(new AnalysisCriteria(
                 new SearchPaths(Collections.singletonList(projectPath)),
-                new AnalysisClassesPattern(packagePattern + "\\..+"),
-                new DependenciesPattern(packagePattern + "\\..+"),
+                new AnalysisClassesPattern(extension.getPackagePattern() + "\\..+"),
+                new DependenciesPattern(extension.getPackagePattern() + "\\..+"),
                 AnalysisTarget.PACKAGE));
 
         List<PackageDependency> list = packageDependencies.list();
@@ -57,10 +55,10 @@ public class JigPackageDiagramTask extends DefaultTask {
         PackageDependencies outputRelation = jdepsPackageDependencies
                 // class解析で取得できたModelのパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
-                .applyDepth(new PackageDepth(depth));
+                .applyDepth(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + outputRelation.list().size());
 
-        Diagram diagram = serviceFactory.diagramService(outputOmitPrefix).generateFrom(outputRelation);
+        Diagram diagram = serviceFactory.diagramService(extension.getOutputOmitPrefix()).generateFrom(outputRelation);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
             outputStream.write(diagram.getBytes());

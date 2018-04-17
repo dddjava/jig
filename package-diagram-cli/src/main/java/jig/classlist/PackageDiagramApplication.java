@@ -80,7 +80,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 // jdepsは関連のないパッケージを検出しないので、class解析で検出したパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
                 .applyDepth(new PackageDepth(this.depth));
-        LOGGER.info("関連数: " + outputRelation.list().size());
+        LOGGER.info("関連数: " + outputRelation.size());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);
 

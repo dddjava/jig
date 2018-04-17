@@ -55,4 +55,8 @@ public class PackageDependencies {
     public PackageDependencies withAllPackage(PackageIdentifiers allPackages) {
         return new PackageDependencies(this.dependencies, allPackages);
     }
+
+    public int size() {
+        return list().size();
+    }
 }

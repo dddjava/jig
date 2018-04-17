@@ -74,13 +74,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 new DependenciesPattern(packagePattern + "\\..+"),
                 AnalysisTarget.PACKAGE));
 
-        List<PackageDependency> list = packageDependencies.list();
-        List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
-        LOGGER.debug("件数       : " + list.size());
-        LOGGER.debug("件数(jdeps): " + jdepsList.size());
-        jdepsList.stream()
-                .filter(relation -> !list.contains(relation))
-                .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
+        debugUntilRemoveJdeps(packageDependencies, jdepsPackageDependencies);
 
         PackageDependencies outputRelation = jdepsPackageDependencies
                 // class解析で取得できたModelのパッケージで上書きする
@@ -96,6 +90,21 @@ public class PackageDiagramApplication implements CommandLineRunner {
         LOGGER.info(output.toAbsolutePath() + "を出力しました。");
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    /**
+     * jdepsをなくせるまで、検証用に検出数の差を表示しておく
+     * @param packageDependencies
+     * @param jdepsPackageDependencies
+     */
+    private void debugUntilRemoveJdeps(PackageDependencies packageDependencies, PackageDependencies jdepsPackageDependencies) {
+        List<PackageDependency> list = packageDependencies.list();
+        List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
+        LOGGER.debug("件数       : " + list.size());
+        LOGGER.debug("件数(jdeps): " + jdepsList.size());
+        jdepsList.stream()
+                .filter(relation -> !list.contains(relation))
+                .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
     }
 
     @Bean

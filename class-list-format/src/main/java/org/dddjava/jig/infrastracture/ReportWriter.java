@@ -1,4 +1,4 @@
-package jig.classlist;
+package org.dddjava.jig.infrastracture;
 
 import jig.domain.model.report.template.Reports;
 

@@ -1,6 +1,5 @@
-package jig.classlist.infrastructure.writer;
+package org.dddjava.jig.infrastracture.writer;
 
-import jig.classlist.ReportWriter;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Reports;
 import org.apache.poi.ss.usermodel.Cell;
@@ -9,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dddjava.jig.infrastracture.ReportWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

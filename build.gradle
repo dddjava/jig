@@ -97,13 +97,20 @@ project(':class-list-cli') {
 
     dependencies {
         compile project(':jig-core')
+        compile project(':class-list-format')
         compile 'org.springframework.boot:spring-boot-starter'
-        compile 'org.apache.poi:poi:3.17'
-        compile 'org.apache.poi:poi-ooxml:3.17'
     }
 
     test {
         dependsOn ':sut:compileJava', ':sut:processResources'
+    }
+}
+
+project(':class-list-format') {
+    dependencies {
+        compile project(':jig-core')
+        compile 'org.apache.poi:poi:3.17'
+        compile 'org.apache.poi:poi-ooxml:3.17'
     }
 }
 
@@ -122,11 +129,10 @@ project(':gradle-plugin') {
         jcenter()
     }
     dependencies {
-        compile 'org.apache.poi:poi:3.17'
-        compile 'org.apache.poi:poi-ooxml:3.17'
+        compile project(':jig-core')
+        compile project(':class-list-format')
         compile gradleApi()
         compile localGroovy()
-        compile project(':jig-core')
     }
 
     jar {

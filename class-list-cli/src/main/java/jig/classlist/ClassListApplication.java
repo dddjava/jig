@@ -4,6 +4,7 @@ import jig.application.service.AnalyzeService;
 import jig.application.service.ReportService;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.template.Reports;
+import org.dddjava.jig.infrastracture.ReportFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

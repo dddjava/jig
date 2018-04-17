@@ -8,7 +8,6 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.template.Reports;
-import jig.gradle.infrastructure.ReportFormat;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import jig.infrastructure.asm.AsmClassFileReader;
@@ -18,6 +17,7 @@ import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
+import org.dddjava.jig.infrastracture.ReportFormat;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 

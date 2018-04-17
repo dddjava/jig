@@ -1,8 +1,8 @@
-package jig.gradle.infrastructure;
+package org.dddjava.jig.infrastracture;
 
 
-import jig.gradle.infrastructure.writer.ExcelWriter;
-import jig.gradle.infrastructure.writer.TsvWriter;
+import org.dddjava.jig.infrastracture.writer.ExcelWriter;
+import org.dddjava.jig.infrastracture.writer.TsvWriter;
 
 public enum ReportFormat {
     TSV {

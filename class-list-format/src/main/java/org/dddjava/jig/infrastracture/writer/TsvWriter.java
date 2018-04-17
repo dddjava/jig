@@ -1,10 +1,12 @@
-package jig.classlist.infrastructure.writer;
+package org.dddjava.jig.infrastracture.writer;
 
-import jig.classlist.ReportWriter;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Reports;
+import org.dddjava.jig.infrastracture.ReportWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.joining;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,8 +14,6 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import static java.util.stream.Collectors.joining;
 
 public class TsvWriter implements ReportWriter {
 

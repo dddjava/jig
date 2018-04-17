@@ -125,12 +125,15 @@ project(':gradle-plugin') {
             }
         }
     }
+
     repositories {
         jcenter()
     }
     dependencies {
         compile project(':jig-core')
         compile project(':class-list-format')
+        compile project(':infrastructure-jdeps')
+        compile project(':diagram-plantuml')
         compile gradleApi()
         compile localGroovy()
     }
@@ -144,6 +147,7 @@ project(':gradle-plugin') {
         exclude "META-INF/*.SF"
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
+        zip64 = true
     }
 }
 

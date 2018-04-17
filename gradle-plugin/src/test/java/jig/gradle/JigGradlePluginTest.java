@@ -14,9 +14,10 @@ class JigGradlePluginTest {
         Project project = ProjectBuilder.builder().build();
 
         project.getPlugins().apply("com.github.irof.Jig");
-        Task task = project.getTasks().findByName("jigList");
-
-        assertThat(task).isInstanceOf(JigListTask.class);
+        Task jigList = project.getTasks().findByName("jigList");
+        Task jigPackageDiagram = project.getTasks().findByName("jigPackageDiagram");
+        assertThat(jigList).isInstanceOf(JigListTask.class);
+        assertThat(jigPackageDiagram).isInstanceOf(JigPackageDiagramTask.class);
     }
 
 

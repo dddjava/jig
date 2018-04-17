@@ -10,8 +10,8 @@ public class JigGradlePlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         ExtensionContainer extensions = project.getExtensions();
-        extensions.create("jigList", JigListExtension.class);
-        extensions.create("jigPackageDiagram", JigPackageDiagramExtension.class);
+        extensions.create("jigListConfig", JigListExtension.class);
+        extensions.create("jigPackageDiagramConfig", JigPackageDiagramExtension.class);
         TaskContainer tasks = project.getTasks();
         tasks.create("jigList", JigListTask.class);
         tasks.create("jigPackageDiagram", JigPackageDiagramTask.class);

@@ -11,48 +11,48 @@ import static java.util.stream.Collectors.toList;
 
 public class PackageDependencies {
 
-    List<PackageDependency> list;
-    PackageIdentifiers allPackages;
+    PackageIdentifiers packages;
+    List<PackageDependency> dependencies;
 
     // TODO jdepsがいらなくなったら不要になる
-    public PackageDependencies(List<PackageDependency> list) {
-        this.list = list;
+    public PackageDependencies(List<PackageDependency> dependencies) {
+        this.dependencies = dependencies;
         // クラス名昇順、メソッド名昇順
-        list.sort(Comparator.<PackageDependency, String>comparing(relation -> relation.from().value())
+        dependencies.sort(Comparator.<PackageDependency, String>comparing(relation -> relation.from().value())
                 .thenComparing(relation -> relation.to().value()));
 
-        allPackages = new PackageIdentifiers(Stream.concat(
+        packages = new PackageIdentifiers(Stream.concat(
                 list().stream().map(PackageDependency::from),
                 list().stream().map(PackageDependency::to))
                 .distinct()
                 .collect(toList()));
     }
 
-    public PackageDependencies(List<PackageDependency> list, PackageIdentifiers allPackages) {
-        this.list = list;
-        this.allPackages = allPackages;
+    public PackageDependencies(List<PackageDependency> dependencies, PackageIdentifiers packages) {
+        this.dependencies = dependencies;
+        this.packages = packages;
     }
 
     public List<PackageDependency> list() {
-        return list;
+        return dependencies;
     }
 
     public PackageDependencies applyDepth(PackageDepth packageDepth) {
         if (packageDepth.unlimited()) return this;
-        List<PackageDependency> list = this.list.stream()
+        List<PackageDependency> list = this.dependencies.stream()
                 .map(relation -> relation.applyDepth(packageDepth))
                 .distinct()
                 .filter(PackageDependency::notSelfRelation)
                 .collect(toList());
-        return new PackageDependencies(list, allPackages.applyDepth(packageDepth));
+        return new PackageDependencies(list, packages.applyDepth(packageDepth));
     }
 
     public PackageIdentifiers allPackages() {
-        return allPackages;
+        return packages;
     }
 
     // TODO jdepsがいらなくなったら不要になる
     public PackageDependencies withAllPackage(PackageIdentifiers allPackages) {
-        return new PackageDependencies(this.list, allPackages);
+        return new PackageDependencies(this.dependencies, allPackages);
     }
 }

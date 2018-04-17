@@ -23,7 +23,6 @@ class PackageDependenciesTest {
                 dependencies,
                 new PackageIdentifiers(Collections.emptyList()));
 
-        int size = sut.list().size();
-        assertThat(size).isEqualTo(3);
+        assertThat(sut.number().asText()).isEqualTo("3");
     }
 }

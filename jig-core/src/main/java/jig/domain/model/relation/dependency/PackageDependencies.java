@@ -56,7 +56,7 @@ public class PackageDependencies {
         return new PackageDependencies(this.dependencies, allPackages);
     }
 
-    public int size() {
-        return list().size();
+    public DependencyNumber number() {
+        return new DependencyNumber(list().size());
     }
 }

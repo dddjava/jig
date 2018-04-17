@@ -80,7 +80,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 // jdepsは関連のないパッケージを検出しないので、class解析で検出したパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
                 .applyDepth(new PackageDepth(this.depth));
-        LOGGER.info("関連数: " + outputRelation.size());
+        LOGGER.info("関連数: " + outputRelation.number().asText());
 
         Diagram diagram = diagramService.generateFrom(outputRelation);
 
@@ -94,14 +94,16 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
     /**
      * jdepsをなくせるまで、検証用に検出数の差を表示しておく
+     *
      * @param packageDependencies
      * @param jdepsPackageDependencies
      */
     private void debugUntilRemoveJdeps(PackageDependencies packageDependencies, PackageDependencies jdepsPackageDependencies) {
+        LOGGER.debug("件数       : " + packageDependencies.number().asText());
+        LOGGER.debug("件数(jdeps): " + jdepsPackageDependencies.number().asText());
+
         List<PackageDependency> list = packageDependencies.list();
         List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
-        LOGGER.debug("件数       : " + list.size());
-        LOGGER.debug("件数(jdeps): " + jdepsList.size());
         jdepsList.stream()
                 .filter(relation -> !list.contains(relation))
                 .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));

@@ -11,48 +11,44 @@ import org.objectweb.asm.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
 
     private TypeIdentifier typeIdentifier;
-    private TypeIdentifier parent;
-    private List<String> annotationDescriptors = new ArrayList<>();
+    private List<ClassDescriptor> annotationDescriptors = new ArrayList<>();
     private List<MethodSpecification> methodSpecifications = new ArrayList<>();
     private List<FieldIdentifier> fieldDescriptors = new ArrayList<>();
     private List<FieldIdentifier> constantDescriptors = new ArrayList<>();
-    private TypeIdentifiers interfaceTypeIdentifiers;
-    private int accessor;
+
+    private Specification specification;
 
     public SpecificationReadingVisitor() {
         super(Opcodes.ASM6);
     }
 
     public Specification specification() {
-        return new Specification(
-                typeIdentifier,
-                parent,
-                accessor,
-                interfaceTypeIdentifiers,
-                annotationDescriptors.stream().map(ClassDescriptor::new).collect(Collectors.toList()),
-                methodSpecifications,
-                fieldDescriptors,
-                constantDescriptors);
+        return specification;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         this.typeIdentifier = new TypeIdentifier(name);
-        this.parent = new TypeIdentifier(superName);
-        this.accessor = access;
-        this.interfaceTypeIdentifiers = Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
+        this.specification = new Specification(
+                typeIdentifier,
+                new TypeIdentifier(superName),
+                access,
+                Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
+                annotationDescriptors,
+                methodSpecifications,
+                fieldDescriptors,
+                constantDescriptors);
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        this.annotationDescriptors.add(descriptor);
+        this.annotationDescriptors.add(new ClassDescriptor(descriptor));
         return super.visitAnnotation(descriptor, visible);
     }
 

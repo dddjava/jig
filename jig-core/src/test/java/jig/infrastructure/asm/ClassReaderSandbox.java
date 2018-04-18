@@ -2,14 +2,14 @@ package jig.infrastructure.asm;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
-import stub.domain.model.relation.fuga.Fuga;
+import stub.domain.model.relation.RelationReadTarget;
 
 import java.io.IOException;
 
 public class ClassReaderSandbox {
 
     public static void main(String[] args) throws IOException {
-        ClassReader classReader = new ClassReader(Fuga.class.getName());
+        ClassReader classReader = new ClassReader(RelationReadTarget.class.getName());
 
         // ConstantPoolの数
         int itemCount = classReader.getItemCount();

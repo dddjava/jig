@@ -1,4 +1,4 @@
-package stub.domain.model.relation.fuga.qux;
+package stub.domain.model.relation.qux;
 
 public class Qux {
 

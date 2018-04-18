@@ -11,14 +11,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.fuga.Corge;
-import stub.domain.model.relation.fuga.Fuga;
-import stub.domain.model.relation.fuga.FugaException;
-import stub.domain.model.relation.fuga.foo.Bar;
-import stub.domain.model.relation.fuga.foo.Baz;
-import stub.domain.model.relation.fuga.foo.Foo;
-import stub.domain.model.relation.fuga.qux.Qux;
-import stub.domain.model.relation.hoge.Hoge;
+import stub.domain.model.relation.test.ArrayField;
+import stub.domain.model.relation.RelationReadTarget;
+import stub.domain.model.relation.test.FugaException;
+import stub.domain.model.relation.foo.Bar;
+import stub.domain.model.relation.foo.Baz;
+import stub.domain.model.relation.foo.Foo;
+import stub.domain.model.relation.qux.Qux;
+import stub.domain.model.relation.test.MethodArgument;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,7 +31,7 @@ public class AsmClassFileReaderTest {
 
     @Test
     void relationReadTest() throws Exception {
-        Path path = Paths.get(Fuga.class.getResource(Fuga.class.getSimpleName().concat(".class")).toURI());
+        Path path = Paths.get(RelationReadTarget.class.getResource(RelationReadTarget.class.getSimpleName().concat(".class")).toURI());
 
         AsmClassFileReader sut = new AsmClassFileReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
@@ -41,11 +41,11 @@ public class AsmClassFileReaderTest {
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(Foo.class),
-                        new TypeIdentifier(Corge.class.getName() + "[]"),
+                        new TypeIdentifier(ArrayField.class.getName() + "[]"),
                         new TypeIdentifier(Bar.class),
                         new TypeIdentifier(Baz.class),
                         new TypeIdentifier(FugaException.class),
-                        new TypeIdentifier(Hoge.class),
+                        new TypeIdentifier(MethodArgument.class),
                         new TypeIdentifier(Qux.Quuz.class)
                 );
     }

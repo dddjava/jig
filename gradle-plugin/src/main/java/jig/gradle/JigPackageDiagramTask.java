@@ -1,5 +1,6 @@
 package jig.gradle;
 
+import jig.application.service.AnalyzeService;
 import jig.domain.model.diagram.Diagram;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.jdeps.*;
@@ -7,6 +8,8 @@ import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +29,22 @@ public class JigPackageDiagramTask extends DefaultTask {
 
     @TaskAction
     public void apply() throws IOException {
+        ExtensionContainer extensions = getProject().getExtensions();
+        JigPackageDiagramExtension extension = extensions.findByType(JigPackageDiagramExtension.class);
 
-        JigPackageDiagramExtension extension = getProject().getExtensions().findByType(JigPackageDiagramExtension.class);
-
-        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         long startTime = System.currentTimeMillis();
 
-        Path projectPath = getProject().getProjectDir().toPath();
         Path output = Paths.get(extension.getOutputDiagramName());
         ensureExists(output);
 
-        PackageDependencies packageDependencies = serviceFactory.analyzeService().packageDependencies(new ProjectLocation(projectPath));
+        Convention convention = getProject().getConvention();
+        ProjectLocation projectLocation = new ProjectLocation(getProject().getProjectDir().toPath());
+        AnalyzeService analyzeService = serviceFactory.analyzeService(convention);
+
+        PackageDependencies packageDependencies = analyzeService.packageDependencies(projectLocation);
 
         PackageDependencies jdepsPackageDependencies = serviceFactory.relationAnalyzer().analyzeRelations(new AnalysisCriteria(
-                new SearchPaths(Collections.singletonList(projectPath)),
+                new SearchPaths(Collections.singletonList(getProject().getProjectDir().toPath())),
                 new AnalysisClassesPattern(extension.getPackagePattern() + "\\..+"),
                 new DependenciesPattern(extension.getPackagePattern() + "\\..+"),
                 AnalysisTarget.PACKAGE));
@@ -58,6 +63,7 @@ public class JigPackageDiagramTask extends DefaultTask {
                 .applyDepth(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + outputRelation.list().size());
 
+        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         Diagram diagram = serviceFactory.diagramService(extension.getOutputOmitPrefix()).generateFrom(outputRelation);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {

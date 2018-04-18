@@ -82,6 +82,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 .applyDepth(new PackageDepth(this.depth));
         LOGGER.info("関連数: " + outputRelation.number().asText());
 
+        showDepth(outputRelation);
+
         Diagram diagram = diagramService.generateFrom(outputRelation);
 
         try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
@@ -90,6 +92,16 @@ public class PackageDiagramApplication implements CommandLineRunner {
         LOGGER.info(output.toAbsolutePath() + "を出力しました。");
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    private void showDepth(PackageDependencies outputRelation) {
+        PackageDepth maxDepth = outputRelation.allPackages().maxDepth();
+
+        LOGGER.info("最大深度: {}", maxDepth.value());
+        for (PackageDepth depth : maxDepth.surfaceList()) {
+            PackageDependencies dependencies = outputRelation.applyDepth(depth);
+            LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
+        }
     }
 
     /**

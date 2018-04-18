@@ -62,4 +62,8 @@ public class MethodSpecification {
     public Set<TypeIdentifier> useTypes() {
         return useTypes;
     }
+
+    public boolean isInstanceMethod() {
+        return true;
+    }
 }

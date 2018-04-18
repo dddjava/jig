@@ -64,7 +64,7 @@ public class Specification {
     }
 
     public boolean hasInstanceMethod() {
-        return !methodSpecifications.isEmpty();
+        return methodSpecifications.stream().anyMatch(MethodSpecification::isInstanceMethod);
     }
 
     public boolean hasField() {

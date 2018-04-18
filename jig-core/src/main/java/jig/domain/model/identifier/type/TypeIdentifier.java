@@ -51,4 +51,11 @@ public class TypeIdentifier {
     public int hashCode() {
         return Objects.hash(value);
     }
+
+    @Override
+    public String toString() {
+        return "TypeIdentifier{" +
+                "value='" + value + '\'' +
+                '}';
+    }
 }

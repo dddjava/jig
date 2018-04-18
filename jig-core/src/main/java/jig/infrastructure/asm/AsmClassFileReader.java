@@ -24,7 +24,7 @@ public class AsmClassFileReader implements ModelReader {
         return new Specifications(list);
     }
 
-    private Specification readSpecification(SpecificationSource specificationSource) {
+    Specification readSpecification(SpecificationSource specificationSource) {
         try (InputStream inputStream = Files.newInputStream(specificationSource.getPath())) {
             SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
             ClassReader classReader = new ClassReader(inputStream);

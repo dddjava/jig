@@ -6,7 +6,10 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.objectweb.asm.Opcodes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Specification {
 
@@ -18,6 +21,7 @@ public class Specification {
     public List<MethodSpecification> methodSpecifications;
     List<FieldIdentifier> fieldIdentifiers;
     List<FieldIdentifier> constantIdentifiers;
+    private Set<TypeIdentifier> useTypes = new HashSet<>();
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
@@ -82,5 +86,16 @@ public class Specification {
     public boolean isModel() {
         // TODO 外部化
         return typeIdentifier.fullQualifiedName().contains(".domain.model.");
+    }
+
+    public TypeIdentifiers useTypes() {
+        for (MethodSpecification methodSpecification : methodSpecifications) {
+            useTypes.addAll(methodSpecification.useTypes());
+        }
+        return new TypeIdentifiers(new ArrayList<>(useTypes));
+    }
+
+    public void addUseType(TypeIdentifier identifier) {
+        useTypes.add(identifier);
     }
 }

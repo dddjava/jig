@@ -33,16 +33,17 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         this.typeIdentifier = new TypeIdentifier(name);
+        TypeIdentifier superType = new TypeIdentifier(superName);
         this.specification = new Specification(
                 typeIdentifier,
-                new TypeIdentifier(superName),
+                superType,
                 access,
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
                 annotationDescriptors,
                 methodSpecifications,
                 fieldDescriptors,
                 constantDescriptors);
-
+        this.specification.addUseType(superType);
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
@@ -54,15 +55,17 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
+        FieldIdentifier field = new FieldIdentifier(name, typeIdentifier);
+        specification.addUseType(typeIdentifier);
+
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
-            fieldDescriptors.add(new FieldIdentifier(name, typeIdentifier));
+            fieldDescriptors.add(field);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
-                constantDescriptors.add(new FieldIdentifier(name, typeIdentifier));
+                constantDescriptors.add(field);
             }
         }
         return super.visitField(access, name, descriptor, signature, value);
@@ -72,15 +75,15 @@ class SpecificationReadingVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         // インスタンスメソッドだけ相手にする
         if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
-            MethodSpecification methodSpecification = newInstanceMethod(name, descriptor);
+            MethodSpecification methodSpecification = newInstanceMethod(name, descriptor, exceptions);
 
             return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
-    public MethodSpecification newInstanceMethod(String methodName, String descriptor) {
-        MethodSpecification methodSpecification = new MethodSpecification(typeIdentifier, methodName, descriptor);
+    public MethodSpecification newInstanceMethod(String methodName, String descriptor, String[] exceptions) {
+        MethodSpecification methodSpecification = new MethodSpecification(typeIdentifier, methodName, descriptor, exceptions);
         this.methodSpecifications.add(methodSpecification);
         return methodSpecification;
     }

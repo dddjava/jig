@@ -75,8 +75,8 @@ public class ServiceFactory {
     private JigPaths jigPaths(JavaPluginConvention javaPluginConvention) {
         SourceSet mainSourceSet = javaPluginConvention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
         File srcDir = mainSourceSet.getJava().getSrcDirs().iterator().next();
-        File classesOutputDir = mainSourceSet.getJava().getOutputDir();
-        File resourceOutputDir = mainSourceSet.getResources().getOutputDir();
+        File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
+        File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
 
         return new JigPaths(
                 classesOutputDir.getAbsolutePath(),

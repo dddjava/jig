@@ -63,7 +63,7 @@ public class Specification {
         return (field1.equals(field2) && field1.fullQualifiedName().equals(clz.getName()));
     }
 
-    public boolean hasMethod() {
+    public boolean hasInstanceMethod() {
         return !methodSpecifications.isEmpty();
     }
 

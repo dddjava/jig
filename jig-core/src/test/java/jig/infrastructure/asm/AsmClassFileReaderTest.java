@@ -64,7 +64,7 @@ public class AsmClassFileReaderTest {
                 .first()
                 .extracting(
                         Specification::isEnum,
-                        Specification::hasMethod,
+                        Specification::hasInstanceMethod,
                         Specification::hasField,
                         Specification::canExtend
                 )

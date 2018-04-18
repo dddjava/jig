@@ -40,7 +40,7 @@ public enum Characteristic {
     ENUM_BEHAVIOUR {
         @Override
         boolean matches(Specification specification) {
-            return specification.isEnum() && specification.hasMethod();
+            return specification.isEnum() && specification.hasInstanceMethod();
         }
     },
     ENUM_PARAMETERIZED {

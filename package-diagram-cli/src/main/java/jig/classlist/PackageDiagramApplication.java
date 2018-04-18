@@ -74,19 +74,15 @@ public class PackageDiagramApplication implements CommandLineRunner {
                 new DependenciesPattern(packagePattern + "\\..+"),
                 AnalysisTarget.PACKAGE));
 
-        List<PackageDependency> list = packageDependencies.list();
-        List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
-        LOGGER.debug("件数       : " + list.size());
-        LOGGER.debug("件数(jdeps): " + jdepsList.size());
-        jdepsList.stream()
-                .filter(relation -> !list.contains(relation))
-                .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
+        debugUntilRemoveJdeps(packageDependencies, jdepsPackageDependencies);
 
         PackageDependencies outputRelation = jdepsPackageDependencies
-                // class解析で取得できたModelのパッケージで上書きする
+                // jdepsは関連のないパッケージを検出しないので、class解析で検出したパッケージで上書きする
                 .withAllPackage(packageDependencies.allPackages())
                 .applyDepth(new PackageDepth(this.depth));
-        LOGGER.info("関連数: " + outputRelation.list().size());
+        LOGGER.info("関連数: " + outputRelation.number().asText());
+
+        showDepth(outputRelation);
 
         Diagram diagram = diagramService.generateFrom(outputRelation);
 
@@ -96,6 +92,33 @@ public class PackageDiagramApplication implements CommandLineRunner {
         LOGGER.info(output.toAbsolutePath() + "を出力しました。");
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    private void showDepth(PackageDependencies outputRelation) {
+        PackageDepth maxDepth = outputRelation.allPackages().maxDepth();
+
+        LOGGER.info("最大深度: {}", maxDepth.value());
+        for (PackageDepth depth : maxDepth.surfaceList()) {
+            PackageDependencies dependencies = outputRelation.applyDepth(depth);
+            LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
+        }
+    }
+
+    /**
+     * jdepsをなくせるまで、検証用に検出数の差を表示しておく
+     *
+     * @param packageDependencies
+     * @param jdepsPackageDependencies
+     */
+    private void debugUntilRemoveJdeps(PackageDependencies packageDependencies, PackageDependencies jdepsPackageDependencies) {
+        LOGGER.debug("件数       : " + packageDependencies.number().asText());
+        LOGGER.debug("件数(jdeps): " + jdepsPackageDependencies.number().asText());
+
+        List<PackageDependency> list = packageDependencies.list();
+        List<PackageDependency> jdepsList = jdepsPackageDependencies.list();
+        jdepsList.stream()
+                .filter(relation -> !list.contains(relation))
+                .forEach(relation -> LOGGER.debug("jdepsでのみ検出された依存: " + relation.from().value() + " -> " + relation.to().value()));
     }
 
     @Bean

@@ -26,6 +26,10 @@ public class PackageIdentifier {
         return new PackageIdentifier(sj.toString());
     }
 
+    public PackageDepth depth() {
+        return new PackageDepth(value.split("\\.").length);
+    }
+
     public String format(PackageIdentifierFormatter formatter) {
         return formatter.format(value);
     }

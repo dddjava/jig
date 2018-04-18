@@ -1,5 +1,6 @@
 package jig.domain.model.identifier.namespace;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -23,5 +24,12 @@ public class PackageIdentifiers {
                 .distinct()
                 .collect(toList());
         return new PackageIdentifiers(list);
+    }
+
+    public PackageDepth maxDepth() {
+        return list.stream()
+                .map(PackageIdentifier::depth)
+                .max(Comparator.comparing(PackageDepth::value))
+                .orElseGet(() -> new PackageDepth(0));
     }
 }

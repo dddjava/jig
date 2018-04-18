@@ -3,12 +3,10 @@ package stub.domain.model.relation;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
 import stub.domain.model.relation.qux.Qux;
-import stub.domain.model.relation.test.ArrayField;
-import stub.domain.model.relation.test.FugaException;
-import stub.domain.model.relation.test.GenericsField;
-import stub.domain.model.relation.test.MethodArgument;
+import stub.domain.model.relation.test.*;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * 使用しているクラスを抽出するテスト対象
@@ -32,6 +30,13 @@ public class RelationReadTarget {
 
     // 引数
     void qux(MethodArgument methodArgument1, MethodArgument methodArgument2) {
+        Function<Void, Void> function = (param) -> {
+            // Lambdaの中でだけ使用しているクラス
+            new UseInLambda();
+            System.out.println("HOGERA");
+            return null;
+        };
+        function.apply(null);
         // ネストされたクラス
         new Qux.Quuz();
     }

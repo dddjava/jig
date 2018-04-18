@@ -11,13 +11,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.test.ArrayField;
 import stub.domain.model.relation.RelationReadTarget;
-import stub.domain.model.relation.test.FugaException;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
 import stub.domain.model.relation.qux.Qux;
+import stub.domain.model.relation.test.ArrayField;
+import stub.domain.model.relation.test.FugaException;
 import stub.domain.model.relation.test.MethodArgument;
 
 import java.nio.file.Path;
@@ -47,6 +47,7 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(FugaException.class),
                         new TypeIdentifier(MethodArgument.class),
                         new TypeIdentifier(Qux.Quuz.class)
+                        // new TypeIdentifier(UseInLambda.class)
                 );
     }
 

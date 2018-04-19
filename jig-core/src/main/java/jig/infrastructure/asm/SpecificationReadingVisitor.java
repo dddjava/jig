@@ -1,6 +1,8 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.ClassDescriptor;
@@ -8,7 +10,10 @@ import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
 
@@ -58,12 +63,26 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                .map(Type::getClassName)
+                .map(TypeIdentifier::new)
+                .collect(Collectors.toList());
+
+        MethodIdentifier identifier = new MethodIdentifier(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
+
+        List<TypeIdentifier> exceptionTypes = new ArrayList<>();
+        if (exceptions != null) {
+            for (String exception : exceptions) {
+                exceptionTypes.add(new TypeIdentifier(exception));
+            }
+        }
+
         MethodSpecification methodSpecification = new MethodSpecification(
-                specification.typeIdentifier,
-                name,
-                descriptor,
-                exceptions,
-                (access & Opcodes.ACC_STATIC) != 0
+                identifier,
+                new TypeIdentifier(Type.getReturnType(descriptor).getClassName()),
+                argumentTypes,
+                exceptionTypes,
+                (access & Opcodes.ACC_STATIC) == 0 && !identifier.methodSignature().asSimpleText().startsWith("<init>")
         );
         specification.add(methodSpecification);
         return new SpecificationReadingMethodVisitor(this.api, methodSpecification);

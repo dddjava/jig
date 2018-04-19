@@ -2,12 +2,12 @@ package jig.domain.model.specification;
 
 import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
-import org.objectweb.asm.Type;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class MethodSpecification {
 
@@ -16,50 +16,45 @@ public class MethodSpecification {
     private final TypeIdentifier returnType;
     private final boolean isInstanceMethod;
 
-    public MethodSpecification(TypeIdentifier classTypeIdentifier, String name, String descriptor, String[] exceptions, boolean isStatic) {
-        this.returnType = new TypeIdentifier(Type.getReturnType(descriptor).getClassName());
-        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(Type::getClassName)
-                .map(TypeIdentifier::new)
-                .collect(Collectors.toList());
-        this.identifier = new MethodIdentifier(classTypeIdentifier, new MethodSignature(name, argumentTypes));
+    public MethodSpecification(MethodIdentifier identifier,
+                               TypeIdentifier returnType,
+                               List<TypeIdentifier> argumentTypes,
+                               List<TypeIdentifier> exceptionTypes,
+                               boolean isInstanceMethod) {
+        this.returnType = returnType;
+        this.identifier = identifier;
 
         this.useTypes.add(this.returnType);
         this.useTypes.addAll(argumentTypes);
+        this.useTypes.addAll(exceptionTypes);
 
-        if (exceptions != null) {
-            for (String exception : exceptions) {
-                this.useTypes.add(new TypeIdentifier(exception));
-            }
-        }
-
-        this.isInstanceMethod = !isStatic && !name.equals("<init>");
+        this.isInstanceMethod = isInstanceMethod;
     }
 
-    public final List<FieldIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
-    public final List<MethodIdentifier> usingMethodIdentifiers = new ArrayList<>();
+    public final List<FieldIdentifier> usingFields = new ArrayList<>();
+    public final List<MethodIdentifier> usingMethods = new ArrayList<>();
 
     public TypeIdentifier getReturnTypeName() {
         return returnType;
     }
 
-    public void addFieldInstruction(String owner, String name, String descriptor) {
-        Type type = Type.getType(descriptor);
-        TypeIdentifier fieldType = new TypeIdentifier(type.getClassName());
-        usingFieldTypeIdentifiers.add(new FieldIdentifier(name, fieldType));
+    public void registerUsingField(FieldIdentifier field) {
+        usingFields.add(field);
     }
 
-    public void addMethodInstruction(String owner, String name, String descriptor) {
-        TypeIdentifier ownerTypeIdentifier = new TypeIdentifier(owner);
-        List<TypeIdentifier> arguments = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(Type::getClassName)
-                .map(TypeIdentifier::new)
-                .collect(Collectors.toList());
-        MethodIdentifier methodIdentifier = new MethodIdentifier(ownerTypeIdentifier, new MethodSignature(name, arguments));
-        usingMethodIdentifiers.add(methodIdentifier);
+    public void registerMethodInstruction(TypeIdentifier ownerType, MethodIdentifier methodIdentifier, TypeIdentifier returnType) {
+        usingMethods.add(methodIdentifier);
 
-        useTypes.add(ownerTypeIdentifier);
-        useTypes.add(new TypeIdentifier(Type.getReturnType(descriptor).getClassName()));
+        // メソッドやコンストラクタの持ち主
+        // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
+        useTypes.add(ownerType);
+
+        // 呼び出したメソッドの戻り値の型
+        useTypes.add(returnType);
+    }
+
+    public void registerClassReference(TypeIdentifier type) {
+        useTypes.add(type);
     }
 
     public Set<TypeIdentifier> useTypes() {
@@ -68,9 +63,5 @@ public class MethodSpecification {
 
     public boolean isInstanceMethod() {
         return isInstanceMethod;
-    }
-
-    public void addLdcType(Type type) {
-        useTypes.add(new TypeIdentifier(type.getClassName()));
     }
 }

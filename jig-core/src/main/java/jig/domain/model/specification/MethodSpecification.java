@@ -57,7 +57,9 @@ public class MethodSpecification {
                 .collect(Collectors.toList());
         MethodIdentifier methodIdentifier = new MethodIdentifier(ownerTypeIdentifier, new MethodSignature(name, arguments));
         usingMethodIdentifiers.add(methodIdentifier);
+
         useTypes.add(ownerTypeIdentifier);
+        useTypes.add(new TypeIdentifier(Type.getReturnType(descriptor).getClassName()));
     }
 
     public Set<TypeIdentifier> useTypes() {

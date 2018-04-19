@@ -18,15 +18,14 @@ public class MethodSpecification {
 
     public MethodSpecification(MethodIdentifier identifier,
                                TypeIdentifier returnType,
-                               List<TypeIdentifier> argumentTypes,
-                               List<TypeIdentifier> exceptionTypes,
+                               List<TypeIdentifier> useTypes,
                                boolean isInstanceMethod) {
         this.returnType = returnType;
         this.identifier = identifier;
 
-        this.useTypes.add(this.returnType);
-        this.useTypes.addAll(argumentTypes);
-        this.useTypes.addAll(exceptionTypes);
+        this.useTypes.add(returnType);
+        this.useTypes.addAll(identifier.methodSignature().arguments());
+        this.useTypes.addAll(useTypes);
 
         this.isInstanceMethod = isInstanceMethod;
     }

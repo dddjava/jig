@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AsmClassFileReaderTest {
 
     @Test
-    void メソッド内で使用するクラスのテスト() throws Exception {
+    void メソッドで使用するクラスのテスト() throws Exception {
         Path path = Paths.get(MethodInstruction.class.getResource(MethodInstruction.class.getSimpleName().concat(".class")).toURI());
 
         AsmClassFileReader sut = new AsmClassFileReader();
@@ -41,7 +41,11 @@ public class AsmClassFileReaderTest {
                 .contains(
                         new TypeIdentifier(Foo.class),
                         new TypeIdentifier(Bar.class),
-                        new TypeIdentifier(Baz.class)
+                        new TypeIdentifier(Baz.class),
+                        new TypeIdentifier(Instantiation.class),
+                        new TypeIdentifier(FugaException.class),
+                        new TypeIdentifier(MethodArgument.class),
+                        new TypeIdentifier(GenericArgument.class)
                 )
                 .doesNotContain(
                         new TypeIdentifier(LocalValue.class)

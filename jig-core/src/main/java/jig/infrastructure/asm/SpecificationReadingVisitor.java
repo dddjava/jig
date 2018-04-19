@@ -9,6 +9,8 @@ import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.*;
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,18 +72,29 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
         MethodIdentifier identifier = new MethodIdentifier(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
 
-        List<TypeIdentifier> exceptionTypes = new ArrayList<>();
+        List<TypeIdentifier> useTypes = new ArrayList<>();
+        if (signature != null) {
+            // ジェネリクスを使用している場合だけsignatureが入る
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(this.api) {
+                        @Override
+                        public void visitClassType(String name) {
+                            // 引数と戻り値に登場するクラスを収集
+                            useTypes.add(new TypeIdentifier(name));
+                        }
+                    }
+            );
+        }
         if (exceptions != null) {
             for (String exception : exceptions) {
-                exceptionTypes.add(new TypeIdentifier(exception));
+                useTypes.add(new TypeIdentifier(exception));
             }
         }
 
         MethodSpecification methodSpecification = new MethodSpecification(
                 identifier,
                 new TypeIdentifier(Type.getReturnType(descriptor).getClassName()),
-                argumentTypes,
-                exceptionTypes,
+                useTypes,
                 (access & Opcodes.ACC_STATIC) == 0 && !identifier.methodSignature().asSimpleText().startsWith("<init>")
         );
         specification.add(methodSpecification);

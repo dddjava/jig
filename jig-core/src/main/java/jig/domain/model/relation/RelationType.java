@@ -39,5 +39,7 @@ public enum RelationType {
                 repository.registerMethodUseType(methodIdentifier, usingMethodIdentifier.declaringType());
             });
         });
+
+        repository.registerDependency(specification.typeIdentifier, specification.useTypes());
     }
 }

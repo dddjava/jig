@@ -2,7 +2,6 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.namespace.PackageIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -31,15 +30,12 @@ public class DependencyService {
         TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
         List<PackageDependency> list =
                 modelTypes.list().stream()
-                        .flatMap(identifier -> {
-                            PackageIdentifier packageIdentifier = identifier.packageIdentifier();
-                            return relationRepository.findAllUsage(identifier)
-                                    .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
-                                    .list().stream()
-                                    .map(TypeIdentifier::packageIdentifier)
-                                    .filter(usagePackage -> !packageIdentifier.equals(usagePackage))
-                                    .map(usagePackage -> new PackageDependency(usagePackage, packageIdentifier));
-                        })
+                        .flatMap(identifier -> relationRepository.findDependency(identifier)
+                                .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
+                                .list().stream()
+                                .map(TypeIdentifier::packageIdentifier)
+                                .map(usePackage -> new PackageDependency(identifier.packageIdentifier(), usePackage))
+                                .filter(PackageDependency::notSelfRelation))
                         .distinct()
                         .collect(Collectors.toList());
 

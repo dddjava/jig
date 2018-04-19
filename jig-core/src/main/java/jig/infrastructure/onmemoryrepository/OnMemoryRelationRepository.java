@@ -133,13 +133,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier) {
-        TypeIdentifiers methodUsages = findMethodUsage(typeIdentifier).declaringTypes();
-        TypeIdentifiers fieldUsages = findFieldUsage(typeIdentifier);
-        return methodUsages.merge(fieldUsages);
-    }
-
-    @Override
     public FieldIdentifiers findConstants(TypeIdentifier type) {
         return constants.stream()
                 .filter(typeRelation -> typeRelation.from().equals(type))
@@ -153,5 +146,17 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .filter(typeRelation -> typeRelation.from().equals(type))
                 .map(TypeRelation::field)
                 .collect(FieldIdentifiers.collector());
+    }
+
+    Map<TypeIdentifier, TypeIdentifiers> map = new HashMap<>();
+
+    @Override
+    public void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers) {
+        map.put(typeIdentifier, typeIdentifiers);
+    }
+
+    @Override
+    public TypeIdentifiers findDependency(TypeIdentifier identifier) {
+        return map.get(identifier);
     }
 }

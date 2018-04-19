@@ -41,9 +41,11 @@ public interface RelationRepository {
 
     MethodIdentifiers findMethodUsage(TypeIdentifier name);
 
-    TypeIdentifiers findAllUsage(TypeIdentifier typeIdentifier);
-
     FieldIdentifiers findConstants(TypeIdentifier type);
 
     FieldIdentifiers findFieldsOf(TypeIdentifier typeIdentifier);
+
+    void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers);
+
+    TypeIdentifiers findDependency(TypeIdentifier identifier);
 }

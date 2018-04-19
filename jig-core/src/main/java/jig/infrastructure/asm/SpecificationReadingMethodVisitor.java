@@ -2,6 +2,7 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.specification.MethodSpecification;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 
 class SpecificationReadingMethodVisitor extends MethodVisitor {
 
@@ -22,5 +23,13 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         methodSpecification.addMethodInstruction(owner, name, descriptor);
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    }
+
+    @Override
+    public void visitLdcInsn(Object value) {
+        if (value instanceof Type) {
+            methodSpecification.addLdcType(Type.class.cast(value));
+        }
+        super.visitLdcInsn(value);
     }
 }

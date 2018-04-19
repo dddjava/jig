@@ -69,4 +69,8 @@ public class MethodSpecification {
     public boolean isInstanceMethod() {
         return isInstanceMethod;
     }
+
+    public void addLdcType(Type type) {
+        useTypes.add(new TypeIdentifier(type.getClassName()));
+    }
 }

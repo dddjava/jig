@@ -15,10 +15,7 @@ import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
-import stub.domain.model.kind.BehaviourEnum;
-import stub.domain.model.kind.ParameterizedEnum;
-import stub.domain.model.kind.PolymorphismEnum;
-import stub.domain.model.kind.RichEnum;
+import stub.domain.model.kind.*;
 import stub.domain.model.type.*;
 
 import java.net.URI;
@@ -63,14 +60,15 @@ public class AnalyzeCharacteristicTest {
 
     @Test
     void 区分() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM).list()).hasSize(5);
-
         assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM_BEHAVIOUR).list()).extracting(TypeIdentifier::fullQualifiedName)
-                .containsExactly(BehaviourEnum.class.getTypeName(), RichEnum.class.getTypeName());
+                .contains(BehaviourEnum.class.getTypeName(), RichEnum.class.getTypeName())
+                .doesNotContain(ParameterizedEnum.class.getTypeName(), PolymorphismEnum.class.getTypeName(), SimpleEnum.class.getTypeName());
         assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM_PARAMETERIZED).list()).extracting(TypeIdentifier::fullQualifiedName)
-                .containsExactly(ParameterizedEnum.class.getTypeName(), RichEnum.class.getTypeName());
+                .contains(ParameterizedEnum.class.getTypeName(), RichEnum.class.getTypeName())
+                .doesNotContain(BehaviourEnum.class.getTypeName(), PolymorphismEnum.class.getTypeName(), SimpleEnum.class.getTypeName());
         assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM_POLYMORPHISM).list()).extracting(TypeIdentifier::fullQualifiedName)
-                .containsExactly(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName());
+                .contains(PolymorphismEnum.class.getTypeName(), RichEnum.class.getTypeName())
+                .doesNotContain(BehaviourEnum.class.getTypeName(), ParameterizedEnum.class.getTypeName(), SimpleEnum.class.getTypeName());
     }
 
     @Test

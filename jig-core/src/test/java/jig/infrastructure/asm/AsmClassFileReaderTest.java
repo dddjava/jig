@@ -11,16 +11,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.RelationReadTarget;
+import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.MethodInstruction;
+import stub.domain.model.relation.RelationReadTarget;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
 import stub.domain.model.relation.qux.Qux;
-import stub.domain.model.relation.test.ArrayField;
-import stub.domain.model.relation.test.FugaException;
-import stub.domain.model.relation.test.LocalValue;
-import stub.domain.model.relation.test.MethodArgument;
+import stub.domain.model.relation.test.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,6 +45,22 @@ public class AsmClassFileReaderTest {
                 )
                 .doesNotContain(
                         new TypeIdentifier(LocalValue.class)
+                );
+    }
+
+    @Test
+    void enumで使用するクラスのテスト() throws Exception {
+        Path path = Paths.get(EnumDefinition.class.getResource(EnumDefinition.class.getSimpleName().concat(".class")).toURI());
+
+        AsmClassFileReader sut = new AsmClassFileReader();
+        Specification actual = sut.readSpecification(new SpecificationSource(path));
+
+        TypeIdentifiers identifiers = actual.useTypes();
+        assertThat(identifiers.list())
+                .contains(
+                        new TypeIdentifier(InstanceField.class),
+                        new TypeIdentifier(ConstructorArgument.class),
+                        new TypeIdentifier(ClassReference.class)
                 );
     }
 

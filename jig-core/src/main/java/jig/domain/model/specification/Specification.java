@@ -104,6 +104,7 @@ public class Specification {
 
     public void addAnnotation(ClassDescriptor classDescriptor) {
         annotationDescriptors.add(classDescriptor);
+        useTypes.add(classDescriptor.toTypeIdentifier());
     }
 
     public void add(MethodSpecification methodSpecification) {

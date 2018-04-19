@@ -5,6 +5,7 @@ import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.MethodSpecification;
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
@@ -18,6 +19,13 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     public SpecificationReadingMethodVisitor(int api, MethodSpecification methodSpecification) {
         super(api);
         this.methodSpecification = methodSpecification;
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+        methodSpecification.registerAnnotation(new TypeIdentifier(Type.getType(descriptor).getClassName()));
+
+        return super.visitAnnotation(descriptor, visible);
     }
 
     @Override

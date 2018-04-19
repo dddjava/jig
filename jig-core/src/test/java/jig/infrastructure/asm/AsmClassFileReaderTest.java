@@ -37,6 +37,7 @@ public class AsmClassFileReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
+                        new TypeIdentifier(RetentionClassAnnotation.class),
                         new TypeIdentifier(SuperClass.class),
                         new TypeIdentifier(ImplementA.class),
                         new TypeIdentifier(ImplementB.class),
@@ -54,6 +55,7 @@ public class AsmClassFileReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
+                        new TypeIdentifier(RetentionClassAnnotation.class),
                         new TypeIdentifier(StaticField.class),
                         new TypeIdentifier(InstanceField.class),
                         new TypeIdentifier(GenericField.class),
@@ -73,6 +75,7 @@ public class AsmClassFileReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
+                        new TypeIdentifier(RetentionClassAnnotation.class),
                         new TypeIdentifier(Foo.class),
                         new TypeIdentifier(Bar.class),
                         new TypeIdentifier(Baz.class),

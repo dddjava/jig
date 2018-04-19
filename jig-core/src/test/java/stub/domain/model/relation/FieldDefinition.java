@@ -14,5 +14,6 @@ public class FieldDefinition {
 
     ArrayField[] arrayFields;
 
+    @RetentionClassAnnotation
     Object obj = FieldReference.FIELD;
 }

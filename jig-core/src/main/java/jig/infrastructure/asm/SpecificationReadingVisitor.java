@@ -81,7 +81,14 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 specification.addConstant(field);
             }
         }
-        return super.visitField(access, name, descriptor, signature, value);
+        return new FieldVisitor(this.api) {
+            @Override
+            public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                String annotationClassName = Type.getType(descriptor).getClassName();
+                specification.addUseType(new TypeIdentifier(annotationClassName));
+                return super.visitAnnotation(descriptor, visible);
+            }
+        };
     }
 
     @Override

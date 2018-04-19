@@ -66,4 +66,8 @@ public class MethodSpecification {
     public boolean isInstanceMethod() {
         return isInstanceMethod;
     }
+
+    public void registerAnnotation(TypeIdentifier type) {
+        useTypes.add(type);
+    }
 }

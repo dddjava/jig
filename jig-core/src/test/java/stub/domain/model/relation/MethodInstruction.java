@@ -7,6 +7,7 @@ import java.util.List;
 
 public class MethodInstruction {
 
+    @RetentionClassAnnotation
     void method(MethodArgument methodArgument) {
         // ローカル変数宣言だけ
         LocalValue localValue = null;

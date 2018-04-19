@@ -28,7 +28,8 @@ public class Specification {
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
                          int classAccess,
-                         TypeIdentifiers interfaceTypeIdentifiers) {
+                         TypeIdentifiers interfaceTypeIdentifiers,
+                         List<TypeIdentifier> useTypes) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
@@ -38,7 +39,9 @@ public class Specification {
         this.fieldIdentifiers = new ArrayList<>();
         this.constantIdentifiers = new ArrayList<>();
 
+        this.useTypes.addAll(useTypes);
         this.useTypes.add(parentTypeIdentifier);
+        this.useTypes.addAll(interfaceTypeIdentifiers.list());
     }
 
     public boolean canExtend() {

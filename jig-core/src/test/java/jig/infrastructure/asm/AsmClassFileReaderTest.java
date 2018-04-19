@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
+import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.RelationReadTarget;
@@ -28,6 +29,23 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmClassFileReaderTest {
+
+    @Test
+    void クラス定義のテスト() throws Exception {
+        Path path = Paths.get(ClassDefinition.class.getResource(ClassDefinition.class.getSimpleName().concat(".class")).toURI());
+
+        AsmClassFileReader sut = new AsmClassFileReader();
+        Specification actual = sut.readSpecification(new SpecificationSource(path));
+
+        TypeIdentifiers identifiers = actual.useTypes();
+        assertThat(identifiers.list())
+                .contains(
+                        new TypeIdentifier(SuperClass.class),
+                        new TypeIdentifier(ImplementA.class),
+                        new TypeIdentifier(ImplementB.class),
+                        new TypeIdentifier(GenericArgument.class)
+                );
+    }
 
     @Test
     void メソッドで使用するクラスのテスト() throws Exception {

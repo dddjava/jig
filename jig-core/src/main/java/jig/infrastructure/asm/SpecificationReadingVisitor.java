@@ -31,12 +31,16 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        List<TypeIdentifier> useTypes = extractSignatureClassType(signature);
+
         this.specification = new Specification(
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
                 access,
-                Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector())
+                Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
+                useTypes
         );
+
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
@@ -72,19 +76,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
         MethodIdentifier identifier = new MethodIdentifier(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
 
-        List<TypeIdentifier> useTypes = new ArrayList<>();
-        if (signature != null) {
-            // ジェネリクスを使用している場合だけsignatureが入る
-            new SignatureReader(signature).accept(
-                    new SignatureVisitor(this.api) {
-                        @Override
-                        public void visitClassType(String name) {
-                            // 引数と戻り値に登場するクラスを収集
-                            useTypes.add(new TypeIdentifier(name));
-                        }
-                    }
-            );
-        }
+        List<TypeIdentifier> useTypes = extractSignatureClassType(signature);
         if (exceptions != null) {
             for (String exception : exceptions) {
                 useTypes.add(new TypeIdentifier(exception));
@@ -99,5 +91,22 @@ class SpecificationReadingVisitor extends ClassVisitor {
         );
         specification.add(methodSpecification);
         return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
+    }
+
+    private List<TypeIdentifier> extractSignatureClassType(String signature) {
+        List<TypeIdentifier> useTypes = new ArrayList<>();
+        if (signature != null) {
+            // ジェネリクスを使用している場合だけsignatureが入る
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(this.api) {
+                        @Override
+                        public void visitClassType(String name) {
+                            // 引数と戻り値に登場するクラスを収集
+                            useTypes.add(new TypeIdentifier(name));
+                        }
+                    }
+            );
+        }
+        return useTypes;
     }
 }

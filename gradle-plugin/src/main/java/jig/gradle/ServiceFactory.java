@@ -10,13 +10,11 @@ import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramMaker;
 import jig.domain.model.diagram.DiagramRepository;
 import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.jdeps.RelationAnalyzer;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
-import jig.infrastructure.jdeps.JdepsExecutor;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -93,11 +91,6 @@ public class ServiceFactory {
                 japaneseNameRepository,
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath)
         );
-    }
-
-
-    RelationAnalyzer relationAnalyzer() {
-        return new JdepsExecutor();
     }
 
     DiagramService diagramService(String outputOmitPrefix) {

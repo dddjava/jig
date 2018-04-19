@@ -74,20 +74,12 @@ project(':diagram-plantuml') {
     }
 }
 
-project(':infrastructure-jdeps') {
-    dependencies {
-        compile files("${System.getProperty('java.home')}/../lib/tools.jar")
-        compile project(':jig-core')
-    }
-}
-
 project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
         compile project(':jig-core')
         compile project(':diagram-plantuml')
-        compile project(':infrastructure-jdeps')
         compile 'org.springframework.boot:spring-boot-starter'
     }
 }
@@ -132,7 +124,6 @@ project(':gradle-plugin') {
     dependencies {
         compile project(':jig-core')
         compile project(':class-list-format')
-        compile project(':infrastructure-jdeps')
         compile project(':diagram-plantuml')
         compile gradleApi()
         compile localGroovy()

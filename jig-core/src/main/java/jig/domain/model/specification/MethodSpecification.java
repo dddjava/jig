@@ -37,8 +37,11 @@ public class MethodSpecification {
         return returnType;
     }
 
-    public void registerUsingField(FieldIdentifier field) {
+    public void registerUsingField(TypeIdentifier ownerType, FieldIdentifier field) {
         usingFields.add(field);
+
+        useTypes.add(ownerType);
+        useTypes.add(field.typeIdentifier());
     }
 
     public void registerMethodInstruction(TypeIdentifier ownerType, MethodIdentifier methodIdentifier, TypeIdentifier returnType) {

@@ -20,4 +20,9 @@ public class MethodInstruction {
         new Instantiation();
         return null;
     }
+
+    void fieldReference() {
+        // 別クラスのフィールドを参照する
+        Object obj = FieldReference.FIELD;
+    }
 }

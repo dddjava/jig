@@ -22,9 +22,10 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+        TypeIdentifier ownerType = new TypeIdentifier(owner);
         TypeIdentifier fieldType = new TypeIdentifier(Type.getType(descriptor).getClassName());
         FieldIdentifier field = new FieldIdentifier(name, fieldType);
-        methodSpecification.registerUsingField(field);
+        methodSpecification.registerUsingField(ownerType, field);
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }

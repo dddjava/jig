@@ -45,7 +45,9 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(Instantiation.class),
                         new TypeIdentifier(FugaException.class),
                         new TypeIdentifier(MethodArgument.class),
-                        new TypeIdentifier(GenericArgument.class)
+                        new TypeIdentifier(GenericArgument.class),
+                        new TypeIdentifier(FieldReference.class),
+                        new TypeIdentifier(ReferenceField.class)
                 )
                 .doesNotContain(
                         new TypeIdentifier(LocalValue.class)

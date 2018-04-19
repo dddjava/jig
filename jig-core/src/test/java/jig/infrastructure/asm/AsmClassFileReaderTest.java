@@ -11,7 +11,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.*;
+import stub.domain.model.relation.ClassDefinition;
+import stub.domain.model.relation.EnumDefinition;
+import stub.domain.model.relation.FieldDefinition;
+import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
@@ -59,6 +62,7 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(StaticField.class),
                         new TypeIdentifier(InstanceField.class),
                         new TypeIdentifier(GenericField.class),
+                        new TypeIdentifier(ArrayField.class.getName() + "[]"),
                         new TypeIdentifier(ArrayField.class),
                         new TypeIdentifier(FieldReference.class),
                         new TypeIdentifier(ReferenceField.class)
@@ -86,11 +90,16 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(FieldReference.class),
                         new TypeIdentifier(ReferenceField.class),
                         new TypeIdentifier(UseInLambda.class),
-                        new TypeIdentifier(MethodReference.class)
+                        new TypeIdentifier(MethodReference.class),
+                        new TypeIdentifier(Qux.Quuz.class),
+                        new TypeIdentifier(ThrowingException.class)
                 )
                 .doesNotContain(
-                        new TypeIdentifier(LocalValue.class)
+                        new TypeIdentifier(LocalValue.class),
+                        new TypeIdentifier(Qux.class)
                 );
+
+        assertThat(actual.hasField()).isFalse();
     }
 
     @Test
@@ -106,28 +115,6 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(InstanceField.class),
                         new TypeIdentifier(ConstructorArgument.class),
                         new TypeIdentifier(ClassReference.class)
-                );
-    }
-
-    @Test
-    void relationReadTest() throws Exception {
-        Path path = Paths.get(RelationReadTarget.class.getResource(RelationReadTarget.class.getSimpleName().concat(".class")).toURI());
-
-        AsmClassFileReader sut = new AsmClassFileReader();
-        Specification actual = sut.readSpecification(new SpecificationSource(path));
-
-        TypeIdentifiers identifiers = actual.useTypes();
-
-        assertThat(identifiers.list())
-                .contains(
-                        new TypeIdentifier(Foo.class),
-                        new TypeIdentifier(ArrayField.class.getName() + "[]"),
-                        new TypeIdentifier(Bar.class),
-                        new TypeIdentifier(Baz.class),
-                        new TypeIdentifier(FugaException.class),
-                        new TypeIdentifier(MethodArgument.class),
-                        new TypeIdentifier(Qux.Quuz.class)
-                        // new TypeIdentifier(UseInLambda.class)
                 );
     }
 

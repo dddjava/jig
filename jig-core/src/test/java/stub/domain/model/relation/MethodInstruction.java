@@ -1,6 +1,7 @@
 package stub.domain.model.relation;
 
 import stub.domain.model.relation.foo.Foo;
+import stub.domain.model.relation.qux.Qux;
 import stub.domain.model.relation.test.*;
 
 import java.util.List;
@@ -39,5 +40,13 @@ public class MethodInstruction {
     MethodReturn method(List<GenericArgument> list) throws FugaException {
         new Instantiation();
         return null;
+    }
+
+    void nestedClass() {
+        new Qux.Quuz();
+    }
+
+    void causeException() throws ThrowingException {
+        throw new ThrowingException();
     }
 }

@@ -119,4 +119,8 @@ public class Specification {
         constantIdentifiers.add(field);
         useTypes.add(field.typeIdentifier());
     }
+
+    public void addUseType(TypeIdentifier typeIdentifier) {
+        useTypes.add(typeIdentifier);
+    }
 }

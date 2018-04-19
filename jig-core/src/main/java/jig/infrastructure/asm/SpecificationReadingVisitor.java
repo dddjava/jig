@@ -52,6 +52,23 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
+        if (signature != null) {
+            new SignatureReader(signature).acceptType(
+                    new SignatureVisitor(this.api) {
+                        @Override
+                        public void visitClassType(String name) {
+                            specification.addUseType(new TypeIdentifier(name));
+                        }
+                    }
+            );
+        }
+
+        // 配列フィールドの型
+        if (descriptor.charAt(0) == '[') {
+            Type elementType = Type.getType(descriptor).getElementType();
+            specification.addUseType(new TypeIdentifier(elementType.getClassName()));
+        }
+
         TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
         FieldIdentifier field = new FieldIdentifier(name, typeIdentifier);
 

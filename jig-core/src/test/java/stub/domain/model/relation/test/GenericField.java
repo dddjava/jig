@@ -1,4 +1,4 @@
 package stub.domain.model.relation.test;
 
-public class GenericsField {
+public class GenericField {
 }

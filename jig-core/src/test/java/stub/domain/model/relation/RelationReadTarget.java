@@ -18,7 +18,7 @@ public class RelationReadTarget {
     // 配列
     ArrayField[] array;
     // ジェネリクス
-    List<GenericsField> list;
+    List<GenericField> list;
 
     // 戻り値と例外
     Baz foo() throws FugaException {

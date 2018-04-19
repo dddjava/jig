@@ -11,10 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.ClassDefinition;
-import stub.domain.model.relation.EnumDefinition;
-import stub.domain.model.relation.MethodInstruction;
-import stub.domain.model.relation.RelationReadTarget;
+import stub.domain.model.relation.*;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
@@ -44,6 +41,25 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(ImplementA.class),
                         new TypeIdentifier(ImplementB.class),
                         new TypeIdentifier(GenericArgument.class)
+                );
+    }
+
+    @Test
+    void フィールド定義のテスト() throws Exception {
+        Path path = Paths.get(FieldDefinition.class.getResource(FieldDefinition.class.getSimpleName().concat(".class")).toURI());
+
+        AsmClassFileReader sut = new AsmClassFileReader();
+        Specification actual = sut.readSpecification(new SpecificationSource(path));
+
+        TypeIdentifiers identifiers = actual.useTypes();
+        assertThat(identifiers.list())
+                .contains(
+                        new TypeIdentifier(StaticField.class),
+                        new TypeIdentifier(InstanceField.class),
+                        new TypeIdentifier(GenericField.class),
+                        new TypeIdentifier(ArrayField.class),
+                        new TypeIdentifier(FieldReference.class),
+                        new TypeIdentifier(ReferenceField.class)
                 );
     }
 

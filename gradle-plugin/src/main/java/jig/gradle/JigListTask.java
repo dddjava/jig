@@ -1,9 +1,13 @@
 package jig.gradle;
 
+import jig.application.service.AnalyzeService;
+import jig.application.service.ReportService;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.IOException;
@@ -17,21 +21,30 @@ public class JigListTask extends DefaultTask {
 
     @TaskAction
     public void apply() {
-        JigListExtension extension = getProject().getExtensions().findByType(JigListExtension.class);
+        ExtensionContainer extensions = getProject().getExtensions();
+        JigListExtension extension = extensions.findByType(JigListExtension.class);
+        ProjectLocation projectLocation = new ProjectLocation(getProject().getProjectDir().toPath());
+        Convention convention = getProject().getConvention();
+        AnalyzeService analyzeService = serviceFactory.analyzeService(convention);
+        analyzeService.importProject(projectLocation);
 
-        Path path = getProject().getProjectDir().toPath();
-        serviceFactory.analyzeService().importProject(new ProjectLocation(path));
+        String outputPath = extension.getOutputPath();
+        ensureExists(outputPath);
 
-        Reports reports = serviceFactory.reportService(extension.getOutputPath()).reports();
+        ReportService reportService = serviceFactory.reportService(outputPath);
+        Reports reports = reportService.reports();
 
-        Path outputDirPath = Paths.get(extension.getOutputPath()).getParent();
+        ReportFormat.from(outputPath)
+                .writer()
+                .writeTo(reports, Paths.get(outputPath));
+    }
+
+    private void ensureExists(String outputPath) {
+        Path outputDirPath = Paths.get(outputPath);
         try {
-            Files.createDirectories(outputDirPath);
+            Files.createDirectories(outputDirPath.getParent());
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-        ReportFormat.from(extension.getOutputPath())
-                .writer()
-                .writeTo(reports, Paths.get(extension.getOutputPath()));
     }
 }

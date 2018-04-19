@@ -8,17 +8,9 @@ import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 class SpecificationReadingVisitor extends ClassVisitor {
-
-    private TypeIdentifier typeIdentifier;
-    private List<ClassDescriptor> annotationDescriptors = new ArrayList<>();
-    private List<MethodSpecification> methodSpecifications = new ArrayList<>();
-    private List<FieldIdentifier> fieldDescriptors = new ArrayList<>();
-    private List<FieldIdentifier> constantDescriptors = new ArrayList<>();
 
     private Specification specification;
 
@@ -32,24 +24,18 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        this.typeIdentifier = new TypeIdentifier(name);
-        TypeIdentifier superType = new TypeIdentifier(superName);
         this.specification = new Specification(
-                typeIdentifier,
-                superType,
+                new TypeIdentifier(name),
+                new TypeIdentifier(superName),
                 access,
-                Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
-                annotationDescriptors,
-                methodSpecifications,
-                fieldDescriptors,
-                constantDescriptors);
-        this.specification.addUseType(superType);
+                Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector())
+        );
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        this.annotationDescriptors.add(new ClassDescriptor(descriptor));
+        specification.addAnnotation(new ClassDescriptor(descriptor));
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -57,15 +43,14 @@ class SpecificationReadingVisitor extends ClassVisitor {
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
         FieldIdentifier field = new FieldIdentifier(name, typeIdentifier);
-        specification.addUseType(typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            fieldDescriptors.add(field);
+            specification.add(field);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                constantDescriptors.add(field);
+                specification.addConstant(field);
             }
         }
         return super.visitField(access, name, descriptor, signature, value);
@@ -73,11 +58,14 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        // インスタンスメソッドだけ相手にする
-        MethodSpecification methodSpecification1 = new MethodSpecification(typeIdentifier, name, descriptor, exceptions, (access & Opcodes.ACC_STATIC) != 0);
-        this.methodSpecifications.add(methodSpecification1);
-        MethodSpecification methodSpecification = methodSpecification1;
-
+        MethodSpecification methodSpecification = new MethodSpecification(
+                specification.typeIdentifier,
+                name,
+                descriptor,
+                exceptions,
+                (access & Opcodes.ACC_STATIC) != 0
+        );
+        specification.add(methodSpecification);
         return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
     }
 }

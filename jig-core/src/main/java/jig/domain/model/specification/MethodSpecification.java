@@ -44,14 +44,12 @@ public class MethodSpecification {
     }
 
     public void addFieldInstruction(String owner, String name, String descriptor) {
-        // 使っているフィールドの型がわかればOK
         Type type = Type.getType(descriptor);
         TypeIdentifier fieldType = new TypeIdentifier(type.getClassName());
         usingFieldTypeIdentifiers.add(new FieldIdentifier(name, fieldType));
     }
 
     public void addMethodInstruction(String owner, String name, String descriptor) {
-        // 使ってるメソッドがわかりたい
         TypeIdentifier ownerTypeIdentifier = new TypeIdentifier(owner);
         List<TypeIdentifier> arguments = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(Type::getClassName)

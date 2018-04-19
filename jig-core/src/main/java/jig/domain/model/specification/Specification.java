@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class Specification {
 
     public TypeIdentifier typeIdentifier;
+
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
@@ -27,19 +28,17 @@ public class Specification {
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
                          int classAccess,
-                         TypeIdentifiers interfaceTypeIdentifiers,
-                         List<ClassDescriptor> annotationDescriptors,
-                         List<MethodSpecification> methodSpecifications,
-                         List<FieldIdentifier> fieldIdentifiers,
-                         List<FieldIdentifier> constantIdentifiers) {
+                         TypeIdentifiers interfaceTypeIdentifiers) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
-        this.annotationDescriptors = annotationDescriptors;
-        this.methodSpecifications = methodSpecifications;
-        this.fieldIdentifiers = fieldIdentifiers;
-        this.constantIdentifiers = constantIdentifiers;
+        this.annotationDescriptors = new ArrayList<>();
+        this.methodSpecifications = new ArrayList<>();
+        this.fieldIdentifiers = new ArrayList<>();
+        this.constantIdentifiers = new ArrayList<>();
+
+        this.useTypes.add(parentTypeIdentifier);
     }
 
     public boolean canExtend() {
@@ -96,11 +95,25 @@ public class Specification {
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public void addUseType(TypeIdentifier identifier) {
-        useTypes.add(identifier);
-    }
-
     public List<MethodSpecification> instanceMethodSpecifications() {
         return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
+    }
+
+    public void addAnnotation(ClassDescriptor classDescriptor) {
+        annotationDescriptors.add(classDescriptor);
+    }
+
+    public void add(MethodSpecification methodSpecification) {
+        methodSpecifications.add(methodSpecification);
+    }
+
+    public void add(FieldIdentifier field) {
+        fieldIdentifiers.add(field);
+        useTypes.add(field.typeIdentifier());
+    }
+
+    public void addConstant(FieldIdentifier field) {
+        constantIdentifiers.add(field);
+        useTypes.add(field.typeIdentifier());
     }
 }

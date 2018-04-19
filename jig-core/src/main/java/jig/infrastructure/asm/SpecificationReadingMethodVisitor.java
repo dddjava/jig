@@ -6,6 +6,7 @@ import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.MethodSpecification;
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
@@ -61,5 +62,22 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
             methodSpecification.registerClassReference(type);
         }
         super.visitLdcInsn(value);
+    }
+
+    @Override
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+        for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
+            if (bootstrapMethodArgument instanceof Type) {
+                Type type = (Type) bootstrapMethodArgument;
+                if (type.getSort() == Type.METHOD) {
+                    Type returnType = type.getReturnType();
+                    methodSpecification.registerInvokeDynamic(new TypeIdentifier(returnType.getClassName()));
+                    for (Type argumentType : type.getArgumentTypes()) {
+                        methodSpecification.registerInvokeDynamic(new TypeIdentifier(argumentType.getClassName()));
+                    }
+                }
+            }
+        }
+        super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
     }
 }

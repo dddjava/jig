@@ -84,7 +84,9 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(MethodArgument.class),
                         new TypeIdentifier(GenericArgument.class),
                         new TypeIdentifier(FieldReference.class),
-                        new TypeIdentifier(ReferenceField.class)
+                        new TypeIdentifier(ReferenceField.class),
+                        new TypeIdentifier(UseInLambda.class),
+                        new TypeIdentifier(MethodReference.class)
                 )
                 .doesNotContain(
                         new TypeIdentifier(LocalValue.class)

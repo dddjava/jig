@@ -70,4 +70,8 @@ public class MethodSpecification {
     public void registerAnnotation(TypeIdentifier type) {
         useTypes.add(type);
     }
+
+    public void registerInvokeDynamic(TypeIdentifier type) {
+        useTypes.add(type);
+    }
 }

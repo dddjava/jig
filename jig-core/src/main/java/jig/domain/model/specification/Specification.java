@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Specification {
 
@@ -18,7 +19,7 @@ public class Specification {
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
     List<ClassDescriptor> annotationDescriptors;
-    public List<MethodSpecification> methodSpecifications;
+    List<MethodSpecification> methodSpecifications;
     List<FieldIdentifier> fieldIdentifiers;
     List<FieldIdentifier> constantIdentifiers;
     private Set<TypeIdentifier> useTypes = new HashSet<>();
@@ -97,5 +98,9 @@ public class Specification {
 
     public void addUseType(TypeIdentifier identifier) {
         useTypes.add(identifier);
+    }
+
+    public List<MethodSpecification> instanceMethodSpecifications() {
+        return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
     }
 }

@@ -74,17 +74,10 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         // インスタンスメソッドだけ相手にする
-        if ((access & Opcodes.ACC_STATIC) == 0 && !name.equals("<init>")) {
-            MethodSpecification methodSpecification = newInstanceMethod(name, descriptor, exceptions);
+        MethodSpecification methodSpecification1 = new MethodSpecification(typeIdentifier, name, descriptor, exceptions, (access & Opcodes.ACC_STATIC) != 0);
+        this.methodSpecifications.add(methodSpecification1);
+        MethodSpecification methodSpecification = methodSpecification1;
 
-            return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
-        }
-        return super.visitMethod(access, name, descriptor, signature, exceptions);
-    }
-
-    public MethodSpecification newInstanceMethod(String methodName, String descriptor, String[] exceptions) {
-        MethodSpecification methodSpecification = new MethodSpecification(typeIdentifier, methodName, descriptor, exceptions);
-        this.methodSpecifications.add(methodSpecification);
-        return methodSpecification;
+        return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
     }
 }

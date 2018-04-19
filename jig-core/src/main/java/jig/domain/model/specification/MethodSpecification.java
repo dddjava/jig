@@ -14,8 +14,9 @@ public class MethodSpecification {
     public final MethodIdentifier identifier;
     private Set<TypeIdentifier> useTypes = new HashSet<>();
     private final TypeIdentifier returnType;
+    private final boolean isInstanceMethod;
 
-    public MethodSpecification(TypeIdentifier classTypeIdentifier, String name, String descriptor, String[] exceptions) {
+    public MethodSpecification(TypeIdentifier classTypeIdentifier, String name, String descriptor, String[] exceptions, boolean isStatic) {
         this.returnType = new TypeIdentifier(Type.getReturnType(descriptor).getClassName());
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(Type::getClassName)
@@ -31,6 +32,8 @@ public class MethodSpecification {
                 this.useTypes.add(new TypeIdentifier(exception));
             }
         }
+
+        this.isInstanceMethod = !isStatic && !name.equals("<init>");
     }
 
     public final List<FieldIdentifier> usingFieldTypeIdentifiers = new ArrayList<>();
@@ -64,6 +67,6 @@ public class MethodSpecification {
     }
 
     public boolean isInstanceMethod() {
-        return true;
+        return isInstanceMethod;
     }
 }

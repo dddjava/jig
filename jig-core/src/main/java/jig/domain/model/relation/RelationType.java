@@ -21,7 +21,7 @@ public enum RelationType {
         specification.constantIdentifiers().list().forEach(fieldIdentifier ->
                 repository.registerConstants(specification.typeIdentifier, fieldIdentifier));
 
-        specification.methodSpecifications.forEach(methodSpecification -> {
+        specification.instanceMethodSpecifications().forEach(methodSpecification -> {
             MethodIdentifier methodIdentifier = methodSpecification.identifier;
             repository.registerMethod(methodIdentifier);
             repository.registerMethodParameter(methodIdentifier);

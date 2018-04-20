@@ -11,7 +11,6 @@ import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.report.Perspective;
 import jig.domain.model.report.method.MethodDetail;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.method.MethodReport;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -37,10 +35,10 @@ public class ReportService {
     final TypeIdentifierFormatter typeIdentifierFormatter;
 
     public ReportService(CharacteristicRepository characteristicRepository,
-                  RelationRepository relationRepository,
-                  SqlRepository sqlRepository,
-                  JapaneseNameRepository japaneseNameRepository,
-                  TypeIdentifierFormatter typeIdentifierFormatter) {
+                         RelationRepository relationRepository,
+                         SqlRepository sqlRepository,
+                         JapaneseNameRepository japaneseNameRepository,
+                         TypeIdentifierFormatter typeIdentifierFormatter) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
         this.sqlRepository = sqlRepository;
@@ -49,13 +47,16 @@ public class ReportService {
     }
 
     public Reports reports() {
-        List<Report> list = Arrays.stream(Perspective.values())
-                .map(perspective -> {
-                    if (perspective.isMethod()) return getMethodReport(perspective.getMethodPerspective());
-                    return getTypeReport(perspective.getTypePerspective());
-                })
-                .collect(Collectors.toList());
-        return new Reports(list);
+        return new Reports(Arrays.asList(
+                getMethodReport(MethodPerspective.SERVICE),
+                getMethodReport(MethodPerspective.REPOSITORY),
+                getTypeReport(TypePerspective.IDENTIFIER),
+                getTypeReport(TypePerspective.ENUM),
+                getTypeReport(TypePerspective.NUMBER),
+                getTypeReport(TypePerspective.COLLECTION),
+                getTypeReport(TypePerspective.DATE),
+                getTypeReport(TypePerspective.TERM)
+        ));
     }
 
     private Report getMethodReport(MethodPerspective perspective) {

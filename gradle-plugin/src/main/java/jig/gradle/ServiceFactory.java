@@ -1,9 +1,6 @@
 package jig.gradle;
 
-import jig.application.service.AnalyzeService;
-import jig.application.service.DependencyService;
-import jig.application.service.DiagramService;
-import jig.application.service.ReportService;
+import jig.application.service.*;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.diagram.DiagramConverter;
@@ -37,7 +34,7 @@ public class ServiceFactory {
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
 
-    final DiagramMaker diagramMaker =  new PlantumlDiagramMaker();
+    final DiagramMaker diagramMaker = new PlantumlDiagramMaker();
 
     final DiagramConverter diagramConverter(String outputOmitPrefix) {
         return new PlantumlDiagramConverter(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
@@ -52,7 +49,7 @@ public class ServiceFactory {
         JigPaths jigPaths = jigPaths(javaPluginConvention);
 
         return new AnalyzeService(
-                new AsmClassFileReader(),
+                new SpecificationService(new AsmClassFileReader()),
                 new MyBatisSqlReader(),
                 new JavaparserJapaneseReader(
                         japaneseNameRepository,

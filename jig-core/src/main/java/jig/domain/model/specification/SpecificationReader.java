@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-public interface ModelReader {
+public interface SpecificationReader {
 
     Specifications readFrom(SpecificationSources specificationSources);
 }

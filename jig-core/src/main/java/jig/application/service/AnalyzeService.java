@@ -7,7 +7,6 @@ import jig.domain.model.datasource.Sqls;
 import jig.domain.model.japanese.JapaneseReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
-import jig.domain.model.specification.ModelReader;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
@@ -16,20 +15,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnalyzeService {
 
-    final ModelReader modelReader;
+    final SpecificationService specificationService;
     final SqlReader sqlReader;
     final JapaneseReader japaneseReader;
     final DependencyService dependencyService;
     final JigPaths jigPaths;
     final SqlRepository sqlRepository;
 
-    public AnalyzeService(ModelReader modelReader,
+    public AnalyzeService(SpecificationService specificationService,
                           SqlReader sqlReader,
                           JapaneseReader japaneseReader,
                           DependencyService dependencyService,
                           JigPaths jigPaths,
                           SqlRepository sqlRepository) {
-        this.modelReader = modelReader;
+        this.specificationService = specificationService;
         this.sqlReader = sqlReader;
         this.japaneseReader = japaneseReader;
         this.dependencyService = dependencyService;
@@ -50,7 +49,8 @@ public class AnalyzeService {
     }
 
     public void importSpecification(ProjectLocation projectLocation) {
-        Specifications specifications = readFrom(projectLocation);
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
+        Specifications specifications = specificationService.specification(specificationSources);
         dependencyService.register(specifications);
     }
 
@@ -63,14 +63,4 @@ public class AnalyzeService {
     public void importJapanese(ProjectLocation projectLocation) {
         japaneseReader.readFrom(projectLocation);
     }
-
-    public Specifications readFrom(ProjectLocation projectLocation) {
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
-        if (specificationSources.notFound()) {
-            throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
-        }
-
-        return modelReader.readFrom(specificationSources);
-    }
-
 }

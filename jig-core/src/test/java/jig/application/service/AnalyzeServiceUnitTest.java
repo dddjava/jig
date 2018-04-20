@@ -1,7 +1,7 @@
 package jig.application.service;
 
 import jig.domain.model.project.ProjectLocation;
-import jig.domain.model.specification.ModelReader;
+import jig.domain.model.specification.SpecificationReader;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 
@@ -19,14 +19,14 @@ public class AnalyzeServiceUnitTest {
                 "not/match/any/directory",
                 "not/match/any/directory",
                 "not/match/any/directory");
-        ModelReader modelReaderMock = mock(ModelReader.class);
+        SpecificationReader specificationReaderMock = mock(SpecificationReader.class);
 
-        AnalyzeService sut = new AnalyzeService(modelReaderMock, null, null, null, jigPaths, null);
+        AnalyzeService sut = new AnalyzeService(new SpecificationService(specificationReaderMock), null, null, null, jigPaths, null);
 
         ProjectLocation location = new ProjectLocation(Paths.get(""));
 
         assertThatThrownBy(() -> sut.importProject(location))
                 .isInstanceOf(RuntimeException.class);
-        verifyZeroInteractions(modelReaderMock);
+        verifyZeroInteractions(specificationReaderMock);
     }
 }

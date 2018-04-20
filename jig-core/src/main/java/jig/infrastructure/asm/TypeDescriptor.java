@@ -1,13 +1,13 @@
-package jig.domain.model.specification;
+package jig.infrastructure.asm;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 import org.objectweb.asm.Type;
 
-public class ClassDescriptor {
+public class TypeDescriptor {
 
     String value;
 
-    public ClassDescriptor(String value) {
+    public TypeDescriptor(String value) {
         this.value = value;
     }
 

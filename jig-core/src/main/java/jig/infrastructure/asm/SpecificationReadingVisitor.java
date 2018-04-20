@@ -5,7 +5,6 @@ import jig.domain.model.identifier.method.MethodIdentifier;
 import jig.domain.model.identifier.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import jig.domain.model.specification.ClassDescriptor;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import org.objectweb.asm.*;
@@ -46,7 +45,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        specification.addAnnotation(new ClassDescriptor(descriptor));
+        specification.addAnnotation(new TypeDescriptor(descriptor).toTypeIdentifier());
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -69,7 +68,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             specification.addUseType(new TypeIdentifier(elementType.getClassName()));
         }
 
-        TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
+        TypeIdentifier typeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
         FieldIdentifier field = new FieldIdentifier(specification.typeIdentifier, name, typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {

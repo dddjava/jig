@@ -19,7 +19,7 @@ public class Specification {
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
-    List<ClassDescriptor> annotationDescriptors;
+    List<TypeIdentifier> annotationDescriptors;
     List<MethodSpecification> methodSpecifications;
     List<FieldIdentifier> fieldIdentifiers;
     List<FieldIdentifier> constantIdentifiers;
@@ -75,7 +75,7 @@ public class Specification {
     }
 
     public boolean hasAnnotation(String annotation) {
-        return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.value.equals(annotation));
+        return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.fullQualifiedName().equals(annotation));
     }
 
     public FieldIdentifiers fieldIdentifiers() {
@@ -102,9 +102,9 @@ public class Specification {
         return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
     }
 
-    public void addAnnotation(ClassDescriptor classDescriptor) {
-        annotationDescriptors.add(classDescriptor);
-        useTypes.add(classDescriptor.toTypeIdentifier());
+    public void addAnnotation(TypeIdentifier annotationType) {
+        annotationDescriptors.add(annotationType);
+        useTypes.add(annotationType);
     }
 
     public void add(MethodSpecification methodSpecification) {

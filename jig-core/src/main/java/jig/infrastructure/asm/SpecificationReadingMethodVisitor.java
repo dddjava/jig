@@ -24,7 +24,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        methodSpecification.registerAnnotation(typeDescriptorToIdentifier(descriptor));
+        methodSpecification.registerAnnotation(new TypeDescriptor(descriptor).toTypeIdentifier());
 
         return super.visitAnnotation(descriptor, visible);
     }
@@ -32,7 +32,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         methodSpecification.registerFieldInstruction(
-                new FieldIdentifier(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
+                new FieldIdentifier(new TypeIdentifier(owner), name, new TypeDescriptor(descriptor).toTypeIdentifier()));
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
@@ -74,10 +74,6 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
         }
 
         super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
-    }
-
-    private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
-        return toTypeIdentifier(Type.getType(descriptor));
     }
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

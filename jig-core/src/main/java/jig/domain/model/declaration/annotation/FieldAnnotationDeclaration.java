@@ -7,10 +7,12 @@ public class FieldAnnotationDeclaration {
 
     final FieldDeclaration fieldDeclaration;
     final TypeIdentifier annotationType;
+    final AnnotationDescription description;
 
-    public FieldAnnotationDeclaration(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType) {
+    public FieldAnnotationDeclaration(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
         this.fieldDeclaration = fieldDeclaration;
         this.annotationType = annotationType;
+        this.description = description;
     }
 
     public FieldDeclaration fieldDeclaration() {
@@ -19,5 +21,9 @@ public class FieldAnnotationDeclaration {
 
     public TypeIdentifier annotationType() {
         return annotationType;
+    }
+
+    public AnnotationDescription description() {
+        return description;
     }
 }

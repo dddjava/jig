@@ -1,6 +1,7 @@
 package jig.domain.model.report.validation;
 
 import jig.application.service.GlossaryService;
+import jig.domain.model.declaration.annotation.AnnotationDescription;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
@@ -29,5 +30,9 @@ public class AnnotationDetail {
 
     public TypeIdentifier annotationType() {
         return annotationDeclaration.annotationType();
+    }
+
+    public AnnotationDescription description() {
+        return annotationDeclaration.annotationDescription();
     }
 }

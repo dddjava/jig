@@ -7,7 +7,7 @@ public enum ValidationConcern {
     クラス和名(detail -> detail.japaneseName().value()),
     フィールドorメソッド(AnnotationDetail::annotateSimpleName),
     アノテーション名(detail -> detail.annotationType().asSimpleText()),
-    記述(detail -> "");
+    記述(detail -> detail.description().asText());
 
     private final Function<AnnotationDetail, String> function;
 

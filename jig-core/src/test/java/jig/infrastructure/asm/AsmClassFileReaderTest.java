@@ -1,15 +1,15 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import jig.domain.model.specification.Specification;
-import jig.domain.model.specification.SpecificationSource;
-import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.specification.Specifications;
+import jig.domain.model.specification.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import stub.domain.model.Annotated;
 import stub.domain.model.kind.*;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
@@ -23,11 +23,50 @@ import stub.domain.model.relation.test.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmClassFileReaderTest {
+
+    @Test
+    void アノテーションの読み取り() throws Exception {
+        Path path = Paths.get(Annotated.class.getResource(Annotated.class.getSimpleName().concat(".class")).toURI());
+
+        AsmClassFileReader sut = new AsmClassFileReader();
+        Specification actual = sut.readSpecification(new SpecificationSource(path));
+
+        List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = actual.fieldAnnotationDeclarations();
+        assertThat(fieldAnnotationDeclarations)
+                .hasSize(1)
+                .first()
+                .satisfies(fieldAnnotationDeclaration -> {
+                    assertThat(fieldAnnotationDeclaration.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+                    assertThat(fieldAnnotationDeclaration.fieldDeclaration().nameText()).isEqualTo("field");
+
+                    String descriptionText = fieldAnnotationDeclaration.description().asText();
+                    assertThat(descriptionText).isNotEqualTo("[]");
+                });
+
+        List<MethodSpecification> methodSpecifications = actual.instanceMethodSpecifications();
+        assertThat(methodSpecifications)
+                .hasSize(1)
+                .first()
+                .satisfies(methodSpecification -> {
+                    List<MethodAnnotationDeclaration> methodAnnotationDeclarations = methodSpecification.methodAnnotationDeclarations();
+                    assertThat(methodAnnotationDeclarations)
+                            .hasSize(1)
+                            .first()
+                            .satisfies(methodAnnotationDeclaration -> {
+                                assertThat(methodAnnotationDeclaration.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+                                assertThat(methodAnnotationDeclaration.methodDeclaration().asSimpleText()).isEqualTo("method()");
+
+                                String descriptionText = methodAnnotationDeclaration.description().asText();
+                                assertThat(descriptionText).isNotEqualTo("[]");
+                            });
+                });
+    }
 
     @Test
     void クラス定義のテスト() throws Exception {

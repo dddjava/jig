@@ -1,8 +1,9 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.AnnotationDescription;
 import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodSignature;
@@ -87,13 +88,13 @@ class SpecificationReadingVisitor extends ClassVisitor {
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
 
-                specification.addFieldAnnotation(new FieldAnnotationDeclaration(
-                        fieldDeclaration,
-                        annotationTypeIdentifier
-                ));
+
                 specification.addUseType(annotationTypeIdentifier);
 
-                return super.visitAnnotation(descriptor, visible);
+                AnnotationDescription description = new AnnotationDescription();
+                specification.addFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, description));
+
+                return new MyAnnotationVisitor(this.api, description);
             }
         };
     }
@@ -122,10 +123,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                methodSpecification.registerAnnotation(
-                        new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, typeDescriptorToIdentifier(descriptor)));
-
-                return super.visitAnnotation(descriptor, visible);
+                AnnotationDescription description = new AnnotationDescription();
+                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, typeDescriptorToIdentifier(descriptor), description));
+                return new MyAnnotationVisitor(this.api, description);
             }
 
             @Override
@@ -209,5 +209,38 @@ class SpecificationReadingVisitor extends ClassVisitor {
             );
         }
         return useTypes;
+    }
+
+    private static class MyAnnotationVisitor extends AnnotationVisitor {
+        final AnnotationDescription description;
+
+        public MyAnnotationVisitor(int api, AnnotationDescription description) {
+            super(api);
+            this.description = description;
+        }
+
+        @Override
+        public void visit(String name, Object value) {
+            description.addParam(name, value);
+            super.visit(name, value);
+        }
+
+        @Override
+        public void visitEnum(String name, String descriptor, String value) {
+            description.addEnum(name, value);
+            super.visitEnum(name, descriptor, value);
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, String descriptor) {
+            description.addAnnotation(name, descriptor);
+            return super.visitAnnotation(name, descriptor);
+        }
+
+        @Override
+        public AnnotationVisitor visitArray(String name) {
+            description.addArray(name);
+            return super.visitArray(name);
+        }
     }
 }

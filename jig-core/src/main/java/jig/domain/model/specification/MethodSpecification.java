@@ -13,9 +13,11 @@ import java.util.Set;
 public class MethodSpecification {
 
     public final MethodDeclaration methodDeclaration;
-    private Set<TypeIdentifier> useTypes = new HashSet<>();
     private final TypeIdentifier returnType;
     private final boolean isInstanceMethod;
+
+    private final Set<TypeIdentifier> useTypes = new HashSet<>();
+    private final List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
 
     public MethodSpecification(MethodDeclaration methodDeclaration,
                                TypeIdentifier returnType,
@@ -23,12 +25,11 @@ public class MethodSpecification {
                                boolean isInstanceMethod) {
         this.returnType = returnType;
         this.methodDeclaration = methodDeclaration;
+        this.isInstanceMethod = isInstanceMethod;
 
         this.useTypes.add(returnType);
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
-
-        this.isInstanceMethod = isInstanceMethod;
     }
 
     public final List<FieldDeclaration> usingFields = new ArrayList<>();
@@ -69,6 +70,7 @@ public class MethodSpecification {
     }
 
     public void registerAnnotation(MethodAnnotationDeclaration methodAnnotationDeclaration) {
+        methodAnnotationDeclarations.add(methodAnnotationDeclaration);
         useTypes.add(methodAnnotationDeclaration.annotationType());
     }
 

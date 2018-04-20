@@ -1,6 +1,6 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.declaration.annotation.AnnotationDefinition;
+import jig.domain.model.declaration.annotation.AnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -20,7 +20,7 @@ public class Specification {
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
-    List<AnnotationDefinition> annotations;
+    List<AnnotationDeclaration> annotations;
     List<MethodSpecification> methodSpecifications;
     List<FieldDeclaration> fieldDeclarations;
     List<FieldDeclaration> constantIdentifiers;
@@ -77,7 +77,7 @@ public class Specification {
 
     public boolean hasAnnotation(String annotation) {
         TypeIdentifier annotationType = new TypeIdentifier(annotation);
-        return annotations.stream().anyMatch(annotationDefinition -> annotationDefinition.typeIs(annotationType));
+        return annotations.stream().anyMatch(annotationDeclaration -> annotationDeclaration.typeIs(annotationType));
     }
 
     public FieldDeclarations fieldIdentifiers() {
@@ -104,9 +104,9 @@ public class Specification {
         return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
     }
 
-    public void addAnnotation(AnnotationDefinition annotationDefinition) {
-        annotations.add(annotationDefinition);
-        useTypes.add(annotationDefinition.type());
+    public void addAnnotation(AnnotationDeclaration annotationDeclaration) {
+        annotations.add(annotationDeclaration);
+        useTypes.add(annotationDeclaration.type());
     }
 
     public void add(MethodSpecification methodSpecification) {

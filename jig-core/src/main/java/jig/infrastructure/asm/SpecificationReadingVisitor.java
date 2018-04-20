@@ -18,6 +18,7 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
@@ -79,12 +80,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-
                 specification.registerUseType(annotationTypeIdentifier);
-
-                AnnotationDescription description = new AnnotationDescription();
-                specification.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, description));
-                return new MyAnnotationVisitor(this.api, description);
+                return new MyAnnotationVisitor(this.api, annotationDescription ->
+                        specification.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
             }
         };
     }
@@ -120,9 +118,8 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                AnnotationDescription description = new AnnotationDescription();
-                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), description));
-                return new MyAnnotationVisitor(this.api, description);
+                return new MyAnnotationVisitor(this.api, annotationDescription ->
+                        methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
             }
 
             @Override
@@ -210,35 +207,41 @@ class SpecificationReadingVisitor extends ClassVisitor {
     }
 
     private static class MyAnnotationVisitor extends AnnotationVisitor {
-        final AnnotationDescription description;
+        final AnnotationDescription annotationDescription = new AnnotationDescription();
+        final Consumer<AnnotationDescription> finisher;
 
-        public MyAnnotationVisitor(int api, AnnotationDescription description) {
+        public MyAnnotationVisitor(int api, Consumer<AnnotationDescription> finisher) {
             super(api);
-            this.description = description;
+            this.finisher = finisher;
         }
 
         @Override
         public void visit(String name, Object value) {
-            description.addParam(name, value);
+            annotationDescription.addParam(name, value);
             super.visit(name, value);
         }
 
         @Override
         public void visitEnum(String name, String descriptor, String value) {
-            description.addEnum(name, value);
+            annotationDescription.addEnum(name, value);
             super.visitEnum(name, descriptor, value);
         }
 
         @Override
         public AnnotationVisitor visitAnnotation(String name, String descriptor) {
-            description.addAnnotation(name, descriptor);
+            annotationDescription.addAnnotation(name, descriptor);
             return super.visitAnnotation(name, descriptor);
         }
 
         @Override
         public AnnotationVisitor visitArray(String name) {
-            description.addArray(name);
+            annotationDescription.addArray(name);
             return super.visitArray(name);
+        }
+
+        @Override
+        public void visitEnd() {
+            finisher.accept(annotationDescription);
         }
     }
 }

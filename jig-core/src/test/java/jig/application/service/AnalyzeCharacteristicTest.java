@@ -12,7 +12,7 @@ import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
-import jig.infrastructure.asm.AsmClassFileReader;
+import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
@@ -44,7 +44,7 @@ public class AnalyzeCharacteristicTest {
         SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
 
         // 仕様化
-        Specifications specifications = new AsmClassFileReader().readFrom(specificationSources);
+        Specifications specifications = new AsmSpecificationReader().readFrom(specificationSources);
 
         // 仕様から特徴と関連を登録
         DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository, annotationDeclarationRepository);

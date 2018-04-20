@@ -10,7 +10,7 @@ import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import jig.infrastructure.asm.AsmClassFileReader;
+import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.*;
@@ -48,7 +48,7 @@ public class ServiceFactory {
         JigPaths jigPaths = jigPaths(javaPluginConvention);
 
         return new AnalyzeService(
-                new SpecificationService(new AsmClassFileReader()),
+                new SpecificationService(new AsmSpecificationReader()),
                 new MyBatisSqlReader(),
                 new JavaparserJapaneseReader(
                         japaneseNameRepository,

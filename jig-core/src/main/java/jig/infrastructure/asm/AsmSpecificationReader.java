@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AsmClassFileReader implements SpecificationReader {
+public class AsmSpecificationReader implements SpecificationReader {
 
     @Override
     public Specifications readFrom(SpecificationSources specificationSources) {

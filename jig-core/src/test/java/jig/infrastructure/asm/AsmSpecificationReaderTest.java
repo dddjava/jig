@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AsmClassFileReaderTest {
+public class AsmSpecificationReaderTest {
 
     @Test
     void アノテーションの読み取り() throws Exception {
         Path path = Paths.get(Annotated.class.getResource(Annotated.class.getSimpleName().concat(".class")).toURI());
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
 
         List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = actual.fieldAnnotationDeclarations();
@@ -72,7 +72,7 @@ public class AsmClassFileReaderTest {
     void クラス定義のテスト() throws Exception {
         Path path = Paths.get(ClassDefinition.class.getResource(ClassDefinition.class.getSimpleName().concat(".class")).toURI());
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -90,7 +90,7 @@ public class AsmClassFileReaderTest {
     void フィールド定義のテスト() throws Exception {
         Path path = Paths.get(FieldDefinition.class.getResource(FieldDefinition.class.getSimpleName().concat(".class")).toURI());
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -111,7 +111,7 @@ public class AsmClassFileReaderTest {
     void メソッドで使用するクラスのテスト() throws Exception {
         Path path = Paths.get(MethodInstruction.class.getResource(MethodInstruction.class.getSimpleName().concat(".class")).toURI());
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -144,7 +144,7 @@ public class AsmClassFileReaderTest {
     void enumで使用するクラスのテスト() throws Exception {
         Path path = Paths.get(EnumDefinition.class.getResource(EnumDefinition.class.getSimpleName().concat(".class")).toURI());
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specification actual = sut.readSpecification(new SpecificationSource(path));
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -162,7 +162,7 @@ public class AsmClassFileReaderTest {
         Path path = Paths.get(clz.getResource(clz.getSimpleName().concat(".class")).toURI());
         SpecificationSources specificationSources = new SpecificationSources(Collections.singletonList(new SpecificationSource(path)));
 
-        AsmClassFileReader sut = new AsmClassFileReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader();
         Specifications actual = sut.readFrom(specificationSources);
 
         assertThat(actual.list()).hasSize(1)

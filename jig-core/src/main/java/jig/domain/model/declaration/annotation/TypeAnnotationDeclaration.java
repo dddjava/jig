@@ -2,12 +2,12 @@ package jig.domain.model.declaration.annotation;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 
-public class AnnotationDeclaration {
+public class TypeAnnotationDeclaration {
 
     final TypeIdentifier declaringType;
     final TypeIdentifier annotationType;
 
-    public AnnotationDeclaration(TypeIdentifier declaringType, TypeIdentifier annotationType) {
+    public TypeAnnotationDeclaration(TypeIdentifier declaringType, TypeIdentifier annotationType) {
         this.declaringType = declaringType;
         this.annotationType = annotationType;
     }

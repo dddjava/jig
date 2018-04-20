@@ -1,6 +1,6 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.declaration.annotation.AnnotationDeclaration;
+import jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
 import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
@@ -47,8 +47,8 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        AnnotationDeclaration annotationDeclaration = specification.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
-        specification.addAnnotation(annotationDeclaration);
+        TypeAnnotationDeclaration typeAnnotationDeclaration = specification.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        specification.addAnnotation(typeAnnotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
     }
 

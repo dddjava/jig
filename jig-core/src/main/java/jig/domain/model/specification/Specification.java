@@ -4,6 +4,8 @@ import jig.domain.model.declaration.annotation.AnnotationDeclaration;
 import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.field.FieldDeclarations;
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 
@@ -15,10 +17,9 @@ import java.util.stream.Collectors;
 
 public class Specification {
 
-    public TypeIdentifier typeIdentifier;
-
-    TypeIdentifier parentTypeIdentifier;
-    private final boolean canExtend;
+    final TypeIdentifier typeIdentifier;
+    final TypeIdentifier parentTypeIdentifier;
+    final boolean canExtend;
 
     public TypeIdentifiers interfaceTypeIdentifiers;
     List<AnnotationDeclaration> annotations = new ArrayList<>();
@@ -43,6 +44,10 @@ public class Specification {
         this.useTypes.addAll(useTypes);
         this.useTypes.add(parentTypeIdentifier);
         this.useTypes.addAll(interfaceTypeIdentifiers.list());
+    }
+
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
     }
 
     public boolean canExtend() {
@@ -93,6 +98,10 @@ public class Specification {
         return typeIdentifier.fullQualifiedName().contains(".domain.model.");
     }
 
+    public boolean isRepository() {
+        return typeIdentifier.fullQualifiedName().endsWith("Repository");
+    }
+
     public TypeIdentifiers useTypes() {
         for (MethodSpecification methodSpecification : methodSpecifications) {
             useTypes.addAll(methodSpecification.useTypes());
@@ -130,4 +139,17 @@ public class Specification {
     public void addFieldAnnotation(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
         fieldAnnotationDeclarations.add(fieldAnnotationDeclaration);
     }
+
+    public AnnotationDeclaration newAnnotationDeclaration(TypeIdentifier annotationTypeIdentifier) {
+        return new AnnotationDeclaration(typeIdentifier, annotationTypeIdentifier);
+    }
+
+    public FieldDeclaration newFieldDeclaration(String name, TypeIdentifier fieldTypeIdentifier) {
+        return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
+    }
+
+    public MethodDeclaration newMethodDeclaration(MethodSignature methodSignature) {
+        return new MethodDeclaration(typeIdentifier, methodSignature);
+    }
+
 }

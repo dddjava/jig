@@ -47,10 +47,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        AnnotationDeclaration annotationDeclaration = new AnnotationDeclaration(
-                specification.typeIdentifier,
-                typeDescriptorToIdentifier(descriptor)
-        );
+        AnnotationDeclaration annotationDeclaration = specification.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
         specification.addAnnotation(annotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
     }
@@ -74,8 +71,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             specification.addUseType(toTypeIdentifier(elementType));
         }
 
-        TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
-        FieldDeclaration fieldDeclaration = new FieldDeclaration(specification.typeIdentifier, name, typeIdentifier);
+        FieldDeclaration fieldDeclaration = specification.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
@@ -105,7 +101,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(specification.typeIdentifier, toMethodSignature(name, descriptor));
+        MethodDeclaration methodDeclaration = specification.newMethodDeclaration(toMethodSignature(name, descriptor));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {

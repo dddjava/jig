@@ -18,7 +18,7 @@ public enum Characteristic {
     REPOSITORY {
         @Override
         boolean matches(Specification specification) {
-            return specification.typeIdentifier.fullQualifiedName().endsWith("Repository");
+            return specification.isRepository();
         }
     },
     DATASOURCE {
@@ -100,7 +100,7 @@ public enum Characteristic {
 
     public static TypeCharacteristics resolveCharacteristics(Specification specification) {
         return new TypeCharacteristics(
-                specification.typeIdentifier,
+                specification.typeIdentifier(),
                 Arrays.stream(values())
                         .filter(characteristic -> characteristic.matches(specification))
                         .collect(Collectors.toSet()));

@@ -38,6 +38,6 @@ public enum RelationType {
             });
         });
 
-        repository.registerDependency(specification.typeIdentifier, specification.useTypes());
+        repository.registerDependency(specification.typeIdentifier(), specification.useTypes());
     }
 }

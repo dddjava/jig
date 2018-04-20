@@ -30,6 +30,6 @@ public class Tables {
         return tables.stream()
                 .map(Table::name)
                 .distinct()
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

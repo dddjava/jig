@@ -25,11 +25,11 @@ class TypeIdentifiersTest {
 
     static Stream<Arguments> test() {
         return Stream.of(
-                Arguments.of(Collections.emptyList(), "", ""),
-                Arguments.of(Collections.singletonList("a.hoge"), "hoge", "a.hoge"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga"), "hoge,fuga", "a.hoge,a.fuga"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "a.fuga"), "hoge,fuga", "a.hoge,a.fuga"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "b.fuga"), "hoge,fuga", "a.hoge,a.fuga,b.fuga")
+                Arguments.of(Collections.emptyList(), "[]", "[]"),
+                Arguments.of(Collections.singletonList("a.hoge"), "[hoge]", "[a.hoge]"),
+                Arguments.of(Arrays.asList("a.hoge", "a.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga]"),
+                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "a.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga]"),
+                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "b.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga, b.fuga]")
         );
     }
 

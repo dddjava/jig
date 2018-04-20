@@ -17,13 +17,12 @@ class MyBatisSqlReaderTest {
 
     @Test
     void bindを使ってても解析できる() {
-        SqlRepository repository = new OnMemorySqlRepository();
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
         Sqls sqls = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
 
         Sql sql = sqls.list().get(0);
-        assertThat(sql.tables().asText()).isEqualTo("fuga");
+        assertThat(sql.tables().asText()).isEqualTo("[fuga]");
     }
 
     @ParameterizedTest
@@ -37,7 +36,7 @@ class MyBatisSqlReaderTest {
 
         SqlIdentifier sqlIdentifier = new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName);
         Sql sql = repository.get(sqlIdentifier);
-        assertThat(sql.tables().asText()).isEqualTo(tableName);
+        assertThat(sql.tables().asText()).isEqualTo("[" + tableName + "]");
         assertThat(sql.sqlType()).isEqualTo(sqlType);
     }
 

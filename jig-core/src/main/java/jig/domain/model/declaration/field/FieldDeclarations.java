@@ -30,13 +30,13 @@ public class FieldDeclarations {
     public String toNameText() {
         return list.stream()
                 .map(FieldDeclaration::nameText)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public String toSignatureText() {
         return list.stream()
                 .map(FieldDeclaration::signatureText)
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public TypeIdentifiers toTypeIdentifies() {

@@ -62,9 +62,9 @@ class DependencyServiceTest {
                 .isEqualTo("test.ReturnType");
         // メソッドの使用しているフィールドがわかる
         assertThat(relationRepository.findUseFields(methodDeclaration).toTypeIdentifies().asText())
-                .isEqualTo("test.FieldA,test.FieldB");
+                .isEqualTo("[test.FieldA, test.FieldB]");
         // メソッドの使用しているメソッドがわかる
         assertThat(relationRepository.findUseMethod(methodDeclaration).asSimpleText())
-                .isEqualTo("OtherClass2.methodB(),TestClass.methodA()");
+                .isEqualTo("[OtherClass2.methodB(), TestClass.methodA()]");
     }
 }

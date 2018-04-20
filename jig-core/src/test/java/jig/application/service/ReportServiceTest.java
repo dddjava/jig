@@ -67,8 +67,8 @@ class ReportServiceTest {
                     .containsExactly(
                             "test.HogeEnum",
                             "対応する和名",
-                            "[A,B]",
-                            "String fugaText, Integer fugaInteger",
+                            "[A, B]",
+                            "[String fugaText, Integer fugaInteger]",
                             "[HogeUser]",
                             "",
                             "◯",

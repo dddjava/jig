@@ -16,6 +16,6 @@ class TablesTest {
                 .merge(new Tables(fuga1))
                 .merge(new Tables(fuga2));
 
-        assertThat(sut.asText()).isEqualTo("hoge,fuga");
+        assertThat(sut.asText()).isEqualTo("[hoge, fuga]");
     }
 }

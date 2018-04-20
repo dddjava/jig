@@ -9,14 +9,14 @@ public enum MethodConcern {
     クラス和名(detail -> detail.japaneseName().value()),
     メソッド(detail -> detail.method().asSimpleText()),
     メソッド戻り値の型(detail -> detail.returnType().asSimpleText()),
-    使用しているフィールドの型(detail -> "[" + detail.usingFieldTypes().asSimpleText() + "]"),
+    使用しているフィールドの型(detail -> detail.usingFieldTypes().asSimpleText()),
 
     DB_C(detail -> detail.sqls().tables(SqlType.INSERT).asText()),
     DB_R(detail -> detail.sqls().tables(SqlType.SELECT).asText()),
     DB_U(detail -> detail.sqls().tables(SqlType.UPDATE).asText()),
     DB_D(detail -> detail.sqls().tables(SqlType.DELETE).asText()),
 
-    使用しているリポジトリのメソッド(detail -> detail.repositoryMethods());
+    使用しているリポジトリのメソッド(methodDetail -> methodDetail.repositoryMethods().asSimpleText());
 
     private final Function<MethodDetail, String> function;
 

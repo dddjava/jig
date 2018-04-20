@@ -33,11 +33,11 @@ public class TypeIdentifiers {
     }
 
     public String asText() {
-        return identifiers.stream().map(TypeIdentifier::fullQualifiedName).distinct().collect(joining(","));
+        return identifiers.stream().map(TypeIdentifier::fullQualifiedName).distinct().collect(joining(", ", "[", "]"));
     }
 
     public String asSimpleText() {
-        return identifiers.stream().map(TypeIdentifier::asSimpleText).distinct().collect(joining(","));
+        return identifiers.stream().map(TypeIdentifier::asSimpleText).distinct().collect(joining(", ", "[", "]"));
     }
 
     public TypeIdentifiers merge(TypeIdentifiers other) {

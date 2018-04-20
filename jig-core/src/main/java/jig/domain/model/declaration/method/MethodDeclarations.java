@@ -48,7 +48,7 @@ public class MethodDeclarations {
     public String asSimpleText() {
         return list.stream().map(methodIdentifier ->
                 methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText()
-        ).collect(Collectors.joining(","));
+        ).collect(Collectors.joining(", ", "[", "]"));
     }
 
     public MethodDeclarations distinct() {

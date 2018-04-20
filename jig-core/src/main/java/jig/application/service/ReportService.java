@@ -48,18 +48,18 @@ public class ReportService {
 
     public Reports reports() {
         return new Reports(Arrays.asList(
-                getMethodReport(MethodPerspective.SERVICE),
-                getMethodReport(MethodPerspective.REPOSITORY),
-                getTypeReport(TypePerspective.IDENTIFIER),
-                getTypeReport(TypePerspective.ENUM),
-                getTypeReport(TypePerspective.NUMBER),
-                getTypeReport(TypePerspective.COLLECTION),
-                getTypeReport(TypePerspective.DATE),
-                getTypeReport(TypePerspective.TERM)
+                methodReportOn(MethodPerspective.SERVICE),
+                methodReportOn(MethodPerspective.REPOSITORY),
+                typeReportOn(TypePerspective.IDENTIFIER),
+                typeReportOn(TypePerspective.ENUM),
+                typeReportOn(TypePerspective.NUMBER),
+                typeReportOn(TypePerspective.COLLECTION),
+                typeReportOn(TypePerspective.DATE),
+                typeReportOn(TypePerspective.TERM)
         ));
     }
 
-    private Report getMethodReport(MethodPerspective perspective) {
+    private Report methodReportOn(MethodPerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
@@ -73,7 +73,7 @@ public class ReportService {
         return new MethodReport(perspective, list);
     }
 
-    private Report getTypeReport(TypePerspective perspective) {
+    private Report typeReportOn(TypePerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);

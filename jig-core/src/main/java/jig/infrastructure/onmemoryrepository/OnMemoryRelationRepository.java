@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
 
-    final List<TypeRelation> memberTypes = new ArrayList<>();
-    final List<TypeRelation> constants = new ArrayList<>();
+    final List<FieldDeclaration> instanceFields = new ArrayList<>();
+    final List<FieldDeclaration> staticFields = new ArrayList<>();
 
     final Set<TypeMethodRelation> memberMethods = new HashSet<>();
     final Set<MethodTypeRelation> methodReturnTypes = new HashSet<>();
@@ -61,12 +61,12 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerField(FieldDeclaration fieldDeclaration) {
-        memberTypes.add(new TypeRelation(fieldDeclaration.declaringType(), fieldDeclaration));
+        instanceFields.add(fieldDeclaration);
     }
 
     @Override
     public void registerConstants(FieldDeclaration fieldDeclaration) {
-        constants.add(new TypeRelation(fieldDeclaration.declaringType(), fieldDeclaration));
+        staticFields.add(fieldDeclaration);
     }
 
     @Override
@@ -118,9 +118,9 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
-        return memberTypes.stream()
-                .filter(typeRelation -> typeRelation.field().typeIdentifier().equals(typeIdentifier))
-                .map(TypeRelation::from)
+        return instanceFields.stream()
+                .filter(fieldDeclaration -> fieldDeclaration.typeIdentifier().equals(typeIdentifier))
+                .map(FieldDeclaration::declaringType)
                 .collect(TypeIdentifiers.collector());
     }
 
@@ -134,17 +134,15 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public FieldDeclarations findConstants(TypeIdentifier type) {
-        return constants.stream()
-                .filter(typeRelation -> typeRelation.from().equals(type))
-                .map(TypeRelation::field)
+        return staticFields.stream()
+                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))
                 .collect(FieldDeclarations.collector());
     }
 
     @Override
     public FieldDeclarations findFieldsOf(TypeIdentifier type) {
-        return memberTypes.stream()
-                .filter(typeRelation -> typeRelation.from().equals(type))
-                .map(TypeRelation::field)
+        return instanceFields.stream()
+                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))
                 .collect(FieldDeclarations.collector());
     }
 

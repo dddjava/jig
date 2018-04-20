@@ -1,49 +1,49 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.field.FieldIdentifier;
-import jig.domain.model.identifier.field.FieldIdentifiers;
-import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.definition.field.FieldDefinition;
+import jig.domain.model.definition.field.FieldDefinitions;
+import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.definition.method.MethodDefinitions;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 
 public interface RelationRepository {
 
-    void registerMethod(MethodIdentifier methodIdentifier);
+    void registerMethod(MethodDefinition methodDefinition);
 
-    void registerMethodParameter(MethodIdentifier methodIdentifier);
+    void registerMethodParameter(MethodDefinition methodDefinition);
 
-    void registerMethodReturnType(MethodIdentifier methodIdentifier, TypeIdentifier returnTypeIdentifier);
+    void registerMethodReturnType(MethodDefinition methodDefinition, TypeIdentifier returnTypeIdentifier);
 
-    void registerMethodUseMethod(MethodIdentifier identifier, MethodIdentifier methodName);
+    void registerMethodUseMethod(MethodDefinition identifier, MethodDefinition methodName);
 
-    void registerMethodUseType(MethodIdentifier identifier, TypeIdentifier fieldTypeName);
+    void registerMethodUseType(MethodDefinition identifier, TypeIdentifier fieldTypeName);
 
-    void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
+    void registerImplementation(MethodDefinition methodDefinition, MethodDefinition methodDefinition1);
 
-    void registerField(FieldIdentifier fieldIdentifier);
+    void registerField(FieldDefinition fieldDefinition);
 
-    void registerConstants(FieldIdentifier fieldIdentifier);
+    void registerConstants(FieldDefinition fieldDefinition);
 
-    void registerMethodUseField(MethodIdentifier methodIdentifier, FieldIdentifier fieldIdentifier);
+    void registerMethodUseField(MethodDefinition methodDefinition, FieldDefinition fieldDefinition);
 
-    TypeIdentifier getReturnTypeOf(MethodIdentifier methodIdentifier);
+    TypeIdentifier getReturnTypeOf(MethodDefinition methodDefinition);
 
-    TypeIdentifiers findUseTypeOf(MethodIdentifier methodIdentifier);
+    TypeIdentifiers findUseTypeOf(MethodDefinition methodDefinition);
 
-    MethodIdentifiers findConcrete(MethodIdentifier methodIdentifier);
+    MethodDefinitions findConcrete(MethodDefinition methodDefinition);
 
-    MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier);
+    MethodDefinitions findUseMethod(MethodDefinition methodDefinition);
 
-    MethodIdentifiers methodsOf(TypeIdentifier typeIdentifier);
+    MethodDefinitions methodsOf(TypeIdentifier typeIdentifier);
 
     TypeIdentifiers findFieldUsage(TypeIdentifier name);
 
-    MethodIdentifiers findMethodUsage(TypeIdentifier name);
+    MethodDefinitions findMethodUsage(TypeIdentifier name);
 
-    FieldIdentifiers findConstants(TypeIdentifier type);
+    FieldDefinitions findConstants(TypeIdentifier type);
 
-    FieldIdentifiers findFieldsOf(TypeIdentifier typeIdentifier);
+    FieldDefinitions findFieldsOf(TypeIdentifier typeIdentifier);
 
     void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers);
 

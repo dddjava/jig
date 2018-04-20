@@ -1,4 +1,4 @@
-package jig.domain.model.identifier.method;
+package jig.domain.model.definition.method;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 import org.junit.jupiter.api.Test;
@@ -8,12 +8,12 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MethodIdentifierTest {
+class MethodDefinitionTest {
 
     @Test
     void methodIdentifier_asText() {
 
-        MethodIdentifier methodIdentifier = new MethodIdentifier(
+        MethodDefinition methodDefinition = new MethodDefinition(
                 new TypeIdentifier("hoge.fuga.Piyo"),
                 new MethodSignature(
                         "abc",
@@ -21,7 +21,7 @@ class MethodIdentifierTest {
                                 .map(TypeIdentifier::new)
                                 .collect(Collectors.toList())));
 
-        assertThat(methodIdentifier.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa,b.Bbb,a.Aaa)");
-        assertThat(methodIdentifier.asSimpleText()).isEqualTo("abc(Aaa,Bbb,Aaa)");
+        assertThat(methodDefinition.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa,b.Bbb,a.Aaa)");
+        assertThat(methodDefinition.asSimpleText()).isEqualTo("abc(Aaa,Bbb,Aaa)");
     }
 }

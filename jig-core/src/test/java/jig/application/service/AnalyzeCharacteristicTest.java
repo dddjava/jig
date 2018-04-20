@@ -2,9 +2,9 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodIdentifiers;
-import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.definition.method.MethodDefinitions;
+import jig.domain.model.definition.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
@@ -46,7 +46,7 @@ public class AnalyzeCharacteristicTest {
 
     @Test
     void 関連() {
-        MethodIdentifiers methods = relationRepository.findConcrete(new MethodIdentifier(
+        MethodDefinitions methods = relationRepository.findConcrete(new MethodDefinition(
                 new TypeIdentifier(HogeRepository.class),
                 new MethodSignature("method", Collections.emptyList())));
         assertThat(methods.list()).isNotEmpty();

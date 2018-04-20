@@ -1,9 +1,9 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.annotation.AnnotationDefinition;
-import jig.domain.model.identifier.field.FieldIdentifier;
-import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.definition.annotation.AnnotationDefinition;
+import jig.domain.model.definition.field.FieldDefinition;
+import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.definition.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.MethodSpecification;
@@ -74,7 +74,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         }
 
         TypeIdentifier typeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
-        FieldIdentifier field = new FieldIdentifier(specification.typeIdentifier, name, typeIdentifier);
+        FieldDefinition field = new FieldDefinition(specification.typeIdentifier, name, typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
@@ -102,7 +102,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 .map(TypeIdentifier::new)
                 .collect(Collectors.toList());
 
-        MethodIdentifier identifier = new MethodIdentifier(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
+        MethodDefinition identifier = new MethodDefinition(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
 
         List<TypeIdentifier> useTypes = extractSignatureClassType(signature);
         if (exceptions != null) {

@@ -3,8 +3,8 @@ package jig.domain.model.report.type;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.characteristic.Satisfaction;
-import jig.domain.model.identifier.field.FieldIdentifiers;
-import jig.domain.model.identifier.method.MethodIdentifiers;
+import jig.domain.model.definition.field.FieldDefinitions;
+import jig.domain.model.definition.method.MethodDefinitions;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -44,7 +44,7 @@ public class TypeDetail {
     public TypeIdentifiers userTypes() {
         TypeIdentifiers userTypes = relationRepository.findFieldUsage(type());
 
-        MethodIdentifiers userMethods = relationRepository.findMethodUsage(type());
+        MethodDefinitions userMethods = relationRepository.findMethodUsage(type());
         TypeIdentifiers methodOwners = userMethods.declaringTypes();
 
         return userTypes.merge(methodOwners);
@@ -58,11 +58,11 @@ public class TypeDetail {
         return type().format(typeIdentifierFormatter);
     }
 
-    public FieldIdentifiers constants() {
+    public FieldDefinitions constants() {
         return relationRepository.findConstants(type());
     }
 
-    public FieldIdentifiers fieldIdentifiers() {
+    public FieldDefinitions fieldIdentifiers() {
         return relationRepository.findFieldsOf(typeIdentifier);
     }
 }

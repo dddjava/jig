@@ -1,4 +1,4 @@
-package jig.domain.model.identifier.method;
+package jig.domain.model.definition.method;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 

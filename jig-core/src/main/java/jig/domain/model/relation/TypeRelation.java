@@ -1,14 +1,14 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.definition.field.FieldDefinition;
 import jig.domain.model.identifier.type.TypeIdentifier;
 
 public class TypeRelation {
 
     TypeIdentifier from;
-    FieldIdentifier to;
+    FieldDefinition to;
 
-    public TypeRelation(TypeIdentifier from, FieldIdentifier to) {
+    public TypeRelation(TypeIdentifier from, FieldDefinition to) {
         this.from = from;
         this.to = to;
     }
@@ -17,7 +17,7 @@ public class TypeRelation {
         return from;
     }
 
-    public FieldIdentifier field() {
+    public FieldDefinition field() {
         return to;
     }
 }

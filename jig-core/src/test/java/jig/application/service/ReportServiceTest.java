@@ -2,7 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.identifier.field.FieldIdentifier;
+import jig.domain.model.definition.field.FieldDefinition;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
@@ -39,13 +39,13 @@ class ReportServiceTest {
         repository.register(typeIdentifier, Characteristic.ENUM_PARAMETERIZED);
         repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
 
-        relationRepository.registerField(new FieldIdentifier(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
-        relationRepository.registerField(new FieldIdentifier(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
+        relationRepository.registerField(new FieldDefinition(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
+        relationRepository.registerField(new FieldDefinition(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
 
         japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
-        relationRepository.registerField(new FieldIdentifier(new TypeIdentifier("test.HogeUser"), "hogera", typeIdentifier));
-        relationRepository.registerConstants(new FieldIdentifier(typeIdentifier, "A", typeIdentifier));
-        relationRepository.registerConstants(new FieldIdentifier(typeIdentifier, "B", typeIdentifier));
+        relationRepository.registerField(new FieldDefinition(new TypeIdentifier("test.HogeUser"), "hogera", typeIdentifier));
+        relationRepository.registerConstants(new FieldDefinition(typeIdentifier, "A", typeIdentifier));
+        relationRepository.registerConstants(new FieldDefinition(typeIdentifier, "B", typeIdentifier));
 
         Reports reports = sut.reports();
         reports.each(report -> {

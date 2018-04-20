@@ -1,10 +1,10 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.identifier.field.FieldIdentifier;
-import jig.domain.model.identifier.field.FieldIdentifiers;
-import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodIdentifiers;
-import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.definition.field.FieldDefinition;
+import jig.domain.model.definition.field.FieldDefinitions;
+import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.definition.method.MethodDefinitions;
+import jig.domain.model.definition.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.*;
@@ -27,93 +27,93 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final Set<MethodRelation> methodUseMethods = new HashSet<>();
 
     @Override
-    public void registerMethod(MethodIdentifier methodIdentifier) {
-        memberMethods.add(new TypeMethodRelation(methodIdentifier.declaringType(), methodIdentifier));
+    public void registerMethod(MethodDefinition methodDefinition) {
+        memberMethods.add(new TypeMethodRelation(methodDefinition.declaringType(), methodDefinition));
     }
 
     @Override
-    public void registerMethodParameter(MethodIdentifier methodIdentifier) {
-        MethodSignature methodSignature = methodIdentifier.methodSignature();
+    public void registerMethodParameter(MethodDefinition methodDefinition) {
+        MethodSignature methodSignature = methodDefinition.methodSignature();
         methodSignature.arguments().forEach(argumentTypeIdentifier ->
-                methodParameterTypes.add(new MethodTypeRelation(methodIdentifier, argumentTypeIdentifier)));
+                methodParameterTypes.add(new MethodTypeRelation(methodDefinition, argumentTypeIdentifier)));
     }
 
     @Override
-    public void registerMethodReturnType(MethodIdentifier methodIdentifier, TypeIdentifier returnTypeIdentifier) {
-        methodReturnTypes.add(new MethodTypeRelation(methodIdentifier, returnTypeIdentifier));
+    public void registerMethodReturnType(MethodDefinition methodDefinition, TypeIdentifier returnTypeIdentifier) {
+        methodReturnTypes.add(new MethodTypeRelation(methodDefinition, returnTypeIdentifier));
     }
 
     @Override
-    public void registerMethodUseMethod(MethodIdentifier from, MethodIdentifier to) {
+    public void registerMethodUseMethod(MethodDefinition from, MethodDefinition to) {
         methodUseMethods.add(new MethodRelation(from, to));
     }
 
     @Override
-    public void registerMethodUseType(MethodIdentifier methodIdentifier, TypeIdentifier typeIdentifier) {
-        methodUseTypes.add(new MethodTypeRelation(methodIdentifier, typeIdentifier));
+    public void registerMethodUseType(MethodDefinition methodDefinition, TypeIdentifier typeIdentifier) {
+        methodUseTypes.add(new MethodTypeRelation(methodDefinition, typeIdentifier));
 
     }
 
     @Override
-    public void registerImplementation(MethodIdentifier from, MethodIdentifier to) {
+    public void registerImplementation(MethodDefinition from, MethodDefinition to) {
         methodImplementMethods.add(new MethodRelation(from, to));
     }
 
     @Override
-    public void registerField(FieldIdentifier fieldIdentifier) {
-        memberTypes.add(new TypeRelation(fieldIdentifier.declaringType(), fieldIdentifier));
+    public void registerField(FieldDefinition fieldDefinition) {
+        memberTypes.add(new TypeRelation(fieldDefinition.declaringType(), fieldDefinition));
     }
 
     @Override
-    public void registerConstants(FieldIdentifier fieldIdentifier) {
-        constants.add(new TypeRelation(fieldIdentifier.declaringType(), fieldIdentifier));
+    public void registerConstants(FieldDefinition fieldDefinition) {
+        constants.add(new TypeRelation(fieldDefinition.declaringType(), fieldDefinition));
     }
 
     @Override
-    public void registerMethodUseField(MethodIdentifier methodIdentifier, FieldIdentifier fieldIdentifier) {
+    public void registerMethodUseField(MethodDefinition methodDefinition, FieldDefinition fieldDefinition) {
         // TODO とりあえず名前はわすれる
-        registerMethodUseType(methodIdentifier, fieldIdentifier.typeIdentifier());
+        registerMethodUseType(methodDefinition, fieldDefinition.typeIdentifier());
     }
 
     @Override
-    public TypeIdentifier getReturnTypeOf(MethodIdentifier methodIdentifier) {
+    public TypeIdentifier getReturnTypeOf(MethodDefinition methodDefinition) {
         return methodReturnTypes.stream()
-                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodIdentifier))
+                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodDefinition))
                 .map(MethodTypeRelation::type)
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(methodIdentifier.asFullText()));
+                .orElseThrow(() -> new NoSuchElementException(methodDefinition.asFullText()));
     }
 
     @Override
-    public TypeIdentifiers findUseTypeOf(MethodIdentifier methodIdentifier) {
+    public TypeIdentifiers findUseTypeOf(MethodDefinition methodDefinition) {
         return methodUseTypes.stream()
-                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodIdentifier))
+                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodDefinition))
                 .map(MethodTypeRelation::type)
                 .collect(TypeIdentifiers.collector());
     }
 
     @Override
-    public MethodIdentifiers findConcrete(MethodIdentifier methodIdentifier) {
+    public MethodDefinitions findConcrete(MethodDefinition methodDefinition) {
         return methodImplementMethods.stream()
-                .filter(methodRelation -> methodRelation.interfaceMethodIs(methodIdentifier))
+                .filter(methodRelation -> methodRelation.interfaceMethodIs(methodDefinition))
                 .map(MethodRelation::concreteMethod)
-                .collect(MethodIdentifiers.collector());
+                .collect(MethodDefinitions.collector());
     }
 
     @Override
-    public MethodIdentifiers findUseMethod(MethodIdentifier methodIdentifier) {
+    public MethodDefinitions findUseMethod(MethodDefinition methodDefinition) {
         return methodUseMethods.stream()
-                .filter(methodRelation -> methodRelation.fromMethodIs(methodIdentifier))
+                .filter(methodRelation -> methodRelation.fromMethodIs(methodDefinition))
                 .map(MethodRelation::to)
-                .collect(MethodIdentifiers.collector());
+                .collect(MethodDefinitions.collector());
     }
 
     @Override
-    public MethodIdentifiers methodsOf(TypeIdentifier typeIdentifier) {
+    public MethodDefinitions methodsOf(TypeIdentifier typeIdentifier) {
         return memberMethods.stream()
                 .filter(typeMethodRelation -> typeMethodRelation.typeIs(typeIdentifier))
                 .map(TypeMethodRelation::method)
-                .collect(MethodIdentifiers.collector());
+                .collect(MethodDefinitions.collector());
     }
 
     @Override
@@ -125,27 +125,27 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public MethodIdentifiers findMethodUsage(TypeIdentifier typeIdentifier) {
+    public MethodDefinitions findMethodUsage(TypeIdentifier typeIdentifier) {
         return Stream.of(methodReturnTypes, methodParameterTypes, methodUseTypes).flatMap(Set::stream)
                 .filter(methodTypeRelation -> methodTypeRelation.typeIs(typeIdentifier))
                 .map(MethodTypeRelation::method)
-                .collect(MethodIdentifiers.collector());
+                .collect(MethodDefinitions.collector());
     }
 
     @Override
-    public FieldIdentifiers findConstants(TypeIdentifier type) {
+    public FieldDefinitions findConstants(TypeIdentifier type) {
         return constants.stream()
                 .filter(typeRelation -> typeRelation.from().equals(type))
                 .map(TypeRelation::field)
-                .collect(FieldIdentifiers.collector());
+                .collect(FieldDefinitions.collector());
     }
 
     @Override
-    public FieldIdentifiers findFieldsOf(TypeIdentifier type) {
+    public FieldDefinitions findFieldsOf(TypeIdentifier type) {
         return memberTypes.stream()
                 .filter(typeRelation -> typeRelation.from().equals(type))
                 .map(TypeRelation::field)
-                .collect(FieldIdentifiers.collector());
+                .collect(FieldDefinitions.collector());
     }
 
     Map<TypeIdentifier, TypeIdentifiers> map = new HashMap<>();

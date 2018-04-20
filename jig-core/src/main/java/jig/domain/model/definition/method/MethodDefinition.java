@@ -1,17 +1,17 @@
-package jig.domain.model.identifier.method;
+package jig.domain.model.definition.method;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Objects;
 
-public class MethodIdentifier {
+public class MethodDefinition {
 
     private final TypeIdentifier declaringType;
     private final MethodSignature methodSignature;
 
     private final String fullText;
 
-    public MethodIdentifier(TypeIdentifier declaringType, MethodSignature methodSignature) {
+    public MethodDefinition(TypeIdentifier declaringType, MethodSignature methodSignature) {
         this.declaringType = declaringType;
         this.methodSignature = methodSignature;
 
@@ -34,15 +34,15 @@ public class MethodIdentifier {
         return methodSignature;
     }
 
-    public MethodIdentifier with(TypeIdentifier typeIdentifier) {
-        return new MethodIdentifier(typeIdentifier, this.methodSignature);
+    public MethodDefinition with(TypeIdentifier typeIdentifier) {
+        return new MethodDefinition(typeIdentifier, this.methodSignature);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MethodIdentifier that = (MethodIdentifier) o;
+        MethodDefinition that = (MethodDefinition) o;
         return Objects.equals(fullText, that.fullText);
     }
 

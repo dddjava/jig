@@ -1,23 +1,23 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.definition.method.MethodDefinition;
 import jig.domain.model.identifier.type.TypeIdentifier;
 
 public class MethodTypeRelation {
 
-    MethodIdentifier from;
+    MethodDefinition from;
     TypeIdentifier to;
 
-    public MethodTypeRelation(MethodIdentifier from, TypeIdentifier to) {
+    public MethodTypeRelation(MethodDefinition from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
     }
 
-    public boolean methodIs(MethodIdentifier methodIdentifier) {
-        return from.equals(methodIdentifier);
+    public boolean methodIs(MethodDefinition methodDefinition) {
+        return from.equals(methodDefinition);
     }
 
-    public MethodIdentifier method() {
+    public MethodDefinition method() {
         return from;
     }
 

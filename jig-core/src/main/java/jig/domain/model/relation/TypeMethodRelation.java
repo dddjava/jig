@@ -1,14 +1,14 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.identifier.method.MethodIdentifier;
+import jig.domain.model.definition.method.MethodDefinition;
 import jig.domain.model.identifier.type.TypeIdentifier;
 
 public class TypeMethodRelation {
 
     TypeIdentifier from;
-    MethodIdentifier to;
+    MethodDefinition to;
 
-    public TypeMethodRelation(TypeIdentifier from, MethodIdentifier to) {
+    public TypeMethodRelation(TypeIdentifier from, MethodDefinition to) {
         this.from = from;
         this.to = to;
     }
@@ -17,7 +17,7 @@ public class TypeMethodRelation {
         return from.equals(typeIdentifier);
     }
 
-    public MethodIdentifier method() {
+    public MethodDefinition method() {
         return to;
     }
 }

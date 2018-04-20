@@ -1,8 +1,8 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.identifier.field.FieldIdentifier;
-import jig.domain.model.identifier.method.MethodIdentifier;
-import jig.domain.model.identifier.method.MethodSignature;
+import jig.domain.model.definition.field.FieldDefinition;
+import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.definition.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.MethodSpecification;
 import org.objectweb.asm.AnnotationVisitor;
@@ -32,7 +32,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         methodSpecification.registerFieldInstruction(
-                new FieldIdentifier(new TypeIdentifier(owner), name, new TypeDescriptor(descriptor).toTypeIdentifier()));
+                new FieldDefinition(new TypeIdentifier(owner), name, new TypeDescriptor(descriptor).toTypeIdentifier()));
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
@@ -43,9 +43,9 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
                 Arrays.stream(Type.getArgumentTypes(descriptor))
                         .map(this::toTypeIdentifier)
                         .collect(Collectors.toList()));
-        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(owner), methodSignature);
+        MethodDefinition methodDefinition = new MethodDefinition(new TypeIdentifier(owner), methodSignature);
 
-        methodSpecification.registerMethodInstruction(methodIdentifier, methodDescriptorToReturnIdentifier(descriptor));
+        methodSpecification.registerMethodInstruction(methodDefinition, methodDescriptorToReturnIdentifier(descriptor));
 
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }

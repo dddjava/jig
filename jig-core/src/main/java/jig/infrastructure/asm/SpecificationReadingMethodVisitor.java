@@ -24,43 +24,39 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        methodSpecification.registerAnnotation(new TypeIdentifier(Type.getType(descriptor).getClassName()));
+        methodSpecification.registerAnnotation(typeDescriptorToIdentifier(descriptor));
 
         return super.visitAnnotation(descriptor, visible);
     }
 
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-        TypeIdentifier ownerType = new TypeIdentifier(owner);
-        TypeIdentifier fieldType = new TypeIdentifier(Type.getType(descriptor).getClassName());
-        FieldIdentifier field = new FieldIdentifier(name, fieldType);
-        methodSpecification.registerUsingField(ownerType, field);
+        methodSpecification.registerFieldInstruction(
+                new TypeIdentifier(owner),
+                new FieldIdentifier(name, typeDescriptorToIdentifier(descriptor)));
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
 
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-        TypeIdentifier returnType = new TypeIdentifier(Type.getReturnType(descriptor).getClassName());
-        TypeIdentifier ownerType = new TypeIdentifier(owner);
         MethodSignature methodSignature = new MethodSignature(name,
                 Arrays.stream(Type.getArgumentTypes(descriptor))
-                        .map(Type::getClassName)
-                        .map(TypeIdentifier::new)
+                        .map(this::toTypeIdentifier)
                         .collect(Collectors.toList()));
-        MethodIdentifier methodIdentifier = new MethodIdentifier(ownerType, methodSignature);
+        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(owner), methodSignature);
 
-        methodSpecification.registerMethodInstruction(ownerType, methodIdentifier, returnType);
+        methodSpecification.registerMethodInstruction(methodIdentifier, methodDescriptorToReturnIdentifier(descriptor));
+
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
 
     @Override
     public void visitLdcInsn(Object value) {
         if (value instanceof Type) {
-            String className = Type.class.cast(value).getClassName();
-            TypeIdentifier type = new TypeIdentifier(className);
-            methodSpecification.registerClassReference(type);
+            methodSpecification.registerClassReference(toTypeIdentifier((Type) value));
         }
+
         super.visitLdcInsn(value);
     }
 
@@ -70,14 +66,26 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
             if (bootstrapMethodArgument instanceof Type) {
                 Type type = (Type) bootstrapMethodArgument;
                 if (type.getSort() == Type.METHOD) {
-                    Type returnType = type.getReturnType();
-                    methodSpecification.registerInvokeDynamic(new TypeIdentifier(returnType.getClassName()));
+                    methodSpecification.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
                     for (Type argumentType : type.getArgumentTypes()) {
-                        methodSpecification.registerInvokeDynamic(new TypeIdentifier(argumentType.getClassName()));
+                        methodSpecification.registerInvokeDynamic(toTypeIdentifier(argumentType));
                     }
                 }
             }
         }
+
         super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+    }
+
+    private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
+        return toTypeIdentifier(Type.getType(descriptor));
+    }
+
+    private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+        return toTypeIdentifier(Type.getReturnType(descriptor));
+    }
+
+    private TypeIdentifier toTypeIdentifier(Type type) {
+        return new TypeIdentifier(type.getClassName());
     }
 }

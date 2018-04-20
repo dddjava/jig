@@ -37,19 +37,19 @@ public class MethodSpecification {
         return returnType;
     }
 
-    public void registerUsingField(TypeIdentifier ownerType, FieldIdentifier field) {
+    public void registerFieldInstruction(TypeIdentifier ownerType, FieldIdentifier field) {
         usingFields.add(field);
 
         useTypes.add(ownerType);
         useTypes.add(field.typeIdentifier());
     }
 
-    public void registerMethodInstruction(TypeIdentifier ownerType, MethodIdentifier methodIdentifier, TypeIdentifier returnType) {
+    public void registerMethodInstruction(MethodIdentifier methodIdentifier, TypeIdentifier returnType) {
         usingMethods.add(methodIdentifier);
 
         // メソッドやコンストラクタの持ち主
         // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
-        useTypes.add(ownerType);
+        useTypes.add(methodIdentifier.declaringType());
 
         // 呼び出したメソッドの戻り値の型
         useTypes.add(returnType);

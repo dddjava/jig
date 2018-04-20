@@ -16,6 +16,8 @@ import java.util.Set;
 
 public class Specification {
 
+    final SpecificationContext specificationContext;
+
     final TypeIdentifier typeIdentifier;
     final TypeIdentifier parentTypeIdentifier;
     final boolean canExtend;
@@ -33,10 +35,13 @@ public class Specification {
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public Specification(TypeIdentifier typeIdentifier,
+    public Specification(SpecificationContext specificationContext,
+                         TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
                          TypeIdentifiers interfaceTypeIdentifiers,
-                         List<TypeIdentifier> useTypes, boolean canExtend) {
+                         List<TypeIdentifier> useTypes,
+                         boolean canExtend) {
+        this.specificationContext = specificationContext;
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
@@ -95,12 +100,11 @@ public class Specification {
     }
 
     public boolean isModel() {
-        // TODO 外部化
-        return typeIdentifier.fullQualifiedName().contains(".domain.model.");
+        return specificationContext.isModel(this);
     }
 
     public boolean isRepository() {
-        return typeIdentifier.fullQualifiedName().endsWith("Repository");
+        return specificationContext.isRepository(this);
     }
 
     public TypeIdentifiers useTypes() {

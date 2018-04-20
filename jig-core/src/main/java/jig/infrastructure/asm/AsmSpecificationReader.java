@@ -14,6 +14,12 @@ import java.util.List;
 @Component
 public class AsmSpecificationReader implements SpecificationReader {
 
+    final SpecificationContext specificationContext;
+
+    public AsmSpecificationReader(SpecificationContext specificationContext) {
+        this.specificationContext = specificationContext;
+    }
+
     @Override
     public Specifications readFrom(SpecificationSources specificationSources) {
         List<Specification> list = new ArrayList<>();
@@ -26,7 +32,7 @@ public class AsmSpecificationReader implements SpecificationReader {
 
     Specification readSpecification(SpecificationSource specificationSource) {
         try (InputStream inputStream = Files.newInputStream(specificationSource.getPath())) {
-            SpecificationReadingVisitor visitor = new SpecificationReadingVisitor();
+            SpecificationReadingVisitor visitor = new SpecificationReadingVisitor(specificationContext);
             ClassReader classReader = new ClassReader(inputStream);
             classReader.accept(visitor, ClassReader.SKIP_DEBUG);
 

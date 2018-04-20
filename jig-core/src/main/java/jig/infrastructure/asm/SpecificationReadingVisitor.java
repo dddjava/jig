@@ -11,6 +11,7 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
+import jig.domain.model.specification.SpecificationContext;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -23,10 +24,12 @@ import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
 
-    private Specification specification;
+    final SpecificationContext specificationContext;
+    Specification specification;
 
-    public SpecificationReadingVisitor() {
+    public SpecificationReadingVisitor(SpecificationContext specificationContext) {
         super(Opcodes.ASM6);
+        this.specificationContext = specificationContext;
     }
 
     public Specification specification() {
@@ -38,6 +41,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
         this.specification = new Specification(
+                specificationContext,
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),

@@ -10,6 +10,7 @@ import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
+import jig.infrastructure.PropertySpecificationContext;
 import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -47,8 +48,11 @@ public class ServiceFactory {
         }
         JigPaths jigPaths = jigPaths(javaPluginConvention);
 
+        // TODO extensionで変更できるようにする
+        PropertySpecificationContext specificationContext = new PropertySpecificationContext();
+
         return new AnalyzeService(
-                new SpecificationService(new AsmSpecificationReader()),
+                new SpecificationService(new AsmSpecificationReader(specificationContext)),
                 new MyBatisSqlReader(),
                 new JavaparserJapaneseReader(
                         japaneseNameRepository,

@@ -10,6 +10,7 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.Specifications;
+import jig.infrastructure.PropertySpecificationContext;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ class DependencyServiceTest {
                 mock(AnnotationDeclarationRepository.class));
 
         Specification specification = new Specification(
+                new PropertySpecificationContext(),
                 new TypeIdentifier("test.TestClass"),
                 new TypeIdentifier("test.TestParentClass"),
                 new TypeIdentifiers(emptyList()), emptyList(), false);

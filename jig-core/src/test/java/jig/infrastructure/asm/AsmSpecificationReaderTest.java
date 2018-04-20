@@ -7,6 +7,7 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.specification.MethodSpecification;
 import jig.domain.model.specification.Specification;
 import jig.domain.model.specification.SpecificationSource;
+import jig.infrastructure.PropertySpecificationContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -175,7 +176,7 @@ public class AsmSpecificationReaderTest {
     private Specification exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmSpecificationReader sut = new AsmSpecificationReader();
+        AsmSpecificationReader sut = new AsmSpecificationReader(new PropertySpecificationContext());
         return sut.readSpecification(new SpecificationSource(path));
     }
 }

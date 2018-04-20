@@ -5,7 +5,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -70,8 +70,8 @@ public class ReportService {
 
     private Report validateAnnotationReport() {
         List<AnnotationDetail> list = new ArrayList<>();
-        for (FieldAnnotationDeclaration fieldAnnotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
-            list.add(new AnnotationDetail(fieldAnnotationDeclaration, glossaryService));
+        for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
+            list.add(new AnnotationDetail(annotationDeclaration, glossaryService));
         }
         return new ValidationAnnotateReport(list);
     }

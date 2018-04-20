@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface AnnotationDeclarationRepository {
 
-    List<FieldAnnotationDeclaration> findValidationAnnotation();
+    List<ValidationAnnotationDeclaration> findValidationAnnotation();
 
     void register(FieldAnnotationDeclaration fieldAnnotationDeclaration);
 

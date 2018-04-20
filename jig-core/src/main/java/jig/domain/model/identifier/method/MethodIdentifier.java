@@ -6,16 +6,16 @@ import java.util.Objects;
 
 public class MethodIdentifier {
 
-    private final TypeIdentifier typeIdentifier;
+    private final TypeIdentifier declaringType;
     private final MethodSignature methodSignature;
 
     private final String fullText;
 
-    public MethodIdentifier(TypeIdentifier typeIdentifier, MethodSignature methodSignature) {
-        this.typeIdentifier = typeIdentifier;
+    public MethodIdentifier(TypeIdentifier declaringType, MethodSignature methodSignature) {
+        this.declaringType = declaringType;
         this.methodSignature = methodSignature;
 
-        this.fullText = typeIdentifier.fullQualifiedName() + "." + methodSignature.asText();
+        this.fullText = declaringType.fullQualifiedName() + "." + methodSignature.asText();
     }
 
     public String asFullText() {
@@ -27,7 +27,7 @@ public class MethodIdentifier {
     }
 
     public TypeIdentifier declaringType() {
-        return typeIdentifier;
+        return declaringType;
     }
 
     public MethodSignature methodSignature() {

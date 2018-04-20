@@ -4,24 +4,27 @@ import jig.application.service.GlossaryService;
 import jig.domain.model.declaration.annotation.AnnotationDescription;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 
 public class AnnotationDetail {
 
-    private ValidationAnnotationDeclaration annotationDeclaration;
-    private GlossaryService glossaryService;
+    private final ValidationAnnotationDeclaration annotationDeclaration;
+    private final GlossaryService glossaryService;
+    private final TypeIdentifierFormatter typeIdentifierFormatter;
 
-    public AnnotationDetail(ValidationAnnotationDeclaration annotationDeclaration, GlossaryService glossaryService) {
+    public AnnotationDetail(ValidationAnnotationDeclaration annotationDeclaration, GlossaryService glossaryService, TypeIdentifierFormatter typeIdentifierFormatter) {
         this.annotationDeclaration = annotationDeclaration;
         this.glossaryService = glossaryService;
+        this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
-    public TypeIdentifier declaringType() {
-        return annotationDeclaration.declaringType();
+    public String declaringTypeName() {
+        return annotationDeclaration.declaringType().format(typeIdentifierFormatter);
     }
 
     public JapaneseName japaneseName() {
-        return glossaryService.japaneseNameFrom(declaringType());
+        return glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
     }
 
     public String annotateSimpleName() {

@@ -3,7 +3,7 @@ package jig.domain.model.report.validation;
 import java.util.function.Function;
 
 public enum ValidationConcern {
-    クラス名(detail -> detail.declaringType().fullQualifiedName()),
+    クラス名(AnnotationDetail::declaringTypeName),
     クラス和名(detail -> detail.japaneseName().value()),
     フィールドorメソッド(AnnotationDetail::annotateSimpleName),
     アノテーション名(detail -> detail.annotationType().asSimpleText()),

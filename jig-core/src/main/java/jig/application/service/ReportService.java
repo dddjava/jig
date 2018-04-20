@@ -71,7 +71,7 @@ public class ReportService {
     private Report validateAnnotationReport() {
         List<AnnotationDetail> list = new ArrayList<>();
         for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
-            list.add(new AnnotationDetail(annotationDeclaration, glossaryService));
+            list.add(new AnnotationDetail(annotationDeclaration, glossaryService, typeIdentifierFormatter));
         }
         return new ValidationAnnotateReport(list);
     }

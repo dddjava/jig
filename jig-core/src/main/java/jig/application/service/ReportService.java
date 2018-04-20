@@ -2,7 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.Characteristics;
+import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
@@ -77,8 +77,8 @@ public class ReportService {
         List<TypeDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
         for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            Characteristics characteristics = characteristicRepository.characteristicsOf(typeIdentifier);
-            TypeDetail detail = new TypeDetail(typeIdentifier, characteristics, relationRepository, japaneseNameRepository, typeIdentifierFormatter);
+            TypeCharacteristics typeCharacteristics = characteristicRepository.characteristicsOf(typeIdentifier);
+            TypeDetail detail = new TypeDetail(typeIdentifier, typeCharacteristics, relationRepository, japaneseNameRepository, typeIdentifierFormatter);
             list.add(detail);
         }
         return new TypeReport(perspective, list);

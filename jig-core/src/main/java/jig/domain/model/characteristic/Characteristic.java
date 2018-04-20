@@ -4,7 +4,9 @@ import jig.domain.model.specification.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum Characteristic {
     SERVICE {
@@ -96,11 +98,11 @@ public enum Characteristic {
         return false;
     }
 
-    public static void register(CharacteristicRepository repository, Specification specification) {
-        for (Characteristic characteristic : values()) {
-            if (characteristic.matches(specification)) {
-                repository.register(specification.typeIdentifier, characteristic);
-            }
-        }
+    public static TypeCharacteristics resolveCharacteristics(Specification specification) {
+        return new TypeCharacteristics(
+                specification.typeIdentifier,
+                Arrays.stream(values())
+                        .filter(characteristic -> characteristic.matches(specification))
+                        .collect(Collectors.toSet()));
     }
 }

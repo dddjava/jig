@@ -7,9 +7,9 @@ public interface CharacteristicRepository {
 
     TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic);
 
-    void register(TypeIdentifier typeIdentifier, Characteristic characteristic);
+    void register(TypeCharacteristics typeCharacteristics);
 
     boolean has(TypeIdentifier typeIdentifier, Characteristic mapper);
 
-    Characteristics characteristicsOf(TypeIdentifier typeIdentifier);
+    TypeCharacteristics characteristicsOf(TypeIdentifier typeIdentifier);
 }

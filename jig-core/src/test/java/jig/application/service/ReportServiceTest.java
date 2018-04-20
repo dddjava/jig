@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
@@ -14,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -32,12 +36,17 @@ class ReportServiceTest {
 
     @Test
     void test() {
-
         TypeIdentifier typeIdentifier = new TypeIdentifier("test.HogeEnum");
-        repository.register(typeIdentifier, Characteristic.ENUM);
-        repository.register(typeIdentifier, Characteristic.ENUM_BEHAVIOUR);
-        repository.register(typeIdentifier, Characteristic.ENUM_PARAMETERIZED);
-        repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
+
+        TypeCharacteristics typeCharacteristics = new TypeCharacteristics(
+                typeIdentifier,
+                Stream.of(
+                        Characteristic.ENUM,
+                        //Characteristic.ENUM_PARAMETERIZED,
+                        Characteristic.ENUM_BEHAVIOUR,
+                        Characteristic.ENUM_POLYMORPHISM
+                ).collect(Collectors.toSet()));
+        repository.register(typeCharacteristics);
 
         relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
         relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
@@ -61,7 +70,7 @@ class ReportServiceTest {
                             "[A,B]",
                             "String fugaText, Integer fugaInteger",
                             "[HogeUser]",
-                            "◯",
+                            "",
                             "◯",
                             "◯"
                     );

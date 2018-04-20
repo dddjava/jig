@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.identifier.namespace.PackageIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -49,7 +50,9 @@ public class DependencyService {
 
     public void register(Specifications specifications) {
         specifications.list().forEach(specification -> {
-            Characteristic.register(characteristicRepository, specification);
+            TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(specification);
+            characteristicRepository.register(typeCharacteristics);
+
             RelationType.register(relationRepository, specification);
         });
     }

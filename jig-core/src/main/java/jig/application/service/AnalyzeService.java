@@ -51,6 +51,7 @@ public class AnalyzeService {
     public void importSpecification(ProjectLocation projectLocation) {
         SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
         Specifications specifications = specificationService.specification(specificationSources);
+
         dependencyService.register(specifications);
     }
 

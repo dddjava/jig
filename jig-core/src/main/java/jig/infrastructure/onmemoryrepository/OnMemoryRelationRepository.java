@@ -108,7 +108,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public MethodDeclarations findUseMethod(MethodDeclaration methodDeclaration) {
-        return methodUseMethodsMap.get(methodDeclaration);
+        return methodUseMethodsMap.get(methodDeclaration).distinct();
     }
 
     @Override

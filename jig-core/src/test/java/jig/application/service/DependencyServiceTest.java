@@ -63,6 +63,6 @@ class DependencyServiceTest {
                 .isEqualTo("test.FieldA,test.FieldB");
         // メソッドの使用しているメソッドがわかる
         assertThat(relationRepository.findUseMethod(methodDeclaration).asSimpleText())
-                .isEqualTo("OtherClass2.methodB(),TestClass.methodA(),TestClass.methodA()");
+                .isEqualTo("OtherClass2.methodB(),TestClass.methodA()");
     }
 }

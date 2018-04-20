@@ -50,4 +50,8 @@ public class MethodDeclarations {
                 methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText()
         ).collect(Collectors.joining(","));
     }
+
+    public MethodDeclarations distinct() {
+        return list.stream().distinct().collect(MethodDeclarations.collector());
+    }
 }

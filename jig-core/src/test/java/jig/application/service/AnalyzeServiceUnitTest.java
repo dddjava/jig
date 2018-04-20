@@ -14,7 +14,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 public class AnalyzeServiceUnitTest {
 
     @Test
-    void test() {
+    void 解析対象が見つからない場合は例外を投げて処理を終了する() {
         JigPaths jigPaths = new JigPaths(
                 "not/match/any/directory",
                 "not/match/any/directory",

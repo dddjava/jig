@@ -2,7 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.TypeCharacteristics;
+import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.identifier.namespace.PackageIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -21,10 +21,12 @@ public class DependencyService {
 
     private final CharacteristicRepository characteristicRepository;
     private final RelationRepository relationRepository;
+    private final AnnotationDeclarationRepository annotationDeclarationRepository;
 
-    public DependencyService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
+    public DependencyService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
+        this.annotationDeclarationRepository = annotationDeclarationRepository;
     }
 
     public PackageDependencies packageDependencies() {
@@ -49,11 +51,16 @@ public class DependencyService {
     }
 
     public void register(Specifications specifications) {
-        specifications.list().forEach(specification -> {
-            TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(specification);
-            characteristicRepository.register(typeCharacteristics);
+        specifications.list().forEach(specification ->
+                characteristicRepository.register(Characteristic.resolveCharacteristics(specification)));
 
-            RelationType.register(relationRepository, specification);
-        });
+        specifications.list().forEach(specification ->
+                RelationType.register(relationRepository, specification));
+
+        specifications.list().forEach(specification ->
+                specification.fieldAnnotationDeclarations().forEach(annotationDeclarationRepository::register));
+
+        specifications.instanceMethodSpecifications().forEach(methodSpecification ->
+                methodSpecification.methodAnnotationDeclarations().forEach(annotationDeclarationRepository::register));
     }
 }

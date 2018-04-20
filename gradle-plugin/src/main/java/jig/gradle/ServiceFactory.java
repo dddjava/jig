@@ -3,6 +3,7 @@ package jig.gradle;
 import jig.application.service.*;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.diagram.DiagramConverter;
 import jig.domain.model.diagram.DiagramMaker;
 import jig.domain.model.japanese.JapaneseNameRepository;
@@ -12,10 +13,7 @@ import jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import jig.infrastructure.asm.AsmClassFileReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
-import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
-import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
-import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
-import jig.infrastructure.onmemoryrepository.OnMemorySqlRepository;
+import jig.infrastructure.onmemoryrepository.*;
 import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import jig.infrastructure.plantuml.PlantumlDiagramMaker;
 import org.gradle.api.plugins.Convention;
@@ -33,6 +31,7 @@ public class ServiceFactory {
     final RelationRepository relationRepository = new OnMemoryRelationRepository();
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
+    final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
     final DiagramMaker diagramMaker = new PlantumlDiagramMaker();
 
@@ -57,8 +56,8 @@ public class ServiceFactory {
                 ),
                 new DependencyService(
                         characteristicRepository,
-                        relationRepository
-                ),
+                        relationRepository,
+                        annotationDeclarationRepository),
                 jigPaths,
                 sqlRepository
         );
@@ -83,8 +82,9 @@ public class ServiceFactory {
                 relationRepository,
                 sqlRepository,
                 japaneseNameRepository,
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath)
-        );
+                new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
+                annotationDeclarationRepository,
+                new GlossaryService(japaneseNameRepository));
     }
 
     DiagramService diagramService(String outputOmitPrefix) {

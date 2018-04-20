@@ -4,6 +4,8 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
+import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -19,6 +21,8 @@ import jig.domain.model.report.template.Reports;
 import jig.domain.model.report.type.TypeDetail;
 import jig.domain.model.report.type.TypePerspective;
 import jig.domain.model.report.type.TypeReport;
+import jig.domain.model.report.validation.AnnotationDetail;
+import jig.domain.model.report.validation.ValidationAnnotateReport;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,17 +37,21 @@ public class ReportService {
     final SqlRepository sqlRepository;
     final JapaneseNameRepository japaneseNameRepository;
     final TypeIdentifierFormatter typeIdentifierFormatter;
+    private AnnotationDeclarationRepository annotationDeclarationRepository;
+    private GlossaryService glossaryService;
 
     public ReportService(CharacteristicRepository characteristicRepository,
                          RelationRepository relationRepository,
                          SqlRepository sqlRepository,
                          JapaneseNameRepository japaneseNameRepository,
-                         TypeIdentifierFormatter typeIdentifierFormatter) {
+                         TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
         this.sqlRepository = sqlRepository;
         this.japaneseNameRepository = japaneseNameRepository;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
+        this.annotationDeclarationRepository = annotationDeclarationRepository;
+        this.glossaryService = glossaryService;
     }
 
     public Reports reports() {
@@ -55,8 +63,17 @@ public class ReportService {
                 typeReportOn(TypePerspective.NUMBER),
                 typeReportOn(TypePerspective.COLLECTION),
                 typeReportOn(TypePerspective.DATE),
-                typeReportOn(TypePerspective.TERM)
+                typeReportOn(TypePerspective.TERM),
+                validateAnnotationReport()
         ));
+    }
+
+    private Report validateAnnotationReport() {
+        List<AnnotationDetail> list = new ArrayList<>();
+        for (FieldAnnotationDeclaration fieldAnnotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
+            list.add(new AnnotationDetail(fieldAnnotationDeclaration, glossaryService));
+        }
+        return new ValidationAnnotateReport(list);
     }
 
     private Report methodReportOn(MethodPerspective perspective) {

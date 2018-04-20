@@ -152,4 +152,7 @@ public class Specification {
         return new MethodDeclaration(typeIdentifier, methodSignature);
     }
 
+    public List<FieldAnnotationDeclaration> fieldAnnotationDeclarations() {
+        return fieldAnnotationDeclarations;
+    }
 }

@@ -2,6 +2,7 @@ package jig.application.service;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.declaration.method.MethodSignature;
@@ -12,6 +13,7 @@ import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.asm.AsmClassFileReader;
+import jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,6 +33,7 @@ public class AnalyzeCharacteristicTest {
 
     static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
+    static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
     @BeforeAll
     static void before() throws URISyntaxException {
@@ -44,7 +47,7 @@ public class AnalyzeCharacteristicTest {
         Specifications specifications = new AsmClassFileReader().readFrom(specificationSources);
 
         // 仕様から特徴と関連を登録
-        DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository);
+        DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository, annotationDeclarationRepository);
         dependencyService.register(specifications);
     }
 

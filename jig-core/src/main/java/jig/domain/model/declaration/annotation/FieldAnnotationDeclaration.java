@@ -5,11 +5,19 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 
 public class FieldAnnotationDeclaration {
 
-    final FieldDeclaration declaringMethod;
+    final FieldDeclaration fieldDeclaration;
     final TypeIdentifier annotationType;
 
-    public FieldAnnotationDeclaration(FieldDeclaration declaringMethod, TypeIdentifier annotationType) {
-        this.declaringMethod = declaringMethod;
+    public FieldAnnotationDeclaration(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType) {
+        this.fieldDeclaration = fieldDeclaration;
         this.annotationType = annotationType;
+    }
+
+    public FieldDeclaration fieldDeclaration() {
+        return fieldDeclaration;
+    }
+
+    public TypeIdentifier annotationType() {
+        return annotationType;
     }
 }

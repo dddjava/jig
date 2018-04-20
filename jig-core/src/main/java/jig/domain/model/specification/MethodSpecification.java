@@ -77,4 +77,8 @@ public class MethodSpecification {
     public void registerInvokeDynamic(TypeIdentifier type) {
         useTypes.add(type);
     }
+
+    public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {
+        return methodAnnotationDeclarations;
+    }
 }

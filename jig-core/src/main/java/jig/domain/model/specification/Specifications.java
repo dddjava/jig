@@ -1,6 +1,7 @@
 package jig.domain.model.specification;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Specifications {
     private final List<Specification> list;
@@ -11,5 +12,12 @@ public class Specifications {
 
     public List<Specification> list() {
         return list;
+    }
+
+    public List<MethodSpecification> instanceMethodSpecifications() {
+        return list.stream()
+                .map(Specification::instanceMethodSpecifications)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 }

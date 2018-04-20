@@ -1,5 +1,6 @@
 package jig.infrastructure.asm;
 
+import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodSignature;
@@ -25,8 +26,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         TypeIdentifier annotationType = new TypeDescriptor(descriptor).toTypeIdentifier();
-        // new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, annotationType);
-        methodSpecification.registerAnnotation(annotationType);
+        methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, annotationType));
 
         return super.visitAnnotation(descriptor, visible);
     }

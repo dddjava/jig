@@ -12,4 +12,8 @@ public class MethodAnnotationDeclaration {
         this.declaringMethod = declaringMethod;
         this.annotationType = annotationType;
     }
+
+    public TypeIdentifier annotationType() {
+        return annotationType;
+    }
 }

@@ -1,6 +1,7 @@
 package jig.infrastructure.asm;
 
 import jig.domain.model.declaration.annotation.AnnotationDeclaration;
+import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodSignature;
@@ -74,22 +75,28 @@ class SpecificationReadingVisitor extends ClassVisitor {
         }
 
         TypeIdentifier typeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
-        FieldDeclaration field = new FieldDeclaration(specification.typeIdentifier, name, typeIdentifier);
+        FieldDeclaration fieldDeclaration = new FieldDeclaration(specification.typeIdentifier, name, typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            specification.add(field);
+            specification.add(fieldDeclaration);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                specification.addConstant(field);
+                specification.addConstant(fieldDeclaration);
             }
         }
         return new FieldVisitor(this.api) {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                String annotationClassName = Type.getType(descriptor).getClassName();
-                specification.addUseType(new TypeIdentifier(annotationClassName));
+                TypeIdentifier annotationTypeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
+
+                specification.addFieldAnnotation(new FieldAnnotationDeclaration(
+                        fieldDeclaration,
+                        annotationTypeIdentifier
+                ));
+                specification.addUseType(annotationTypeIdentifier);
+
                 return super.visitAnnotation(descriptor, visible);
             }
         };

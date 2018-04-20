@@ -1,5 +1,6 @@
 package jig.domain.model.specification;
 
+import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -67,8 +68,8 @@ public class MethodSpecification {
         return isInstanceMethod;
     }
 
-    public void registerAnnotation(TypeIdentifier type) {
-        useTypes.add(type);
+    public void registerAnnotation(MethodAnnotationDeclaration methodAnnotationDeclaration) {
+        useTypes.add(methodAnnotationDeclaration.annotationType());
     }
 
     public void registerInvokeDynamic(TypeIdentifier type) {

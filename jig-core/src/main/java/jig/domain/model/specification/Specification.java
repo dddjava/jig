@@ -1,6 +1,7 @@
 package jig.domain.model.specification;
 
 import jig.domain.model.declaration.annotation.AnnotationDeclaration;
+import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -20,10 +21,14 @@ public class Specification {
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
-    List<AnnotationDeclaration> annotations;
-    List<MethodSpecification> methodSpecifications;
-    List<FieldDeclaration> fieldDeclarations;
-    List<FieldDeclaration> constantIdentifiers;
+    List<AnnotationDeclaration> annotations = new ArrayList<>();
+    List<FieldDeclaration> constantIdentifiers = new ArrayList<>();
+
+    private List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
+    List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
+
+    List<MethodSpecification> methodSpecifications = new ArrayList<>();
+
     private Set<TypeIdentifier> useTypes = new HashSet<>();
 
     public Specification(TypeIdentifier typeIdentifier,
@@ -35,10 +40,6 @@ public class Specification {
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
-        this.annotations = new ArrayList<>();
-        this.methodSpecifications = new ArrayList<>();
-        this.fieldDeclarations = new ArrayList<>();
-        this.constantIdentifiers = new ArrayList<>();
 
         this.useTypes.addAll(useTypes);
         this.useTypes.add(parentTypeIdentifier);
@@ -125,5 +126,9 @@ public class Specification {
 
     public void addUseType(TypeIdentifier typeIdentifier) {
         useTypes.add(typeIdentifier);
+    }
+
+    public void addFieldAnnotation(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
+        fieldAnnotationDeclarations.add(fieldAnnotationDeclaration);
     }
 }

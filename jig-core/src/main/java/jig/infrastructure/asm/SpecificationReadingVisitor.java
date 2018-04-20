@@ -38,10 +38,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
         this.specification = new Specification(
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
-                access,
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
-                useTypes
-        );
+                useTypes,
+                (access & Opcodes.ACC_FINAL) == 0);
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

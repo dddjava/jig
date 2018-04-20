@@ -6,7 +6,6 @@ import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,7 +18,8 @@ public class Specification {
     public TypeIdentifier typeIdentifier;
 
     TypeIdentifier parentTypeIdentifier;
-    int classAccess;
+    private final boolean canExtend;
+
     public TypeIdentifiers interfaceTypeIdentifiers;
     List<AnnotationDeclaration> annotations = new ArrayList<>();
     List<FieldDeclaration> constantIdentifiers = new ArrayList<>();
@@ -33,13 +33,12 @@ public class Specification {
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
-                         int classAccess,
                          TypeIdentifiers interfaceTypeIdentifiers,
-                         List<TypeIdentifier> useTypes) {
+                         List<TypeIdentifier> useTypes, boolean canExtend) {
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
-        this.classAccess = classAccess;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
+        this.canExtend = canExtend;
 
         this.useTypes.addAll(useTypes);
         this.useTypes.add(parentTypeIdentifier);
@@ -47,7 +46,7 @@ public class Specification {
     }
 
     public boolean canExtend() {
-        return (classAccess & Opcodes.ACC_FINAL) == 0;
+        return canExtend;
     }
 
     public boolean isEnum() {

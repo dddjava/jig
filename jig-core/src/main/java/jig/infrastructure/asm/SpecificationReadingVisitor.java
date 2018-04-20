@@ -84,7 +84,6 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
                 AnnotationDescription description = new AnnotationDescription();
                 specification.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, description));
-
                 return new MyAnnotationVisitor(this.api, description);
             }
         };
@@ -117,13 +116,12 @@ class SpecificationReadingVisitor extends ClassVisitor {
             specification.registerInstanceMethodSpecification(methodSpecification);
         }
 
-
         return new MethodVisitor(this.api) {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 AnnotationDescription description = new AnnotationDescription();
-                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, typeDescriptorToIdentifier(descriptor), description));
+                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), description));
                 return new MyAnnotationVisitor(this.api, description);
             }
 
@@ -171,7 +169,6 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
                 super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
             }
-
         };
     }
 

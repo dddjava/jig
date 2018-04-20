@@ -101,14 +101,22 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-
         MethodSpecification methodSpecification = new MethodSpecification(
                 methodDeclaration,
                 methodDescriptorToReturnIdentifier(descriptor),
-                useTypes,
-                (access & Opcodes.ACC_STATIC) == 0 && !methodDeclaration.methodSignature().asSimpleText().startsWith("<init>")
+                useTypes
         );
-        specification.registerMethodSpecification(methodSpecification);
+        if (methodDeclaration.methodSignature().asSimpleText().startsWith("<init>")) {
+            // コンストラクタ
+            specification.registerConstructorSpecification(methodSpecification);
+        } else if ((access & Opcodes.ACC_STATIC) != 0) {
+            // staticメソッド
+            specification.registerStaticMethodSpecification(methodSpecification);
+        } else {
+            // インスタンスメソッド
+            specification.registerInstanceMethodSpecification(methodSpecification);
+        }
+
 
         return new MethodVisitor(this.api) {
 

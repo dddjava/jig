@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Specification {
 
@@ -28,7 +27,9 @@ public class Specification {
     final List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    final List<MethodSpecification> methodSpecifications = new ArrayList<>();
+    final List<MethodSpecification> instanceMethodSpecifications = new ArrayList<>();
+    final List<MethodSpecification> staticMethodSpecifications = new ArrayList<>();
+    final List<MethodSpecification> constructorSpecifications = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
@@ -73,7 +74,7 @@ public class Specification {
     }
 
     public boolean hasInstanceMethod() {
-        return methodSpecifications.stream().anyMatch(MethodSpecification::isInstanceMethod);
+        return !instanceMethodSpecifications.isEmpty();
     }
 
     public boolean hasField() {
@@ -103,23 +104,26 @@ public class Specification {
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodSpecification methodSpecification : methodSpecifications) {
+        for (MethodSpecification methodSpecification : instanceMethodSpecifications) {
             useTypes.addAll(methodSpecification.useTypes());
         }
+        for (MethodSpecification methodSpecification : staticMethodSpecifications) {
+            useTypes.addAll(methodSpecification.useTypes());
+        }
+        for (MethodSpecification methodSpecification : constructorSpecifications) {
+            useTypes.addAll(methodSpecification.useTypes());
+        }
+
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
     public List<MethodSpecification> instanceMethodSpecifications() {
-        return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
+        return instanceMethodSpecifications;
     }
 
     public void registerTypeAnnotation(TypeAnnotationDeclaration typeAnnotationDeclaration) {
         typeAnnotationDeclarations.add(typeAnnotationDeclaration);
         useTypes.add(typeAnnotationDeclaration.type());
-    }
-
-    public void registerMethodSpecification(MethodSpecification methodSpecification) {
-        methodSpecifications.add(methodSpecification);
     }
 
     public void registerField(FieldDeclaration field) {
@@ -154,5 +158,17 @@ public class Specification {
 
     public List<FieldAnnotationDeclaration> fieldAnnotationDeclarations() {
         return fieldAnnotationDeclarations;
+    }
+
+    public void registerInstanceMethodSpecification(MethodSpecification methodSpecification) {
+        instanceMethodSpecifications.add(methodSpecification);
+    }
+
+    public void registerStaticMethodSpecification(MethodSpecification methodSpecification) {
+        staticMethodSpecifications.add(methodSpecification);
+    }
+
+    public void registerConstructorSpecification(MethodSpecification methodSpecification) {
+        constructorSpecifications.add(methodSpecification);
     }
 }

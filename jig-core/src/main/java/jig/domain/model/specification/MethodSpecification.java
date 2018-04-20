@@ -16,7 +16,6 @@ public class MethodSpecification {
 
     public final MethodDeclaration methodDeclaration;
     private final TypeIdentifier returnType;
-    private final boolean isInstanceMethod;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
     private final List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
@@ -26,11 +25,9 @@ public class MethodSpecification {
 
     public MethodSpecification(MethodDeclaration methodDeclaration,
                                TypeIdentifier returnType,
-                               List<TypeIdentifier> useTypes,
-                               boolean isInstanceMethod) {
+                               List<TypeIdentifier> useTypes) {
         this.methodDeclaration = methodDeclaration;
         this.returnType = returnType;
-        this.isInstanceMethod = isInstanceMethod;
 
         this.useTypes.add(returnType);
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
@@ -70,10 +67,6 @@ public class MethodSpecification {
 
     public TypeIdentifier returnType() {
         return returnType;
-    }
-
-    public boolean isInstanceMethod() {
-        return isInstanceMethod;
     }
 
     public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {

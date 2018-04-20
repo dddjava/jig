@@ -32,10 +32,6 @@ public enum RelationType {
             repository.registerMethodUseFields(methodDeclaration, methodSpecification.usingFields());
 
             repository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
-
-            methodSpecification.usingMethods.forEach(usingMethodIdentifier -> {
-                repository.registerMethodUseType(methodDeclaration, usingMethodIdentifier.declaringType());
-            });
         });
 
         repository.registerDependency(specification.typeIdentifier(), specification.useTypes());

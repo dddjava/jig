@@ -17,8 +17,6 @@ public interface RelationRepository {
 
     void registerMethodUseMethods(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations);
 
-    void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier fieldTypeName);
-
     void registerImplementation(MethodDeclaration methodDeclaration, MethodDeclaration methodDeclaration1);
 
     void registerField(FieldDeclaration fieldDeclaration);

@@ -45,11 +45,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
         methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, returnTypeIdentifier));
     }
 
-
-    @Override
-    public void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier typeIdentifier) {
+    private void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier typeIdentifier) {
         methodUseTypes.add(new MethodTypeRelation(methodDeclaration, typeIdentifier));
-
     }
 
     @Override
@@ -104,6 +101,9 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerMethodUseMethods(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations) {
         methodUseMethodsMap.put(methodDeclaration, methodDeclarations);
+
+        methodDeclarations.list().forEach(method ->
+                registerMethodUseType(methodDeclaration, method.declaringType()));
     }
 
     @Override

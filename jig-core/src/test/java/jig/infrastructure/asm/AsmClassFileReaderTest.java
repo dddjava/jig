@@ -18,7 +18,6 @@ import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
-import stub.domain.model.relation.qux.Qux;
 import stub.domain.model.relation.test.*;
 
 import java.nio.file.Path;
@@ -91,12 +90,12 @@ public class AsmClassFileReaderTest {
                         new TypeIdentifier(ReferenceField.class),
                         new TypeIdentifier(UseInLambda.class),
                         new TypeIdentifier(MethodReference.class),
-                        new TypeIdentifier(Qux.Quuz.class),
+                        new TypeIdentifier(EnclosedClass.NestedClass.class),
                         new TypeIdentifier(ThrowingException.class)
                 )
                 .doesNotContain(
                         new TypeIdentifier(LocalValue.class),
-                        new TypeIdentifier(Qux.class)
+                        new TypeIdentifier(EnclosedClass.class)
                 );
 
         assertThat(actual.hasField()).isFalse();

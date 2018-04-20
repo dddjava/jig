@@ -1,7 +1,7 @@
 package stub.domain.model.relation;
 
 import stub.domain.model.relation.foo.Foo;
-import stub.domain.model.relation.qux.Qux;
+import stub.domain.model.relation.test.EnclosedClass;
 import stub.domain.model.relation.test.*;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class MethodInstruction {
     }
 
     void nestedClass() {
-        new Qux.Quuz();
+        new EnclosedClass.NestedClass();
     }
 
     void causeException() throws ThrowingException {

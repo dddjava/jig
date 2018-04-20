@@ -27,7 +27,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final Set<MethodTypeRelation> methodParameterTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodUseTypes = new HashSet<>();
     final Set<MethodRelation> methodImplementMethods = new HashSet<>();
-    final Set<MethodRelation> methodUseMethods = new HashSet<>();
 
     @Override
     public void registerMethod(MethodDeclaration methodDeclaration) {
@@ -46,10 +45,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
         methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, returnTypeIdentifier));
     }
 
-    @Override
-    public void registerMethodUseMethod(MethodDeclaration from, MethodDeclaration to) {
-        methodUseMethods.add(new MethodRelation(from, to));
-    }
 
     @Override
     public void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier typeIdentifier) {
@@ -104,12 +99,16 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .collect(MethodDeclarations.collector());
     }
 
+    Map<MethodDeclaration, MethodDeclarations> methodUseMethodsMap = new HashMap<>();
+
+    @Override
+    public void registerMethodUseMethod(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations) {
+        methodUseMethodsMap.put(methodDeclaration, methodDeclarations);
+    }
+
     @Override
     public MethodDeclarations findUseMethod(MethodDeclaration methodDeclaration) {
-        return methodUseMethods.stream()
-                .filter(methodRelation -> methodRelation.fromMethodIs(methodDeclaration))
-                .map(MethodRelation::to)
-                .collect(MethodDeclarations.collector());
+        return methodUseMethodsMap.get(methodDeclaration);
     }
 
     @Override

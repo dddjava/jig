@@ -15,9 +15,9 @@ public interface RelationRepository {
 
     void registerMethodReturnType(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier);
 
-    void registerMethodUseMethod(MethodDeclaration identifier, MethodDeclaration methodName);
+    void registerMethodUseMethod(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations);
 
-    void registerMethodUseType(MethodDeclaration identifier, TypeIdentifier fieldTypeName);
+    void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier fieldTypeName);
 
     void registerImplementation(MethodDeclaration methodDeclaration, MethodDeclaration methodDeclaration1);
 

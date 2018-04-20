@@ -1,12 +1,12 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.Optional;
 
 public interface SqlRepository {
 
-    Optional<Sql> find(MethodDefinition identifier);
+    Optional<Sql> find(MethodDeclaration identifier);
 
     void register(Sql sql);
 

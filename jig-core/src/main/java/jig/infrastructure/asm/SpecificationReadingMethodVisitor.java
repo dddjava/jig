@@ -1,8 +1,8 @@
 package jig.infrastructure.asm;
 
-import jig.domain.model.definition.field.FieldDefinition;
-import jig.domain.model.definition.method.MethodDefinition;
-import jig.domain.model.definition.method.MethodSignature;
+import jig.domain.model.declaration.field.FieldDeclaration;
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.MethodSpecification;
 import org.objectweb.asm.AnnotationVisitor;
@@ -24,7 +24,9 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        methodSpecification.registerAnnotation(new TypeDescriptor(descriptor).toTypeIdentifier());
+        TypeIdentifier annotationType = new TypeDescriptor(descriptor).toTypeIdentifier();
+        // new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, annotationType);
+        methodSpecification.registerAnnotation(annotationType);
 
         return super.visitAnnotation(descriptor, visible);
     }
@@ -32,7 +34,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         methodSpecification.registerFieldInstruction(
-                new FieldDefinition(new TypeIdentifier(owner), name, new TypeDescriptor(descriptor).toTypeIdentifier()));
+                new FieldDeclaration(new TypeIdentifier(owner), name, new TypeDescriptor(descriptor).toTypeIdentifier()));
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }
@@ -43,9 +45,9 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
                 Arrays.stream(Type.getArgumentTypes(descriptor))
                         .map(this::toTypeIdentifier)
                         .collect(Collectors.toList()));
-        MethodDefinition methodDefinition = new MethodDefinition(new TypeIdentifier(owner), methodSignature);
+        MethodDeclaration methodDeclaration = new MethodDeclaration(new TypeIdentifier(owner), methodSignature);
 
-        methodSpecification.registerMethodInstruction(methodDefinition, methodDescriptorToReturnIdentifier(descriptor));
+        methodSpecification.registerMethodInstruction(methodDeclaration, methodDescriptorToReturnIdentifier(descriptor));
 
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }

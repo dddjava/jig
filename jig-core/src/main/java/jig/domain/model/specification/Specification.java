@@ -1,8 +1,8 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.definition.annotation.AnnotationDefinition;
-import jig.domain.model.definition.field.FieldDefinition;
-import jig.domain.model.definition.field.FieldDefinitions;
+import jig.domain.model.declaration.annotation.AnnotationDefinition;
+import jig.domain.model.declaration.field.FieldDeclaration;
+import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.objectweb.asm.Opcodes;
@@ -22,8 +22,8 @@ public class Specification {
     public TypeIdentifiers interfaceTypeIdentifiers;
     List<AnnotationDefinition> annotations;
     List<MethodSpecification> methodSpecifications;
-    List<FieldDefinition> fieldDefinitions;
-    List<FieldDefinition> constantIdentifiers;
+    List<FieldDeclaration> fieldDeclarations;
+    List<FieldDeclaration> constantIdentifiers;
     private Set<TypeIdentifier> useTypes = new HashSet<>();
 
     public Specification(TypeIdentifier typeIdentifier,
@@ -37,7 +37,7 @@ public class Specification {
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
         this.annotations = new ArrayList<>();
         this.methodSpecifications = new ArrayList<>();
-        this.fieldDefinitions = new ArrayList<>();
+        this.fieldDeclarations = new ArrayList<>();
         this.constantIdentifiers = new ArrayList<>();
 
         this.useTypes.addAll(useTypes);
@@ -55,15 +55,15 @@ public class Specification {
 
     public boolean hasOnlyOneFieldAndFieldTypeIs(Class<?> clz) {
         if (isEnum()) return false;
-        if (fieldDefinitions.size() != 1) return false;
-        return fieldDefinitions.get(0).typeIdentifier().fullQualifiedName().equals(clz.getName());
+        if (fieldDeclarations.size() != 1) return false;
+        return fieldDeclarations.get(0).typeIdentifier().fullQualifiedName().equals(clz.getName());
     }
 
     public boolean hasTwoFieldsAndFieldTypeAre(Class<?> clz) {
         if (isEnum()) return false;
-        if (fieldDefinitions.size() != 2) return false;
-        TypeIdentifier field1 = fieldDefinitions.get(0).typeIdentifier();
-        TypeIdentifier field2 = fieldDefinitions.get(1).typeIdentifier();
+        if (fieldDeclarations.size() != 2) return false;
+        TypeIdentifier field1 = fieldDeclarations.get(0).typeIdentifier();
+        TypeIdentifier field2 = fieldDeclarations.get(1).typeIdentifier();
         return (field1.equals(field2) && field1.fullQualifiedName().equals(clz.getName()));
     }
 
@@ -72,7 +72,7 @@ public class Specification {
     }
 
     public boolean hasField() {
-        return !fieldDefinitions.isEmpty();
+        return !fieldDeclarations.isEmpty();
     }
 
     public boolean hasAnnotation(String annotation) {
@@ -80,12 +80,12 @@ public class Specification {
         return annotations.stream().anyMatch(annotationDefinition -> annotationDefinition.typeIs(annotationType));
     }
 
-    public FieldDefinitions fieldIdentifiers() {
-        return new FieldDefinitions(fieldDefinitions);
+    public FieldDeclarations fieldIdentifiers() {
+        return new FieldDeclarations(fieldDeclarations);
     }
 
-    public FieldDefinitions constantIdentifiers() {
-        return new FieldDefinitions(constantIdentifiers);
+    public FieldDeclarations constantIdentifiers() {
+        return new FieldDeclarations(constantIdentifiers);
     }
 
     public boolean isModel() {
@@ -113,12 +113,12 @@ public class Specification {
         methodSpecifications.add(methodSpecification);
     }
 
-    public void add(FieldDefinition field) {
-        fieldDefinitions.add(field);
+    public void add(FieldDeclaration field) {
+        fieldDeclarations.add(field);
         useTypes.add(field.typeIdentifier());
     }
 
-    public void addConstant(FieldDefinition field) {
+    public void addConstant(FieldDeclaration field) {
         constantIdentifiers.add(field);
         useTypes.add(field.typeIdentifier());
     }

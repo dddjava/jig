@@ -4,8 +4,8 @@ import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.definition.method.MethodDefinition;
-import jig.domain.model.definition.method.MethodDefinitions;
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -63,9 +63,9 @@ public class ReportService {
         List<MethodDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
         for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            MethodDefinitions methods = relationRepository.methodsOf(typeIdentifier);
-            for (MethodDefinition methodDefinition : methods.list()) {
-                MethodDetail detail = new MethodDetail(typeIdentifier, methodDefinition, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository, typeIdentifierFormatter);
+            MethodDeclarations methods = relationRepository.methodsOf(typeIdentifier);
+            for (MethodDeclaration methodDeclaration : methods.list()) {
+                MethodDetail detail = new MethodDetail(typeIdentifier, methodDeclaration, relationRepository, characteristicRepository, sqlRepository, japaneseNameRepository, typeIdentifierFormatter);
                 list.add(detail);
             }
         }

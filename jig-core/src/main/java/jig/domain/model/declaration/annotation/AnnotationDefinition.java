@@ -1,4 +1,4 @@
-package jig.domain.model.definition.annotation;
+package jig.domain.model.declaration.annotation;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 

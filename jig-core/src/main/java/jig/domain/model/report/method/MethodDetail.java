@@ -5,8 +5,8 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
-import jig.domain.model.definition.method.MethodDefinition;
-import jig.domain.model.definition.method.MethodDefinitions;
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
@@ -20,7 +20,7 @@ import java.util.List;
 public class MethodDetail {
 
     private final TypeIdentifier typeIdentifier;
-    private final MethodDefinition methodDefinition;
+    private final MethodDeclaration methodDeclaration;
     private final RelationRepository relationRepository;
     private final CharacteristicRepository characteristicRepository;
     private final SqlRepository sqlRepository;
@@ -29,14 +29,14 @@ public class MethodDetail {
 
     // TODO repositoryうけとるのやめたい
     public MethodDetail(TypeIdentifier typeIdentifier,
-                        MethodDefinition methodDefinition,
+                        MethodDeclaration methodDeclaration,
                         RelationRepository relationRepository,
                         CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
                         JapaneseNameRepository japaneseNameRepository,
                         TypeIdentifierFormatter typeIdentifierFormatter) {
         this.typeIdentifier = typeIdentifier;
-        this.methodDefinition = methodDefinition;
+        this.methodDeclaration = methodDeclaration;
         this.relationRepository = relationRepository;
         this.characteristicRepository = characteristicRepository;
         this.sqlRepository = sqlRepository;
@@ -52,8 +52,8 @@ public class MethodDetail {
         return japaneseNameRepository.get(type());
     }
 
-    public MethodDefinition method() {
-        return methodDefinition;
+    public MethodDeclaration method() {
+        return methodDeclaration;
     }
 
     public TypeIdentifier returnType() {
@@ -64,7 +64,7 @@ public class MethodDetail {
         return relationRepository.findUseTypeOf(method());
     }
 
-    public MethodDefinitions instructMapperMethodIdentifiers() {
+    public MethodDeclarations instructMapperMethodIdentifiers() {
         return relationRepository.findConcrete(method())
                 .map(relationRepository::findUseMethod)
                 .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.declaringType(), Characteristic.MAPPER));
@@ -72,7 +72,7 @@ public class MethodDetail {
 
     public Sqls sqls() {
         List<Sql> sqls = new ArrayList<>();
-        for (MethodDefinition identifier : instructMapperMethodIdentifiers().list()) {
+        for (MethodDeclaration identifier : instructMapperMethodIdentifiers().list()) {
             sqlRepository.find(identifier).ifPresent(sqls::add);
         }
         return new Sqls(sqls);
@@ -83,7 +83,7 @@ public class MethodDetail {
     }
 
     public String repositoryMethods() {
-        return relationRepository.findUseMethod(methodDefinition)
+        return relationRepository.findUseMethod(methodDeclaration)
                 .filter(useMethod -> characteristicRepository.has(useMethod.declaringType(), Characteristic.REPOSITORY))
                 .asSimpleText();
     }

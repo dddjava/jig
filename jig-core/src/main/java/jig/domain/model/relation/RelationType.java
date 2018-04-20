@@ -1,6 +1,6 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.Specification;
 
@@ -20,21 +20,21 @@ public enum RelationType {
         specification.constantIdentifiers().list().forEach(repository::registerConstants);
 
         specification.instanceMethodSpecifications().forEach(methodSpecification -> {
-            MethodDefinition methodDefinition = methodSpecification.methodDefinition;
-            repository.registerMethod(methodDefinition);
-            repository.registerMethodParameter(methodDefinition);
-            repository.registerMethodReturnType(methodDefinition, methodSpecification.getReturnTypeName());
+            MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
+            repository.registerMethod(methodDeclaration);
+            repository.registerMethodParameter(methodDeclaration);
+            repository.registerMethodReturnType(methodDeclaration, methodSpecification.getReturnTypeName());
 
             for (TypeIdentifier interfaceTypeIdentifier : specification.interfaceTypeIdentifiers.list()) {
-                repository.registerImplementation(methodDefinition, methodDefinition.with(interfaceTypeIdentifier));
+                repository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
             }
 
             methodSpecification.usingFields.forEach(fieldIdentifier ->
-                    repository.registerMethodUseField(methodDefinition, fieldIdentifier));
+                    repository.registerMethodUseField(methodDeclaration, fieldIdentifier));
 
             methodSpecification.usingMethods.forEach(usingMethodIdentifier -> {
-                repository.registerMethodUseMethod(methodDefinition, usingMethodIdentifier);
-                repository.registerMethodUseType(methodDefinition, usingMethodIdentifier.declaringType());
+                repository.registerMethodUseMethod(methodDeclaration, usingMethodIdentifier);
+                repository.registerMethodUseType(methodDeclaration, usingMethodIdentifier.declaringType());
             });
         });
 

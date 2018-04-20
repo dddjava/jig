@@ -1,30 +1,30 @@
 package jig.domain.model.relation;
 
-import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.declaration.method.MethodDeclaration;
 
 public class MethodRelation {
 
-    MethodDefinition from;
-    MethodDefinition to;
+    MethodDeclaration from;
+    MethodDeclaration to;
 
-    public MethodRelation(MethodDefinition from, MethodDefinition to) {
+    public MethodRelation(MethodDeclaration from, MethodDeclaration to) {
         this.from = from;
         this.to = to;
     }
 
-    public boolean interfaceMethodIs(MethodDefinition methodDefinition) {
-        return to.equals(methodDefinition);
+    public boolean interfaceMethodIs(MethodDeclaration methodDeclaration) {
+        return to.equals(methodDeclaration);
     }
 
-    public MethodDefinition concreteMethod() {
+    public MethodDeclaration concreteMethod() {
         return from;
     }
 
-    public MethodDefinition to() {
+    public MethodDeclaration to() {
         return to;
     }
 
-    public boolean fromMethodIs(MethodDefinition methodDefinition) {
-        return from.equals(methodDefinition);
+    public boolean fromMethodIs(MethodDeclaration methodDeclaration) {
+        return from.equals(methodDeclaration);
     }
 }

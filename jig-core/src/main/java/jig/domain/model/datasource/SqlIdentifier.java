@@ -1,6 +1,6 @@
 package jig.domain.model.datasource;
 
-import jig.domain.model.definition.method.MethodDefinition;
+import jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class SqlIdentifier {
         return Objects.hash(value);
     }
 
-    public boolean matches(MethodDefinition identifier) {
+    public boolean matches(MethodDeclaration identifier) {
         // メソッド名から引数部分を除去してマッチングする
         String nameString = identifier.asFullText();
         String substring = nameString.substring(0, nameString.indexOf('('));

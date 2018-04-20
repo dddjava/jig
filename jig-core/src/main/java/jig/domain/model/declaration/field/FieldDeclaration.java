@@ -1,14 +1,14 @@
-package jig.domain.model.definition.field;
+package jig.domain.model.declaration.field;
 
 import jig.domain.model.identifier.type.TypeIdentifier;
 
-public class FieldDefinition {
+public class FieldDeclaration {
 
     private final TypeIdentifier declaringType;
     String name;
     TypeIdentifier typeIdentifier;
 
-    public FieldDefinition(TypeIdentifier declaringType, String name, TypeIdentifier typeIdentifier) {
+    public FieldDeclaration(TypeIdentifier declaringType, String name, TypeIdentifier typeIdentifier) {
         this.declaringType = declaringType;
         this.name = name;
         this.typeIdentifier = typeIdentifier;

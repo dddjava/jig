@@ -13,7 +13,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication(scanBasePackages = "jig")
@@ -43,8 +42,7 @@ public class ClassListApplication {
 
         LOGGER.info("解析をはじめます");
 
-        Path path = Paths.get(projectPath);
-        analyzeService.importProject(new ProjectLocation(path));
+        analyzeService.importProject(new ProjectLocation(Paths.get(projectPath)));
 
         LOGGER.info("レポートデータの準備をはじめます");
 

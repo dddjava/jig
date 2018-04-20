@@ -21,24 +21,20 @@ public class MethodSpecification {
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
     private final List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
 
+    private final List<FieldDeclaration> usingFields = new ArrayList<>();
+    private final List<MethodDeclaration> usingMethods = new ArrayList<>();
+
     public MethodSpecification(MethodDeclaration methodDeclaration,
                                TypeIdentifier returnType,
                                List<TypeIdentifier> useTypes,
                                boolean isInstanceMethod) {
-        this.returnType = returnType;
         this.methodDeclaration = methodDeclaration;
+        this.returnType = returnType;
         this.isInstanceMethod = isInstanceMethod;
 
         this.useTypes.add(returnType);
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
-    }
-
-    public final List<FieldDeclaration> usingFields = new ArrayList<>();
-    public final List<MethodDeclaration> usingMethods = new ArrayList<>();
-
-    public TypeIdentifier getReturnTypeName() {
-        return returnType;
     }
 
     public void registerFieldInstruction(FieldDeclaration field) {
@@ -63,14 +59,6 @@ public class MethodSpecification {
         useTypes.add(type);
     }
 
-    public Set<TypeIdentifier> useTypes() {
-        return useTypes;
-    }
-
-    public boolean isInstanceMethod() {
-        return isInstanceMethod;
-    }
-
     public void registerAnnotation(MethodAnnotationDeclaration methodAnnotationDeclaration) {
         methodAnnotationDeclarations.add(methodAnnotationDeclaration);
         useTypes.add(methodAnnotationDeclaration.annotationType());
@@ -80,8 +68,20 @@ public class MethodSpecification {
         useTypes.add(type);
     }
 
+    public TypeIdentifier returnType() {
+        return returnType;
+    }
+
+    public boolean isInstanceMethod() {
+        return isInstanceMethod;
+    }
+
     public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {
         return methodAnnotationDeclarations;
+    }
+
+    public Set<TypeIdentifier> useTypes() {
+        return useTypes;
     }
 
     public FieldDeclarations usingFields() {

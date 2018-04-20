@@ -148,6 +148,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
+                    // `Xxx.class` などのクラス参照を読み込む
                     methodSpecification.registerClassReference(toTypeIdentifier((Type) value));
                 }
 
@@ -160,6 +161,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                     if (bootstrapMethodArgument instanceof Type) {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
+                            // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
                             methodSpecification.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
                                 methodSpecification.registerInvokeDynamic(toTypeIdentifier(argumentType));

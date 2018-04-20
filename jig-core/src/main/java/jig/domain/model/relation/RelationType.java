@@ -23,7 +23,7 @@ public enum RelationType {
             MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
             repository.registerMethod(methodDeclaration);
             repository.registerMethodParameter(methodDeclaration);
-            repository.registerMethodReturnType(methodDeclaration, methodSpecification.getReturnTypeName());
+            repository.registerMethodReturnType(methodDeclaration, methodSpecification.returnType());
 
             for (TypeIdentifier interfaceTypeIdentifier : specification.interfaceTypeIdentifiers.list()) {
                 repository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));

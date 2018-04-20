@@ -7,7 +7,10 @@ import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import jig.domain.model.relation.*;
+import jig.domain.model.relation.MethodRelation;
+import jig.domain.model.relation.MethodTypeRelation;
+import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.TypeMethodRelation;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -70,12 +73,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerMethodUseField(MethodDeclaration methodDeclaration, FieldDeclaration fieldDeclaration) {
-        // TODO とりあえず名前はわすれる
-        registerMethodUseType(methodDeclaration, fieldDeclaration.typeIdentifier());
-    }
-
-    @Override
     public TypeIdentifier getReturnTypeOf(MethodDeclaration methodDeclaration) {
         return methodReturnTypes.stream()
                 .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodDeclaration))
@@ -84,12 +81,19 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .orElseThrow(() -> new NoSuchElementException(methodDeclaration.asFullText()));
     }
 
+    Map<MethodDeclaration, FieldDeclarations> methodUseFieldsMap = new HashMap<>();
+
     @Override
-    public TypeIdentifiers findUseTypeOf(MethodDeclaration methodDeclaration) {
-        return methodUseTypes.stream()
-                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodDeclaration))
-                .map(MethodTypeRelation::type)
-                .collect(TypeIdentifiers.collector());
+    public void registerMethodUseField(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations) {
+        methodUseFieldsMap.put(methodDeclaration, fieldDeclarations);
+
+        fieldDeclarations.list().forEach(fieldDeclaration ->
+                registerMethodUseType(methodDeclaration, fieldDeclaration.typeIdentifier()));
+    }
+
+    @Override
+    public FieldDeclarations findUseFields(MethodDeclaration methodDeclaration) {
+        return methodUseFieldsMap.getOrDefault(methodDeclaration, FieldDeclarations.empty());
     }
 
     @Override

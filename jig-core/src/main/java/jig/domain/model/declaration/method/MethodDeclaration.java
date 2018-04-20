@@ -50,5 +50,4 @@ public class MethodDeclaration {
     public int hashCode() {
         return Objects.hash(fullText);
     }
-
 }

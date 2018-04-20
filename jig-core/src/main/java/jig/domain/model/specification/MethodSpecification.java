@@ -2,6 +2,7 @@ package jig.domain.model.specification;
 
 import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
+import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 
@@ -80,5 +81,9 @@ public class MethodSpecification {
 
     public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {
         return methodAnnotationDeclarations;
+    }
+
+    public FieldDeclarations usingFields() {
+        return usingFields.stream().collect(FieldDeclarations.collector());
     }
 }

@@ -61,7 +61,7 @@ public class MethodDetail {
     }
 
     public TypeIdentifiers usingFieldTypes() {
-        return relationRepository.findUseTypeOf(method());
+        return relationRepository.findUseFields(method()).toTypeIdentifies();
     }
 
     public MethodDeclarations instructMapperMethodIdentifiers() {

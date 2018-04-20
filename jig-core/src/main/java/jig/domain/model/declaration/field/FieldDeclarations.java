@@ -1,5 +1,8 @@
 package jig.domain.model.declaration.field;
 
+import jig.domain.model.identifier.type.TypeIdentifiers;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -16,6 +19,10 @@ public class FieldDeclarations {
         return Collectors.collectingAndThen(Collectors.toList(), FieldDeclarations::new);
     }
 
+    public static FieldDeclarations empty() {
+        return new FieldDeclarations(Collections.emptyList());
+    }
+
     public List<FieldDeclaration> list() {
         return list;
     }
@@ -30,5 +37,12 @@ public class FieldDeclarations {
         return list.stream()
                 .map(FieldDeclaration::signatureText)
                 .collect(Collectors.joining(", "));
+    }
+
+    public TypeIdentifiers toTypeIdentifies() {
+        return list.stream()
+                .map(FieldDeclaration::typeIdentifier)
+                .distinct()
+                .collect(TypeIdentifiers.collector());
     }
 }

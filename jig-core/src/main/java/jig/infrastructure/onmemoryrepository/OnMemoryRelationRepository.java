@@ -102,7 +102,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     Map<MethodDeclaration, MethodDeclarations> methodUseMethodsMap = new HashMap<>();
 
     @Override
-    public void registerMethodUseMethod(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations) {
+    public void registerMethodUseMethods(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations) {
         methodUseMethodsMap.put(methodDeclaration, methodDeclarations);
     }
 

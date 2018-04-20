@@ -33,7 +33,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        List<TypeIdentifier> useTypes = extractSignatureClassType(signature);
+        List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
         this.specification = new Specification(
                 new TypeIdentifier(name),
@@ -72,7 +72,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            specification.addUseType(new TypeIdentifier(elementType.getClassName()));
+            specification.addUseType(toTypeIdentifier(elementType));
         }
 
         TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
@@ -105,14 +105,10 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(Type::getClassName)
-                .map(TypeIdentifier::new)
-                .collect(Collectors.toList());
 
-        MethodDeclaration identifier = new MethodDeclaration(specification.typeIdentifier, new MethodSignature(name, argumentTypes));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(specification.typeIdentifier, toMethodSignature(name, descriptor));
 
-        List<TypeIdentifier> useTypes = extractSignatureClassType(signature);
+        List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
             for (String exception : exceptions) {
                 useTypes.add(new TypeIdentifier(exception));
@@ -120,10 +116,10 @@ class SpecificationReadingVisitor extends ClassVisitor {
         }
 
         MethodSpecification methodSpecification = new MethodSpecification(
-                identifier,
-                new TypeIdentifier(Type.getReturnType(descriptor).getClassName()),
+                methodDeclaration,
+                methodDescriptorToReturnIdentifier(descriptor),
                 useTypes,
-                (access & Opcodes.ACC_STATIC) == 0 && !identifier.methodSignature().asSimpleText().startsWith("<init>")
+                (access & Opcodes.ACC_STATIC) == 0 && !methodDeclaration.methodSignature().asSimpleText().startsWith("<init>")
         );
         specification.add(methodSpecification);
 
@@ -131,8 +127,8 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                TypeIdentifier annotationType = typeDescriptorToIdentifier(descriptor);
-                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, annotationType));
+                methodSpecification.registerAnnotation(
+                        new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, typeDescriptorToIdentifier(descriptor)));
 
                 return super.visitAnnotation(descriptor, visible);
             }
@@ -147,13 +143,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                MethodSignature methodSignature = new MethodSignature(name,
-                        Arrays.stream(Type.getArgumentTypes(descriptor))
-                                .map(this::toTypeIdentifier)
-                                .collect(Collectors.toList()));
-                MethodDeclaration methodDeclaration = new MethodDeclaration(new TypeIdentifier(owner), methodSignature);
-
-                methodSpecification.registerMethodInstruction(methodDeclaration, methodDescriptorToReturnIdentifier(descriptor));
+                methodSpecification.registerMethodInstruction(
+                        new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor)),
+                        methodDescriptorToReturnIdentifier(descriptor));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -184,26 +176,33 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
             }
 
-            private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
-                return toTypeIdentifier(Type.getReturnType(descriptor));
-            }
-
-            private TypeIdentifier toTypeIdentifier(Type type) {
-                return new TypeIdentifier(type.getClassName());
-            }
         };
+    }
+
+    private MethodSignature toMethodSignature(String name, String descriptor) {
+        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                .map(this::toTypeIdentifier)
+                .collect(Collectors.toList());
+        return new MethodSignature(name, argumentTypes);
+    }
+
+    private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+        return toTypeIdentifier(Type.getReturnType(descriptor));
     }
 
     private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
         Type type = Type.getType(descriptor);
-        String className = type.getClassName();
-        return new TypeIdentifier(className);
+        return toTypeIdentifier(type);
     }
 
-    private List<TypeIdentifier> extractSignatureClassType(String signature) {
+    private TypeIdentifier toTypeIdentifier(Type type) {
+        return new TypeIdentifier(type.getClassName());
+    }
+
+    private List<TypeIdentifier> extractClassTypeFromGenericsSignature(String signature) {
+        // ジェネリクスを使用している場合だけsignatureが入る
         List<TypeIdentifier> useTypes = new ArrayList<>();
         if (signature != null) {
-            // ジェネリクスを使用している場合だけsignatureが入る
             new SignatureReader(signature).accept(
                     new SignatureVisitor(this.api) {
                         @Override

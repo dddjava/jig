@@ -2,6 +2,7 @@ package jig.infrastructure.asm;
 
 import jig.domain.model.declaration.annotation.AnnotationDeclaration;
 import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodSignature;
@@ -49,7 +50,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         AnnotationDeclaration annotationDeclaration = new AnnotationDeclaration(
                 specification.typeIdentifier,
-                new TypeDescriptor(descriptor).toTypeIdentifier()
+                typeDescriptorToIdentifier(descriptor)
         );
         specification.addAnnotation(annotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
@@ -74,7 +75,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             specification.addUseType(new TypeIdentifier(elementType.getClassName()));
         }
 
-        TypeIdentifier typeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
+        TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
         FieldDeclaration fieldDeclaration = new FieldDeclaration(specification.typeIdentifier, name, typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
@@ -89,7 +90,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         return new FieldVisitor(this.api) {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                TypeIdentifier annotationTypeIdentifier = new TypeDescriptor(descriptor).toTypeIdentifier();
+                TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
 
                 specification.addFieldAnnotation(new FieldAnnotationDeclaration(
                         fieldDeclaration,
@@ -125,7 +126,78 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 (access & Opcodes.ACC_STATIC) == 0 && !identifier.methodSignature().asSimpleText().startsWith("<init>")
         );
         specification.add(methodSpecification);
-        return new SpecificationReadingMethodVisitor(this.api, methodSpecification);
+
+        return new MethodVisitor(this.api) {
+
+            @Override
+            public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                TypeIdentifier annotationType = typeDescriptorToIdentifier(descriptor);
+                methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodSpecification.methodDeclaration, annotationType));
+
+                return super.visitAnnotation(descriptor, visible);
+            }
+
+            @Override
+            public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                methodSpecification.registerFieldInstruction(
+                        new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
+
+                super.visitFieldInsn(opcode, owner, name, descriptor);
+            }
+
+            @Override
+            public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+                MethodSignature methodSignature = new MethodSignature(name,
+                        Arrays.stream(Type.getArgumentTypes(descriptor))
+                                .map(this::toTypeIdentifier)
+                                .collect(Collectors.toList()));
+                MethodDeclaration methodDeclaration = new MethodDeclaration(new TypeIdentifier(owner), methodSignature);
+
+                methodSpecification.registerMethodInstruction(methodDeclaration, methodDescriptorToReturnIdentifier(descriptor));
+
+                super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+            }
+
+            @Override
+            public void visitLdcInsn(Object value) {
+                if (value instanceof Type) {
+                    methodSpecification.registerClassReference(toTypeIdentifier((Type) value));
+                }
+
+                super.visitLdcInsn(value);
+            }
+
+            @Override
+            public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+                for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
+                    if (bootstrapMethodArgument instanceof Type) {
+                        Type type = (Type) bootstrapMethodArgument;
+                        if (type.getSort() == Type.METHOD) {
+                            methodSpecification.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
+                            for (Type argumentType : type.getArgumentTypes()) {
+                                methodSpecification.registerInvokeDynamic(toTypeIdentifier(argumentType));
+                            }
+                        }
+                    }
+                }
+
+                super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+            }
+
+            private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
+                return toTypeIdentifier(Type.getReturnType(descriptor));
+            }
+
+            private TypeIdentifier toTypeIdentifier(Type type) {
+                return new TypeIdentifier(type.getClassName());
+            }
+        };
+    }
+
+    private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {
+        Type type = Type.getType(descriptor);
+        String className = type.getClassName();
+        return new TypeIdentifier(className);
     }
 
     private List<TypeIdentifier> extractSignatureClassType(String signature) {

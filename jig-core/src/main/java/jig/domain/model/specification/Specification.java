@@ -1,7 +1,7 @@
 package jig.domain.model.specification;
 
-import jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
 import jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
+import jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.declaration.method.MethodDeclaration;
@@ -22,15 +22,15 @@ public class Specification {
     final boolean canExtend;
 
     public TypeIdentifiers interfaceTypeIdentifiers;
-    List<TypeAnnotationDeclaration> annotations = new ArrayList<>();
-    List<FieldDeclaration> constantIdentifiers = new ArrayList<>();
+    final List<TypeAnnotationDeclaration> typeAnnotationDeclarations = new ArrayList<>();
+    final List<FieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
-    private List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
-    List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
+    final List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
+    final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    List<MethodSpecification> methodSpecifications = new ArrayList<>();
+    final List<MethodSpecification> methodSpecifications = new ArrayList<>();
 
-    private Set<TypeIdentifier> useTypes = new HashSet<>();
+    final Set<TypeIdentifier> useTypes = new HashSet<>();
 
     public Specification(TypeIdentifier typeIdentifier,
                          TypeIdentifier parentTypeIdentifier,
@@ -82,15 +82,15 @@ public class Specification {
 
     public boolean hasAnnotation(String annotation) {
         TypeIdentifier annotationType = new TypeIdentifier(annotation);
-        return annotations.stream().anyMatch(typeAnnotationDeclaration -> typeAnnotationDeclaration.typeIs(annotationType));
+        return typeAnnotationDeclarations.stream().anyMatch(typeAnnotationDeclaration -> typeAnnotationDeclaration.typeIs(annotationType));
     }
 
     public FieldDeclarations fieldIdentifiers() {
         return new FieldDeclarations(fieldDeclarations);
     }
 
-    public FieldDeclarations constantIdentifiers() {
-        return new FieldDeclarations(constantIdentifiers);
+    public FieldDeclarations staticFieldDeclarations() {
+        return new FieldDeclarations(staticFieldDeclarations);
     }
 
     public boolean isModel() {
@@ -113,30 +113,30 @@ public class Specification {
         return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
     }
 
-    public void addAnnotation(TypeAnnotationDeclaration typeAnnotationDeclaration) {
-        annotations.add(typeAnnotationDeclaration);
+    public void registerTypeAnnotation(TypeAnnotationDeclaration typeAnnotationDeclaration) {
+        typeAnnotationDeclarations.add(typeAnnotationDeclaration);
         useTypes.add(typeAnnotationDeclaration.type());
     }
 
-    public void add(MethodSpecification methodSpecification) {
+    public void registerMethodSpecification(MethodSpecification methodSpecification) {
         methodSpecifications.add(methodSpecification);
     }
 
-    public void add(FieldDeclaration field) {
+    public void registerField(FieldDeclaration field) {
         fieldDeclarations.add(field);
         useTypes.add(field.typeIdentifier());
     }
 
-    public void addConstant(FieldDeclaration field) {
-        constantIdentifiers.add(field);
+    public void registerStaticField(FieldDeclaration field) {
+        staticFieldDeclarations.add(field);
         useTypes.add(field.typeIdentifier());
     }
 
-    public void addUseType(TypeIdentifier typeIdentifier) {
+    public void registerUseType(TypeIdentifier typeIdentifier) {
         useTypes.add(typeIdentifier);
     }
 
-    public void addFieldAnnotation(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
+    public void registerFieldAnnotation(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
         fieldAnnotationDeclarations.add(fieldAnnotationDeclaration);
     }
 

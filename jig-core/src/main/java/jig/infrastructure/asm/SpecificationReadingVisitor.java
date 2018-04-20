@@ -49,38 +49,30 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         TypeAnnotationDeclaration typeAnnotationDeclaration = specification.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
-        specification.addAnnotation(typeAnnotationDeclaration);
+        specification.registerTypeAnnotation(typeAnnotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        if (signature != null) {
-            new SignatureReader(signature).acceptType(
-                    new SignatureVisitor(this.api) {
-                        @Override
-                        public void visitClassType(String name) {
-                            specification.addUseType(new TypeIdentifier(name));
-                        }
-                    }
-            );
-        }
+        List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
+        genericsTypes.forEach(specification::registerUseType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            specification.addUseType(toTypeIdentifier(elementType));
+            specification.registerUseType(toTypeIdentifier(elementType));
         }
 
         FieldDeclaration fieldDeclaration = specification.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            specification.add(fieldDeclaration);
+            specification.registerField(fieldDeclaration);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                specification.addConstant(fieldDeclaration);
+                specification.registerStaticField(fieldDeclaration);
             }
         }
         return new FieldVisitor(this.api) {
@@ -88,11 +80,10 @@ class SpecificationReadingVisitor extends ClassVisitor {
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
 
-
-                specification.addUseType(annotationTypeIdentifier);
+                specification.registerUseType(annotationTypeIdentifier);
 
                 AnnotationDescription description = new AnnotationDescription();
-                specification.addFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, description));
+                specification.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, description));
 
                 return new MyAnnotationVisitor(this.api, description);
             }
@@ -117,7 +108,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes,
                 (access & Opcodes.ACC_STATIC) == 0 && !methodDeclaration.methodSignature().asSimpleText().startsWith("<init>")
         );
-        specification.add(methodSpecification);
+        specification.registerMethodSpecification(methodSpecification);
 
         return new MethodVisitor(this.api) {
 

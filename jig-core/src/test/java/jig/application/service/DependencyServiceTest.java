@@ -48,9 +48,9 @@ class DependencyServiceTest {
         methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList())), new TypeIdentifier("test.MethodReturn2"));
         methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList())), new TypeIdentifier("test.MethodReturn1"));
 
-        specification.add(methodSpecification);
+        specification.registerMethodSpecification(methodSpecification);
 
-        sut.register(new Specifications(Collections.singletonList(specification)));
+        sut.registerSpecifications(new Specifications(Collections.singletonList(specification)));
 
         MethodDeclaration methodDeclaration = new MethodDeclaration(
                 new TypeIdentifier("test.TestClass"),

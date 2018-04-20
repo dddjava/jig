@@ -48,7 +48,7 @@ public class AnalyzeCharacteristicTest {
 
         // 仕様から特徴と関連を登録
         DependencyService dependencyService = new DependencyService(characteristicRepository, relationRepository, annotationDeclarationRepository);
-        dependencyService.register(specifications);
+        dependencyService.registerSpecifications(specifications);
     }
 
     @Test

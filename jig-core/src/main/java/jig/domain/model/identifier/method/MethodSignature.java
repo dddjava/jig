@@ -9,6 +9,8 @@ import static java.util.stream.Collectors.joining;
 public class MethodSignature {
 
     private final String methodName;
+
+    // TODO 重複ありで順番が重要なのでArgumentTypeIdentifiersとかを作る
     List<TypeIdentifier> argumentTypeIdentifiers;
 
     public MethodSignature(String methodName, List<TypeIdentifier> argumentTypeIdentifiers) {

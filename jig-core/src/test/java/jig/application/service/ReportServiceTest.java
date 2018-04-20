@@ -39,13 +39,13 @@ class ReportServiceTest {
         repository.register(typeIdentifier, Characteristic.ENUM_PARAMETERIZED);
         repository.register(typeIdentifier, Characteristic.ENUM_POLYMORPHISM);
 
-        relationRepository.registerField(typeIdentifier, new FieldIdentifier("fugaText", new TypeIdentifier(("java.lang.String"))));
-        relationRepository.registerField(typeIdentifier, new FieldIdentifier("fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
+        relationRepository.registerField(new FieldIdentifier(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
+        relationRepository.registerField(new FieldIdentifier(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
 
         japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
-        relationRepository.registerField(new TypeIdentifier("test.HogeUser"), new FieldIdentifier("hogera", typeIdentifier));
-        relationRepository.registerConstants(typeIdentifier, new FieldIdentifier("A", typeIdentifier));
-        relationRepository.registerConstants(typeIdentifier, new FieldIdentifier("B", typeIdentifier));
+        relationRepository.registerField(new FieldIdentifier(new TypeIdentifier("test.HogeUser"), "hogera", typeIdentifier));
+        relationRepository.registerConstants(new FieldIdentifier(typeIdentifier, "A", typeIdentifier));
+        relationRepository.registerConstants(new FieldIdentifier(typeIdentifier, "B", typeIdentifier));
 
         Reports reports = sut.reports();
         reports.each(report -> {

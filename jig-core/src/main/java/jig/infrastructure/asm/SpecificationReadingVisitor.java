@@ -70,7 +70,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         }
 
         TypeIdentifier typeIdentifier = new ClassDescriptor(descriptor).toTypeIdentifier();
-        FieldIdentifier field = new FieldIdentifier(name, typeIdentifier);
+        FieldIdentifier field = new FieldIdentifier(specification.typeIdentifier, name, typeIdentifier);
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする

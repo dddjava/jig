@@ -37,10 +37,10 @@ public class MethodSpecification {
         return returnType;
     }
 
-    public void registerFieldInstruction(TypeIdentifier ownerType, FieldIdentifier field) {
+    public void registerFieldInstruction(FieldIdentifier field) {
         usingFields.add(field);
 
-        useTypes.add(ownerType);
+        useTypes.add(field.declaringType());
         useTypes.add(field.typeIdentifier());
     }
 

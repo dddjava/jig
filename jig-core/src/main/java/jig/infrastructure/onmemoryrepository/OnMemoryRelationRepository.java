@@ -60,13 +60,13 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerField(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier) {
-        memberTypes.add(new TypeRelation(typeIdentifier, fieldIdentifier));
+    public void registerField(FieldIdentifier fieldIdentifier) {
+        memberTypes.add(new TypeRelation(fieldIdentifier.declaringType(), fieldIdentifier));
     }
 
     @Override
-    public void registerConstants(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier) {
-        constants.add(new TypeRelation(typeIdentifier, fieldIdentifier));
+    public void registerConstants(FieldIdentifier fieldIdentifier) {
+        constants.add(new TypeRelation(fieldIdentifier.declaringType(), fieldIdentifier));
     }
 
     @Override

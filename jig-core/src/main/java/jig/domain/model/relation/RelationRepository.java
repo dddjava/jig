@@ -21,9 +21,9 @@ public interface RelationRepository {
 
     void registerImplementation(MethodIdentifier methodIdentifier, MethodIdentifier methodIdentifier1);
 
-    void registerField(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier);
+    void registerField(FieldIdentifier fieldIdentifier);
 
-    void registerConstants(TypeIdentifier typeIdentifier, FieldIdentifier fieldIdentifier);
+    void registerConstants(FieldIdentifier fieldIdentifier);
 
     void registerMethodUseField(MethodIdentifier methodIdentifier, FieldIdentifier fieldIdentifier);
 

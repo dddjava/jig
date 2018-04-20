@@ -32,8 +32,7 @@ class SpecificationReadingMethodVisitor extends MethodVisitor {
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
         methodSpecification.registerFieldInstruction(
-                new TypeIdentifier(owner),
-                new FieldIdentifier(name, typeDescriptorToIdentifier(descriptor)));
+                new FieldIdentifier(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
 
         super.visitFieldInsn(opcode, owner, name, descriptor);
     }

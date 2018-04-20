@@ -1,5 +1,6 @@
 package jig.domain.model.specification;
 
+import jig.domain.model.annotation.AnnotationDefinition;
 import jig.domain.model.identifier.field.FieldIdentifier;
 import jig.domain.model.identifier.field.FieldIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -19,7 +20,7 @@ public class Specification {
     TypeIdentifier parentTypeIdentifier;
     int classAccess;
     public TypeIdentifiers interfaceTypeIdentifiers;
-    List<TypeIdentifier> annotationDescriptors;
+    List<AnnotationDefinition> annotations;
     List<MethodSpecification> methodSpecifications;
     List<FieldIdentifier> fieldIdentifiers;
     List<FieldIdentifier> constantIdentifiers;
@@ -34,7 +35,7 @@ public class Specification {
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.classAccess = classAccess;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
-        this.annotationDescriptors = new ArrayList<>();
+        this.annotations = new ArrayList<>();
         this.methodSpecifications = new ArrayList<>();
         this.fieldIdentifiers = new ArrayList<>();
         this.constantIdentifiers = new ArrayList<>();
@@ -75,7 +76,8 @@ public class Specification {
     }
 
     public boolean hasAnnotation(String annotation) {
-        return annotationDescriptors.stream().anyMatch(annotationDescriptor -> annotationDescriptor.fullQualifiedName().equals(annotation));
+        TypeIdentifier annotationType = new TypeIdentifier(annotation);
+        return annotations.stream().anyMatch(annotationDefinition -> annotationDefinition.typeIs(annotationType));
     }
 
     public FieldIdentifiers fieldIdentifiers() {
@@ -102,9 +104,9 @@ public class Specification {
         return methodSpecifications.stream().filter(MethodSpecification::isInstanceMethod).collect(Collectors.toList());
     }
 
-    public void addAnnotation(TypeIdentifier annotationType) {
-        annotationDescriptors.add(annotationType);
-        useTypes.add(annotationType);
+    public void addAnnotation(AnnotationDefinition annotationDefinition) {
+        annotations.add(annotationDefinition);
+        useTypes.add(annotationDefinition.type());
     }
 
     public void add(MethodSpecification methodSpecification) {

@@ -10,7 +10,7 @@ public enum Characteristic {
     SERVICE {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasAnnotation("Lorg/springframework/stereotype/Service;");
+            return specification.hasAnnotation("org.springframework.stereotype.Service");
         }
     },
     REPOSITORY {
@@ -22,13 +22,13 @@ public enum Characteristic {
     DATASOURCE {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasAnnotation("Lorg/springframework/stereotype/Repository;");
+            return specification.hasAnnotation("org.springframework.stereotype.Repository");
         }
     },
     MAPPER {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasAnnotation("Lorg/apache/ibatis/annotations/Mapper;");
+            return specification.hasAnnotation("org.apache.ibatis.annotations.Mapper");
         }
     },
     ENUM {

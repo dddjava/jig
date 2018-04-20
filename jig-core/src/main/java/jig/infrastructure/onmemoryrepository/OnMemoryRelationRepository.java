@@ -84,7 +84,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     Map<MethodDeclaration, FieldDeclarations> methodUseFieldsMap = new HashMap<>();
 
     @Override
-    public void registerMethodUseField(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations) {
+    public void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations) {
         methodUseFieldsMap.put(methodDeclaration, fieldDeclarations);
 
         fieldDeclarations.list().forEach(fieldDeclaration ->

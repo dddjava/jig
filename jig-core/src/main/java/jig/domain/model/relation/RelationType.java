@@ -29,7 +29,7 @@ public enum RelationType {
                 repository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
             }
 
-            repository.registerMethodUseField(methodDeclaration, methodSpecification.usingFields());
+            repository.registerMethodUseFields(methodDeclaration, methodSpecification.usingFields());
 
             methodSpecification.usingMethods.forEach(usingMethodIdentifier -> {
                 repository.registerMethodUseMethod(methodDeclaration, usingMethodIdentifier);

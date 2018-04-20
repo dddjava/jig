@@ -25,7 +25,7 @@ public interface RelationRepository {
 
     void registerConstants(FieldDeclaration fieldDeclaration);
 
-    void registerMethodUseField(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations);
+    void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations);
 
     TypeIdentifier getReturnTypeOf(MethodDeclaration methodDeclaration);
 

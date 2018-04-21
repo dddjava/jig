@@ -1,6 +1,8 @@
 package jig.infrastructure;
 
 import jig.domain.model.datasource.SqlSources;
+import jig.domain.model.japanese.PackageNameSources;
+import jig.domain.model.japanese.TypeNameSources;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
@@ -80,36 +82,6 @@ public class JigPaths {
         return path.toString().endsWith(".class");
     }
 
-    public List<Path> sourcePaths(ProjectLocation location) {
-        List<Path> paths = pathsOf(location, this::isJavaFile);
-        LOGGER.info("*.java: {}件", paths.size());
-        return paths;
-    }
-
-    public List<Path> packageInfoPaths(ProjectLocation location) {
-        List<Path> paths = pathsOf(location, this::isPackageInfoFile);
-        LOGGER.info("package-info.java: {}件", paths.size());
-        return paths;
-    }
-
-    private List<Path> pathsOf(ProjectLocation location, Predicate<Path> condition) {
-        try {
-            List<Path> paths = new ArrayList<>();
-            for (Path path : extractSourcePath(location)) {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (condition.test(file)) paths.add(file);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            }
-            return paths;
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private Path[] extractSourcePath(ProjectLocation location) {
         try (Stream<Path> walk = Files.walk(location.toPath())) {
             return walk.filter(Files::isDirectory)
@@ -163,5 +135,35 @@ public class JigPaths {
     private String toClassName(Path path) {
         String pathStr = path.toString();
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
+    }
+
+    public PackageNameSources getPackageNameSources(ProjectLocation projectLocation) {
+        List<Path> paths = pathsOf(projectLocation, this::isPackageInfoFile);
+        LOGGER.info("package-info.java: {}件", paths.size());
+        return new PackageNameSources(paths);
+    }
+
+    public TypeNameSources getTypeNameSources(ProjectLocation projectLocation) {
+        List<Path> paths = pathsOf(projectLocation, this::isJavaFile);
+        LOGGER.info("*.java: {}件", paths.size());
+        return new TypeNameSources(paths);
+    }
+
+    private List<Path> pathsOf(ProjectLocation location, Predicate<Path> condition) {
+        try {
+            List<Path> paths = new ArrayList<>();
+            for (Path path : extractSourcePath(location)) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        if (condition.test(file)) paths.add(file);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            }
+            return paths;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

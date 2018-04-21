@@ -1,6 +1,9 @@
 package jig.gradle;
 
-import jig.application.service.*;
+import jig.application.service.DatasourceService;
+import jig.application.service.DependencyService;
+import jig.application.service.GlossaryService;
+import jig.application.service.SpecificationService;
 import jig.application.usecase.AnalyzeService;
 import jig.application.usecase.ReportService;
 import jig.diagram.plantuml.PlantumlDriver;
@@ -51,10 +54,7 @@ public class ServiceFactory {
                         relationRepository,
                         annotationDeclarationRepository),
                 new GlossaryService(
-                        new JavaparserJapaneseReader(
-                                japaneseNameRepository,
-                                jigPaths
-                        ),
+                        new JavaparserJapaneseReader(),
                         japaneseNameRepository
                 ),
                 new DatasourceService(
@@ -85,8 +85,7 @@ public class ServiceFactory {
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
                 annotationDeclarationRepository,
                 new GlossaryService(
-                        // TODO nullなんとかする
-                        null,
+                        new JavaparserJapaneseReader(),
                         japaneseNameRepository));
     }
 

@@ -3,6 +3,8 @@ package jig.infrastructure.javaparser;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.japanese.PackageNames;
+import jig.domain.model.japanese.TypeNames;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -23,13 +25,14 @@ class JavaparserJapaneseReaderTest {
 
     @Test
     void パッケージ和名取得() {
-        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
         JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
-        JavaparserJapaneseReader sut = new JavaparserJapaneseReader(repository, jigPath);
+        JavaparserJapaneseReader sut = new JavaparserJapaneseReader();
 
         ProjectLocation projectLocation = new ProjectLocation(TestSupport.getModuleRootPath());
-        sut.readFrom(projectLocation);
+        PackageNames packageNames = sut.readPackages(jigPath.getPackageNameSources(projectLocation));
 
+        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
+        packageNames.register(repository);
         assertThat(repository.get(new PackageIdentifier("stub")).value())
                 .isEqualTo("テストで使用するスタブたち");
     }
@@ -37,13 +40,14 @@ class JavaparserJapaneseReaderTest {
     @ParameterizedTest
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
         JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
-        JavaparserJapaneseReader sut = new JavaparserJapaneseReader(repository, jigPath);
+        JavaparserJapaneseReader sut = new JavaparserJapaneseReader();
 
         ProjectLocation projectLocation = new ProjectLocation(TestSupport.getModuleRootPath());
-        sut.readFrom(projectLocation);
+        TypeNames typeNames = sut.readTypes(jigPath.getTypeNameSources(projectLocation));
 
+        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
+        typeNames.register(repository);
         assertThat(repository.get(typeIdentifier).value())
                 .isEqualTo(comment);
     }

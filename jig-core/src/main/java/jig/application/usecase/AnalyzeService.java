@@ -34,14 +34,14 @@ public class AnalyzeService {
 
     public PackageDependencies packageDependencies(ProjectLocation projectLocation) {
         importSpecification(projectLocation);
-        glossaryService.importJapanese(projectLocation);
+        glossaryService.importJapanese(jigPaths.getPackageNameSources(projectLocation));
         return dependencyService.packageDependencies();
     }
 
     public void importProject(ProjectLocation projectLocation) {
         importSpecification(projectLocation);
         datasourceService.importDatabaseAccess(jigPaths.getSqlSources(projectLocation));
-        glossaryService.importJapanese(projectLocation);
+        glossaryService.importJapanese(jigPaths.getTypeNameSources(projectLocation));
     }
 
     public void importSpecification(ProjectLocation projectLocation) {

@@ -1,32 +1,21 @@
 package jig.infrastructure.javaparser;
 
-import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.japanese.JapaneseReader;
-import jig.domain.model.project.ProjectLocation;
-import jig.infrastructure.JigPaths;
+import jig.domain.model.japanese.*;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JavaparserJapaneseReader implements JapaneseReader {
 
-    JapaneseNameRepository repository;
-    JigPaths jigPaths;
+    PackageInfoReader packageInfoReader = new PackageInfoReader();
+    ClassCommentReader classCommentReader = new ClassCommentReader();
 
-    public JavaparserJapaneseReader(JapaneseNameRepository repository, JigPaths jigPaths) {
-        this.repository = repository;
-        this.jigPaths = jigPaths;
+    @Override
+    public PackageNames readPackages(PackageNameSources nameSources) {
+        return nameSources.toPackageNames(packageInfoReader::execute);
     }
 
     @Override
-    public void readFrom(ProjectLocation projectLocation) {
-        ClassCommentReader classCommentReader = new ClassCommentReader();
-        jigPaths.sourcePaths(projectLocation).forEach(path -> {
-            classCommentReader.execute(path).ifPresent(repository::register);
-        });
-
-        PackageInfoReader packageInfoReader = new PackageInfoReader();
-        jigPaths.packageInfoPaths(projectLocation).forEach(path -> {
-            packageInfoReader.execute(path).ifPresent(repository::register);
-        });
+    public TypeNames readTypes(TypeNameSources nameSources) {
+        return nameSources.toTypeNames(classCommentReader::execute);
     }
 }

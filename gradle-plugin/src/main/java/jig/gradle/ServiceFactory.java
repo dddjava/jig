@@ -1,11 +1,10 @@
 package jig.gradle;
 
 import jig.application.service.*;
+import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import jig.domain.model.diagram.DiagramConverter;
-import jig.domain.model.diagram.DiagramMaker;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
@@ -15,8 +14,6 @@ import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.*;
-import jig.infrastructure.plantuml.PlantumlDiagramConverter;
-import jig.infrastructure.plantuml.PlantumlDiagramMaker;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -33,13 +30,6 @@ public class ServiceFactory {
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
-
-    final DiagramMaker diagramMaker = new PlantumlDiagramMaker();
-
-    final DiagramConverter diagramConverter(String outputOmitPrefix) {
-        return new PlantumlDiagramConverter(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
-    }
-
 
     AnalyzeService analyzeService(Convention convention) {
         JavaPluginConvention javaPluginConvention = convention.findPlugin(JavaPluginConvention.class);
@@ -91,9 +81,7 @@ public class ServiceFactory {
                 new GlossaryService(japaneseNameRepository));
     }
 
-    DiagramService diagramService(String outputOmitPrefix) {
-        return new DiagramService(
-                diagramMaker,
-                diagramConverter(outputOmitPrefix));
+    PlantumlDriver diagramService(String outputOmitPrefix) {
+        return new PlantumlDriver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
     }
 }

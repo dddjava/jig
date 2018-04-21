@@ -1,15 +1,10 @@
 package jig.classlist;
 
 import jig.application.service.AnalyzeService;
-import jig.application.service.DiagramService;
-import jig.domain.model.diagram.Diagram;
-import jig.domain.model.diagram.DiagramConverter;
+import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.identifier.namespace.PackageDepth;
-import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
-import jig.infrastructure.plantuml.PlantumlDiagramConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -47,10 +38,10 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Autowired
     AnalyzeService analyzeService;
     @Autowired
-    DiagramService diagramService;
+    PlantumlDriver plantumlDriver;
 
     @Override
-    public void run(String... args) throws IOException {
+    public void run(String... args) {
         long startTime = System.currentTimeMillis();
 
         Path projectPath = Paths.get(this.projectPath);
@@ -63,12 +54,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         showDepth(packageDependencies);
 
-        Diagram diagram = diagramService.generateFrom(packageDependencies);
-
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
-            outputStream.write(diagram.getBytes());
-        }
-        LOGGER.info(output.toAbsolutePath() + "を出力しました。");
+        plantumlDriver.output(packageDependencies, output);
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
@@ -81,11 +67,6 @@ public class PackageDiagramApplication implements CommandLineRunner {
             PackageDependencies dependencies = outputRelation.applyDepth(depth);
             LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
         }
-    }
-
-    @Bean
-    public DiagramConverter diagramConverter(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
-        return new PlantumlDiagramConverter(formatter, repository);
     }
 }
 

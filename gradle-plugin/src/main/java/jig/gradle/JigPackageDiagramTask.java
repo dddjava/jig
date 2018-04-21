@@ -1,7 +1,6 @@
 package jig.gradle;
 
 import jig.application.service.AnalyzeService;
-import jig.domain.model.diagram.Diagram;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
@@ -12,7 +11,6 @@ import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,12 +40,7 @@ public class JigPackageDiagramTask extends DefaultTask {
         LOGGER.info("関連数: " + packageDependencies.list().size());
 
         System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
-        Diagram diagram = serviceFactory.diagramService(extension.getOutputOmitPrefix()).generateFrom(packageDependencies);
-
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
-            outputStream.write(diagram.getBytes());
-        }
-        LOGGER.info(output.toAbsolutePath() + "を出力しました。");
+        serviceFactory.diagramService(extension.getOutputOmitPrefix()).output(packageDependencies, output);
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

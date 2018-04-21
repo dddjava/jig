@@ -1,7 +1,5 @@
-package jig.infrastructure.plantuml;
+package jig.diagram.plantuml.diagramsource;
 
-import jig.domain.model.diagram.DiagramConverter;
-import jig.domain.model.diagram.DiagramSource;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseNameRepository;
@@ -10,17 +8,16 @@ import jig.domain.model.relation.dependency.PackageDependency;
 
 import static java.util.stream.Collectors.joining;
 
-public class PlantumlDiagramConverter implements DiagramConverter {
+public class DiagramSourceWriter {
 
     PackageIdentifierFormatter formatter;
     JapaneseNameRepository repository;
 
-    public PlantumlDiagramConverter(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+    public DiagramSourceWriter(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
         this.formatter = formatter;
         this.repository = repository;
     }
 
-    @Override
     public DiagramSource toDiagramSource(PackageDependencies packageDependencies) {
         String source = "@startuml\n" +
                 "hide members\n" +

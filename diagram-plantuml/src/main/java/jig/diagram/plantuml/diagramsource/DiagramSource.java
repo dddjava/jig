@@ -1,4 +1,4 @@
-package jig.domain.model.diagram;
+package jig.diagram.plantuml.diagramsource;
 
 public class DiagramSource {
 

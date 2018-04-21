@@ -1,4 +1,4 @@
-package jig.domain.model.diagram;
+package jig.diagram.plantuml.diagram;
 
 public class Diagram {
     private final byte[] bytes;

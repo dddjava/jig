@@ -1,6 +1,5 @@
 package jig.domain.model.report.validation;
 
-import jig.application.service.GlossaryService;
 import jig.domain.model.declaration.annotation.AnnotationDescription;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
@@ -10,12 +9,12 @@ import jig.domain.model.japanese.JapaneseName;
 public class AnnotationDetail {
 
     private final ValidationAnnotationDeclaration annotationDeclaration;
-    private final GlossaryService glossaryService;
+    private final JapaneseName japaneseName;
     private final TypeIdentifierFormatter typeIdentifierFormatter;
 
-    public AnnotationDetail(ValidationAnnotationDeclaration annotationDeclaration, GlossaryService glossaryService, TypeIdentifierFormatter typeIdentifierFormatter) {
+    public AnnotationDetail(ValidationAnnotationDeclaration annotationDeclaration, JapaneseName japaneseName, TypeIdentifierFormatter typeIdentifierFormatter) {
         this.annotationDeclaration = annotationDeclaration;
-        this.glossaryService = glossaryService;
+        this.japaneseName = japaneseName;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
@@ -24,7 +23,7 @@ public class AnnotationDetail {
     }
 
     public JapaneseName japaneseName() {
-        return glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
+        return japaneseName;
     }
 
     public String annotateSimpleName() {

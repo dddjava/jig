@@ -2,7 +2,6 @@ package jig.application.service;
 
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
-import jig.domain.model.project.SourceFactory;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -27,11 +26,9 @@ class GlossaryServiceTest {
 
     @Test
     void パッケージ和名取得() {
-        JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
+        JigPaths jigPath = new JigPaths(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
-        SourceFactory sourceFactory = new SourceFactory(jigPath, TestSupport.getModuleRootPath());
-
-        sut.importJapanese(jigPath.getPackageNameSources(sourceFactory));
+        sut.importJapanese(jigPath.getPackageNameSources());
 
         assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
                 .isEqualTo("テストで使用するスタブたち");
@@ -40,10 +37,9 @@ class GlossaryServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
-        SourceFactory sourceFactory = new SourceFactory(jigPath, TestSupport.getModuleRootPath());
+        JigPaths jigPath = new JigPaths(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
-        sut.importJapanese(jigPath.getTypeNameSources(sourceFactory));
+        sut.importJapanese(jigPath.getTypeNameSources());
 
         assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);

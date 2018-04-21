@@ -11,7 +11,6 @@ import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.template.Reports;
@@ -104,19 +103,20 @@ class ReportServiceTest {
     void クラスを読み込むE2Eに近いテスト() throws Exception {
         // 読み込む対象のソースを取得
         Path path = Paths.get(TestSupport.defaultPackageClassURI());
-        JigPaths jigPaths = new JigPaths(path.toString(),
+        JigPaths jigPaths = new JigPaths(
+                path.toString(),
+                path.toString(),
                 // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
                 "not/read/resources",
                 // TODO ソースディレクトリの安定した取得方法が欲しい
                 "not/read/sources");
-        SourceFactory sourceFactory = new SourceFactory(jigPaths, path);
 
         dependencyService.registerSpecifications(
                 specificationService.specification(
-                        jigPaths.getSpecificationSources(sourceFactory)));
+                        jigPaths.getSpecificationSources()));
         sqlRepository.register(
                 sqlReader.readFrom(
-                        jigPaths.getSqlSources(sourceFactory)));
+                        jigPaths.getSqlSources()));
 
         japaneseNameRepository.register(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1"));
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())

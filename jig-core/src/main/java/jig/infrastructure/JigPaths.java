@@ -24,30 +24,34 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class JigPaths {
+public class JigPaths implements SourceFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JigPaths.class);
 
+    private final Path projectPath;
     Path classesDirectory;
     Path resourcesDirectory;
     Path sourcesDirectory;
 
-    public JigPaths(@Value("${directory.classes:build/classes/java/main}") String classesDirectory,
+    public JigPaths(@Value("${project.path}") String projectPath,
+                    @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
                     @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
                     @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
+        LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);
         LOGGER.info("sources suffix  : {}", sourcesDirectory);
 
+        this.projectPath = Paths.get(projectPath);
         this.classesDirectory = Paths.get(classesDirectory);
         this.resourcesDirectory = Paths.get(resourcesDirectory);
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    public SpecificationSources getSpecificationSources(SourceFactory location) {
+    public SpecificationSources getSpecificationSources() {
         ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {
-            for (Path path : extractClassPath(location)) {
+            for (Path path : extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -66,8 +70,8 @@ public class JigPaths {
         return new SpecificationSources(sources);
     }
 
-    private Path[] extractClassPath(SourceFactory location) {
-        try (Stream<Path> walk = Files.walk(location.toPath())) {
+    private Path[] extractClassPath() {
+        try (Stream<Path> walk = Files.walk(projectPath)) {
             return walk
                     .filter(Files::isDirectory)
                     .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
@@ -82,17 +86,6 @@ public class JigPaths {
         return path.toString().endsWith(".class");
     }
 
-    private Path[] extractSourcePath(SourceFactory location) {
-        try (Stream<Path> walk = Files.walk(location.toPath())) {
-            return walk.filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(sourcesDirectory))
-                    .peek(path -> LOGGER.info("sources: {}", path))
-                    .toArray(Path[]::new);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
     private boolean isJavaFile(Path path) {
         return path.toString().endsWith(".java");
     }
@@ -101,9 +94,9 @@ public class JigPaths {
         return path.toString().endsWith("package-info.java");
     }
 
-    public SqlSources getSqlSources(SourceFactory sourceFactory) {
+    public SqlSources getSqlSources() {
         try {
-            Path[] array = extractClassPath(sourceFactory);
+            Path[] array = extractClassPath();
 
             URL[] urls = new URL[array.length];
             List<String> classNames = new ArrayList<>();
@@ -137,22 +130,22 @@ public class JigPaths {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    public PackageNameSources getPackageNameSources(SourceFactory sourceFactory) {
-        List<Path> paths = pathsOf(sourceFactory, this::isPackageInfoFile);
+    public PackageNameSources getPackageNameSources() {
+        List<Path> paths = pathsOf(this::isPackageInfoFile);
         LOGGER.info("package-info.java: {}件", paths.size());
         return new PackageNameSources(paths);
     }
 
-    public TypeNameSources getTypeNameSources(SourceFactory sourceFactory) {
-        List<Path> paths = pathsOf(sourceFactory, this::isJavaFile);
+    public TypeNameSources getTypeNameSources() {
+        List<Path> paths = pathsOf(this::isJavaFile);
         LOGGER.info("*.java: {}件", paths.size());
         return new TypeNameSources(paths);
     }
 
-    private List<Path> pathsOf(SourceFactory location, Predicate<Path> condition) {
+    private List<Path> pathsOf(Predicate<Path> condition) {
         try {
             List<Path> paths = new ArrayList<>();
-            for (Path path : extractSourcePath(location)) {
+            for (Path path : extractSourcePath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -162,6 +155,17 @@ public class JigPaths {
                 });
             }
             return paths;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private Path[] extractSourcePath() {
+        try (Stream<Path> walk = Files.walk(projectPath)) {
+            return walk.filter(Files::isDirectory)
+                    .filter(path -> path.endsWith(sourcesDirectory))
+                    .peek(path -> LOGGER.info("sources: {}", path))
+                    .toArray(Path[]::new);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

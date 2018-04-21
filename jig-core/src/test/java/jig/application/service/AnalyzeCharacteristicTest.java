@@ -7,7 +7,6 @@ import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
-import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
@@ -44,9 +43,8 @@ public class AnalyzeCharacteristicTest {
         // 読み込む対象のソースを取得
         URI location = AnalyzeCharacteristicTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
-        JigPaths jigPaths = new JigPaths(value.toString(), "not/read/resources", "not/read/sources");
-        SourceFactory sourceFactory = new SourceFactory(jigPaths, value);
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources(sourceFactory);
+        JigPaths jigPaths = new JigPaths(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources();
 
         // 仕様化
         Specifications specifications = new AsmSpecificationReader(

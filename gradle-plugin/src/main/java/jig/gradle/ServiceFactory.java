@@ -11,7 +11,6 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -42,13 +41,13 @@ public class ServiceFactory {
         if (javaPluginConvention == null) {
             throw new AssertionError("JavaPluginが適用されていません。");
         }
-        JigPaths jigPaths = jigPaths(javaPluginConvention);
+        JigPaths jigPaths = jigPaths(project, javaPluginConvention);
 
         // TODO extensionで変更できるようにする
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
         return new AnalyzeService(
-                new SourceFactory(jigPaths, project.getProjectDir().toPath()),
+                jigPaths,
                 new SpecificationService(new AsmSpecificationReader(specificationContext)),
                 new DependencyService(
                         characteristicRepository,
@@ -65,13 +64,14 @@ public class ServiceFactory {
         );
     }
 
-    private JigPaths jigPaths(JavaPluginConvention javaPluginConvention) {
+    private JigPaths jigPaths(Project project, JavaPluginConvention javaPluginConvention) {
         SourceSet mainSourceSet = javaPluginConvention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
         File srcDir = mainSourceSet.getJava().getSrcDirs().iterator().next();
         File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
         File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
 
         return new JigPaths(
+                project.getProjectDir().toString(),
                 classesOutputDir.getAbsolutePath(),
                 resourceOutputDir.getAbsolutePath(),
                 srcDir.getAbsolutePath()

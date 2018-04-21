@@ -11,8 +11,8 @@ public class TestSupport {
 
     public static URL[] getTestResourceRootURLs() {
         try {
-            URL classRootUrl = defaultPackageClassURI().resolve("./").toURL();
-            URL resourceRootUrl = resourceRootURI().resolve("./").toURL();
+            URL classRootUrl = defaultPackageClassURI().toURL();
+            URL resourceRootUrl = resourceRootURI().toURL();
             return new URL[]{classRootUrl, resourceRootUrl};
         } catch (MalformedURLException e) {
             throw new AssertionError(e);
@@ -33,17 +33,17 @@ public class TestSupport {
     }
 
 
-    private static URI defaultPackageClassURI() {
+    public static URI defaultPackageClassURI() {
         try {
-            return TestSupport.class.getResource("/DefaultPackageClass.class").toURI();
+            return TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }
     }
 
-    private static URI resourceRootURI() {
+    public static URI resourceRootURI() {
         try {
-            return TestSupport.class.getResource("/marker.properties").toURI();
+            return TestSupport.class.getResource("/marker.properties").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.domain.model.kind.*;
 import stub.domain.model.type.*;
+import stub.domain.model.type.fuga.FugaIdentifier;
+import stub.domain.model.type.fuga.FugaName;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -83,8 +85,13 @@ public class AnalyzeCharacteristicTest {
 
     @Test
     void 識別子() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.IDENTIFIER).list()).extracting(TypeIdentifier::fullQualifiedName)
-                .containsExactly(SimpleIdentifier.class.getTypeName());
+        assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.IDENTIFIER).list())
+                .extracting(TypeIdentifier::fullQualifiedName)
+                .containsExactly(
+                        SimpleIdentifier.class.getTypeName(),
+                        FugaIdentifier.class.getTypeName(),
+                        FugaName.class.getTypeName()
+                );
     }
 
     @Test

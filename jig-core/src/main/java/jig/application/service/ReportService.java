@@ -76,7 +76,7 @@ public class ReportService {
         return new ValidationAnnotateReport(list);
     }
 
-    private Report methodReportOn(MethodPerspective perspective) {
+    Report methodReportOn(MethodPerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
@@ -90,7 +90,7 @@ public class ReportService {
         return new MethodReport(perspective, list);
     }
 
-    private Report typeReportOn(TypePerspective perspective) {
+    Report typeReportOn(TypePerspective perspective) {
         Characteristic characteristic = perspective.characteristic();
         List<TypeDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);

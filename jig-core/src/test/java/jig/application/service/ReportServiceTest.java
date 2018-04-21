@@ -3,18 +3,28 @@ package jig.application.service;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
+import jig.domain.model.datasource.SqlReader;
+import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.template.Reports;
+import jig.domain.model.report.type.TypePerspective;
+import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import stub.application.service.CanonicalService;
+import stub.domain.model.type.fuga.FugaRepository;
+import testing.TestSupport;
 
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +38,15 @@ class ReportServiceTest {
     ReportService sut;
 
     @Autowired
+    DependencyService dependencyService;
+    @Autowired
+    SpecificationService specificationService;
+    @Autowired
+    SqlReader sqlReader;
+    @Autowired
+    SqlRepository sqlRepository;
+
+    @Autowired
     CharacteristicRepository repository;
     @Autowired
     RelationRepository relationRepository;
@@ -35,7 +54,7 @@ class ReportServiceTest {
     JapaneseNameRepository japaneseNameRepository;
 
     @Test
-    void test() {
+    void 出力だけのテスト() {
         TypeIdentifier typeIdentifier = new TypeIdentifier("test.HogeEnum");
 
         TypeCharacteristics typeCharacteristics = new TypeCharacteristics(
@@ -75,6 +94,54 @@ class ReportServiceTest {
                             "◯"
                     );
         });
+    }
+
+    @Test
+    void クラスを読み込むE2Eに近いテスト() throws Exception {
+        // 読み込む対象のソースを取得
+        ProjectLocation projectLocation = new ProjectLocation(Paths.get(TestSupport.defaultPackageClassURI()));
+        JigPaths jigPaths = new JigPaths(projectLocation.toPath().toString(),
+                // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
+                "not/read/resources",
+                // TODO ソースディレクトリの安定した取得方法が欲しい
+                "not/read/sources");
+
+        dependencyService.registerSpecifications(
+                specificationService.specification(
+                        jigPaths.getSpecificationSources(projectLocation)));
+        sqlRepository.register(
+                sqlReader.readFrom(
+                        jigPaths.getSqlSources(projectLocation)));
+
+        japaneseNameRepository.register(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1"));
+        assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsSequence(
+                        "[stub.application.service.CanonicalService, 暫定和名1, fuga(FugaIdentifier), Fuga, [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
+                        "[stub.application.service.CanonicalService, 暫定和名1, method(), void, [], []]"
+                );
+
+        japaneseNameRepository.register(new TypeIdentifier(FugaRepository.class), new JapaneseName("暫定和名2"));
+        assertThat(sut.methodReportOn(MethodPerspective.REPOSITORY).rows())
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsSequence(
+                        "[stub.domain.model.type.fuga.FugaRepository, 暫定和名2, get(FugaIdentifier), Fuga, [sut.piyo], [fuga], [], []]",
+                        "[stub.domain.model.type.fuga.FugaRepository, 暫定和名2, register(Fuga), void, [], [], [], []]"
+                );
+
+        assertThat(sut.typeReportOn(TypePerspective.IDENTIFIER).rows())
+                .extracting(reportRow -> reportRow.list().get(0))
+                .containsSequence(
+                        "stub.domain.model.type.SimpleIdentifier");
+
+        assertThat(sut.typeReportOn(TypePerspective.ENUM).rows())
+                .extracting(reportRow -> reportRow.list().get(0))
+                .containsSequence(
+                        "stub.domain.model.kind.BehaviourEnum",
+                        "stub.domain.model.kind.ParameterizedEnum",
+                        "stub.domain.model.kind.PolymorphismEnum",
+                        "stub.domain.model.kind.RichEnum",
+                        "stub.domain.model.kind.SimpleEnum");
     }
 
     @TestConfiguration

@@ -1,5 +1,6 @@
-package jig.application.service;
+package jig.application.usecase;
 
+import jig.application.service.SpecificationService;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.specification.SpecificationReader;
 import jig.infrastructure.JigPaths;

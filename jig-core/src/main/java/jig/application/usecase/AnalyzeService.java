@@ -1,5 +1,9 @@
-package jig.application.service;
+package jig.application.usecase;
 
+import jig.application.service.DatasourceService;
+import jig.application.service.DependencyService;
+import jig.application.service.GlossaryService;
+import jig.application.service.SpecificationService;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;

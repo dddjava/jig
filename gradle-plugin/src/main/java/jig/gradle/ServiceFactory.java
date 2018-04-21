@@ -1,6 +1,8 @@
 package jig.gradle;
 
 import jig.application.service.*;
+import jig.application.usecase.AnalyzeService;
+import jig.application.usecase.ReportService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;

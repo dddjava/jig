@@ -1,5 +1,6 @@
-package jig.application.service;
+package jig.application.usecase;
 
+import jig.application.service.GlossaryService;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;

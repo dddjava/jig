@@ -1,7 +1,7 @@
 package jig.gradle;
 
-import jig.application.service.AnalyzeService;
-import jig.application.service.ReportService;
+import jig.application.usecase.AnalyzeService;
+import jig.application.usecase.ReportService;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;

@@ -1,6 +1,6 @@
 package jig.gradle;
 
-import jig.application.service.AnalyzeService;
+import jig.application.usecase.AnalyzeService;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;

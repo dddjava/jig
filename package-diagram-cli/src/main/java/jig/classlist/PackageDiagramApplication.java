@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.application.service.AnalyzeService;
+import jig.application.usecase.AnalyzeService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.project.ProjectLocation;

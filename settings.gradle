@@ -5,5 +5,4 @@ include 'jig-core',
         'package-diagram-cli',
         'class-list-cli',
         'class-list-format',
-        'gradle-plugin',
-        'sut'
+        'gradle-plugin'

@@ -60,10 +60,6 @@ project(':jig-core') {
         compile 'com.github.javaparser:javaparser-core:3.5.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
     }
-
-    test {
-        dependsOn ':sut:compileJava', ':sut:processResources'
-    }
 }
 
 project(':diagram-plantuml') {
@@ -91,10 +87,6 @@ project(':class-list-cli') {
         compile project(':jig-core')
         compile project(':class-list-format')
         compile 'org.springframework.boot:spring-boot-starter'
-    }
-
-    test {
-        dependsOn ':sut:compileJava', ':sut:processResources'
     }
 }
 
@@ -139,19 +131,5 @@ project(':gradle-plugin') {
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
         zip64 = true
-    }
-}
-
-project(':sut') {
-    dependencies {
-        compile 'org.springframework.boot:spring-boot-starter-web'
-        compile 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.1'
-        runtime 'com.h2database:h2'
-    }
-
-    sourceSets {
-        main {
-            resources.srcDirs = ["src/main/java", "src/main/resources"]
-        }
     }
 }

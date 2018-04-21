@@ -2,7 +2,7 @@ package jig.domain.model.japanese;
 
 public interface JapaneseReader {
 
-    PackageNames readPackages(PackageNameSources nameSources);
+    PackageNames readPackages(PackageNameSources packageNameSources);
 
-    TypeNames readTypes(TypeNameSources nameSources);
+    TypeNames readTypes(TypeNameSources typeNameSources);
 }

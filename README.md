@@ -1,11 +1,16 @@
 # Jig
 
+## 使い方
+
+- コマンドライン
+  - [一覧出力](./class-list-cli)
+  - [ダイアグラム出力](./package-diagram-cli)
+- [Gradleプラグイン](./gradle-plugin)
+
 ## 必要な環境
 
 - GraphViz
   - dotを使ってるので http://plantuml.com/graphviz-dot
-- JDK 1.8.0
-  - jdepsを使ってるので
 
 ### Windows
 

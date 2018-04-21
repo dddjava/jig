@@ -8,29 +8,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class GlossaryService {
 
-    final JapaneseReader japaneseReader;
-    final JapaneseNameRepository japaneseNameRepository;
+    final JapaneseReader reader;
+    final JapaneseNameRepository repository;
 
-    public GlossaryService(JapaneseReader japaneseReader, JapaneseNameRepository japaneseNameRepository) {
-        this.japaneseReader = japaneseReader;
-        this.japaneseNameRepository = japaneseNameRepository;
+    public GlossaryService(JapaneseReader reader, JapaneseNameRepository repository) {
+        this.reader = reader;
+        this.repository = repository;
     }
 
     public JapaneseName japaneseNameFrom(TypeIdentifier typeIdentifier) {
-        return japaneseNameRepository.get(typeIdentifier);
+        return repository.get(typeIdentifier);
     }
 
     public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
-        return japaneseNameRepository.get(packageIdentifier);
+        return repository.get(packageIdentifier);
     }
 
     public void importJapanese(PackageNameSources packageNameSources) {
-        PackageNames packageNames = japaneseReader.readPackages(packageNameSources);
-        packageNames.register(japaneseNameRepository);
+        PackageNames packageNames = reader.readPackages(packageNameSources);
+        packageNames.register(repository);
     }
 
     public void importJapanese(TypeNameSources typeNameSources) {
-        TypeNames typeNames = japaneseReader.readTypes(typeNameSources);
-        typeNames.register(japaneseNameRepository);
+        TypeNames typeNames = reader.readTypes(typeNameSources);
+        typeNames.register(repository);
     }
 }

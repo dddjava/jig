@@ -38,9 +38,6 @@ public class PackageDiagramApplication implements CommandLineRunner {
     @Value("${project.path}")
     String projectPath;
 
-    @Value("${package.pattern}")
-    String packagePattern;
-
     @Value("${output.diagram.name}")
     String outputDiagramName;
 

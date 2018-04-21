@@ -1,12 +1,10 @@
-package jig.infrastructure.javaparser;
+package jig.application.service;
 
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
-import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.japanese.PackageNames;
-import jig.domain.model.japanese.TypeNames;
 import jig.domain.model.project.ProjectLocation;
 import jig.infrastructure.JigPaths;
+import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,19 +19,21 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JavaparserJapaneseReaderTest {
+class GlossaryServiceTest {
+
+    GlossaryService sut = new GlossaryService(
+            new JavaparserJapaneseReader(),
+            new OnMemoryJapaneseNameRepository());
 
     @Test
     void パッケージ和名取得() {
         JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
-        JavaparserJapaneseReader sut = new JavaparserJapaneseReader();
 
         ProjectLocation projectLocation = new ProjectLocation(TestSupport.getModuleRootPath());
-        PackageNames packageNames = sut.readPackages(jigPath.getPackageNameSources(projectLocation));
 
-        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
-        packageNames.register(repository);
-        assertThat(repository.get(new PackageIdentifier("stub")).value())
+        sut.importJapanese(jigPath.getPackageNameSources(projectLocation));
+
+        assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
                 .isEqualTo("テストで使用するスタブたち");
     }
 
@@ -41,14 +41,11 @@ class JavaparserJapaneseReaderTest {
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
         JigPaths jigPath = new JigPaths("dummy", "dummy", "src/test/java");
-        JavaparserJapaneseReader sut = new JavaparserJapaneseReader();
-
         ProjectLocation projectLocation = new ProjectLocation(TestSupport.getModuleRootPath());
-        TypeNames typeNames = sut.readTypes(jigPath.getTypeNameSources(projectLocation));
 
-        JapaneseNameRepository repository = new OnMemoryJapaneseNameRepository();
-        typeNames.register(repository);
-        assertThat(repository.get(typeIdentifier).value())
+        sut.importJapanese(jigPath.getTypeNameSources(projectLocation));
+
+        assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);
     }
 

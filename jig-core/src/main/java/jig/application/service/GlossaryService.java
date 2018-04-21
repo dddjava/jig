@@ -1,5 +1,6 @@
 package jig.application.service;
 
+import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.*;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class GlossaryService {
 
     public JapaneseName japaneseNameFrom(TypeIdentifier typeIdentifier) {
         return japaneseNameRepository.get(typeIdentifier);
+    }
+
+    public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
+        return japaneseNameRepository.get(packageIdentifier);
     }
 
     public void importJapanese(PackageNameSources packageNameSources) {

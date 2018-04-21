@@ -80,7 +80,6 @@ public class ServiceFactory {
                 characteristicRepository,
                 relationRepository,
                 sqlRepository,
-                japaneseNameRepository,
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
                 annotationDeclarationRepository,
                 new GlossaryService(

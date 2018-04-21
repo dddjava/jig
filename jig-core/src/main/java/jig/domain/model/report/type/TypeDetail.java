@@ -1,15 +1,14 @@
 package jig.domain.model.report.type;
 
 import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.characteristic.Satisfaction;
+import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 
 public class TypeDetail {
@@ -17,19 +16,19 @@ public class TypeDetail {
     private final TypeIdentifier typeIdentifier;
     private final TypeCharacteristics typeCharacteristics;
     private final RelationRepository relationRepository;
-    private final JapaneseNameRepository japaneseNameRepository;
+    private final JapaneseName japaneseName;
     private final TypeIdentifierFormatter typeIdentifierFormatter;
 
     // TODO repositoryうけとるのやめたい
     public TypeDetail(TypeIdentifier typeIdentifier,
                       TypeCharacteristics typeCharacteristics,
                       RelationRepository relationRepository,
-                      JapaneseNameRepository japaneseNameRepository,
+                      JapaneseName japaneseName,
                       TypeIdentifierFormatter typeIdentifierFormatter) {
         this.typeIdentifier = typeIdentifier;
         this.typeCharacteristics = typeCharacteristics;
         this.relationRepository = relationRepository;
-        this.japaneseNameRepository = japaneseNameRepository;
+        this.japaneseName = japaneseName;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
@@ -38,7 +37,7 @@ public class TypeDetail {
     }
 
     public JapaneseName japaneseName() {
-        return japaneseNameRepository.get(type());
+        return japaneseName;
     }
 
     public TypeIdentifiers userTypes() {

@@ -11,7 +11,6 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class MethodDetail {
     private final RelationRepository relationRepository;
     private final CharacteristicRepository characteristicRepository;
     private final SqlRepository sqlRepository;
-    private final JapaneseNameRepository japaneseNameRepository;
+    private final JapaneseName japaneseName;
     private final TypeIdentifierFormatter typeIdentifierFormatter;
 
     // TODO repositoryうけとるのやめたい
@@ -33,14 +32,14 @@ public class MethodDetail {
                         RelationRepository relationRepository,
                         CharacteristicRepository characteristicRepository,
                         SqlRepository sqlRepository,
-                        JapaneseNameRepository japaneseNameRepository,
+                        JapaneseName japaneseName,
                         TypeIdentifierFormatter typeIdentifierFormatter) {
         this.typeIdentifier = typeIdentifier;
         this.methodDeclaration = methodDeclaration;
         this.relationRepository = relationRepository;
         this.characteristicRepository = characteristicRepository;
         this.sqlRepository = sqlRepository;
-        this.japaneseNameRepository = japaneseNameRepository;
+        this.japaneseName = japaneseName;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
     }
 
@@ -49,7 +48,7 @@ public class MethodDetail {
     }
 
     public JapaneseName japaneseName() {
-        return japaneseNameRepository.get(type());
+        return japaneseName;
     }
 
     public MethodDeclaration method() {

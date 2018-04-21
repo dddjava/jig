@@ -21,7 +21,9 @@ public class AnalyzeServiceUnitTest {
                 "not/match/any/directory");
         SpecificationReader specificationReaderMock = mock(SpecificationReader.class);
 
-        AnalyzeService sut = new AnalyzeService(new SpecificationService(specificationReaderMock), null, null, null, jigPaths, null);
+        AnalyzeService sut = new AnalyzeService(
+                jigPaths,
+                new SpecificationService(specificationReaderMock), null, null, null);
 
         ProjectLocation location = new ProjectLocation(Paths.get(""));
 

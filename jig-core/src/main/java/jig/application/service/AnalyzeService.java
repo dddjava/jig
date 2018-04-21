@@ -1,10 +1,5 @@
 package jig.application.service;
 
-import jig.domain.model.datasource.SqlReader;
-import jig.domain.model.datasource.SqlRepository;
-import jig.domain.model.datasource.SqlSources;
-import jig.domain.model.datasource.Sqls;
-import jig.domain.model.japanese.JapaneseReader;
 import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.specification.SpecificationSources;
@@ -15,37 +10,34 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnalyzeService {
 
-    final SpecificationService specificationService;
-    final SqlReader sqlReader;
-    final JapaneseReader japaneseReader;
-    final DependencyService dependencyService;
     final JigPaths jigPaths;
-    final SqlRepository sqlRepository;
+    final SpecificationService specificationService;
+    final DependencyService dependencyService;
+    final GlossaryService glossaryService;
+    final DatasourceService datasourceService;
 
-    public AnalyzeService(SpecificationService specificationService,
-                          SqlReader sqlReader,
-                          JapaneseReader japaneseReader,
+    public AnalyzeService(JigPaths jigPaths,
+                          SpecificationService specificationService,
                           DependencyService dependencyService,
-                          JigPaths jigPaths,
-                          SqlRepository sqlRepository) {
+                          GlossaryService glossaryService,
+                          DatasourceService datasourceService) {
         this.specificationService = specificationService;
-        this.sqlReader = sqlReader;
-        this.japaneseReader = japaneseReader;
         this.dependencyService = dependencyService;
         this.jigPaths = jigPaths;
-        this.sqlRepository = sqlRepository;
+        this.glossaryService = glossaryService;
+        this.datasourceService = datasourceService;
     }
 
     public PackageDependencies packageDependencies(ProjectLocation projectLocation) {
         importSpecification(projectLocation);
-        importJapanese(projectLocation);
+        glossaryService.importJapanese(projectLocation);
         return dependencyService.packageDependencies();
     }
 
     public void importProject(ProjectLocation projectLocation) {
         importSpecification(projectLocation);
-        importDatabaseAccess(projectLocation);
-        importJapanese(projectLocation);
+        datasourceService.importDatabaseAccess(jigPaths.getSqlSources(projectLocation));
+        glossaryService.importJapanese(projectLocation);
     }
 
     public void importSpecification(ProjectLocation projectLocation) {
@@ -53,15 +45,5 @@ public class AnalyzeService {
         Specifications specifications = specificationService.specification(specificationSources);
 
         dependencyService.registerSpecifications(specifications);
-    }
-
-    public void importDatabaseAccess(ProjectLocation projectLocation) {
-        SqlSources sqlSources = jigPaths.getSqlSources(projectLocation);
-        Sqls sqls = sqlReader.readFrom(sqlSources);
-        sqlRepository.register(sqls);
-    }
-
-    public void importJapanese(ProjectLocation projectLocation) {
-        japaneseReader.readFrom(projectLocation);
     }
 }

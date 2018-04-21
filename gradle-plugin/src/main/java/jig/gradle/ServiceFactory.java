@@ -42,18 +42,23 @@ public class ServiceFactory {
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
         return new AnalyzeService(
+                jigPaths,
                 new SpecificationService(new AsmSpecificationReader(specificationContext)),
-                new MyBatisSqlReader(),
-                new JavaparserJapaneseReader(
-                        japaneseNameRepository,
-                        jigPaths
-                ),
                 new DependencyService(
                         characteristicRepository,
                         relationRepository,
                         annotationDeclarationRepository),
-                jigPaths,
-                sqlRepository
+                new GlossaryService(
+                        new JavaparserJapaneseReader(
+                                japaneseNameRepository,
+                                jigPaths
+                        ),
+                        japaneseNameRepository
+                ),
+                new DatasourceService(
+                        new MyBatisSqlReader(),
+                        sqlRepository
+                )
         );
     }
 
@@ -78,7 +83,10 @@ public class ServiceFactory {
                 japaneseNameRepository,
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
                 annotationDeclarationRepository,
-                new GlossaryService(japaneseNameRepository));
+                new GlossaryService(
+                        // TODO nullなんとかする
+                        null,
+                        japaneseNameRepository));
     }
 
     PlantumlDriver diagramService(String outputOmitPrefix) {

@@ -4,62 +4,44 @@ import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.comments.JavadocComment;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.japanese.TypeJapaneseName;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 class ClassCommentReader {
 
-    private final JapaneseNameRepository repository;
-
-    public ClassCommentReader(JapaneseNameRepository repository) {
-        this.repository = repository;
-    }
-
-    void execute(Path path) {
+    Optional<TypeJapaneseName> execute(Path path) {
         try {
             CompilationUnit cu = JavaParser.parse(path);
 
-            cu.accept(new VoidVisitorAdapter<Void>() {
-
-                private PackageDeclaration packageDeclaration = null;
+            Optional<TypeJapaneseName> result = cu.accept(new GenericVisitorAdapter<Optional<TypeJapaneseName>, Void>() {
 
                 @Override
-                public void visit(PackageDeclaration packageDeclaration, Void arg) {
-                    this.packageDeclaration = packageDeclaration;
-                }
+                public Optional<TypeJapaneseName> visit(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, Void arg) {
+                    return classOrInterfaceDeclaration.getJavadoc()
+                            .map(javadoc -> {
+                                String javadocText = javadoc.getDescription().toText();
+                                JapaneseName japaneseName = new JapaneseName(javadocText);
 
-                @Override
-                public void visit(ClassOrInterfaceDeclaration classOrInterfaceDeclaration, Void arg) {
-                    String className = classOrInterfaceDeclaration.getNameAsString();
-                    if (packageDeclaration != null) {
-                        className = packageDeclaration.getNameAsString() + "." + className;
-                    }
+                                String packageName = cu.getPackageDeclaration()
+                                        .map(PackageDeclaration::getNameAsString)
+                                        .map(name -> name + ".")
+                                        .orElse("");
+                                String className = classOrInterfaceDeclaration.getNameAsString();
+                                TypeIdentifier typeIdentifier = new TypeIdentifier(packageName + className);
 
-                    TypeIdentifier typeIdentifier = new TypeIdentifier(className);
-
-                    classOrInterfaceDeclaration.accept(new VoidVisitorAdapter<TypeIdentifier>() {
-
-                        @Override
-                        public void visit(JavadocComment n, TypeIdentifier typeIdentifier) {
-                            n.getCommentedNode()
-                                    .filter(node -> node instanceof ClassOrInterfaceDeclaration)
-                                    .ifPresent(node -> {
-                                        String text = n.parse().getDescription().toText();
-                                        JapaneseName japaneseName = new JapaneseName(text);
-
-                                        repository.register(typeIdentifier, japaneseName);
-                                    });
-                        }
-                    }, typeIdentifier);
+                                return new TypeJapaneseName(typeIdentifier, japaneseName);
+                            });
                 }
             }, null);
+
+            return result != null ? result : Optional.empty();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

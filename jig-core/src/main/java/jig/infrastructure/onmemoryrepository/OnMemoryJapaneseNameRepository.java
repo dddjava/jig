@@ -4,6 +4,8 @@ import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.japanese.PackageJapaneseName;
+import jig.domain.model.japanese.TypeJapaneseName;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -38,6 +40,16 @@ public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
     @Override
     public void register(PackageIdentifier packageIdentifier, JapaneseName japaneseName) {
         packageMap.put(packageIdentifier, japaneseName);
+    }
+
+    @Override
+    public void register(TypeJapaneseName typeJapaneseName) {
+        register(typeJapaneseName.typeIdentifier(), typeJapaneseName.japaneseName());
+    }
+
+    @Override
+    public void register(PackageJapaneseName packageJapaneseName) {
+        register(packageJapaneseName.packageIdentifier(), packageJapaneseName.japaneseName());
     }
 
     @Override

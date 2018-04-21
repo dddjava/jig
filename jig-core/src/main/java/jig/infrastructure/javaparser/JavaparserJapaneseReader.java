@@ -19,12 +19,14 @@ public class JavaparserJapaneseReader implements JapaneseReader {
 
     @Override
     public void readFrom(ProjectLocation projectLocation) {
-        ClassCommentReader classCommentReader = new ClassCommentReader(repository);
-        jigPaths.sourcePaths(projectLocation)
-                .forEach(classCommentReader::execute);
+        ClassCommentReader classCommentReader = new ClassCommentReader();
+        jigPaths.sourcePaths(projectLocation).forEach(path -> {
+            classCommentReader.execute(path).ifPresent(repository::register);
+        });
 
-        PackageInfoReader packageInfoReader = new PackageInfoReader(repository);
-        jigPaths.packageInfoPaths(projectLocation)
-                .forEach(packageInfoReader::execute);
+        PackageInfoReader packageInfoReader = new PackageInfoReader();
+        jigPaths.packageInfoPaths(projectLocation).forEach(path -> {
+            packageInfoReader.execute(path).ifPresent(repository::register);
+        });
     }
 }

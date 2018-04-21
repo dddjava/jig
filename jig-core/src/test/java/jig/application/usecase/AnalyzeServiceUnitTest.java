@@ -1,7 +1,7 @@
 package jig.application.usecase;
 
 import jig.application.service.SpecificationService;
-import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.project.SourceFactory;
 import jig.domain.model.specification.SpecificationReader;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
@@ -23,12 +23,10 @@ public class AnalyzeServiceUnitTest {
         SpecificationReader specificationReaderMock = mock(SpecificationReader.class);
 
         AnalyzeService sut = new AnalyzeService(
-                jigPaths,
+                new SourceFactory(jigPaths, Paths.get("")),
                 new SpecificationService(specificationReaderMock), null, null, null);
 
-        ProjectLocation location = new ProjectLocation(Paths.get(""));
-
-        assertThatThrownBy(() -> sut.importProject(location))
+        assertThatThrownBy(sut::importProject)
                 .isInstanceOf(RuntimeException.class);
         verifyZeroInteractions(specificationReaderMock);
     }

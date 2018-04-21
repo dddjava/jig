@@ -7,7 +7,7 @@ import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
 import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
-import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
 import jig.domain.model.specification.Specifications;
@@ -27,6 +27,7 @@ import stub.domain.model.type.fuga.FugaName;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -42,9 +43,10 @@ public class AnalyzeCharacteristicTest {
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
         URI location = AnalyzeCharacteristicTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-        ProjectLocation projectLocation = new ProjectLocation(Paths.get(location));
-        JigPaths jigPaths = new JigPaths(projectLocation.toPath().toString(), "not/read/resources", "not/read/sources");
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources(projectLocation);
+        Path value = Paths.get(location);
+        JigPaths jigPaths = new JigPaths(value.toString(), "not/read/resources", "not/read/sources");
+        SourceFactory sourceFactory = new SourceFactory(jigPaths, value);
+        SpecificationSources specificationSources = jigPaths.getSpecificationSources(sourceFactory);
 
         // 仕様化
         Specifications specifications = new AsmSpecificationReader(

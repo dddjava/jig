@@ -2,7 +2,6 @@ package jig.application.usecase;
 
 import jig.application.service.DependencyService;
 import jig.application.service.SpecificationService;
-import testing.TestConfiguration;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
@@ -12,7 +11,7 @@ import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
-import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.template.Reports;
@@ -25,8 +24,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import stub.application.service.CanonicalService;
 import stub.domain.model.type.fuga.FugaRepository;
+import testing.TestConfiguration;
 import testing.TestSupport;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -102,19 +103,20 @@ class ReportServiceTest {
     @Test
     void クラスを読み込むE2Eに近いテスト() throws Exception {
         // 読み込む対象のソースを取得
-        ProjectLocation projectLocation = new ProjectLocation(Paths.get(TestSupport.defaultPackageClassURI()));
-        JigPaths jigPaths = new JigPaths(projectLocation.toPath().toString(),
+        Path path = Paths.get(TestSupport.defaultPackageClassURI());
+        JigPaths jigPaths = new JigPaths(path.toString(),
                 // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
                 "not/read/resources",
                 // TODO ソースディレクトリの安定した取得方法が欲しい
                 "not/read/sources");
+        SourceFactory sourceFactory = new SourceFactory(jigPaths, path);
 
         dependencyService.registerSpecifications(
                 specificationService.specification(
-                        jigPaths.getSpecificationSources(projectLocation)));
+                        jigPaths.getSpecificationSources(sourceFactory)));
         sqlRepository.register(
                 sqlReader.readFrom(
-                        jigPaths.getSqlSources(projectLocation)));
+                        jigPaths.getSqlSources(sourceFactory)));
 
         japaneseNameRepository.register(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1"));
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())

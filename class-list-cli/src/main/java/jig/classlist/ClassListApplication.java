@@ -2,7 +2,6 @@ package jig.classlist;
 
 import jig.application.usecase.AnalyzeService;
 import jig.application.usecase.ReportService;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;
 import org.slf4j.Logger;
@@ -29,9 +28,6 @@ public class ClassListApplication {
     @Value("${output.list.name}")
     String outputPath;
 
-    @Value("${project.path}")
-    String projectPath;
-
     @Autowired
     AnalyzeService analyzeService;
     @Autowired
@@ -42,7 +38,7 @@ public class ClassListApplication {
 
         LOGGER.info("解析をはじめます");
 
-        analyzeService.importProject(new ProjectLocation(Paths.get(projectPath)));
+        analyzeService.importProject();
 
         LOGGER.info("レポートデータの準備をはじめます");
 

@@ -3,7 +3,6 @@ package jig.classlist;
 import jig.application.usecase.AnalyzeService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.identifier.namespace.PackageDepth;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +25,6 @@ public class PackageDiagramApplication implements CommandLineRunner {
         SpringApplication.run(PackageDiagramApplication.class, args);
     }
 
-    @Value("${project.path}")
-    String projectPath;
-
     @Value("${output.diagram.name}")
     String outputDiagramName;
 
@@ -44,10 +40,9 @@ public class PackageDiagramApplication implements CommandLineRunner {
     public void run(String... args) {
         long startTime = System.currentTimeMillis();
 
-        Path projectPath = Paths.get(this.projectPath);
         Path output = Paths.get(outputDiagramName);
 
-        PackageDependencies packageDependencies = analyzeService.packageDependencies(new ProjectLocation(projectPath))
+        PackageDependencies packageDependencies = analyzeService.packageDependencies()
                 .applyDepth(new PackageDepth(this.depth));
 
         LOGGER.info("関連数: " + packageDependencies.number().asText());

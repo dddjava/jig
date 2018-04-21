@@ -3,7 +3,7 @@ package jig.infrastructure;
 import jig.domain.model.datasource.SqlSources;
 import jig.domain.model.japanese.PackageNameSources;
 import jig.domain.model.japanese.TypeNameSources;
-import jig.domain.model.project.ProjectLocation;
+import jig.domain.model.project.SourceFactory;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class JigPaths {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    public SpecificationSources getSpecificationSources(ProjectLocation location) {
+    public SpecificationSources getSpecificationSources(SourceFactory location) {
         ArrayList<SpecificationSource> sources = new ArrayList<>();
         try {
             for (Path path : extractClassPath(location)) {
@@ -66,7 +66,7 @@ public class JigPaths {
         return new SpecificationSources(sources);
     }
 
-    private Path[] extractClassPath(ProjectLocation location) {
+    private Path[] extractClassPath(SourceFactory location) {
         try (Stream<Path> walk = Files.walk(location.toPath())) {
             return walk
                     .filter(Files::isDirectory)
@@ -82,7 +82,7 @@ public class JigPaths {
         return path.toString().endsWith(".class");
     }
 
-    private Path[] extractSourcePath(ProjectLocation location) {
+    private Path[] extractSourcePath(SourceFactory location) {
         try (Stream<Path> walk = Files.walk(location.toPath())) {
             return walk.filter(Files::isDirectory)
                     .filter(path -> path.endsWith(sourcesDirectory))
@@ -101,9 +101,9 @@ public class JigPaths {
         return path.toString().endsWith("package-info.java");
     }
 
-    public SqlSources getSqlSources(ProjectLocation projectLocation) {
+    public SqlSources getSqlSources(SourceFactory sourceFactory) {
         try {
-            Path[] array = extractClassPath(projectLocation);
+            Path[] array = extractClassPath(sourceFactory);
 
             URL[] urls = new URL[array.length];
             List<String> classNames = new ArrayList<>();
@@ -137,19 +137,19 @@ public class JigPaths {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    public PackageNameSources getPackageNameSources(ProjectLocation projectLocation) {
-        List<Path> paths = pathsOf(projectLocation, this::isPackageInfoFile);
+    public PackageNameSources getPackageNameSources(SourceFactory sourceFactory) {
+        List<Path> paths = pathsOf(sourceFactory, this::isPackageInfoFile);
         LOGGER.info("package-info.java: {}件", paths.size());
         return new PackageNameSources(paths);
     }
 
-    public TypeNameSources getTypeNameSources(ProjectLocation projectLocation) {
-        List<Path> paths = pathsOf(projectLocation, this::isJavaFile);
+    public TypeNameSources getTypeNameSources(SourceFactory sourceFactory) {
+        List<Path> paths = pathsOf(sourceFactory, this::isJavaFile);
         LOGGER.info("*.java: {}件", paths.size());
         return new TypeNameSources(paths);
     }
 
-    private List<Path> pathsOf(ProjectLocation location, Predicate<Path> condition) {
+    private List<Path> pathsOf(SourceFactory location, Predicate<Path> condition) {
         try {
             List<Path> paths = new ArrayList<>();
             for (Path path : extractSourcePath(location)) {

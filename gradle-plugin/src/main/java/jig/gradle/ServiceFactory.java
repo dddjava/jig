@@ -11,6 +11,7 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.RelationRepository;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -19,7 +20,7 @@ import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.*;
-import org.gradle.api.plugins.Convention;
+import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.slf4j.Logger;
@@ -36,8 +37,8 @@ public class ServiceFactory {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
-    AnalyzeService analyzeService(Convention convention) {
-        JavaPluginConvention javaPluginConvention = convention.findPlugin(JavaPluginConvention.class);
+    AnalyzeService analyzeService(Project project) {
+        JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
         if (javaPluginConvention == null) {
             throw new AssertionError("JavaPluginが適用されていません。");
         }
@@ -47,7 +48,7 @@ public class ServiceFactory {
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
         return new AnalyzeService(
-                jigPaths,
+                new SourceFactory(jigPaths, project.getProjectDir().toPath()),
                 new SpecificationService(new AsmSpecificationReader(specificationContext)),
                 new DependencyService(
                         characteristicRepository,

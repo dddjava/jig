@@ -2,10 +2,8 @@ package jig.gradle;
 
 import jig.application.usecase.AnalyzeService;
 import jig.domain.model.identifier.namespace.PackageDepth;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
@@ -31,11 +29,9 @@ public class JigPackageDiagramTask extends DefaultTask {
         Path output = Paths.get(extension.getOutputDiagramName());
         ensureExists(output);
 
-        Convention convention = getProject().getConvention();
-        ProjectLocation projectLocation = new ProjectLocation(getProject().getProjectDir().toPath());
-        AnalyzeService analyzeService = serviceFactory.analyzeService(convention);
+        AnalyzeService analyzeService = serviceFactory.analyzeService(getProject());
 
-        PackageDependencies packageDependencies = analyzeService.packageDependencies(projectLocation)
+        PackageDependencies packageDependencies = analyzeService.packageDependencies()
                 .applyDepth(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + packageDependencies.list().size());
 

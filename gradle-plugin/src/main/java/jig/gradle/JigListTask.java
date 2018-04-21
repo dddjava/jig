@@ -2,11 +2,9 @@ package jig.gradle;
 
 import jig.application.usecase.AnalyzeService;
 import jig.application.usecase.ReportService;
-import jig.domain.model.project.ProjectLocation;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 
@@ -23,10 +21,8 @@ public class JigListTask extends DefaultTask {
     public void apply() {
         ExtensionContainer extensions = getProject().getExtensions();
         JigListExtension extension = extensions.findByType(JigListExtension.class);
-        ProjectLocation projectLocation = new ProjectLocation(getProject().getProjectDir().toPath());
-        Convention convention = getProject().getConvention();
-        AnalyzeService analyzeService = serviceFactory.analyzeService(convention);
-        analyzeService.importProject(projectLocation);
+        AnalyzeService analyzeService = serviceFactory.analyzeService(getProject());
+        analyzeService.importProject();
 
         String outputPath = extension.getOutputPath();
         ensureExists(outputPath);

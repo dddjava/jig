@@ -66,12 +66,16 @@ project(':jig-core') {
         compile 'org.slf4j:slf4j-api'
         compile 'ch.qos.logback:logback-classic'
 
+        // class解析
         compile 'org.ow2.asm:asm:6.1'
-
+        // datasource解析
         compile 'org.mybatis:mybatis:3.4.5'
-
+        // javadocコメント取得
         compile 'com.github.javaparser:javaparser-core:3.5.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+        // excel出力
+        compile 'org.apache.poi:poi:3.17'
+        compile 'org.apache.poi:poi-ooxml:3.17'
     }
 }
 
@@ -104,15 +108,6 @@ project(':package-diagram-cli') {
 project(':class-list-cli') {
     dependencies {
         compile project(':jig-core')
-        compile project(':class-list-format')
-    }
-}
-
-project(':class-list-format') {
-    dependencies {
-        compile project(':jig-core')
-        compile 'org.apache.poi:poi:3.17'
-        compile 'org.apache.poi:poi-ooxml:3.17'
     }
 }
 
@@ -133,7 +128,6 @@ project(':gradle-plugin') {
     }
     dependencies {
         compile project(':jig-core')
-        compile project(':class-list-format')
         compile project(':diagram-plantuml')
         compile gradleApi()
         compile localGroovy()

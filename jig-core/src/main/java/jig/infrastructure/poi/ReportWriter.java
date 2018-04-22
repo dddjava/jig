@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastracture;
+package jig.infrastructure.poi;
 
 import jig.domain.model.report.template.Reports;
 

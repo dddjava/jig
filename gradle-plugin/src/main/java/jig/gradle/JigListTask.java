@@ -3,7 +3,7 @@ package jig.gradle;
 import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
 import jig.domain.model.report.template.Reports;
-import org.dddjava.jig.infrastracture.ReportFormat;
+import jig.infrastructure.poi.ReportFormat;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;

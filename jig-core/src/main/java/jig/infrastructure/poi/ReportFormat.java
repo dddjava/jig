@@ -1,8 +1,8 @@
-package org.dddjava.jig.infrastracture;
+package jig.infrastructure.poi;
 
 
-import org.dddjava.jig.infrastracture.writer.ExcelWriter;
-import org.dddjava.jig.infrastracture.writer.TsvWriter;
+import jig.infrastructure.poi.writer.ExcelWriter;
+import jig.infrastructure.poi.writer.TsvWriter;
 
 public enum ReportFormat {
     TSV {

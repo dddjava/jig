@@ -56,8 +56,9 @@ class ReportServiceTest {
 
         japaneseNameRepository.register(new TypeJapaneseName(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1")));
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())
+                .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
                 .extracting(reportRow -> reportRow.list().toString())
-                .containsSequence(
+                .containsExactly(
                         "[stub.application.service.CanonicalService, 暫定和名1, fuga(FugaIdentifier), Fuga, [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
                         "[stub.application.service.CanonicalService, 暫定和名1, method(), void, [], []]"
                 );

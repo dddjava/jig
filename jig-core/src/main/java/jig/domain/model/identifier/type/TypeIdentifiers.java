@@ -1,7 +1,6 @@
 package jig.domain.model.identifier.type;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,10 +23,6 @@ public class TypeIdentifiers {
 
     public Set<TypeIdentifier> set() {
         return new HashSet<>(identifiers);
-    }
-
-    public TypeIdentifiers filter(Predicate<TypeIdentifier> condition) {
-        return identifiers.stream().filter(condition).collect(collector());
     }
 
     public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {

@@ -38,22 +38,12 @@ public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
     }
 
     @Override
-    public void register(PackageIdentifier packageIdentifier, JapaneseName japaneseName) {
-        packageMap.put(packageIdentifier, japaneseName);
-    }
-
-    @Override
     public void register(TypeJapaneseName typeJapaneseName) {
-        register(typeJapaneseName.typeIdentifier(), typeJapaneseName.japaneseName());
+        map.put(typeJapaneseName.typeIdentifier(), typeJapaneseName.japaneseName());
     }
 
     @Override
     public void register(PackageJapaneseName packageJapaneseName) {
-        register(packageJapaneseName.packageIdentifier(), packageJapaneseName.japaneseName());
-    }
-
-    @Override
-    public void register(TypeIdentifier fqn, JapaneseName japaneseName) {
-        map.put(fqn, japaneseName);
+        packageMap.put(packageJapaneseName.packageIdentifier(), packageJapaneseName.japaneseName());
     }
 }

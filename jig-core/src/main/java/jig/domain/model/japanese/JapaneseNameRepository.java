@@ -7,13 +7,9 @@ public interface JapaneseNameRepository {
 
     JapaneseName get(TypeIdentifier typeIdentifier);
 
-    void register(TypeIdentifier typeIdentifier, JapaneseName japaneseName);
-
     boolean exists(PackageIdentifier packageIdentifier);
 
     JapaneseName get(PackageIdentifier packageIdentifier);
-
-    void register(PackageIdentifier packageIdentifier, JapaneseName japaneseName);
 
     void register(TypeJapaneseName typeJapaneseName);
 

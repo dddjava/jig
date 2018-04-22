@@ -19,12 +19,4 @@ public class MethodRelation {
     public MethodDeclaration concreteMethod() {
         return from;
     }
-
-    public MethodDeclaration to() {
-        return to;
-    }
-
-    public boolean fromMethodIs(MethodDeclaration methodDeclaration) {
-        return from.equals(methodDeclaration);
-    }
 }

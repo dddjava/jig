@@ -19,10 +19,6 @@ public class DependencyRepository {
         map.put(typeIdentifier, typeIdentifiers);
     }
 
-    public TypeIdentifiers findDependency(TypeIdentifier identifier) {
-        return map.get(identifier);
-    }
-
     public TypeDependencies findAllTypeDependency() {
         List<TypeDependency> list = map.entrySet().stream()
                 .flatMap(entry -> entry.getValue().list().stream()

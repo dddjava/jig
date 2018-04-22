@@ -11,10 +11,6 @@ public class PackageIdentifier {
         this.value = value;
     }
 
-    public String value() {
-        return value;
-    }
-
     public PackageIdentifier applyDepth(PackageDepth packageDepth) {
         String[] split = value.split("\\.");
         if (split.length < packageDepth.value()) return this;

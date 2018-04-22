@@ -11,6 +11,7 @@ import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
+import jig.domain.model.japanese.TypeJapaneseName;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.template.Reports;
@@ -73,7 +74,7 @@ class ReportServiceTest {
         relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
         relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
 
-        japaneseNameRepository.register(typeIdentifier, new JapaneseName("対応する和名"));
+        japaneseNameRepository.register(new TypeJapaneseName(typeIdentifier, new JapaneseName("対応する和名")));
         relationRepository.registerField(new FieldDeclaration(new TypeIdentifier("test.HogeUser"), "hogera", typeIdentifier));
         relationRepository.registerConstants(new FieldDeclaration(typeIdentifier, "A", typeIdentifier));
         relationRepository.registerConstants(new FieldDeclaration(typeIdentifier, "B", typeIdentifier));
@@ -116,7 +117,7 @@ class ReportServiceTest {
                 sqlReader.readFrom(
                         jigPaths.getSqlSources()));
 
-        japaneseNameRepository.register(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1"));
+        japaneseNameRepository.register(new TypeJapaneseName(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1")));
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsSequence(
@@ -124,7 +125,7 @@ class ReportServiceTest {
                         "[stub.application.service.CanonicalService, 暫定和名1, method(), void, [], []]"
                 );
 
-        japaneseNameRepository.register(new TypeIdentifier(FugaRepository.class), new JapaneseName("暫定和名2"));
+        japaneseNameRepository.register(new TypeJapaneseName(new TypeIdentifier(FugaRepository.class), new JapaneseName("暫定和名2")));
         assertThat(sut.methodReportOn(MethodPerspective.REPOSITORY).rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsSequence(

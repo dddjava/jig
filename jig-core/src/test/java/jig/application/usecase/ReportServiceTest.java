@@ -1,12 +1,10 @@
 package jig.application.usecase;
 
-import jig.application.service.DependencyService;
+import jig.application.service.DatasourceService;
 import jig.application.service.SpecificationService;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
-import jig.domain.model.datasource.SqlReader;
-import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
@@ -42,13 +40,9 @@ class ReportServiceTest {
     ReportService sut;
 
     @Autowired
-    DependencyService dependencyService;
-    @Autowired
     SpecificationService specificationService;
     @Autowired
-    SqlReader sqlReader;
-    @Autowired
-    SqlRepository sqlRepository;
+    DatasourceService datasourceService;
 
     @Autowired
     CharacteristicRepository repository;
@@ -113,9 +107,7 @@ class ReportServiceTest {
                 "not/read/sources");
 
         specificationService.importSpecification(jigPaths.getSpecificationSources());
-        sqlRepository.register(
-                sqlReader.readFrom(
-                        jigPaths.getSqlSources()));
+        datasourceService.importDatabaseAccess(jigPaths.getSqlSources());
 
         japaneseNameRepository.register(new TypeJapaneseName(new TypeIdentifier(CanonicalService.class), new JapaneseName("暫定和名1")));
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())

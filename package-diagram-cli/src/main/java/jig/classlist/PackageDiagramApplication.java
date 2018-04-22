@@ -42,11 +42,14 @@ public class PackageDiagramApplication implements CommandLineRunner {
     public void run(String... args) {
         long startTime = System.currentTimeMillis();
 
+        LOGGER.info("プロジェクト情報の取り込みをはじめます");
         importLocalProjectService.importProject();
+
+        LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
         PackageDependencies packageDependencies = dependencyService.packageDependencies()
                 .applyDepth(new PackageDepth(this.depth));
 
-        LOGGER.info("出力する関連数: " + packageDependencies.number().asText());
+        LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
 
         plantumlDriver.output(packageDependencies, Paths.get(outputDiagramName));
 

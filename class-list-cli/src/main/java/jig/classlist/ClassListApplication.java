@@ -36,16 +36,13 @@ public class ClassListApplication {
     public void output() {
         long startTime = System.currentTimeMillis();
 
-        LOGGER.info("解析をはじめます");
-
+        LOGGER.info("プロジェクト情報の取り込みをはじめます");
         importLocalProjectService.importProject();
 
         LOGGER.info("レポートデータの準備をはじめます");
-
         Reports reports = reportService.reports();
 
         LOGGER.info("ファイルに書き出します");
-
         ReportFormat.from(outputPath)
                 .writer()
                 .writeTo(reports, Paths.get(outputPath));

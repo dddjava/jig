@@ -1,6 +1,6 @@
 package jig.classlist;
 
-import jig.application.usecase.AnalyzeService;
+import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;
@@ -29,7 +29,7 @@ public class ClassListApplication {
     String outputPath;
 
     @Autowired
-    AnalyzeService analyzeService;
+    ImportLocalProjectService importLocalProjectService;
     @Autowired
     ReportService reportService;
 
@@ -38,7 +38,7 @@ public class ClassListApplication {
 
         LOGGER.info("解析をはじめます");
 
-        analyzeService.importProject();
+        importLocalProjectService.importProject();
 
         LOGGER.info("レポートデータの準備をはじめます");
 

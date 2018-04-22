@@ -25,11 +25,11 @@ class ReportServiceTest {
     ReportService sut;
 
     @Autowired
-    AnalyzeService analyzeService;
+    ImportLocalProjectService importLocalProjectService;
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        analyzeService.importProject();
+        importLocalProjectService.importProject();
 
         assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))

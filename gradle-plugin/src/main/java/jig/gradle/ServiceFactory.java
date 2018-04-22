@@ -4,7 +4,7 @@ import jig.application.service.DatasourceService;
 import jig.application.service.DependencyService;
 import jig.application.service.GlossaryService;
 import jig.application.service.SpecificationService;
-import jig.application.usecase.AnalyzeService;
+import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
@@ -36,7 +36,7 @@ public class ServiceFactory {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
-    AnalyzeService analyzeService(Project project) {
+    ImportLocalProjectService analyzeService(Project project) {
         JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
         if (javaPluginConvention == null) {
             throw new AssertionError("JavaPluginが適用されていません。");
@@ -46,19 +46,15 @@ public class ServiceFactory {
         // TODO extensionで変更できるようにする
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
-        DependencyService dependencyService = new DependencyService(
-                characteristicRepository,
-                relationRepository
-        );
-        return new AnalyzeService(
+
+        return new ImportLocalProjectService(
                 jigPaths,
                 new SpecificationService(
                         new AsmSpecificationReader(specificationContext),
                         characteristicRepository,
                         relationRepository,
                         annotationDeclarationRepository,
-                        dependencyService),
-                dependencyService,
+                        dependencyService()),
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
                         japaneseNameRepository
@@ -94,6 +90,10 @@ public class ServiceFactory {
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
                         japaneseNameRepository));
+    }
+
+    public DependencyService dependencyService() {
+        return new DependencyService(characteristicRepository, relationRepository);
     }
 
     PlantumlDriver diagramService(String outputOmitPrefix) {

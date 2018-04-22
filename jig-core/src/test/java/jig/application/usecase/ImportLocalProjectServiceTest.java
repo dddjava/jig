@@ -1,5 +1,6 @@
 package jig.application.usecase;
 
+import jig.application.service.DependencyService;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.dependency.PackageDependencies;
@@ -24,13 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "jig.model.pattern = stub.domain.model.+")
-public class AnalyzeServiceTest {
+public class ImportLocalProjectServiceTest {
 
     @Autowired
-    AnalyzeService sut;
+    DependencyService sut;
+
+    @Autowired
+    ImportLocalProjectService importLocalProjectService;
 
     @Test
     void パッケージ依存() {
+        importLocalProjectService.importProject();
         PackageDependencies packageDependencies = sut.packageDependencies();
 
         // パッケージのリストアップ

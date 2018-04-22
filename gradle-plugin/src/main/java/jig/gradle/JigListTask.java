@@ -1,6 +1,6 @@
 package jig.gradle;
 
-import jig.application.usecase.AnalyzeService;
+import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
 import jig.domain.model.report.template.Reports;
 import org.dddjava.jig.infrastracture.ReportFormat;
@@ -21,8 +21,8 @@ public class JigListTask extends DefaultTask {
     public void apply() {
         ExtensionContainer extensions = getProject().getExtensions();
         JigListExtension extension = extensions.findByType(JigListExtension.class);
-        AnalyzeService analyzeService = serviceFactory.analyzeService(getProject());
-        analyzeService.importProject();
+        ImportLocalProjectService importLocalProjectService = serviceFactory.analyzeService(getProject());
+        importLocalProjectService.importProject();
 
         String outputPath = extension.getOutputPath();
         ensureExists(outputPath);

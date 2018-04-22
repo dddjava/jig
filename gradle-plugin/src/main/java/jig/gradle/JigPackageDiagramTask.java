@@ -1,6 +1,5 @@
 package jig.gradle;
 
-import jig.application.usecase.AnalyzeService;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import org.gradle.api.DefaultTask;
@@ -29,9 +28,9 @@ public class JigPackageDiagramTask extends DefaultTask {
         Path output = Paths.get(extension.getOutputDiagramName());
         ensureExists(output);
 
-        AnalyzeService analyzeService = serviceFactory.analyzeService(getProject());
+        serviceFactory.analyzeService(getProject()).importProject();
 
-        PackageDependencies packageDependencies = analyzeService.packageDependencies()
+        PackageDependencies packageDependencies = serviceFactory.dependencyService().packageDependencies()
                 .applyDepth(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + packageDependencies.list().size());
 

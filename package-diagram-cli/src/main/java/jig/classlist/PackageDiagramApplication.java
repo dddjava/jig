@@ -1,6 +1,7 @@
 package jig.classlist;
 
-import jig.application.usecase.AnalyzeService;
+import jig.application.service.DependencyService;
+import jig.application.usecase.ImportLocalProjectService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
@@ -32,7 +33,9 @@ public class PackageDiagramApplication implements CommandLineRunner {
     int depth;
 
     @Autowired
-    AnalyzeService analyzeService;
+    ImportLocalProjectService importLocalProjectService;
+    @Autowired
+    DependencyService dependencyService;
     @Autowired
     PlantumlDriver plantumlDriver;
 
@@ -42,7 +45,8 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         Path output = Paths.get(outputDiagramName);
 
-        PackageDependencies packageDependencies = analyzeService.packageDependencies()
+        importLocalProjectService.importProject();
+        PackageDependencies packageDependencies = dependencyService.packageDependencies()
                 .applyDepth(new PackageDepth(this.depth));
 
         LOGGER.info("関連数: " + packageDependencies.number().asText());

@@ -19,12 +19,14 @@ public class SpecificationService {
     final CharacteristicRepository characteristicRepository;
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
+    private final DependencyService dependencyService;
 
-    public SpecificationService(SpecificationReader specificationReader, CharacteristicRepository characteristicRepository, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository) {
+    public SpecificationService(SpecificationReader specificationReader, CharacteristicRepository characteristicRepository, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyService dependencyService) {
         this.specificationReader = specificationReader;
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
+        this.dependencyService = dependencyService;
     }
 
     public void importSpecification(SpecificationSources specificationSources) {
@@ -68,6 +70,6 @@ public class SpecificationService {
             relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
         });
 
-        relationRepository.registerDependency(specification.typeIdentifier(), specification.useTypes());
+        dependencyService.registerDependency(specification.typeIdentifier(), specification.useTypes());
     }
 }

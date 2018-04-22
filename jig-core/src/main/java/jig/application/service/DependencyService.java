@@ -6,6 +6,7 @@ import jig.domain.model.identifier.namespace.PackageIdentifiers;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.dependency.DependencyRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependency;
 import org.springframework.stereotype.Service;
@@ -17,18 +18,18 @@ import java.util.stream.Collectors;
 public class DependencyService {
 
     private final CharacteristicRepository characteristicRepository;
-    private final RelationRepository relationRepository;
+    private final DependencyRepository dependencyRepository;
 
     public DependencyService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
         this.characteristicRepository = characteristicRepository;
-        this.relationRepository = relationRepository;
+        this.dependencyRepository = new DependencyRepository();
     }
 
     public PackageDependencies packageDependencies() {
         TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
         List<PackageDependency> list =
                 modelTypes.list().stream()
-                        .flatMap(identifier -> relationRepository.findDependency(identifier)
+                        .flatMap(identifier -> dependencyRepository.findDependency(identifier)
                                 .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
                                 .list().stream()
                                 .map(useType -> new PackageDependency(identifier, useType))
@@ -42,5 +43,9 @@ public class DependencyService {
                         .collect(Collectors.toList()));
 
         return new PackageDependencies(list, allPackages);
+    }
+
+    public void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers) {
+        dependencyRepository.registerDependency(typeIdentifier, typeIdentifiers);
     }
 }

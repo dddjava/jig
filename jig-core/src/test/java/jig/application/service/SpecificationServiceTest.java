@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SpecificationServiceTest {
 
@@ -47,7 +48,8 @@ public class SpecificationServiceTest {
 
         SpecificationService specificationService = new SpecificationService(
                 new AsmSpecificationReader(new PropertySpecificationContext()),
-                characteristicRepository, relationRepository, annotationDeclarationRepository);
+                characteristicRepository, relationRepository, annotationDeclarationRepository,
+                mock(DependencyService.class));
         specificationService.importSpecification(specificationSources);
     }
 

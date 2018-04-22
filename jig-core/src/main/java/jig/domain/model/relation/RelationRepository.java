@@ -42,8 +42,4 @@ public interface RelationRepository {
     FieldDeclarations findConstants(TypeIdentifier type);
 
     FieldDeclarations findFieldsOf(TypeIdentifier typeIdentifier);
-
-    void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers);
-
-    TypeIdentifiers findDependency(TypeIdentifier identifier);
 }

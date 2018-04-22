@@ -148,16 +148,4 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))
                 .collect(FieldDeclarations.collector());
     }
-
-    Map<TypeIdentifier, TypeIdentifiers> map = new HashMap<>();
-
-    @Override
-    public void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers) {
-        map.put(typeIdentifier, typeIdentifiers);
-    }
-
-    @Override
-    public TypeIdentifiers findDependency(TypeIdentifier identifier) {
-        return map.get(identifier);
-    }
 }

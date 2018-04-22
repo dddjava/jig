@@ -46,13 +46,19 @@ public class ServiceFactory {
         // TODO extensionで変更できるようにする
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
+        DependencyService dependencyService = new DependencyService(
+                characteristicRepository,
+                relationRepository
+        );
         return new AnalyzeService(
                 jigPaths,
-                new SpecificationService(new AsmSpecificationReader(specificationContext), characteristicRepository, relationRepository, annotationDeclarationRepository),
-                new DependencyService(
+                new SpecificationService(
+                        new AsmSpecificationReader(specificationContext),
                         characteristicRepository,
-                        relationRepository
-                ),
+                        relationRepository,
+                        annotationDeclarationRepository,
+                        dependencyService),
+                dependencyService,
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
                         japaneseNameRepository

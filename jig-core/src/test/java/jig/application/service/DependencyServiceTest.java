@@ -30,7 +30,8 @@ class DependencyServiceTest {
                 null,
                 mock(CharacteristicRepository.class),
                 relationRepository,
-                mock(AnnotationDeclarationRepository.class));
+                mock(AnnotationDeclarationRepository.class),
+                mock(DependencyService.class));
 
         Specification specification = new Specification(
                 new PropertySpecificationContext(),

@@ -60,7 +60,9 @@ class ReportServiceTest {
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
                         "[stub.application.service.CanonicalService, 暫定和名1, fuga(FugaIdentifier), Fuga, [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
-                        "[stub.application.service.CanonicalService, 暫定和名1, method(), void, [], []]"
+                        "[stub.application.service.CanonicalService, 暫定和名1, method(), void, [], []]",
+                        "[stub.application.service.SimpleService, , コントローラーから呼ばれない(), void, [], []]",
+                        "[stub.application.service.SimpleService, , コントローラーから呼ばれる(), void, [], []]"
                 );
 
         japaneseNameRepository.register(new TypeJapaneseName(new TypeIdentifier(FugaRepository.class), new JapaneseName("暫定和名2")));

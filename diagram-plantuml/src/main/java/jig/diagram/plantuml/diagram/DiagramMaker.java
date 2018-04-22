@@ -23,6 +23,7 @@ public class DiagramMaker {
     }
 
     public Diagram make(DiagramSource source) {
+        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         try (ByteArrayOutputStream image = new ByteArrayOutputStream()) {
             SourceStringReader reader = new SourceStringReader(source.value());
             String desc = reader.generateImage(image);

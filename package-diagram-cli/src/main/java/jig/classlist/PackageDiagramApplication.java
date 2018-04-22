@@ -2,9 +2,10 @@ package jig.classlist;
 
 import jig.application.service.DependencyService;
 import jig.application.usecase.ImportLocalProjectService;
-import jig.diagram.plantuml.PlantumlDriver;
+import jig.domain.basic.FileWriteFailureException;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.relation.dependency.PackageDependencyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication(scanBasePackages = "jig")
@@ -21,7 +27,6 @@ public class PackageDiagramApplication implements CommandLineRunner {
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageDiagramApplication.class);
 
     public static void main(String[] args) {
-        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
         SpringApplication.run(PackageDiagramApplication.class, args);
     }
 
@@ -35,8 +40,9 @@ public class PackageDiagramApplication implements CommandLineRunner {
     ImportLocalProjectService importLocalProjectService;
     @Autowired
     DependencyService dependencyService;
+
     @Autowired
-    PlantumlDriver plantumlDriver;
+    PackageDependencyWriter writer;
 
     @Override
     public void run(String... args) {
@@ -51,7 +57,12 @@ public class PackageDiagramApplication implements CommandLineRunner {
 
         LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
 
-        plantumlDriver.output(packageDependencies, Paths.get(outputDiagramName));
+        Path path = Paths.get(outputDiagramName);
+        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
+            writer.write(packageDependencies, outputStream);
+        } catch (IOException e) {
+            throw new FileWriteFailureException(e);
+        }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

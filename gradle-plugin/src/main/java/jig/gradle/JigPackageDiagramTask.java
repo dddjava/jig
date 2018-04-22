@@ -1,5 +1,6 @@
 package jig.gradle;
 
+import jig.domain.basic.FileWriteFailureException;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import org.gradle.api.DefaultTask;
@@ -8,7 +9,9 @@ import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,8 +37,11 @@ public class JigPackageDiagramTask extends DefaultTask {
                 .applyDepth(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + packageDependencies.list().size());
 
-        System.setProperty("PLANTUML_LIMIT_SIZE", "65536");
-        serviceFactory.diagramService(extension.getOutputOmitPrefix()).output(packageDependencies, output);
+        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {
+            serviceFactory.diagramService(extension.getOutputOmitPrefix()).write(packageDependencies, outputStream);
+        } catch (IOException e) {
+            throw new FileWriteFailureException(e);
+        }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

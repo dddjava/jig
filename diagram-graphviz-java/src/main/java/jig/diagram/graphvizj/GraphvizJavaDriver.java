@@ -6,16 +6,19 @@ import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.relation.dependency.PackageDependencyWriter;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.io.OutputStream;
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
 @Component
-public class GraphvizJavaDriver {
+@Conditional(GraphvizJavaCondition.class)
+public class GraphvizJavaDriver implements PackageDependencyWriter {
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameRepository repository;
@@ -25,7 +28,8 @@ public class GraphvizJavaDriver {
         this.repository = repository;
     }
 
-    public void output(PackageDependencies packageDependencies, Path outputPath) {
+    @Override
+    public void write(PackageDependencies packageDependencies, OutputStream outputStream) {
         try {
             PackageIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 
@@ -56,7 +60,7 @@ public class GraphvizJavaDriver {
                             .add(labelsText)
                             .toString())
                     .render(Format.PNG)
-                    .toFile(outputPath.toFile());
+                    .toOutputStream(outputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

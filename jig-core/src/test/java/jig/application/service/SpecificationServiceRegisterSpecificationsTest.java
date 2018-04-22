@@ -20,7 +20,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class DependencyServiceTest {
+class SpecificationServiceRegisterSpecificationsTest {
 
     @Test
     void メソッドの使用するメソッドを取得する() {

@@ -32,7 +32,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class SpecificationServiceTest {
+public class SpecificationServiceImportSpecificationTest {
 
     static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
@@ -41,7 +41,7 @@ public class SpecificationServiceTest {
     @BeforeAll
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
-        URI location = SpecificationServiceTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = SpecificationServiceImportSpecificationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         JigPaths jigPaths = new JigPaths(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         SpecificationSources specificationSources = jigPaths.getSpecificationSources();

@@ -1,8 +1,6 @@
 package jig.domain.model.identifier.type;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -22,6 +20,10 @@ public class TypeIdentifiers {
         ArrayList<TypeIdentifier> list = new ArrayList<>(this.identifiers);
         list.sort(Comparator.comparing(TypeIdentifier::fullQualifiedName));
         return list;
+    }
+
+    public Set<TypeIdentifier> set() {
+        return new HashSet<>(identifiers);
     }
 
     public TypeIdentifiers filter(Predicate<TypeIdentifier> condition) {

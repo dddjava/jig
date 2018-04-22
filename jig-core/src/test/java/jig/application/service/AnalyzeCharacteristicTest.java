@@ -9,7 +9,6 @@ import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.specification.Specifications;
 import jig.infrastructure.JigPaths;
 import jig.infrastructure.PropertySpecificationContext;
 import jig.infrastructure.asm.AsmSpecificationReader;
@@ -46,14 +45,10 @@ public class AnalyzeCharacteristicTest {
         JigPaths jigPaths = new JigPaths(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         SpecificationSources specificationSources = jigPaths.getSpecificationSources();
 
-        // 仕様化
-        Specifications specifications = new AsmSpecificationReader(
-                new PropertySpecificationContext()
-        ).readFrom(specificationSources);
-
-        // 仕様から特徴と関連を登録
-        SpecificationService specificationService = new SpecificationService(null, characteristicRepository, relationRepository, annotationDeclarationRepository);
-        specificationService.registerSpecifications(specifications);
+        SpecificationService specificationService = new SpecificationService(
+                new AsmSpecificationReader(new PropertySpecificationContext()),
+                characteristicRepository, relationRepository, annotationDeclarationRepository);
+        specificationService.importSpecification(specificationSources);
     }
 
     @Test

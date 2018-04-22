@@ -70,12 +70,20 @@ project(':diagram-plantuml') {
     }
 }
 
+project(':diagram-graphviz-java') {
+    dependencies {
+        compile 'guru.nidi:graphviz-java:0.4.0'
+        compile project(':jig-core')
+    }
+}
+
 project(':package-diagram-cli') {
     apply plugin: 'org.springframework.boot'
 
     dependencies {
         compile project(':jig-core')
         compile project(':diagram-plantuml')
+        compile project(':diagram-graphviz-java')
         compile 'org.springframework.boot:spring-boot-starter'
     }
 }

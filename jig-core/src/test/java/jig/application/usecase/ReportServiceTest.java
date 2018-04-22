@@ -2,17 +2,11 @@ package jig.application.usecase;
 
 import jig.application.service.DatasourceService;
 import jig.application.service.SpecificationService;
-import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.TypeCharacteristics;
-import jig.domain.model.declaration.field.FieldDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.japanese.TypeJapaneseName;
-import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.method.MethodPerspective;
-import jig.domain.model.report.template.Reports;
 import jig.domain.model.report.type.TypePerspective;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
@@ -27,8 +21,6 @@ import testing.TestSupport;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,54 +37,7 @@ class ReportServiceTest {
     DatasourceService datasourceService;
 
     @Autowired
-    CharacteristicRepository repository;
-    @Autowired
-    RelationRepository relationRepository;
-    @Autowired
     JapaneseNameRepository japaneseNameRepository;
-
-    @Test
-    void 出力だけのテスト() {
-        TypeIdentifier typeIdentifier = new TypeIdentifier("test.HogeEnum");
-
-        TypeCharacteristics typeCharacteristics = new TypeCharacteristics(
-                typeIdentifier,
-                Stream.of(
-                        Characteristic.ENUM,
-                        //Characteristic.ENUM_PARAMETERIZED,
-                        Characteristic.ENUM_BEHAVIOUR,
-                        Characteristic.ENUM_POLYMORPHISM
-                ).collect(Collectors.toSet()));
-        repository.register(typeCharacteristics);
-
-        relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaText", new TypeIdentifier(("java.lang.String"))));
-        relationRepository.registerField(new FieldDeclaration(typeIdentifier, "fugaInteger", new TypeIdentifier(("java.lang.Integer"))));
-
-        japaneseNameRepository.register(new TypeJapaneseName(typeIdentifier, new JapaneseName("対応する和名")));
-        relationRepository.registerField(new FieldDeclaration(new TypeIdentifier("test.HogeUser"), "hogera", typeIdentifier));
-        relationRepository.registerConstants(new FieldDeclaration(typeIdentifier, "A", typeIdentifier));
-        relationRepository.registerConstants(new FieldDeclaration(typeIdentifier, "B", typeIdentifier));
-
-        Reports reports = sut.reports();
-        reports.each(report -> {
-            if (!report.title().value().equals("ENUM")) {
-                return;
-            }
-
-            assertThat(report.rows().size()).isEqualTo(1);
-            assertThat(report.rows().get(0).list())
-                    .containsExactly(
-                            "test.HogeEnum",
-                            "対応する和名",
-                            "[A, B]",
-                            "[String fugaText, Integer fugaInteger]",
-                            "[HogeUser]",
-                            "",
-                            "◯",
-                            "◯"
-                    );
-        });
-    }
 
     @Test
     void クラスを読み込むE2Eに近いテスト() throws Exception {
@@ -131,13 +76,15 @@ class ReportServiceTest {
                         "stub.domain.model.type.SimpleIdentifier");
 
         assertThat(sut.typeReportOn(TypePerspective.ENUM).rows())
-                .extracting(reportRow -> reportRow.list().get(0))
-                .containsSequence(
-                        "stub.domain.model.kind.BehaviourEnum",
-                        "stub.domain.model.kind.ParameterizedEnum",
-                        "stub.domain.model.kind.PolymorphismEnum",
-                        "stub.domain.model.kind.RichEnum",
-                        "stub.domain.model.kind.SimpleEnum");
+                .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsExactly(
+                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], [], , ◯, ]",
+                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [], ◯, , ]",
+                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [], , , ◯]",
+                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [], ◯, ◯, ◯]",
+                        "[stub.domain.model.kind.SimpleEnum, , [A, B, C, D], [], [], , , ]"
+                );
     }
 
     @TestConfiguration

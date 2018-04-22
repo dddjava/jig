@@ -7,8 +7,6 @@ import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependencyWriter;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,8 +14,6 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-@Component
-@Conditional(GraphvizJavaCondition.class)
 public class GraphvizJavaDriver implements PackageDependencyWriter {
 
     final PackageIdentifierFormatter formatter;

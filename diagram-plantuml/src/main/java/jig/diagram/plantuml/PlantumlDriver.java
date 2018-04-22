@@ -11,14 +11,10 @@ import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependencyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-@Component
-@Conditional(PlantumlCondition.class)
 public class PlantumlDriver implements PackageDependencyWriter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlantumlDriver.class);

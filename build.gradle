@@ -65,7 +65,11 @@ project(':jig-core') {
 project(':diagram-plantuml') {
     dependencies {
         compile 'org.springframework:spring-context'
-        compile 'net.sourceforge.plantuml:plantuml:8059'
+        if (project.hasProperty('includePlantUML')) {
+            compile 'net.sourceforge.plantuml:plantuml:8059'
+        } else {
+            compileOnly 'net.sourceforge.plantuml:plantuml:8059'
+        }
         compile project(':jig-core')
     }
 }

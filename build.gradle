@@ -3,7 +3,6 @@ plugins {
     id "eu.appsatori.fatjar" version "0.3" apply false
 }
 
-
 repositories {
     jcenter()
 }
@@ -45,6 +44,20 @@ subprojects {
             includeEngines 'junit-jupiter'
         }
     }
+
+    jar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+    }
+}
+
+configure(subprojects.findAll { it.name.endsWith('-cli') }) {
+    apply plugin: 'org.springframework.boot'
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter'
+    }
+    bootJar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+    }
 }
 
 project(':jig-core') {
@@ -64,41 +77,34 @@ project(':jig-core') {
 
 project(':diagram-plantuml') {
     dependencies {
-        compile 'org.springframework:spring-context'
+        compile project(':jig-core')
         if (project.hasProperty('includePlantUML')) {
             compile 'net.sourceforge.plantuml:plantuml:8059'
         } else {
             compileOnly 'net.sourceforge.plantuml:plantuml:8059'
         }
-        compile project(':jig-core')
     }
 }
 
 project(':diagram-graphviz-java') {
     dependencies {
-        compile 'guru.nidi:graphviz-java:0.4.0'
         compile project(':jig-core')
+        compile 'guru.nidi:graphviz-java:0.4.0'
     }
 }
 
 project(':package-diagram-cli') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         compile project(':jig-core')
         compile project(':diagram-plantuml')
         compile project(':diagram-graphviz-java')
-        compile 'org.springframework.boot:spring-boot-starter'
     }
 }
 
 project(':class-list-cli') {
-    apply plugin: 'org.springframework.boot'
-
     dependencies {
         compile project(':jig-core')
         compile project(':class-list-format')
-        compile 'org.springframework.boot:spring-boot-starter'
     }
 }
 

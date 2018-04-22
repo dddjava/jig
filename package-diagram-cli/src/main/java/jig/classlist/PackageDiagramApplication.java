@@ -13,7 +13,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication(scanBasePackages = "jig")
@@ -43,29 +42,15 @@ public class PackageDiagramApplication implements CommandLineRunner {
     public void run(String... args) {
         long startTime = System.currentTimeMillis();
 
-        Path output = Paths.get(outputDiagramName);
-
         importLocalProjectService.importProject();
         PackageDependencies packageDependencies = dependencyService.packageDependencies()
                 .applyDepth(new PackageDepth(this.depth));
 
-        LOGGER.info("関連数: " + packageDependencies.number().asText());
+        LOGGER.info("出力する関連数: " + packageDependencies.number().asText());
 
-        showDepth(packageDependencies);
-
-        plantumlDriver.output(packageDependencies, output);
+        plantumlDriver.output(packageDependencies, Paths.get(outputDiagramName));
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
-    }
-
-    private void showDepth(PackageDependencies outputRelation) {
-        PackageDepth maxDepth = outputRelation.allPackages().maxDepth();
-
-        LOGGER.info("最大深度: {}", maxDepth.value());
-        for (PackageDepth depth : maxDepth.surfaceList()) {
-            PackageDependencies dependencies = outputRelation.applyDepth(depth);
-            LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
-        }
     }
 }
 

@@ -54,4 +54,8 @@ public class MethodDeclarations {
     public MethodDeclarations distinct() {
         return list.stream().distinct().collect(MethodDeclarations.collector());
     }
+
+    public boolean contains(MethodDeclaration methodDeclaration) {
+        return list.stream().anyMatch(methodDeclaration::equals);
+    }
 }

@@ -2,6 +2,7 @@ package jig.domain.model.report.method;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
+import jig.domain.model.characteristic.Satisfaction;
 import jig.domain.model.datasource.Sql;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.datasource.Sqls;
@@ -84,5 +85,13 @@ public class MethodDetail {
     public MethodDeclarations repositoryMethods() {
         return relationRepository.findUseMethod(methodDeclaration)
                 .filter(useMethod -> characteristicRepository.has(useMethod.declaringType(), Characteristic.REPOSITORY));
+    }
+
+    public Satisfaction isEventHandler() {
+        boolean callFromController = relationRepository.findUserTypes(methodDeclaration)
+                .list().stream()
+                .anyMatch(typeIdentifier -> characteristicRepository.has(typeIdentifier, Characteristic.CONTROLLER));
+        return Satisfaction.of(callFromController);
+
     }
 }

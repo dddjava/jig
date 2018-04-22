@@ -11,6 +11,7 @@ public enum MethodPerspective {
             MethodConcern.クラス和名,
             MethodConcern.メソッド,
             MethodConcern.メソッド戻り値の型,
+            MethodConcern.イベントハンドラ,
             MethodConcern.使用しているフィールドの型,
             MethodConcern.使用しているリポジトリのメソッド,
     }),

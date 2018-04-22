@@ -9,6 +9,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum Characteristic {
+    CONTROLLER {
+        @Override
+        boolean matches(Specification specification) {
+            return specification.hasAnnotation("org.springframework.stereotype.Controller")
+                    || specification.hasAnnotation("org.springframework.web.bind.annotation.RestController");
+        }
+    },
     SERVICE {
         @Override
         boolean matches(Specification specification) {

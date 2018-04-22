@@ -16,7 +16,9 @@ public enum MethodConcern {
     DB_U(detail -> detail.sqls().tables(SqlType.UPDATE).asText()),
     DB_D(detail -> detail.sqls().tables(SqlType.DELETE).asText()),
 
-    使用しているリポジトリのメソッド(methodDetail -> methodDetail.repositoryMethods().asSimpleText());
+    使用しているリポジトリのメソッド(methodDetail -> methodDetail.repositoryMethods().asSimpleText()),
+
+    イベントハンドラ(methodDetail -> methodDetail.isEventHandler().toSymbolText());
 
     private final Function<MethodDetail, String> function;
 

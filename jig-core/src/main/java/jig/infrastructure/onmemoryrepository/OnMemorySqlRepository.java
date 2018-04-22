@@ -24,11 +24,6 @@ public class OnMemorySqlRepository implements SqlRepository {
     }
 
     @Override
-    public Sql get(SqlIdentifier identifier) {
-        return map.get(identifier);
-    }
-
-    @Override
     public void register(Sql sql) {
         map.put(sql.identifier(), sql);
     }

@@ -13,6 +13,4 @@ public interface SqlRepository {
     default void register(Sqls sqls) {
         sqls.list().forEach(this::register);
     }
-
-    Sql get(SqlIdentifier identifier);
 }

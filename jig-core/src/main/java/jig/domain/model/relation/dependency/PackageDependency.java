@@ -2,6 +2,7 @@ package jig.domain.model.relation.dependency;
 
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
+import jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Objects;
 
@@ -12,6 +13,10 @@ public class PackageDependency {
     public PackageDependency(PackageIdentifier from, PackageIdentifier to) {
         this.from = from;
         this.to = to;
+    }
+
+    public PackageDependency(TypeIdentifier form, TypeIdentifier to) {
+        this(form.packageIdentifier(), to.packageIdentifier());
     }
 
     public PackageIdentifier from() {

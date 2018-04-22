@@ -31,7 +31,7 @@ public class DependencyService {
                         .flatMap(identifier -> relationRepository.findDependency(identifier)
                                 .filter(usage -> characteristicRepository.has(usage, Characteristic.MODEL))
                                 .list().stream()
-                                .map(useType -> new PackageDependency(identifier.packageIdentifier(), useType.packageIdentifier()))
+                                .map(useType -> new PackageDependency(identifier, useType))
                                 .filter(PackageDependency::notSelfRelation))
                         .distinct()
                         .collect(Collectors.toList());

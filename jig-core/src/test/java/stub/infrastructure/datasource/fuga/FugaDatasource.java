@@ -5,6 +5,9 @@ import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaRepository;
 
+/**
+ * データソース和名（この名前は使用されない）
+ */
 @Repository
 public class FugaDatasource implements FugaRepository {
 

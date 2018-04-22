@@ -2,6 +2,9 @@ package stub.application.service;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * フィールドを持たないサービス
+ */
 @Service
 public class SimpleService {
 

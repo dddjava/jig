@@ -6,6 +6,9 @@ import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaRepository;
 
+/**
+ * サービス和名
+ */
 @Service
 public class CanonicalService {
 

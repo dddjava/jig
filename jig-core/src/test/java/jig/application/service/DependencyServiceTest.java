@@ -26,7 +26,8 @@ class DependencyServiceTest {
     void メソッドの使用するメソッドを取得する() {
         OnMemoryRelationRepository relationRepository = new OnMemoryRelationRepository();
 
-        DependencyService sut = new DependencyService(
+        SpecificationService sut = new SpecificationService(
+                null,
                 mock(CharacteristicRepository.class),
                 relationRepository,
                 mock(AnnotationDeclarationRepository.class));

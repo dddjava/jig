@@ -111,9 +111,7 @@ class ReportServiceTest {
                 // TODO ソースディレクトリの安定した取得方法が欲しい
                 "not/read/sources");
 
-        dependencyService.registerSpecifications(
-                specificationService.specification(
-                        jigPaths.getSpecificationSources()));
+        specificationService.importSpecification(jigPaths.getSpecificationSources());
         sqlRepository.register(
                 sqlReader.readFrom(
                         jigPaths.getSqlSources()));

@@ -6,8 +6,6 @@ import jig.application.service.GlossaryService;
 import jig.application.service.SpecificationService;
 import jig.domain.model.project.SourceFactory;
 import jig.domain.model.relation.dependency.PackageDependencies;
-import jig.domain.model.specification.SpecificationSources;
-import jig.domain.model.specification.Specifications;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,21 +30,15 @@ public class AnalyzeService {
     }
 
     public PackageDependencies packageDependencies() {
-        importSpecification();
+        specificationService.importSpecification(sourceFactory.getSpecificationSources());
         glossaryService.importJapanese(sourceFactory.getPackageNameSources());
+
         return dependencyService.packageDependencies();
     }
 
     public void importProject() {
-        importSpecification();
+        specificationService.importSpecification(sourceFactory.getSpecificationSources());
         datasourceService.importDatabaseAccess(sourceFactory.getSqlSources());
         glossaryService.importJapanese(sourceFactory.getTypeNameSources());
-    }
-
-    public void importSpecification() {
-        SpecificationSources specificationSources = sourceFactory.getSpecificationSources();
-        Specifications specifications = specificationService.specification(specificationSources);
-
-        dependencyService.registerSpecifications(specifications);
     }
 }

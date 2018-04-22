@@ -48,11 +48,11 @@ public class ServiceFactory {
 
         return new AnalyzeService(
                 jigPaths,
-                new SpecificationService(new AsmSpecificationReader(specificationContext)),
+                new SpecificationService(new AsmSpecificationReader(specificationContext), characteristicRepository, relationRepository, annotationDeclarationRepository),
                 new DependencyService(
                         characteristicRepository,
-                        relationRepository,
-                        annotationDeclarationRepository),
+                        relationRepository
+                ),
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
                         japaneseNameRepository

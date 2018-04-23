@@ -17,6 +17,8 @@ jobs:
     steps:
       - checkout
 
+      - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
+
       - restore_cache:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
 

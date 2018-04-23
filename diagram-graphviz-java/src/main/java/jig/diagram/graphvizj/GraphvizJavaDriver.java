@@ -51,7 +51,7 @@ public class GraphvizJavaDriver implements PackageDependencyWriter {
 
             Graphviz.fromString(
                     new StringJoiner("\n", "digraph {", "}")
-                            .add("node [shape=box];")
+                            .add("node [shape=box,style=filled,color=lightgoldenrod];")
                             .add(dependenciesText)
                             .add(labelsText)
                             .toString())

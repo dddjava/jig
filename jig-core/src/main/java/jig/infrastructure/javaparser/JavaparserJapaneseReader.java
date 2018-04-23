@@ -3,6 +3,10 @@ package jig.infrastructure.javaparser;
 import jig.domain.model.japanese.*;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class JavaparserJapaneseReader implements JapaneseReader {
 
@@ -11,11 +15,21 @@ public class JavaparserJapaneseReader implements JapaneseReader {
 
     @Override
     public PackageNames readPackages(PackageNameSources nameSources) {
-        return nameSources.toPackageNames(packageInfoReader::execute);
+        List<PackageJapaneseName> names = new ArrayList<>();
+        for (Path path : nameSources.list()) {
+            packageInfoReader.read(path)
+                    .ifPresent(names::add);
+        }
+        return new PackageNames(names);
     }
 
     @Override
     public TypeNames readTypes(TypeNameSources nameSources) {
-        return nameSources.toTypeNames(classCommentReader::execute);
+        List<TypeJapaneseName> names = new ArrayList<>();
+        for (Path path : nameSources.list()) {
+            classCommentReader.read(path)
+                    .ifPresent(names::add);
+        }
+        return new TypeNames(names);
     }
 }

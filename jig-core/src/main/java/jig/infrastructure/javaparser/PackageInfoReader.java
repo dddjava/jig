@@ -17,7 +17,7 @@ import java.util.Optional;
 
 class PackageInfoReader {
 
-    Optional<PackageJapaneseName> execute(Path path) {
+    Optional<PackageJapaneseName> read(Path path) {
         try {
             CompilationUnit cu = JavaParser.parse(path);
 

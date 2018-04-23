@@ -16,7 +16,7 @@ import java.util.Optional;
 
 class ClassCommentReader {
 
-    Optional<TypeJapaneseName> execute(Path path) {
+    Optional<TypeJapaneseName> read(Path path) {
         try {
             CompilationUnit cu = JavaParser.parse(path);
 

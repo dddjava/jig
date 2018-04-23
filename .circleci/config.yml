@@ -42,6 +42,8 @@ jobs:
          java -jar package-diagram-cli/build/libs/package-diagram-cli.jar --output.diagram.name=package-diagram.png
       - store_artifacts:
           path: class-list.xlsx
+          destination: example
       - store_artifacts:
           path: package-diagram.png
+          destination: example
 

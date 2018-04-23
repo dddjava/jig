@@ -152,6 +152,13 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
+    public TypeIdentifiers findUserTypes(TypeIdentifier typeIdentifier) {
+        TypeIdentifiers fieldUsage = findFieldUsage(typeIdentifier);
+        TypeIdentifiers methodUsage = findMethodUsage(typeIdentifier).declaringTypes();
+        return fieldUsage.merge(methodUsage);
+    }
+
+    @Override
     public FieldDeclarations findConstants(TypeIdentifier type) {
         return staticFields.stream()
                 .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))

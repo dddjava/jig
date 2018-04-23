@@ -12,4 +12,6 @@ public interface CharacteristicRepository {
     boolean has(TypeIdentifier typeIdentifier, Characteristic mapper);
 
     TypeCharacteristics characteristicsOf(TypeIdentifier typeIdentifier);
+
+    Characteristics findCharacteristics(TypeIdentifier typeIdentifier);
 }

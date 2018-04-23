@@ -46,4 +46,6 @@ public interface RelationRepository {
     TypeIdentifiers findUserTypes(MethodDeclaration methodDeclaration);
 
     MethodDeclarations findUserMethods(MethodDeclaration equals);
+
+    TypeIdentifiers findUserTypes(TypeIdentifier typeIdentifier);
 }

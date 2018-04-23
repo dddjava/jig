@@ -1,9 +1,6 @@
 package jig.infrastructure.onmemoryrepository;
 
-import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.Satisfaction;
-import jig.domain.model.characteristic.TypeCharacteristics;
+import jig.domain.model.characteristic.*;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.springframework.stereotype.Repository;
@@ -48,5 +45,14 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     @Override
     public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
         return new TypeIdentifiers(map.get(characteristic));
+    }
+
+    @Override
+    public Characteristics findCharacteristics(TypeIdentifier typeIdentifier) {
+        Set<Characteristic> set = map.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(typeIdentifier))
+                .map(Map.Entry::getKey)
+                .collect(toSet());
+        return new Characteristics(EnumSet.copyOf(set));
     }
 }

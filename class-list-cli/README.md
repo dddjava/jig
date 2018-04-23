@@ -21,9 +21,9 @@
 
 出力項目は以下を参照してください。
 
-- [機能情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/method/MethodPerspective.java)
-- [モデル情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/type/TypePerspective.java)
-- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/type/TypePerspective.java)
+- [機能情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/MethodPerspective.java)
+- [モデル情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/TypePerspective.java)
+- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/TypePerspective.java)
 
 #### 補足: データソースのテーブル名
 

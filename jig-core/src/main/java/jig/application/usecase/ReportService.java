@@ -23,7 +23,7 @@ import jig.domain.model.report.template.Reports;
 import jig.domain.model.angle.type.TypeDetail;
 import jig.domain.model.report.TypePerspective;
 import jig.domain.model.report.TypeReport;
-import jig.domain.model.angle.validation.AnnotationDetail;
+import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.report.ValidationReport;
 import org.springframework.stereotype.Service;
 
@@ -69,11 +69,11 @@ public class ReportService {
     }
 
     private Report validateAnnotationReport() {
-        List<AnnotationDetail> list = new ArrayList<>();
+        List<ValidationDetail> list = new ArrayList<>();
         for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
             TypeIdentifier typeIdentifier = annotationDeclaration.declaringType();
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
-            list.add(new AnnotationDetail(annotationDeclaration, japaneseName, typeIdentifierFormatter));
+            list.add(new ValidationDetail(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }
         return new ValidationReport(list);
     }

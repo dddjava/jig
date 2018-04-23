@@ -6,13 +6,13 @@ import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 
-public class AnnotationDetail {
+public class ValidationDetail {
 
     private final ValidationAnnotationDeclaration annotationDeclaration;
     private final JapaneseName japaneseName;
     private final TypeIdentifierFormatter typeIdentifierFormatter;
 
-    public AnnotationDetail(ValidationAnnotationDeclaration annotationDeclaration, JapaneseName japaneseName, TypeIdentifierFormatter typeIdentifierFormatter) {
+    public ValidationDetail(ValidationAnnotationDeclaration annotationDeclaration, JapaneseName japaneseName, TypeIdentifierFormatter typeIdentifierFormatter) {
         this.annotationDeclaration = annotationDeclaration;
         this.japaneseName = japaneseName;
         this.typeIdentifierFormatter = typeIdentifierFormatter;

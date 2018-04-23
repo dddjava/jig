@@ -1,6 +1,6 @@
 package jig.domain.model.report;
 
-import jig.domain.model.angle.validation.AnnotationDetail;
+import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.angle.validation.ValidationConcern;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
@@ -13,9 +13,9 @@ import static java.util.stream.Collectors.toList;
 
 public class ValidationReport implements Report {
 
-    private final List<AnnotationDetail> list;
+    private final List<ValidationDetail> list;
 
-    public ValidationReport(List<AnnotationDetail> list) {
+    public ValidationReport(List<ValidationDetail> list) {
         this.list = list;
     }
 

@@ -45,4 +45,5 @@ jobs:
          java -jar package-diagram-cli/build/libs/package-diagram-cli.jar --output.diagram.name=example/package-diagram.png
       - store_artifacts:
           path: example
+          destination: example
 

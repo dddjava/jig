@@ -135,16 +135,14 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .collect(MethodDeclarations.collector());
     }
 
-    @Override
-    public TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
+    TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
         return instanceFields.stream()
                 .filter(fieldDeclaration -> fieldDeclaration.typeIdentifier().equals(typeIdentifier))
                 .map(FieldDeclaration::declaringType)
                 .collect(TypeIdentifiers.collector());
     }
 
-    @Override
-    public MethodDeclarations findMethodUsage(TypeIdentifier typeIdentifier) {
+    MethodDeclarations findMethodUsage(TypeIdentifier typeIdentifier) {
         return Stream.of(methodReturnTypes, methodParameterTypes, methodUseTypes).flatMap(Set::stream)
                 .filter(methodTypeRelation -> methodTypeRelation.typeIs(typeIdentifier))
                 .map(MethodTypeRelation::method)

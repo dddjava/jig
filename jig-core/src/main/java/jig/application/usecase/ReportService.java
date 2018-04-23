@@ -55,21 +55,18 @@ public class ReportService {
         return new Reports(Arrays.asList(
                 methodReportOn(MethodPerspective.SERVICE),
                 methodReportOn(MethodPerspective.REPOSITORY),
-                typeReportOn(TypePerspective.IDENTIFIER),
+                typeReportOn(Characteristic.IDENTIFIER),
                 enumReportOn(),
-                typeReportOn(TypePerspective.NUMBER),
-                typeReportOn(TypePerspective.COLLECTION),
-                typeReportOn(TypePerspective.DATE),
-                typeReportOn(TypePerspective.TERM),
+                typeReportOn(Characteristic.NUMBER),
+                typeReportOn(Characteristic.COLLECTION),
+                typeReportOn(Characteristic.DATE),
+                typeReportOn(Characteristic.TERM),
                 validateAnnotationReport(),
                 new StringComparingReport(relationRepository).toReport()
         ));
     }
 
-    Report typeReportOn(TypePerspective perspective) {
-        Characteristic characteristic = perspective.characteristic();
-        if (characteristic == Characteristic.ENUM) return enumReportOn();
-
+    Report typeReportOn(Characteristic characteristic) {
         GenericModelAngles genericModelAngles = angleService.genericModelAngles(characteristic);
         List<GenericModelReport.Row> list = genericModelAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());

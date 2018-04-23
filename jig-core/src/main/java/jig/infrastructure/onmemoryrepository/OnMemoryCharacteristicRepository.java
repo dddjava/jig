@@ -34,15 +34,6 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
-    public TypeCharacteristics characteristicsOf(TypeIdentifier typeIdentifier) {
-        Set<Characteristic> set = map.entrySet().stream()
-                .filter(entry -> entry.getValue().contains(typeIdentifier))
-                .map(Map.Entry::getKey)
-                .collect(toSet());
-        return new TypeCharacteristics(typeIdentifier, set);
-    }
-
-    @Override
     public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
         return new TypeIdentifiers(map.get(characteristic));
     }

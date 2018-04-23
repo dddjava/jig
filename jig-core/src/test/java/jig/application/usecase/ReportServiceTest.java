@@ -1,8 +1,8 @@
 package jig.application.usecase;
 
+import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.project.SourceFactory;
 import jig.domain.model.report.MethodPerspective;
-import jig.domain.model.report.TypePerspective;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,12 +48,12 @@ class ReportServiceTest {
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, register(Fuga), void, [], [], [], []]"
                 );
 
-        assertThat(sut.typeReportOn(TypePerspective.IDENTIFIER).rows())
+        assertThat(sut.typeReportOn(Characteristic.IDENTIFIER).rows())
                 .extracting(reportRow -> reportRow.list().get(0))
                 .containsSequence(
                         "stub.domain.model.type.SimpleIdentifier");
 
-        assertThat(sut.typeReportOn(TypePerspective.ENUM).rows())
+        assertThat(sut.enumReportOn().rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(

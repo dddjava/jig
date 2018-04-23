@@ -40,6 +40,7 @@ jobs:
           destination: module
 
       - run: |
+        mkdir example
          java -jar class-list-cli/build/libs/class-list-cli.jar --output.list.name=example/class-list.xlsx
          java -jar package-diagram-cli/build/libs/package-diagram-cli.jar --output.diagram.name=example/package-diagram.png
       - store_artifacts:

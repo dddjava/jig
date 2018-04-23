@@ -1,17 +1,19 @@
 package jig.application.service;
 
-import jig.domain.model.angle.EnumAngle;
-import jig.domain.model.angle.EnumAngles;
-import jig.domain.model.angle.GenericModelAngle;
-import jig.domain.model.angle.GenericModelAngles;
+import jig.domain.model.angle.*;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.declaration.field.FieldDeclarations;
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodDeclarations;
+import jig.domain.model.declaration.method.MethodSignature;
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -46,5 +48,23 @@ public class AngleService {
             return new GenericModelAngle(characteristic, typeIdentifier, userTypeIdentifiers);
         }).collect(toList());
         return new GenericModelAngles(list);
+    }
+
+    /**
+     * 文字列比較を行なっているメソッドを見つける。
+     *
+     * 文字列比較を行なっているメソッドはビジネスルールの分類判定を行なっている可能性が高い。
+     * サービスなどに登場した場合はかなり拙いし、そうでなくても列挙を使用するなど改善の余地がある。
+     */
+    public DesignSmellAngle stringComparing() {
+        // String#equals(Object)
+        MethodDeclaration equalsMethod = new MethodDeclaration(
+                new TypeIdentifier(String.class),
+                new MethodSignature(
+                        "equals",
+                        Collections.singletonList(new TypeIdentifier(Object.class))));
+
+        MethodDeclarations userMethods = relationRepository.findUserMethods(equalsMethod);
+        return new DesignSmellAngle(userMethods);
     }
 }

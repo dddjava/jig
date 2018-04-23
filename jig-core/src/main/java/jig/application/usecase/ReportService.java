@@ -4,6 +4,7 @@ import jig.application.service.AngleService;
 import jig.application.service.GlossaryService;
 import jig.domain.model.angle.EnumAngles;
 import jig.domain.model.angle.GenericModelAngles;
+import jig.domain.model.angle.DesignSmellAngle;
 import jig.domain.model.angle.method.MethodDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
@@ -62,8 +63,13 @@ public class ReportService {
                 typeReportOn(Characteristic.DATE),
                 typeReportOn(Characteristic.TERM),
                 validateAnnotationReport(),
-                new StringComparingReport(relationRepository).toReport()
+                stringComparingReport()
         ));
+    }
+
+    Report stringComparingReport() {
+        DesignSmellAngle designSmellAngle = angleService.stringComparing();
+        return new StringComparingReport(designSmellAngle);
     }
 
     Report typeReportOn(Characteristic characteristic) {

@@ -1,0 +1,58 @@
+package jig.domain.model.report;
+
+import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.domain.model.declaration.method.MethodDeclarations;
+import jig.domain.model.declaration.method.MethodSignature;
+import jig.domain.model.identifier.type.TypeIdentifier;
+import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.report.template.Report;
+import jig.domain.model.report.template.ReportRow;
+import jig.domain.model.report.template.Title;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StringComparingReport {
+    private final RelationRepository relationRepository;
+
+    public StringComparingReport(RelationRepository relationRepository) {
+        this.relationRepository = relationRepository;
+    }
+
+    public List<ReportRow> rows() {
+        // String#equals(Object)
+        MethodDeclaration equalsMethod = new MethodDeclaration(
+                new TypeIdentifier(String.class),
+                new MethodSignature(
+                        "equals",
+                        Collections.singletonList(new TypeIdentifier(Object.class))));
+        MethodDeclarations methodDeclarations = relationRepository.findUserMethods(equalsMethod);
+
+        return methodDeclarations.list().stream()
+                .map(methodDeclaration -> new ReportRow(Arrays.asList(
+                        methodDeclaration.declaringType().fullQualifiedName(),
+                        methodDeclaration.methodSignature().asSimpleText()
+                ))).collect(Collectors.toList());
+    }
+
+    public Report toReport() {
+        return new Report() {
+            @Override
+            public Title title() {
+                return new Title("文字列比較箇所");
+            }
+
+            @Override
+            public ReportRow headerRow() {
+                return new ReportRow(Arrays.asList("クラス名", "メソッド名"));
+            }
+
+            @Override
+            public List<ReportRow> rows() {
+                return StringComparingReport.this.rows();
+            }
+        };
+    }
+}

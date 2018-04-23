@@ -14,6 +14,7 @@ import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.report.StringComparingReport;
 import jig.domain.model.report.method.MethodDetail;
 import jig.domain.model.report.method.MethodPerspective;
 import jig.domain.model.report.method.MethodReport;
@@ -62,7 +63,8 @@ public class ReportService {
                 typeReportOn(TypePerspective.COLLECTION),
                 typeReportOn(TypePerspective.DATE),
                 typeReportOn(TypePerspective.TERM),
-                validateAnnotationReport()
+                validateAnnotationReport(),
+                new StringComparingReport(relationRepository).toReport()
         ));
     }
 

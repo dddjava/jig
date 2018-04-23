@@ -120,6 +120,14 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
+    public MethodDeclarations findUserMethods(MethodDeclaration methodDeclaration) {
+        return methodUseMethodsMap.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(methodDeclaration))
+                .map(Map.Entry::getKey)
+                .collect(MethodDeclarations.collector());
+    }
+
+    @Override
     public MethodDeclarations methodsOf(TypeIdentifier typeIdentifier) {
         return memberMethods.stream()
                 .filter(typeMethodRelation -> typeMethodRelation.typeIs(typeIdentifier))

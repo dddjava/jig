@@ -37,3 +37,11 @@ jobs:
       - store_artifacts:
           path: package-diagram-cli/build/libs
 
+      - run: |
+         java -jar class-list-cli/build/libs/class-list-cli.jar --output.list.name=class-list.xlsx
+         java -jar package-diagram-cli/build/libs/package-diagram-cli.jar --output.diagram.name=package-diagram.png
+      - store_artifacts:
+          path: class-list.xlsx
+      - store_artifacts:
+          path: package-diagram.png
+

@@ -22,8 +22,10 @@
 出力項目は以下を参照してください。
 
 - [機能情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/MethodPerspective.java)
-- [モデル情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/TypePerspective.java)
-- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/angle/validation/ValidationConcern.java)
+- モデル情報の出力項目
+    - [列挙子](../jig-core/src/main/java/jig/domain/model/report/EnumReport.java)
+    - [その他](../jig-core/src/main/java/jig/domain/model/report/GenericModelReport.java)
+- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/ValidationReport.java)
 
 #### 補足: データソースのテーブル名
 

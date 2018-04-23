@@ -1,4 +1,4 @@
-package jig.domain.model.report.validation;
+package jig.domain.model.angle.validation;
 
 import jig.domain.model.declaration.annotation.AnnotationDescription;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;

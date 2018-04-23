@@ -1,4 +1,4 @@
-package jig.domain.model.report.validation;
+package jig.domain.model.angle.validation;
 
 import java.util.function.Function;
 

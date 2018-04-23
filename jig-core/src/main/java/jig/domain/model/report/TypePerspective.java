@@ -1,5 +1,7 @@
-package jig.domain.model.report.type;
+package jig.domain.model.report;
 
+import jig.domain.model.angle.type.TypeConcern;
+import jig.domain.model.angle.type.TypeDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.report.template.ReportRow;
 

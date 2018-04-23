@@ -1,5 +1,6 @@
-package jig.domain.model.report.method;
+package jig.domain.model.report;
 
+import jig.domain.model.angle.method.MethodDetail;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;

@@ -1,4 +1,4 @@
-package jig.domain.model.report.method;
+package jig.domain.model.angle.method;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;

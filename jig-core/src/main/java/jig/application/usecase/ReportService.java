@@ -15,16 +15,16 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.StringComparingReport;
-import jig.domain.model.report.method.MethodDetail;
-import jig.domain.model.report.method.MethodPerspective;
-import jig.domain.model.report.method.MethodReport;
+import jig.domain.model.angle.method.MethodDetail;
+import jig.domain.model.report.MethodPerspective;
+import jig.domain.model.report.MethodReport;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.Reports;
-import jig.domain.model.report.type.TypeDetail;
-import jig.domain.model.report.type.TypePerspective;
-import jig.domain.model.report.type.TypeReport;
-import jig.domain.model.report.validation.AnnotationDetail;
-import jig.domain.model.report.validation.ValidationAnnotateReport;
+import jig.domain.model.angle.type.TypeDetail;
+import jig.domain.model.report.TypePerspective;
+import jig.domain.model.report.TypeReport;
+import jig.domain.model.angle.validation.AnnotationDetail;
+import jig.domain.model.report.ValidationReport;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
             list.add(new AnnotationDetail(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }
-        return new ValidationAnnotateReport(list);
+        return new ValidationReport(list);
     }
 
     Report methodReportOn(MethodPerspective perspective) {

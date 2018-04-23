@@ -1,4 +1,4 @@
 /**
  * メソッド分析の切り口
  */
-package jig.domain.model.report.method;
+package jig.domain.model.angle.method;

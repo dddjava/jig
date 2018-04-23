@@ -1,5 +1,7 @@
-package jig.domain.model.report.validation;
+package jig.domain.model.report;
 
+import jig.domain.model.angle.validation.AnnotationDetail;
+import jig.domain.model.angle.validation.ValidationConcern;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;
@@ -9,11 +11,11 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class ValidationAnnotateReport implements Report {
+public class ValidationReport implements Report {
 
     private final List<AnnotationDetail> list;
 
-    public ValidationAnnotateReport(List<AnnotationDetail> list) {
+    public ValidationReport(List<AnnotationDetail> list) {
         this.list = list;
     }
 

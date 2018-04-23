@@ -1,8 +1,8 @@
 package jig.application.usecase;
 
 import jig.domain.model.project.SourceFactory;
-import jig.domain.model.report.method.MethodPerspective;
-import jig.domain.model.report.type.TypePerspective;
+import jig.domain.model.report.MethodPerspective;
+import jig.domain.model.report.TypePerspective;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

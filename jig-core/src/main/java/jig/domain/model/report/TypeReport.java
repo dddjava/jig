@@ -1,5 +1,6 @@
-package jig.domain.model.report.type;
+package jig.domain.model.report;
 
+import jig.domain.model.angle.type.TypeDetail;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;

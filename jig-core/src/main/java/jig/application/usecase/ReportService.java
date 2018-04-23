@@ -3,7 +3,6 @@ package jig.application.usecase;
 import jig.application.service.GlossaryService;
 import jig.domain.model.angle.method.MethodDetail;
 import jig.domain.model.angle.type.TypeDetail;
-import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
@@ -64,11 +63,10 @@ public class ReportService {
     }
 
     private Report validateAnnotationReport() {
-        List<ValidationDetail> list = new ArrayList<>();
+        List<ValidationReport.Row> list = new ArrayList<>();
         for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
-            TypeIdentifier typeIdentifier = annotationDeclaration.declaringType();
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
-            list.add(new ValidationDetail(annotationDeclaration, japaneseName, typeIdentifierFormatter));
+            JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
+            list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }
         return new ValidationReport(list);
     }

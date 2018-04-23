@@ -1,5 +1,6 @@
 package jig.domain.model.report.template;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -18,5 +19,9 @@ public class ReportRow {
 
     public List<String> list() {
         return list;
+    }
+
+    public static ReportRow of(String... cols) {
+        return new ReportRow(Arrays.asList(cols));
     }
 }

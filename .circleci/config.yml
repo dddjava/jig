@@ -16,8 +16,6 @@ jobs:
     
     steps:
       - checkout
-      
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
 
       - restore_cache:
           keys:
@@ -32,13 +30,15 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
         
-      # run tests!
-      - run: ./gradlew test
+      - run: ./gradlew build
 
       - store_test_results:
-          path: ./class-list-cli/build/test-results
+          path: jig-core/build/test-results
       - store_test_results:
-          path: ./diagram-plantuml/build/test-results
-      - store_test_results:
-          path: ./web/build/test-results
+          path: gradle-plugin/build/test-results
+
+      - store_artifacts:
+          path: class-list-cli/build/libs
+      - store_artifacts:
+          path: package-diagram-cli/build/libs
 

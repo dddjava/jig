@@ -10,11 +10,13 @@ import jig.domain.model.characteristic.Characteristics;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@Service
 public class AngleService {
 
     private final CharacteristicRepository characteristicRepository;
@@ -37,7 +39,7 @@ public class AngleService {
         return new EnumAngles(list);
     }
 
-    public GenericModelAngles specifyCharacteristicAngles(Characteristic characteristic) {
+    public GenericModelAngles genericModelAngles(Characteristic characteristic) {
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
         List<GenericModelAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);

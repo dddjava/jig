@@ -1,9 +1,6 @@
 package jig.gradle;
 
-import jig.application.service.DatasourceService;
-import jig.application.service.DependencyService;
-import jig.application.service.GlossaryService;
-import jig.application.service.SpecificationService;
+import jig.application.service.*;
 import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
 import jig.diagram.plantuml.PlantumlDriver;
@@ -89,7 +86,11 @@ public class ServiceFactory {
                 annotationDeclarationRepository,
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
-                        japaneseNameRepository));
+                        japaneseNameRepository),
+                new AngleService(
+                        characteristicRepository,
+                        relationRepository)
+        );
     }
 
     public DependencyService dependencyService() {

@@ -1,11 +1,12 @@
 package jig.application.usecase;
 
+import jig.application.service.AngleService;
 import jig.application.service.GlossaryService;
+import jig.domain.model.angle.EnumAngles;
+import jig.domain.model.angle.GenericModelAngles;
 import jig.domain.model.angle.method.MethodDetail;
-import jig.domain.model.angle.type.TypeDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportService {
@@ -34,17 +36,19 @@ public class ReportService {
     final TypeIdentifierFormatter typeIdentifierFormatter;
     private AnnotationDeclarationRepository annotationDeclarationRepository;
     private GlossaryService glossaryService;
+    private final AngleService angleService;
 
     public ReportService(CharacteristicRepository characteristicRepository,
                          RelationRepository relationRepository,
                          SqlRepository sqlRepository,
-                         TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService) {
+                         TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService, AngleService angleService) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
         this.sqlRepository = sqlRepository;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.glossaryService = glossaryService;
+        this.angleService = angleService;
     }
 
     public Reports reports() {
@@ -52,7 +56,7 @@ public class ReportService {
                 methodReportOn(MethodPerspective.SERVICE),
                 methodReportOn(MethodPerspective.REPOSITORY),
                 typeReportOn(TypePerspective.IDENTIFIER),
-                typeReportOn(TypePerspective.ENUM),
+                enumReportOn(),
                 typeReportOn(TypePerspective.NUMBER),
                 typeReportOn(TypePerspective.COLLECTION),
                 typeReportOn(TypePerspective.DATE),
@@ -60,6 +64,27 @@ public class ReportService {
                 validateAnnotationReport(),
                 new StringComparingReport(relationRepository).toReport()
         ));
+    }
+
+    Report typeReportOn(TypePerspective perspective) {
+        Characteristic characteristic = perspective.characteristic();
+        if (characteristic == Characteristic.ENUM) return enumReportOn();
+
+        GenericModelAngles genericModelAngles = angleService.genericModelAngles(characteristic);
+        List<GenericModelReport.Row> list = genericModelAngles.list().stream().map(enumAngle -> {
+            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
+            return new GenericModelReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+        }).collect(Collectors.toList());
+        return new GenericModelReport(characteristic, list);
+    }
+
+    Report enumReportOn() {
+        EnumAngles enumAngles = angleService.enumAngles();
+        List<EnumReport.Row> list = enumAngles.list().stream().map(enumAngle -> {
+            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
+            return new EnumReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+        }).collect(Collectors.toList());
+        return new EnumReport(list);
     }
 
     private Report validateAnnotationReport() {
@@ -86,16 +111,4 @@ public class ReportService {
         return new MethodReport(perspective, list);
     }
 
-    Report typeReportOn(TypePerspective perspective) {
-        Characteristic characteristic = perspective.characteristic();
-        List<TypeDetail> list = new ArrayList<>();
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
-        for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            TypeCharacteristics typeCharacteristics = characteristicRepository.characteristicsOf(typeIdentifier);
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
-            TypeDetail detail = new TypeDetail(typeIdentifier, typeCharacteristics, relationRepository, japaneseName, typeIdentifierFormatter);
-            list.add(detail);
-        }
-        return new TypeReport(perspective, list);
-    }
 }

@@ -9,4 +9,8 @@ public class EnumAngles {
     public EnumAngles(List<EnumAngle> list) {
         this.list = list;
     }
+
+    public List<EnumAngle> list() {
+        return list;
+    }
 }

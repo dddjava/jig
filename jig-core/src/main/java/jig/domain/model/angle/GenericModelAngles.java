@@ -9,4 +9,8 @@ public class GenericModelAngles {
     public GenericModelAngles(List<GenericModelAngle> list) {
         this.list = list;
     }
+
+    public List<GenericModelAngle> list() {
+        return list;
+    }
 }

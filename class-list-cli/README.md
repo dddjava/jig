@@ -23,7 +23,7 @@
 
 - [機能情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/MethodPerspective.java)
 - [モデル情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/TypePerspective.java)
-- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/TypePerspective.java)
+- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/angle/validation/ValidationConcern.java)
 
 #### 補足: データソースのテーブル名
 

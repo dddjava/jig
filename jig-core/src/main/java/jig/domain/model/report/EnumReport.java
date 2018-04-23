@@ -8,10 +8,29 @@ import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class EnumReport implements Report {
+
+    private enum Items {
+        クラス名(Row::クラス名),
+        クラス和名(Row::クラス和名),
+        定数宣言(Row::定数宣言),
+        フィールド(Row::フィールド),
+        使用箇所(Row::使用箇所),
+        パラメーター有り(Row::パラメーター有り),
+        振る舞い有り(Row::振る舞い有り),
+        多態(Row::多態);
+
+        private final Function<Row, String> func;
+
+        Items(Function<Row, String> func) {
+            this.func = func;
+        }
+    }
 
     private final List<EnumReport.Row> list;
 
@@ -26,30 +45,17 @@ public class EnumReport implements Report {
 
     @Override
     public ReportRow headerRow() {
-        return ReportRow.of(
-                "クラス名",
-                "クラス和名",
-                "定数宣言",
-                "フィールド",
-                "使用箇所",
-                "パラメーター有り",
-                "振る舞い有り",
-                "多態"
-        );
+        return ReportRow.of(Arrays.stream(Items.values()).map(Enum::name).toArray(String[]::new));
     }
 
     @Override
     public List<ReportRow> rows() {
-        return list.stream().map(row -> ReportRow.of(
-                row.クラス名(),
-                row.クラス和名(),
-                row.定数宣言(),
-                row.フィールド(),
-                row.使用箇所(),
-                row.パラメーター有り(),
-                row.振る舞い有り(),
-                row.多態()
-        )).collect(Collectors.toList());
+        return list.stream()
+                .map(row -> ReportRow.of(
+                        Arrays.stream(Items.values())
+                                .map(column -> column.func.apply(row))
+                                .toArray(String[]::new)))
+                .collect(Collectors.toList());
     }
 
     public static class Row {

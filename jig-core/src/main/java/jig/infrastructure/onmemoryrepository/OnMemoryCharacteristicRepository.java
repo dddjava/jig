@@ -2,8 +2,8 @@ package jig.infrastructure.onmemoryrepository;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.characteristic.Satisfaction;
+import jig.domain.model.characteristic.TypeCharacteristics;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import org.springframework.stereotype.Repository;

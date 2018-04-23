@@ -1,7 +1,7 @@
 package jig.domain.model.report;
 
-import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.angle.validation.ValidationConcern;
+import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;

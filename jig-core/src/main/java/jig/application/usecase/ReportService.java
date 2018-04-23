@@ -1,6 +1,9 @@
 package jig.application.usecase;
 
 import jig.application.service.GlossaryService;
+import jig.domain.model.angle.method.MethodDetail;
+import jig.domain.model.angle.type.TypeDetail;
+import jig.domain.model.angle.validation.ValidationDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.TypeCharacteristics;
@@ -14,17 +17,9 @@ import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.relation.RelationRepository;
-import jig.domain.model.report.StringComparingReport;
-import jig.domain.model.angle.method.MethodDetail;
-import jig.domain.model.report.MethodPerspective;
-import jig.domain.model.report.MethodReport;
+import jig.domain.model.report.*;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.Reports;
-import jig.domain.model.angle.type.TypeDetail;
-import jig.domain.model.report.TypePerspective;
-import jig.domain.model.report.TypeReport;
-import jig.domain.model.angle.validation.ValidationDetail;
-import jig.domain.model.report.ValidationReport;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

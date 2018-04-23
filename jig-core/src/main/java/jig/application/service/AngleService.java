@@ -2,8 +2,8 @@ package jig.application.service;
 
 import jig.domain.model.angle.EnumAngle;
 import jig.domain.model.angle.EnumAngles;
-import jig.domain.model.angle.SpecifyCharacteristicAngle;
-import jig.domain.model.angle.SpecifyCharacteristicAngles;
+import jig.domain.model.angle.GenericModelAngle;
+import jig.domain.model.angle.GenericModelAngles;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
@@ -37,12 +37,12 @@ public class AngleService {
         return new EnumAngles(list);
     }
 
-    public SpecifyCharacteristicAngles specifyCharacteristicAngles(Characteristic characteristic) {
+    public GenericModelAngles specifyCharacteristicAngles(Characteristic characteristic) {
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
-        List<SpecifyCharacteristicAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
+        List<GenericModelAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
-            return new SpecifyCharacteristicAngle(characteristic, typeIdentifier, userTypeIdentifiers);
+            return new GenericModelAngle(characteristic, typeIdentifier, userTypeIdentifiers);
         }).collect(toList());
-        return new SpecifyCharacteristicAngles(list);
+        return new GenericModelAngles(list);
     }
 }

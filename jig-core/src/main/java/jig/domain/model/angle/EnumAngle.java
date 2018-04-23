@@ -20,4 +20,24 @@ public class EnumAngle {
         this.constantsDeclarations = constantsDeclarations;
         this.fieldDeclarations = fieldDeclarations;
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
+    }
+
+    public Characteristics characteristics() {
+        return characteristics;
+    }
+
+    public TypeIdentifiers userTypeIdentifiers() {
+        return userTypeIdentifiers;
+    }
+
+    public FieldDeclarations constantsDeclarations() {
+        return constantsDeclarations;
+    }
+
+    public FieldDeclarations fieldDeclarations() {
+        return fieldDeclarations;
+    }
 }

@@ -9,4 +9,8 @@ public class Characteristics {
     public Characteristics(EnumSet<Characteristic> characteristics) {
         this.characteristics = characteristics;
     }
+
+    public Satisfaction has(Characteristic characteristic) {
+        return Satisfaction.of(characteristics.contains(characteristic));
+    }
 }

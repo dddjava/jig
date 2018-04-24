@@ -13,13 +13,15 @@ public class ServiceAngle {
     MethodDeclaration methodDeclaration;
     TypeIdentifier returnTypeIdentifier;
     Characteristics userCharacteristics;
+    private final MethodDeclarations userServiceMethods;
     TypeIdentifiers usingFieldTypeIdentifiers;
     MethodDeclarations usingRepositoryMethods;
 
-    public ServiceAngle(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier, Characteristics userCharacteristics, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods) {
+    public ServiceAngle(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods) {
         this.methodDeclaration = methodDeclaration;
         this.returnTypeIdentifier = returnTypeIdentifier;
         this.userCharacteristics = userCharacteristics;
+        this.userServiceMethods = userServiceMethods;
         this.usingFieldTypeIdentifiers = usingFieldTypeIdentifiers;
         this.usingRepositoryMethods = usingRepositoryMethods;
     }
@@ -42,5 +44,9 @@ public class ServiceAngle {
 
     public Satisfaction usingFromController() {
         return userCharacteristics.has(Characteristic.CONTROLLER);
+    }
+
+    public MethodDeclarations userServiceMethods() {
+        return userServiceMethods;
     }
 }

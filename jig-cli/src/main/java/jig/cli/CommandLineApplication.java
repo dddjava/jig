@@ -1,4 +1,4 @@
-package jig.diagram;
+package jig.cli;
 
 import jig.application.service.AngleService;
 import jig.application.service.DependencyService;
@@ -29,12 +29,12 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication(scanBasePackages = "jig")
-public class DiagramApplication implements CommandLineRunner {
+public class CommandLineApplication implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DiagramApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(DiagramApplication.class, args);
+        SpringApplication.run(CommandLineApplication.class, args);
     }
 
     @Value("${diagramType:}")
@@ -56,20 +56,20 @@ public class DiagramApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<DiagramType> diagramTypes =
+        List<DocumentType> documentTypes =
                 diagramTypeText.isEmpty()
-                        ? Arrays.asList(DiagramType.values())
-                        : DiagramType.resolve(diagramTypeText);
+                        ? Arrays.asList(DocumentType.values())
+                        : DocumentType.resolve(diagramTypeText);
 
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         importLocalProjectService.importProject();
 
-        for (DiagramType diagramType : diagramTypes) {
-            if (diagramType == DiagramType.ServiceMethodCallHierarchy) {
+        for (DocumentType documentType : documentTypes) {
+            if (documentType == DocumentType.ServiceMethodCallHierarchy) {
                 serviceMethodCallHierarchy();
-            } else if (diagramType == DiagramType.PackageDependency) {
+            } else if (documentType == DocumentType.PackageDependency) {
                 packageDependency();
             }
         }

@@ -1,16 +1,16 @@
-package jig.diagram;
+package jig.cli;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum DiagramType {
+public enum DocumentType {
     ServiceMethodCallHierarchy,
     PackageDependency;
 
-    public static List<DiagramType> resolve(String diagramTypes) {
+    public static List<DocumentType> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))
-                .map(DiagramType::valueOf)
+                .map(DocumentType::valueOf)
                 .collect(Collectors.toList());
     }
 }

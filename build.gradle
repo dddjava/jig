@@ -105,7 +105,7 @@ project(':package-diagram-cli') {
     }
 }
 
-project(':jig-diagram-cli') {
+project(':jig-cli') {
     dependencies {
         compile project(':jig-core')
         compile project(':diagram-graphviz-java')

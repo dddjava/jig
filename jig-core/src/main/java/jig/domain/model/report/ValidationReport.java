@@ -34,8 +34,8 @@ public class ValidationReport {
         this.list = list;
     }
 
-    public Report toReport() {
-        return new ConvertibleItemReport<>("VALIDATION", list, Items.values());
+    public Report<?> toReport() {
+        return new Report<>("VALIDATION", list, Items.values());
     }
 
     public static class Row {

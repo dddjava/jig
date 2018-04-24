@@ -37,8 +37,8 @@ public class DatasourceReport {
         this.list = list;
     }
 
-    public Report toReport() {
-        return new ConvertibleItemReport<>("REPOSITORY", list, Items.values());
+    public Report<?> toReport() {
+        return new Report<>("REPOSITORY", list, Items.values());
     }
 
     public static class Row {

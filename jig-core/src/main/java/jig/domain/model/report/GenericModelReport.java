@@ -35,8 +35,8 @@ public class GenericModelReport {
         this.list = list;
     }
 
-    public Report toReport() {
-        return new ConvertibleItemReport<>(characteristic.name(), list, Items.values());
+    public Report<?> toReport() {
+        return new Report<>(characteristic.name(), list, Items.values());
     }
 
     public static class Row {

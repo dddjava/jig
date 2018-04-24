@@ -28,8 +28,8 @@ public class StringComparingReport {
         this.designSmellAngle = designSmellAngle;
     }
 
-    public Report toReport() {
+    public Report<?> toReport() {
         List<MethodDeclaration> list = designSmellAngle.stringComparingMethods().list();
-        return new ConvertibleItemReport<>("文字列比較箇所", list, Items.values());
+        return new Report<>("文字列比較箇所", list, Items.values());
     }
 }

@@ -36,8 +36,8 @@ public class ServiceReport {
         this.list = list;
     }
 
-    public Report toReport() {
-        return new ConvertibleItemReport<>("SERVICE", list, Items.values());
+    public Report<?> toReport() {
+        return new Report<>("SERVICE", list, Items.values());
     }
 
     public static class Row {

@@ -38,8 +38,8 @@ public class EnumReport {
         this.list = list;
     }
 
-    public Report toReport() {
-        return new ConvertibleItemReport<>("ENUM", list, Items.values());
+    public Report<?> toReport() {
+        return new Report<>("ENUM", list, Items.values());
     }
 
     public static class Row {

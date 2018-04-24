@@ -9,8 +9,6 @@ import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.report.*;
-import jig.domain.model.report.Report;
-import jig.domain.model.report.Reports;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -48,7 +46,7 @@ public class ReportService {
         ));
     }
 
-    Report serviceReport() {
+    Report<?> serviceReport() {
         ServiceAngles serviceAngles = angleService.serviceAngles();
         List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
@@ -57,7 +55,7 @@ public class ReportService {
         return new ServiceReport(list).toReport();
     }
 
-    Report datasourceReport() {
+    Report<?> datasourceReport() {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles();
         List<DatasourceReport.Row> list = datasourceAngles.list().stream().map(angle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
@@ -66,12 +64,12 @@ public class ReportService {
         return new DatasourceReport(list).toReport();
     }
 
-    Report stringComparingReport() {
+    Report<?> stringComparingReport() {
         DesignSmellAngle designSmellAngle = angleService.stringComparing();
         return new StringComparingReport(designSmellAngle).toReport();
     }
 
-    Report typeReportOn(Characteristic characteristic) {
+    Report<?> typeReportOn(Characteristic characteristic) {
         GenericModelAngles genericModelAngles = angleService.genericModelAngles(characteristic);
         List<GenericModelReport.Row> list = genericModelAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
@@ -80,7 +78,7 @@ public class ReportService {
         return new GenericModelReport(characteristic, list).toReport();
     }
 
-    Report enumReport() {
+    Report<?> enumReport() {
         EnumAngles enumAngles = angleService.enumAngles();
         List<EnumReport.Row> list = enumAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
@@ -89,7 +87,7 @@ public class ReportService {
         return new EnumReport(list).toReport();
     }
 
-    private Report validateAnnotationReport() {
+    Report<?> validateAnnotationReport() {
         List<ValidationReport.Row> list = new ArrayList<>();
         for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());

@@ -1,8 +1,7 @@
 package jig.application.usecase;
 
 import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.project.SourceFactory;
-import jig.infrastructure.JigPaths;
+import jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +23,13 @@ class ReportServiceTest {
     ReportService sut;
 
     @Autowired
-    ImportLocalProjectService importLocalProjectService;
+    ImportService importService;
+    @Autowired
+    LocalProject localProject;
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        importLocalProjectService.importProject();
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         assertThat(sut.serviceReport().rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
@@ -68,16 +69,15 @@ class ReportServiceTest {
     static class Config {
 
         @Bean
-        SourceFactory sourceFactory() {
+        LocalProject localProject() {
             // jig-coreプロジェクトを読み取り対象にする
-            JigPaths jigPaths = new JigPaths(
+            return new LocalProject(
                     TestSupport.getModuleRootPath().toString(),
                     // classの出力ディレクトリ
                     Paths.get(TestSupport.defaultPackageClassURI()).toString(),
                     "src/test/resources",
                     // 日本語取得のためのソース読み取り場所
                     "src/test/java");
-            return jigPaths;
         }
     }
 }

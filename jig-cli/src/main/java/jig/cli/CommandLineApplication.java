@@ -2,7 +2,7 @@ package jig.cli;
 
 import jig.application.service.AngleService;
 import jig.application.service.DependencyService;
-import jig.application.usecase.ImportLocalProjectService;
+import jig.application.usecase.ImportService;
 import jig.application.usecase.ReportService;
 import jig.diagram.graphvizj.GraphvizJavaDriver;
 import jig.diagram.graphvizj.ServiceMethodCallHierarchyWriter;
@@ -13,6 +13,7 @@ import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.report.Reports;
+import jig.infrastructure.LocalProject;
 import jig.infrastructure.poi.writer.ExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class CommandLineApplication implements CommandLineRunner {
     String outputDirectory;
 
     @Autowired
-    ImportLocalProjectService importLocalProjectService;
+    ImportService importService;
     @Autowired
     AngleService angleService;
 
@@ -60,6 +61,9 @@ public class CommandLineApplication implements CommandLineRunner {
     JapaneseNameRepository japaneseNameRepository;
     @Autowired
     PackageIdentifierFormatter packageIdentifierFormatter;
+
+    @Autowired
+    LocalProject localProject;
 
     @Override
     public void run(String... args) throws IOException {
@@ -74,7 +78,7 @@ public class CommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        importLocalProjectService.importProject();
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         for (DocumentType documentType : documentTypes) {
             if (documentType == DocumentType.ServiceMethodCallHierarchy) {

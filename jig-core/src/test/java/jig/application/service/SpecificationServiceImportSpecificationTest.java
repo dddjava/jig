@@ -9,7 +9,7 @@ import jig.domain.model.declaration.method.MethodSignature;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.specification.SpecificationSources;
-import jig.infrastructure.JigPaths;
+import jig.infrastructure.LocalProject;
 import jig.infrastructure.PropertySpecificationContext;
 import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
@@ -41,8 +41,8 @@ public class SpecificationServiceImportSpecificationTest {
         // 読み込む対象のソースを取得
         URI location = SpecificationServiceImportSpecificationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
-        JigPaths jigPaths = new JigPaths(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
-        SpecificationSources specificationSources = jigPaths.getSpecificationSources();
+        LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
+        SpecificationSources specificationSources = localProject.getSpecificationSources();
 
         SpecificationService specificationService = new SpecificationService(
                 new AsmSpecificationReader(new PropertySpecificationContext()),

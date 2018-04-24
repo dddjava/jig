@@ -1,7 +1,7 @@
 package jig.gradle;
 
 import jig.application.service.*;
-import jig.application.usecase.ImportLocalProjectService;
+import jig.application.usecase.ImportService;
 import jig.application.usecase.ReportService;
 import jig.diagram.plantuml.PlantumlDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
@@ -9,7 +9,7 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
-import jig.infrastructure.JigPaths;
+import jig.infrastructure.LocalProject;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import jig.infrastructure.PropertySpecificationContext;
 import jig.infrastructure.asm.AsmSpecificationReader;
@@ -33,19 +33,12 @@ public class ServiceFactory {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
-    ImportLocalProjectService analyzeService(Project project) {
-        JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
-        if (javaPluginConvention == null) {
-            throw new AssertionError("JavaPluginが適用されていません。");
-        }
-        JigPaths jigPaths = jigPaths(project, javaPluginConvention);
+    ImportService importService(Project project) {
 
         // TODO extensionで変更できるようにする
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
 
-
-        return new ImportLocalProjectService(
-                jigPaths,
+        return new ImportService(
                 new SpecificationService(
                         new AsmSpecificationReader(specificationContext),
                         characteristicRepository,
@@ -63,13 +56,18 @@ public class ServiceFactory {
         );
     }
 
-    private JigPaths jigPaths(Project project, JavaPluginConvention javaPluginConvention) {
+    public LocalProject localProject(Project project) {
+        JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
+        if (javaPluginConvention == null) {
+            throw new AssertionError("JavaPluginが適用されていません。");
+        }
+
         SourceSet mainSourceSet = javaPluginConvention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
         File srcDir = mainSourceSet.getJava().getSrcDirs().iterator().next();
         File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
         File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
 
-        return new JigPaths(
+        return new LocalProject(
                 project.getProjectDir().toString(),
                 classesOutputDir.getAbsolutePath(),
                 resourceOutputDir.getAbsolutePath(),

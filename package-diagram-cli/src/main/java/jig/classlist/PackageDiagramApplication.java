@@ -1,11 +1,12 @@
 package jig.classlist;
 
 import jig.application.service.DependencyService;
-import jig.application.usecase.ImportLocalProjectService;
+import jig.application.usecase.ImportService;
 import jig.domain.basic.FileWriteFailureException;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.domain.model.relation.dependency.PackageDependencyWriter;
+import jig.infrastructure.LocalProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,9 @@ public class PackageDiagramApplication implements CommandLineRunner {
     int depth;
 
     @Autowired
-    ImportLocalProjectService importLocalProjectService;
+    ImportService importService;
+    @Autowired
+    LocalProject localProject;
     @Autowired
     DependencyService dependencyService;
 
@@ -49,7 +52,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        importLocalProjectService.importProject();
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
         PackageDependencies packageDependencies = dependencyService.packageDependencies()

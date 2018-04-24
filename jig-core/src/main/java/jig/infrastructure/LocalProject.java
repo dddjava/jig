@@ -3,7 +3,6 @@ package jig.infrastructure;
 import jig.domain.model.datasource.SqlSources;
 import jig.domain.model.japanese.PackageNameSources;
 import jig.domain.model.japanese.TypeNameSources;
-import jig.domain.model.project.SourceFactory;
 import jig.domain.model.specification.SpecificationSource;
 import jig.domain.model.specification.SpecificationSources;
 import org.slf4j.Logger;
@@ -24,19 +23,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class JigPaths implements SourceFactory {
+public class LocalProject {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JigPaths.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
 
     private final Path projectPath;
     Path classesDirectory;
     Path resourcesDirectory;
     Path sourcesDirectory;
 
-    public JigPaths(@Value("${project.path}") String projectPath,
-                    @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
-                    @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
-                    @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
+    public LocalProject(@Value("${project.path}") String projectPath,
+                        @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
+                        @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
+                        @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);

@@ -3,6 +3,7 @@ package jig.gradle;
 import jig.domain.basic.FileWriteFailureException;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.infrastructure.LocalProject;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -31,7 +32,11 @@ public class JigPackageDiagramTask extends DefaultTask {
         Path output = Paths.get(extension.getOutputDiagramName());
         ensureExists(output);
 
-        serviceFactory.analyzeService(getProject()).importProject();
+        LocalProject localProject = serviceFactory.localProject(getProject());
+        serviceFactory.importService(getProject()).importSources(
+                localProject.getSpecificationSources(),
+                localProject.getSqlSources(),
+                localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         PackageDependencies packageDependencies = serviceFactory.dependencyService().packageDependencies()
                 .applyDepth(new PackageDepth(extension.getDepth()));

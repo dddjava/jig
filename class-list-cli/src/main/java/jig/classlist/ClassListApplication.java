@@ -1,8 +1,9 @@
 package jig.classlist;
 
-import jig.application.usecase.ImportLocalProjectService;
+import jig.application.usecase.ImportService;
 import jig.application.usecase.ReportService;
 import jig.domain.model.report.Reports;
+import jig.infrastructure.LocalProject;
 import jig.infrastructure.poi.ReportFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +30,18 @@ public class ClassListApplication {
     String outputPath;
 
     @Autowired
-    ImportLocalProjectService importLocalProjectService;
+    ImportService importService;
     @Autowired
     ReportService reportService;
+
+    @Autowired
+    LocalProject localProject;
 
     public void output() {
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        importLocalProjectService.importProject();
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         LOGGER.info("レポートデータの準備をはじめます");
         Reports reports = reportService.reports();

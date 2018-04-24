@@ -23,7 +23,7 @@ java -jar jig-cli.jar
 次のように `--`に続けて指定します。
 
 ```
-java -jar jig-cli.jar --depth=7
+java -jar jig-cli.jar --depth=7　--outputDirectory=.jig documentType=PackageDependency,ClassList
 ```
 
 ```
@@ -31,26 +31,11 @@ java -jar jig-cli.jar --depth=7
 documentType=ServiceMethodCallHierarchy,PackageDependency,ClassList
 # パッケージ依存図で出力する階層（-1は無制限）
 depth=-1
+# 出力ディレクトリ
+outputDirectory=./
 ```
 
-#### 実験的なプロパティ
-
-以下は変更する可能性が高いプロパティです。
-
-```
-# 出力時に省略するプレフィックス
-output.omit.prefix=.+\\.(service|domain\\.(model|basic))\\.
-# モデルと認識するパターン（パッケージ依存図で使用）
-jig.model.pattern=.+\\.domain\\.model\\..+
-# Repositoryと認識するパターン（クラス一覧で使用）
-jig.repository.pattern=.+Repository
-# 情報を読み取るルートディレクトリ
-project.path=./
-# 情報を読み取るディレクトリ（Gradle準拠）
-directory.classes=build/classes/java/main
-directory.resources=build/resources/main
-directory.sources=src/main/java
-```
+その他のプロパティは [application.propertis](./src/main/resources/application.properties) を参照してください。
 
 ## クラス情報一覧
 

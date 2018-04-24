@@ -52,7 +52,7 @@ public class SpecificationService {
     void registerSpecification(Specification specification) {
         characteristicRepository.register(Characteristic.resolveCharacteristics(specification));
 
-        specification.fieldIdentifiers().list().forEach(relationRepository::registerField);
+        specification.fieldDeclarations().list().forEach(relationRepository::registerField);
         specification.staticFieldDeclarations().list().forEach(relationRepository::registerConstants);
         specification.fieldAnnotationDeclarations().forEach(annotationDeclarationRepository::register);
 

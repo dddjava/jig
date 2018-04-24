@@ -91,7 +91,7 @@ public class Specification {
         return typeAnnotationDeclarations.stream().anyMatch(typeAnnotationDeclaration -> typeAnnotationDeclaration.typeIs(annotationType));
     }
 
-    public FieldDeclarations fieldIdentifiers() {
+    public FieldDeclarations fieldDeclarations() {
         return new FieldDeclarations(fieldDeclarations);
     }
 

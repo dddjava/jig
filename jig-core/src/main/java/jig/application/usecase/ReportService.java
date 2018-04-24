@@ -68,7 +68,7 @@ public class ReportService {
 
     Report stringComparingReport() {
         DesignSmellAngle designSmellAngle = angleService.stringComparing();
-        return new StringComparingReport(designSmellAngle);
+        return new StringComparingReport(designSmellAngle).toReport();
     }
 
     Report typeReportOn(Characteristic characteristic) {

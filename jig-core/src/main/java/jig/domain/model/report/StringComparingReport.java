@@ -1,11 +1,26 @@
 package jig.domain.model.report;
 
 import jig.domain.model.angle.DesignSmellAngle;
+import jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class StringComparingReport implements Report {
+public class StringComparingReport {
+
+    enum Items implements ConvertibleItem<MethodDeclaration> {
+        クラス名 {
+            @Override
+            public String convert(MethodDeclaration row) {
+                return row.declaringType().fullQualifiedName();
+            }
+        },
+        メソッド名 {
+            @Override
+            public String convert(MethodDeclaration row) {
+                return row.methodSignature().asSimpleText();
+            }
+        };
+    }
 
     private final DesignSmellAngle designSmellAngle;
 
@@ -13,22 +28,8 @@ public class StringComparingReport implements Report {
         this.designSmellAngle = designSmellAngle;
     }
 
-    @Override
-    public List<ReportRow> rows() {
-        return designSmellAngle.stringComparingMethods().list().stream()
-                .map(methodDeclaration -> ReportRow.of(
-                        methodDeclaration.declaringType().fullQualifiedName(),
-                        methodDeclaration.methodSignature().asSimpleText()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Title title() {
-        return new Title("文字列比較箇所");
-    }
-
-    @Override
-    public ReportRow headerRow() {
-        return ReportRow.of("クラス名", "メソッド名");
+    public Report toReport() {
+        List<MethodDeclaration> list = designSmellAngle.stringComparingMethods().list();
+        return new ConvertibleItemReport<>("文字列比較箇所", list, Items.values());
     }
 }

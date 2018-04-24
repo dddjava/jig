@@ -4,16 +4,16 @@ import jig.domain.model.angle.EnumAngle;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
+import jig.domain.model.report.template.ItemRowConverter;
 import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.ReportRow;
-import jig.domain.model.report.template.Title;
+import jig.domain.model.report.template.ReportImpl;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class EnumReport implements Report {
+public class EnumReport {
 
     private enum Items {
         クラス名(Row::クラス名),
@@ -38,24 +38,12 @@ public class EnumReport implements Report {
         this.list = list;
     }
 
-    @Override
-    public Title title() {
-        return new Title("ENUM");
-    }
-
-    @Override
-    public ReportRow headerRow() {
-        return ReportRow.of(Arrays.stream(Items.values()).map(Enum::name).toArray(String[]::new));
-    }
-
-    @Override
-    public List<ReportRow> rows() {
-        return list.stream()
-                .map(row -> ReportRow.of(
-                        Arrays.stream(Items.values())
-                                .map(column -> column.func.apply(row))
-                                .toArray(String[]::new)))
-                .collect(Collectors.toList());
+    public Report toReport() {
+        List<ItemRowConverter<Row>> rowConverters =
+                Arrays.stream(Items.values())
+                        .map(item -> new ItemRowConverter<>(item, item.func))
+                        .collect(Collectors.toList());
+        return new ReportImpl<>("ENUM", rowConverters, list);
     }
 
     public static class Row {

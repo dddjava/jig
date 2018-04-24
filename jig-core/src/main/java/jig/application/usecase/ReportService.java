@@ -54,7 +54,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
             return new ServiceReport.Row(angle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new ServiceReport(list);
+        return new ServiceReport(list).toReport();
     }
 
     Report datasourceReport() {
@@ -63,7 +63,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
             return new DatasourceReport.Row(angle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new DatasourceReport(list);
+        return new DatasourceReport(list).toReport();
     }
 
     Report stringComparingReport() {
@@ -77,7 +77,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new GenericModelReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new GenericModelReport(characteristic, list);
+        return new GenericModelReport(characteristic, list).toReport();
     }
 
     Report enumReport() {
@@ -86,7 +86,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new EnumReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new EnumReport(list);
+        return new EnumReport(list).toReport();
     }
 
     private Report validateAnnotationReport() {
@@ -95,6 +95,6 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
             list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }
-        return new ValidationReport(list);
+        return new ValidationReport(list).toReport();
     }
 }

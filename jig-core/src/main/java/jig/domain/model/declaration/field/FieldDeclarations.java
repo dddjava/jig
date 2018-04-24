@@ -1,7 +1,9 @@
 package jig.domain.model.declaration.field;
 
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
@@ -44,5 +46,11 @@ public class FieldDeclarations {
                 .map(FieldDeclaration::typeIdentifier)
                 .distinct()
                 .collect(TypeIdentifiers.collector());
+    }
+
+    public boolean matches(TypeIdentifier... typeIdentifiers) {
+        if (list.size() != typeIdentifiers.length) return false;
+        return Arrays.equals(typeIdentifiers,
+                list.stream().map(FieldDeclaration::typeIdentifier).toArray(TypeIdentifier[]::new));
     }
 }

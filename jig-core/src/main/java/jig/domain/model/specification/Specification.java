@@ -64,22 +64,8 @@ public class Specification {
         return parentTypeIdentifier.equals(new TypeIdentifier(Enum.class));
     }
 
-    public boolean hasOnlyOneFieldAndFieldTypeIs(Class<?> clz) {
-        if (isEnum()) return false;
-        if (fieldDeclarations.size() != 1) return false;
-        return fieldDeclarations.get(0).typeIdentifier().fullQualifiedName().equals(clz.getName());
-    }
-
-    public boolean hasTwoFieldsAndFieldTypeAre(Class<?> clz) {
-        if (isEnum()) return false;
-        if (fieldDeclarations.size() != 2) return false;
-        TypeIdentifier field1 = fieldDeclarations.get(0).typeIdentifier();
-        TypeIdentifier field2 = fieldDeclarations.get(1).typeIdentifier();
-        return (field1.equals(field2) && field1.fullQualifiedName().equals(clz.getName()));
-    }
-
     public boolean hasInstanceMethod() {
-        return !instanceMethodSpecifications.isEmpty();
+        return !instanceMethodSpecifications().isEmpty();
     }
 
     public boolean hasField() {

@@ -1,5 +1,6 @@
 package jig.domain.model.characteristic;
 
+import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.specification.Specification;
 
 import java.math.BigDecimal;
@@ -67,31 +68,32 @@ public enum Characteristic {
     IDENTIFIER {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs(String.class);
+            if (specification.isEnum()) return false;
+            return specification.fieldDeclarations().matches(new TypeIdentifier(String.class));
         }
     },
     NUMBER {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs(BigDecimal.class);
+            return specification.fieldDeclarations().matches(new TypeIdentifier(BigDecimal.class));
         }
     },
     DATE {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs(LocalDate.class);
+            return specification.fieldDeclarations().matches(new TypeIdentifier(LocalDate.class));
         }
     },
     TERM {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasTwoFieldsAndFieldTypeAre(LocalDate.class);
+            return specification.fieldDeclarations().matches(new TypeIdentifier(LocalDate.class), new TypeIdentifier(LocalDate.class));
         }
     },
     COLLECTION {
         @Override
         boolean matches(Specification specification) {
-            return specification.hasOnlyOneFieldAndFieldTypeIs(List.class);
+            return specification.fieldDeclarations().matches(new TypeIdentifier(List.class));
         }
     },
     MODEL {

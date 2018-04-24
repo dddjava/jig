@@ -19,7 +19,7 @@ public class SpecificationService {
     final CharacteristicRepository characteristicRepository;
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
-    private final DependencyService dependencyService;
+    final DependencyService dependencyService;
 
     public SpecificationService(SpecificationReader specificationReader, CharacteristicRepository characteristicRepository, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyService dependencyService) {
         this.specificationReader = specificationReader;
@@ -34,7 +34,7 @@ public class SpecificationService {
         registerSpecifications(specifications);
     }
 
-    public Specifications specification(SpecificationSources specificationSources) {
+    Specifications specification(SpecificationSources specificationSources) {
         if (specificationSources.notFound()) {
             throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
         }
@@ -42,15 +42,16 @@ public class SpecificationService {
         return specificationReader.readFrom(specificationSources);
     }
 
-    public void registerSpecifications(Specifications specifications) {
+    void registerSpecifications(Specifications specifications) {
         specifications.list().forEach(this::registerSpecification);
 
         specifications.instanceMethodSpecifications().forEach(methodSpecification ->
                 methodSpecification.methodAnnotationDeclarations().forEach(annotationDeclarationRepository::register));
     }
 
-    public void registerSpecification(Specification specification) {
+    void registerSpecification(Specification specification) {
         characteristicRepository.register(Characteristic.resolveCharacteristics(specification));
+
         specification.fieldIdentifiers().list().forEach(relationRepository::registerField);
         specification.staticFieldDeclarations().list().forEach(relationRepository::registerConstants);
         specification.fieldAnnotationDeclarations().forEach(annotationDeclarationRepository::register);

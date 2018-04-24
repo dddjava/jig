@@ -58,7 +58,7 @@ public class AngleService {
 
                     MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
                             .map(relationRepository::findUseMethod)
-                            .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.declaringType(), Characteristic.MAPPER));
+                            .filter(methodIdentifier -> characteristicRepository.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
                     List<Sql> sqls = new ArrayList<>();
                     for (MethodDeclaration identifier : mapperMethods.list()) {
                         sqlRepository.find(identifier).ifPresent(sqls::add);

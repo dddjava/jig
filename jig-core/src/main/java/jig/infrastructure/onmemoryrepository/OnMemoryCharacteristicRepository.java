@@ -29,11 +29,6 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     }
 
     @Override
-    public boolean has(TypeIdentifier typeIdentifier, Characteristic characteristic) {
-        return map.get(characteristic).contains(typeIdentifier);
-    }
-
-    @Override
     public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
         return new TypeIdentifiers(map.get(characteristic));
     }

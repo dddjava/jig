@@ -9,8 +9,6 @@ public interface CharacteristicRepository {
 
     void register(TypeCharacteristics typeCharacteristics);
 
-    boolean has(TypeIdentifier typeIdentifier, Characteristic mapper);
-
     Characteristics findCharacteristics(TypeIdentifier typeIdentifier);
 
     Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers);

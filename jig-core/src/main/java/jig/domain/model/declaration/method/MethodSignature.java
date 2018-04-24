@@ -27,11 +27,11 @@ public class MethodSignature {
     }
 
     String argumentsAsText() {
-        return argumentTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(","));
+        return argumentTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
     }
 
     String argumentsAsSimpleText() {
-        return argumentTypeIdentifiers.stream().map(TypeIdentifier::asSimpleText).collect(joining(","));
+        return argumentTypeIdentifiers.stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
     }
 
     public List<TypeIdentifier> arguments() {

@@ -21,7 +21,7 @@ class MethodDeclarationTest {
                                 .map(TypeIdentifier::new)
                                 .collect(Collectors.toList())));
 
-        assertThat(methodDeclaration.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa,b.Bbb,a.Aaa)");
-        assertThat(methodDeclaration.asSimpleText()).isEqualTo("abc(Aaa,Bbb,Aaa)");
+        assertThat(methodDeclaration.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa, b.Bbb, a.Aaa)");
+        assertThat(methodDeclaration.asSimpleText()).isEqualTo("abc(Aaa, Bbb, Aaa)");
     }
 }

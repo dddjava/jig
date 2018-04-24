@@ -62,34 +62,42 @@ public class DiagramApplication implements CommandLineRunner {
         importLocalProjectService.importProject();
 
         if (diagramType == DiagramType.ServiceMethodCallHierarchy) {
-            LOGGER.info("ServiceAngleを取得します");
-            ServiceAngles serviceAngles = angleService.serviceAngles();
-
-            Path path = Paths.get("jig-diagram_service-method-call-hierarchy.png");
-            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
-                new ServiceMethodCallHierarchyWriter().write(serviceAngles, outputStream);
-
-                LOGGER.info("{} を出力しました。", path);
-            } catch (IOException e) {
-                throw new FileWriteFailureException(e);
-            }
+            serviceMethodCallHierarchy();
         } else if (diagramType == DiagramType.PackageDependency) {
-            LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
-            PackageDependencies packageDependencies = dependencyService.packageDependencies()
-                    .applyDepth(new PackageDepth(this.depth));
-
-            LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
-
-            Path path = Paths.get("jig-diagram_package-dependency.png");
-            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
-                new GraphvizJavaDriver(packageIdentifierFormatter, japaneseNameRepository).write(packageDependencies, outputStream);
-
-                LOGGER.info("{} を出力しました。", path);
-            } catch (IOException e) {
-                throw new FileWriteFailureException(e);
-            }
+            packageDependency();
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    private void packageDependency() {
+        LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
+        PackageDependencies packageDependencies = dependencyService.packageDependencies()
+                .applyDepth(new PackageDepth(this.depth));
+
+        LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
+
+        Path path = Paths.get("jig-diagram_package-dependency.png");
+        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
+            new GraphvizJavaDriver(packageIdentifierFormatter, japaneseNameRepository).write(packageDependencies, outputStream);
+
+            LOGGER.info("{} を出力しました。", path);
+        } catch (IOException e) {
+            throw new FileWriteFailureException(e);
+        }
+    }
+
+    private void serviceMethodCallHierarchy() {
+        LOGGER.info("ServiceAngleを取得します");
+        ServiceAngles serviceAngles = angleService.serviceAngles();
+
+        Path path = Paths.get("jig-diagram_service-method-call-hierarchy.png");
+        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
+            new ServiceMethodCallHierarchyWriter().write(serviceAngles, outputStream);
+
+            LOGGER.info("{} を出力しました。", path);
+        } catch (IOException e) {
+            throw new FileWriteFailureException(e);
+        }
     }
 }

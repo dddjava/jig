@@ -67,7 +67,7 @@ public class ServiceMethodCallHierarchyWriter {
                     .add(subgraphText)
                     .toString();
 
-            LOGGER.info(graphText);
+            LOGGER.debug(graphText);
 
             Graphviz.fromString(graphText)
                     .render(Format.PNG)

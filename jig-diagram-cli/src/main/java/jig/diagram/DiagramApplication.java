@@ -68,6 +68,8 @@ public class DiagramApplication implements CommandLineRunner {
             Path path = Paths.get("jig-diagram_service-method-call-hierarchy.png");
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
                 new ServiceMethodCallHierarchyWriter().write(serviceAngles, outputStream);
+
+                LOGGER.info("{} を出力しました。", path);
             } catch (IOException e) {
                 throw new FileWriteFailureException(e);
             }
@@ -81,6 +83,8 @@ public class DiagramApplication implements CommandLineRunner {
             Path path = Paths.get("jig-diagram_package-dependency.png");
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
                 new GraphvizJavaDriver(packageIdentifierFormatter, japaneseNameRepository).write(packageDependencies, outputStream);
+
+                LOGGER.info("{} を出力しました。", path);
             } catch (IOException e) {
                 throw new FileWriteFailureException(e);
             }

@@ -44,6 +44,8 @@ public class CommandLineApplication implements CommandLineRunner {
     String documentTypeText;
     @Value("${depth:-1}")
     int depth;
+    @Value("${outputDirectory}")
+    String outputDirectory;
 
     @Autowired
     ImportLocalProjectService importLocalProjectService;
@@ -60,11 +62,14 @@ public class CommandLineApplication implements CommandLineRunner {
     PackageIdentifierFormatter packageIdentifierFormatter;
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws IOException {
         List<DocumentType> documentTypes =
                 documentTypeText.isEmpty()
                         ? Arrays.asList(DocumentType.values())
                         : DocumentType.resolve(documentTypeText);
+
+        Path path = Paths.get(outputDirectory);
+        Files.createDirectories(path);
 
         long startTime = System.currentTimeMillis();
 
@@ -92,7 +97,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
         LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
 
-        Path path = Paths.get("jig-diagram_package-dependency.png");
+        Path path = Paths.get(outputDirectory).resolve("jig-diagram_package-dependency.png");
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
             new GraphvizJavaDriver(packageIdentifierFormatter, japaneseNameRepository).write(packageDependencies, outputStream);
 
@@ -107,7 +112,7 @@ public class CommandLineApplication implements CommandLineRunner {
         LOGGER.info("ServiceAngleを取得します");
         ServiceAngles serviceAngles = angleService.serviceAngles();
 
-        Path path = Paths.get("jig-diagram_service-method-call-hierarchy.png");
+        Path path = Paths.get(outputDirectory).resolve("jig-diagram_service-method-call-hierarchy.png");
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
             new ServiceMethodCallHierarchyWriter().write(serviceAngles, outputStream);
 
@@ -122,7 +127,7 @@ public class CommandLineApplication implements CommandLineRunner {
         LOGGER.info("レポートデータの準備をはじめます");
         Reports reports = reportService.reports();
 
-        Path path = Paths.get("jig-report-class-list.xlsx");
+        Path path = Paths.get(outputDirectory).resolve("jig-report-class-list.xlsx");
         LOGGER.info("ファイルに書き出します");
         new ExcelWriter().writeTo(reports, path);
     }

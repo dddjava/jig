@@ -21,11 +21,14 @@
 
 出力項目は以下を参照してください。
 
-- [機能情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/MethodPerspective.java)
+- 機能情報の出力項目
+    - [サービス](../jig-core/src/main/java/jig/domain/model/report/ServiceReport.java)
+    - [データソース](../jig-core/src/main/java/jig/domain/model/report/DatasourceReport.java)
 - モデル情報の出力項目
     - [列挙子](../jig-core/src/main/java/jig/domain/model/report/EnumReport.java)
     - [その他](../jig-core/src/main/java/jig/domain/model/report/GenericModelReport.java)
 - [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/ValidationReport.java)
+- [文字列比較箇所の出力項目](../jig-core/src/main/java/jig/domain/model/report/StringComparingReport.java)
 
 #### 補足: データソースのテーブル名
 

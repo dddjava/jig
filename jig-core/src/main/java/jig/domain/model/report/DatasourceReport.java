@@ -26,8 +26,8 @@ public class DatasourceReport {
         }
 
         @Override
-        public RowConverter<Row> converter() {
-            return new RowConverter<>(this, func);
+        public String convert(Row row) {
+            return func.apply(row);
         }
     }
 
@@ -60,27 +60,27 @@ public class DatasourceReport {
             return japaneseName.summarySentence();
         }
 
-        public String メソッド() {
+        String メソッド() {
             return datasourceAngle.method().asSimpleText();
         }
 
-        public String メソッド戻り値の型() {
+        String メソッド戻り値の型() {
             return datasourceAngle.returnType().asSimpleText();
         }
 
-        public String insertTables() {
+        String insertTables() {
             return datasourceAngle.insertTables().asText();
         }
 
-        public String selectTables() {
+        String selectTables() {
             return datasourceAngle.selectTables().asText();
         }
 
-        public String updateTables() {
+        String updateTables() {
             return datasourceAngle.updateTables().asText();
         }
 
-        public String deleteTables() {
+        String deleteTables() {
             return datasourceAngle.deleteTables().asText();
         }
     }

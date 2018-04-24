@@ -23,8 +23,8 @@ public class ValidationReport {
         }
 
         @Override
-        public RowConverter<Row> converter() {
-            return new RowConverter<>(this, func);
+        public String convert(Row row) {
+            return func.apply(row);
         }
     }
 

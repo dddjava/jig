@@ -9,7 +9,6 @@ class ConvertibleItemReport<ROW> implements Report {
     ConvertibleItem<ROW>[] convertibleItems;
 
     String title;
-    List<RowConverter<ROW>> rowConverters;
     List<ROW> rows;
 
     public ConvertibleItemReport(String title, List<ROW> rows, ConvertibleItem<ROW>[] values) {

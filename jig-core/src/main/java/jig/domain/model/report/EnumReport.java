@@ -27,8 +27,8 @@ public class EnumReport {
         }
 
         @Override
-        public RowConverter<Row> converter() {
-            return new RowConverter<>(this, func);
+        public String convert(Row row) {
+            return func.apply(row);
         }
     }
 
@@ -61,27 +61,27 @@ public class EnumReport {
             return japaneseName.summarySentence();
         }
 
-        public String 定数宣言() {
+        String 定数宣言() {
             return enumAngle.constantsDeclarations().toNameText();
         }
 
-        public String フィールド() {
+        String フィールド() {
             return enumAngle.fieldDeclarations().toSignatureText();
         }
 
-        public String 使用箇所() {
+        String 使用箇所() {
             return enumAngle.userTypeIdentifiers().asSimpleText();
         }
 
-        public String パラメーター有り() {
+        String パラメーター有り() {
             return enumAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED).toSymbolText();
         }
 
-        public String 振る舞い有り() {
+        String 振る舞い有り() {
             return enumAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR).toSymbolText();
         }
 
-        public String 多態() {
+        String 多態() {
             return enumAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM).toSymbolText();
         }
     }

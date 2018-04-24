@@ -1,7 +1,6 @@
 package jig.domain.model.report;
 
 import jig.domain.model.angle.ServiceAngle;
-import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.report.template.Report;
@@ -31,17 +30,15 @@ public class ServiceReport implements Report {
         }
     }
 
-    private final Characteristic characteristic;
     private final List<Row> list;
 
-    public ServiceReport(Characteristic characteristic, List<Row> list) {
-        this.characteristic = characteristic;
+    public ServiceReport(List<Row> list) {
         this.list = list;
     }
 
     @Override
     public Title title() {
-        return new Title(characteristic.name());
+        return new Title("SERVICE");
     }
 
     @Override

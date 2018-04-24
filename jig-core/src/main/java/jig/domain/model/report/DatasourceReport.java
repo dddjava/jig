@@ -1,7 +1,6 @@
 package jig.domain.model.report;
 
 import jig.domain.model.angle.DatasourceAngle;
-import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.report.template.Report;
@@ -32,17 +31,15 @@ public class DatasourceReport implements Report {
         }
     }
 
-    private final Characteristic characteristic;
     private final List<Row> list;
 
-    public DatasourceReport(Characteristic characteristic, List<Row> list) {
-        this.characteristic = characteristic;
+    public DatasourceReport(List<Row> list) {
         this.list = list;
     }
 
     @Override
     public Title title() {
-        return new Title(characteristic.name());
+        return new Title("REPOSITORY");
     }
 
     @Override

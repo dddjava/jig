@@ -71,7 +71,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
             return new ServiceReport.Row(angle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new ServiceReport(Characteristic.SERVICE, list);
+        return new ServiceReport(list);
     }
 
     Report datasourceReport() {
@@ -80,7 +80,7 @@ public class ReportService {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
             return new DatasourceReport.Row(angle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new DatasourceReport(Characteristic.REPOSITORY, list);
+        return new DatasourceReport(list);
     }
 
     Report stringComparingReport() {

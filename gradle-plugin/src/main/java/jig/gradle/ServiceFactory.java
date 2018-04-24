@@ -90,7 +90,7 @@ public class ServiceFactory {
     }
 
     public DependencyService dependencyService() {
-        return new DependencyService(characteristicRepository, relationRepository);
+        return new DependencyService(characteristicRepository);
     }
 
     PlantumlDriver diagramService(String outputOmitPrefix) {

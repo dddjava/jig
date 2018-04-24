@@ -5,7 +5,6 @@ import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifiers;
-import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.relation.dependency.DependencyRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ public class DependencyService {
     private final CharacteristicRepository characteristicRepository;
     private final DependencyRepository dependencyRepository;
 
-    public DependencyService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
+    public DependencyService(CharacteristicRepository characteristicRepository) {
         this.characteristicRepository = characteristicRepository;
         this.dependencyRepository = new DependencyRepository();
     }

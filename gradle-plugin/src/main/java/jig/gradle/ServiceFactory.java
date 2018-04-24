@@ -79,9 +79,6 @@ public class ServiceFactory {
 
     ReportService reportService(String outputOmitPrefixPath) {
         return new ReportService(
-                characteristicRepository,
-                relationRepository,
-                sqlRepository,
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
                 annotationDeclarationRepository,
                 new GlossaryService(

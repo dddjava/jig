@@ -2,7 +2,6 @@ package jig.application.usecase;
 
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.project.SourceFactory;
-import jig.domain.model.report.MethodPerspective;
 import jig.infrastructure.JigPaths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,7 @@ class ReportServiceTest {
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
         importLocalProjectService.importProject();
 
-        assertThat(sut.methodReportOn(MethodPerspective.SERVICE).rows())
+        assertThat(sut.serviceReport().rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
@@ -41,7 +40,7 @@ class ReportServiceTest {
                         "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, [], []]"
                 );
 
-        assertThat(sut.methodReportOn(MethodPerspective.REPOSITORY).rows())
+        assertThat(sut.datasourceReport().rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsSequence(
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, get(FugaIdentifier), Fuga, [sut.piyo], [fuga], [], []]",

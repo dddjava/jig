@@ -3,19 +3,11 @@ package jig.application.usecase;
 import jig.application.service.AngleService;
 import jig.application.service.GlossaryService;
 import jig.domain.model.angle.*;
-import jig.domain.model.angle.method.MethodDetail;
 import jig.domain.model.characteristic.Characteristic;
-import jig.domain.model.characteristic.CharacteristicRepository;
-import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
-import jig.domain.model.declaration.method.MethodDeclaration;
-import jig.domain.model.declaration.method.MethodDeclarations;
-import jig.domain.model.identifier.type.TypeIdentifier;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
-import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.relation.RelationRepository;
 import jig.domain.model.report.*;
 import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.Reports;
@@ -29,21 +21,12 @@ import java.util.stream.Collectors;
 @Service
 public class ReportService {
 
-    final CharacteristicRepository characteristicRepository;
-    final RelationRepository relationRepository;
-    final SqlRepository sqlRepository;
     final TypeIdentifierFormatter typeIdentifierFormatter;
     private AnnotationDeclarationRepository annotationDeclarationRepository;
     private GlossaryService glossaryService;
     private final AngleService angleService;
 
-    public ReportService(CharacteristicRepository characteristicRepository,
-                         RelationRepository relationRepository,
-                         SqlRepository sqlRepository,
-                         TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService, AngleService angleService) {
-        this.characteristicRepository = characteristicRepository;
-        this.relationRepository = relationRepository;
-        this.sqlRepository = sqlRepository;
+    public ReportService(TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService, AngleService angleService) {
         this.typeIdentifierFormatter = typeIdentifierFormatter;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.glossaryService = glossaryService;
@@ -114,23 +97,4 @@ public class ReportService {
         }
         return new ValidationReport(list);
     }
-
-    Report methodReportOn(MethodPerspective perspective) {
-        if (perspective == MethodPerspective.SERVICE) return serviceReport();
-        if (perspective == MethodPerspective.REPOSITORY) return datasourceReport();
-        
-        Characteristic characteristic = perspective.characteristic();
-        List<MethodDetail> list = new ArrayList<>();
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
-        for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            MethodDeclarations methods = relationRepository.methodsOf(typeIdentifier);
-            for (MethodDeclaration methodDeclaration : methods.list()) {
-                JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
-                MethodDetail detail = new MethodDetail(typeIdentifier, methodDeclaration, relationRepository, characteristicRepository, sqlRepository, japaneseName, typeIdentifierFormatter);
-                list.add(detail);
-            }
-        }
-        return new MethodReport(perspective, list);
-    }
-
 }

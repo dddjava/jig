@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 
 public enum DocumentType {
     ServiceMethodCallHierarchy,
-    PackageDependency;
+    PackageDependency,
+    ClassList;
 
     public static List<DocumentType> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))

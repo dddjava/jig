@@ -3,6 +3,7 @@ package jig.cli;
 import jig.application.service.AngleService;
 import jig.application.service.DependencyService;
 import jig.application.usecase.ImportLocalProjectService;
+import jig.application.usecase.ReportService;
 import jig.diagram.graphvizj.GraphvizJavaDriver;
 import jig.diagram.graphvizj.ServiceMethodCallHierarchyWriter;
 import jig.domain.basic.FileWriteFailureException;
@@ -11,6 +12,8 @@ import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
+import jig.domain.model.report.Reports;
+import jig.infrastructure.poi.writer.ExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +40,8 @@ public class CommandLineApplication implements CommandLineRunner {
         SpringApplication.run(CommandLineApplication.class, args);
     }
 
-    @Value("${diagramType:}")
-    String diagramTypeText;
+    @Value("${documentType:}")
+    String documentTypeText;
     @Value("${depth:-1}")
     int depth;
 
@@ -50,6 +53,8 @@ public class CommandLineApplication implements CommandLineRunner {
     @Autowired
     DependencyService dependencyService;
     @Autowired
+    ReportService reportService;
+    @Autowired
     JapaneseNameRepository japaneseNameRepository;
     @Autowired
     PackageIdentifierFormatter packageIdentifierFormatter;
@@ -57,9 +62,9 @@ public class CommandLineApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<DocumentType> documentTypes =
-                diagramTypeText.isEmpty()
+                documentTypeText.isEmpty()
                         ? Arrays.asList(DocumentType.values())
-                        : DocumentType.resolve(diagramTypeText);
+                        : DocumentType.resolve(documentTypeText);
 
         long startTime = System.currentTimeMillis();
 
@@ -71,6 +76,8 @@ public class CommandLineApplication implements CommandLineRunner {
                 serviceMethodCallHierarchy();
             } else if (documentType == DocumentType.PackageDependency) {
                 packageDependency();
+            } else if (documentType == DocumentType.ClassList) {
+                classList();
             }
         }
 
@@ -89,7 +96,7 @@ public class CommandLineApplication implements CommandLineRunner {
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
             new GraphvizJavaDriver(packageIdentifierFormatter, japaneseNameRepository).write(packageDependencies, outputStream);
 
-            LOGGER.info("{} を出力しました。", path);
+            LOGGER.info("{} を出力しました。", path.toAbsolutePath());
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }
@@ -104,9 +111,19 @@ public class CommandLineApplication implements CommandLineRunner {
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(path))) {
             new ServiceMethodCallHierarchyWriter().write(serviceAngles, outputStream);
 
-            LOGGER.info("{} を出力しました。", path);
+            LOGGER.info("{} を出力しました。", path.toAbsolutePath());
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }
+    }
+
+    private void classList() {
+        LOGGER.info("クラス一覧を出力します");
+        LOGGER.info("レポートデータの準備をはじめます");
+        Reports reports = reportService.reports();
+
+        Path path = Paths.get("jig-report-class-list.xlsx");
+        LOGGER.info("ファイルに書き出します");
+        new ExcelWriter().writeTo(reports, path);
     }
 }

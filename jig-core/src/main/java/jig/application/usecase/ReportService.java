@@ -55,7 +55,7 @@ public class ReportService {
                 serviceReport(),
                 methodReportOn(MethodPerspective.REPOSITORY),
                 typeReportOn(Characteristic.IDENTIFIER),
-                enumReportOn(),
+                enumReport(),
                 typeReportOn(Characteristic.NUMBER),
                 typeReportOn(Characteristic.COLLECTION),
                 typeReportOn(Characteristic.DATE),
@@ -97,7 +97,7 @@ public class ReportService {
         return new GenericModelReport(characteristic, list);
     }
 
-    Report enumReportOn() {
+    Report enumReport() {
         EnumAngles enumAngles = angleService.enumAngles();
         List<EnumReport.Row> list = enumAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());

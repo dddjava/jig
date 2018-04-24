@@ -53,7 +53,7 @@ class ReportServiceTest {
                 .containsSequence(
                         "stub.domain.model.type.SimpleIdentifier");
 
-        assertThat(sut.enumReportOn().rows())
+        assertThat(sut.enumReport().rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(

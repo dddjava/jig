@@ -1,6 +1,7 @@
 package jig.application.usecase;
 
 import jig.application.service.DependencyService;
+import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.domain.model.identifier.namespace.PackageIdentifier;
 import jig.domain.model.relation.dependency.PackageDependencies;
 import jig.infrastructure.LocalProject;
@@ -37,7 +38,7 @@ public class ImportServiceTest {
     @Test
     void パッケージ依存() {
         importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
-        PackageDependencies packageDependencies = sut.packageDependencies();
+        PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1));
 
         // パッケージのリストアップ
         List<String> packageNames = packageDependencies.allPackages().stream()

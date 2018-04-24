@@ -38,8 +38,7 @@ public class JigPackageDiagramTask extends DefaultTask {
                 localProject.getSqlSources(),
                 localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
-        PackageDependencies packageDependencies = serviceFactory.dependencyService().packageDependencies()
-                .applyDepth(new PackageDepth(extension.getDepth()));
+        PackageDependencies packageDependencies = serviceFactory.dependencyService().packageDependencies(new PackageDepth(extension.getDepth()));
         LOGGER.info("関連数: " + packageDependencies.list().size());
 
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(output))) {

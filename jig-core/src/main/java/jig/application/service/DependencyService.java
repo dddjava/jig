@@ -25,7 +25,7 @@ public class DependencyService {
         this.dependencyRepository = new DependencyRepository();
     }
 
-    public PackageDependencies packageDependencies() {
+    public PackageDependencies packageDependencies(PackageDepth packageDepth) {
         TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
 
         PackageDependencies packageDependencies = dependencyRepository
@@ -34,7 +34,7 @@ public class DependencyService {
 
         showDepth(packageDependencies);
 
-        return packageDependencies;
+        return packageDependencies.applyDepth(packageDepth);
     }
 
     public void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers) {

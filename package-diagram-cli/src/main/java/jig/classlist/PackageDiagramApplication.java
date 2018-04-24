@@ -55,8 +55,7 @@ public class PackageDiagramApplication implements CommandLineRunner {
         importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
-        PackageDependencies packageDependencies = dependencyService.packageDependencies()
-                .applyDepth(new PackageDepth(this.depth));
+        PackageDependencies packageDependencies = dependencyService.packageDependencies(new PackageDepth(this.depth));
 
         LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
 

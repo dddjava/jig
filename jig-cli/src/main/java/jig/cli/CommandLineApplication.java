@@ -96,8 +96,7 @@ public class CommandLineApplication implements CommandLineRunner {
     private void packageDependency() {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
         LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
-        PackageDependencies packageDependencies = dependencyService.packageDependencies()
-                .applyDepth(new PackageDepth(this.depth));
+        PackageDependencies packageDependencies = dependencyService.packageDependencies(new PackageDepth(this.depth));
 
         LOGGER.info("出力する関連数: {}", packageDependencies.number().asText());
 

@@ -130,7 +130,7 @@ public class CommandLineApplication implements CommandLineRunner {
         LOGGER.info("レポートデータの準備をはじめます");
         Reports reports = reportService.reports();
 
-        Path path = Paths.get(outputDirectory).resolve("jig-report-class-list.xlsx");
+        Path path = Paths.get(outputDirectory).resolve("jig-report_class-list.xlsx");
         LOGGER.info("ファイルに書き出します");
         new ExcelWriter().writeTo(reports, path);
     }

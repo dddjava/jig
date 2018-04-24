@@ -89,7 +89,8 @@ public class ServiceFactory {
                         japaneseNameRepository),
                 new AngleService(
                         characteristicRepository,
-                        relationRepository)
+                        relationRepository,
+                        sqlRepository)
         );
     }
 

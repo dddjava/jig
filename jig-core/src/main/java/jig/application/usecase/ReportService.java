@@ -2,10 +2,7 @@ package jig.application.usecase;
 
 import jig.application.service.AngleService;
 import jig.application.service.GlossaryService;
-import jig.domain.model.angle.DesignSmellAngle;
-import jig.domain.model.angle.EnumAngles;
-import jig.domain.model.angle.GenericModelAngles;
-import jig.domain.model.angle.ServiceAngles;
+import jig.domain.model.angle.*;
 import jig.domain.model.angle.method.MethodDetail;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
@@ -75,6 +72,15 @@ public class ReportService {
             return new ServiceReport.Row(angle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
         return new ServiceReport(Characteristic.SERVICE, list);
+    }
+
+    Report datasourceReport() {
+        DatasourceAngles datasourceAngles = angleService.datasourceAngles();
+        List<DatasourceReport.Row> list = datasourceAngles.list().stream().map(angle -> {
+            JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
+            return new DatasourceReport.Row(angle, japaneseName, typeIdentifierFormatter);
+        }).collect(Collectors.toList());
+        return new DatasourceReport(Characteristic.REPOSITORY, list);
     }
 
     Report stringComparingReport() {

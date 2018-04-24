@@ -4,6 +4,9 @@ import jig.domain.model.angle.*;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.characteristic.Characteristics;
+import jig.domain.model.datasource.Sql;
+import jig.domain.model.datasource.SqlRepository;
+import jig.domain.model.datasource.Sqls;
 import jig.domain.model.declaration.field.FieldDeclarations;
 import jig.domain.model.declaration.method.MethodDeclaration;
 import jig.domain.model.declaration.method.MethodDeclarations;
@@ -13,6 +16,7 @@ import jig.domain.model.identifier.type.TypeIdentifiers;
 import jig.domain.model.relation.RelationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,12 +25,14 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class AngleService {
 
-    private final CharacteristicRepository characteristicRepository;
-    private final RelationRepository relationRepository;
+    CharacteristicRepository characteristicRepository;
+    RelationRepository relationRepository;
+    SqlRepository sqlRepository;
 
-    public AngleService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository) {
+    public AngleService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository, SqlRepository sqlRepository) {
         this.characteristicRepository = characteristicRepository;
         this.relationRepository = relationRepository;
+        this.sqlRepository = sqlRepository;
     }
 
     public ServiceAngles serviceAngles() {
@@ -42,6 +48,24 @@ public class AngleService {
                     return new ServiceAngle(methodDeclaration, returnTypeIdentifier, userCharacteristics, usingFieldTypeIdentifiers, usingRepositoryMethods);
                 })).collect(toList());
         return new ServiceAngles(list);
+    }
+
+    public DatasourceAngles datasourceAngles() {
+        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.REPOSITORY);
+        List<DatasourceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
+                relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
+                    TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
+
+                    MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
+                            .map(relationRepository::findUseMethod)
+                            .filter(methodIdentifier -> characteristicRepository.has(methodIdentifier.declaringType(), Characteristic.MAPPER));
+                    List<Sql> sqls = new ArrayList<>();
+                    for (MethodDeclaration identifier : mapperMethods.list()) {
+                        sqlRepository.find(identifier).ifPresent(sqls::add);
+                    }
+                    return new DatasourceAngle(methodDeclaration, returnTypeIdentifier, new Sqls(sqls));
+                })).collect(toList());
+        return new DatasourceAngles(list);
     }
 
     public EnumAngles enumAngles() {

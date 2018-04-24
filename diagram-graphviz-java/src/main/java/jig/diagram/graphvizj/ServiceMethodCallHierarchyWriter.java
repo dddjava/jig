@@ -29,14 +29,14 @@ public class ServiceMethodCallHierarchyWriter {
                     .flatMap(serviceAngle ->
                             serviceAngle.userServiceMethods().list().stream().map(userServiceMethod ->
                                     String.format("\"%s\" -> \"%s\";",
-                                            serviceAngle.method().asFullText(),
-                                            userServiceMethod.asFullText())
+                                            userServiceMethod.asFullText(),
+                                            serviceAngle.method().asFullText())
                             ))
                     .collect(joining("\n"));
 
             // メソッドのラベルをシグネチャだけにする
             String labelText = angles.stream()
-                    .map(serviceAngle -> serviceAngle.method())
+                    .map(ServiceAngle::method)
                     .map(serviceMethod ->
                             String.format("\"%s\" [label=\"%s\"];",
                                     serviceMethod.asFullText(),

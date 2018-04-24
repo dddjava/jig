@@ -29,6 +29,21 @@ public class AngleService {
         this.relationRepository = relationRepository;
     }
 
+    public ServiceAngles serviceAngles() {
+        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.SERVICE);
+        List<ServiceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
+                relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
+                    TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
+                    TypeIdentifiers userTypes = relationRepository.findUserTypes(methodDeclaration);
+                    Characteristics userCharacteristics = characteristicRepository.findCharacteristics(userTypes);
+                    TypeIdentifiers usingFieldTypeIdentifiers = relationRepository.findUseFields(methodDeclaration).toTypeIdentifies();
+                    MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethod(methodDeclaration)
+                            .filter(m -> characteristicRepository.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
+                    return new ServiceAngle(methodDeclaration, returnTypeIdentifier, userCharacteristics, usingFieldTypeIdentifiers, usingRepositoryMethods);
+                })).collect(toList());
+        return new ServiceAngles(list);
+    }
+
     public EnumAngles enumAngles() {
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
         List<EnumAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {

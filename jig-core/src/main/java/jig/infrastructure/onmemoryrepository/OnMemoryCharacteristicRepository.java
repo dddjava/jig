@@ -46,4 +46,17 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
                 .collect(toSet());
         return new Characteristics(EnumSet.copyOf(set));
     }
+
+    @Override
+    public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
+        HashSet<Characteristic> set = new HashSet<>();
+        for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
+            for (Map.Entry<Characteristic, List<TypeIdentifier>> entry : map.entrySet()) {
+                if (entry.getValue().contains(typeIdentifier)) {
+                    set.add(entry.getKey());
+                }
+            }
+        }
+        return new Characteristics(EnumSet.copyOf(set));
+    }
 }

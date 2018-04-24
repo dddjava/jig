@@ -17,4 +17,8 @@ public enum Satisfaction {
     public String toSymbolText() {
         return symbol;
     }
+
+    public boolean isSatisfy() {
+        return this == SATISFY;
+    }
 }

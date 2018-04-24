@@ -1,4 +1,4 @@
-package jig.diagram.service;
+package jig.diagram.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;

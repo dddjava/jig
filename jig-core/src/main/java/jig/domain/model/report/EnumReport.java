@@ -25,16 +25,16 @@ public class EnumReport implements Report {
         振る舞い有り(Row::振る舞い有り),
         多態(Row::多態);
 
-        private final Function<Row, String> func;
+        Function<Row, String> func;
 
         Items(Function<Row, String> func) {
             this.func = func;
         }
     }
 
-    private final List<EnumReport.Row> list;
+    private final List<Row> list;
 
-    public EnumReport(List<EnumReport.Row> list) {
+    public EnumReport(List<Row> list) {
         this.list = list;
     }
 

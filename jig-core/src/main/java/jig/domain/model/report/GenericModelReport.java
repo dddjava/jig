@@ -8,13 +8,27 @@ import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class GenericModelReport implements Report {
 
+    private enum Items {
+        クラス名(Row::クラス名),
+        クラス和名(Row::クラス和名),
+        使用箇所(Row::使用箇所);
+
+        Function<Row, String> func;
+
+        Items(Function<Row, String> func) {
+            this.func = func;
+        }
+    }
+
     private final Characteristic characteristic;
-    private final List<GenericModelReport.Row> list;
+    private final List<Row> list;
 
     public GenericModelReport(Characteristic characteristic, List<Row> list) {
         this.characteristic = characteristic;
@@ -28,20 +42,17 @@ public class GenericModelReport implements Report {
 
     @Override
     public ReportRow headerRow() {
-        return ReportRow.of(
-                "クラス名",
-                "クラス和名",
-                "使用箇所"
-        );
+        return ReportRow.of(Arrays.stream(Items.values()).map(Enum::name).toArray(String[]::new));
     }
 
     @Override
     public List<ReportRow> rows() {
-        return list.stream().map(row -> ReportRow.of(
-                row.クラス名(),
-                row.クラス和名(),
-                row.使用箇所()
-        )).collect(Collectors.toList());
+        return list.stream()
+                .map(row -> ReportRow.of(
+                        Arrays.stream(Items.values())
+                                .map(column -> column.func.apply(row))
+                                .toArray(String[]::new)))
+                .collect(Collectors.toList());
     }
 
     public static class Row {

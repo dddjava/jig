@@ -7,10 +7,26 @@ import jig.domain.model.report.template.Report;
 import jig.domain.model.report.template.ReportRow;
 import jig.domain.model.report.template.Title;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ValidationReport implements Report {
+
+    private enum Items {
+        クラス名(Row::クラス名),
+        クラス和名(Row::クラス和名),
+        フィールドorメソッド(Row::フィールドorメソッド),
+        アノテーション名(Row::アノテーション名),
+        アノテーション記述(Row::アノテーション記述);
+
+        Function<Row, String> func;
+
+        Items(Function<Row, String> func) {
+            this.func = func;
+        }
+    }
 
     private final List<Row> list;
 
@@ -25,24 +41,17 @@ public class ValidationReport implements Report {
 
     @Override
     public ReportRow headerRow() {
-        return ReportRow.of(
-                "クラス名",
-                "クラス和名",
-                "フィールドorメソッド",
-                "アノテーション名",
-                "アノテーション記述"
-        );
+        return ReportRow.of(Arrays.stream(Items.values()).map(Enum::name).toArray(String[]::new));
     }
 
     @Override
     public List<ReportRow> rows() {
-        return list.stream().map(row -> ReportRow.of(
-                row.クラス名(),
-                row.クラス和名(),
-                row.フィールドorメソッド(),
-                row.アノテーション名(),
-                row.アノテーション記述()
-        )).collect(Collectors.toList());
+        return list.stream()
+                .map(row -> ReportRow.of(
+                        Arrays.stream(Items.values())
+                                .map(column -> column.func.apply(row))
+                                .toArray(String[]::new)))
+                .collect(Collectors.toList());
     }
 
     public static class Row {

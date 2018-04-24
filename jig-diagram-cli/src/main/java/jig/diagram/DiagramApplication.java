@@ -25,6 +25,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication(scanBasePackages = "jig")
 public class DiagramApplication implements CommandLineRunner {
@@ -54,23 +56,29 @@ public class DiagramApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        DiagramType diagramType = DiagramType.resolve(diagramTypeText);
+        List<DiagramType> diagramTypes =
+                diagramTypeText.isEmpty()
+                        ? Arrays.asList(DiagramType.values())
+                        : DiagramType.resolve(diagramTypeText);
 
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         importLocalProjectService.importProject();
 
-        if (diagramType == DiagramType.ServiceMethodCallHierarchy) {
-            serviceMethodCallHierarchy();
-        } else if (diagramType == DiagramType.PackageDependency) {
-            packageDependency();
+        for (DiagramType diagramType : diagramTypes) {
+            if (diagramType == DiagramType.ServiceMethodCallHierarchy) {
+                serviceMethodCallHierarchy();
+            } else if (diagramType == DiagramType.PackageDependency) {
+                packageDependency();
+            }
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 
     private void packageDependency() {
+        LOGGER.info("パッケージ依存ダイアグラムを出力します");
         LOGGER.info("パッケージ依存情報を取得します(設定深度: {})", this.depth);
         PackageDependencies packageDependencies = dependencyService.packageDependencies()
                 .applyDepth(new PackageDepth(this.depth));
@@ -88,6 +96,7 @@ public class DiagramApplication implements CommandLineRunner {
     }
 
     private void serviceMethodCallHierarchy() {
+        LOGGER.info("サービスメソッド呼び出しダイアグラムを出力します");
         LOGGER.info("ServiceAngleを取得します");
         ServiceAngles serviceAngles = angleService.serviceAngles();
 

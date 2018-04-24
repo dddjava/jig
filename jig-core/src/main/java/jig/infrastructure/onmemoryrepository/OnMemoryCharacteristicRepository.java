@@ -44,7 +44,7 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
                 .filter(entry -> entry.getValue().contains(typeIdentifier))
                 .map(Map.Entry::getKey)
                 .collect(toSet());
-        return new Characteristics(EnumSet.copyOf(set));
+        return new Characteristics(set);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
                 }
             }
         }
-        return new Characteristics(EnumSet.copyOf(set));
+        return new Characteristics(set);
     }
 }

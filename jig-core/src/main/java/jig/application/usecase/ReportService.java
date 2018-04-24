@@ -53,7 +53,7 @@ public class ReportService {
     public Reports reports() {
         return new Reports(Arrays.asList(
                 serviceReport(),
-                methodReportOn(MethodPerspective.REPOSITORY),
+                datasourceReport(),
                 typeReportOn(Characteristic.IDENTIFIER),
                 enumReport(),
                 typeReportOn(Characteristic.NUMBER),
@@ -116,6 +116,9 @@ public class ReportService {
     }
 
     Report methodReportOn(MethodPerspective perspective) {
+        if (perspective == MethodPerspective.SERVICE) return serviceReport();
+        if (perspective == MethodPerspective.REPOSITORY) return datasourceReport();
+        
         Characteristic characteristic = perspective.characteristic();
         List<MethodDetail> list = new ArrayList<>();
         TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);

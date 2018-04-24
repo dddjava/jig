@@ -1,12 +1,12 @@
 package jig.domain.model.characteristic;
 
-import java.util.EnumSet;
+import java.util.Set;
 
 public class Characteristics {
 
-    EnumSet<Characteristic> characteristics;
+    Set<Characteristic> characteristics;
 
-    public Characteristics(EnumSet<Characteristic> characteristics) {
+    public Characteristics(Set<Characteristic> characteristics) {
         this.characteristics = characteristics;
     }
 

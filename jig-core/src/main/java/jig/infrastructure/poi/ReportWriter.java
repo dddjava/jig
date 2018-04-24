@@ -1,6 +1,6 @@
 package jig.infrastructure.poi;
 
-import jig.domain.model.report.template.Reports;
+import jig.domain.model.report.Reports;
 
 import java.nio.file.Path;
 

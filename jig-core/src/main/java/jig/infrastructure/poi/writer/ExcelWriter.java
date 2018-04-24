@@ -1,7 +1,7 @@
 package jig.infrastructure.poi.writer;
 
-import jig.domain.model.report.template.ReportRow;
-import jig.domain.model.report.template.Reports;
+import jig.domain.model.report.ReportRow;
+import jig.domain.model.report.Reports;
 import jig.infrastructure.poi.ReportWriter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;

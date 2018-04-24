@@ -1,4 +1,4 @@
-package jig.domain.model.report.template;
+package jig.domain.model.report;
 
 public class Title {
 

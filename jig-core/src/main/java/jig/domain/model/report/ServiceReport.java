@@ -3,18 +3,13 @@ package jig.domain.model.report;
 import jig.domain.model.angle.ServiceAngle;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.report.template.ItemRowConverter;
-import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.ReportImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ServiceReport {
 
-    private enum Items {
+    private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
         メソッド(Row::メソッド),
@@ -28,6 +23,11 @@ public class ServiceReport {
         Items(Function<Row, String> func) {
             this.func = func;
         }
+
+        @Override
+        public RowConverter<Row> converter() {
+            return new RowConverter<>(this, func);
+        }
     }
 
     private final List<Row> list;
@@ -37,11 +37,7 @@ public class ServiceReport {
     }
 
     public Report toReport() {
-        List<ItemRowConverter<Row>> rowConverters =
-                Arrays.stream(Items.values())
-                        .map(item -> new ItemRowConverter<>(item, item.func))
-                        .collect(Collectors.toList());
-        return new ReportImpl<>("SERVICE", rowConverters, list);
+        return new ConvertibleItemReport<>("SERVICE", list, Items.values());
     }
 
     public static class Row {
@@ -63,23 +59,23 @@ public class ServiceReport {
             return japaneseName.summarySentence();
         }
 
-        public String メソッド() {
+        String メソッド() {
             return serviceAngle.method().asSimpleText();
         }
 
-        public String メソッド戻り値の型() {
+        String メソッド戻り値の型() {
             return serviceAngle.returnType().asSimpleText();
         }
 
-        public String イベントハンドラ() {
+        String イベントハンドラ() {
             return serviceAngle.usingFromController().toSymbolText();
         }
 
-        public String 使用しているフィールドの型() {
+        String 使用しているフィールドの型() {
             return serviceAngle.usingFields().asSimpleText();
         }
 
-        public String 使用しているリポジトリのメソッド() {
+        String 使用しているリポジトリのメソッド() {
             return serviceAngle.usingRepositoryMethods().asSimpleText();
         }
     }

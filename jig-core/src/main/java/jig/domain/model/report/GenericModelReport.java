@@ -4,18 +4,13 @@ import jig.domain.model.angle.GenericModelAngle;
 import jig.domain.model.characteristic.Characteristic;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.report.template.ItemRowConverter;
-import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.ReportImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class GenericModelReport {
 
-    private enum Items {
+    private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
         使用箇所(Row::使用箇所);
@@ -24,6 +19,11 @@ public class GenericModelReport {
 
         Items(Function<Row, String> func) {
             this.func = func;
+        }
+
+        @Override
+        public RowConverter<Row> converter() {
+            return new RowConverter<>(this, func);
         }
     }
 
@@ -36,11 +36,7 @@ public class GenericModelReport {
     }
 
     public Report toReport() {
-        List<ItemRowConverter<Row>> rowConverters =
-                Arrays.stream(Items.values())
-                        .map(item -> new ItemRowConverter<>(item, item.func))
-                        .collect(Collectors.toList());
-        return new ReportImpl<>(characteristic.name(), rowConverters, list);
+        return new ConvertibleItemReport<>(characteristic.name(), list, Items.values());
     }
 
     public static class Row {
@@ -62,7 +58,7 @@ public class GenericModelReport {
             return japaneseName.summarySentence();
         }
 
-        public String 使用箇所() {
+        String 使用箇所() {
             return genericModelAngle.userTypeIdentifiers().asSimpleText();
         }
     }

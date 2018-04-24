@@ -3,18 +3,13 @@ package jig.domain.model.report;
 import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
-import jig.domain.model.report.template.ItemRowConverter;
-import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.ReportImpl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ValidationReport {
 
-    private enum Items {
+    private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
         フィールドorメソッド(Row::フィールドorメソッド),
@@ -26,6 +21,11 @@ public class ValidationReport {
         Items(Function<Row, String> func) {
             this.func = func;
         }
+
+        @Override
+        public RowConverter<Row> converter() {
+            return new RowConverter<>(this, func);
+        }
     }
 
     private final List<Row> list;
@@ -35,11 +35,7 @@ public class ValidationReport {
     }
 
     public Report toReport() {
-        List<ItemRowConverter<Row>> rowConverters =
-                Arrays.stream(Items.values())
-                        .map(item -> new ItemRowConverter<>(item, item.func))
-                        .collect(Collectors.toList());
-        return new ReportImpl<>("VALIDATION", rowConverters, list);
+        return new ConvertibleItemReport<>("VALIDATION", list, Items.values());
     }
 
     public static class Row {

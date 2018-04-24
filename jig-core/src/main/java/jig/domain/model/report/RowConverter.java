@@ -1,13 +1,13 @@
-package jig.domain.model.report.template;
+package jig.domain.model.report;
 
 import java.util.function.Function;
 
-public class ItemRowConverter<T> {
+public class RowConverter<T> {
 
     Enum<?> item;
     Function<T, String> rowConverter;
 
-    public ItemRowConverter(Enum<?> item, Function<T, String> rowConverter) {
+    public RowConverter(Enum<?> item, Function<T, String> rowConverter) {
         this.item = item;
         this.rowConverter = rowConverter;
     }

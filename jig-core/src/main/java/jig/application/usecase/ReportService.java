@@ -9,8 +9,8 @@ import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.report.*;
-import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.Reports;
+import jig.domain.model.report.Report;
+import jig.domain.model.report.Reports;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

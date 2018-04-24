@@ -2,7 +2,7 @@ package jig.classlist;
 
 import jig.application.usecase.ImportLocalProjectService;
 import jig.application.usecase.ReportService;
-import jig.domain.model.report.template.Reports;
+import jig.domain.model.report.Reports;
 import jig.infrastructure.poi.ReportFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

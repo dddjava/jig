@@ -1,9 +1,6 @@
 package jig.domain.model.report;
 
 import jig.domain.model.angle.DesignSmellAngle;
-import jig.domain.model.report.template.Report;
-import jig.domain.model.report.template.ReportRow;
-import jig.domain.model.report.template.Title;
 
 import java.util.List;
 import java.util.stream.Collectors;

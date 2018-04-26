@@ -79,17 +79,6 @@ project(':jig-core') {
     }
 }
 
-project(':diagram-plantuml') {
-    dependencies {
-        compile project(':jig-core')
-        if (project.hasProperty('includePlantUML')) {
-            compile 'net.sourceforge.plantuml:plantuml:8059'
-        } else {
-            compileOnly 'net.sourceforge.plantuml:plantuml:8059'
-        }
-    }
-}
-
 project(':diagram-graphviz-java') {
     dependencies {
         compile project(':jig-core')
@@ -121,7 +110,7 @@ project(':gradle-plugin') {
     }
     dependencies {
         compile project(':jig-core')
-        compile project(':diagram-plantuml')
+        compile project(':diagram-graphviz-java')
         compile gradleApi()
         compile localGroovy()
     }

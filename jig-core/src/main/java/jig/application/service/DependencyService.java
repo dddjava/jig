@@ -19,9 +19,9 @@ public class DependencyService {
     private final CharacteristicRepository characteristicRepository;
     private final DependencyRepository dependencyRepository;
 
-    public DependencyService(CharacteristicRepository characteristicRepository) {
+    public DependencyService(CharacteristicRepository characteristicRepository, DependencyRepository dependencyRepository) {
         this.characteristicRepository = characteristicRepository;
-        this.dependencyRepository = new DependencyRepository();
+        this.dependencyRepository = dependencyRepository;
     }
 
     public PackageDependencies packageDependencies(PackageDepth packageDepth) {

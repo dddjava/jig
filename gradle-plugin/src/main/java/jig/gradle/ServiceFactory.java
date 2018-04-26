@@ -8,6 +8,7 @@ import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.RelationRepository;
+import jig.domain.model.relation.dependency.DependencyRepository;
 import jig.infrastructure.LocalProject;
 import jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import jig.infrastructure.PropertySpecificationContext;
@@ -34,6 +35,7 @@ public class ServiceFactory {
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
+    final DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
 
     ImportService importService() {
 
@@ -92,7 +94,7 @@ public class ServiceFactory {
     }
 
     DependencyService dependencyService() {
-        return new DependencyService(characteristicRepository);
+        return new DependencyService(characteristicRepository, dependencyRepository);
     }
 
     private JigViewResolver jigViewResolver(String outputOmitPrefix) {

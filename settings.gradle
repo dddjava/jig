@@ -2,8 +2,6 @@ rootProject.name = 'jig'
 
 include 'jig-core',
         'jig-cli',
-        'package-diagram-cli',
-        'class-list-cli',
         'diagram-plantuml',
         'diagram-graphviz-java',
         'gradle-plugin'

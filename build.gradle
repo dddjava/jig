@@ -97,24 +97,10 @@ project(':diagram-graphviz-java') {
     }
 }
 
-project(':package-diagram-cli') {
-    dependencies {
-        compile project(':jig-core')
-        compile project(':diagram-plantuml')
-        compile project(':diagram-graphviz-java')
-    }
-}
-
 project(':jig-cli') {
     dependencies {
         compile project(':jig-core')
         compile project(':diagram-graphviz-java')
-    }
-}
-
-project(':class-list-cli') {
-    dependencies {
-        compile project(':jig-core')
     }
 }
 

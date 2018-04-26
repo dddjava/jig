@@ -3,7 +3,7 @@ package jig.gradle;
 import jig.application.service.*;
 import jig.application.usecase.ImportService;
 import jig.application.usecase.ReportService;
-import jig.diagram.plantuml.PlantumlDriver;
+import jig.diagram.graphvizj.GraphvizJavaDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
@@ -93,7 +93,7 @@ public class ServiceFactory {
         return new DependencyService(characteristicRepository);
     }
 
-    PlantumlDriver diagramService(String outputOmitPrefix) {
-        return new PlantumlDriver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
+    GraphvizJavaDriver diagramService(String outputOmitPrefix) {
+        return new GraphvizJavaDriver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
     }
 }

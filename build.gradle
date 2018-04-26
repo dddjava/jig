@@ -121,7 +121,7 @@ project(':gradle-plugin') {
     }
     dependencies {
         compile project(':jig-core')
-        compile project(':diagram-plantuml')
+        compile project('::diagram-graphviz-java')
         compile gradleApi()
         compile localGroovy()
     }

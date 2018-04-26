@@ -23,14 +23,13 @@ jigPackageDiagram.dependsOn(compileJava)
 ## 設定(値はデフォルト)
 ```
 jigListConfig {
-    outputDirectory = 'build/reports/output.xlsx' //出力ディレクトリ
+    outputDirectory = 'build/reports' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
 }
 
 jigPackageDiagramConfig {
-    packagePattern = '.*.domain.model' //出力対象のパッケージ
-    outputDiagramName = 'build/reports/output.png' //出力ファイル名
-    outputOmitPrefix = '.+\.(service|domain\.(model|basic))\.' //省略するプレフィックス
+    outputDirectory = 'build/reports' //出力ディレクトリ
+    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
     deps = -1 //出力する最大のパッケージ階層(-1は制限なし）
 }
 ```

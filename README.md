@@ -11,17 +11,11 @@
 ## 使い方
 
 - [コマンドライン](./jig-cli)
-- コマンドライン（廃止予定）
-  - [一覧出力](./class-list-cli)
-  - [ダイアグラム出力](./package-diagram-cli)
 - [Gradleプラグイン](./gradle-plugin)
 
-## 入手方法
+## ビルド
 
-- CircleCIからダウンロードする
-  - https://circleci.com/api/v1.1/project/github/irof/Jig/latest/artifacts
-- ビルドする
-  - `./gradlew clean build`
+ `./gradlew clean build`
 
 ## LICENSE
 

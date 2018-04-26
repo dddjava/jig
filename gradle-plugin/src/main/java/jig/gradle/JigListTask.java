@@ -3,7 +3,7 @@ package jig.gradle;
 import jig.application.usecase.ReportService;
 import jig.domain.model.report.Reports;
 import jig.infrastructure.LocalProject;
-import jig.infrastructure.poi.ReportFormat;
+import jig.infrastructure.poi.writer.ExcelWriter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -35,9 +35,7 @@ public class JigListTask extends DefaultTask {
         ReportService reportService = serviceFactory.reportService(outputPath);
         Reports reports = reportService.reports();
 
-        ReportFormat.from(outputPath)
-                .writer()
-                .writeTo(reports, Paths.get(outputPath));
+        new ExcelWriter().writeTo(reports, Paths.get(outputPath));
     }
 
     private void ensureExists(String outputPath) {

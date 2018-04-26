@@ -1,49 +1,26 @@
 package jig.gradle;
 
-import jig.application.usecase.ReportService;
-import jig.domain.model.report.Reports;
-import jig.infrastructure.LocalProject;
-import jig.infrastructure.poi.writer.ExcelWriter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class JigListTask extends DefaultTask {
-
-    ServiceFactory serviceFactory = new ServiceFactory();
+    private static final Logger LOGGER = LoggerFactory.getLogger(JigListTask.class);
 
     @TaskAction
     public void apply() {
         ExtensionContainer extensions = getProject().getExtensions();
         JigListExtension extension = extensions.findByType(JigListExtension.class);
 
-        LocalProject localProject = serviceFactory.localProject(getProject());
-        serviceFactory.importService(getProject()).importSources(
-                localProject.getSpecificationSources(),
-                localProject.getSqlSources(),
-                localProject.getTypeNameSources(),
-                localProject.getPackageNameSources());
+        ServiceFactory serviceFactory = JigImportTask.getServiceFactory(getProject());
 
-        String outputPath = extension.getOutputPath();
-        ensureExists(outputPath);
-
-        ReportService reportService = serviceFactory.reportService(outputPath);
-        Reports reports = reportService.reports();
-
-        new ExcelWriter().writeTo(reports, Paths.get(outputPath));
+        serviceFactory.classListController(extension.getOutputOmitPrefix())
+                .classList()
+                .write(Paths.get(extension.getOutputDirectory()));
     }
 
-    private void ensureExists(String outputPath) {
-        Path outputDirPath = Paths.get(outputPath);
-        try {
-            Files.createDirectories(outputDirPath.getParent());
-        } catch (IOException e) {
-            throw new AssertionError(e);
-        }
-    }
 }

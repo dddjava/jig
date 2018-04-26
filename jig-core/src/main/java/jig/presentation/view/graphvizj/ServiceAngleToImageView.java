@@ -1,10 +1,11 @@
-package jig.diagram.graphvizj;
+package jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import jig.domain.model.angle.ServiceAngle;
 import jig.domain.model.angle.ServiceAngles;
 import jig.domain.model.declaration.method.MethodDeclaration;
+import jig.presentation.view.AbstractLocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +17,19 @@ import java.util.StringJoiner;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
-public class ServiceMethodCallHierarchyWriter {
+public class ServiceAngleToImageView extends AbstractLocalView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceMethodCallHierarchyWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceAngleToImageView.class);
 
-    public void write(ServiceAngles serviceAngles, OutputStream outputStream) {
+    private final ServiceAngles serviceAngles;
+
+    public ServiceAngleToImageView(ServiceAngles serviceAngles) {
+        super("jig-diagram_service-method-call-hierarchy.png");
+        this.serviceAngles = serviceAngles;
+    }
+
+    @Override
+    protected void write(OutputStream outputStream) {
         try {
             List<ServiceAngle> angles = serviceAngles.list();
 

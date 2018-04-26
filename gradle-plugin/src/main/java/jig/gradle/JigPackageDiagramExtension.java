@@ -1,25 +1,16 @@
 package jig.gradle;
 
 public class JigPackageDiagramExtension {
-    String packagePattern = ".*.domain.model";
-    String outputDiagramName = "build/reports/output.png";
+    String outputDirectory = "build/reports";
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
     int depth = -1;
 
-    String getPackagePattern() {
-        return packagePattern;
+    String getOutputDirectory() {
+        return outputDirectory;
     }
 
-    void setPackagePattern(String packagePattern) {
-        this.packagePattern = packagePattern;
-    }
-
-    String getOutputDiagramName() {
-        return outputDiagramName;
-    }
-
-    void setOutputDiagramName(String outputDiagramName) {
-        this.outputDiagramName = outputDiagramName;
+    void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
     }
 
     String getOutputOmitPrefix() {

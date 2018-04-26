@@ -1,8 +1,8 @@
-package jig.infrastructure.poi.writer;
+package jig.presentation.view.poi;
 
 import jig.domain.model.report.ReportRow;
 import jig.domain.model.report.Reports;
-import jig.infrastructure.poi.ReportWriter;
+import jig.presentation.view.AbstractLocalView;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -14,19 +14,20 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-public class ExcelWriter implements ReportWriter {
+public class ReportToExcelView extends AbstractLocalView {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelWriter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
+    private final Reports reports;
+
+    public ReportToExcelView(Reports reports) {
+        super("jig-report_class-list.xlsx");
+        this.reports = reports;
+    }
 
     @Override
-    public void writeTo(Reports reports, Path output) {
-        try (Workbook book = new XSSFWorkbook();
-             OutputStream os = Files.newOutputStream(output)) {
-
+    protected void write(OutputStream outputStream) throws IOException {
+        try (Workbook book = new XSSFWorkbook()) {
             reports.each(report -> {
                 Sheet sheet = book.createSheet(report.title().value());
                 writeRow(report.headerRow(), sheet.createRow(0));
@@ -43,11 +44,7 @@ public class ExcelWriter implements ReportWriter {
                         0, sheet.getRow(0).getLastCellNum() - 1
                 ));
             });
-
-            book.write(os);
-            LOGGER.info(output.toAbsolutePath() + "を出力しました。");
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            book.write(outputStream);
         }
     }
 

@@ -3,7 +3,6 @@ package jig.gradle;
 import jig.application.service.*;
 import jig.application.usecase.ImportService;
 import jig.application.usecase.ReportService;
-import jig.diagram.graphvizj.GraphvizJavaDriver;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
@@ -16,6 +15,9 @@ import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.*;
+import jig.presentation.controller.ClassListController;
+import jig.presentation.controller.PackageDependencyController;
+import jig.presentation.view.JigViewResolver;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -33,7 +35,7 @@ public class ServiceFactory {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
-    ImportService importService(Project project) {
+    ImportService importService() {
 
         // TODO extensionで変更できるようにする
         PropertySpecificationContext specificationContext = new PropertySpecificationContext();
@@ -56,7 +58,7 @@ public class ServiceFactory {
         );
     }
 
-    public LocalProject localProject(Project project) {
+    LocalProject localProject(Project project) {
         JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
         if (javaPluginConvention == null) {
             throw new AssertionError("JavaPluginが適用されていません。");
@@ -75,9 +77,9 @@ public class ServiceFactory {
         );
     }
 
-    ReportService reportService(String outputOmitPrefixPath) {
+    ReportService reportService(String outputOmitPrefix) {
         return new ReportService(
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefixPath),
+                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
                 annotationDeclarationRepository,
                 new GlossaryService(
                         new JavaparserJapaneseReader(),
@@ -89,11 +91,21 @@ public class ServiceFactory {
         );
     }
 
-    public DependencyService dependencyService() {
+    DependencyService dependencyService() {
         return new DependencyService(characteristicRepository);
     }
 
-    GraphvizJavaDriver diagramService(String outputOmitPrefix) {
-        return new GraphvizJavaDriver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), japaneseNameRepository);
+    private JigViewResolver jigViewResolver(String outputOmitPrefix) {
+        return new JigViewResolver(
+                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
+                japaneseNameRepository);
+    }
+
+    public ClassListController classListController(String outputOmitPrefix) {
+        return new ClassListController(reportService(outputOmitPrefix), jigViewResolver(outputOmitPrefix));
+    }
+
+    public PackageDependencyController packageDependencyController(String outputOmitPrefix) {
+        return new PackageDependencyController(dependencyService(), jigViewResolver(outputOmitPrefix));
     }
 }

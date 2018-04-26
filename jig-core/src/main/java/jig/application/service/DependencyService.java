@@ -25,6 +25,7 @@ public class DependencyService {
     }
 
     public PackageDependencies packageDependencies(PackageDepth packageDepth) {
+        LOGGER.info("パッケージ依存情報を取得します(深度: {})", packageDepth.value());
         TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
 
         PackageDependencies packageDependencies = dependencyRepository

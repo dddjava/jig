@@ -23,7 +23,7 @@ jigPackageDiagram.dependsOn(compileJava)
 ## 設定(値はデフォルト)
 ```
 jigListConfig {
-    outputPath = 'build/reports/output.xlsx' //出力ディレクトリ
+    outputDirectory = 'build/reports/output.xlsx' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
 }
 

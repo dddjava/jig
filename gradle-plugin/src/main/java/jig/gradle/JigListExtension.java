@@ -1,15 +1,15 @@
 package jig.gradle;
 
 public class JigListExtension {
-    String outputPath = "build/reports/output.xlsx";
+    String outputDirectory = "build/reports";
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
 
-    public String getOutputPath() {
-        return outputPath;
+    public String getOutputDirectory() {
+        return outputDirectory;
     }
 
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
     }
 
     public String getOutputOmitPrefix() {

@@ -13,8 +13,10 @@ public class JigGradlePlugin implements Plugin<Project> {
         extensions.create("jigListConfig", JigListExtension.class);
         extensions.create("jigPackageDiagramConfig", JigPackageDiagramExtension.class);
         TaskContainer tasks = project.getTasks();
-        tasks.create("jigList", JigListTask.class);
-        tasks.create("jigPackageDiagram", JigPackageDiagramTask.class);
-    }
 
+        JigImportTask jigImport = tasks.create("jigImport", JigImportTask.class);
+
+        tasks.create("jigList", JigListTask.class).dependsOn(jigImport);
+        tasks.create("jigPackageDiagram", JigPackageDiagramTask.class).dependsOn(jigImport);
+    }
 }

@@ -76,12 +76,7 @@ project(':jig-core') {
         // excel出力
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'
-    }
-}
-
-project(':diagram-graphviz-java') {
-    dependencies {
-        compile project(':jig-core')
+        // ダイアグラム出力
         compile 'guru.nidi:graphviz-java:0.4.0'
     }
 }
@@ -89,7 +84,6 @@ project(':diagram-graphviz-java') {
 project(':jig-cli') {
     dependencies {
         compile project(':jig-core')
-        compile project(':diagram-graphviz-java')
     }
 }
 
@@ -110,7 +104,6 @@ project(':gradle-plugin') {
     }
     dependencies {
         compile project(':jig-core')
-        compile project(':diagram-graphviz-java')
         compile gradleApi()
         compile localGroovy()
     }

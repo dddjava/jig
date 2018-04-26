@@ -1,4 +1,4 @@
-package jig.diagram.graphvizj;
+package jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
@@ -6,7 +6,7 @@ import jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.japanese.JapaneseNameRepository;
 import jig.domain.model.relation.dependency.PackageDependencies;
-import jig.domain.model.relation.dependency.PackageDependencyWriter;
+import jig.presentation.view.AbstractLocalView;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,18 +14,21 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class GraphvizJavaDriver implements PackageDependencyWriter {
+public class PackageDependencyToImageView extends AbstractLocalView {
 
+    private final PackageDependencies packageDependencies;
     final PackageIdentifierFormatter formatter;
     final JapaneseNameRepository repository;
 
-    public GraphvizJavaDriver(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+    public PackageDependencyToImageView(PackageDependencies packageDependencies, PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+        super("jig-diagram_package-dependency.png");
+        this.packageDependencies = packageDependencies;
         this.formatter = formatter;
         this.repository = repository;
     }
 
     @Override
-    public void write(PackageDependencies packageDependencies, OutputStream outputStream) {
+    protected void write(OutputStream outputStream) {
         try {
             PackageIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 

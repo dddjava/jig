@@ -2,7 +2,6 @@ package jig.gradle;
 
 import jig.application.service.*;
 import jig.application.usecase.ImportService;
-import jig.application.usecase.ReportService;
 import jig.domain.model.characteristic.CharacteristicRepository;
 import jig.domain.model.datasource.SqlRepository;
 import jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
@@ -16,8 +15,8 @@ import jig.infrastructure.asm.AsmSpecificationReader;
 import jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import jig.infrastructure.mybatis.MyBatisSqlReader;
 import jig.infrastructure.onmemoryrepository.*;
-import jig.presentation.controller.ClassListController;
 import jig.presentation.controller.PackageDependencyController;
+import jig.presentation.controller.classlist.ClassListController;
 import jig.presentation.view.JigViewResolver;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -79,20 +78,6 @@ public class ServiceFactory {
         );
     }
 
-    ReportService reportService(String outputOmitPrefix) {
-        return new ReportService(
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
-                annotationDeclarationRepository,
-                new GlossaryService(
-                        new JavaparserJapaneseReader(),
-                        japaneseNameRepository),
-                new AngleService(
-                        characteristicRepository,
-                        relationRepository,
-                        sqlRepository)
-        );
-    }
-
     DependencyService dependencyService() {
         return new DependencyService(characteristicRepository, dependencyRepository);
     }
@@ -104,7 +89,18 @@ public class ServiceFactory {
     }
 
     public ClassListController classListController(String outputOmitPrefix) {
-        return new ClassListController(reportService(outputOmitPrefix), jigViewResolver(outputOmitPrefix));
+        return new ClassListController(
+                jigViewResolver(outputOmitPrefix),
+                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
+                annotationDeclarationRepository,
+                new GlossaryService(
+                        new JavaparserJapaneseReader(),
+                        japaneseNameRepository),
+                new AngleService(
+                        characteristicRepository,
+                        relationRepository,
+                        sqlRepository
+                ));
     }
 
     public PackageDependencyController packageDependencyController(String outputOmitPrefix) {

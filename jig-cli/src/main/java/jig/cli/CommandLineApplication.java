@@ -3,7 +3,7 @@ package jig.cli;
 import jig.application.usecase.ImportService;
 import jig.domain.model.identifier.namespace.PackageDepth;
 import jig.infrastructure.LocalProject;
-import jig.presentation.controller.ClassListController;
+import jig.presentation.controller.classlist.ClassListController;
 import jig.presentation.controller.PackageDependencyController;
 import jig.presentation.controller.ServiceMethodCallHierarchyController;
 import jig.presentation.view.LocalView;

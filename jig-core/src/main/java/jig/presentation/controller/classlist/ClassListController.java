@@ -1,4 +1,4 @@
-package jig.application.usecase;
+package jig.presentation.controller.classlist;
 
 import jig.application.service.AngleService;
 import jig.application.service.GlossaryService;
@@ -9,30 +9,44 @@ import jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import jig.domain.model.japanese.JapaneseName;
 import jig.domain.model.report.*;
-import org.springframework.stereotype.Service;
+import jig.presentation.view.JigViewResolver;
+import jig.presentation.view.LocalView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-public class ReportService {
+@Controller
+public class ClassListController {
 
-    final TypeIdentifierFormatter typeIdentifierFormatter;
-    private AnnotationDeclarationRepository annotationDeclarationRepository;
-    private GlossaryService glossaryService;
-    private final AngleService angleService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassListController.class);
 
-    public ReportService(TypeIdentifierFormatter typeIdentifierFormatter, AnnotationDeclarationRepository annotationDeclarationRepository, GlossaryService glossaryService, AngleService angleService) {
+    JigViewResolver jigViewResolver;
+
+    TypeIdentifierFormatter typeIdentifierFormatter;
+    AnnotationDeclarationRepository annotationDeclarationRepository;
+    GlossaryService glossaryService;
+    AngleService angleService;
+
+    public ClassListController(JigViewResolver jigViewResolver,
+                               TypeIdentifierFormatter typeIdentifierFormatter,
+                               AnnotationDeclarationRepository annotationDeclarationRepository,
+                               GlossaryService glossaryService,
+                               AngleService angleService) {
+        this.jigViewResolver = jigViewResolver;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.glossaryService = glossaryService;
         this.angleService = angleService;
     }
 
-    public Reports reports() {
-        return new Reports(Arrays.asList(
+    public LocalView classList() {
+        LOGGER.info("クラス一覧を出力します");
+        Reports reports = new Reports(Arrays.asList(
                 serviceReport(),
                 datasourceReport(),
                 typeReportOn(Characteristic.IDENTIFIER),
@@ -44,6 +58,8 @@ public class ReportService {
                 validateAnnotationReport(),
                 stringComparingReport()
         ));
+
+        return jigViewResolver.classList(reports);
     }
 
     Report<?> serviceReport() {

@@ -1,5 +1,6 @@
-package jig.application.usecase;
+package jig.presentation.controller.classlist;
 
+import jig.application.usecase.ImportService;
 import jig.domain.model.characteristic.Characteristic;
 import jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReportServiceTest {
 
     @Autowired
-    ReportService sut;
+    ClassListController sut;
 
     @Autowired
     ImportService importService;

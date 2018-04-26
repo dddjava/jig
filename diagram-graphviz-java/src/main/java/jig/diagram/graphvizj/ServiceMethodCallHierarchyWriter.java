@@ -4,6 +4,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import jig.domain.model.angle.ServiceAngle;
 import jig.domain.model.angle.ServiceAngles;
+import jig.domain.model.declaration.method.MethodDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,14 +35,21 @@ public class ServiceMethodCallHierarchyWriter {
                             ))
                     .collect(joining("\n"));
 
-            // メソッドのラベルをシグネチャだけにする
+            // メソッドの表示方法
             String labelText = angles.stream()
-                    .map(ServiceAngle::method)
-                    .map(serviceMethod ->
-                            String.format("\"%s\" [label=\"%s\"];",
-                                    serviceMethod.asFullText(),
-                                    serviceMethod.asSimpleText()))
-                    .collect(joining("\n"));
+                    .map(angle -> {
+                        // ラベルを method(ArgumentType) : ReturnType にする
+                        // ハンドラを強調（赤色）
+                        MethodDeclaration method = angle.method();
+                        StringJoiner attribute = new StringJoiner(",", "[", "]");
+                        attribute.add("label=\"" + method.asSimpleTextWith(angle.returnType()) + "\"");
+                        if (angle.usingFromController().isSatisfy()) {
+                            attribute.add("color=red");
+                        }
+                        return String.format("\"%s\" " + attribute + ";",
+                                method.asFullText(),
+                                method.asSimpleText());
+                    }).collect(joining("\n"));
 
             // クラス名でグルーピングする
             String subgraphText = angles.stream()

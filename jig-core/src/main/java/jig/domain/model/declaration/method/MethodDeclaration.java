@@ -50,4 +50,9 @@ public class MethodDeclaration {
     public int hashCode() {
         return Objects.hash(fullText);
     }
+
+    public String asSimpleTextWith(TypeIdentifier returnTypeIdentifier) {
+        // TODO ReturnTypeはこの中に持ってしまいたい
+        return asSimpleText() + " : " + returnTypeIdentifier.asSimpleText();
+    }
 }

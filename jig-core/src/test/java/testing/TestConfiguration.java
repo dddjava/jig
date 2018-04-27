@@ -11,6 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Configuration
-@ComponentScan(basePackages = "jig", excludeFilters = @ComponentScan.Filter(TestConfiguration.class))
+@ComponentScan(basePackages = "org.dddjava.jig", excludeFilters = @ComponentScan.Filter(TestConfiguration.class))
 public @interface TestConfiguration {
 }

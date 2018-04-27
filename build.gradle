@@ -94,7 +94,7 @@ project(':jig-gradle-plugin') {
         plugins {
             jigGradlePlugin {
                 id = 'org.dddjava.jig'
-                implementationClass = 'jig.gradle.JigGradlePlugin'
+                implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
             }
         }
     }

@@ -87,13 +87,13 @@ project(':jig-cli') {
     }
 }
 
-project(':gradle-plugin') {
+project(':jig-gradle-plugin') {
     apply plugin: "java-gradle-plugin"
     apply plugin: "eu.appsatori.fatjar"
     gradlePlugin {
         plugins {
             jigGradlePlugin {
-                id = 'com.github.irof.Jig'
+                id = 'org.dddjava.jig'
                 implementationClass = 'jig.gradle.JigGradlePlugin'
             }
         }
@@ -109,11 +109,11 @@ project(':gradle-plugin') {
     }
 
     jar {
-        baseName = 'gradle-jig-plugin'
+        baseName = 'jig-gradle-plugin'
     }
 
     fatJar {
-        baseName = 'gradle-jig-plugin-all'
+        baseName = 'jig-gradle-plugin-all'
         exclude "META-INF/*.SF"
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"

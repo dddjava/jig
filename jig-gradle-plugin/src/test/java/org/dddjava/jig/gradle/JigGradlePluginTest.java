@@ -13,7 +13,7 @@ class JigGradlePluginTest {
     void test() {
         Project project = ProjectBuilder.builder().build();
 
-        project.getPlugins().apply("org.dddjava.jig");
+        project.getPlugins().apply("jig-gradle-plugin");
 
         Task jigList = project.getTasks().findByName("jigList");
         Task jigPackageDiagram = project.getTasks().findByName("jigPackageDiagram");

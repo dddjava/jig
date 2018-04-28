@@ -98,6 +98,9 @@ project(':jig-core') {
         // ダイアグラム出力
         compile 'guru.nidi:graphviz-java:0.4.0'
     }
+
+    build.dependsOn(publishToMavenLocal)
+
 }
 
 project(':jig-cli') {

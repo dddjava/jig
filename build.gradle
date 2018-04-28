@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.0.0.RELEASE' apply false
-    id "eu.appsatori.fatjar" version "0.3" apply false
+    id 'com.gradle.plugin-publish' version '0.9.10' apply false
 }
 
 repositories {
@@ -61,6 +61,25 @@ configure(subprojects.findAll { it.name.endsWith('-cli') }) {
 }
 
 project(':jig-core') {
+    apply plugin: 'maven-publish'
+
+    group='org.dddjava.jig'
+    version = '2018.4.4.0'
+    ext {
+        artifactId='jig-core'
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId project.group
+                artifactId project.artifactId
+                version project.version
+                from components.java
+            }
+        }
+    }
+
     dependencies {
         compile 'org.springframework:spring-context'
         compile 'org.slf4j:slf4j-api'
@@ -89,21 +108,16 @@ project(':jig-cli') {
 
 project(':jig-gradle-plugin') {
     apply plugin: "java-gradle-plugin"
-    apply plugin: "eu.appsatori.fatjar"
-    gradlePlugin {
-        plugins {
-            jigGradlePlugin {
-                id = 'org.dddjava.jig'
-                implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
-            }
-        }
-    }
+    apply plugin: 'com.gradle.plugin-publish'
+    apply plugin: 'maven-publish'
 
     repositories {
         jcenter()
+        mavenLocal()
     }
+
     dependencies {
-        compile project(':jig-core')
+        compile 'org.dddjava.jig:jig-core:2018.4.4.0'
         compile gradleApi()
         compile localGroovy()
     }
@@ -112,11 +126,45 @@ project(':jig-gradle-plugin') {
         baseName = 'jig-gradle-plugin'
     }
 
-    fatJar {
-        baseName = 'jig-gradle-plugin-all'
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-        zip64 = true
+    version = '2018.4.4.0'
+    group = 'org.dddjava.jig'
+    ext {
+        artifactId='jig-gradle-plugin'
     }
+
+    gradlePlugin {
+        plugins {
+            jigGradlePlugin {
+                id = project.artifactId
+                implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
+            }
+        }
+    }
+
+    pluginBundle {
+        website = 'http://www.gradle.org/'
+        vcsUrl = 'https://github.com/gradle/gradle'
+        description = 'Visualizing code for DDD'
+        tags = ['ddd', 'plugin', 'visualize']
+
+        plugins {
+            jigGradlePlugin {
+                id = project.artifactId
+                displayName = 'Jig Gradle Plugin'
+            }
+        }
+    }
+
+    publishing {
+        publications {
+            puluginPublication(MavenPublication) {
+                groupId project.group
+                artifactId project.artifactId
+                version project.version
+                from components.java
+            }
+        }
+    }
+
+
 }

@@ -4,17 +4,25 @@
 * jigPackageDiagram: パッケージ関連図出力
 
 ## 適用方法
-現時点ではプラグインリポジトリに公開していないので、`./gradlew gradle-plugin:fatJar`でjarファイルを作り
-任意のディレクトリに配置した上で、`build.gradle` に以下を記述
+現時点ではプラグインリポジトリに公開していないので `mavenLocal()` へのインストールを行う
+```
+./gradlew jig-core:publishToMevenLocal
+./gradlew jig-gradle-plugin:publishToMevenLocal
+```
+
+`build.gradle` に以下を記述
 
 ```
 buildscript {
-     dependencies {
-        classpath files('{Jarファイルの配置ディレクトリ}/gradle-jig-plugin-all.jar')
-     }
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.4.4.0'
+    }
 }
 
-apply plugin: 'com.github.irof.Jig'
+apply plugin: 'jig-gradle-plugin'
 
 jigList.dependsOn(compileJava)
 jigPackageDiagram.dependsOn(compileJava)

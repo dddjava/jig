@@ -18,10 +18,10 @@
 
 ## リリース手順
 
-- [GitHubでリリースを作成](https://github.com/dddjava/Jig/releases/new)
+- [GitHubでリリースページを作成](https://github.com/dddjava/Jig/releases/new)
   - version: `{年}.{月}.{週}`
-- CircleCIのArtifactsから `jig-cli.jar` を取得
-- Edit releaseからアップロード
+- [CircleCI](https://circleci.com/gh/dddjava/Jig)のリリースビルドから `jig-cli.jar` を取得
+- リリースページのEdit releaseからjarをアップロード
 
 ## LICENSE
 

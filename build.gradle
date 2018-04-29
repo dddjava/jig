@@ -116,7 +116,7 @@ project(':jig-gradle-plugin') {
     }
 
     dependencies {
-        compile 'org.dddjava.jig:jig-core:2018.4.4.0'
+        compile 'org.dddjava.jig:jig-core:2018.4.4'
         compile gradleApi()
         compile localGroovy()
     }

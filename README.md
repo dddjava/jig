@@ -11,7 +11,7 @@
 ## 使い方
 
 - [コマンドライン](./jig-cli)
-- [Gradleプラグイン](./gradle-plugin)
+- [Gradleプラグイン](./jig-gradle-plugin)
 
 ## ビルド
 

@@ -6,6 +6,10 @@
 - パッケージ依存図（PNG）
 - サービスメソッド関連図（PNG）
 
+## ダウンロード
+
+[直近のリリース](https://github.com/dddjava/Jig/releases/latest)から `jig-cli.jar` をダウンロードしてください。
+
 ## 実行方法
 
 ```

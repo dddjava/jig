@@ -18,7 +18,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.4.4.0'
+        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.4.4'
     }
 }
 

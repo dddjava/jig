@@ -1,39 +1,45 @@
 version: 2
 jobs:
-  build:
+  usually-build:
     docker:
       - image: circleci/openjdk:8-jdk
-
     working_directory: ~/repo
-
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
-    
     steps:
       - checkout
-
       - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
-
       - restore_cache:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
-
       - run: ./gradlew build
-
       - save_cache:
           paths:
             - ~/.gradle
           key: gradle-dependencies-{{ checksum "build.gradle" }}
-
       - store_test_results:
           path: jig-core/build/test-results
-      - store_test_results:
-          path: gradle-plugin/build/test-results
 
+  release-build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
+      - restore_cache:
+          key: gradle-dependencies-{{ checksum "build.gradle" }}
+      - run: ./gradlew build
+      - store_test_results:
+          path: jig-core/build/test-results
+
+      # RELEASE
       - store_artifacts:
           path: jig-cli/build/libs
           destination: module
-
       - run: |
          java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example
       - store_artifacts:
@@ -43,13 +49,13 @@ workflows:
   version: 2
   usually:
     jobs:
-      - build:
+      - usually-build:
           filters:
             branches:
               only: 'master'
   release:
     jobs:
-      - build:
+      - release-build:
           filters:
             branches:
               ignore: /.*/

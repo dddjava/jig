@@ -41,15 +41,15 @@ jobs:
           destination: example
 workflows:
   version: 2
-    usually:
-      jobs:
-        - build:
-            filters:
-              branches: 'master'
-    release:
-      jobs:
-        - build:
-            filters:
-              tags:
-                only: /.+/
+  usually:
+    jobs:
+      - build:
+          filters:
+            branches: 'master'
+  release:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.+/
 

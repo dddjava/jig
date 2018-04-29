@@ -1,7 +1,3 @@
-# Java Gradle CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build:
@@ -43,4 +39,15 @@ jobs:
       - store_artifacts:
           path: example
           destination: example
+workflows:
+  version: 2
+    usually:
+      - build:
+          filters:
+            branches: 'master'
+    release:
+      - build:
+          filters:
+            tags:
+              only: /.+/
 

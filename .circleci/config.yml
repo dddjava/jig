@@ -45,7 +45,8 @@ workflows:
     jobs:
       - build:
           filters:
-            branches: 'master'
+            branches:
+              only: 'master'
   release:
     jobs:
       - build:

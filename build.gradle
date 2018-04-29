@@ -11,6 +11,9 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
+    version = '2018.4.4'
+    group = 'org.dddjava.jig'
+
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
@@ -50,23 +53,11 @@ subprojects {
     }
 }
 
-configure(subprojects.findAll { it.name.endsWith('-cli') }) {
-    apply plugin: 'org.springframework.boot'
-    dependencies {
-        compile 'org.springframework.boot:spring-boot-starter'
-    }
-    bootJar {
-        metaInf { from(rootDir) { include 'LICENSE' } }
-    }
-}
-
 project(':jig-core') {
     apply plugin: 'maven-publish'
 
-    group='org.dddjava.jig'
-    version = '2018.4.4.0'
     ext {
-        artifactId='jig-core'
+        artifactId = 'jig-core'
     }
 
     publishing {
@@ -100,12 +91,17 @@ project(':jig-core') {
     }
 
     build.dependsOn(publishToMavenLocal)
-
 }
 
 project(':jig-cli') {
+    apply plugin: 'org.springframework.boot'
     dependencies {
         compile project(':jig-core')
+        compile 'org.springframework.boot:spring-boot-starter'
+    }
+    bootJar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+        archiveName 'jig-cli.jar'
     }
 }
 
@@ -129,10 +125,8 @@ project(':jig-gradle-plugin') {
         baseName = 'jig-gradle-plugin'
     }
 
-    version = '2018.4.4.0'
-    group = 'org.dddjava.jig'
     ext {
-        artifactId='jig-gradle-plugin'
+        artifactId = 'jig-gradle-plugin'
     }
 
     gradlePlugin {

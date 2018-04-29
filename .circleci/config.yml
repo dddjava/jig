@@ -42,12 +42,14 @@ jobs:
 workflows:
   version: 2
     usually:
-      - build:
-          filters:
-            branches: 'master'
+      jobs:
+        - build:
+            filters:
+              branches: 'master'
     release:
-      - build:
-          filters:
-            tags:
-              only: /.+/
+      jobs:
+        - build:
+            filters:
+              tags:
+                only: /.+/
 

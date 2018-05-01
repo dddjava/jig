@@ -16,6 +16,7 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.*;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
+import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
 import org.dddjava.jig.presentation.view.JigViewResolver;
 import org.gradle.api.Project;
@@ -26,8 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
-public class ServiceFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceFactory.class);
+public class Dependencies {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
 
     final CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     final RelationRepository relationRepository = new OnMemoryRelationRepository();
@@ -105,5 +106,19 @@ public class ServiceFactory {
 
     public PackageDependencyController packageDependencyController(String outputOmitPrefix) {
         return new PackageDependencyController(dependencyService(), jigViewResolver(outputOmitPrefix));
+    }
+
+    public ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
+        return new ServiceMethodCallHierarchyController(
+                new AngleService(
+                        characteristicRepository,
+                        relationRepository,
+                        sqlRepository
+                ),
+                new JigViewResolver(
+                        new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
+                        japaneseNameRepository
+                )
+        );
     }
 }

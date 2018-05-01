@@ -11,7 +11,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.4.4'
+    version = '2018.5.1'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'
@@ -116,7 +116,7 @@ project(':jig-gradle-plugin') {
     }
 
     dependencies {
-        compile 'org.dddjava.jig:jig-core:2018.4.4'
+        compile "org.dddjava.jig:jig-core:${project.version}"
         compile gradleApi()
         compile localGroovy()
     }
@@ -163,5 +163,6 @@ project(':jig-gradle-plugin') {
         }
     }
 
+    build.dependsOn(publishToMavenLocal)
 
 }

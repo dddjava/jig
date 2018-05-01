@@ -1,7 +1,6 @@
 下記のタスクをプロジェクトに組み込みます
 
-* jigList: クラス一覧出力
-* jigPackageDiagram: パッケージ関連図出力
+* jigReports: レポート一式を出力
 
 ## 適用方法
 現時点ではプラグインリポジトリに公開していないので `mavenLocal()` へのインストールを行う
@@ -18,7 +17,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.4.4'
+        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.5.1'
     }
 }
 
@@ -30,12 +29,8 @@ jigPackageDiagram.dependsOn(compileJava)
 
 ## 設定(値はデフォルト)
 ```
-jigListConfig {
-    outputDirectory = 'build/reports' //出力ディレクトリ
-    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
-}
-
-jigPackageDiagramConfig {
+jig {
+    documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ClassList']
     outputDirectory = 'build/reports' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
     deps = -1 //出力する最大のパッケージ階層(-1は制限なし）

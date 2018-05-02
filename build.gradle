@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.0.0.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
+    id 'com.jfrog.bintray' version '1.7.3' apply false
 }
 
 repositories {
@@ -11,7 +12,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.5.1'
+    version = '2018.4.4'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'
@@ -55,9 +56,36 @@ subprojects {
 
 project(':jig-core') {
     apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
 
     ext {
         artifactId = 'jig-core'
+    }
+
+    def pomConfig = {
+        licenses {
+            license {
+                name "The Apache Software License, Version 2.0"
+                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution "repo"
+            }
+        }
+        developers {
+            developer {
+                id "irof"
+                name "irof"
+                email ""
+            }
+            developer {
+                id "haljik"
+                name "haljik"
+                email "seiji.kawakami@sora-works.com"
+            }
+        }
+
+        scm {
+            url "https://github.com/dddjava/Jig.git"
+        }
     }
 
     publishing {
@@ -66,8 +94,34 @@ project(':jig-core') {
                 groupId project.group
                 artifactId project.artifactId
                 version project.version
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description','Core of Jig')
+                    root.appendNode('name', 'jig-core')
+                    root.appendNode('url','https://github.com/dddjava/Jig')
+                    root.children().last() + pomConfig
+                }
                 from components.java
             }
+        }
+    }
+
+    bintray {
+        user = project.property("bintray.user")
+        key = project.property("bintray.apikey")
+
+        configurations = ['archives']
+        publications = ['maven']
+        pkg {
+            repo = 'jig'
+            name = 'jig-core'
+            desc = 'core of Jig'
+            userOrg = 'dddjava'
+            websiteUrl = 'https://github.com/dddjava/Jig'
+            vcsUrl = 'https://github.com/dddjava/Jig.git'
+            licenses = ["Apache-2.0"]
+            publish = true
+            publicDownloadNumbers = true
         }
     }
 

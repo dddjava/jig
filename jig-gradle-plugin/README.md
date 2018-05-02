@@ -21,10 +21,10 @@ buildscript {
     }
 }
 
+apply plugin: 'java'
 apply plugin: 'jig-gradle-plugin'
 
-jigList.dependsOn(compileJava)
-jigPackageDiagram.dependsOn(compileJava)
+jigReports.dependsOn(compileJava)
 ```
 
 ## 設定(値はデフォルト)

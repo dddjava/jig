@@ -62,7 +62,7 @@ public class AsmSpecificationReaderTest {
     }
 
     @Test
-    void クラス定義のテスト() throws Exception {
+    void クラス定義に使用している型が取得できる() throws Exception {
         Specification actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -77,7 +77,7 @@ public class AsmSpecificationReaderTest {
     }
 
     @Test
-    void フィールド定義のテスト() throws Exception {
+    void フィールド定義に使用している型が取得できる() throws Exception {
         Specification actual = exercise(FieldDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -95,7 +95,7 @@ public class AsmSpecificationReaderTest {
     }
 
     @Test
-    void メソッドで使用するクラスのテスト() throws Exception {
+    void メソッドで使用している型が取得できる() throws Exception {
         Specification actual = exercise(MethodInstruction.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -117,11 +117,11 @@ public class AsmSpecificationReaderTest {
                         new TypeIdentifier(ThrowingException.class)
                 )
                 .doesNotContain(
+                        // ローカル変数宣言だけで使用されている型は取得できない（コンパイルされたら消える）
                         new TypeIdentifier(LocalValue.class),
+                        // ネストされた型のエンクローズド型は名前空間を提供しているだけなので取得できない
                         new TypeIdentifier(EnclosedClass.class)
                 );
-
-        assertThat(actual.hasField()).isFalse();
     }
 
     @Test
@@ -139,7 +139,7 @@ public class AsmSpecificationReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void enumTest(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
+    void enumの種類を判別できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
         Specification actual = exercise(clz);
 
         assertThat(actual)
@@ -157,7 +157,7 @@ public class AsmSpecificationReaderTest {
                 );
     }
 
-    static Stream<Arguments> enumTest() {
+    static Stream<Arguments> enumの種類を判別できる() {
         return Stream.of(
                 Arguments.of(SimpleEnum.class, false, false, false),
                 Arguments.of(BehaviourEnum.class, true, false, false),

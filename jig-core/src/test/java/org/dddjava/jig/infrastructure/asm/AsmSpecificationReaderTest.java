@@ -1,14 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.specification.MethodSpecification;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationSource;
 import org.dddjava.jig.infrastructure.PropertySpecificationContext;
-import org.dddjava.jig.domain.model.specification.SpecificationSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -27,7 +23,6 @@ import stub.domain.model.relation.test.*;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,11 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AsmSpecificationReaderTest {
 
     @Test
-    void アノテーションの読み取り() throws Exception {
+    void 付与されているアノテーションと記述が取得できる() throws Exception {
         Specification actual = exercise(Annotated.class);
 
-        List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = actual.fieldAnnotationDeclarations();
-        assertThat(fieldAnnotationDeclarations)
+        assertThat(actual.fieldAnnotationDeclarations())
                 .hasSize(1)
                 .first()
                 .satisfies(fieldAnnotationDeclaration -> {
@@ -47,16 +41,14 @@ public class AsmSpecificationReaderTest {
                     assertThat(fieldAnnotationDeclaration.fieldDeclaration().nameText()).isEqualTo("field");
 
                     String descriptionText = fieldAnnotationDeclaration.description().asText();
-                    assertThat(descriptionText).isNotEqualTo("[]");
+                    assertThat(descriptionText).isEqualTo("[string = \"af\", arrayString = [...], number = 13, clz = Ljava/lang/reflect/Field;, arrayClz = [...], enumValue = DUMMY1, annotation = Ljava/lang/Deprecated;[...]]");
                 });
 
-        List<MethodSpecification> methodSpecifications = actual.instanceMethodSpecifications();
-        assertThat(methodSpecifications)
+        assertThat(actual.instanceMethodSpecifications())
                 .hasSize(1)
                 .first()
                 .satisfies(methodSpecification -> {
-                    List<MethodAnnotationDeclaration> methodAnnotationDeclarations = methodSpecification.methodAnnotationDeclarations();
-                    assertThat(methodAnnotationDeclarations)
+                    assertThat(methodSpecification.methodAnnotationDeclarations())
                             .hasSize(1)
                             .first()
                             .satisfies(methodAnnotationDeclaration -> {
@@ -64,7 +56,7 @@ public class AsmSpecificationReaderTest {
                                 assertThat(methodAnnotationDeclaration.methodDeclaration().asSimpleText()).isEqualTo("method()");
 
                                 String descriptionText = methodAnnotationDeclaration.description().asText();
-                                assertThat(descriptionText).isNotEqualTo("[]");
+                                assertThat(descriptionText).isEqualTo("[string = \"am\", arrayString = [...], number = 23, clz = Ljava/lang/reflect/Method;, enumValue = DUMMY2]");
                             });
                 });
     }

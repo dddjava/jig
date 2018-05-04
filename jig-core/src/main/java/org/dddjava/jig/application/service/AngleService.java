@@ -57,9 +57,8 @@ public class AngleService {
     }
 
     public DatasourceAngles datasourceAngles() {
-        TypeIdentifiers typeIdentifiers = characteristicService.getRepositories();
-        List<DatasourceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
-                relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
+        List<DatasourceAngle> list = characteristicService.getRepositoryMethods().list().stream()
+                .map(methodDeclaration -> {
                     TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
 
                     MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
@@ -70,7 +69,7 @@ public class AngleService {
                         sqlRepository.find(identifier).ifPresent(sqls::add);
                     }
                     return new DatasourceAngle(methodDeclaration, returnTypeIdentifier, new Sqls(sqls));
-                })).collect(toList());
+                }).collect(toList());
         return new DatasourceAngles(list);
     }
 

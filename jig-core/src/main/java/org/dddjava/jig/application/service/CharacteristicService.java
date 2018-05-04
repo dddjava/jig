@@ -34,15 +34,10 @@ public class CharacteristicService {
             if (typeCharacteristics.has(Characteristic.SERVICE).isSatisfy()) {
                 characterizedMethodRepository.register(MethodCharacteristic.SERVICE_METHOD, methodSpecification.methodDeclaration);
             }
+            if (typeCharacteristics.has(Characteristic.REPOSITORY).isSatisfy()) {
+                characterizedMethodRepository.register(MethodCharacteristic.REPOSITORY_METHOD, methodSpecification.methodDeclaration);
+            }
         }
-    }
-
-    public TypeIdentifiers getServices() {
-        return characteristicRepository.getTypeIdentifiersOf(Characteristic.SERVICE);
-    }
-
-    public TypeIdentifiers getRepositories() {
-        return characteristicRepository.getTypeIdentifiersOf(Characteristic.REPOSITORY);
     }
 
     public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
@@ -63,5 +58,9 @@ public class CharacteristicService {
 
     public MethodDeclarations getServiceMethods() {
         return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.SERVICE_METHOD);
+    }
+
+    public MethodDeclarations getRepositoryMethods() {
+        return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.REPOSITORY_METHOD);
     }
 }

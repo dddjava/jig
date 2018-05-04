@@ -1,7 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -10,22 +8,20 @@ import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationReader;
 import org.dddjava.jig.domain.model.specification.SpecificationSources;
 import org.dddjava.jig.domain.model.specification.Specifications;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.specification.SpecificationSources;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SpecificationService {
 
     final SpecificationReader specificationReader;
-    final CharacteristicRepository characteristicRepository;
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
     final DependencyService dependencyService;
+    final CharacteristicService characteristicService;
 
-    public SpecificationService(SpecificationReader specificationReader, CharacteristicRepository characteristicRepository, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyService dependencyService) {
+    public SpecificationService(SpecificationReader specificationReader, CharacteristicService characteristicService, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyService dependencyService) {
         this.specificationReader = specificationReader;
-        this.characteristicRepository = characteristicRepository;
+        this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.dependencyService = dependencyService;
@@ -52,7 +48,7 @@ public class SpecificationService {
     }
 
     void registerSpecification(Specification specification) {
-        characteristicRepository.register(Characteristic.resolveCharacteristics(specification));
+        characteristicService.registerCharacteristic(specification);
 
         specification.fieldDeclarations().list().forEach(relationRepository::registerField);
         specification.staticFieldDeclarations().list().forEach(relationRepository::registerConstants);

@@ -7,12 +7,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 public class ServiceAngle {
 
@@ -49,6 +43,7 @@ public class ServiceAngle {
     }
 
     public Satisfaction usingFromController() {
+        // TODO MethodCharacteristic.HANDLERで判別させたい
         return userCharacteristics.has(Characteristic.CONTROLLER);
     }
 

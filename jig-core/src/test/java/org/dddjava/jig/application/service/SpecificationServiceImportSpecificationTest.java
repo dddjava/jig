@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -14,9 +15,7 @@ import org.dddjava.jig.infrastructure.PropertySpecificationContext;
 import org.dddjava.jig.infrastructure.asm.AsmSpecificationReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
-import org.dddjava.jig.domain.model.specification.SpecificationSources;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacterizedMethodRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,6 +35,8 @@ import static org.mockito.Mockito.mock;
 public class SpecificationServiceImportSpecificationTest {
 
     static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
+    static CharacterizedMethodRepository characterizedMethodRepository = new OnMemoryCharacterizedMethodRepository();
+
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
     static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
@@ -49,7 +50,8 @@ public class SpecificationServiceImportSpecificationTest {
 
         SpecificationService specificationService = new SpecificationService(
                 new AsmSpecificationReader(new PropertySpecificationContext()),
-                characteristicRepository, relationRepository, annotationDeclarationRepository,
+                new CharacteristicService(characteristicRepository, characterizedMethodRepository),
+                relationRepository, annotationDeclarationRepository,
                 mock(DependencyService.class));
         specificationService.importSpecification(specificationSources);
     }

@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -28,7 +27,7 @@ class SpecificationServiceRegisterSpecificationsTest {
 
         SpecificationService sut = new SpecificationService(
                 null,
-                mock(CharacteristicRepository.class),
+                mock(CharacteristicService.class),
                 relationRepository,
                 mock(AnnotationDeclarationRepository.class),
                 mock(DependencyService.class));

@@ -3,6 +3,7 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
 import org.dddjava.jig.domain.model.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
@@ -31,6 +32,7 @@ public class Dependencies {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
 
     final CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
+    final CharacterizedMethodRepository characterizedMethodRepository = new OnMemoryCharacterizedMethodRepository();
     final RelationRepository relationRepository = new OnMemoryRelationRepository();
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
@@ -45,7 +47,7 @@ public class Dependencies {
         return new ImportService(
                 new SpecificationService(
                         new AsmSpecificationReader(specificationContext),
-                        characteristicRepository,
+                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
                         relationRepository,
                         annotationDeclarationRepository,
                         dependencyService()),

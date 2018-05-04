@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.*;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
@@ -21,12 +22,17 @@ public class CharacteristicService {
     }
 
     public void registerCharacteristic(Specification specification) {
-        characteristicRepository.register(Characteristic.resolveCharacteristics(specification));
+        TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(specification);
+        characteristicRepository.register(typeCharacteristics);
 
         List<MethodSpecification> methodSpecifications = specification.instanceMethodSpecifications();
         for (MethodSpecification methodSpecification : methodSpecifications) {
             if (methodSpecification.hasDecision()) {
                 characterizedMethodRepository.register(MethodCharacteristic.HAS_DECISION, methodSpecification.methodDeclaration);
+            }
+
+            if (typeCharacteristics.has(Characteristic.SERVICE).isSatisfy()) {
+                characterizedMethodRepository.register(MethodCharacteristic.SERVICE_METHOD, methodSpecification.methodDeclaration);
             }
         }
     }
@@ -53,5 +59,9 @@ public class CharacteristicService {
 
     public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
         return characteristicRepository.getTypeIdentifiersOf(characteristic);
+    }
+
+    public MethodDeclarations getServiceMethods() {
+        return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.SERVICE_METHOD);
     }
 }

@@ -35,9 +35,8 @@ public class AngleService {
     }
 
     public ServiceAngles serviceAngles() {
-        TypeIdentifiers typeIdentifiers = characteristicService.getServices();
-        List<ServiceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
-                relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
+        List<ServiceAngle> list = characteristicService.getServiceMethods().list().stream()
+                .map(methodDeclaration -> {
                     TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
 
                     TypeIdentifiers userTypes = relationRepository.findUserTypes(methodDeclaration);
@@ -53,7 +52,7 @@ public class AngleService {
                     MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethod(methodDeclaration)
                             .filter(m -> characteristicService.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
                     return new ServiceAngle(methodDeclaration, returnTypeIdentifier, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
-                })).collect(toList());
+                }).collect(toList());
         return new ServiceAngles(list);
     }
 

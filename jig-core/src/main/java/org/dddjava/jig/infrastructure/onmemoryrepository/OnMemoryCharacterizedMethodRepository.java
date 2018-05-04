@@ -4,9 +4,11 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedMethod;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
 import org.dddjava.jig.domain.model.characteristic.MethodCharacteristic;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -18,6 +20,12 @@ public class OnMemoryCharacterizedMethodRepository implements CharacterizedMetho
     @Override
     public CharacterizedMethod get(MethodDeclaration methodDeclaration) {
         return null;
+    }
+
+    @Override
+    public MethodDeclarations getCharacterizedMethods(MethodCharacteristic methodCharacteristic) {
+        List<MethodDeclaration> list = map.getOrDefault(methodCharacteristic, Collections.emptyList());
+        return new MethodDeclarations(list);
     }
 
     @Override

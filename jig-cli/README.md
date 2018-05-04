@@ -57,6 +57,7 @@ outputDirectory=./
     - ファーストクラスコレクション
 - バリデーション情報の一覧
 - 文字列比較箇所の一覧
+- 条件分岐箇所の一覧
 
 ### 出力項目
 
@@ -70,6 +71,7 @@ outputDirectory=./
     - [その他](../jig-core/src/main/java/jig/domain/model/report/GenericModelReport.java)
 - [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/ValidationReport.java)
 - [文字列比較箇所の出力項目](../jig-core/src/main/java/jig/domain/model/report/StringComparingReport.java)
+- [条件分岐箇所の出力項目](../jig-core/src/main/java/jig/domain/model/report/DecisionReport.java)
 
 #### 補足: データソースのテーブル名
 

@@ -1,35 +1,38 @@
 package org.dddjava.jig.domain.model.report;
 
 import org.dddjava.jig.domain.model.angle.DecisionAngle;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-
-import java.util.List;
+import org.dddjava.jig.domain.model.angle.DecisionAngles;
 
 public class DecisionReport {
 
-    enum Items implements ConvertibleItem<MethodDeclaration> {
+    enum Items implements ConvertibleItem<DecisionAngle> {
+        レイヤー {
+            @Override
+            public String convert(DecisionAngle row) {
+                return row.typeLayer().asText();
+            }
+        },
         クラス名 {
             @Override
-            public String convert(MethodDeclaration row) {
+            public String convert(DecisionAngle row) {
                 return row.declaringType().fullQualifiedName();
             }
         },
         メソッド名 {
             @Override
-            public String convert(MethodDeclaration row) {
+            public String convert(DecisionAngle row) {
                 return row.methodSignature().asSimpleText();
             }
         };
     }
 
-    private final DecisionAngle decisionAngle;
+    private final DecisionAngles decisionAngles;
 
-    public DecisionReport(DecisionAngle decisionAngle) {
-        this.decisionAngle = decisionAngle;
+    public DecisionReport(DecisionAngles decisionAngles) {
+        this.decisionAngles = decisionAngles;
     }
 
     public Report<?> toReport() {
-        List<MethodDeclaration> list = decisionAngle.methods().list();
-        return new Report<>("条件分岐箇所", list, Items.values());
+        return new Report<>("条件分岐箇所", decisionAngles.listOnlyLayer(), Items.values());
     }
 }

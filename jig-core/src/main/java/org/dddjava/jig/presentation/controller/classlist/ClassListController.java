@@ -114,7 +114,7 @@ public class ClassListController {
     }
 
     Report<?> decisionReport() {
-        DecisionAngle decisionAngle = angleService.decision();
-        return new DecisionReport(decisionAngle).toReport();
+        DecisionAngles decisionAngles = angleService.decision();
+        return new DecisionReport(decisionAngles).toReport();
     }
 }

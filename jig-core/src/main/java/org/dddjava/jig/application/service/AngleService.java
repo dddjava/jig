@@ -112,8 +112,14 @@ public class AngleService {
         return new DesignSmellAngle(userMethods);
     }
 
-    public DecisionAngle decision() {
+    public DecisionAngles decision() {
         MethodDeclarations methods = characteristicService.getDecisionMethods();
-        return new DecisionAngle(methods);
+        List<DecisionAngle> list = methods.list().stream()
+                .map(methodDeclaration -> {
+                    TypeIdentifier typeIdentifier = methodDeclaration.declaringType();
+                    Characteristics characteristics = characteristicService.findCharacteristics(typeIdentifier);
+                    return new DecisionAngle(methodDeclaration, characteristics);
+                }).collect(toList());
+        return new DecisionAngles(list);
     }
 }

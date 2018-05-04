@@ -38,6 +38,7 @@ class ReportServiceTest {
                 .containsExactly(
                         "[stub.application.service.CanonicalService, サービス和名, fuga(FugaIdentifier), Fuga, , [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
                         "[stub.application.service.CanonicalService, サービス和名, method(), void, , [], []]",
+                        "[stub.application.service.DecisionService, 分岐のあるサービス, 分岐のあるメソッド(Object), void, , [], []]",
                         "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれない(), void, , [], []]",
                         "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, [], []]"
                 );
@@ -66,11 +67,11 @@ class ReportServiceTest {
                 );
 
         assertThat(sut.decisionReport().rows())
-                .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.relation."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
-                        "[stub.domain.model.relation.DecisionClass, ifがあるメソッド()]",
-                        "[stub.domain.model.relation.DecisionClass, switchがあるメソッド()]"
+                        "[APPLICATION, stub.application.service.DecisionService, 分岐のあるメソッド(Object)]",
+                        "[DATASOURCE, stub.infrastructure.datasource.DecisionDatasource, 分岐のあるメソッド(Object)]",
+                        "[PRESENTATION, stub.presentation.controller.DecisionController, 分岐のあるメソッド(Object)]"
                 );
     }
 

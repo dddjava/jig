@@ -13,4 +13,19 @@ public class Characteristics {
     public Satisfaction has(Characteristic characteristic) {
         return Satisfaction.of(characteristics.contains(characteristic));
     }
+
+    public Layer toLayer() {
+        for (Characteristic characteristic : characteristics) {
+            if (characteristic == Characteristic.CONTROLLER) {
+                return Layer.PRESENTATION;
+            }
+            if (characteristic == Characteristic.SERVICE) {
+                return Layer.APPLICATION;
+            }
+            if (characteristic == Characteristic.REPOSITORY || characteristic == Characteristic.DATASOURCE) {
+                return Layer.DATASOURCE;
+            }
+        }
+        return Layer.OTHER;
+    }
 }

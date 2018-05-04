@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethod;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
 import org.dddjava.jig.domain.model.characteristic.MethodCharacteristic;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -16,11 +15,6 @@ import java.util.List;
 public class OnMemoryCharacterizedMethodRepository implements CharacterizedMethodRepository {
 
     HashMap<MethodCharacteristic, List<MethodDeclaration>> map = new HashMap<>();
-
-    @Override
-    public CharacterizedMethod get(MethodDeclaration methodDeclaration) {
-        return null;
-    }
 
     @Override
     public MethodDeclarations getCharacterizedMethods(MethodCharacteristic methodCharacteristic) {

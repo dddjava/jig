@@ -106,22 +106,24 @@ project(':jig-core') {
         }
     }
 
-    bintray {
-        user = project.property("bintray.user")
-        key = project.property("bintray.apikey")
+    if (project.hasProperty("bintray.user")) {
+        bintray {
+            user = project.property("bintray.user")
+            key = project.property("bintray.apikey")
 
-        configurations = ['archives']
-        publications = ['maven']
-        pkg {
-            repo = 'jig'
-            name = 'jig-core'
-            desc = 'core of Jig'
-            userOrg = 'dddjava'
-            websiteUrl = 'https://github.com/dddjava/Jig'
-            vcsUrl = 'https://github.com/dddjava/Jig.git'
-            licenses = ["Apache-2.0"]
-            publish = true
-            publicDownloadNumbers = true
+            configurations = ['archives']
+            publications = ['maven']
+            pkg {
+                repo = 'jig'
+                name = 'jig-core'
+                desc = 'core of Jig'
+                userOrg = 'dddjava'
+                websiteUrl = 'https://github.com/dddjava/Jig'
+                vcsUrl = 'https://github.com/dddjava/Jig.git'
+                licenses = ["Apache-2.0"]
+                publish = true
+                publicDownloadNumbers = true
+            }
         }
     }
 

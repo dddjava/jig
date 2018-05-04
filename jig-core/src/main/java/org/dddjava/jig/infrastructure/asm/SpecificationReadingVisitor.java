@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationContext;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -170,6 +169,20 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 }
 
                 super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+            }
+
+            @Override
+            public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+                // switchがある
+                methodSpecification.registerLookupSwitchInstruction();
+                super.visitLookupSwitchInsn(dflt, keys, labels);
+            }
+
+            @Override
+            public void visitJumpInsn(int opcode, Label label) {
+                // 何かしらの分岐がある
+                methodSpecification.registerJumpInstruction();
+                super.visitJumpInsn(opcode, label);
             }
         };
     }

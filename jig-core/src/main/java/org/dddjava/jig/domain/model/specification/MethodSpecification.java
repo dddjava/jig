@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +22,11 @@ public class MethodSpecification {
 
     private final List<FieldDeclaration> usingFields = new ArrayList<>();
     private final List<MethodDeclaration> usingMethods = new ArrayList<>();
+
+    // 制御が飛ぶ処理がある（ifやbreak）
+    private boolean jumpInstruction = false;
+    // switchがある
+    private boolean lookupSwitchInstruction = false;
 
     public MethodSpecification(MethodDeclaration methodDeclaration,
                                TypeIdentifier returnType,
@@ -51,6 +55,14 @@ public class MethodSpecification {
 
         // 呼び出したメソッドの戻り値の型
         useTypes.add(returnType);
+    }
+
+    public void registerJumpInstruction() {
+        this.jumpInstruction = true;
+    }
+
+    public void registerLookupSwitchInstruction() {
+        this.lookupSwitchInstruction = true;
     }
 
     public void registerClassReference(TypeIdentifier type) {
@@ -84,5 +96,9 @@ public class MethodSpecification {
 
     public MethodDeclarations usingMethods() {
         return usingMethods.stream().collect(MethodDeclarations.collector());
+    }
+
+    public boolean hasDecision() {
+        return jumpInstruction || lookupSwitchInstruction;
     }
 }

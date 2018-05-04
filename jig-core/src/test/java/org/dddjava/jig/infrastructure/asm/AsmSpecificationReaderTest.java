@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.specification.MethodSpecification;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationSource;
 import org.dddjava.jig.infrastructure.PropertySpecificationContext;
@@ -11,10 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.Annotated;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.ClassDefinition;
-import stub.domain.model.relation.EnumDefinition;
-import stub.domain.model.relation.FieldDefinition;
-import stub.domain.model.relation.MethodInstruction;
+import stub.domain.model.relation.*;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
@@ -23,9 +21,11 @@ import stub.domain.model.relation.test.*;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class AsmSpecificationReaderTest {
 
@@ -122,6 +122,22 @@ public class AsmSpecificationReaderTest {
                         // ネストされた型のエンクローズド型は名前空間を提供しているだけなので取得できない
                         new TypeIdentifier(EnclosedClass.class)
                 );
+    }
+
+    @Test
+    void メソッドでifやswitchを使用していると検出できる() throws Exception {
+        Specification actual = exercise(DecisionClass.class);
+
+        List<MethodSpecification> methodSpecifications = actual.instanceMethodSpecifications();
+
+        assertThat(methodSpecifications)
+                .extracting(
+                        methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
+                        MethodSpecification::hasDecision)
+                .containsExactlyInAnyOrder(
+                        tuple("分岐なしメソッド()", false),
+                        tuple("ifがあるメソッド()", true),
+                        tuple("switchがあるメソッド()", true));
     }
 
     @Test

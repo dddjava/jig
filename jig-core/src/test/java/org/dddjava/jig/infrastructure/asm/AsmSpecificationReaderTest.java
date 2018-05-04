@@ -12,11 +12,15 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.Annotated;
 import stub.domain.model.kind.*;
-import stub.domain.model.relation.*;
+import stub.domain.model.relation.ClassDefinition;
+import stub.domain.model.relation.EnumDefinition;
+import stub.domain.model.relation.FieldDefinition;
+import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.foo.Bar;
 import stub.domain.model.relation.foo.Baz;
 import stub.domain.model.relation.foo.Foo;
 import stub.domain.model.relation.test.*;
+import stub.misc.DecisionClass;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -137,7 +141,10 @@ public class AsmSpecificationReaderTest {
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", false),
                         tuple("ifがあるメソッド()", true),
-                        tuple("switchがあるメソッド()", true));
+                        tuple("switchがあるメソッド()", true),
+                        // forは ifeq と goto で構成されるのでifと区別つかない
+                        tuple("forがあるメソッド()", true)
+                );
     }
 
     @Test

@@ -1,4 +1,6 @@
-package stub.domain.model.relation;
+package stub.misc;
+
+import java.util.Collections;
 
 /**
  * 分岐を検出するためのクラス
@@ -24,6 +26,12 @@ public class DecisionClass {
                 System.out.println(2);
             default:
                 System.out.println(0);
+        }
+    }
+
+    void forがあるメソッド() {
+        for (Object obj : Collections.emptyList()) {
+            System.out.println(obj);
         }
     }
 }

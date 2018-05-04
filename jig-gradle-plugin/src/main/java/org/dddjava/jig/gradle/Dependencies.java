@@ -100,7 +100,7 @@ public class Dependencies {
                         new JavaparserJapaneseReader(),
                         japaneseNameRepository),
                 new AngleService(
-                        characteristicRepository,
+                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
                         relationRepository,
                         sqlRepository
                 ));
@@ -113,7 +113,7 @@ public class Dependencies {
     public ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
         return new ServiceMethodCallHierarchyController(
                 new AngleService(
-                        characteristicRepository,
+                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
                         relationRepository,
                         sqlRepository
                 ),

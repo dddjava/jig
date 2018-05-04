@@ -1,9 +1,8 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
-import org.dddjava.jig.domain.model.characteristic.MethodCharacteristic;
+import org.dddjava.jig.domain.model.characteristic.*;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class CharacteristicService {
         this.characterizedMethodRepository = characterizedMethodRepository;
     }
 
-    public void registerCharacteristic(Specification specification){
+    public void registerCharacteristic(Specification specification) {
         characteristicRepository.register(Characteristic.resolveCharacteristics(specification));
 
         List<MethodSpecification> methodSpecifications = specification.instanceMethodSpecifications();
@@ -30,5 +29,29 @@ public class CharacteristicService {
                 characterizedMethodRepository.register(MethodCharacteristic.HAS_DECISION, methodSpecification.methodDeclaration);
             }
         }
+    }
+
+    public TypeIdentifiers getServices() {
+        return characteristicRepository.getTypeIdentifiersOf(Characteristic.SERVICE);
+    }
+
+    public TypeIdentifiers getRepositories() {
+        return characteristicRepository.getTypeIdentifiersOf(Characteristic.REPOSITORY);
+    }
+
+    public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
+        return characteristicRepository.findCharacteristics(typeIdentifiers);
+    }
+
+    public Characteristics findCharacteristics(TypeIdentifier typeIdentifier) {
+        return characteristicRepository.findCharacteristics(typeIdentifier);
+    }
+
+    public TypeIdentifiers getEnums() {
+        return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
+    }
+
+    public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
+        return characteristicRepository.getTypeIdentifiersOf(characteristic);
     }
 }

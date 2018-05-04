@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.angle.*;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.datasource.Sql;
 import org.dddjava.jig.domain.model.datasource.SqlRepository;
@@ -14,11 +13,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.relation.RelationRepository;
-import org.dddjava.jig.domain.model.angle.EnumAngle;
-import org.dddjava.jig.domain.model.angle.EnumAngles;
-import org.dddjava.jig.domain.model.angle.GenericModelAngle;
-import org.dddjava.jig.domain.model.angle.GenericModelAngles;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,48 +24,48 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class AngleService {
 
-    CharacteristicRepository characteristicRepository;
+    CharacteristicService characteristicService;
     RelationRepository relationRepository;
     SqlRepository sqlRepository;
 
-    public AngleService(CharacteristicRepository characteristicRepository, RelationRepository relationRepository, SqlRepository sqlRepository) {
-        this.characteristicRepository = characteristicRepository;
+    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, SqlRepository sqlRepository) {
+        this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
         this.sqlRepository = sqlRepository;
     }
 
     public ServiceAngles serviceAngles() {
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.SERVICE);
+        TypeIdentifiers typeIdentifiers = characteristicService.getServices();
         List<ServiceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
                 relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
                     TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
 
                     TypeIdentifiers userTypes = relationRepository.findUserTypes(methodDeclaration);
-                    Characteristics userCharacteristics = characteristicRepository.findCharacteristics(userTypes);
+                    Characteristics userCharacteristics = characteristicService.findCharacteristics(userTypes);
 
                     MethodDeclarations userServiceMethods = relationRepository.findUserMethods(methodDeclaration)
-                            .filter(userMethod -> characteristicRepository
+                            .filter(userMethod -> characteristicService
                                     .findCharacteristics(userMethod.declaringType())
                                     .has(Characteristic.SERVICE).isSatisfy());
 
                     TypeIdentifiers usingFieldTypeIdentifiers = relationRepository.findUseFields(methodDeclaration).toTypeIdentifies();
 
                     MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethod(methodDeclaration)
-                            .filter(m -> characteristicRepository.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
+                            .filter(m -> characteristicService.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
                     return new ServiceAngle(methodDeclaration, returnTypeIdentifier, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
                 })).collect(toList());
         return new ServiceAngles(list);
     }
 
     public DatasourceAngles datasourceAngles() {
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.REPOSITORY);
+        TypeIdentifiers typeIdentifiers = characteristicService.getRepositories();
         List<DatasourceAngle> list = typeIdentifiers.list().stream().flatMap(typeIdentifier ->
                 relationRepository.methodsOf(typeIdentifier).list().stream().map(methodDeclaration -> {
                     TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
 
                     MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
                             .map(relationRepository::findUseMethod)
-                            .filter(methodIdentifier -> characteristicRepository.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
+                            .filter(methodIdentifier -> characteristicService.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
                     List<Sql> sqls = new ArrayList<>();
                     for (MethodDeclaration identifier : mapperMethods.list()) {
                         sqlRepository.find(identifier).ifPresent(sqls::add);
@@ -82,9 +76,9 @@ public class AngleService {
     }
 
     public EnumAngles enumAngles() {
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
+        TypeIdentifiers typeIdentifiers = characteristicService.getEnums();
         List<EnumAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
-            Characteristics characteristics = characteristicRepository.findCharacteristics(typeIdentifier);
+            Characteristics characteristics = characteristicService.findCharacteristics(typeIdentifier);
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
             FieldDeclarations fieldDeclarations = relationRepository.findFieldsOf(typeIdentifier);
             FieldDeclarations constantsDeclarations = relationRepository.findConstants(typeIdentifier);
@@ -94,7 +88,7 @@ public class AngleService {
     }
 
     public GenericModelAngles genericModelAngles(Characteristic characteristic) {
-        TypeIdentifiers typeIdentifiers = characteristicRepository.getTypeIdentifiersOf(characteristic);
+        TypeIdentifiers typeIdentifiers = characteristicService.getTypeIdentifiersOf(characteristic);
         List<GenericModelAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
             return new GenericModelAngle(characteristic, typeIdentifier, userTypeIdentifiers);

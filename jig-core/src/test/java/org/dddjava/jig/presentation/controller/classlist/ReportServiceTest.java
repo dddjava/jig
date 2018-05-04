@@ -64,6 +64,14 @@ class ReportServiceTest {
                         "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [], ◯, ◯, ◯]",
                         "[stub.domain.model.kind.SimpleEnum, , [A, B, C, D], [], [], , , ]"
                 );
+
+        assertThat(sut.decisionReport().rows())
+                .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.relation."))
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsExactly(
+                        "[stub.domain.model.relation.DecisionClass, ifがあるメソッド()]",
+                        "[stub.domain.model.relation.DecisionClass, switchがあるメソッド()]"
+                );
     }
 
     @TestConfiguration

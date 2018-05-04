@@ -63,4 +63,8 @@ public class CharacteristicService {
     public MethodDeclarations getRepositoryMethods() {
         return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.REPOSITORY_METHOD);
     }
+
+    public MethodDeclarations getDecisionMethods() {
+        return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.HAS_DECISION);
+    }
 }

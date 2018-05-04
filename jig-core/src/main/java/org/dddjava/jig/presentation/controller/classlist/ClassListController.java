@@ -11,18 +11,6 @@ import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.report.*;
 import org.dddjava.jig.presentation.view.JigViewResolver;
 import org.dddjava.jig.presentation.view.LocalView;
-import org.dddjava.jig.application.service.AngleService;
-import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.angle.EnumAngles;
-import org.dddjava.jig.domain.model.angle.GenericModelAngles;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
-import org.dddjava.jig.domain.model.report.EnumReport;
-import org.dddjava.jig.domain.model.report.GenericModelReport;
-import org.dddjava.jig.domain.model.report.StringComparingReport;
-import org.dddjava.jig.domain.model.report.ValidationReport;
-import org.dddjava.jig.presentation.view.JigViewResolver;
-import org.dddjava.jig.presentation.view.LocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -68,7 +56,8 @@ public class ClassListController {
                 typeReportOn(Characteristic.DATE),
                 typeReportOn(Characteristic.TERM),
                 validateAnnotationReport(),
-                stringComparingReport()
+                stringComparingReport(),
+                decisionReport()
         ));
 
         return jigViewResolver.classList(reports);
@@ -122,5 +111,10 @@ public class ClassListController {
             list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }
         return new ValidationReport(list).toReport();
+    }
+
+    Report<?> decisionReport() {
+        DecisionAngle decisionAngle = angleService.decision();
+        return new DecisionReport(decisionAngle).toReport();
     }
 }

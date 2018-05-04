@@ -111,4 +111,9 @@ public class AngleService {
         MethodDeclarations userMethods = relationRepository.findUserMethods(equalsMethod);
         return new DesignSmellAngle(userMethods);
     }
+
+    public DecisionAngle decision() {
+        MethodDeclarations methods = characteristicService.getDecisionMethods();
+        return new DecisionAngle(methods);
+    }
 }

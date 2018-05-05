@@ -110,16 +110,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 access
         );
         MethodType methodType = methodSpecification.methodType();
-        if (methodType == MethodType.CONSTRUCTOR) {
-            // コンストラクタ
-            specification.registerConstructorSpecification(methodSpecification);
-        } else if (methodType == MethodType.STATIC_METHOD) {
-            // staticメソッド
-            specification.registerStaticMethodSpecification(methodSpecification);
-        } else {
-            // インスタンスメソッド
-            specification.registerInstanceMethodSpecification(methodSpecification);
-        }
+        methodType.linkMethodSpecificationToSpecification(methodSpecification, specification);
 
         return new MethodVisitor(this.api) {
 

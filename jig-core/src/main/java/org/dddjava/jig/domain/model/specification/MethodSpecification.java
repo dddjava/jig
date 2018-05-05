@@ -119,4 +119,8 @@ public class MethodSpecification {
         }
         return MethodType.INSTANCE_METHOD;
     }
+
+    public void bind(Specification specification) {
+        methodType().bind(this, specification);
+    }
 }

@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
-import org.dddjava.jig.domain.model.specification.MethodType;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationContext;
 import org.objectweb.asm.*;
@@ -109,8 +108,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes,
                 access
         );
-        MethodType methodType = methodSpecification.methodType();
-        methodType.linkMethodSpecificationToSpecification(methodSpecification, specification);
+        methodSpecification.bind(specification);
 
         return new MethodVisitor(this.api) {
 

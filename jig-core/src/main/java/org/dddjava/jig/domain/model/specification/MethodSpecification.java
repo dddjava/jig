@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,6 +17,7 @@ public class MethodSpecification {
 
     public final MethodDeclaration methodDeclaration;
     private final TypeIdentifier returnType;
+    private final int access;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
     private final List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
@@ -30,9 +32,11 @@ public class MethodSpecification {
 
     public MethodSpecification(MethodDeclaration methodDeclaration,
                                TypeIdentifier returnType,
-                               List<TypeIdentifier> useTypes) {
+                               List<TypeIdentifier> useTypes,
+                               int access) {
         this.methodDeclaration = methodDeclaration;
         this.returnType = returnType;
+        this.access = access;
 
         this.useTypes.add(returnType);
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
@@ -104,5 +108,9 @@ public class MethodSpecification {
 
     public boolean isConstructor() {
         return methodDeclaration.isConstructor();
+    }
+
+    public boolean isStatic() {
+        return (access & Opcodes.ACC_STATIC) != 0;
     }
 }

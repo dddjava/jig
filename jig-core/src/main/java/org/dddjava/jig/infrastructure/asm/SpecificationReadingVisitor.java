@@ -105,12 +105,13 @@ class SpecificationReadingVisitor extends ClassVisitor {
         MethodSpecification methodSpecification = new MethodSpecification(
                 methodDeclaration,
                 methodDescriptorToReturnIdentifier(descriptor),
-                useTypes
+                useTypes,
+                access
         );
         if (methodSpecification.isConstructor()) {
             // コンストラクタ
             specification.registerConstructorSpecification(methodSpecification);
-        } else if ((access & Opcodes.ACC_STATIC) != 0) {
+        } else if (methodSpecification.isStatic()) {
             // staticメソッド
             specification.registerStaticMethodSpecification(methodSpecification);
         } else {

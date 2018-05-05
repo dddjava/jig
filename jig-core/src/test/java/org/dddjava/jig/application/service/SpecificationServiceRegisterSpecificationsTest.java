@@ -41,7 +41,8 @@ class SpecificationServiceRegisterSpecificationsTest {
         MethodSpecification methodSpecification = new MethodSpecification(
                 new MethodDeclaration(typeIdentifier, new MethodSignature("methodName", emptyList()), new TypeIdentifier("test.ReturnType")),
                 new TypeIdentifier("test.ReturnType"),
-                emptyList());
+                emptyList(),
+                0);
         // フィールド呼び出し
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field1", new TypeIdentifier("test.FieldA")));
         methodSpecification.registerFieldInstruction(new FieldDeclaration(new TypeIdentifier("test.OtherClass1"), "field2", new TypeIdentifier("test.FieldB")));

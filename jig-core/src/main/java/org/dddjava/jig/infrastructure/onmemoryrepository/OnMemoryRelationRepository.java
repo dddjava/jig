@@ -21,7 +21,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final List<FieldDeclaration> instanceFields = new ArrayList<>();
     final List<FieldDeclaration> staticFields = new ArrayList<>();
 
-    final Set<MethodDeclaration> memberMethods = new HashSet<>();
     final Set<MethodTypeRelation> methodReturnTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodParameterTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodUseTypes = new HashSet<>();
@@ -29,7 +28,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerMethod(MethodDeclaration methodDeclaration) {
-        memberMethods.add(methodDeclaration);
         methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, methodDeclaration.returnType()));
         MethodSignature methodSignature = methodDeclaration.methodSignature();
         methodSignature.arguments().forEach(argumentTypeIdentifier ->
@@ -106,13 +104,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
         return methodUseMethodsMap.entrySet().stream()
                 .filter(entry -> entry.getValue().contains(methodDeclaration))
                 .map(Map.Entry::getKey)
-                .collect(MethodDeclarations.collector());
-    }
-
-    @Override
-    public MethodDeclarations methodsOf(TypeIdentifier typeIdentifier) {
-        return memberMethods.stream()
-                .filter(methodDeclaration -> methodDeclaration.declaringType().equals(typeIdentifier))
                 .collect(MethodDeclarations.collector());
     }
 

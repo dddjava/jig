@@ -27,8 +27,6 @@ public interface RelationRepository {
 
     MethodDeclarations findUseMethod(MethodDeclaration methodDeclaration);
 
-    MethodDeclarations methodsOf(TypeIdentifier typeIdentifier);
-
     FieldDeclarations findConstants(TypeIdentifier type);
 
     FieldDeclarations findFieldsOf(TypeIdentifier typeIdentifier);

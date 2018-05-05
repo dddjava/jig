@@ -107,7 +107,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 methodDescriptorToReturnIdentifier(descriptor),
                 useTypes
         );
-        if (methodDeclaration.methodSignature().asSimpleText().startsWith("<init>")) {
+        if (methodSpecification.isConstructor()) {
             // コンストラクタ
             specification.registerConstructorSpecification(methodSpecification);
         } else if ((access & Opcodes.ACC_STATIC) != 0) {

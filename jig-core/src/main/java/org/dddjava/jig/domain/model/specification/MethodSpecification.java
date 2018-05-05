@@ -101,4 +101,8 @@ public class MethodSpecification {
     public boolean hasDecision() {
         return jumpInstruction || lookupSwitchInstruction;
     }
+
+    public boolean isConstructor() {
+        return methodDeclaration.isConstructor();
+    }
 }

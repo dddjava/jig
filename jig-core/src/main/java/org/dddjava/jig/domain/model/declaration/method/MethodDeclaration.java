@@ -60,4 +60,8 @@ public class MethodDeclaration {
     public TypeIdentifier returnType() {
         return returnTypeIdentifier;
     }
+
+    public boolean isConstructor() {
+        return methodSignature().asSimpleText().startsWith("<init>");
+    }
 }

@@ -97,7 +97,9 @@ public class SpecificationServiceImportSpecificationTest {
     @Test
     void コレクション() {
         assertThat(characteristicRepository.getTypeIdentifiersOf(Characteristic.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
-                .containsExactly(SimpleCollection.class.getTypeName());
+                .containsExactlyInAnyOrder(
+                        SimpleCollection.class.getTypeName(),
+                        SetCollection.class.getTypeName());
     }
 
 }

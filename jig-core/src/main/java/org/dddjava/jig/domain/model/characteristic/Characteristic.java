@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.characteristic;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.specification.Specification;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public enum Characteristic {
@@ -93,7 +95,8 @@ public enum Characteristic {
     COLLECTION {
         @Override
         boolean matches(Specification specification) {
-            return specification.fieldDeclarations().matches(new TypeIdentifier(List.class));
+            FieldDeclarations fieldDeclarations = specification.fieldDeclarations();
+            return fieldDeclarations.matches(new TypeIdentifier(List.class)) || fieldDeclarations.matches(new TypeIdentifier(Set.class));
         }
     },
     MODEL {

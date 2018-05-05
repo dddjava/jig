@@ -29,6 +29,9 @@ public class SpecificationService {
 
     public void importSpecification(SpecificationSources specificationSources) {
         Specifications specifications = specification(specificationSources);
+
+        characteristicService.registerCharacteristic(specifications);
+
         registerSpecifications(specifications);
     }
 
@@ -48,8 +51,6 @@ public class SpecificationService {
     }
 
     void registerSpecification(Specification specification) {
-        characteristicService.registerCharacteristic(specification);
-
         specification.fieldDeclarations().list().forEach(relationRepository::registerField);
         specification.staticFieldDeclarations().list().forEach(relationRepository::registerConstants);
         specification.fieldAnnotationDeclarations().forEach(annotationDeclarationRepository::register);

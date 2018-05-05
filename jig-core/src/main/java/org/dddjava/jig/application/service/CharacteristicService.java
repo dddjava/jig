@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
 import org.dddjava.jig.domain.model.specification.Specification;
+import org.dddjava.jig.domain.model.specification.Specifications;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public class CharacteristicService {
     public CharacteristicService(CharacteristicRepository characteristicRepository, CharacterizedMethodRepository characterizedMethodRepository) {
         this.characteristicRepository = characteristicRepository;
         this.characterizedMethodRepository = characterizedMethodRepository;
+    }
+
+    public void registerCharacteristic(Specifications specifications) {
+        for (Specification specification : specifications.list()) {
+            registerCharacteristic(specification);
+        }
     }
 
     public void registerCharacteristic(Specification specification) {

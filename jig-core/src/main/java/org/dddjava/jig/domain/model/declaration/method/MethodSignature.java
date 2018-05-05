@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.List;
 
@@ -37,5 +36,9 @@ public class MethodSignature {
 
     public List<TypeIdentifier> arguments() {
         return argumentTypeIdentifiers;
+    }
+
+    public boolean isLambda() {
+        return methodName.startsWith("lambda$");
     }
 }

@@ -64,4 +64,8 @@ public class MethodDeclaration {
     public boolean isConstructor() {
         return methodSignature().asSimpleText().startsWith("<init>");
     }
+
+    public boolean isLambda() {
+        return methodSignature.isLambda();
+    }
 }

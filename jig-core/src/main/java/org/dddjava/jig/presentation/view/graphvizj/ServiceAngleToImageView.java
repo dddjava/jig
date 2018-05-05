@@ -47,13 +47,18 @@ public class ServiceAngleToImageView extends AbstractLocalView {
             // メソッドの表示方法
             String labelText = angles.stream()
                     .map(angle -> {
-                        // ラベルを method(ArgumentType) : ReturnType にする
-                        // ハンドラを強調（赤色）
                         MethodDeclaration method = angle.method();
                         StringJoiner attribute = new StringJoiner(",", "[", "]");
-                        attribute.add("label=\"" + method.asSimpleTextWithReturnType() + "\"");
-                        if (angle.usingFromController().isSatisfy()) {
-                            attribute.add("color=red");
+
+                        if (method.isLambda()) {
+                            attribute.add("label=\"(lambda)\"");
+                        } else {
+                            // ラベルを method(ArgumentType) : ReturnType にする
+                            attribute.add("label=\"" + method.asSimpleTextWithReturnType() + "\"");
+                            // ハンドラを強調（赤色）
+                            if (angle.usingFromController().isSatisfy()) {
+                                attribute.add("color=red");
+                            }
                         }
                         return String.format("\"%s\" " + attribute + ";",
                                 method.asFullText(),

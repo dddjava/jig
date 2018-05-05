@@ -150,6 +150,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
                 for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
+
                     if (bootstrapMethodArgument instanceof Type) {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
@@ -159,6 +160,17 @@ class SpecificationReadingVisitor extends ClassVisitor {
                                 methodSpecification.registerInvokeDynamic(toTypeIdentifier(argumentType));
                             }
                         }
+                    }
+
+                    // lambdaで記述されているハンドラメソッド
+                    if (bootstrapMethodArgument instanceof Handle) {
+                        Handle handle = (Handle) bootstrapMethodArgument;
+                        methodSpecification.registerMethodInstruction(
+                                new MethodDeclaration(
+                                        new TypeIdentifier(handle.getOwner()),
+                                        toMethodSignature(handle.getName(), handle.getDesc()),
+                                        methodDescriptorToReturnIdentifier(handle.getDesc()))
+                        );
                     }
                 }
 

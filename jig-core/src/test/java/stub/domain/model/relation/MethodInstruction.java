@@ -1,11 +1,11 @@
 package stub.domain.model.relation;
 
 import stub.domain.model.relation.foo.Foo;
-import stub.domain.model.relation.test.EnclosedClass;
 import stub.domain.model.relation.test.*;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class MethodInstruction {
 
@@ -25,11 +25,11 @@ public class MethodInstruction {
     }
 
     void lambda() {
-        // Lambdaの中でだけ使用しているクラス
-        Function<Void, Void> lambda = (param) -> {
-            new UseInLambda();
-            return null;
-        };
+        Stream.empty()
+                .forEach(item -> {
+                    // Lambdaの中でだけ使用しているクラス
+                    new UseInLambda();
+                });
     }
 
     void methodRef() {

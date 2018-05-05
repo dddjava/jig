@@ -129,6 +129,25 @@ public class AsmSpecificationReaderTest {
     }
 
     @Test
+    void メソッドの使用しているメソッドが取得できる() throws Exception {
+        Specification actual = exercise(MethodInstruction.class);
+
+        assertThat(actual.instanceMethodSpecifications())
+                .extracting(
+                        methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
+                        methodSpecification -> methodSpecification.usingMethods().asSimpleText()
+                )
+                .filteredOn(tuple -> {
+                    Object methodDeclaration = tuple.toArray()[0];
+                    return methodDeclaration.equals("method(MethodArgument)") || methodDeclaration.equals("lambda()");
+                })
+                .containsExactlyInAnyOrder(
+                        tuple("method(MethodArgument)", "[Bar.toBaz(), Foo.toBar()]"),
+                        tuple("lambda()", "[Stream.empty(), Stream.forEach(Consumer), MethodInstruction.lambda$lambda$0(Object)]")
+                );
+    }
+
+    @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
         Specification actual = exercise(DecisionClass.class);
 

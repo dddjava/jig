@@ -65,7 +65,7 @@ class SpecificationServiceRegisterSpecificationsTest {
         assertThat(relationRepository.findUseFields(methodDeclaration).toTypeIdentifies().asText())
                 .isEqualTo("[test.FieldA, test.FieldB]");
         // メソッドの使用しているメソッドがわかる
-        assertThat(relationRepository.findUseMethod(methodDeclaration).asSimpleText())
+        assertThat(relationRepository.findUseMethods(methodDeclaration).asSimpleText())
                 .isEqualTo("[OtherClass2.methodB(), TestClass.methodA()]");
     }
 }

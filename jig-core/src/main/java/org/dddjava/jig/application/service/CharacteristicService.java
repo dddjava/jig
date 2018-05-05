@@ -44,6 +44,9 @@ public class CharacteristicService {
             if (typeCharacteristics.has(Characteristic.REPOSITORY).isSatisfy()) {
                 characterizedMethodRepository.register(MethodCharacteristic.REPOSITORY_METHOD, methodSpecification.methodDeclaration);
             }
+            if (typeCharacteristics.has(Characteristic.MAPPER).isSatisfy()) {
+                characterizedMethodRepository.register(MethodCharacteristic.MAPPER_METHOD, methodSpecification.methodDeclaration);
+            }
         }
     }
 
@@ -73,5 +76,9 @@ public class CharacteristicService {
 
     public MethodDeclarations getDecisionMethods() {
         return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.HAS_DECISION);
+    }
+
+    public MethodDeclarations getMapperMethods() {
+        return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.MAPPER_METHOD);
     }
 }

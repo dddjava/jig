@@ -1,9 +1,8 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -29,16 +28,6 @@ public class MethodDeclarations {
         return list.stream().filter(predicate).collect(collector());
     }
 
-    public static MethodDeclarations empty() {
-        return new MethodDeclarations(Collections.emptyList());
-    }
-
-    public MethodDeclarations map(Function<MethodDeclaration, MethodDeclarations> function) {
-        if (list.isEmpty()) return MethodDeclarations.empty();
-        // TODO 複数の場合
-        return function.apply(list.get(0));
-    }
-
     public String asSimpleText() {
         return list.stream().map(methodIdentifier ->
                 methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText()
@@ -51,5 +40,17 @@ public class MethodDeclarations {
 
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.stream().anyMatch(methodDeclaration::equals);
+    }
+
+    public MethodDeclarations intersection(MethodDeclarations others) {
+        return list.stream()
+                .filter(others.list::contains)
+                .collect(collector());
+    }
+
+    public MethodDeclarations union(MethodDeclarations others) {
+        ArrayList<MethodDeclaration> newList = new ArrayList<>(list);
+        newList.addAll(others.list);
+        return new MethodDeclarations(newList);
     }
 }

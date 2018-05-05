@@ -44,7 +44,7 @@ public class AngleService {
 
                     TypeIdentifiers usingFieldTypeIdentifiers = relationRepository.findUseFields(methodDeclaration).toTypeIdentifies();
 
-                    MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethod(methodDeclaration)
+                    MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethods(methodDeclaration)
                             .filter(m -> characteristicService.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
                     return new ServiceAngle(methodDeclaration, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
                 }).collect(toList());
@@ -52,18 +52,21 @@ public class AngleService {
     }
 
     public DatasourceAngles datasourceAngles() {
+        MethodDeclarations mapperMethods = characteristicService.getMapperMethods();
+
         List<DatasourceAngle> list = characteristicService.getRepositoryMethods().list().stream()
                 .map(methodDeclaration -> {
                     // Repositoryを実装している具象メソッド
                     MethodDeclarations datasourceMethods = relationRepository.findConcrete(methodDeclaration);
 
                     // 使用しているMapperメソッド
-                    MethodDeclarations mapperMethods = datasourceMethods
-                            .map(relationRepository::findUseMethod)
-                            .filter(methodIdentifier -> characteristicService.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
+                    MethodDeclarations usingMethods = new MethodDeclarations(Collections.emptyList());
+                    for (MethodDeclaration datasourceMethod : datasourceMethods.list()) {
+                        usingMethods = usingMethods.union(relationRepository.findUseMethods(datasourceMethod));
+                    }
+                    MethodDeclarations usingMapperMethods = usingMethods.intersection(mapperMethods);
 
-                    Sqls sqls = datasourceService.findSqls(mapperMethods);
-
+                    Sqls sqls = datasourceService.findSqls(usingMapperMethods);
                     return new DatasourceAngle(methodDeclaration, sqls);
                 }).collect(toList());
         return new DatasourceAngles(list);

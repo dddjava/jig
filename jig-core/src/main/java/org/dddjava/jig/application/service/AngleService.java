@@ -51,7 +51,7 @@ public class AngleService {
 
                     MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethod(methodDeclaration)
                             .filter(m -> characteristicService.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
-                    return new ServiceAngle(methodDeclaration, returnTypeIdentifier, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
+                    return new ServiceAngle(methodDeclaration, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
                 }).collect(toList());
         return new ServiceAngles(list);
     }
@@ -59,8 +59,6 @@ public class AngleService {
     public DatasourceAngles datasourceAngles() {
         List<DatasourceAngle> list = characteristicService.getRepositoryMethods().list().stream()
                 .map(methodDeclaration -> {
-                    TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
-
                     MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
                             .map(relationRepository::findUseMethod)
                             .filter(methodIdentifier -> characteristicService.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
@@ -68,7 +66,7 @@ public class AngleService {
                     for (MethodDeclaration identifier : mapperMethods.list()) {
                         sqlRepository.find(identifier).ifPresent(sqls::add);
                     }
-                    return new DatasourceAngle(methodDeclaration, returnTypeIdentifier, new Sqls(sqls));
+                    return new DatasourceAngle(methodDeclaration, new Sqls(sqls));
                 }).collect(toList());
         return new DatasourceAngles(list);
     }

@@ -58,11 +58,7 @@ class SpecificationServiceRegisterSpecificationsTest {
         MethodDeclaration methodDeclaration = new MethodDeclaration(
                 new TypeIdentifier("test.TestClass"),
                 new MethodSignature("methodName", emptyList()),
-                // TODO
-                null);
-        // メソッドの戻り型がわかる
-        assertThat(relationRepository.getReturnTypeOf(methodDeclaration).fullQualifiedName())
-                .isEqualTo("test.ReturnType");
+                new TypeIdentifier("test.ReturnType"));
         // メソッドの使用しているフィールドがわかる
         assertThat(relationRepository.findUseFields(methodDeclaration).toTypeIdentifies().asText())
                 .isEqualTo("[test.FieldA, test.FieldB]");

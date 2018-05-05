@@ -11,15 +11,13 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 public class ServiceAngle {
 
     MethodDeclaration methodDeclaration;
-    TypeIdentifier returnTypeIdentifier;
     Characteristics userCharacteristics;
     private final MethodDeclarations userServiceMethods;
     TypeIdentifiers usingFieldTypeIdentifiers;
     MethodDeclarations usingRepositoryMethods;
 
-    public ServiceAngle(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods) {
+    public ServiceAngle(MethodDeclaration methodDeclaration, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods) {
         this.methodDeclaration = methodDeclaration;
-        this.returnTypeIdentifier = returnTypeIdentifier;
         this.userCharacteristics = userCharacteristics;
         this.userServiceMethods = userServiceMethods;
         this.usingFieldTypeIdentifiers = usingFieldTypeIdentifiers;
@@ -31,7 +29,7 @@ public class ServiceAngle {
     }
 
     public TypeIdentifier returnType() {
-        return returnTypeIdentifier;
+        return methodDeclaration.returnType();
     }
 
     public TypeIdentifiers usingFields() {

@@ -31,10 +31,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     public void registerMethod(MethodDeclaration methodDeclaration) {
         memberMethods.add(methodDeclaration);
         methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, methodDeclaration.returnType()));
-    }
-
-    @Override
-    public void registerMethodParameter(MethodDeclaration methodDeclaration) {
         MethodSignature methodSignature = methodDeclaration.methodSignature();
         methodSignature.arguments().forEach(argumentTypeIdentifier ->
                 methodParameterTypes.add(new MethodTypeRelation(methodDeclaration, argumentTypeIdentifier)));

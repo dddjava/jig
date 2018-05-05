@@ -57,7 +57,6 @@ public class SpecificationService {
         specification.instanceMethodSpecifications().forEach(methodSpecification -> {
             MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
             relationRepository.registerMethod(methodDeclaration);
-            relationRepository.registerMethodParameter(methodDeclaration);
 
             for (TypeIdentifier interfaceTypeIdentifier : specification.interfaceTypeIdentifiers.list()) {
                 relationRepository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));

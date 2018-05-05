@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.toSet;
+
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
 
@@ -105,27 +107,29 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .collect(MethodDeclarations.collector());
     }
 
-    TypeIdentifiers findFieldUsage(TypeIdentifier typeIdentifier) {
+    private Set<TypeIdentifier> findUseByFieldTypes(TypeIdentifier typeIdentifier) {
         return instanceFields.stream()
                 .filter(fieldDeclaration -> fieldDeclaration.typeIdentifier().equals(typeIdentifier))
                 .map(FieldDeclaration::declaringType)
-                .collect(TypeIdentifiers.collector());
+                .collect(toSet());
     }
 
-    private MethodDeclarations findMethodUsage(TypeIdentifier typeIdentifier) {
+    private Set<TypeIdentifier> findUseByMethodTypes(TypeIdentifier typeIdentifier) {
         Set<MethodDeclaration> methodDeclarations = typeUserMethods.get(typeIdentifier);
-        ArrayList<MethodDeclaration> list = new ArrayList<>();
-        if (methodDeclarations != null) {
-            list.addAll(methodDeclarations);
+        if (methodDeclarations == null) {
+            return Collections.emptySet();
         }
-        return new MethodDeclarations(list);
+        return methodDeclarations.stream()
+                .map(MethodDeclaration::declaringType)
+                .collect(toSet());
     }
 
     @Override
     public TypeIdentifiers findUserTypes(TypeIdentifier typeIdentifier) {
-        TypeIdentifiers fieldUsage = findFieldUsage(typeIdentifier);
-        TypeIdentifiers methodUsage = findMethodUsage(typeIdentifier).declaringTypes();
-        return fieldUsage.merge(methodUsage);
+        HashSet<TypeIdentifier> set = new HashSet<>();
+        set.addAll(findUseByFieldTypes(typeIdentifier));
+        set.addAll(findUseByMethodTypes(typeIdentifier));
+        return new TypeIdentifiers(new ArrayList<>(set));
     }
 
     @Override

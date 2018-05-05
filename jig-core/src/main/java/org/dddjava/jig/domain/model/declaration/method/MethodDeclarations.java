@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -39,10 +37,6 @@ public class MethodDeclarations {
         if (list.isEmpty()) return MethodDeclarations.empty();
         // TODO 複数の場合
         return function.apply(list.get(0));
-    }
-
-    public TypeIdentifiers declaringTypes() {
-        return list.stream().map(MethodDeclaration::declaringType).collect(TypeIdentifiers.collector());
     }
 
     public String asSimpleText() {

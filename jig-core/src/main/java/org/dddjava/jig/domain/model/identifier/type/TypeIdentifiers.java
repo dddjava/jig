@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.identifier.type;
 import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -35,9 +34,5 @@ public class TypeIdentifiers {
 
     public String asSimpleText() {
         return identifiers.stream().map(TypeIdentifier::asSimpleText).distinct().collect(joining(", ", "[", "]"));
-    }
-
-    public TypeIdentifiers merge(TypeIdentifiers other) {
-        return Stream.concat(identifiers.stream(), other.identifiers.stream()).collect(TypeIdentifiers.collector());
     }
 }

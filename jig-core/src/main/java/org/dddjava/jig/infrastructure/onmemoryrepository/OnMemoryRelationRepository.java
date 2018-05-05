@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.relation.MethodRelation;
 import org.dddjava.jig.domain.model.relation.MethodTypeRelation;
 import org.dddjava.jig.domain.model.relation.RelationRepository;
-import org.dddjava.jig.domain.model.relation.TypeMethodRelation;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final List<FieldDeclaration> instanceFields = new ArrayList<>();
     final List<FieldDeclaration> staticFields = new ArrayList<>();
 
-    final Set<TypeMethodRelation> memberMethods = new HashSet<>();
+    final Set<MethodDeclaration> memberMethods = new HashSet<>();
     final Set<MethodTypeRelation> methodReturnTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodParameterTypes = new HashSet<>();
     final Set<MethodTypeRelation> methodUseTypes = new HashSet<>();
@@ -30,7 +29,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
     @Override
     public void registerMethod(MethodDeclaration methodDeclaration) {
-        memberMethods.add(new TypeMethodRelation(methodDeclaration.declaringType(), methodDeclaration));
+        memberMethods.add(methodDeclaration);
     }
 
     @Override
@@ -130,8 +129,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public MethodDeclarations methodsOf(TypeIdentifier typeIdentifier) {
         return memberMethods.stream()
-                .filter(typeMethodRelation -> typeMethodRelation.typeIs(typeIdentifier))
-                .map(TypeMethodRelation::method)
+                .filter(methodDeclaration -> methodDeclaration.declaringType().equals(typeIdentifier))
                 .collect(MethodDeclarations.collector());
     }
 

@@ -106,21 +106,11 @@ public class MethodSpecification {
         return jumpInstruction || lookupSwitchInstruction;
     }
 
-    private boolean isStatic() {
+    boolean isStatic() {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
 
-    public MethodType methodType() {
-        if (methodDeclaration.isConstructor()) {
-            return MethodType.CONSTRUCTOR;
-        }
-        if (isStatic()) {
-            return MethodType.STATIC_METHOD;
-        }
-        return MethodType.INSTANCE_METHOD;
-    }
-
     public void bind(Specification specification) {
-        methodType().bind(this, specification);
+        MethodType.methodType(this).bind(this, specification);
     }
 }

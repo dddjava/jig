@@ -20,5 +20,15 @@ public enum MethodType {
         }
     };
 
+    public static MethodType methodType(MethodSpecification methodSpecification) {
+        if (methodSpecification.methodDeclaration.isConstructor()) {
+            return CONSTRUCTOR;
+        }
+        if (methodSpecification.isStatic()) {
+            return STATIC_METHOD;
+        }
+        return INSTANCE_METHOD;
+    }
+
     public abstract void bind(MethodSpecification methodSpecification, Specification specification);
 }

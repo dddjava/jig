@@ -140,8 +140,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                         new MethodDeclaration(
                                 new TypeIdentifier(owner),
                                 toMethodSignature(name, descriptor),
-                                methodDescriptorToReturnIdentifier(descriptor)),
-                        methodDescriptorToReturnIdentifier(descriptor));
+                                methodDescriptorToReturnIdentifier(descriptor)));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }

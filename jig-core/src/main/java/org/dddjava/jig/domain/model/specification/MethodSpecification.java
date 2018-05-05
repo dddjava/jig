@@ -46,7 +46,7 @@ public class MethodSpecification {
         useTypes.add(field.typeIdentifier());
     }
 
-    public void registerMethodInstruction(MethodDeclaration methodDeclaration, TypeIdentifier returnType) {
+    public void registerMethodInstruction(MethodDeclaration methodDeclaration) {
         usingMethods.add(methodDeclaration);
 
         // メソッドやコンストラクタの持ち主
@@ -54,7 +54,7 @@ public class MethodSpecification {
         useTypes.add(methodDeclaration.declaringType());
 
         // 呼び出したメソッドの戻り値の型
-        useTypes.add(returnType);
+        useTypes.add(methodDeclaration.returnType());
     }
 
     public void registerJumpInstruction() {

@@ -47,9 +47,9 @@ class SpecificationServiceRegisterSpecificationsTest {
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field3", new TypeIdentifier("test.FieldA")));
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field4", new TypeIdentifier("test.FieldB")));
         // メソッド呼び出し
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")), new TypeIdentifier("test.MethodReturn1"));
-        methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")), new TypeIdentifier("test.MethodReturn2"));
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")), new TypeIdentifier("test.MethodReturn1"));
+        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
+        methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")));
+        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
 
         specification.registerInstanceMethodSpecification(methodSpecification);
 

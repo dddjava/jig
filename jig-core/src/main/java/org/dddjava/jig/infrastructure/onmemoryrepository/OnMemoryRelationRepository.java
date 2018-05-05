@@ -4,16 +4,13 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.relation.MethodRelation;
-import org.dddjava.jig.domain.model.relation.MethodTypeRelation;
 import org.dddjava.jig.domain.model.relation.RelationRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
@@ -21,21 +18,22 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final List<FieldDeclaration> instanceFields = new ArrayList<>();
     final List<FieldDeclaration> staticFields = new ArrayList<>();
 
-    final Set<MethodTypeRelation> methodReturnTypes = new HashSet<>();
-    final Set<MethodTypeRelation> methodParameterTypes = new HashSet<>();
-    final Set<MethodTypeRelation> methodUseTypes = new HashSet<>();
     final Set<MethodRelation> methodImplementMethods = new HashSet<>();
+
+    final Map<TypeIdentifier, Set<MethodDeclaration>> typeUserMethods = new HashMap<>();
 
     @Override
     public void registerMethod(MethodDeclaration methodDeclaration) {
-        methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, methodDeclaration.returnType()));
-        MethodSignature methodSignature = methodDeclaration.methodSignature();
-        methodSignature.arguments().forEach(argumentTypeIdentifier ->
-                methodParameterTypes.add(new MethodTypeRelation(methodDeclaration, argumentTypeIdentifier)));
+        methodDeclaration.methodSignature().arguments().forEach(argumentTypeIdentifier ->
+                registerMethodUseType(methodDeclaration, argumentTypeIdentifier));
+        registerMethodUseType(methodDeclaration, methodDeclaration.returnType());
     }
 
     private void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier typeIdentifier) {
-        methodUseTypes.add(new MethodTypeRelation(methodDeclaration, typeIdentifier));
+        if (!typeUserMethods.containsKey(typeIdentifier)) {
+            typeUserMethods.put(typeIdentifier, new HashSet<>());
+        }
+        typeUserMethods.get(typeIdentifier).add(methodDeclaration);
     }
 
     @Override
@@ -114,11 +112,13 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .collect(TypeIdentifiers.collector());
     }
 
-    MethodDeclarations findMethodUsage(TypeIdentifier typeIdentifier) {
-        return Stream.of(methodReturnTypes, methodParameterTypes, methodUseTypes).flatMap(Set::stream)
-                .filter(methodTypeRelation -> methodTypeRelation.typeIs(typeIdentifier))
-                .map(MethodTypeRelation::method)
-                .collect(MethodDeclarations.collector());
+    private MethodDeclarations findMethodUsage(TypeIdentifier typeIdentifier) {
+        Set<MethodDeclaration> methodDeclarations = typeUserMethods.get(typeIdentifier);
+        ArrayList<MethodDeclaration> list = new ArrayList<>();
+        if (methodDeclarations != null) {
+            list.addAll(methodDeclarations);
+        }
+        return new MethodDeclarations(list);
     }
 
     @Override

@@ -30,6 +30,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerMethod(MethodDeclaration methodDeclaration) {
         memberMethods.add(methodDeclaration);
+        methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, methodDeclaration.returnType()));
     }
 
     @Override
@@ -37,11 +38,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
         MethodSignature methodSignature = methodDeclaration.methodSignature();
         methodSignature.arguments().forEach(argumentTypeIdentifier ->
                 methodParameterTypes.add(new MethodTypeRelation(methodDeclaration, argumentTypeIdentifier)));
-    }
-
-    @Override
-    public void registerMethodReturnType(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier) {
-        methodReturnTypes.add(new MethodTypeRelation(methodDeclaration, returnTypeIdentifier));
     }
 
     private void registerMethodUseType(MethodDeclaration methodDeclaration, TypeIdentifier typeIdentifier) {
@@ -61,15 +57,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerConstants(FieldDeclaration fieldDeclaration) {
         staticFields.add(fieldDeclaration);
-    }
-
-    @Override
-    public TypeIdentifier getReturnTypeOf(MethodDeclaration methodDeclaration) {
-        return methodReturnTypes.stream()
-                .filter(methodTypeRelation -> methodTypeRelation.methodIs(methodDeclaration))
-                .map(MethodTypeRelation::type)
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(methodDeclaration.asFullText()));
     }
 
     Map<MethodDeclaration, FieldDeclarations> methodUseFieldsMap = new HashMap<>();

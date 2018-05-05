@@ -6,20 +6,12 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 public interface RelationRepository {
 
     void registerMethod(MethodDeclaration methodDeclaration);
 
     void registerMethodParameter(MethodDeclaration methodDeclaration);
-
-    void registerMethodReturnType(MethodDeclaration methodDeclaration, TypeIdentifier returnTypeIdentifier);
 
     void registerMethodUseMethods(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations);
 
@@ -30,8 +22,6 @@ public interface RelationRepository {
     void registerConstants(FieldDeclaration fieldDeclaration);
 
     void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations);
-
-    TypeIdentifier getReturnTypeOf(MethodDeclaration methodDeclaration);
 
     FieldDeclarations findUseFields(MethodDeclaration methodDeclaration);
 

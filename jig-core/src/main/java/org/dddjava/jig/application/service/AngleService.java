@@ -37,8 +37,6 @@ public class AngleService {
     public ServiceAngles serviceAngles() {
         List<ServiceAngle> list = characteristicService.getServiceMethods().list().stream()
                 .map(methodDeclaration -> {
-                    TypeIdentifier returnTypeIdentifier = relationRepository.getReturnTypeOf(methodDeclaration);
-
                     TypeIdentifiers userTypes = relationRepository.findUserTypes(methodDeclaration);
                     Characteristics userCharacteristics = characteristicService.findCharacteristics(userTypes);
 

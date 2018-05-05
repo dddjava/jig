@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.angle.ServiceAngle;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.AbstractLocalView;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,7 @@ public class ServiceAngleToImageView extends AbstractLocalView {
                         // ハンドラを強調（赤色）
                         MethodDeclaration method = angle.method();
                         StringJoiner attribute = new StringJoiner(",", "[", "]");
-                        attribute.add("label=\"" + method.asSimpleTextWith(angle.returnType()) + "\"");
+                        attribute.add("label=\"" + method.asSimpleTextWithReturnType() + "\"");
                         if (angle.usingFromController().isSatisfy()) {
                             attribute.add("color=red");
                         }

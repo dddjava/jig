@@ -53,8 +53,11 @@ public class MethodDeclaration {
         return Objects.hash(fullText);
     }
 
-    public String asSimpleTextWith(TypeIdentifier returnTypeIdentifier) {
-        // TODO ReturnTypeはこの中に持ってしまいたい
+    public String asSimpleTextWithReturnType() {
         return asSimpleText() + " : " + returnTypeIdentifier.asSimpleText();
+    }
+
+    public TypeIdentifier returnType() {
+        return returnTypeIdentifier;
     }
 }

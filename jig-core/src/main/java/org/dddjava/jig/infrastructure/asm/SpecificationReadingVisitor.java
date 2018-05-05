@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.specification.MethodSpecification;
+import org.dddjava.jig.domain.model.specification.MethodType;
 import org.dddjava.jig.domain.model.specification.Specification;
 import org.dddjava.jig.domain.model.specification.SpecificationContext;
 import org.objectweb.asm.*;
@@ -108,10 +109,11 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes,
                 access
         );
-        if (methodSpecification.isConstructor()) {
+        MethodType methodType = methodSpecification.methodType();
+        if (methodType == MethodType.CONSTRUCTOR) {
             // コンストラクタ
             specification.registerConstructorSpecification(methodSpecification);
-        } else if (methodSpecification.isStatic()) {
+        } else if (methodType == MethodType.STATIC_METHOD) {
             // staticメソッド
             specification.registerStaticMethodSpecification(methodSpecification);
         } else {

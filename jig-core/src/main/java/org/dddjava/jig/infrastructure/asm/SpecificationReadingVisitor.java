@@ -94,7 +94,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = specification.newMethodDeclaration(toMethodSignature(name, descriptor));
+        MethodDeclaration methodDeclaration = specification.newMethodDeclaration(toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -137,7 +137,10 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
                 methodSpecification.registerMethodInstruction(
-                        new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor)),
+                        new MethodDeclaration(
+                                new TypeIdentifier(owner),
+                                toMethodSignature(name, descriptor),
+                                methodDescriptorToReturnIdentifier(descriptor)),
                         methodDescriptorToReturnIdentifier(descriptor));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);

@@ -106,7 +106,8 @@ public class AngleService {
                 new TypeIdentifier(String.class),
                 new MethodSignature(
                         "equals",
-                        Collections.singletonList(new TypeIdentifier(Object.class))));
+                        Collections.singletonList(new TypeIdentifier(Object.class))),
+                new TypeIdentifier("boolean"));
 
         MethodDeclarations userMethods = relationRepository.findUserMethods(equalsMethod);
         return new DesignSmellAngle(userMethods);

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Objects;
 
@@ -9,12 +8,14 @@ public class MethodDeclaration {
 
     private final TypeIdentifier declaringType;
     private final MethodSignature methodSignature;
+    private final TypeIdentifier returnTypeIdentifier;
 
     private final String fullText;
 
-    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature) {
+    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, TypeIdentifier returnTypeIdentifier) {
         this.declaringType = declaringType;
         this.methodSignature = methodSignature;
+        this.returnTypeIdentifier = returnTypeIdentifier;
 
         this.fullText = declaringType.fullQualifiedName() + "." + methodSignature.asText();
     }
@@ -36,7 +37,7 @@ public class MethodDeclaration {
     }
 
     public MethodDeclaration with(TypeIdentifier typeIdentifier) {
-        return new MethodDeclaration(typeIdentifier, this.methodSignature);
+        return new MethodDeclaration(typeIdentifier, this.methodSignature, returnTypeIdentifier);
     }
 
     @Override

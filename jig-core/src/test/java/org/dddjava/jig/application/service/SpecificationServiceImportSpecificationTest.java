@@ -60,7 +60,8 @@ public class SpecificationServiceImportSpecificationTest {
     void 関連() {
         MethodDeclarations methods = relationRepository.findConcrete(new MethodDeclaration(
                 new TypeIdentifier(HogeRepository.class),
-                new MethodSignature("method", Collections.emptyList())));
+                new MethodSignature("method", Collections.emptyList()),
+                new TypeIdentifier("void")));
         assertThat(methods.list()).isNotEmpty();
     }
 

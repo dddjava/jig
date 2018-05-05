@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -143,8 +142,8 @@ public class Specification {
         return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
     }
 
-    public MethodDeclaration newMethodDeclaration(MethodSignature methodSignature) {
-        return new MethodDeclaration(typeIdentifier, methodSignature);
+    public MethodDeclaration newMethodDeclaration(MethodSignature methodSignature, TypeIdentifier returnTypeIdentifier) {
+        return new MethodDeclaration(this.typeIdentifier, methodSignature, returnTypeIdentifier);
     }
 
     public List<FieldAnnotationDeclaration> fieldAnnotationDeclarations() {

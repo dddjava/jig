@@ -38,7 +38,7 @@ class SpecificationServiceRegisterSpecificationsTest {
                 new TypeIdentifier("test.TestParentClass"),
                 new TypeIdentifiers(emptyList()), emptyList(), false);
         MethodSpecification methodSpecification = new MethodSpecification(
-                specification.newMethodDeclaration(new MethodSignature("methodName", emptyList())),
+                specification.newMethodDeclaration(new MethodSignature("methodName", emptyList()), new TypeIdentifier("test.ReturnType")),
                 new TypeIdentifier("test.ReturnType"),
                 emptyList());
         // フィールド呼び出し
@@ -47,9 +47,9 @@ class SpecificationServiceRegisterSpecificationsTest {
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field3", new TypeIdentifier("test.FieldA")));
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field4", new TypeIdentifier("test.FieldB")));
         // メソッド呼び出し
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList())), new TypeIdentifier("test.MethodReturn1"));
-        methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList())), new TypeIdentifier("test.MethodReturn2"));
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList())), new TypeIdentifier("test.MethodReturn1"));
+        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")), new TypeIdentifier("test.MethodReturn1"));
+        methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")), new TypeIdentifier("test.MethodReturn2"));
+        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")), new TypeIdentifier("test.MethodReturn1"));
 
         specification.registerInstanceMethodSpecification(methodSpecification);
 
@@ -57,7 +57,9 @@ class SpecificationServiceRegisterSpecificationsTest {
 
         MethodDeclaration methodDeclaration = new MethodDeclaration(
                 new TypeIdentifier("test.TestClass"),
-                new MethodSignature("methodName", emptyList()));
+                new MethodSignature("methodName", emptyList()),
+                // TODO
+                null);
         // メソッドの戻り型がわかる
         assertThat(relationRepository.getReturnTypeOf(methodDeclaration).fullQualifiedName())
                 .isEqualTo("test.ReturnType");

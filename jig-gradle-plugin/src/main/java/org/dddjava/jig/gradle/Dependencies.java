@@ -39,29 +39,6 @@ public class Dependencies {
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     final DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
 
-    ImportService importService() {
-
-        // TODO extensionで変更できるようにする
-        PropertySpecificationContext specificationContext = new PropertySpecificationContext();
-
-        return new ImportService(
-                new SpecificationService(
-                        new AsmSpecificationReader(specificationContext),
-                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
-                        relationRepository,
-                        annotationDeclarationRepository,
-                        dependencyService()),
-                new GlossaryService(
-                        new JavaparserJapaneseReader(),
-                        japaneseNameRepository
-                ),
-                new DatasourceService(
-                        new MyBatisSqlReader(),
-                        sqlRepository
-                )
-        );
-    }
-
     LocalProject localProject(Project project) {
         JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
         if (javaPluginConvention == null) {
@@ -81,8 +58,57 @@ public class Dependencies {
         );
     }
 
-    DependencyService dependencyService() {
+    ImportService importService() {
+        // TODO extensionで変更できるようにする
+        PropertySpecificationContext specificationContext = new PropertySpecificationContext();
+
+        return new ImportService(
+                new SpecificationService(
+                        new AsmSpecificationReader(specificationContext),
+                        characteristicService(),
+                        relationRepository,
+                        annotationDeclarationRepository,
+                        dependencyService()),
+                glossaryService(),
+                datasourceService()
+        );
+    }
+
+    ClassListController classListController(String outputOmitPrefix) {
+        return new ClassListController(
+                jigViewResolver(outputOmitPrefix),
+                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
+                annotationDeclarationRepository,
+                glossaryService(),
+                angleService()
+        );
+    }
+
+    PackageDependencyController packageDependencyController(String outputOmitPrefix) {
+        return new PackageDependencyController(dependencyService(), jigViewResolver(outputOmitPrefix));
+    }
+
+    ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
+        return new ServiceMethodCallHierarchyController(
+                angleService(),
+                jigViewResolver(outputOmitPrefix)
+        );
+    }
+
+    private DependencyService dependencyService() {
         return new DependencyService(characteristicRepository, dependencyRepository);
+    }
+
+    private CharacteristicService characteristicService() {
+        return new CharacteristicService(characteristicRepository, characterizedMethodRepository);
+    }
+
+    private AngleService angleService() {
+        return new AngleService(
+                characteristicService(),
+                relationRepository,
+                datasourceService()
+        );
     }
 
     private JigViewResolver jigViewResolver(String outputOmitPrefix) {
@@ -91,36 +117,17 @@ public class Dependencies {
                 japaneseNameRepository);
     }
 
-    public ClassListController classListController(String outputOmitPrefix) {
-        return new ClassListController(
-                jigViewResolver(outputOmitPrefix),
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
-                annotationDeclarationRepository,
-                new GlossaryService(
-                        new JavaparserJapaneseReader(),
-                        japaneseNameRepository),
-                new AngleService(
-                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
-                        relationRepository,
-                        sqlRepository
-                ));
+    private GlossaryService glossaryService() {
+        return new GlossaryService(
+                new JavaparserJapaneseReader(),
+                japaneseNameRepository
+        );
     }
 
-    public PackageDependencyController packageDependencyController(String outputOmitPrefix) {
-        return new PackageDependencyController(dependencyService(), jigViewResolver(outputOmitPrefix));
-    }
-
-    public ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
-        return new ServiceMethodCallHierarchyController(
-                new AngleService(
-                        new CharacteristicService(characteristicRepository, characterizedMethodRepository),
-                        relationRepository,
-                        sqlRepository
-                ),
-                new JigViewResolver(
-                        new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
-                        japaneseNameRepository
-                )
+    private DatasourceService datasourceService() {
+        return new DatasourceService(
+                new MyBatisSqlReader(),
+                sqlRepository
         );
     }
 }

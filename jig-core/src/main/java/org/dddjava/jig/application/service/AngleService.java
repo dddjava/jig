@@ -3,8 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.angle.*;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
-import org.dddjava.jig.domain.model.datasource.Sql;
-import org.dddjava.jig.domain.model.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.datasource.Sqls;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -15,7 +13,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.relation.RelationRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,12 +23,12 @@ public class AngleService {
 
     CharacteristicService characteristicService;
     RelationRepository relationRepository;
-    SqlRepository sqlRepository;
+    DatasourceService datasourceService;
 
-    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, SqlRepository sqlRepository) {
+    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, DatasourceService datasourceService) {
         this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
-        this.sqlRepository = sqlRepository;
+        this.datasourceService = datasourceService;
     }
 
     public ServiceAngles serviceAngles() {
@@ -57,14 +54,17 @@ public class AngleService {
     public DatasourceAngles datasourceAngles() {
         List<DatasourceAngle> list = characteristicService.getRepositoryMethods().list().stream()
                 .map(methodDeclaration -> {
-                    MethodDeclarations mapperMethods = relationRepository.findConcrete(methodDeclaration)
+                    // Repositoryを実装している具象メソッド
+                    MethodDeclarations datasourceMethods = relationRepository.findConcrete(methodDeclaration);
+
+                    // 使用しているMapperメソッド
+                    MethodDeclarations mapperMethods = datasourceMethods
                             .map(relationRepository::findUseMethod)
                             .filter(methodIdentifier -> characteristicService.findCharacteristics(methodIdentifier.declaringType()).has(Characteristic.MAPPER).isSatisfy());
-                    List<Sql> sqls = new ArrayList<>();
-                    for (MethodDeclaration identifier : mapperMethods.list()) {
-                        sqlRepository.find(identifier).ifPresent(sqls::add);
-                    }
-                    return new DatasourceAngle(methodDeclaration, new Sqls(sqls));
+
+                    Sqls sqls = datasourceService.findSqls(mapperMethods);
+
+                    return new DatasourceAngle(methodDeclaration, sqls);
                 }).collect(toList());
         return new DatasourceAngles(list);
     }

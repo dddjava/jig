@@ -94,7 +94,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = specification.newMethodDeclaration(toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(specification.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {

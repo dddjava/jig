@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclar
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
@@ -140,10 +138,6 @@ public class Specification {
 
     public FieldDeclaration newFieldDeclaration(String name, TypeIdentifier fieldTypeIdentifier) {
         return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
-    }
-
-    public MethodDeclaration newMethodDeclaration(MethodSignature methodSignature, TypeIdentifier returnTypeIdentifier) {
-        return new MethodDeclaration(this.typeIdentifier, methodSignature, returnTypeIdentifier);
     }
 
     public List<FieldAnnotationDeclaration> fieldAnnotationDeclarations() {

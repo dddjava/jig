@@ -32,13 +32,14 @@ class SpecificationServiceRegisterSpecificationsTest {
                 mock(AnnotationDeclarationRepository.class),
                 mock(DependencyService.class));
 
+        TypeIdentifier typeIdentifier = new TypeIdentifier("test.TestClass");
         Specification specification = new Specification(
                 new PropertySpecificationContext(),
-                new TypeIdentifier("test.TestClass"),
+                typeIdentifier,
                 new TypeIdentifier("test.TestParentClass"),
                 new TypeIdentifiers(emptyList()), emptyList(), false);
         MethodSpecification methodSpecification = new MethodSpecification(
-                specification.newMethodDeclaration(new MethodSignature("methodName", emptyList()), new TypeIdentifier("test.ReturnType")),
+                new MethodDeclaration(typeIdentifier, new MethodSignature("methodName", emptyList()), new TypeIdentifier("test.ReturnType")),
                 new TypeIdentifier("test.ReturnType"),
                 emptyList());
         // フィールド呼び出し
@@ -47,9 +48,9 @@ class SpecificationServiceRegisterSpecificationsTest {
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field3", new TypeIdentifier("test.FieldA")));
         methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field4", new TypeIdentifier("test.FieldB")));
         // メソッド呼び出し
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
+        methodSpecification.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
         methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")));
-        methodSpecification.registerMethodInstruction(specification.newMethodDeclaration(new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
+        methodSpecification.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
 
         specification.registerInstanceMethodSpecification(methodSpecification);
 

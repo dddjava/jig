@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
@@ -17,10 +18,12 @@ public class JigViewResolver {
 
     private PackageIdentifierFormatter packageIdentifierFormatter;
     private JapaneseNameRepository japaneseNameRepository;
+    private GlossaryService glossaryService;
 
-    public JigViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JapaneseNameRepository japaneseNameRepository) {
+    public JigViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JapaneseNameRepository japaneseNameRepository, GlossaryService glossaryService) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.japaneseNameRepository = japaneseNameRepository;
+        this.glossaryService = glossaryService;
     }
 
     public LocalView dependencyWriter(PackageDependencies packageDependencies) {
@@ -36,6 +39,6 @@ public class JigViewResolver {
     }
 
     public LocalView enumUsage(EnumAngles enumAngles) {
-        return new EnumUsageToImageView(enumAngles);
+        return new EnumUsageToImageView(enumAngles, glossaryService);
     }
 }

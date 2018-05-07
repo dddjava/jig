@@ -114,7 +114,8 @@ public class Dependencies {
     private JigViewResolver jigViewResolver(String outputOmitPrefix) {
         return new JigViewResolver(
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
-                japaneseNameRepository);
+                japaneseNameRepository,
+                glossaryService());
     }
 
     private GlossaryService glossaryService() {

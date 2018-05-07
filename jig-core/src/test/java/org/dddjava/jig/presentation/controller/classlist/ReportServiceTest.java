@@ -63,7 +63,7 @@ class ReportServiceTest {
                         "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [], ◯, , ]",
                         "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [], , , ◯]",
                         "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [], ◯, ◯, ◯]",
-                        "[stub.domain.model.kind.SimpleEnum, , [A, B, C, D], [], [], , , ]"
+                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [], , , ]"
                 );
 
         assertThat(sut.decisionReport().rows())

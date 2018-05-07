@@ -65,11 +65,16 @@ public class EnumUsageToImageView extends AbstractLocalView {
                             userTypeText, appendJapaneseName(typeIdentifier));
                 }).collect(joining("\n"));
 
-        System.out.println(userLabel);
+        String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
+                .add("label=凡例;")
+                .add("enum[color=gold];")
+                .add("enum以外[color=lightgoldenrodyellow];")
+                .toString();
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrodyellow];")
+                .add(legendText)
                 .add(enumsText)
                 .add(relationText)
                 .add(userLabel)

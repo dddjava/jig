@@ -1,4 +1,4 @@
-package org.dddjava.jig.cli;
+package org.dddjava.jig.domain.model;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 public enum DocumentType {
     ServiceMethodCallHierarchy,
     PackageDependency,
-    ClassList,
+    ApplicationList,
+    DomainList,
     EnumUsage;
 
     public static List<DocumentType> resolve(String diagramTypes) {

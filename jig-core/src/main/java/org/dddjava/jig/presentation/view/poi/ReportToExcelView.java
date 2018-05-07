@@ -20,8 +20,8 @@ public class ReportToExcelView extends AbstractLocalView {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
     private final Reports reports;
 
-    public ReportToExcelView(Reports reports) {
-        super("jig-report_class-list.xlsx");
+    public ReportToExcelView(Reports reports, String fileName) {
+        super(fileName);
         this.reports = reports;
     }
 

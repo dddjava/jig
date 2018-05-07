@@ -2,7 +2,8 @@
 
 以下のドキュメントを出力するコマンドラインツールです。
 
-- クラス情報一覧（EXCEL）
+- ビジネスルール一覧（EXCEL）
+- 入出力一覧（EXCEL）
 - パッケージ依存図（PNG）
 - サービスメソッド関連図（PNG）
 
@@ -16,9 +17,10 @@
 java -jar jig-cli.jar
 ```
 
-カレントディレクトリに以下のファイルが出力されます。
+`./build/jig` ディレクトリに以下のファイルが出力されます。
 
-- jig-report-class-list.xlsx
+- jig-list_application.xlsx
+- jig-list_domain.xlsx
 - jig-diagram_package-dependency.png
 - jig-diagram_service-method-call-hierarchy.png
 
@@ -27,8 +29,10 @@ java -jar jig-cli.jar
 次のように `--`に続けて指定します。
 
 ```
-java -jar jig-cli.jar --depth=7　--outputDirectory=.jig documentType=PackageDependency,ClassList
+java -jar jig-cli.jar --depth=7　--outputDirectory=.
 ```
+
+上記ではパッケージ依存図の出力が7階層になり、ドキュメントはカレントディレクトリに出力されます。
 
 ```
 # 出力対象（カンマで複数指定）

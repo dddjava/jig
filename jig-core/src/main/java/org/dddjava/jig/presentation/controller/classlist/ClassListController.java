@@ -44,11 +44,19 @@ public class ClassListController {
         this.angleService = angleService;
     }
 
-    public LocalView classList() {
-        LOGGER.info("クラス一覧を出力します");
+    public LocalView applicationList() {
+        LOGGER.info("入出力リストを出力します");
         Reports reports = new Reports(Arrays.asList(
                 serviceReport(),
-                datasourceReport(),
+                datasourceReport()
+        ));
+
+        return jigViewResolver.applicationList(reports);
+    }
+
+    public LocalView domainList() {
+        LOGGER.info("ビジネスルールリストを出力します");
+        Reports reports = new Reports(Arrays.asList(
                 typeReportOn(Characteristic.IDENTIFIER),
                 enumReport(),
                 typeReportOn(Characteristic.NUMBER),
@@ -60,7 +68,7 @@ public class ClassListController {
                 decisionReport()
         ));
 
-        return jigViewResolver.classList(reports);
+        return jigViewResolver.domainList(reports);
     }
 
     Report<?> serviceReport() {

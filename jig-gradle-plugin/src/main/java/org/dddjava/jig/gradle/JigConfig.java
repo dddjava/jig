@@ -1,5 +1,7 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.DocumentType;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

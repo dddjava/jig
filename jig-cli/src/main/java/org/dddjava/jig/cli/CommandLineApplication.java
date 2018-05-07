@@ -1,6 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
@@ -79,8 +80,10 @@ public class CommandLineApplication implements CommandLineRunner {
             return serviceMethodCallHierarchyController.serviceMethodCallHierarchy();
         } else if (documentType == DocumentType.PackageDependency) {
             return packageDependencyController.packageDependency(new PackageDepth(this.depth));
-        } else if (documentType == DocumentType.ClassList) {
-            return classListController.classList();
+        } else if (documentType == DocumentType.ApplicationList) {
+            return classListController.applicationList();
+        } else if (documentType == DocumentType.DomainList) {
+            return classListController.domainList();
         } else if (documentType == DocumentType.EnumUsage) {
             return enumUsageController.enumUsage();
         }

@@ -1,8 +1,10 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
@@ -57,9 +59,15 @@ public class JigReportsTask extends DefaultTask {
         } else if (documentType == DocumentType.PackageDependency) {
             PackageDependencyController packageDependencyController = dependencies.packageDependencyController(config.getOutputOmitPrefix());
             return packageDependencyController.packageDependency(new PackageDepth(config.getDepth()));
-        } else if (documentType == DocumentType.ClassList) {
+        } else if (documentType == DocumentType.ApplicationList) {
             ClassListController classListController = dependencies.classListController(config.getOutputOmitPrefix());
-            return classListController.classList();
+            return classListController.applicationList();
+        } else if (documentType == DocumentType.DomainList) {
+            ClassListController classListController = dependencies.classListController(config.getOutputOmitPrefix());
+            return classListController.domainList();
+        } else if (documentType == DocumentType.EnumUsage) {
+            EnumUsageController enumUsageController = dependencies.enumUsageController(config.getOutputOmitPrefix());
+            return enumUsageController.enumUsage();
         }
         throw new IllegalArgumentException(documentType.toString());
     }

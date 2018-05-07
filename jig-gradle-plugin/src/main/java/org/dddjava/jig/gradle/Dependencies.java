@@ -16,6 +16,7 @@ import org.dddjava.jig.infrastructure.asm.AsmSpecificationReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.*;
+import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
@@ -82,6 +83,12 @@ public class Dependencies {
                 glossaryService(),
                 angleService()
         );
+    }
+
+    EnumUsageController enumUsageController(String outputOmitPrefix) {
+        return new EnumUsageController(
+                angleService(),
+                jigViewResolver(outputOmitPrefix));
     }
 
     PackageDependencyController packageDependencyController(String outputOmitPrefix) {

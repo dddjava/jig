@@ -34,11 +34,15 @@ public class JigViewResolver {
         return new ServiceAngleToImageView(serviceAngles);
     }
 
-    public LocalView classList(Reports reports) {
-        return new ReportToExcelView(reports);
+    public LocalView applicationList(Reports reports) {
+        return new ReportToExcelView(reports, "jig-list_application.xlsx");
     }
 
     public LocalView enumUsage(EnumAngles enumAngles) {
         return new EnumUsageToImageView(enumAngles, glossaryService);
+    }
+
+    public LocalView domainList(Reports reports) {
+        return new ReportToExcelView(reports, "jig-list_domain.xlsx");
     }
 }

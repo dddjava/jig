@@ -1,14 +1,15 @@
 package org.dddjava.jig.presentation.view.poi;
 
-import org.dddjava.jig.domain.model.report.ReportRow;
-import org.dddjava.jig.domain.model.report.Reports;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dddjava.jig.domain.model.DocumentType;
+import org.dddjava.jig.domain.model.report.ReportRow;
+import org.dddjava.jig.domain.model.report.Reports;
+import org.dddjava.jig.presentation.view.AbstractLocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,8 +21,8 @@ public class ReportToExcelView extends AbstractLocalView {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
     private final Reports reports;
 
-    public ReportToExcelView(Reports reports, String fileName) {
-        super(fileName);
+    public ReportToExcelView(Reports reports, DocumentType documentType) {
+        super(documentType.fileName());
         this.reports = reports;
     }
 

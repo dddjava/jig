@@ -2,11 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
@@ -26,7 +22,7 @@ public class PackageDependencyToImageView extends AbstractLocalView {
     final JapaneseNameRepository repository;
 
     public PackageDependencyToImageView(PackageDependencies packageDependencies, PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
-        super("jig-diagram_package-dependency.png");
+        super(DocumentType.PackageDependency.fileName());
         this.packageDependencies = packageDependencies;
         this.formatter = formatter;
         this.repository = repository;

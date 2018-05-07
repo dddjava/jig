@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.EnumAngle;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -23,7 +24,7 @@ public class EnumUsageToImageView extends AbstractLocalView {
     private final GlossaryService glossaryService;
 
     public EnumUsageToImageView(EnumAngles enumAngles, GlossaryService glossaryService) {
-        super("jig-diagram_enum-usage.png");
+        super(DocumentType.EnumUsage.fileName());
         this.enumAngles = enumAngles;
         this.glossaryService = glossaryService;
     }

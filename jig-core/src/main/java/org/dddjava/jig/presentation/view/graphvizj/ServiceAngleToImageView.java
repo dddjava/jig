@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.ServiceAngle;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -24,7 +25,7 @@ public class ServiceAngleToImageView extends AbstractLocalView {
     private final ServiceAngles serviceAngles;
 
     public ServiceAngleToImageView(ServiceAngles serviceAngles) {
-        super("jig-diagram_service-method-call-hierarchy.png");
+        super(DocumentType.ServiceMethodCallHierarchy.fileName());
         this.serviceAngles = serviceAngles;
     }
 

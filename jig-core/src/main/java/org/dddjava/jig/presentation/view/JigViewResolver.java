@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
@@ -35,7 +36,7 @@ public class JigViewResolver {
     }
 
     public LocalView applicationList(Reports reports) {
-        return new ReportToExcelView(reports, "jig-list_application.xlsx");
+        return new ReportToExcelView(reports, DocumentType.ApplicationList);
     }
 
     public LocalView enumUsage(EnumAngles enumAngles) {
@@ -43,6 +44,6 @@ public class JigViewResolver {
     }
 
     public LocalView domainList(Reports reports) {
-        return new ReportToExcelView(reports, "jig-list_domain.xlsx");
+        return new ReportToExcelView(reports, DocumentType.DomainList);
     }
 }

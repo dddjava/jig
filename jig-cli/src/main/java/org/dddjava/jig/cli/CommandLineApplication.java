@@ -3,6 +3,7 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
@@ -46,6 +47,8 @@ public class CommandLineApplication implements CommandLineRunner {
     ClassListController classListController;
     @Autowired
     PackageDependencyController packageDependencyController;
+    @Autowired
+    EnumUsageController enumUsageController;
 
     @Override
     public void run(String... args) throws IOException {
@@ -78,6 +81,8 @@ public class CommandLineApplication implements CommandLineRunner {
             return packageDependencyController.packageDependency(new PackageDepth(this.depth));
         } else if (documentType == DocumentType.ClassList) {
             return classListController.classList();
+        } else if (documentType == DocumentType.EnumUsage) {
+            return enumUsageController.enumUsage();
         }
         throw new IllegalArgumentException(documentType.toString());
     }

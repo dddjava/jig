@@ -9,6 +9,10 @@ public class JapaneseName {
     }
 
     public String summarySentence() {
+        if (value.contains("\n") || value.contains("。")) {
+            int end = Math.min(value.indexOf("\n"), value.indexOf("。"));
+            return value.substring(0, end);
+        }
         return value;
     }
 

@@ -8,6 +8,8 @@ import stub.domain.model.type.fuga.FugaRepository;
 
 /**
  * サービス和名
+ * 2行目や
+ * 3行目は出力しない
  */
 @Service
 public class CanonicalService {

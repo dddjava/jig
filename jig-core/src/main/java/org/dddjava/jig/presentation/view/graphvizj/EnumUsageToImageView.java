@@ -26,16 +26,33 @@ public class EnumUsageToImageView extends AbstractLocalView {
     protected void write(OutputStream outputStream) throws IOException {
         TypeIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 
-        String labelsText = enumAngles.list().stream()
+        String enumsText = enumAngles.list().stream()
                 .map(enumAngle -> {
                     TypeIdentifier typeIdentifier = enumAngle.typeIdentifier();
-                    return typeIdentifier.format(doubleQuote);
+                    String enumText = typeIdentifier.format(doubleQuote);
+                    return enumText + "[color=gold]";
+                }).collect(joining(";\n"));
+
+        String relationText = enumAngles.list().stream()
+                .flatMap(enumAngle -> {
+                    TypeIdentifier typeIdentifier = enumAngle.typeIdentifier();
+                    String enumTypeText = typeIdentifier.format(doubleQuote);
+
+                    return enumAngle.userTypeIdentifiers().list()
+                            .stream()
+                            .map(userType -> {
+                                String userTypeText = userType.format(doubleQuote);
+
+                                return String.format("%s -> %s;",
+                                        userTypeText, enumTypeText);
+                            });
                 }).collect(joining("\n"));
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                 .add("rankdir=LR;")
-                .add("node [shape=box,style=filled,color=lightgoldenrod];")
-                .add(labelsText)
+                .add("node [shape=box,style=filled,color=lightgoldenrodyellow];")
+                .add(enumsText)
+                .add(relationText)
                 .toString();
         Graphviz.fromString(graphText)
                 .render(Format.PNG)

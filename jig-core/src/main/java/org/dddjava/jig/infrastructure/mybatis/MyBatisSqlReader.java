@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.domain.model.datasource.*;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
@@ -9,7 +8,7 @@ import org.apache.ibatis.scripting.xmltags.MixedSqlNode;
 import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
-import org.dddjava.jig.domain.model.datasource.SqlSources;
+import org.dddjava.jig.domain.model.datasource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,6 +19,13 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 本クラスではMyBatisの内部APIを使用してSQLを取得しています。
+ * ごくシンプルな使い方のみを想定しているため、高度な使い方をしている場合は正確な情報が取得できません。
+ *
+ * クラスパスにMapperが依存しているクラスが存在しない場合、MyBatisがMapperを読み取れないため解析できません。
+ * それでも出力したい場合は、実行時に該当のクラスをクラスパスに含めてください。
+ */
 @Component
 public class MyBatisSqlReader implements SqlReader {
 

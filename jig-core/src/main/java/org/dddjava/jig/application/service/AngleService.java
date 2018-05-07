@@ -18,6 +18,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * 分析の切り口サービス
+ */
 @Service
 public class AngleService {
 

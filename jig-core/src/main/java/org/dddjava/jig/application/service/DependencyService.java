@@ -7,17 +7,13 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.relation.dependency.DependencyRepository;
 import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.relation.dependency.DependencyRepository;
-import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/**
+ * 依存関係サービス
+ */
 @Service
 public class DependencyService {
 

@@ -4,6 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 取り扱うドキュメントの種類
+ */
 public enum DocumentType {
     ServiceMethodCallHierarchy("jig-diagram_service-method-call-hierarchy.png"),
     PackageDependency("jig-diagram_package-dependency.png"),

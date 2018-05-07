@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.characteristic;
 
 /**
- * 三層のいずれに属するかを表します。
+ * 属するレイヤー
  */
 public enum Layer {
     PRESENTATION,

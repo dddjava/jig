@@ -7,14 +7,11 @@ import org.dddjava.jig.domain.model.datasource.SqlSources;
 import org.dddjava.jig.domain.model.japanese.PackageNameSources;
 import org.dddjava.jig.domain.model.japanese.TypeNameSources;
 import org.dddjava.jig.domain.model.specification.SpecificationSources;
-import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.application.service.SpecificationService;
-import org.dddjava.jig.domain.model.datasource.SqlSources;
-import org.dddjava.jig.domain.model.japanese.PackageNameSources;
-import org.dddjava.jig.domain.model.japanese.TypeNameSources;
-import org.dddjava.jig.domain.model.specification.SpecificationSources;
 import org.springframework.stereotype.Service;
 
+/**
+ * 取り込みサービス
+ */
 @Service
 public class ImportService {
 

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * 特徴サービス
+ */
 @Service
 public class CharacteristicService {
 

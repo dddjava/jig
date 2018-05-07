@@ -10,6 +10,9 @@ import org.dddjava.jig.domain.model.specification.SpecificationSources;
 import org.dddjava.jig.domain.model.specification.Specifications;
 import org.springframework.stereotype.Service;
 
+/**
+ * 仕様サービス
+ */
 @Service
 public class SpecificationService {
 

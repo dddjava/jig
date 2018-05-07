@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.japanese.PackageNameSources;
 import org.dddjava.jig.domain.model.japanese.TypeNameSources;
 import org.springframework.stereotype.Service;
 
+/**
+ * 用語サービス
+ */
 @Service
 public class GlossaryService {
 

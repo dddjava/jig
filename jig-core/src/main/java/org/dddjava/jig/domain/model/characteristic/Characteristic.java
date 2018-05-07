@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * モデルの特徴
+ */
 public enum Characteristic {
     CONTROLLER {
         @Override

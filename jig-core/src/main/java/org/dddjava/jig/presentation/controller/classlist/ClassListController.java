@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationD
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.report.*;
-import org.dddjava.jig.presentation.view.JigViewResolver;
-import org.dddjava.jig.presentation.view.LocalView;
+import org.dddjava.jig.presentation.view.local.JigViewResolver;
+import org.dddjava.jig.presentation.view.local.LocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;

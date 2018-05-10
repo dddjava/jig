@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
+import org.dddjava.jig.presentation.view.local.AbstractLocalView;
 
 import java.io.IOException;
 import java.io.OutputStream;

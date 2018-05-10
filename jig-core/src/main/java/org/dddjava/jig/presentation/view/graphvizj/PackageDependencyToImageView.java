@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
+import org.dddjava.jig.presentation.view.local.AbstractLocalView;
 
 import java.io.IOException;
 import java.io.OutputStream;

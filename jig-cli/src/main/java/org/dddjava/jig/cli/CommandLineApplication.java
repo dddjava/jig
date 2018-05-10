@@ -2,13 +2,10 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.DocumentType;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.controller.EnumUsageController;
-import org.dddjava.jig.presentation.controller.PackageDependencyController;
-import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
-import org.dddjava.jig.presentation.controller.classlist.ClassListController;
-import org.dddjava.jig.presentation.view.LocalView;
+import org.dddjava.jig.presentation.view.local.DocumentLocalView;
+import org.dddjava.jig.presentation.view.local.LocalView;
+import org.dddjava.jig.presentation.view.local.LocalViewContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +39,9 @@ public class CommandLineApplication implements CommandLineRunner {
     ImportService importService;
     @Autowired
     LocalProject localProject;
+
     @Autowired
-    ServiceMethodCallHierarchyController serviceMethodCallHierarchyController;
-    @Autowired
-    ClassListController classListController;
-    @Autowired
-    PackageDependencyController packageDependencyController;
-    @Autowired
-    EnumUsageController enumUsageController;
+    LocalViewContext localViewContext;
 
     @Override
     public void run(String... args) throws IOException {
@@ -76,18 +68,7 @@ public class CommandLineApplication implements CommandLineRunner {
     }
 
     private LocalView writer(DocumentType documentType) {
-        if (documentType == DocumentType.ServiceMethodCallHierarchy) {
-            return serviceMethodCallHierarchyController.serviceMethodCallHierarchy();
-        } else if (documentType == DocumentType.PackageDependency) {
-            return packageDependencyController.packageDependency(new PackageDepth(this.depth));
-        } else if (documentType == DocumentType.ApplicationList) {
-            return classListController.applicationList();
-        } else if (documentType == DocumentType.DomainList) {
-            return classListController.domainList();
-        } else if (documentType == DocumentType.EnumUsage) {
-            return enumUsageController.enumUsage();
-        }
-        throw new IllegalArgumentException(documentType.toString());
+        DocumentLocalView documentLocalView = DocumentLocalView.of(documentType);
+        return documentLocalView.execute(localViewContext);
     }
-
 }

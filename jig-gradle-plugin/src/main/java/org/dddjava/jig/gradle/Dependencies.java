@@ -20,7 +20,8 @@ import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
-import org.dddjava.jig.presentation.view.JigViewResolver;
+import org.dddjava.jig.presentation.view.local.JigViewResolver;
+import org.dddjava.jig.presentation.view.local.LocalViewContext;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -136,6 +137,16 @@ public class Dependencies {
         return new DatasourceService(
                 new MyBatisSqlReader(),
                 sqlRepository
+        );
+    }
+
+    public LocalViewContext localViewContextWith(JigConfig config) {
+        return new LocalViewContext(
+                serviceMethodCallHierarchyController(config.outputOmitPrefix),
+                classListController(config.outputOmitPrefix),
+                packageDependencyController(config.outputOmitPrefix),
+                enumUsageController(config.outputOmitPrefix),
+                config.depth
         );
     }
 }

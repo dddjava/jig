@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.presentation.view.local;
 
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.DocumentType;

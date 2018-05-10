@@ -9,7 +9,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.report.ReportRow;
 import org.dddjava.jig.domain.model.report.Reports;
-import org.dddjava.jig.presentation.view.AbstractLocalView;
+import org.dddjava.jig.presentation.view.local.AbstractLocalView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

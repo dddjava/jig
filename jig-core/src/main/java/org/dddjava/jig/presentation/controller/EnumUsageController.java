@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
-import org.dddjava.jig.presentation.view.JigViewResolver;
-import org.dddjava.jig.presentation.view.LocalView;
+import org.dddjava.jig.presentation.view.local.JigViewResolver;
+import org.dddjava.jig.presentation.view.local.LocalView;
 import org.springframework.stereotype.Controller;
 
 @Controller

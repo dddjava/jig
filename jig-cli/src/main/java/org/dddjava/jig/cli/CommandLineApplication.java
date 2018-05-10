@@ -3,9 +3,8 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.view.local.DocumentLocalView;
-import org.dddjava.jig.presentation.view.local.LocalView;
-import org.dddjava.jig.presentation.view.local.LocalViewContext;
+import org.dddjava.jig.presentation.view.JigDocumentHandler;
+import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +41,7 @@ public class CommandLineApplication implements CommandLineRunner {
     LocalProject localProject;
 
     @Autowired
-    LocalViewContext localViewContext;
+    JigHandlerContext jigHandlerContext;
 
     @Override
     public void run(String... args) throws IOException {
@@ -60,15 +60,13 @@ public class CommandLineApplication implements CommandLineRunner {
                 localProject.getTypeNameSources(),
                 localProject.getPackageNameSources());
 
+        Path outputDirectory = Paths.get(this.outputDirectory);
         for (DocumentType documentType : documentTypes) {
-            writer(documentType).write(Paths.get(outputDirectory));
+            JigDocumentHandler.of(documentType)
+                    .handleLocal(jigHandlerContext)
+                    .render(outputDirectory);
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
-    }
-
-    private LocalView writer(DocumentType documentType) {
-        DocumentLocalView documentLocalView = DocumentLocalView.of(documentType);
-        return documentLocalView.execute(localViewContext);
     }
 }

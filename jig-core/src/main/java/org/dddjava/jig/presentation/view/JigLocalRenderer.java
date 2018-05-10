@@ -1,6 +1,7 @@
-package org.dddjava.jig.presentation.view.local;
+package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
+import org.dddjava.jig.domain.model.DocumentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,32 +11,31 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class AbstractLocalView implements LocalView {
+public class JigLocalRenderer<T> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JigLocalRenderer.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLocalView.class);
-    private final String fileName;
+    DocumentType documentType;
+    JigModelAndView<T> modelAndView;
 
-    public AbstractLocalView(String fileName) {
-        this.fileName = fileName;
+    public JigLocalRenderer(DocumentType documentType, JigModelAndView<T> modelAndView) {
+        this.documentType = documentType;
+        this.modelAndView = modelAndView;
     }
 
-    @Override
-    public void write(Path outputDirectory) {
+    public void render(Path outputDirectory) {
         try {
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);
                 LOGGER.info("{} を作成しました。", outputDirectory.toAbsolutePath());
             }
 
-            Path outputFilePath = outputDirectory.resolve(fileName);
+            Path outputFilePath = outputDirectory.resolve(documentType.fileName());
             try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
-                write(outputStream);
+                modelAndView.render(outputStream);
                 LOGGER.info("{} を出力しました。", outputFilePath.toAbsolutePath());
             }
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }
     }
-
-    protected abstract void write(OutputStream outputStream) throws IOException;
 }

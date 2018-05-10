@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
-import org.dddjava.jig.presentation.view.local.JigViewResolver;
-import org.dddjava.jig.presentation.view.local.LocalView;
+import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -14,16 +14,16 @@ public class ServiceMethodCallHierarchyController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceMethodCallHierarchyController.class);
 
     AngleService angleService;
-    JigViewResolver jigViewResolver;
+    ViewResolver viewResolver;
 
-    public ServiceMethodCallHierarchyController(AngleService angleService, JigViewResolver jigViewResolver) {
+    public ServiceMethodCallHierarchyController(AngleService angleService, ViewResolver viewResolver) {
         this.angleService = angleService;
-        this.jigViewResolver = jigViewResolver;
+        this.viewResolver = viewResolver;
     }
 
-    public LocalView serviceMethodCallHierarchy() {
+    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy() {
         LOGGER.info("サービスメソッド呼び出しダイアグラムを出力します");
         ServiceAngles serviceAngles = angleService.serviceAngles();
-        return jigViewResolver.serviceMethodCallHierarchy(serviceAngles);
+        return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy());
     }
 }

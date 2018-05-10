@@ -2,12 +2,11 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
-import org.dddjava.jig.presentation.view.local.AbstractLocalView;
+import org.dddjava.jig.presentation.view.JigView;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,21 +14,18 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class PackageDependencyToImageView extends AbstractLocalView {
+public class PackageDependencyToImageView implements JigView<PackageDependencies> {
 
-    private final PackageDependencies packageDependencies;
     final PackageIdentifierFormatter formatter;
     final JapaneseNameRepository repository;
 
-    public PackageDependencyToImageView(PackageDependencies packageDependencies, PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
-        super(DocumentType.PackageDependency.fileName());
-        this.packageDependencies = packageDependencies;
+    public PackageDependencyToImageView(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
         this.formatter = formatter;
         this.repository = repository;
     }
 
     @Override
-    protected void write(OutputStream outputStream) {
+    public void render(PackageDependencies packageDependencies, OutputStream outputStream) {
         try {
             PackageIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 

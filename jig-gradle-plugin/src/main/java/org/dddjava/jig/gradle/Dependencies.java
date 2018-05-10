@@ -20,8 +20,8 @@ import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
-import org.dddjava.jig.presentation.view.local.JigViewResolver;
-import org.dddjava.jig.presentation.view.local.LocalViewContext;
+import org.dddjava.jig.presentation.view.ViewResolver;
+import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -119,8 +119,8 @@ public class Dependencies {
         );
     }
 
-    private JigViewResolver jigViewResolver(String outputOmitPrefix) {
-        return new JigViewResolver(
+    private ViewResolver jigViewResolver(String outputOmitPrefix) {
+        return new ViewResolver(
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
                 japaneseNameRepository,
                 glossaryService());
@@ -140,8 +140,8 @@ public class Dependencies {
         );
     }
 
-    public LocalViewContext localViewContextWith(JigConfig config) {
-        return new LocalViewContext(
+    public JigHandlerContext localViewContextWith(JigConfig config) {
+        return new JigHandlerContext(
                 serviceMethodCallHierarchyController(config.outputOmitPrefix),
                 classListController(config.outputOmitPrefix),
                 packageDependencyController(config.outputOmitPrefix),

@@ -3,13 +3,12 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.EnumAngle;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.presentation.view.local.AbstractLocalView;
+import org.dddjava.jig.presentation.view.JigView;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,19 +17,16 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class EnumUsageToImageView extends AbstractLocalView {
+public class EnumUsageToImageView implements JigView<EnumAngles> {
 
-    private final EnumAngles enumAngles;
     private final GlossaryService glossaryService;
 
-    public EnumUsageToImageView(EnumAngles enumAngles, GlossaryService glossaryService) {
-        super(DocumentType.EnumUsage.fileName());
-        this.enumAngles = enumAngles;
+    public EnumUsageToImageView(GlossaryService glossaryService) {
         this.glossaryService = glossaryService;
     }
 
     @Override
-    protected void write(OutputStream outputStream) throws IOException {
+    public void render(EnumAngles enumAngles, OutputStream outputStream) throws IOException {
         TypeIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 
         String enumsText = enumAngles.list().stream()

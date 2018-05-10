@@ -1,7 +1,6 @@
-package org.dddjava.jig.presentation.view.local;
+package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
@@ -15,35 +14,35 @@ import org.dddjava.jig.presentation.view.poi.ReportToExcelView;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JigViewResolver {
+public class ViewResolver {
 
     private PackageIdentifierFormatter packageIdentifierFormatter;
     private JapaneseNameRepository japaneseNameRepository;
     private GlossaryService glossaryService;
 
-    public JigViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JapaneseNameRepository japaneseNameRepository, GlossaryService glossaryService) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JapaneseNameRepository japaneseNameRepository, GlossaryService glossaryService) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.japaneseNameRepository = japaneseNameRepository;
         this.glossaryService = glossaryService;
     }
 
-    public LocalView dependencyWriter(PackageDependencies packageDependencies) {
-        return new PackageDependencyToImageView(packageDependencies, packageIdentifierFormatter, japaneseNameRepository);
+    public JigView<PackageDependencies> dependencyWriter() {
+        return new PackageDependencyToImageView(packageIdentifierFormatter, japaneseNameRepository);
     }
 
-    public LocalView serviceMethodCallHierarchy(ServiceAngles serviceAngles) {
-        return new ServiceAngleToImageView(serviceAngles);
+    public JigView<ServiceAngles> serviceMethodCallHierarchy() {
+        return new ServiceAngleToImageView();
     }
 
-    public LocalView applicationList(Reports reports) {
-        return new ReportToExcelView(reports, DocumentType.ApplicationList);
+    public JigView<Reports> applicationList() {
+        return new ReportToExcelView();
     }
 
-    public LocalView enumUsage(EnumAngles enumAngles) {
-        return new EnumUsageToImageView(enumAngles, glossaryService);
+    public JigView<EnumAngles> enumUsage() {
+        return new EnumUsageToImageView(glossaryService);
     }
 
-    public LocalView domainList(Reports reports) {
-        return new ReportToExcelView(reports, DocumentType.DomainList);
+    public JigView<Reports> domainList() {
+        return new ReportToExcelView();
     }
 }

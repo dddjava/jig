@@ -2,11 +2,10 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.angle.ServiceAngle;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.presentation.view.local.AbstractLocalView;
+import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +17,12 @@ import java.util.StringJoiner;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
-public class ServiceAngleToImageView extends AbstractLocalView {
+public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceAngleToImageView.class);
 
-    private final ServiceAngles serviceAngles;
-
-    public ServiceAngleToImageView(ServiceAngles serviceAngles) {
-        super(DocumentType.ServiceMethodCallHierarchy.fileName());
-        this.serviceAngles = serviceAngles;
-    }
-
     @Override
-    protected void write(OutputStream outputStream) {
+    public void render(ServiceAngles serviceAngles, OutputStream outputStream) {
         try {
             List<ServiceAngle> angles = serviceAngles.list();
 

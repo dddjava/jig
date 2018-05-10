@@ -6,28 +6,21 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.dddjava.jig.domain.model.DocumentType;
 import org.dddjava.jig.domain.model.report.ReportRow;
 import org.dddjava.jig.domain.model.report.Reports;
-import org.dddjava.jig.presentation.view.local.AbstractLocalView;
+import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class ReportToExcelView extends AbstractLocalView {
+public class ReportToExcelView implements JigView<Reports> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
-    private final Reports reports;
-
-    public ReportToExcelView(Reports reports, DocumentType documentType) {
-        super(documentType.fileName());
-        this.reports = reports;
-    }
 
     @Override
-    protected void write(OutputStream outputStream) throws IOException {
+    public void render(Reports reports, OutputStream outputStream) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             reports.each(report -> {
                 Sheet sheet = book.createSheet(report.title().value());

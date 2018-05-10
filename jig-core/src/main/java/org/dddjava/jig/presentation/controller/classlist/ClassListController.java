@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationD
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.report.*;
-import org.dddjava.jig.presentation.view.local.JigViewResolver;
-import org.dddjava.jig.presentation.view.local.LocalView;
+import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -25,36 +25,36 @@ public class ClassListController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassListController.class);
 
-    JigViewResolver jigViewResolver;
+    ViewResolver viewResolver;
 
     TypeIdentifierFormatter typeIdentifierFormatter;
     AnnotationDeclarationRepository annotationDeclarationRepository;
     GlossaryService glossaryService;
     AngleService angleService;
 
-    public ClassListController(JigViewResolver jigViewResolver,
+    public ClassListController(ViewResolver viewResolver,
                                TypeIdentifierFormatter typeIdentifierFormatter,
                                AnnotationDeclarationRepository annotationDeclarationRepository,
                                GlossaryService glossaryService,
                                AngleService angleService) {
-        this.jigViewResolver = jigViewResolver;
+        this.viewResolver = viewResolver;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.glossaryService = glossaryService;
         this.angleService = angleService;
     }
 
-    public LocalView applicationList() {
+    public JigModelAndView<Reports> applicationList() {
         LOGGER.info("入出力リストを出力します");
         Reports reports = new Reports(Arrays.asList(
                 serviceReport(),
                 datasourceReport()
         ));
 
-        return jigViewResolver.applicationList(reports);
+        return new JigModelAndView<>(reports, viewResolver.applicationList());
     }
 
-    public LocalView domainList() {
+    public JigModelAndView<Reports> domainList() {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
                 typeReportOn(Characteristic.IDENTIFIER),
@@ -68,7 +68,7 @@ public class ClassListController {
                 decisionReport()
         ));
 
-        return jigViewResolver.domainList(reports);
+        return new JigModelAndView<>(reports, viewResolver.domainList());
     }
 
     Report<?> serviceReport() {

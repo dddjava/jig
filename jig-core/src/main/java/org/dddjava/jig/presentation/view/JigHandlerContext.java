@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.local;
+package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocalViewContext {
+public class JigHandlerContext {
 
     ServiceMethodCallHierarchyController serviceMethodCallHierarchyController;
     ClassListController classListController;
@@ -18,11 +18,11 @@ public class LocalViewContext {
 
     PackageDepth packageDepth;
 
-    public LocalViewContext(ServiceMethodCallHierarchyController serviceMethodCallHierarchyController,
-                            ClassListController classListController,
-                            PackageDependencyController packageDependencyController,
-                            EnumUsageController enumUsageController,
-                            @Value("${depth:-1}") int packageDepth) {
+    public JigHandlerContext(ServiceMethodCallHierarchyController serviceMethodCallHierarchyController,
+                             ClassListController classListController,
+                             PackageDependencyController packageDependencyController,
+                             EnumUsageController enumUsageController,
+                             @Value("${depth:-1}") int packageDepth) {
         this.serviceMethodCallHierarchyController = serviceMethodCallHierarchyController;
         this.classListController = classListController;
         this.packageDependencyController = packageDependencyController;

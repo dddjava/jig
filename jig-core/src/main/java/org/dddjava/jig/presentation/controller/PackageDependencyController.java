@@ -3,8 +3,8 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
-import org.dddjava.jig.presentation.view.local.JigViewResolver;
-import org.dddjava.jig.presentation.view.local.LocalView;
+import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -15,16 +15,16 @@ public class PackageDependencyController {
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageDependencyController.class);
 
     DependencyService dependencyService;
-    JigViewResolver jigViewResolver;
+    ViewResolver viewResolver;
 
-    public PackageDependencyController(DependencyService dependencyService, JigViewResolver jigViewResolver) {
+    public PackageDependencyController(DependencyService dependencyService, ViewResolver viewResolver) {
         this.dependencyService = dependencyService;
-        this.jigViewResolver = jigViewResolver;
+        this.viewResolver = viewResolver;
     }
 
-    public LocalView packageDependency(PackageDepth depth) {
+    public JigModelAndView<PackageDependencies> packageDependency(PackageDepth depth) {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
         PackageDependencies packageDependencies = dependencyService.packageDependencies(depth);
-        return jigViewResolver.dependencyWriter(packageDependencies);
+        return new JigModelAndView<>(packageDependencies, viewResolver.dependencyWriter());
     }
 }

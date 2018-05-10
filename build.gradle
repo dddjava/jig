@@ -74,7 +74,7 @@ project(':jig-core') {
             developer {
                 id "irof"
                 name "irof"
-                email ""
+                email "irof@hogedriven.net"
             }
             developer {
                 id "haljik"

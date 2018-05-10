@@ -2,17 +2,14 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.DocumentType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class JigConfig {
 
-    List<String> documentTypes = Arrays.asList(
-            "ServiceMethodCallHierarchy",
-            "PackageDependency",
-            "ClassList"
-    );
+    List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "build/reports/jig/";
 
@@ -22,6 +19,7 @@ public class JigConfig {
 
 
     List<DocumentType> documentTypes() {
+        if (documentTypes.isEmpty()) return Arrays.asList(DocumentType.values());
         return documentTypes.stream()
                 .map(DocumentType::valueOf)
                 .collect(Collectors.toList());

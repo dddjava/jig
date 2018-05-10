@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.japanese;
 
+import java.util.stream.Stream;
+
 public class JapaneseName {
 
     final String value;
@@ -9,11 +11,10 @@ public class JapaneseName {
     }
 
     public String summarySentence() {
-        if (value.contains("\n") || value.contains("。")) {
-            int end = Math.min(value.indexOf("\n"), value.indexOf("。"));
-            return value.substring(0, end);
-        }
-        return value;
+        int end = Stream.of(value.indexOf("\n"), value.indexOf("。"), value.length())
+                .filter(length -> length >= 0)
+                .min(Integer::compareTo).orElseThrow(IllegalStateException::new);
+        return value.substring(0, end);
     }
 
     public String value() {

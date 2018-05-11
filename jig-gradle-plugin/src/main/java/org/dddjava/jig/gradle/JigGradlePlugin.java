@@ -12,6 +12,9 @@ public class JigGradlePlugin implements Plugin<Project> {
         ExtensionContainer extensions = project.getExtensions();
         extensions.create("jig", JigConfig.class);
         TaskContainer tasks = project.getTasks();
-        tasks.create("jigReports", JigReportsTask.class);
+
+        JigReportsTask jigReports = tasks.create("jigReports", JigReportsTask.class);
+        jigReports.setGroup("JIG");
+        jigReports.setDescription("Generates JIG documentation for the main source code.");
     }
 }

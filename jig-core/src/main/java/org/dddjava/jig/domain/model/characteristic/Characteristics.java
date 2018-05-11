@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.characteristic;
 
 import java.util.Set;
 
+/**
+ * 型の特徴の集合
+ */
 public class Characteristics {
 
     Set<Characteristic> characteristics;

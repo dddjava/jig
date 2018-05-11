@@ -1,10 +1,12 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 
 import java.util.Objects;
 
+/**
+ * 型の識別子
+ */
 public class TypeIdentifier {
 
     String value;

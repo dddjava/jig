@@ -53,10 +53,16 @@ public class CharacteristicService {
         }
     }
 
+    /**
+     * 複数の型の特徴を検索する
+     */
     public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
         return characteristicRepository.findCharacteristics(typeIdentifiers);
     }
 
+    /**
+     * 一つの型の特徴を検索する
+     */
     public Characteristics findCharacteristics(TypeIdentifier typeIdentifier) {
         return characteristicRepository.findCharacteristics(typeIdentifier);
     }

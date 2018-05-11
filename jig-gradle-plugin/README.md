@@ -2,11 +2,16 @@
 
 * jigReports: レポート一式を出力
 
-## 適用方法
-現時点ではプラグインリポジトリに公開していないので `mavenLocal()` へのインストールを行う
+## プラグインリポジトリから取得
+
+https://plugins.gradle.org/plugin/org.dddjava.jig-gradle-plugin を参照してください。
+
+## SNAPSHOTの適用
+
+`mavenLocal()` へのインストールを行う
+
 ```
-./gradlew jig-core:publishToMevenLocal
-./gradlew jig-gradle-plugin:publishToMevenLocal
+./gradlew build
 ```
 
 `build.gradle` に以下を記述
@@ -17,12 +22,12 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'org.dddjava.jig:jig-gradle-plugin:2018.5.1'
+        classpath 'org.dddjava.jig:jig-gradle-plugin:+'
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'jig-gradle-plugin'
+apply plugin: 'org.dddjava.jig-gradle-plugin'
 
 jigReports.dependsOn(compileJava)
 ```

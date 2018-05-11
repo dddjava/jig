@@ -9,10 +9,10 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.implementation.SpecificationSources;
+import org.dddjava.jig.domain.model.implementation.ImplementationSources;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.PropertySpecificationContext;
-import org.dddjava.jig.infrastructure.asm.AsmSpecificationReader;
+import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
+import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacterizedMethodRepository;
@@ -32,7 +32,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class SpecificationServiceImportSpecificationTest {
+public class SpecificationServiceImportImplementationTest {
 
     static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
     static CharacterizedMethodRepository characterizedMethodRepository = new OnMemoryCharacterizedMethodRepository();
@@ -43,17 +43,17 @@ public class SpecificationServiceImportSpecificationTest {
     @BeforeAll
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
-        URI location = SpecificationServiceImportSpecificationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = SpecificationServiceImportImplementationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
-        SpecificationSources specificationSources = localProject.getSpecificationSources();
+        ImplementationSources implementationSources = localProject.getSpecificationSources();
 
         SpecificationService specificationService = new SpecificationService(
-                new AsmSpecificationReader(new PropertySpecificationContext()),
+                new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
                 new CharacteristicService(characteristicRepository, characterizedMethodRepository),
                 relationRepository, annotationDeclarationRepository,
                 mock(DependencyService.class));
-        specificationService.importSpecification(specificationSources);
+        specificationService.importSpecification(implementationSources);
     }
 
     @Test

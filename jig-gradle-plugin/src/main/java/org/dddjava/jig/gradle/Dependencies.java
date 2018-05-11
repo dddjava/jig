@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.implementation.relation.dependency.DependencyRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.PropertySpecificationContext;
-import org.dddjava.jig.infrastructure.asm.AsmSpecificationReader;
+import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
+import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.*;
@@ -62,11 +62,11 @@ public class Dependencies {
 
     ImportService importService() {
         // TODO extensionで変更できるようにする
-        PropertySpecificationContext specificationContext = new PropertySpecificationContext();
+        PropertyImplementationAnalyzeContext specificationContext = new PropertyImplementationAnalyzeContext();
 
         return new ImportService(
                 new SpecificationService(
-                        new AsmSpecificationReader(specificationContext),
+                        new AsmImplementationFactory(specificationContext),
                         characteristicService(),
                         relationRepository,
                         annotationDeclarationRepository,

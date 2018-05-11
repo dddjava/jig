@@ -12,9 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Specification {
+/**
+ * モデルの実装
+ */
+public class Implementation {
 
-    final SpecificationContext specificationContext;
+    final ImplementationAnalyzeContext implementationAnalyzeContext;
 
     final TypeIdentifier typeIdentifier;
     final TypeIdentifier parentTypeIdentifier;
@@ -27,19 +30,19 @@ public class Specification {
     final List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    final List<MethodSpecification> instanceMethodSpecifications = new ArrayList<>();
-    final List<MethodSpecification> staticMethodSpecifications = new ArrayList<>();
-    final List<MethodSpecification> constructorSpecifications = new ArrayList<>();
+    final List<MethodImplementation> instanceMethodImplementations = new ArrayList<>();
+    final List<MethodImplementation> staticMethodImplementations = new ArrayList<>();
+    final List<MethodImplementation> constructorSpecifications = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public Specification(SpecificationContext specificationContext,
-                         TypeIdentifier typeIdentifier,
-                         TypeIdentifier parentTypeIdentifier,
-                         TypeIdentifiers interfaceTypeIdentifiers,
-                         List<TypeIdentifier> useTypes,
-                         boolean canExtend) {
-        this.specificationContext = specificationContext;
+    public Implementation(ImplementationAnalyzeContext implementationAnalyzeContext,
+                          TypeIdentifier typeIdentifier,
+                          TypeIdentifier parentTypeIdentifier,
+                          TypeIdentifiers interfaceTypeIdentifiers,
+                          List<TypeIdentifier> useTypes,
+                          boolean canExtend) {
+        this.implementationAnalyzeContext = implementationAnalyzeContext;
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
@@ -84,29 +87,29 @@ public class Specification {
     }
 
     public boolean isModel() {
-        return specificationContext.isModel(this);
+        return implementationAnalyzeContext.isModel(this);
     }
 
     public boolean isRepository() {
-        return specificationContext.isRepository(this);
+        return implementationAnalyzeContext.isRepository(this);
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodSpecification methodSpecification : instanceMethodSpecifications) {
-            useTypes.addAll(methodSpecification.useTypes());
+        for (MethodImplementation methodImplementation : instanceMethodImplementations) {
+            useTypes.addAll(methodImplementation.useTypes());
         }
-        for (MethodSpecification methodSpecification : staticMethodSpecifications) {
-            useTypes.addAll(methodSpecification.useTypes());
+        for (MethodImplementation methodImplementation : staticMethodImplementations) {
+            useTypes.addAll(methodImplementation.useTypes());
         }
-        for (MethodSpecification methodSpecification : constructorSpecifications) {
-            useTypes.addAll(methodSpecification.useTypes());
+        for (MethodImplementation methodImplementation : constructorSpecifications) {
+            useTypes.addAll(methodImplementation.useTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public List<MethodSpecification> instanceMethodSpecifications() {
-        return instanceMethodSpecifications;
+    public List<MethodImplementation> instanceMethodSpecifications() {
+        return instanceMethodImplementations;
     }
 
     public void registerTypeAnnotation(TypeAnnotationDeclaration typeAnnotationDeclaration) {
@@ -144,15 +147,15 @@ public class Specification {
         return fieldAnnotationDeclarations;
     }
 
-    public void registerInstanceMethodSpecification(MethodSpecification methodSpecification) {
-        instanceMethodSpecifications.add(methodSpecification);
+    public void registerInstanceMethodSpecification(MethodImplementation methodImplementation) {
+        instanceMethodImplementations.add(methodImplementation);
     }
 
-    public void registerStaticMethodSpecification(MethodSpecification methodSpecification) {
-        staticMethodSpecifications.add(methodSpecification);
+    public void registerStaticMethodSpecification(MethodImplementation methodImplementation) {
+        staticMethodImplementations.add(methodImplementation);
     }
 
-    public void registerConstructorSpecification(MethodSpecification methodSpecification) {
-        constructorSpecifications.add(methodSpecification);
+    public void registerConstructorSpecification(MethodImplementation methodImplementation) {
+        constructorSpecifications.add(methodImplementation);
     }
 }

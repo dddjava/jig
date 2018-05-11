@@ -9,9 +9,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.MethodSpecification;
-import org.dddjava.jig.domain.model.implementation.Specification;
-import org.dddjava.jig.domain.model.implementation.SpecificationContext;
+import org.dddjava.jig.domain.model.implementation.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.Implementation;
+import org.dddjava.jig.domain.model.implementation.ImplementationAnalyzeContext;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -24,24 +24,24 @@ import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
 
-    final SpecificationContext specificationContext;
-    Specification specification;
+    final ImplementationAnalyzeContext implementationAnalyzeContext;
+    Implementation implementation;
 
-    public SpecificationReadingVisitor(SpecificationContext specificationContext) {
+    public SpecificationReadingVisitor(ImplementationAnalyzeContext implementationAnalyzeContext) {
         super(Opcodes.ASM6);
-        this.specificationContext = specificationContext;
+        this.implementationAnalyzeContext = implementationAnalyzeContext;
     }
 
-    public Specification specification() {
-        return specification;
+    public Implementation specification() {
+        return implementation;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
-        this.specification = new Specification(
-                specificationContext,
+        this.implementation = new Implementation(
+                implementationAnalyzeContext,
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
@@ -53,40 +53,40 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        TypeAnnotationDeclaration typeAnnotationDeclaration = specification.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
-        specification.registerTypeAnnotation(typeAnnotationDeclaration);
+        TypeAnnotationDeclaration typeAnnotationDeclaration = implementation.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        implementation.registerTypeAnnotation(typeAnnotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(specification::registerUseType);
+        genericsTypes.forEach(implementation::registerUseType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            specification.registerUseType(toTypeIdentifier(elementType));
+            implementation.registerUseType(toTypeIdentifier(elementType));
         }
 
-        FieldDeclaration fieldDeclaration = specification.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
+        FieldDeclaration fieldDeclaration = implementation.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            specification.registerField(fieldDeclaration);
+            implementation.registerField(fieldDeclaration);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                specification.registerStaticField(fieldDeclaration);
+                implementation.registerStaticField(fieldDeclaration);
             }
         }
         return new FieldVisitor(this.api) {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                specification.registerUseType(annotationTypeIdentifier);
+                implementation.registerUseType(annotationTypeIdentifier);
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        specification.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                        implementation.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
             }
         };
     }
@@ -94,7 +94,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(specification.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(implementation.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -102,25 +102,25 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-        MethodSpecification methodSpecification = new MethodSpecification(
+        MethodImplementation methodImplementation = new MethodImplementation(
                 methodDeclaration,
                 methodDescriptorToReturnIdentifier(descriptor),
                 useTypes,
                 access
         );
-        methodSpecification.bind(specification);
+        methodImplementation.bind(implementation);
 
         return new MethodVisitor(this.api) {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodSpecification.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
+                        methodImplementation.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
             }
 
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                methodSpecification.registerFieldInstruction(
+                methodImplementation.registerFieldInstruction(
                         new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
@@ -128,7 +128,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                methodSpecification.registerMethodInstruction(
+                methodImplementation.registerMethodInstruction(
                         new MethodDeclaration(
                                 new TypeIdentifier(owner),
                                 toMethodSignature(name, descriptor),
@@ -141,7 +141,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    methodSpecification.registerClassReference(toTypeIdentifier((Type) value));
+                    methodImplementation.registerClassReference(toTypeIdentifier((Type) value));
                 }
 
                 super.visitLdcInsn(value);
@@ -155,9 +155,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
-                            methodSpecification.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
+                            methodImplementation.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
-                                methodSpecification.registerInvokeDynamic(toTypeIdentifier(argumentType));
+                                methodImplementation.registerInvokeDynamic(toTypeIdentifier(argumentType));
                             }
                         }
                     }
@@ -165,7 +165,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
-                        methodSpecification.registerMethodInstruction(
+                        methodImplementation.registerMethodInstruction(
                                 new MethodDeclaration(
                                         new TypeIdentifier(handle.getOwner()),
                                         toMethodSignature(handle.getName(), handle.getDesc()),
@@ -180,14 +180,14 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                methodSpecification.registerLookupSwitchInstruction();
+                methodImplementation.registerLookupSwitchInstruction();
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
             @Override
             public void visitJumpInsn(int opcode, Label label) {
                 // 何かしらの分岐がある
-                methodSpecification.registerJumpInstruction();
+                methodImplementation.registerJumpInstruction();
                 super.visitJumpInsn(opcode, label);
             }
         };

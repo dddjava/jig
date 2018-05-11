@@ -1,34 +1,37 @@
 package org.dddjava.jig.domain.model.implementation;
 
+/**
+ * メソッドの種類
+ */
 public enum MethodType {
     CONSTRUCTOR {
         @Override
-        public void bind(MethodSpecification methodSpecification, Specification specification) {
-            specification.registerConstructorSpecification(methodSpecification);
+        public void bind(MethodImplementation methodImplementation, Implementation implementation) {
+            implementation.registerConstructorSpecification(methodImplementation);
         }
     },
     STATIC_METHOD {
         @Override
-        public void bind(MethodSpecification methodSpecification, Specification specification) {
-            specification.registerStaticMethodSpecification(methodSpecification);
+        public void bind(MethodImplementation methodImplementation, Implementation implementation) {
+            implementation.registerStaticMethodSpecification(methodImplementation);
         }
     },
     INSTANCE_METHOD {
         @Override
-        public void bind(MethodSpecification methodSpecification, Specification specification) {
-            specification.registerInstanceMethodSpecification(methodSpecification);
+        public void bind(MethodImplementation methodImplementation, Implementation implementation) {
+            implementation.registerInstanceMethodSpecification(methodImplementation);
         }
     };
 
-    public static MethodType methodType(MethodSpecification methodSpecification) {
-        if (methodSpecification.methodDeclaration.isConstructor()) {
+    public static MethodType methodType(MethodImplementation methodImplementation) {
+        if (methodImplementation.methodDeclaration.isConstructor()) {
             return CONSTRUCTOR;
         }
-        if (methodSpecification.isStatic()) {
+        if (methodImplementation.isStatic()) {
             return STATIC_METHOD;
         }
         return INSTANCE_METHOD;
     }
 
-    public abstract void bind(MethodSpecification methodSpecification, Specification specification);
+    public abstract void bind(MethodImplementation methodImplementation, Implementation implementation);
 }

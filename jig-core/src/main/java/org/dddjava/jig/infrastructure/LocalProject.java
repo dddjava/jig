@@ -3,8 +3,8 @@ package org.dddjava.jig.infrastructure;
 import org.dddjava.jig.domain.model.datasource.SqlSources;
 import org.dddjava.jig.domain.model.japanese.PackageNameSources;
 import org.dddjava.jig.domain.model.japanese.TypeNameSources;
-import org.dddjava.jig.domain.model.implementation.SpecificationSource;
-import org.dddjava.jig.domain.model.implementation.SpecificationSources;
+import org.dddjava.jig.domain.model.implementation.ImplementationSource;
+import org.dddjava.jig.domain.model.implementation.ImplementationSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,16 +47,16 @@ public class LocalProject {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    public SpecificationSources getSpecificationSources() {
-        ArrayList<SpecificationSource> sources = new ArrayList<>();
+    public ImplementationSources getSpecificationSources() {
+        ArrayList<ImplementationSource> sources = new ArrayList<>();
         try {
             for (Path path : extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (isClassFile(file)) {
-                            SpecificationSource specificationSource = new SpecificationSource(file);
-                            sources.add(specificationSource);
+                            ImplementationSource implementationSource = new ImplementationSource(file);
+                            sources.add(implementationSource);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -66,7 +66,7 @@ public class LocalProject {
             throw new UncheckedIOException(e);
         }
         LOGGER.info("*.class: {}件", sources.size());
-        return new SpecificationSources(sources);
+        return new ImplementationSources(sources);
     }
 
     private Path[] extractClassPath() {

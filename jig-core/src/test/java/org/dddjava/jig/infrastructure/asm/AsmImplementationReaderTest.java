@@ -2,10 +2,10 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.MethodSpecification;
-import org.dddjava.jig.domain.model.implementation.Specification;
-import org.dddjava.jig.domain.model.implementation.SpecificationSource;
-import org.dddjava.jig.infrastructure.PropertySpecificationContext;
+import org.dddjava.jig.domain.model.implementation.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.Implementation;
+import org.dddjava.jig.domain.model.implementation.ImplementationSource;
+import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,11 +31,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-public class AsmSpecificationReaderTest {
+public class AsmImplementationReaderTest {
 
     @Test
     void 付与されているアノテーションと記述が取得できる() throws Exception {
-        Specification actual = exercise(Annotated.class);
+        Implementation actual = exercise(Annotated.class);
 
         assertThat(actual.fieldAnnotationDeclarations())
                 .hasSize(1)
@@ -67,7 +67,7 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        Specification actual = exercise(ClassDefinition.class);
+        Implementation actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -82,7 +82,7 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        Specification actual = exercise(FieldDefinition.class);
+        Implementation actual = exercise(FieldDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -100,7 +100,7 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void メソッドで使用している型が取得できる() throws Exception {
-        Specification actual = exercise(MethodInstruction.class);
+        Implementation actual = exercise(MethodInstruction.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -130,7 +130,7 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
-        Specification actual = exercise(MethodInstruction.class);
+        Implementation actual = exercise(MethodInstruction.class);
 
         assertThat(actual.instanceMethodSpecifications())
                 .extracting(
@@ -149,14 +149,14 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        Specification actual = exercise(DecisionClass.class);
+        Implementation actual = exercise(DecisionClass.class);
 
-        List<MethodSpecification> methodSpecifications = actual.instanceMethodSpecifications();
+        List<MethodImplementation> methodImplementations = actual.instanceMethodSpecifications();
 
-        assertThat(methodSpecifications)
+        assertThat(methodImplementations)
                 .extracting(
                         methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
-                        MethodSpecification::hasDecision)
+                        MethodImplementation::hasDecision)
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", false),
                         tuple("ifがあるメソッド()", true),
@@ -168,7 +168,7 @@ public class AsmSpecificationReaderTest {
 
     @Test
     void enumで使用するクラスのテスト() throws Exception {
-        Specification actual = exercise(EnumDefinition.class);
+        Implementation actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -182,14 +182,14 @@ public class AsmSpecificationReaderTest {
     @ParameterizedTest
     @MethodSource
     void enumの種類を判別できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
-        Specification actual = exercise(clz);
+        Implementation actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
-                        Specification::isEnum,
-                        Specification::hasInstanceMethod,
-                        Specification::hasField,
-                        Specification::canExtend
+                        Implementation::isEnum,
+                        Implementation::hasInstanceMethod,
+                        Implementation::hasField,
+                        Implementation::canExtend
                 )
                 .containsExactly(
                         true,
@@ -208,10 +208,10 @@ public class AsmSpecificationReaderTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private Specification exercise(Class<?> definitionClass) throws URISyntaxException {
+    private Implementation exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmSpecificationReader sut = new AsmSpecificationReader(new PropertySpecificationContext());
-        return sut.readSpecification(new SpecificationSource(path));
+        AsmImplementationFactory sut = new AsmImplementationFactory(new PropertyImplementationAnalyzeContext());
+        return sut.readSpecification(new ImplementationSource(path));
     }
 }

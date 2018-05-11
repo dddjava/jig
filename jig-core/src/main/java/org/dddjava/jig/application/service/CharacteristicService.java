@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.MethodSpecification;
-import org.dddjava.jig.domain.model.implementation.Specification;
-import org.dddjava.jig.domain.model.implementation.Specifications;
+import org.dddjava.jig.domain.model.implementation.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.Implementation;
+import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,30 +25,30 @@ public class CharacteristicService {
         this.characterizedMethodRepository = characterizedMethodRepository;
     }
 
-    public void registerCharacteristic(Specifications specifications) {
-        for (Specification specification : specifications.list()) {
-            registerCharacteristic(specification);
+    public void registerCharacteristic(Implementations implementations) {
+        for (Implementation implementation : implementations.list()) {
+            registerCharacteristic(implementation);
         }
     }
 
-    public void registerCharacteristic(Specification specification) {
-        TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(specification);
+    public void registerCharacteristic(Implementation implementation) {
+        TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
         characteristicRepository.register(typeCharacteristics);
 
-        List<MethodSpecification> methodSpecifications = specification.instanceMethodSpecifications();
-        for (MethodSpecification methodSpecification : methodSpecifications) {
-            if (methodSpecification.hasDecision()) {
-                characterizedMethodRepository.register(MethodCharacteristic.HAS_DECISION, methodSpecification.methodDeclaration);
+        List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
+        for (MethodImplementation methodImplementation : methodImplementations) {
+            if (methodImplementation.hasDecision()) {
+                characterizedMethodRepository.register(MethodCharacteristic.HAS_DECISION, methodImplementation.methodDeclaration);
             }
 
             if (typeCharacteristics.has(Characteristic.SERVICE).isSatisfy()) {
-                characterizedMethodRepository.register(MethodCharacteristic.SERVICE_METHOD, methodSpecification.methodDeclaration);
+                characterizedMethodRepository.register(MethodCharacteristic.SERVICE_METHOD, methodImplementation.methodDeclaration);
             }
             if (typeCharacteristics.has(Characteristic.REPOSITORY).isSatisfy()) {
-                characterizedMethodRepository.register(MethodCharacteristic.REPOSITORY_METHOD, methodSpecification.methodDeclaration);
+                characterizedMethodRepository.register(MethodCharacteristic.REPOSITORY_METHOD, methodImplementation.methodDeclaration);
             }
             if (typeCharacteristics.has(Characteristic.MAPPER).isSatisfy()) {
-                characterizedMethodRepository.register(MethodCharacteristic.MAPPER_METHOD, methodSpecification.methodDeclaration);
+                characterizedMethodRepository.register(MethodCharacteristic.MAPPER_METHOD, methodImplementation.methodDeclaration);
             }
         }
     }

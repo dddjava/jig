@@ -13,7 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MethodSpecification {
+/**
+ * メソッドの実装
+ */
+public class MethodImplementation {
 
     public final MethodDeclaration methodDeclaration;
     private final TypeIdentifier returnType;
@@ -30,10 +33,10 @@ public class MethodSpecification {
     // switchがある
     private boolean lookupSwitchInstruction = false;
 
-    public MethodSpecification(MethodDeclaration methodDeclaration,
-                               TypeIdentifier returnType,
-                               List<TypeIdentifier> useTypes,
-                               int access) {
+    public MethodImplementation(MethodDeclaration methodDeclaration,
+                                TypeIdentifier returnType,
+                                List<TypeIdentifier> useTypes,
+                                int access) {
         this.methodDeclaration = methodDeclaration;
         this.returnType = returnType;
         this.access = access;
@@ -110,7 +113,7 @@ public class MethodSpecification {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
 
-    public void bind(Specification specification) {
-        MethodType.methodType(this).bind(this, specification);
+    public void bind(Implementation implementation) {
+        MethodType.methodType(this).bind(this, implementation);
     }
 }

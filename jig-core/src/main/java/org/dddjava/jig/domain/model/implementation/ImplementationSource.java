@@ -2,10 +2,13 @@ package org.dddjava.jig.domain.model.implementation;
 
 import java.nio.file.Path;
 
-public class SpecificationSource {
+/**
+ * モデルが実装されたソース
+ */
+public class ImplementationSource {
     private final Path path;
 
-    public SpecificationSource(Path path) {
+    public ImplementationSource(Path path) {
         this.path = path;
     }
 

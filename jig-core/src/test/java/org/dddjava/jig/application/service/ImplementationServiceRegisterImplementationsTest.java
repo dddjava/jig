@@ -6,10 +6,10 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.MethodSpecification;
-import org.dddjava.jig.domain.model.implementation.Specification;
-import org.dddjava.jig.domain.model.implementation.Specifications;
-import org.dddjava.jig.infrastructure.PropertySpecificationContext;
+import org.dddjava.jig.domain.model.implementation.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.Implementation;
+import org.dddjava.jig.domain.model.implementation.Implementations;
+import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-class SpecificationServiceRegisterSpecificationsTest {
+class ImplementationServiceRegisterImplementationsTest {
 
     @Test
     void メソッドの使用するメソッドを取得する() {
@@ -33,29 +33,29 @@ class SpecificationServiceRegisterSpecificationsTest {
                 mock(DependencyService.class));
 
         TypeIdentifier typeIdentifier = new TypeIdentifier("test.TestClass");
-        Specification specification = new Specification(
-                new PropertySpecificationContext(),
+        Implementation implementation = new Implementation(
+                new PropertyImplementationAnalyzeContext(),
                 typeIdentifier,
                 new TypeIdentifier("test.TestParentClass"),
                 new TypeIdentifiers(emptyList()), emptyList(), false);
-        MethodSpecification methodSpecification = new MethodSpecification(
+        MethodImplementation methodImplementation = new MethodImplementation(
                 new MethodDeclaration(typeIdentifier, new MethodSignature("methodName", emptyList()), new TypeIdentifier("test.ReturnType")),
                 new TypeIdentifier("test.ReturnType"),
                 emptyList(),
                 0);
         // フィールド呼び出し
-        methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field1", new TypeIdentifier("test.FieldA")));
-        methodSpecification.registerFieldInstruction(new FieldDeclaration(new TypeIdentifier("test.OtherClass1"), "field2", new TypeIdentifier("test.FieldB")));
-        methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field3", new TypeIdentifier("test.FieldA")));
-        methodSpecification.registerFieldInstruction(specification.newFieldDeclaration("field4", new TypeIdentifier("test.FieldB")));
+        methodImplementation.registerFieldInstruction(implementation.newFieldDeclaration("field1", new TypeIdentifier("test.FieldA")));
+        methodImplementation.registerFieldInstruction(new FieldDeclaration(new TypeIdentifier("test.OtherClass1"), "field2", new TypeIdentifier("test.FieldB")));
+        methodImplementation.registerFieldInstruction(implementation.newFieldDeclaration("field3", new TypeIdentifier("test.FieldA")));
+        methodImplementation.registerFieldInstruction(implementation.newFieldDeclaration("field4", new TypeIdentifier("test.FieldB")));
         // メソッド呼び出し
-        methodSpecification.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
-        methodSpecification.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")));
-        methodSpecification.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
+        methodImplementation.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
+        methodImplementation.registerMethodInstruction(new MethodDeclaration(new TypeIdentifier("test.OtherClass2"), new MethodSignature("methodB", emptyList()), new TypeIdentifier("test.MethodReturn2")));
+        methodImplementation.registerMethodInstruction(new MethodDeclaration(typeIdentifier, new MethodSignature("methodA", emptyList()), new TypeIdentifier("test.MethodReturn1")));
 
-        specification.registerInstanceMethodSpecification(methodSpecification);
+        implementation.registerInstanceMethodSpecification(methodImplementation);
 
-        sut.registerSpecifications(new Specifications(Collections.singletonList(specification)));
+        sut.registerSpecifications(new Implementations(Collections.singletonList(implementation)));
 
         MethodDeclaration methodDeclaration = new MethodDeclaration(
                 new TypeIdentifier("test.TestClass"),

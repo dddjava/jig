@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelation;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +19,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final List<FieldDeclaration> instanceFields = new ArrayList<>();
     final List<FieldDeclaration> staticFields = new ArrayList<>();
 
-    final Set<MethodRelation> methodImplementMethods = new HashSet<>();
+    final Set<ImplementationMethod> methodImplementMethods = new HashSet<>();
 
     final Map<TypeIdentifier, Set<MethodDeclaration>> typeUserMethods = new HashMap<>();
 
@@ -39,8 +38,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public void registerImplementation(MethodDeclaration from, MethodDeclaration to) {
-        methodImplementMethods.add(new MethodRelation(from, to));
+    public void registerImplementation(MethodDeclaration implementationMethod, MethodDeclaration interfaceMethod) {
+        methodImplementMethods.add(new ImplementationMethod(implementationMethod, interfaceMethod));
     }
 
     @Override
@@ -71,8 +70,8 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public MethodDeclarations findConcrete(MethodDeclaration methodDeclaration) {
         return methodImplementMethods.stream()
-                .filter(methodRelation -> methodRelation.interfaceMethodIs(methodDeclaration))
-                .map(MethodRelation::concreteMethod)
+                .filter(implementationMethod -> implementationMethod.interfaceMethodIs(methodDeclaration))
+                .map(ImplementationMethod::implementationMethod)
                 .collect(MethodDeclarations.collector());
     }
 

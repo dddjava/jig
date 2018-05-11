@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.valueobjects;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
+import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.japanese.JapaneseName;
 
 import java.util.List;
 import java.util.function.Function;
@@ -28,16 +28,16 @@ public class ValueObjectReport {
         }
     }
 
-    private final Characteristic characteristic;
+    private final ValueObjectType valueObjectType;
     private final List<Row> list;
 
-    public ValueObjectReport(Characteristic characteristic, List<Row> list) {
-        this.characteristic = characteristic;
+    public ValueObjectReport(ValueObjectType valueObjectType, List<Row> list) {
+        this.valueObjectType = valueObjectType;
         this.list = list;
     }
 
     public Report<?> toReport() {
-        return new Report<>(characteristic.name(), list, Items.values());
+        return new Report<>(valueObjectType.name(), list, Items.values());
     }
 
     public static class Row {

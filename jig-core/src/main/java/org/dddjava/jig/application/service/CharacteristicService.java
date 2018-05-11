@@ -65,8 +65,8 @@ public class CharacteristicService {
         return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
     }
 
-    public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
-        return characteristicRepository.getTypeIdentifiersOf(characteristic);
+    public TypeIdentifiers getTypeIdentifiersOf(ValueObjectType valueObjectType) {
+        return characteristicRepository.getTypeIdentifiersOf(valueObjectType.toCharacteristic());
     }
 
     public MethodDeclarations getServiceMethods() {

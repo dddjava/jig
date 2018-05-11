@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
 import org.dddjava.jig.domain.model.valueobjects.*;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
@@ -96,11 +97,11 @@ public class AngleService {
         return new EnumAngles(list);
     }
 
-    public ValueObjectAngles genericModelAngles(Characteristic characteristic) {
-        TypeIdentifiers typeIdentifiers = characteristicService.getTypeIdentifiersOf(characteristic);
+    public ValueObjectAngles genericModelAngles(ValueObjectType valueObjectType) {
+        TypeIdentifiers typeIdentifiers = characteristicService.getTypeIdentifiersOf(valueObjectType);
         List<ValueObjectAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
-            return new ValueObjectAngle(characteristic, typeIdentifier, userTypeIdentifiers);
+            return new ValueObjectAngle(valueObjectType, typeIdentifier, userTypeIdentifiers);
         }).collect(toList());
         return new ValueObjectAngles(list);
     }

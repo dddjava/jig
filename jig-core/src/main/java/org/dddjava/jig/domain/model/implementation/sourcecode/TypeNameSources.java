@@ -1,8 +1,11 @@
-package org.dddjava.jig.domain.model.japanese;
+package org.dddjava.jig.domain.model.implementation.sourcecode;
 
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * モデル名のソース
+ */
 public class TypeNameSources {
 
     List<Path> list;

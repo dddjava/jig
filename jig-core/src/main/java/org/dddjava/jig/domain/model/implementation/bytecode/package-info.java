@@ -1,4 +1,4 @@
 /**
- * 解析対象の実装状態
+ * バイトコード
  */
 package org.dddjava.jig.domain.model.implementation.bytecode;

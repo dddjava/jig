@@ -2,9 +2,10 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.sourcecode.JapaneseReader;
 import org.dddjava.jig.domain.model.japanese.*;
-import org.dddjava.jig.domain.model.japanese.PackageNameSources;
-import org.dddjava.jig.domain.model.japanese.TypeNameSources;
+import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
+import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.springframework.stereotype.Service;
 
 /**

@@ -35,6 +35,9 @@ public class CharacteristicService {
         TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
         characteristicRepository.register(typeCharacteristics);
 
+        ValueObjectTypes valueObjectTypes = ValueObjectType.from(implementation);
+        characteristicRepository.register(implementation.typeIdentifier(), valueObjectTypes);
+
         List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
         for (MethodImplementation methodImplementation : methodImplementations) {
             if (methodImplementation.hasDecision()) {
@@ -72,7 +75,7 @@ public class CharacteristicService {
     }
 
     public TypeIdentifiers getTypeIdentifiersOf(ValueObjectType valueObjectType) {
-        return characteristicRepository.getTypeIdentifiersOf(valueObjectType.toCharacteristic());
+        return characteristicRepository.getTypeIdentifiersOf(valueObjectType);
     }
 
     public MethodDeclarations getServiceMethods() {

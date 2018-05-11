@@ -6,8 +6,10 @@ import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 値オブジェクト
@@ -46,9 +48,12 @@ public enum ValueObjectType {
         }
     };
 
-    abstract boolean matches(Implementation implementation);
-
-    public Characteristic toCharacteristic() {
-        return Characteristic.valueOf(this.name());
+    public static ValueObjectTypes from(Implementation implementation) {
+        List<ValueObjectType> list = Arrays.stream(values())
+                .filter(characteristic -> characteristic.matches(implementation))
+                .collect(Collectors.toList());
+        return new ValueObjectTypes(list);
     }
+
+    abstract boolean matches(Implementation implementation);
 }

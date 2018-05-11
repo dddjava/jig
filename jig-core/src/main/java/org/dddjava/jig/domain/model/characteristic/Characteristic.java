@@ -64,36 +64,6 @@ public enum Characteristic {
             return implementation.isEnum() && implementation.canExtend();
         }
     },
-    IDENTIFIER {
-        @Override
-        boolean matches(Implementation implementation) {
-            return ValueObjectType.IDENTIFIER.matches(implementation);
-        }
-    },
-    NUMBER {
-        @Override
-        boolean matches(Implementation implementation) {
-            return ValueObjectType.NUMBER.matches(implementation);
-        }
-    },
-    DATE {
-        @Override
-        boolean matches(Implementation implementation) {
-            return ValueObjectType.DATE.matches(implementation);
-        }
-    },
-    TERM {
-        @Override
-        boolean matches(Implementation implementation) {
-            return ValueObjectType.TERM.matches(implementation);
-        }
-    },
-    COLLECTION {
-        @Override
-        boolean matches(Implementation implementation) {
-            return ValueObjectType.COLLECTION.matches(implementation);
-        }
-    },
     MODEL {
         @Override
         boolean matches(Implementation implementation) {

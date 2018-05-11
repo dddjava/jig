@@ -54,4 +54,19 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
         }
         return new Characteristics(set);
     }
+
+    Map<TypeIdentifier, ValueObjectTypes> valueObjectTypesMap = new HashMap<>();
+
+    @Override
+    public void register(TypeIdentifier typeIdentifier, ValueObjectTypes valueObjectTypes) {
+        valueObjectTypesMap.put(typeIdentifier, valueObjectTypes);
+    }
+
+    @Override
+    public TypeIdentifiers getTypeIdentifiersOf(ValueObjectType valueObjectType) {
+        return valueObjectTypesMap.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(valueObjectType))
+                .map(Map.Entry::getKey)
+                .collect(TypeIdentifiers.collector());
+    }
 }

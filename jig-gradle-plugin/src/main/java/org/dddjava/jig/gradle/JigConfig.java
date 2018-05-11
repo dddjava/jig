@@ -11,7 +11,7 @@ public class JigConfig {
 
     List<String> documentTypes = new ArrayList<>();
 
-    String outputDirectory = "build/reports/jig/";
+    String outputDirectory = "build/jig";
 
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
 

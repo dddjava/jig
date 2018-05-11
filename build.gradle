@@ -192,21 +192,23 @@ project(':jig-gradle-plugin') {
     gradlePlugin {
         plugins {
             jigGradlePlugin {
-                id = project.artifactId
+                id = "org.dddjava.${project.artifactId}"
                 implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
             }
         }
     }
 
+
+
     pluginBundle {
-        website = 'http://www.gradle.org/'
-        vcsUrl = 'https://github.com/gradle/gradle'
+        website = 'https://github.com/dddjava/Jig'
+        vcsUrl = 'https://github.com/dddjava/Jig.git'
         description = 'Visualizing code for DDD'
-        tags = ['ddd', 'plugin', 'visualize']
+        tags = ['ddd', 'visualize']
 
         plugins {
             jigGradlePlugin {
-                id = project.artifactId
+                id = "org.dddjava.${project.artifactId}"
                 displayName = 'Jig Gradle Plugin'
             }
         }

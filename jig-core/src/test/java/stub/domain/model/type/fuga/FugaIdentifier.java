@@ -1,5 +1,8 @@
 package stub.domain.model.type.fuga;
 
+/**
+ * 普通の識別子
+ */
 public class FugaIdentifier {
 
     String value;

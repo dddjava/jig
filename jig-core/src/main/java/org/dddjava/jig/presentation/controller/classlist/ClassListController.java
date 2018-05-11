@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -87,8 +89,8 @@ public class ClassListController {
     Report<?> serviceReport() {
         ServiceAngles serviceAngles = angleService.serviceAngles();
         List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
-            return new ServiceReport.Row(angle, japaneseName, typeIdentifierFormatter);
+            Function<TypeIdentifier, JapaneseName> JapaneseNameResolver = glossaryService::japaneseNameFrom;
+            return new ServiceReport.Row(angle, JapaneseNameResolver, typeIdentifierFormatter);
         }).collect(Collectors.toList());
         return new ServiceReport(list).toReport();
     }

@@ -36,11 +36,11 @@ class ReportServiceTest {
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
-                        "[stub.application.service.CanonicalService, サービス和名, fuga(FugaIdentifier), Fuga, , [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
-                        "[stub.application.service.CanonicalService, サービス和名, method(), void, , [], []]",
-                        "[stub.application.service.DecisionService, 分岐のあるサービス, 分岐のあるメソッド(Object), void, , [], []]",
-                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれない(), void, , [], []]",
-                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, [], []]"
+                        "[stub.application.service.CanonicalService, サービス和名, fuga(FugaIdentifier), Fuga, , , 普通のドメインモデル, [普通の識別子], [HogeRepository, FugaRepository], [HogeRepository.method(), FugaRepository.get(FugaIdentifier)]]",
+                        "[stub.application.service.CanonicalService, サービス和名, method(), void, , , , [], [], []]",
+                        "[stub.application.service.DecisionService, 分岐のあるサービス, 分岐のあるメソッド(Object), void, , , , [], [], []]",
+                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれない(), void, , , , [], [], []]",
+                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, , , [], [], []]"
                 );
 
         assertThat(sut.datasourceReport().rows())

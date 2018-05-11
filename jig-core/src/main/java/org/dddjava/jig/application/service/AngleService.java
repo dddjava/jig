@@ -1,8 +1,15 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.angle.*;
+import org.dddjava.jig.domain.model.valueobjects.*;
+import org.dddjava.jig.domain.model.categories.EnumAngle;
+import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.decisions.DecisionAngle;
+import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -11,6 +18,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -87,13 +96,13 @@ public class AngleService {
         return new EnumAngles(list);
     }
 
-    public GenericModelAngles genericModelAngles(Characteristic characteristic) {
+    public ValueObjectAngles genericModelAngles(Characteristic characteristic) {
         TypeIdentifiers typeIdentifiers = characteristicService.getTypeIdentifiersOf(characteristic);
-        List<GenericModelAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
+        List<ValueObjectAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
             TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
-            return new GenericModelAngle(characteristic, typeIdentifier, userTypeIdentifiers);
+            return new ValueObjectAngle(characteristic, typeIdentifier, userTypeIdentifiers);
         }).collect(toList());
-        return new GenericModelAngles(list);
+        return new ValueObjectAngles(list);
     }
 
     /**
@@ -102,7 +111,7 @@ public class AngleService {
      * 文字列比較を行なっているメソッドはビジネスルールの分類判定を行なっている可能性が高い。
      * サービスなどに登場した場合はかなり拙いし、そうでなくても列挙を使用するなど改善の余地がある。
      */
-    public DesignSmellAngle stringComparing() {
+    public StringComparingAngle stringComparing() {
         // String#equals(Object)
         MethodDeclaration equalsMethod = new MethodDeclaration(
                 new TypeIdentifier(String.class),
@@ -112,7 +121,7 @@ public class AngleService {
                 new TypeIdentifier("boolean"));
 
         MethodDeclarations userMethods = relationRepository.findUserMethods(equalsMethod);
-        return new DesignSmellAngle(userMethods);
+        return new StringComparingAngle(userMethods);
     }
 
     public DecisionAngles decision() {

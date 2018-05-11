@@ -2,13 +2,24 @@ package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.angle.*;
+import org.dddjava.jig.domain.model.validations.ValidationReport;
+import org.dddjava.jig.domain.model.valueobjects.*;
+import org.dddjava.jig.domain.model.categories.EnumAngles;
+import org.dddjava.jig.domain.model.categories.EnumReport;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.datasources.DatasourceReport;
+import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.decisions.DecisionReport;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
+import org.dddjava.jig.domain.model.decisions.StringComparingReport;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.report.*;
+import org.dddjava.jig.domain.basic.report.*;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.services.ServiceReport;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
@@ -90,17 +101,17 @@ public class ClassListController {
     }
 
     Report<?> stringComparingReport() {
-        DesignSmellAngle designSmellAngle = angleService.stringComparing();
-        return new StringComparingReport(designSmellAngle).toReport();
+        StringComparingAngle stringComparingAngle = angleService.stringComparing();
+        return new StringComparingReport(stringComparingAngle).toReport();
     }
 
     Report<?> typeReportOn(Characteristic characteristic) {
-        GenericModelAngles genericModelAngles = angleService.genericModelAngles(characteristic);
-        List<GenericModelReport.Row> list = genericModelAngles.list().stream().map(enumAngle -> {
+        ValueObjectAngles valueObjectAngles = angleService.genericModelAngles(characteristic);
+        List<ValueObjectReport.Row> list = valueObjectAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new GenericModelReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+            return new ValueObjectReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new GenericModelReport(characteristic, list).toReport();
+        return new ValueObjectReport(characteristic, list).toReport();
     }
 
     Report<?> enumReport() {

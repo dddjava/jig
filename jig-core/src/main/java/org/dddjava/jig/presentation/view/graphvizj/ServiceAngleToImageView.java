@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.domain.model.angle.ServiceAngle;
-import org.dddjava.jig.domain.model.angle.ServiceAngles;
+import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;

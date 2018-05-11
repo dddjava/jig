@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.relation;
+package org.dddjava.jig.domain.model.implementation.relation;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 public class MethodRelation {

@@ -3,7 +3,7 @@ package org.dddjava.jig.application.usecase;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.PackageDependencies;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

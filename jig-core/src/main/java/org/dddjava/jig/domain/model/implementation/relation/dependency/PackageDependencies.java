@@ -1,7 +1,6 @@
-package org.dddjava.jig.domain.model.relation.dependency;
+package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
 
 import java.util.List;

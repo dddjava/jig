@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.relation.dependency;
+package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
 public class DependencyNumber {
     int value;

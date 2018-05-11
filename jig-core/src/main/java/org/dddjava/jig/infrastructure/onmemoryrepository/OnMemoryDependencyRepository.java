@@ -2,14 +2,9 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.relation.dependency.DependencyRepository;
-import org.dddjava.jig.domain.model.relation.dependency.TypeDependencies;
-import org.dddjava.jig.domain.model.relation.dependency.TypeDependency;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.relation.dependency.DependencyRepository;
-import org.dddjava.jig.domain.model.relation.dependency.TypeDependencies;
-import org.dddjava.jig.domain.model.relation.dependency.TypeDependency;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.DependencyRepository;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.TypeDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.TypeDependency;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

@@ -3,11 +3,11 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.relation.RelationRepository;
-import org.dddjava.jig.domain.model.specification.Specification;
-import org.dddjava.jig.domain.model.specification.SpecificationReader;
-import org.dddjava.jig.domain.model.specification.SpecificationSources;
-import org.dddjava.jig.domain.model.specification.Specifications;
+import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.implementation.Specification;
+import org.dddjava.jig.domain.model.implementation.SpecificationReader;
+import org.dddjava.jig.domain.model.implementation.SpecificationSources;
+import org.dddjava.jig.domain.model.implementation.Specifications;
 import org.springframework.stereotype.Service;
 
 /**

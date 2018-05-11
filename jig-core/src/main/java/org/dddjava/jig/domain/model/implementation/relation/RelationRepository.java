@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.relation;
+package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;

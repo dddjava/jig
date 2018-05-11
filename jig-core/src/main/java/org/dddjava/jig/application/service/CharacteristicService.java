@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.specification.MethodSpecification;
-import org.dddjava.jig.domain.model.specification.Specification;
-import org.dddjava.jig.domain.model.specification.Specifications;
+import org.dddjava.jig.domain.model.implementation.MethodSpecification;
+import org.dddjava.jig.domain.model.implementation.Specification;
+import org.dddjava.jig.domain.model.implementation.Specifications;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

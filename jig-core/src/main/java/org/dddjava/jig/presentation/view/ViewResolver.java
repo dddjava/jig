@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.angle.EnumAngles;
 import org.dddjava.jig.domain.model.angle.ServiceAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.relation.dependency.PackageDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.PackageDependencies;
 import org.dddjava.jig.domain.model.report.Reports;
 import org.dddjava.jig.presentation.view.graphvizj.EnumUsageToImageView;
 import org.dddjava.jig.presentation.view.graphvizj.PackageDependencyToImageView;

@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.relation.MethodRelation;
-import org.dddjava.jig.domain.model.relation.RelationRepository;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelation;
+import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;

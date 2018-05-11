@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.specification.*;
-import org.dddjava.jig.domain.model.specification.SpecificationSource;
-import org.dddjava.jig.domain.model.specification.SpecificationSources;
+import org.dddjava.jig.domain.model.implementation.*;
+import org.dddjava.jig.domain.model.implementation.SpecificationSource;
+import org.dddjava.jig.domain.model.implementation.SpecificationSources;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Component;
 

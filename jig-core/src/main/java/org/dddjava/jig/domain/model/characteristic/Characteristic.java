@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.characteristic;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.specification.Specification;
+import org.dddjava.jig.domain.model.implementation.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

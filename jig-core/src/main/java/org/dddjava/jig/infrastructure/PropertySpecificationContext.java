@@ -1,8 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.specification.Specification;
-import org.dddjava.jig.domain.model.specification.SpecificationContext;
-import org.dddjava.jig.domain.model.specification.Specification;
+import org.dddjava.jig.domain.model.implementation.Specification;
+import org.dddjava.jig.domain.model.implementation.SpecificationContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

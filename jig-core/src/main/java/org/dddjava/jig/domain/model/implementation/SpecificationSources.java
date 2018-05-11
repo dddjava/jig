@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.specification;
+package org.dddjava.jig.domain.model.implementation;
 
 import java.util.List;
 

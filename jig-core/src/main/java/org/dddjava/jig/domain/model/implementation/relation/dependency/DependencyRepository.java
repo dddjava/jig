@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.relation.dependency;
+package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;

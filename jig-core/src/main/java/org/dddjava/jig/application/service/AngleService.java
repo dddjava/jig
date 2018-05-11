@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.relation.RelationRepository;
+import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository
 import org.dddjava.jig.domain.model.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.relation.RelationRepository;
-import org.dddjava.jig.domain.model.relation.dependency.DependencyRepository;
+import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.implementation.relation.dependency.DependencyRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.PropertySpecificationContext;

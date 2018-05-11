@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.angle;
 
-import org.dddjava.jig.domain.model.datasource.SqlType;
-import org.dddjava.jig.domain.model.datasource.Sqls;
-import org.dddjava.jig.domain.model.datasource.Tables;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.datasource.Tables;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 

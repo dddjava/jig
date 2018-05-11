@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation;
+package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;

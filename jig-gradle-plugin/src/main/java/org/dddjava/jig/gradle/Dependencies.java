@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
-import org.dddjava.jig.domain.model.datasource.SqlRepository;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;

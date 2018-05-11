@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.datasource;
+package org.dddjava.jig.domain.model.implementation.datasource;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.Objects;

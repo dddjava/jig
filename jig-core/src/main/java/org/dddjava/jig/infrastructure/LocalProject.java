@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.datasource.SqlSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.japanese.PackageNameSources;
 import org.dddjava.jig.domain.model.japanese.TypeNameSources;
-import org.dddjava.jig.domain.model.implementation.ImplementationSource;
-import org.dddjava.jig.domain.model.implementation.ImplementationSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

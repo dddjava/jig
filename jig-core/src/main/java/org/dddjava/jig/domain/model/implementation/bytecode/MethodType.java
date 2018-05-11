@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation;
+package org.dddjava.jig.domain.model.implementation.bytecode;
 
 /**
  * メソッドの種類

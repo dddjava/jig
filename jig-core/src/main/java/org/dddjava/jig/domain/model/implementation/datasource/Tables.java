@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.datasource;
+package org.dddjava.jig.domain.model.implementation.datasource;
 
 import java.util.ArrayList;
 import java.util.Collections;

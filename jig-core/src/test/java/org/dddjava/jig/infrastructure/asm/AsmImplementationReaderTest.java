@@ -2,9 +2,9 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.MethodImplementation;
-import org.dddjava.jig.domain.model.implementation.Implementation;
-import org.dddjava.jig.domain.model.implementation.ImplementationSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

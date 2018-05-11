@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.datasource.Sql;
-import org.dddjava.jig.domain.model.datasource.SqlIdentifier;
-import org.dddjava.jig.domain.model.datasource.SqlRepository;
+import org.dddjava.jig.domain.model.implementation.datasource.Sql;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlIdentifier;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.springframework.stereotype.Repository;
 

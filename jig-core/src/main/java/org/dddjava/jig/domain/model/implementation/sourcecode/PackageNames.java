@@ -1,4 +1,7 @@
-package org.dddjava.jig.domain.model.japanese;
+package org.dddjava.jig.domain.model.implementation.sourcecode;
+
+import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
+import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 
 import java.util.List;
 

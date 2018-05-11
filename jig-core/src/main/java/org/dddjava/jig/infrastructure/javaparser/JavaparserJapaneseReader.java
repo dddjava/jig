@@ -1,9 +1,8 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.implementation.sourcecode.JapaneseReader;
-import org.dddjava.jig.domain.model.japanese.*;
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
+import org.dddjava.jig.domain.model.implementation.sourcecode.*;
+import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
+import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;

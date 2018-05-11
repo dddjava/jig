@@ -1,12 +1,12 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.angle.EnumAngles;
-import org.dddjava.jig.domain.model.angle.ServiceAngles;
+import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.implementation.relation.dependency.PackageDependencies;
-import org.dddjava.jig.domain.model.report.Reports;
+import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.basic.report.Reports;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.EnumUsageToImageView;
 import org.dddjava.jig.presentation.view.graphvizj.PackageDependencyToImageView;
 import org.dddjava.jig.presentation.view.graphvizj.ServiceAngleToImageView;

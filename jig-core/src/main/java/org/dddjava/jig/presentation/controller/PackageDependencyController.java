@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.relation.dependency.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;

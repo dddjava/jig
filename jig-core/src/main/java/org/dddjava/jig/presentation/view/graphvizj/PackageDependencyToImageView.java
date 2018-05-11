@@ -5,7 +5,7 @@ import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.implementation.relation.dependency.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.presentation.view.JigView;
 
 import java.io.IOException;

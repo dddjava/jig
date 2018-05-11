@@ -70,12 +70,12 @@ public class ClassListController {
     public JigModelAndView<Reports> domainList() {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                typeReportOn(ValueObjectType.IDENTIFIER),
+                valueObjectReport(ValueObjectType.IDENTIFIER),
                 enumReport(),
-                typeReportOn(ValueObjectType.NUMBER),
-                typeReportOn(ValueObjectType.COLLECTION),
-                typeReportOn(ValueObjectType.DATE),
-                typeReportOn(ValueObjectType.TERM),
+                valueObjectReport(ValueObjectType.NUMBER),
+                valueObjectReport(ValueObjectType.COLLECTION),
+                valueObjectReport(ValueObjectType.DATE),
+                valueObjectReport(ValueObjectType.TERM),
                 validateAnnotationReport(),
                 stringComparingReport(),
                 decisionReport()
@@ -107,7 +107,7 @@ public class ClassListController {
         return new StringComparingReport(stringComparingAngle).toReport();
     }
 
-    Report<?> typeReportOn(ValueObjectType valueObjectType) {
+    Report<?> valueObjectReport(ValueObjectType valueObjectType) {
         ValueObjectAngles valueObjectAngles = angleService.genericModelAngles(valueObjectType);
         List<ValueObjectReport.Row> list = valueObjectAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());

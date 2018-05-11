@@ -50,7 +50,7 @@ class ReportServiceTest {
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, register(Fuga), void, [], [], [], []]"
                 );
 
-        assertThat(sut.typeReportOn(ValueObjectType.IDENTIFIER).rows())
+        assertThat(sut.valueObjectReport(ValueObjectType.IDENTIFIER).rows())
                 .extracting(reportRow -> reportRow.list().get(0))
                 .containsSequence(
                         "stub.domain.model.type.SimpleIdentifier");

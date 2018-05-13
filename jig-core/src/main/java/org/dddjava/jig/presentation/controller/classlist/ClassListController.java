@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
@@ -89,8 +90,9 @@ public class ClassListController {
     Report<?> serviceReport() {
         ServiceAngles serviceAngles = angleService.serviceAngles();
         List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
-            Function<TypeIdentifier, JapaneseName> JapaneseNameResolver = glossaryService::japaneseNameFrom;
-            return new ServiceReport.Row(angle, JapaneseNameResolver, typeIdentifierFormatter);
+            Function<TypeIdentifier, JapaneseName> japaneseNameResolver = glossaryService::japaneseNameFrom;
+            Function<MethodDeclaration, JapaneseName> methodJapaneseNameResolver = glossaryService::japaneseNameFrom;
+            return new ServiceReport.Row(angle, japaneseNameResolver, methodJapaneseNameResolver, typeIdentifierFormatter);
         }).collect(Collectors.toList());
         return new ServiceReport(list).toReport();
     }

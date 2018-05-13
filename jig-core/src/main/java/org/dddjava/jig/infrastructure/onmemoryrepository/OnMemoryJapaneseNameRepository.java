@@ -1,11 +1,9 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
-import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
+import org.dddjava.jig.domain.model.japanese.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -14,13 +12,9 @@ import java.util.Map;
 @Repository
 public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
 
-    final Map<TypeIdentifier, JapaneseName> map;
-    final Map<PackageIdentifier, JapaneseName> packageMap;
-
-    public OnMemoryJapaneseNameRepository() {
-        this.map = new HashMap<>();
-        this.packageMap = new HashMap<>();
-    }
+    final Map<TypeIdentifier, JapaneseName> map = new HashMap<>();
+    final Map<PackageIdentifier, JapaneseName> packageMap = new HashMap<>();
+    final Map<String, JapaneseName> methodMap = new HashMap<>();
 
     @Override
     public JapaneseName get(TypeIdentifier typeIdentifier) {
@@ -45,5 +39,21 @@ public class OnMemoryJapaneseNameRepository implements JapaneseNameRepository {
     @Override
     public void register(PackageJapaneseName packageJapaneseName) {
         packageMap.put(packageJapaneseName.packageIdentifier(), packageJapaneseName.japaneseName());
+    }
+
+    @Override
+    public JapaneseName get(MethodDeclaration methodDeclaration) {
+        // TODO 引数と戻り値の型解決に制限があるため名前だけで引き当てる
+        String methodName = methodDeclaration.methodSignature().methodName();
+        String key = methodDeclaration.declaringType().fullQualifiedName() + methodName;
+        return methodMap.getOrDefault(key, new JapaneseName(""));
+    }
+
+    @Override
+    public void register(MethodJapaneseName methodJapaneseName) {
+        MethodDeclaration methodDeclaration = methodJapaneseName.methodDeclaration();
+        String methodName = methodDeclaration.methodSignature().methodName();
+        String key = methodDeclaration.declaringType().fullQualifiedName() + methodName;
+        methodMap.put(key, methodJapaneseName.japaneseName());
     }
 }

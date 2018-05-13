@@ -6,7 +6,7 @@ package stub.domain.model;
 public class ClassJavadocStub {
 
     /**
-     * メソッドのJavadoc
+     * メソッドのJavadoc（使用しない）
      */
     void method() {
     }

@@ -22,6 +22,10 @@ public class MethodSignature {
         return methodName + "(" + argumentsAsText() + ")";
     }
 
+    public String methodName() {
+        return methodName;
+    }
+
     public String asSimpleText() {
         return methodName + "(" + argumentsAsSimpleText() + ")";
     }

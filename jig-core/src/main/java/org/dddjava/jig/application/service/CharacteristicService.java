@@ -25,12 +25,18 @@ public class CharacteristicService {
         this.characterizedMethodRepository = characterizedMethodRepository;
     }
 
+    /**
+     * モデルの実装リストを元に特徴を登録する。
+     */
     public void registerCharacteristic(Implementations implementations) {
         for (Implementation implementation : implementations.list()) {
             registerCharacteristic(implementation);
         }
     }
 
+    /**
+     * モデルの実装を元に特徴を登録する。
+     */
     public void registerCharacteristic(Implementation implementation) {
         TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
         characteristicRepository.register(typeCharacteristics);

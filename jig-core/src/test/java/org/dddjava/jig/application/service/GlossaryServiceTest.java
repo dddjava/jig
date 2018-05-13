@@ -1,11 +1,8 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.infrastructure.LocalProject;
@@ -20,9 +17,8 @@ import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.TestSupport;
 
+import java.util.Collections;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GlossaryServiceTest {
 
@@ -60,4 +56,30 @@ class GlossaryServiceTest {
         );
     }
 
+    @Test
+    void メソッド和名取得() {
+        LocalProject localProject = new LocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+
+        sut.importJapanese(localProject.getTypeNameSources());
+
+        MethodDeclaration methodDeclaration = new MethodDeclaration(
+                new TypeIdentifier(MethodJavadocStub.class),
+                new MethodSignature(
+                        "method",
+                        Collections.emptyList()),
+                new TypeIdentifier("void")
+        );
+        Assertions.assertThat(sut.japaneseNameFrom(methodDeclaration).value())
+                .isEqualTo("メソッドのJavadoc");
+
+        MethodDeclaration overloadMethodDeclaration = new MethodDeclaration(
+                new TypeIdentifier(MethodJavadocStub.class),
+                new MethodSignature(
+                        "overloadMethod",
+                        Collections.singletonList(new TypeIdentifier(String.class))),
+                new TypeIdentifier("void")
+        );
+        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodDeclaration).value())
+                .isEqualTo("引数ありのメソッド");
+    }
 }

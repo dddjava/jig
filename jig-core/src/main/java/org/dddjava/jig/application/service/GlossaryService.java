@@ -1,10 +1,13 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.sourcecode.*;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
+import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
+import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,6 +39,17 @@ public class GlossaryService {
 
     public void importJapanese(TypeNameSources typeNameSources) {
         TypeNames typeNames = reader.readTypes(typeNameSources);
-        typeNames.register(repository);
+
+        for (TypeJapaneseName typeJapaneseName : typeNames.list()) {
+            repository.register(typeJapaneseName);
+        }
+
+        for (MethodJapaneseName methodJapaneseName: typeNames.methodList()) {
+            repository.register(methodJapaneseName);
+        }
+    }
+
+    public JapaneseName japaneseNameFrom(MethodDeclaration methodDeclaration) {
+        return repository.get(methodDeclaration);
     }
 }

@@ -24,13 +24,6 @@
 
  `./gradlew clean build`
 
-## リリース手順
-
-- [GitHubでリリースページを作成](https://github.com/dddjava/Jig/releases/new)
-  - version: `{年}.{月}.{週}`
-- [CircleCI](https://circleci.com/gh/dddjava/Jig)のリリースビルドから `jig-cli.jar` を取得
-- リリースページのEdit releaseからjarをアップロード
-
 ## LICENSE
 
 [Apache License 2.0](LICENSE)

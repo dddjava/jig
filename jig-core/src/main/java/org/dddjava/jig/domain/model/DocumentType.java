@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
  * 取り扱うドキュメントの種類
  */
 public enum DocumentType {
-    ServiceMethodCallHierarchy("jig-diagram_service-method-call-hierarchy.png"),
-    PackageDependency("jig-diagram_package-dependency.png"),
-    ApplicationList("jig-list_application.xlsx"),
-    DomainList("jig-list_domain.xlsx"),
-    EnumUsage("jig-diagram_enum-usage.png");
+    ServiceMethodCallHierarchy("service-method-call-hierarchy.png"),
+    PackageDependency("package-dependency.png"),
+    ApplicationList("application.xlsx"),
+    DomainList("domain.xlsx"),
+    EnumUsage("enum-usage.png");
 
     private final String documentFileName;
 

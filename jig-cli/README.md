@@ -19,10 +19,10 @@ java -jar jig-cli.jar
 
 `./build/jig` ディレクトリに以下のファイルが出力されます。
 
-- jig-list_application.xlsx
-- jig-list_domain.xlsx
-- jig-diagram_package-dependency.png
-- jig-diagram_service-method-call-hierarchy.png
+- application.xlsx
+- domain.xlsx
+- package-dependency.png
+- service-method-call-hierarchy.png
 
 ### プロパティ
 

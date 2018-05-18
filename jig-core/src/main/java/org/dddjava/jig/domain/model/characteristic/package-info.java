@@ -1,4 +1,4 @@
 /**
- * モデルの特徴
+ * 特徴
  */
 package org.dddjava.jig.domain.model.characteristic;

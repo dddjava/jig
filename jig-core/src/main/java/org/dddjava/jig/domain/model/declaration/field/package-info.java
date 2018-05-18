@@ -1,4 +1,4 @@
 /**
- * フィールド定義
+ * フィールド
  */
 package org.dddjava.jig.domain.model.declaration.field;

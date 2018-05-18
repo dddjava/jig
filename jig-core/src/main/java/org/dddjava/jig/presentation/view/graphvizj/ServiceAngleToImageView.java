@@ -2,24 +2,32 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static java.util.stream.Collectors.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.StringJoiner;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.joining;
-
 public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceAngleToImageView.class);
+
+    final JapaneseNameRepository japaneseNameRepository;
+
+    public ServiceAngleToImageView(JapaneseNameRepository japaneseNameRepository) {
+        this.japaneseNameRepository = japaneseNameRepository;
+    }
+
 
     @Override
     public void render(ServiceAngles serviceAngles, OutputStream outputStream) {
@@ -31,9 +39,11 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                     .filter(serviceAngle -> !serviceAngle.userServiceMethods().list().isEmpty())
                     .flatMap(serviceAngle ->
                             serviceAngle.userServiceMethods().list().stream().map(userServiceMethod ->
-                                    String.format("\"%s\" -> \"%s\";",
-                                            userServiceMethod.asFullText(),
-                                            serviceAngle.method().asFullText())
+                                String.format("\"%s%s\" -> \"%s%s\";",
+                                        japaneseNameLineOf(userServiceMethod),
+                                        userServiceMethod.asFullText(),
+                                        japaneseNameLineOf(serviceAngle.method()),
+                                        serviceAngle.method().asFullText())
                             ))
                     .collect(joining("\n"));
 
@@ -65,9 +75,10 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                     .map(entry ->
                             "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                     + "{"
-                                    + "label=\"" + entry.getKey().asSimpleText() + "\";"
+                                    + "label=\"" + japaneseNameLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
                                     + entry.getValue().stream()
-                                    .map(serviceAngle -> serviceAngle.method().asFullText())
+                                    .map(serviceAngle ->
+                                            japaneseNameLineOf(serviceAngle.method()) + serviceAngle.method().asFullText())
                                     .map(text -> "\"" + text + "\";")
                                     .collect(joining("\n"))
                                     + "}")
@@ -90,5 +101,15 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {
+        String japaneseName = japaneseNameRepository.get(typeIdentifier).summarySentence();
+        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
+    }
+
+    private String japaneseNameLineOf(MethodDeclaration method) {
+        String japaneseName = japaneseNameRepository.get(method).summarySentence();
+        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 }

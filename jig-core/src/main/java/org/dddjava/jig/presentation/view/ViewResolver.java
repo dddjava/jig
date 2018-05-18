@@ -31,7 +31,7 @@ public class ViewResolver {
     }
 
     public JigView<ServiceAngles> serviceMethodCallHierarchy() {
-        return new ServiceAngleToImageView();
+        return new ServiceAngleToImageView(japaneseNameRepository);
     }
 
     public JigView<Reports> applicationList() {

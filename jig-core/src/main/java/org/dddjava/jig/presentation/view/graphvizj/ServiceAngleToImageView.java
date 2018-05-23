@@ -39,7 +39,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             RelationText relationText = new RelationText();
             for (ServiceAngle serviceAngle : angles) {
                 for (MethodDeclaration methodDeclaration : serviceAngle.userServiceMethods().list()) {
-                    relationText.add(methodDeclaration.asFullText(), serviceAngle.method().asFullText());
+                    relationText.add(methodDeclaration, serviceAngle.method());
                 }
             }
 
@@ -47,7 +47,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             String labelText = angles.stream()
                     .map(angle -> {
                         MethodDeclaration method = angle.method();
-                        IndividualAttribute individualAttribute = new IndividualAttribute(method.asFullText());
+                        IndividualAttribute individualAttribute = IndividualAttribute.of(method);
                         if (method.isLambda()) {
                             individualAttribute.label("(lambda)");
                         } else {

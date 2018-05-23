@@ -30,7 +30,7 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
         try {
             RelationText relationText = new RelationText();
             for (PackageDependency packageDependency : packageDependencies.list()) {
-                relationText.add(packageDependency.from().asText(), packageDependency.to().asText());
+                relationText.add(packageDependency.from(), packageDependency.to());
             }
 
             String labelsText = packageDependencies.allPackages().stream()
@@ -40,7 +40,7 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
                             JapaneseName japaneseName = repository.get(packageIdentifier);
                             labelText = japaneseName.summarySentence() + "\\n" + labelText;
                         }
-                        return new IndividualAttribute(packageIdentifier.asText())
+                        return IndividualAttribute.of(packageIdentifier)
                                 .label(labelText).asText();
                     })
                     .collect(joining("\n"));

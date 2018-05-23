@@ -37,7 +37,6 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
             // メソッド間の関連
             String serviceMethodRelationText = angles.stream()
-                    .filter(serviceAngle -> !serviceAngle.userServiceMethods().list().isEmpty())
                     .flatMap(serviceAngle ->
                             serviceAngle.userServiceMethods().list().stream().map(userServiceMethod ->
                                     String.format("\"%s\" -> \"%s\";",

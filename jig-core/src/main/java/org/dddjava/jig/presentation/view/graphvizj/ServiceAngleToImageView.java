@@ -78,12 +78,19 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                     .collect(joining("\n"));
 
 
+            String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
+                    .add("label=凡例;")
+                    .add("ハンドラメソッド[color=red];")
+                    .add("通常のメソッド;")
+                    .toString();
+
             String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                     .add("rankdir=LR;")
                     .add("node [shape=box,style=filled,color=lightgoldenrod];")
                     .add(relationText.asText())
                     .add(labelText)
                     .add(subgraphText)
+                    .add(legendText)
                     .toString();
 
             LOGGER.debug(graphText);

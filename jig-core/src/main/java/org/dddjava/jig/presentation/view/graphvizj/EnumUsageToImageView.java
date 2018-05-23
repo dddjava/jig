@@ -36,21 +36,14 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
                     return enumText + "[color=gold]";
                 }).collect(joining(";\n"));
 
-        String relationText = enumAngles.list().stream()
-                .flatMap(enumAngle -> {
-                    TypeIdentifier typeIdentifier = enumAngle.typeIdentifier();
-                    String enumTypeText = typeIdentifier.format(doubleQuote);
-
-                    return enumAngle.userTypeIdentifiers().list()
-                            .stream()
-                            .map(userType -> {
-                                String userTypeText = userType.format(doubleQuote);
-
-                                return String.format("%s -> %s;",
-                                        userTypeText, enumTypeText);
-                            });
-                }).collect(joining("\n"));
-
+        RelationText relationText = new RelationText();
+        for (EnumAngle enumAngle : enumAngles.list()) {
+            for (TypeIdentifier userType : enumAngle.userTypeIdentifiers().list()) {
+                relationText.add(
+                        userType.fullQualifiedName(),
+                        enumAngle.typeIdentifier().fullQualifiedName());
+            }
+        }
 
         String userLabel = Stream.concat(
                 enumAngles.list().stream().map(EnumAngle::typeIdentifier),
@@ -73,7 +66,7 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
                 .add("node [shape=box,style=filled,color=lightgoldenrodyellow];")
                 .add(legendText)
                 .add(enumsText)
-                .add(relationText)
+                .add(relationText.asText())
                 .add(userLabel)
                 .toString();
 

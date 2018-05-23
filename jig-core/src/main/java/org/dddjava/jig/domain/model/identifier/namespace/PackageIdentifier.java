@@ -47,4 +47,7 @@ public class PackageIdentifier {
         return Objects.hash(value);
     }
 
+    public String asText() {
+        return value;
+    }
 }

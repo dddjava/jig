@@ -36,14 +36,12 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             List<ServiceAngle> angles = serviceAngles.list();
 
             // メソッド間の関連
-            String serviceMethodRelationText = angles.stream()
-                    .flatMap(serviceAngle ->
-                            serviceAngle.userServiceMethods().list().stream().map(userServiceMethod ->
-                                    String.format("\"%s\" -> \"%s\";",
-                                            userServiceMethod.asFullText(),
-                                            serviceAngle.method().asFullText())
-                            ))
-                    .collect(joining("\n"));
+            RelationText relationText = new RelationText();
+            for (ServiceAngle serviceAngle : angles) {
+                for (MethodDeclaration methodDeclaration : serviceAngle.userServiceMethods().list()) {
+                    relationText.add(methodDeclaration.asFullText(), serviceAngle.method().asFullText());
+                }
+            }
 
             // メソッドの表示方法
             String labelText = angles.stream()
@@ -86,7 +84,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                     .add("rankdir=LR;")
                     .add("node [shape=box,style=filled,color=lightgoldenrod];")
-                    .add(serviceMethodRelationText)
+                    .add(relationText.asText())
                     .add(labelText)
                     .add(subgraphText)
                     .toString();

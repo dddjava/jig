@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageDependency;
 import org.dddjava.jig.presentation.view.JigView;
 
 import java.io.IOException;
@@ -29,11 +30,10 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
         try {
             PackageIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
 
-            String dependenciesText = packageDependencies.list().stream()
-                    .map(item -> String.format("%s -> %s;",
-                            item.from().format(doubleQuote),
-                            item.to().format(doubleQuote)))
-                    .collect(joining("\n"));
+            RelationText relationText = new RelationText();
+            for (PackageDependency packageDependency : packageDependencies.list()) {
+                relationText.add(packageDependency.from().asText(), packageDependency.to().asText());
+            }
 
             String labelsText = packageDependencies.allPackages().stream()
                     .map(packageIdentifier -> {
@@ -52,7 +52,7 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
             Graphviz.fromString(
                     new StringJoiner("\n", "digraph {", "}")
                             .add("node [shape=box,style=filled,color=lightgoldenrod];")
-                            .add(dependenciesText)
+                            .add(relationText.asText())
                             .add(labelsText)
                             .toString())
                     .render(Format.PNG)

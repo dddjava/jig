@@ -28,8 +28,6 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
     @Override
     public void render(PackageDependencies packageDependencies, OutputStream outputStream) {
         try {
-            PackageIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
-
             RelationText relationText = new RelationText();
             for (PackageDependency packageDependency : packageDependencies.list()) {
                 relationText.add(packageDependency.from().asText(), packageDependency.to().asText());
@@ -42,10 +40,8 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
                             JapaneseName japaneseName = repository.get(packageIdentifier);
                             labelText = japaneseName.summarySentence() + "\\n" + labelText;
                         }
-
-                        return String.format("%s [label=%s];",
-                                packageIdentifier.format(doubleQuote),
-                                doubleQuote.format(labelText));
+                        return new IndividualAttribute(packageIdentifier.asText())
+                                .label(labelText).asText();
                     })
                     .collect(joining("\n"));
 

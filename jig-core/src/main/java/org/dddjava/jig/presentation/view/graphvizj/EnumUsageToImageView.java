@@ -6,7 +6,6 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.presentation.view.JigView;
 
@@ -27,14 +26,11 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
 
     @Override
     public void render(EnumAngles enumAngles, OutputStream outputStream) throws IOException {
-        TypeIdentifierFormatter doubleQuote = value -> "\"" + value + "\"";
-
         String enumsText = enumAngles.list().stream()
-                .map(enumAngle -> {
-                    TypeIdentifier typeIdentifier = enumAngle.typeIdentifier();
-                    String enumText = typeIdentifier.format(doubleQuote);
-                    return enumText + "[color=gold]";
-                }).collect(joining(";\n"));
+                .map(enumAngle ->
+                        new IndividualAttribute(enumAngle.typeIdentifier().fullQualifiedName())
+                                .color("gold").asText())
+                .collect(joining("\n"));
 
         RelationText relationText = new RelationText();
         for (EnumAngle enumAngle : enumAngles.list()) {
@@ -49,11 +45,10 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
                 enumAngles.list().stream().map(EnumAngle::typeIdentifier),
                 enumAngles.list().stream().flatMap(enumAngle -> enumAngle.userTypeIdentifiers().list().stream()))
                 .distinct()
-                .map(typeIdentifier -> {
-                    String userTypeText = typeIdentifier.format(doubleQuote);
-                    return String.format("%s[label=\"%s\"];",
-                            userTypeText, appendJapaneseName(typeIdentifier));
-                }).collect(joining("\n"));
+                .map(typeIdentifier ->
+                        new IndividualAttribute(typeIdentifier.fullQualifiedName())
+                                .label(appendJapaneseName(typeIdentifier)).asText())
+                .collect(joining("\n"));
 
         String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                 .add("label=凡例;")

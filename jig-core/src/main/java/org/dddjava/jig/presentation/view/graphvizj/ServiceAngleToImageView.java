@@ -47,22 +47,19 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             String labelText = angles.stream()
                     .map(angle -> {
                         MethodDeclaration method = angle.method();
-                        StringJoiner attribute = new StringJoiner(",", "[", "]");
-
+                        IndividualAttribute individualAttribute = new IndividualAttribute(method.asFullText());
                         if (method.isLambda()) {
-                            attribute.add("label=\"(lambda)\"");
+                            individualAttribute.label("(lambda)");
                         } else {
                             // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
                             String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
-                            attribute.add("label=\"" + methodText + "\"");
+                            individualAttribute.label(methodText);
                             // ハンドラを強調（赤色）
                             if (angle.usingFromController().isSatisfy()) {
-                                attribute.add("color=red");
+                                individualAttribute.color("red");
                             }
                         }
-                        return String.format("\"%s\" " + attribute + ";",
-                                method.asFullText(),
-                                method.asSimpleText());
+                        return individualAttribute.asText();
                     }).collect(joining("\n"));
 
             // クラス名でグルーピングする

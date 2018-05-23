@@ -11,12 +11,13 @@ import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.*;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.StringJoiner;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.joining;
 
 public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
@@ -39,11 +40,9 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                     .filter(serviceAngle -> !serviceAngle.userServiceMethods().list().isEmpty())
                     .flatMap(serviceAngle ->
                             serviceAngle.userServiceMethods().list().stream().map(userServiceMethod ->
-                                String.format("\"%s%s\" -> \"%s%s\";",
-                                        japaneseNameLineOf(userServiceMethod),
-                                        userServiceMethod.asFullText(),
-                                        japaneseNameLineOf(serviceAngle.method()),
-                                        serviceAngle.method().asFullText())
+                                    String.format("\"%s\" -> \"%s\";",
+                                            userServiceMethod.asFullText(),
+                                            serviceAngle.method().asFullText())
                             ))
                     .collect(joining("\n"));
 
@@ -56,8 +55,9 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                         if (method.isLambda()) {
                             attribute.add("label=\"(lambda)\"");
                         } else {
-                            // ラベルを method(ArgumentType) : ReturnType にする
-                            attribute.add("label=\"" + method.asSimpleTextWithReturnType() + "\"");
+                            // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
+                            String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
+                            attribute.add("label=\"" + methodText + "\"");
                             // ハンドラを強調（赤色）
                             if (angle.usingFromController().isSatisfy()) {
                                 attribute.add("color=red");
@@ -77,8 +77,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                                     + "{"
                                     + "label=\"" + japaneseNameLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
                                     + entry.getValue().stream()
-                                    .map(serviceAngle ->
-                                            japaneseNameLineOf(serviceAngle.method()) + serviceAngle.method().asFullText())
+                                    .map(serviceAngle -> serviceAngle.method().asFullText())
                                     .map(text -> "\"" + text + "\";")
                                     .collect(joining("\n"))
                                     + "}")

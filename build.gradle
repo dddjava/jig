@@ -157,6 +157,8 @@ project(':jig-core') {
         compile 'org.apache.poi:poi-ooxml:3.17'
         // ダイアグラム出力
         compile 'guru.nidi:graphviz-java:0.4.0'
+
+        testCompile 'org.springframework:spring-web'
     }
 
     build.dependsOn(publishToMavenLocal)

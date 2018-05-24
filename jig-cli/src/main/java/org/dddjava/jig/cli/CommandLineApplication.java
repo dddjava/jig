@@ -32,8 +32,6 @@ public class CommandLineApplication implements CommandLineRunner {
     String documentTypeText;
     @Value("${outputDirectory}")
     String outputDirectory;
-    @Value("${depth:-1}")
-    int depth;
 
     @Autowired
     ImportService importService;

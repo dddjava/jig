@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.basic.report;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ReportRow {
 
@@ -15,7 +17,7 @@ public class ReportRow {
         return list;
     }
 
-    public static ReportRow of(String... cols) {
-        return new ReportRow(Arrays.asList(cols));
+    public static <ROW> ReportRow of(ConvertibleItem<ROW>[] items, Function<ConvertibleItem<ROW>, String> itemToString) {
+        return new ReportRow(Arrays.stream(items).map(itemToString).collect(Collectors.toList()));
     }
 }

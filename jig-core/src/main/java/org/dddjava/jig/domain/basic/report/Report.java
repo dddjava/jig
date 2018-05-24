@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.basic.report;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +21,12 @@ public class Report<ROW> {
     }
 
     public ReportRow headerRow() {
-        return ReportRow.of(
-                Arrays.stream(convertibleItems).map(ConvertibleItem::name).toArray(String[]::new));
+        return ReportRow.of(convertibleItems, ConvertibleItem::name);
     }
 
     public List<ReportRow> rows() {
         return rows.stream()
-                .map(row -> ReportRow.of(
-                        Arrays.stream(convertibleItems).map(converter -> converter.convert(row)).toArray(String[]::new)))
+                .map(row -> ReportRow.of(convertibleItems, converter -> converter.convert(row)))
                 .collect(Collectors.toList());
     }
 }

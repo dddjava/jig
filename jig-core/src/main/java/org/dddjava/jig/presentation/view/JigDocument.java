@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model;
+package org.dddjava.jig.presentation.view;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 /**
  * 取り扱うドキュメントの種類
  */
-public enum DocumentType {
+public enum JigDocument {
     ServiceMethodCallHierarchy("service-method-call-hierarchy.png"),
     PackageDependency("package-dependency.png"),
     ApplicationList("application.xlsx"),
@@ -16,7 +16,7 @@ public enum DocumentType {
 
     private final String documentFileName;
 
-    DocumentType(String documentFileName) {
+    JigDocument(String documentFileName) {
         this.documentFileName = documentFileName;
     }
 
@@ -24,9 +24,9 @@ public enum DocumentType {
         return documentFileName;
     }
 
-    public static List<DocumentType> resolve(String diagramTypes) {
+    public static List<JigDocument> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))
-                .map(DocumentType::valueOf)
+                .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
     }
 }

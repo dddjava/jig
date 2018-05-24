@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.DocumentType;
+import org.dddjava.jig.presentation.view.JigDocument;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +18,10 @@ public class JigConfig {
     int depth = -1;
 
 
-    List<DocumentType> documentTypes() {
-        if (documentTypes.isEmpty()) return Arrays.asList(DocumentType.values());
+    List<JigDocument> documentTypes() {
+        if (documentTypes.isEmpty()) return Arrays.asList(JigDocument.values());
         return documentTypes.stream()
-                .map(DocumentType::valueOf)
+                .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
     }
 

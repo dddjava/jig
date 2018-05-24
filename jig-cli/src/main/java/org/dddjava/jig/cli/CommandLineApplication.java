@@ -1,7 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.usecase.ImportService;
-import org.dddjava.jig.domain.model.DocumentType;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
@@ -43,10 +43,10 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws IOException {
-        List<DocumentType> documentTypes =
+        List<JigDocument> jigDocuments =
                 documentTypeText.isEmpty()
-                        ? Arrays.asList(DocumentType.values())
-                        : DocumentType.resolve(documentTypeText);
+                        ? Arrays.asList(JigDocument.values())
+                        : JigDocument.resolve(documentTypeText);
 
 
         long startTime = System.currentTimeMillis();
@@ -59,8 +59,8 @@ public class CommandLineApplication implements CommandLineRunner {
                 localProject.getPackageNameSources());
 
         Path outputDirectory = Paths.get(this.outputDirectory);
-        for (DocumentType documentType : documentTypes) {
-            JigDocumentHandler.of(documentType)
+        for (JigDocument jigDocument : jigDocuments) {
+            JigDocumentHandler.of(jigDocument)
                     .handleLocal(jigHandlerContext)
                     .render(outputDirectory);
         }

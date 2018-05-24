@@ -7,11 +7,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
  * 値の型
  */
 public class ValueType {
-    TypeIdentifier typeIdentifier;
     Implementation implementation;
 
-    public ValueType(TypeIdentifier typeIdentifier, Implementation implementation) {
-        this.typeIdentifier = typeIdentifier;
+    public ValueType(Implementation implementation) {
         this.implementation = implementation;
     }
 
@@ -20,6 +18,6 @@ public class ValueType {
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return implementation.typeIdentifier();
     }
 }

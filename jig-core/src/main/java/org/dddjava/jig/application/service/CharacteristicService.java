@@ -38,8 +38,7 @@ public class CharacteristicService {
         for (Implementation implementation : implementations.list()) {
             registerCharacteristic(implementation);
 
-            ValueType valueType = new ValueType(implementation.typeIdentifier(), implementation);
-            valueTypes.add(valueType);
+            valueTypes.add(new ValueType(implementation));
         }
     }
 

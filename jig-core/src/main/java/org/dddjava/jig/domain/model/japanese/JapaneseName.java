@@ -20,4 +20,8 @@ public class JapaneseName {
     public String value() {
         return value;
     }
+
+    public boolean exists() {
+        return value.length() > 0;
+    }
 }

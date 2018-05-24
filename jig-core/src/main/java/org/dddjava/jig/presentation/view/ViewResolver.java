@@ -1,9 +1,8 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
+import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -17,29 +16,25 @@ import org.springframework.stereotype.Component;
 public class ViewResolver {
 
     private PackageIdentifierFormatter packageIdentifierFormatter;
-    private JapaneseNameRepository japaneseNameRepository;
-    private GlossaryService glossaryService;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JapaneseNameRepository japaneseNameRepository, GlossaryService glossaryService) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-        this.japaneseNameRepository = japaneseNameRepository;
-        this.glossaryService = glossaryService;
     }
 
-    public JigView<PackageDependencies> dependencyWriter() {
-        return new PackageDependencyToImageView(packageIdentifierFormatter, japaneseNameRepository);
+    public JigView<PackageDependencies> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
+        return new PackageDependencyToImageView(packageIdentifierFormatter, japaneseNameFinder);
     }
 
-    public JigView<ServiceAngles> serviceMethodCallHierarchy() {
-        return new ServiceAngleToImageView(japaneseNameRepository);
+    public JigView<ServiceAngles> serviceMethodCallHierarchy(JapaneseNameFinder japaneseNameFinder) {
+        return new ServiceAngleToImageView(japaneseNameFinder);
     }
 
     public JigView<Reports> applicationList() {
         return new ReportToExcelView();
     }
 
-    public JigView<EnumAngles> enumUsage() {
-        return new EnumUsageToImageView(glossaryService);
+    public JigView<EnumAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
+        return new EnumUsageToImageView(japaneseNameFinder);
     }
 
     public JigView<Reports> domainList() {

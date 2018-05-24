@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 
 public class PackageJapaneseName {
     PackageIdentifier packageIdentifier;
@@ -18,5 +17,9 @@ public class PackageJapaneseName {
 
     public JapaneseName japaneseName() {
         return japaneseName;
+    }
+
+    public boolean exists() {
+        return japaneseName.exists();
     }
 }

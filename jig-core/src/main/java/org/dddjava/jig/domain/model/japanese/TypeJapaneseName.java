@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 public class TypeJapaneseName {
     TypeIdentifier typeIdentifier;
@@ -18,5 +17,9 @@ public class TypeJapaneseName {
 
     public JapaneseName japaneseName() {
         return japaneseName;
+    }
+
+    public boolean exists() {
+        return japaneseName.exists();
     }
 }

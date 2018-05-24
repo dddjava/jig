@@ -3,8 +3,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
+import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.PackageDependency;
 import org.dddjava.jig.presentation.view.JigView;
@@ -18,11 +18,11 @@ import static java.util.stream.Collectors.joining;
 public class PackageDependencyToImageView implements JigView<PackageDependencies> {
 
     final PackageIdentifierFormatter formatter;
-    final JapaneseNameRepository repository;
+    final JapaneseNameFinder japaneseNameFinder;
 
-    public PackageDependencyToImageView(PackageIdentifierFormatter formatter, JapaneseNameRepository repository) {
+    public PackageDependencyToImageView(PackageIdentifierFormatter formatter, JapaneseNameFinder japaneseNameFinder) {
         this.formatter = formatter;
-        this.repository = repository;
+        this.japaneseNameFinder = japaneseNameFinder;
     }
 
     @Override
@@ -36,9 +36,9 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
             String labelsText = packageDependencies.allPackages().stream()
                     .map(packageIdentifier -> {
                         String labelText = packageIdentifier.format(formatter);
-                        if (repository.exists(packageIdentifier)) {
-                            JapaneseName japaneseName = repository.get(packageIdentifier);
-                            labelText = japaneseName.summarySentence() + "\\n" + labelText;
+                        PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
+                        if (packageJapaneseName.exists()) {
+                            labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
                         }
                         return IndividualAttribute.of(packageIdentifier)
                                 .label(labelText).asText();

@@ -91,18 +91,22 @@ public class Dependencies {
     EnumUsageController enumUsageController(String outputOmitPrefix) {
         return new EnumUsageController(
                 angleService(),
+                glossaryService(),
                 jigViewResolver(outputOmitPrefix));
     }
 
     PackageDependencyController packageDependencyController(String outputOmitPrefix) {
-        return new PackageDependencyController(dependencyService(), jigViewResolver(outputOmitPrefix));
+        return new PackageDependencyController(
+                dependencyService(),
+                glossaryService(),
+                jigViewResolver(outputOmitPrefix));
     }
 
     ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
         return new ServiceMethodCallHierarchyController(
                 angleService(),
-                jigViewResolver(outputOmitPrefix)
-        );
+                glossaryService(),
+                jigViewResolver(outputOmitPrefix));
     }
 
     private DependencyService dependencyService() {
@@ -118,10 +122,7 @@ public class Dependencies {
     }
 
     private ViewResolver jigViewResolver(String outputOmitPrefix) {
-        return new ViewResolver(
-                new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
-                japaneseNameRepository,
-                glossaryService());
+        return new ViewResolver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix));
     }
 
     private GlossaryService glossaryService() {

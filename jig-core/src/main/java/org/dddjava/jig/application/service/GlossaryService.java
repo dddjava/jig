@@ -24,12 +24,16 @@ public class GlossaryService {
         this.repository = repository;
     }
 
+    public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
+        return repository.get(packageIdentifier);
+    }
+
     public JapaneseName japaneseNameFrom(TypeIdentifier typeIdentifier) {
         return repository.get(typeIdentifier);
     }
 
-    public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
-        return repository.get(packageIdentifier);
+    public JapaneseName japaneseNameFrom(MethodDeclaration methodDeclaration) {
+        return repository.get(methodDeclaration);
     }
 
     public void importJapanese(PackageNameSources packageNameSources) {
@@ -44,12 +48,8 @@ public class GlossaryService {
             repository.register(typeJapaneseName);
         }
 
-        for (MethodJapaneseName methodJapaneseName: typeNames.methodList()) {
+        for (MethodJapaneseName methodJapaneseName : typeNames.methodList()) {
             repository.register(methodJapaneseName);
         }
-    }
-
-    public JapaneseName japaneseNameFrom(MethodDeclaration methodDeclaration) {
-        return repository.get(methodDeclaration);
     }
 }

@@ -4,7 +4,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
+import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigView;
@@ -23,10 +23,10 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceAngleToImageView.class);
 
-    final JapaneseNameRepository japaneseNameRepository;
+    final JapaneseNameFinder japaneseNameFinder;
 
-    public ServiceAngleToImageView(JapaneseNameRepository japaneseNameRepository) {
-        this.japaneseNameRepository = japaneseNameRepository;
+    public ServiceAngleToImageView(JapaneseNameFinder japaneseNameFinder) {
+        this.japaneseNameFinder = japaneseNameFinder;
     }
 
 
@@ -104,12 +104,12 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
     }
 
     private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {
-        String japaneseName = japaneseNameRepository.get(typeIdentifier).summarySentence();
+        String japaneseName = japaneseNameFinder.find(typeIdentifier).japaneseName().summarySentence();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = japaneseNameRepository.get(method).summarySentence();
+        String japaneseName = japaneseNameFinder.find(method).japaneseName().summarySentence();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 }

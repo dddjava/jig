@@ -2,11 +2,11 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 import org.dddjava.jig.presentation.view.JigView;
 
 import java.io.IOException;
@@ -18,10 +18,10 @@ import static java.util.stream.Collectors.joining;
 
 public class EnumUsageToImageView implements JigView<EnumAngles> {
 
-    private final GlossaryService glossaryService;
+    private final JapaneseNameFinder japaneseNameFinder;
 
-    public EnumUsageToImageView(GlossaryService glossaryService) {
-        this.glossaryService = glossaryService;
+    public EnumUsageToImageView(JapaneseNameFinder japaneseNameFinder) {
+        this.japaneseNameFinder = japaneseNameFinder;
     }
 
     @Override
@@ -69,10 +69,10 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
     }
 
     private String appendJapaneseName(TypeIdentifier typeIdentifier) {
-        JapaneseName japaneseName = glossaryService.japaneseNameFrom(typeIdentifier);
-        if (japaneseName.value().equals("")) {
-            return typeIdentifier.asSimpleText();
+        TypeJapaneseName typeJapaneseName = japaneseNameFinder.find(typeIdentifier);
+        if (typeJapaneseName.exists()) {
+            return typeJapaneseName.japaneseName().summarySentence() + "\\n" + typeIdentifier.asSimpleText();
         }
-        return japaneseName.summarySentence() + "\\n" + typeIdentifier.asSimpleText();
+        return typeIdentifier.asSimpleText();
     }
 }

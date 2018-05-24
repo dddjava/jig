@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
-import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
@@ -50,11 +49,7 @@ public class SpecificationService {
         projectData.setMethodRelations(relationRepository.allMethodRelations());
         projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());
 
-        ValueTypes valueTypes = new ValueTypes();
-        for (Implementation implementation : implementations.list()) {
-            valueTypes.add(new ValueType(implementation));
-        }
-        projectData.setValueTypes(valueTypes);
+        projectData.setValueTypes(new ValueTypes(implementations));
 
         return projectData;
     }

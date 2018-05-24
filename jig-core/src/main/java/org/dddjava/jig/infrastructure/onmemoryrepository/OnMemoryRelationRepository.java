@@ -117,12 +117,4 @@ public class OnMemoryRelationRepository implements RelationRepository {
     public MethodDeclarations findUseMethods(MethodDeclaration methodDeclaration) {
         return methodUseMethodsMap.get(methodDeclaration).distinct();
     }
-
-    @Override
-    public MethodDeclarations findUserMethods(MethodDeclaration methodDeclaration) {
-        return methodUseMethodsMap.entrySet().stream()
-                .filter(entry -> entry.getValue().contains(methodDeclaration))
-                .map(Map.Entry::getKey)
-                .collect(MethodDeclarations.collector());
-    }
 }

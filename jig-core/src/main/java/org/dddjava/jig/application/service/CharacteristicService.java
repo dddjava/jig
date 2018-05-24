@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
@@ -65,20 +64,6 @@ public class CharacteristicService {
                 characterizedMethodRepository.register(MethodCharacteristic.MAPPER_METHOD, methodImplementation.methodDeclaration);
             }
         }
-    }
-
-    /**
-     * 複数の型の特徴を検索する
-     */
-    public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
-        return characteristicRepository.findCharacteristics(typeIdentifiers);
-    }
-
-    /**
-     * 一つの型の特徴を検索する
-     */
-    public Characteristics findCharacteristics(TypeIdentifier typeIdentifier) {
-        return characteristicRepository.findCharacteristics(typeIdentifier);
     }
 
     public TypeIdentifiers getEnums() {

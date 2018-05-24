@@ -26,8 +26,6 @@ public interface RelationRepository {
 
     MethodDeclarations findUseMethods(MethodDeclaration methodDeclaration);
 
-    MethodDeclarations findUserMethods(MethodDeclaration equals);
-
     MethodRelations allMethodRelations();
 
     MethodUsingFields allMethodUsingFields();

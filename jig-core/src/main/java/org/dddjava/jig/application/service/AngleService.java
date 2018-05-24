@@ -1,18 +1,14 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.EnumAngles;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -96,33 +92,15 @@ public class AngleService {
         return ValueAngles.of(valueKind, typeIdentifiers, allTypeDependencies);
     }
 
-    /**
-     * 文字列比較を行なっているメソッドを見つける。
-     *
-     * 文字列比較を行なっているメソッドはビジネスルールの分類判定を行なっている可能性が高い。
-     * サービスなどに登場した場合はかなり拙いし、そうでなくても列挙を使用するなど改善の余地がある。
-     */
     public StringComparingAngle stringComparing() {
-        // String#equals(Object)
-        MethodDeclaration equalsMethod = new MethodDeclaration(
-                new TypeIdentifier(String.class),
-                new MethodSignature(
-                        "equals",
-                        Collections.singletonList(new TypeIdentifier(Object.class))),
-                new TypeIdentifier("boolean"));
-
-        MethodDeclarations userMethods = relationRepository.findUserMethods(equalsMethod);
-        return new StringComparingAngle(userMethods);
+        MethodRelations methodRelations = relationRepository.allMethodRelations();
+        return StringComparingAngle.of(methodRelations);
     }
 
     public DecisionAngles decision() {
         MethodDeclarations methods = characteristicService.getDecisionMethods();
-        List<DecisionAngle> list = methods.list().stream()
-                .map(methodDeclaration -> {
-                    TypeIdentifier typeIdentifier = methodDeclaration.declaringType();
-                    Characteristics characteristics = characteristicService.findCharacteristics(typeIdentifier);
-                    return new DecisionAngle(methodDeclaration, characteristics);
-                }).collect(toList());
-        return new DecisionAngles(list);
+        CharacterizedTypes characterizedTypes = characteristicService.allCharacterizedTypes();
+
+        return DecisionAngles.of(methods, characterizedTypes);
     }
 }

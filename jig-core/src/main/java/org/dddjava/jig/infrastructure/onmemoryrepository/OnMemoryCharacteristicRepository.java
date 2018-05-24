@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
-
-import static java.util.stream.Collectors.toSet;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 
 @Repository
 public class OnMemoryCharacteristicRepository implements CharacteristicRepository {
@@ -34,28 +34,6 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
     @Override
     public TypeIdentifiers getTypeIdentifiersOf(Characteristic characteristic) {
         return new TypeIdentifiers(map.get(characteristic));
-    }
-
-    @Override
-    public Characteristics findCharacteristics(TypeIdentifier typeIdentifier) {
-        Set<Characteristic> set = map.entrySet().stream()
-                .filter(entry -> entry.getValue().contains(typeIdentifier))
-                .map(Map.Entry::getKey)
-                .collect(toSet());
-        return new Characteristics(set);
-    }
-
-    @Override
-    public Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers) {
-        HashSet<Characteristic> set = new HashSet<>();
-        for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            for (Map.Entry<Characteristic, List<TypeIdentifier>> entry : map.entrySet()) {
-                if (entry.getValue().contains(typeIdentifier)) {
-                    set.add(entry.getKey());
-                }
-            }
-        }
-        return new Characteristics(set);
     }
 
     @Override

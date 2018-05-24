@@ -29,6 +29,9 @@ public class AngleService {
         this.characteristicService = characteristicService;
     }
 
+    /**
+     * サービス分析する
+     */
     public ServiceAngles serviceAngles(ProjectData projectData) {
         MethodDeclarations serviceMethods = characteristicService.getServiceMethods();
 
@@ -38,6 +41,9 @@ public class AngleService {
                 projectData.methodUsingFields());
     }
 
+    /**
+     * データソースを分析する
+     */
     public DatasourceAngles datasourceAngles(ProjectData projectData) {
         MethodDeclarations repositoryMethods = characteristicService.getRepositoryMethods();
 
@@ -49,6 +55,9 @@ public class AngleService {
                 projectData.sqls()));
     }
 
+    /**
+     * enumを分析する
+     */
     public EnumAngles enumAngles(ProjectData projectData) {
         TypeIdentifiers enumTypeIdentifies = projectData.characterizedTypes().stream()
                 .filter(Characteristic.ENUM)
@@ -62,15 +71,24 @@ public class AngleService {
                 projectData.staticFieldDeclarations()));
     }
 
+    /**
+     * 値を分析する
+     */
     public ValueAngles valueAngles(ValueKind valueKind, ProjectData projectData) {
         return ValueAngles.of(valueKind, new ValueAngleSource(
                 projectData.valueTypes(), projectData.typeDependencies()));
     }
 
+    /**
+     * 文字列比較を分析する
+     */
     public StringComparingAngle stringComparing(ProjectData projectData) {
         return StringComparingAngle.of(projectData.methodRelations());
     }
 
+    /**
+     * 分岐箇所を分析する
+     */
     public DecisionAngles decision(ProjectData projectData) {
         MethodDeclarations methods = characteristicService.getDecisionMethods();
 

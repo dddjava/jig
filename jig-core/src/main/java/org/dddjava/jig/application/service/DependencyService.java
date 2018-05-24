@@ -26,6 +26,9 @@ public class DependencyService {
         this.dependencyRepository = dependencyRepository;
     }
 
+    /**
+     * パッケージ依存を取得する
+     */
     public PackageDependencies packageDependencies(PackageDepth packageDepth) {
         LOGGER.info("パッケージ依存情報を取得します(深度: {})", packageDepth.value());
         TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
@@ -39,6 +42,9 @@ public class DependencyService {
         return packageDependencies.applyDepth(packageDepth);
     }
 
+    /**
+     * 深度ごとの関連数をログ出力する
+     */
     private void showDepth(PackageDependencies packageDependencies) {
         PackageDepth maxDepth = packageDependencies.allPackages().maxDepth();
 

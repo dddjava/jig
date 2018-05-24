@@ -61,4 +61,13 @@ public class TypeIdentifier {
                 "value='" + value + '\'' +
                 '}';
     }
+
+    public TypeIdentifier normalize() {
+        // コンパイラが生成する継承クラス名を元の名前にする
+        // enumで Hoge$1 などになっているものが対象
+        if (value.indexOf('$') == -1) {
+            return this;
+        }
+        return new TypeIdentifier(value.replaceFirst("\\$\\d+", ""));
+    }
 }

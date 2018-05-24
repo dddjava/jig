@@ -60,12 +60,12 @@ class ReportServiceTest {
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
-                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], [], , ◯, ]",
-                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [], ◯, , ]",
-                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [], , , ◯]",
+                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], [AsmImplementationReaderTest, RelationEnum], , ◯, ]",
+                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [AsmImplementationReaderTest, RelationEnum], ◯, , ]",
+                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [AsmImplementationReaderTest, RelationEnum], , , ◯]",
                         "[stub.domain.model.kind.RelationEnum, , [A, B, C], [RichEnum field], [], ◯, , ]",
-                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [RelationEnum], ◯, ◯, ◯]",
-                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [], , , ]"
+                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [AsmImplementationReaderTest, RelationEnum], ◯, ◯, ◯]",
+                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [AsmImplementationReaderTest, RelationEnum], , , ]"
                 );
 
         assertThat(sut.decisionReport().rows())

@@ -2,8 +2,6 @@ package org.dddjava.jig.domain.model.declaration.field;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,5 +52,11 @@ public class FieldDeclarations {
         if (list.size() != typeIdentifiers.length) return false;
         return Arrays.equals(typeIdentifiers,
                 list.stream().map(FieldDeclaration::typeIdentifier).toArray(TypeIdentifier[]::new));
+    }
+
+    public FieldDeclarations filterDeclareTypeIs(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(typeIdentifier))
+                .collect(FieldDeclarations.collector());
     }
 }

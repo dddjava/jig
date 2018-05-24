@@ -21,4 +21,16 @@ public class TypeDependency {
     public PackageDependency toPackageDependency() {
         return new PackageDependency(from.packageIdentifier(), to.packageIdentifier());
     }
+
+    public boolean toIs(TypeIdentifier typeIdentifier) {
+        return to.equals(typeIdentifier);
+    }
+
+    public TypeIdentifier from() {
+        return from;
+    }
+
+    public boolean notSelfDependency() {
+        return !from.normalize().equals(to.normalize());
+    }
 }

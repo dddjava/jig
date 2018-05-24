@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
@@ -19,6 +18,8 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.networks.DependencyRepository;
+import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -39,10 +40,12 @@ public class AngleService {
     CharacteristicService characteristicService;
     RelationRepository relationRepository;
     DatasourceService datasourceService;
+    DependencyRepository dependencyRepository;
 
-    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, DatasourceService datasourceService) {
+    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, DependencyRepository dependencyRepository, DatasourceService datasourceService) {
         this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
+        this.dependencyRepository = dependencyRepository;
         this.datasourceService = datasourceService;
     }
 
@@ -79,14 +82,12 @@ public class AngleService {
 
     public EnumAngles enumAngles() {
         TypeIdentifiers typeIdentifiers = characteristicService.getEnums();
-        List<EnumAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
-            Characteristics characteristics = characteristicService.findCharacteristics(typeIdentifier);
-            TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
-            FieldDeclarations fieldDeclarations = relationRepository.findFieldsOf(typeIdentifier);
-            FieldDeclarations constantsDeclarations = relationRepository.findConstants(typeIdentifier);
-            return new EnumAngle(characteristics, typeIdentifier, userTypeIdentifiers, constantsDeclarations, fieldDeclarations);
-        }).collect(toList());
-        return new EnumAngles(list);
+        CharacterizedTypes characterizedTypes = characteristicService.allCharacterizedTypes();
+        TypeDependencies allTypeDependencies = dependencyRepository.findAllTypeDependency();
+        FieldDeclarations allFieldDeclarations = relationRepository.allFieldDeclarations();
+        FieldDeclarations allStaticFieldDeclarations = relationRepository.allStaticFieldDeclarations();
+
+        return EnumAngles.of(typeIdentifiers, characterizedTypes, allTypeDependencies, allFieldDeclarations, allStaticFieldDeclarations);
     }
 
     public ValueAngles genericModelAngles(ValueKind valueKind) {

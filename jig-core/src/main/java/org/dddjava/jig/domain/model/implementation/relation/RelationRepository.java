@@ -41,4 +41,8 @@ public interface RelationRepository {
     MethodRelations allMethodRelations();
 
     MethodUsingFields allMethodUsingFields();
+
+    FieldDeclarations allFieldDeclarations();
+
+    FieldDeclarations allStaticFieldDeclarations();
 }

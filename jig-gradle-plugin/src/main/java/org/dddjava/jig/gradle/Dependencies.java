@@ -117,6 +117,7 @@ public class Dependencies {
         return new AngleService(
                 characteristicService,
                 relationRepository,
+                dependencyRepository,
                 datasourceService()
         );
     }

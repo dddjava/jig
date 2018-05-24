@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.characteristic;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -29,5 +30,11 @@ public class CharacterizedTypeStream {
 
     public CharacterizedTypeStream filter(Characteristic characteristic) {
         return new CharacterizedTypeStream(stream.filter(typeCharacteristics -> typeCharacteristics.has(characteristic).isSatisfy()));
+    }
+
+    public TypeCharacteristics pickup(TypeIdentifier typeIdentifier) {
+        return stream.filter(typeCharacteristics -> typeCharacteristics.typeIdentifier().equals(typeIdentifier))
+                .findFirst()
+                .orElseGet(() -> new TypeCharacteristics(typeIdentifier, Collections.emptySet()));
     }
 }

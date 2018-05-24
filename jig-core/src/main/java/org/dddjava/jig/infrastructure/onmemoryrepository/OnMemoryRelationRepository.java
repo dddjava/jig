@@ -68,6 +68,16 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
+    public FieldDeclarations allFieldDeclarations() {
+        return new FieldDeclarations(instanceFields);
+    }
+
+    @Override
+    public FieldDeclarations allStaticFieldDeclarations() {
+        return new FieldDeclarations(staticFields);
+    }
+
+    @Override
     public void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations) {
         methodUseFieldsMap.put(methodDeclaration, fieldDeclarations);
 

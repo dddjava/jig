@@ -46,18 +46,21 @@ public enum Characteristic {
             return implementation.isEnum();
         }
     },
+    // TODO characteristicじゃなくす
     ENUM_BEHAVIOUR {
         @Override
         boolean matches(Implementation implementation) {
             return implementation.isEnum() && implementation.hasInstanceMethod();
         }
     },
+    // TODO characteristicじゃなくす
     ENUM_PARAMETERIZED {
         @Override
         boolean matches(Implementation implementation) {
             return implementation.isEnum() && implementation.hasField();
         }
     },
+    // TODO characteristicじゃなくす
     ENUM_POLYMORPHISM {
         @Override
         boolean matches(Implementation implementation) {

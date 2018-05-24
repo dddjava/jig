@@ -32,4 +32,8 @@ public class TypeDependencies {
 
         return new PackageDependencies(packageDependencyList, allPackages);
     }
+
+    public TypeDependencyStream stream() {
+        return new TypeDependencyStream(list.stream());
+    }
 }

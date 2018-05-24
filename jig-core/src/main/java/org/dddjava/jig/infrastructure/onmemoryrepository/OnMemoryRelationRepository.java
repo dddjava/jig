@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingField;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelation;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toSet;
 
 @Repository
 public class OnMemoryRelationRepository implements RelationRepository {
@@ -127,30 +124,5 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 .filter(entry -> entry.getValue().contains(methodDeclaration))
                 .map(Map.Entry::getKey)
                 .collect(MethodDeclarations.collector());
-    }
-
-    private Set<TypeIdentifier> findUseByFieldTypes(TypeIdentifier typeIdentifier) {
-        return instanceFields.stream()
-                .filter(fieldDeclaration -> fieldDeclaration.typeIdentifier().equals(typeIdentifier))
-                .map(FieldDeclaration::declaringType)
-                .collect(toSet());
-    }
-
-    private Set<TypeIdentifier> findUseByMethodTypes(TypeIdentifier typeIdentifier) {
-        Set<MethodDeclaration> methodDeclarations = typeUserMethods.get(typeIdentifier);
-        if (methodDeclarations == null) {
-            return Collections.emptySet();
-        }
-        return methodDeclarations.stream()
-                .map(MethodDeclaration::declaringType)
-                .collect(toSet());
-    }
-
-    @Override
-    public TypeIdentifiers findUserTypes(TypeIdentifier typeIdentifier) {
-        HashSet<TypeIdentifier> set = new HashSet<>();
-        set.addAll(findUseByFieldTypes(typeIdentifier));
-        set.addAll(findUseByMethodTypes(typeIdentifier));
-        return new TypeIdentifiers(new ArrayList<>(set));
     }
 }

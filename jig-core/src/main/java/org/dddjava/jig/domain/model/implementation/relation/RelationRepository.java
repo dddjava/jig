@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 
 public interface RelationRepository {
@@ -29,8 +27,6 @@ public interface RelationRepository {
     MethodDeclarations findUseMethods(MethodDeclaration methodDeclaration);
 
     MethodDeclarations findUserMethods(MethodDeclaration equals);
-
-    TypeIdentifiers findUserTypes(TypeIdentifier typeIdentifier);
 
     MethodRelations allMethodRelations();
 

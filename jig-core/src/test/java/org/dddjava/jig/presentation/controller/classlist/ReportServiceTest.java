@@ -63,7 +63,8 @@ class ReportServiceTest {
                         "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], [], , ◯, ]",
                         "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [], ◯, , ]",
                         "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [], , , ◯]",
-                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [], ◯, ◯, ◯]",
+                        "[stub.domain.model.kind.RelationEnum, , [A, B, C], [RichEnum field], [], ◯, , ]",
+                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [RelationEnum], ◯, ◯, ◯]",
                         "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [], , , ]"
                 );
 

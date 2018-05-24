@@ -1,30 +1,25 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.domain.model.implementation.datasource.Sql;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlIdentifier;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class OnMemorySqlRepository implements SqlRepository {
 
-    Map<SqlIdentifier, Sql> map = new HashMap<>();
-
-    @Override
-    public Optional<Sql> find(MethodDeclaration identifier) {
-        return map.keySet().stream()
-                .filter(i -> i.matches(identifier))
-                .findFirst()
-                .map(map::get);
-    }
+    List<Sql> list = new ArrayList<>();
 
     @Override
     public void register(Sql sql) {
-        map.put(sql.identifier(), sql);
+        list.add(sql);
+    }
+
+    @Override
+    public Sqls all() {
+        return new Sqls(list);
     }
 }

@@ -2,16 +2,15 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
@@ -20,11 +19,6 @@ import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * 分析の切り口サービス
@@ -56,23 +50,13 @@ public class AngleService {
 
     public DatasourceAngles datasourceAngles() {
         MethodDeclarations mapperMethods = characteristicService.getMapperMethods();
+        ImplementationMethods implementationMethods = relationRepository.allImplementationMethods();
+        MethodRelations methodRelations = relationRepository.allMethodRelations();
+        Sqls allSqls = datasourceService.allSqls();
 
-        List<DatasourceAngle> list = characteristicService.getRepositoryMethods().list().stream()
-                .map(methodDeclaration -> {
-                    // Repositoryを実装している具象メソッド
-                    MethodDeclarations datasourceMethods = relationRepository.findConcrete(methodDeclaration);
+        MethodDeclarations repositoryMethods = characteristicService.getRepositoryMethods();
 
-                    // 使用しているMapperメソッド
-                    MethodDeclarations usingMethods = new MethodDeclarations(Collections.emptyList());
-                    for (MethodDeclaration datasourceMethod : datasourceMethods.list()) {
-                        usingMethods = usingMethods.union(relationRepository.findUseMethods(datasourceMethod));
-                    }
-                    MethodDeclarations usingMapperMethods = usingMethods.intersection(mapperMethods);
-
-                    Sqls sqls = datasourceService.findSqls(usingMapperMethods);
-                    return new DatasourceAngle(methodDeclaration, sqls);
-                }).collect(toList());
-        return new DatasourceAngles(list);
+        return DatasourceAngles.of(repositoryMethods, mapperMethods, implementationMethods, methodRelations, allSqls);
     }
 
     public EnumAngles enumAngles() {

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
 import java.util.Objects;
 
@@ -30,5 +31,13 @@ public class SqlIdentifier {
         String nameString = identifier.asFullText();
         String substring = nameString.substring(0, nameString.indexOf('('));
         return substring.equals(value);
+    }
+
+    public boolean matches(MethodDeclarations methodDeclarations) {
+        for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
+            boolean matches = matches(methodDeclaration);
+            if (matches) return true;
+        }
+        return false;
     }
 }

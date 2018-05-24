@@ -1,12 +1,10 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.implementation.datasource.*;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * データソースサービス
@@ -27,11 +25,7 @@ public class DatasourceService {
         sqlRepository.register(sqls);
     }
 
-    public Sqls findSqls(MethodDeclarations mapperMethods) {
-        List<Sql> sqls = new ArrayList<>();
-        for (MethodDeclaration identifier : mapperMethods.list()) {
-            sqlRepository.find(identifier).ifPresent(sqls::add);
-        }
-        return new Sqls(sqls);
+    public Sqls allSqls() {
+        return sqlRepository.all();
     }
 }

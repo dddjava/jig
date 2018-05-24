@@ -1,5 +1,12 @@
 package org.dddjava.jig.domain.model.datasources;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatasourceAngles {
@@ -8,6 +15,14 @@ public class DatasourceAngles {
 
     public DatasourceAngles(List<DatasourceAngle> list) {
         this.list = list;
+    }
+
+    public static DatasourceAngles of(MethodDeclarations repositoryMethods, MethodDeclarations mapperMethods, ImplementationMethods implementationMethods, MethodRelations methodRelations, Sqls allSqls) {
+        List<DatasourceAngle> list = new ArrayList<>();
+        for (MethodDeclaration methodDeclaration : repositoryMethods.list()) {
+            list.add(DatasourceAngle.of(methodDeclaration, mapperMethods, implementationMethods, methodRelations, allSqls));
+        }
+        return new DatasourceAngles(list);
     }
 
     public List<DatasourceAngle> list() {

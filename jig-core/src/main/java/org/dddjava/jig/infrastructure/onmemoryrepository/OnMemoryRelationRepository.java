@@ -7,9 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingField;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelation;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.implementation.relation.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -21,7 +19,7 @@ public class OnMemoryRelationRepository implements RelationRepository {
     final List<FieldDeclaration> instanceFields = new ArrayList<>();
     final List<FieldDeclaration> staticFields = new ArrayList<>();
 
-    final Set<ImplementationMethod> methodImplementMethods = new HashSet<>();
+    final List<ImplementationMethod> methodImplementMethods = new ArrayList<>();
 
     final Map<TypeIdentifier, Set<MethodDeclaration>> typeUserMethods = new HashMap<>();
 
@@ -42,6 +40,11 @@ public class OnMemoryRelationRepository implements RelationRepository {
     @Override
     public void registerImplementation(MethodDeclaration implementationMethod, MethodDeclaration interfaceMethod) {
         methodImplementMethods.add(new ImplementationMethod(implementationMethod, interfaceMethod));
+    }
+
+    @Override
+    public ImplementationMethods allImplementationMethods() {
+        return new ImplementationMethods(methodImplementMethods);
     }
 
     @Override

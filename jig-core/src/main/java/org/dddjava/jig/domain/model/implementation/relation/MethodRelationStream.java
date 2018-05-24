@@ -45,4 +45,12 @@ public class MethodRelationStream {
         return stream.map(MethodRelation::to)
                 .collect(MethodDeclarations.collector());
     }
+
+    public MethodRelationStream filterAnyFrom(MethodDeclarations methodDeclarations) {
+        return new MethodRelationStream(stream.filter(methodRelation -> methodDeclarations.contains(methodRelation.from())));
+    }
+
+    public MethodRelationStream filterAnyTo(MethodDeclarations methodDeclarations) {
+        return new MethodRelationStream(stream.filter(methodRelation -> methodDeclarations.contains(methodRelation.to())));
+    }
 }

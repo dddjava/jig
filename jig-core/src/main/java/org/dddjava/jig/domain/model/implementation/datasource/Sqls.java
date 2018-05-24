@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sqls {
 
@@ -20,5 +23,12 @@ public class Sqls {
 
     public List<Sql> list() {
         return list;
+    }
+
+    public Sqls filterRelationOn(MethodDeclarations methodDeclarations) {
+        List<Sql> sqls = list.stream()
+                .filter(sql -> sql.identifier().matches(methodDeclarations))
+                .collect(Collectors.toList());
+        return new Sqls(sqls);
     }
 }

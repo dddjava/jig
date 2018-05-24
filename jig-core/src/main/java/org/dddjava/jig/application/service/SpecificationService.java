@@ -10,6 +10,8 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
+import org.dddjava.jig.domain.model.values.ValueType;
+import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,7 +34,7 @@ public class SpecificationService {
         this.dependencyRepository = dependencyRepository;
     }
 
-    public void importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
+    public ProjectData importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
         Implementations implementations = specification(implementationSources);
 
         characteristicService.registerCharacteristic(implementations);
@@ -47,7 +49,14 @@ public class SpecificationService {
         projectData.setImplementationMethods(relationRepository.allImplementationMethods());
         projectData.setMethodRelations(relationRepository.allMethodRelations());
         projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());
-        projectData.setValueTypes(characteristicService.valueTypes());
+
+        ValueTypes valueTypes = new ValueTypes();
+        for (Implementation implementation : implementations.list()) {
+            valueTypes.add(new ValueType(implementation));
+        }
+        projectData.setValueTypes(valueTypes);
+
+        return projectData;
     }
 
     Implementations specification(ImplementationSources implementationSources) {

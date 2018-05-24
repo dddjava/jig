@@ -2,13 +2,9 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
-import org.dddjava.jig.domain.model.values.ValueKind;
-import org.dddjava.jig.domain.model.values.ValueType;
-import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +18,6 @@ public class CharacteristicService {
     CharacteristicRepository characteristicRepository;
     CharacterizedMethodRepository characterizedMethodRepository;
 
-    // TODO パラメタでまわせるようにする
-    ValueTypes valueTypes = new ValueTypes();
-
     public CharacteristicService(CharacteristicRepository characteristicRepository, CharacterizedMethodRepository characterizedMethodRepository) {
         this.characteristicRepository = characteristicRepository;
         this.characterizedMethodRepository = characterizedMethodRepository;
@@ -36,8 +29,6 @@ public class CharacteristicService {
     public void registerCharacteristic(Implementations implementations) {
         for (Implementation implementation : implementations.list()) {
             registerCharacteristic(implementation);
-
-            valueTypes.add(new ValueType(implementation));
         }
     }
 
@@ -64,18 +55,6 @@ public class CharacteristicService {
                 characterizedMethodRepository.register(MethodCharacteristic.MAPPER_METHOD, methodImplementation.methodDeclaration);
             }
         }
-    }
-
-    public TypeIdentifiers getEnums() {
-        return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
-    }
-
-    public ValueTypes valueTypes() {
-        return valueTypes;
-    }
-
-    public TypeIdentifiers getTypeIdentifiersOf(ValueKind valueKind) {
-        return valueTypes.extract(valueKind);
     }
 
     public MethodDeclarations getServiceMethods() {

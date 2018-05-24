@@ -38,6 +38,7 @@ public class SpecificationServiceImportImplementationTest {
     static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     static CharacteristicService characteristicService = new CharacteristicService(
             new OnMemoryCharacteristicRepository(), new OnMemoryCharacterizedMethodRepository());
+    private static ProjectData projectData;
 
     @BeforeAll
     static void before() throws URISyntaxException {
@@ -51,7 +52,7 @@ public class SpecificationServiceImportImplementationTest {
                 new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
                 characteristicService, relationRepository, annotationDeclarationRepository,
                 mock(DependencyRepository.class));
-        specificationService.importSpecification(implementationSources, new ProjectData());
+        projectData = specificationService.importSpecification(implementationSources, new ProjectData());
     }
 
     @Test
@@ -65,7 +66,7 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 識別子() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.IDENTIFIER).list())
+        assertThat(projectData.valueTypes().extract(ValueKind.IDENTIFIER).list())
                 .extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(
                         SimpleIdentifier.class.getTypeName(),
@@ -76,25 +77,25 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 数値() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(projectData.valueTypes().extract(ValueKind.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleNumber.class.getTypeName());
     }
 
     @Test
     void 日付() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(projectData.valueTypes().extract(ValueKind.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(projectData.valueTypes().extract(ValueKind.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }
 
     @Test
     void コレクション() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(projectData.valueTypes().extract(ValueKind.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactlyInAnyOrder(
                         SimpleCollection.class.getTypeName(),
                         SetCollection.class.getTypeName());

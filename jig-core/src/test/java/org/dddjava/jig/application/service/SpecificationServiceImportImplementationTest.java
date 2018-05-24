@@ -1,9 +1,6 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
@@ -27,7 +24,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -53,15 +49,6 @@ public class SpecificationServiceImportImplementationTest {
                 characteristicService, relationRepository, annotationDeclarationRepository,
                 mock(DependencyRepository.class));
         projectData = specificationService.importSpecification(implementationSources, new ProjectData());
-    }
-
-    @Test
-    void 関連() {
-        MethodDeclarations methods = relationRepository.findConcrete(new MethodDeclaration(
-                new TypeIdentifier(HogeRepository.class),
-                new MethodSignature("method", Collections.emptyList()),
-                new TypeIdentifier("void")));
-        assertThat(methods.list()).isNotEmpty();
     }
 
     @Test

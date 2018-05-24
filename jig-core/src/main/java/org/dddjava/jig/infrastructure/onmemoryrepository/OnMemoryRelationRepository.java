@@ -85,19 +85,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
                 registerMethodUseType(methodDeclaration, fieldDeclaration.typeIdentifier()));
     }
 
-    @Override
-    public FieldDeclarations findUseFields(MethodDeclaration methodDeclaration) {
-        return methodUseFieldsMap.getOrDefault(methodDeclaration, FieldDeclarations.empty());
-    }
-
-    @Override
-    public MethodDeclarations findConcrete(MethodDeclaration methodDeclaration) {
-        return methodImplementMethods.stream()
-                .filter(implementationMethod -> implementationMethod.interfaceMethodIs(methodDeclaration))
-                .map(ImplementationMethod::implementationMethod)
-                .collect(MethodDeclarations.collector());
-    }
-
     Map<MethodDeclaration, MethodDeclarations> methodUseMethodsMap = new HashMap<>();
 
     @Override
@@ -114,10 +101,5 @@ public class OnMemoryRelationRepository implements RelationRepository {
 
         methodDeclarations.list().forEach(method ->
                 registerMethodUseType(methodDeclaration, method.declaringType()));
-    }
-
-    @Override
-    public MethodDeclarations findUseMethods(MethodDeclaration methodDeclaration) {
-        return methodUseMethodsMap.get(methodDeclaration).distinct();
     }
 }

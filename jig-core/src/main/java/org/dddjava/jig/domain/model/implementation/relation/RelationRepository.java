@@ -20,12 +20,6 @@ public interface RelationRepository {
 
     void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations);
 
-    FieldDeclarations findUseFields(MethodDeclaration methodDeclaration);
-
-    MethodDeclarations findConcrete(MethodDeclaration methodDeclaration);
-
-    MethodDeclarations findUseMethods(MethodDeclaration methodDeclaration);
-
     MethodRelations allMethodRelations();
 
     MethodUsingFields allMethodUsingFields();

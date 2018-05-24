@@ -1,23 +1,21 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ValueTypes {
-    TypeIdentifier typeIdentifier;
-    List<ValueType> list;
+    private List<ValueType> list = new ArrayList<>();
 
-    public ValueTypes(TypeIdentifier typeIdentifier, List<ValueType> list) {
-        this.typeIdentifier = typeIdentifier;
-        this.list = list;
+    public void add(ValueType valueType) {
+        list.add(valueType);
     }
 
-    public boolean contains(ValueType valueType) {
-        return list.contains(valueType);
-    }
-
-    public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+    public TypeIdentifiers extract(ValueKind valueKind) {
+        return list.stream()
+                .filter(valueType -> valueType.is(valueKind))
+                .map(ValueType::typeIdentifier)
+                .collect(TypeIdentifiers.collector());
     }
 }

@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.categories.EnumReport;
-import org.dddjava.jig.domain.model.values.ValueType;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -73,12 +73,12 @@ public class ClassListController {
     public JigModelAndView<Reports> domainList() {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                valueObjectReport(ValueType.IDENTIFIER),
+                valueObjectReport(ValueKind.IDENTIFIER),
                 enumReport(),
-                valueObjectReport(ValueType.NUMBER),
-                valueObjectReport(ValueType.COLLECTION),
-                valueObjectReport(ValueType.DATE),
-                valueObjectReport(ValueType.TERM),
+                valueObjectReport(ValueKind.NUMBER),
+                valueObjectReport(ValueKind.COLLECTION),
+                valueObjectReport(ValueKind.DATE),
+                valueObjectReport(ValueKind.TERM),
                 validateAnnotationReport(),
                 stringComparingReport(),
                 decisionReport()
@@ -111,13 +111,13 @@ public class ClassListController {
         return new StringComparingReport(stringComparingAngle).toReport();
     }
 
-    Report<?> valueObjectReport(ValueType valueType) {
-        ValueAngles valueAngles = angleService.genericModelAngles(valueType);
+    Report<?> valueObjectReport(ValueKind valueKind) {
+        ValueAngles valueAngles = angleService.genericModelAngles(valueKind);
         List<ValueReport.Row> list = valueAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new ValueReport(valueType, list).toReport();
+        return new ValueReport(valueKind, list).toReport();
     }
 
     Report<?> enumReport() {

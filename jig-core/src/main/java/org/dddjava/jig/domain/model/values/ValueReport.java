@@ -27,16 +27,16 @@ public class ValueReport {
         }
     }
 
-    private final ValueType valueType;
+    private final ValueKind valueKind;
     private final List<Row> list;
 
-    public ValueReport(ValueType valueType, List<Row> list) {
-        this.valueType = valueType;
+    public ValueReport(ValueKind valueKind, List<Row> list) {
+        this.valueKind = valueKind;
         this.list = list;
     }
 
     public Report<?> toReport() {
-        return new Report<>(valueType.name(), list, Items.values());
+        return new Report<>(valueKind.name(), list, Items.values());
     }
 
     public static class Row {

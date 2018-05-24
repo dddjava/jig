@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.domain.model.values.ValueType;
-import org.dddjava.jig.domain.model.values.ValueTypeContainer;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class CharacteristicService {
     CharacterizedMethodRepository characterizedMethodRepository;
 
     // TODO パラメタでまわせるようにする
-    ValueTypeContainer valueTypeContainer = new ValueTypeContainer();
+    ValueTypes valueTypes = new ValueTypes();
 
     public CharacteristicService(CharacteristicRepository characteristicRepository, CharacterizedMethodRepository characterizedMethodRepository) {
         this.characteristicRepository = characteristicRepository;
@@ -37,6 +37,9 @@ public class CharacteristicService {
     public void registerCharacteristic(Implementations implementations) {
         for (Implementation implementation : implementations.list()) {
             registerCharacteristic(implementation);
+
+            ValueType valueType = new ValueType(implementation.typeIdentifier(), implementation);
+            valueTypes.add(valueType);
         }
     }
 
@@ -46,9 +49,6 @@ public class CharacteristicService {
     public void registerCharacteristic(Implementation implementation) {
         TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
         characteristicRepository.register(typeCharacteristics);
-
-        ValueTypes valueTypes = ValueType.from(implementation);
-        valueTypeContainer.add(valueTypes);
 
         List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
         for (MethodImplementation methodImplementation : methodImplementations) {
@@ -86,8 +86,8 @@ public class CharacteristicService {
         return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
     }
 
-    public TypeIdentifiers getTypeIdentifiersOf(ValueType valueType) {
-        return valueTypeContainer.extract(valueType);
+    public TypeIdentifiers getTypeIdentifiersOf(ValueKind valueKind) {
+        return valueTypes.extract(valueKind);
     }
 
     public MethodDeclarations getServiceMethods() {

@@ -5,12 +5,12 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 public class ValueAngle {
 
-    ValueType valueType;
+    ValueKind valueKind;
     TypeIdentifier typeIdentifier;
     TypeIdentifiers userTypeIdentifiers;
 
-    public ValueAngle(ValueType valueType, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers) {
-        this.valueType = valueType;
+    public ValueAngle(ValueKind valueKind, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers) {
+        this.valueKind = valueKind;
         this.typeIdentifier = typeIdentifier;
         this.userTypeIdentifiers = userTypeIdentifiers;
     }

@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.values.ValueType;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
@@ -63,7 +63,7 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 識別子() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.IDENTIFIER).list())
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.IDENTIFIER).list())
                 .extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(
                         SimpleIdentifier.class.getTypeName(),
@@ -74,25 +74,25 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 数値() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleNumber.class.getTypeName());
     }
 
     @Test
     void 日付() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }
 
     @Test
     void コレクション() {
-        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueKind.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactlyInAnyOrder(
                         SimpleCollection.class.getTypeName(),
                         SetCollection.class.getTypeName());

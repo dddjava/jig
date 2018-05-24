@@ -13,7 +13,7 @@ public interface CharacteristicRepository {
 
     Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers);
 
-    void register(TypeIdentifier typeIdentifier, ValueObjectTypes valueObjectTypes);
+    void register(TypeIdentifier typeIdentifier, ValueTypes valueTypes);
 
-    TypeIdentifiers getTypeIdentifiersOf(ValueObjectType valueObjectType);
+    TypeIdentifiers getTypeIdentifiersOf(ValueType valueType);
 }

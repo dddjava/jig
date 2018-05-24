@@ -1,15 +1,15 @@
-package org.dddjava.jig.domain.model.valueobjects;
+package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
-import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
+import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 
 import java.util.List;
 import java.util.function.Function;
 
-public class ValueObjectReport {
+public class ValueReport {
 
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
@@ -28,31 +28,31 @@ public class ValueObjectReport {
         }
     }
 
-    private final ValueObjectType valueObjectType;
+    private final ValueType valueType;
     private final List<Row> list;
 
-    public ValueObjectReport(ValueObjectType valueObjectType, List<Row> list) {
-        this.valueObjectType = valueObjectType;
+    public ValueReport(ValueType valueType, List<Row> list) {
+        this.valueType = valueType;
         this.list = list;
     }
 
     public Report<?> toReport() {
-        return new Report<>(valueObjectType.name(), list, Items.values());
+        return new Report<>(valueType.name(), list, Items.values());
     }
 
     public static class Row {
-        ValueObjectAngle valueObjectAngle;
+        ValueAngle valueAngle;
         JapaneseName japaneseName;
         TypeIdentifierFormatter identifierFormatter;
 
-        public Row(ValueObjectAngle valueObjectAngle, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
-            this.valueObjectAngle = valueObjectAngle;
+        public Row(ValueAngle valueAngle, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
+            this.valueAngle = valueAngle;
             this.japaneseName = japaneseName;
             this.identifierFormatter = identifierFormatter;
         }
 
         String クラス名() {
-            return valueObjectAngle.typeIdentifier().format(identifierFormatter);
+            return valueAngle.typeIdentifier().format(identifierFormatter);
         }
 
         String クラス和名() {
@@ -60,7 +60,7 @@ public class ValueObjectReport {
         }
 
         String 使用箇所() {
-            return valueObjectAngle.userTypeIdentifiers().asSimpleText();
+            return valueAngle.userTypeIdentifiers().asSimpleText();
         }
     }
 }

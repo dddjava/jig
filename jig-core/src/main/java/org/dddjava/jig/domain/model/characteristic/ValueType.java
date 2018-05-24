@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * 値オブジェクト
  */
-public enum ValueObjectType {
+public enum ValueType {
     IDENTIFIER {
         @Override
         boolean matches(Implementation implementation) {
@@ -48,11 +48,11 @@ public enum ValueObjectType {
         }
     };
 
-    public static ValueObjectTypes from(Implementation implementation) {
-        List<ValueObjectType> list = Arrays.stream(values())
+    public static ValueTypes from(Implementation implementation) {
+        List<ValueType> list = Arrays.stream(values())
                 .filter(characteristic -> characteristic.matches(implementation))
                 .collect(Collectors.toList());
-        return new ValueObjectTypes(list);
+        return new ValueTypes(list);
     }
 
     abstract boolean matches(Implementation implementation);

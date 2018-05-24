@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.categories.EnumReport;
-import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
+import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -22,8 +22,8 @@ import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceReport;
 import org.dddjava.jig.domain.model.validations.ValidationReport;
-import org.dddjava.jig.domain.model.valueobjects.ValueObjectAngles;
-import org.dddjava.jig.domain.model.valueobjects.ValueObjectReport;
+import org.dddjava.jig.domain.model.values.ValueAngles;
+import org.dddjava.jig.domain.model.values.ValueReport;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
@@ -73,12 +73,12 @@ public class ClassListController {
     public JigModelAndView<Reports> domainList() {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                valueObjectReport(ValueObjectType.IDENTIFIER),
+                valueObjectReport(ValueType.IDENTIFIER),
                 enumReport(),
-                valueObjectReport(ValueObjectType.NUMBER),
-                valueObjectReport(ValueObjectType.COLLECTION),
-                valueObjectReport(ValueObjectType.DATE),
-                valueObjectReport(ValueObjectType.TERM),
+                valueObjectReport(ValueType.NUMBER),
+                valueObjectReport(ValueType.COLLECTION),
+                valueObjectReport(ValueType.DATE),
+                valueObjectReport(ValueType.TERM),
                 validateAnnotationReport(),
                 stringComparingReport(),
                 decisionReport()
@@ -111,13 +111,13 @@ public class ClassListController {
         return new StringComparingReport(stringComparingAngle).toReport();
     }
 
-    Report<?> valueObjectReport(ValueObjectType valueObjectType) {
-        ValueObjectAngles valueObjectAngles = angleService.genericModelAngles(valueObjectType);
-        List<ValueObjectReport.Row> list = valueObjectAngles.list().stream().map(enumAngle -> {
+    Report<?> valueObjectReport(ValueType valueType) {
+        ValueAngles valueAngles = angleService.genericModelAngles(valueType);
+        List<ValueReport.Row> list = valueAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new ValueObjectReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+            return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new ValueObjectReport(valueObjectType, list).toReport();
+        return new ValueReport(valueType, list).toReport();
     }
 
     Report<?> enumReport() {

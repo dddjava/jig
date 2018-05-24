@@ -1,17 +1,17 @@
-package org.dddjava.jig.domain.model.valueobjects;
+package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
+import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
-public class ValueObjectAngle {
+public class ValueAngle {
 
-    ValueObjectType valueObjectType;
+    ValueType valueType;
     TypeIdentifier typeIdentifier;
     TypeIdentifiers userTypeIdentifiers;
 
-    public ValueObjectAngle(ValueObjectType valueObjectType, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers) {
-        this.valueObjectType = valueObjectType;
+    public ValueAngle(ValueType valueType, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers) {
+        this.valueType = valueType;
         this.typeIdentifier = typeIdentifier;
         this.userTypeIdentifiers = userTypeIdentifiers;
     }

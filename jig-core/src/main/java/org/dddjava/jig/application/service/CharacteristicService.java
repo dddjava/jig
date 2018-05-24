@@ -41,8 +41,8 @@ public class CharacteristicService {
         TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
         characteristicRepository.register(typeCharacteristics);
 
-        ValueObjectTypes valueObjectTypes = ValueObjectType.from(implementation);
-        characteristicRepository.register(implementation.typeIdentifier(), valueObjectTypes);
+        ValueTypes valueTypes = ValueType.from(implementation);
+        characteristicRepository.register(implementation.typeIdentifier(), valueTypes);
 
         List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
         for (MethodImplementation methodImplementation : methodImplementations) {
@@ -80,8 +80,8 @@ public class CharacteristicService {
         return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
     }
 
-    public TypeIdentifiers getTypeIdentifiersOf(ValueObjectType valueObjectType) {
-        return characteristicRepository.getTypeIdentifiersOf(valueObjectType);
+    public TypeIdentifiers getTypeIdentifiersOf(ValueType valueType) {
+        return characteristicRepository.getTypeIdentifiersOf(valueType);
     }
 
     public MethodDeclarations getServiceMethods() {

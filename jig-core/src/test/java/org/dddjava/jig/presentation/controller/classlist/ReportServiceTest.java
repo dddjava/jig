@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.usecase.ImportService;
-import org.dddjava.jig.domain.model.characteristic.ValueObjectType;
+import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,7 +51,7 @@ class ReportServiceTest {
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, register(Fuga), void, [], [], [], []]"
                 );
 
-        assertThat(sut.valueObjectReport(ValueObjectType.IDENTIFIER).rows())
+        assertThat(sut.valueObjectReport(ValueType.IDENTIFIER).rows())
                 .extracting(reportRow -> reportRow.list().get(0))
                 .containsSequence(
                         "stub.domain.model.type.SimpleIdentifier");

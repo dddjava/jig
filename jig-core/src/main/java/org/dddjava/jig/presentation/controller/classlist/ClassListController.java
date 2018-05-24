@@ -112,7 +112,7 @@ public class ClassListController {
     }
 
     Report<?> valueObjectReport(ValueKind valueKind) {
-        ValueAngles valueAngles = angleService.genericModelAngles(valueKind);
+        ValueAngles valueAngles = angleService.valueAngles(valueKind);
         List<ValueReport.Row> list = valueAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);

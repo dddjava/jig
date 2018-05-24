@@ -21,7 +21,6 @@ import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.springframework.stereotype.Service;
@@ -90,13 +89,11 @@ public class AngleService {
         return EnumAngles.of(typeIdentifiers, characterizedTypes, allTypeDependencies, allFieldDeclarations, allStaticFieldDeclarations);
     }
 
-    public ValueAngles genericModelAngles(ValueKind valueKind) {
+    public ValueAngles valueAngles(ValueKind valueKind) {
         TypeIdentifiers typeIdentifiers = characteristicService.getTypeIdentifiersOf(valueKind);
-        List<ValueAngle> list = typeIdentifiers.list().stream().map(typeIdentifier -> {
-            TypeIdentifiers userTypeIdentifiers = relationRepository.findUserTypes(typeIdentifier);
-            return new ValueAngle(valueKind, typeIdentifier, userTypeIdentifiers);
-        }).collect(toList());
-        return new ValueAngles(list);
+        TypeDependencies allTypeDependencies = dependencyRepository.findAllTypeDependency();
+
+        return ValueAngles.of(valueKind, typeIdentifiers, allTypeDependencies);
     }
 
     /**

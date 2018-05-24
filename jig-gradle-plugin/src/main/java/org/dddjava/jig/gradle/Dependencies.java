@@ -114,12 +114,7 @@ public class Dependencies {
     }
 
     private AngleService angleService() {
-        return new AngleService(
-                characteristicService,
-                relationRepository,
-                dependencyRepository,
-                datasourceService()
-        );
+        return new AngleService(characteristicService);
     }
 
     private ViewResolver jigViewResolver(String outputOmitPrefix) {

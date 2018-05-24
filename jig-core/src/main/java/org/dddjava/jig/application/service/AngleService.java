@@ -11,8 +11,6 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngleSource;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -26,15 +24,9 @@ import org.springframework.stereotype.Service;
 public class AngleService {
 
     CharacteristicService characteristicService;
-    RelationRepository relationRepository;
-    DatasourceService datasourceService;
-    DependencyRepository dependencyRepository;
 
-    public AngleService(CharacteristicService characteristicService, RelationRepository relationRepository, DependencyRepository dependencyRepository, DatasourceService datasourceService) {
+    public AngleService(CharacteristicService characteristicService) {
         this.characteristicService = characteristicService;
-        this.relationRepository = relationRepository;
-        this.dependencyRepository = dependencyRepository;
-        this.datasourceService = datasourceService;
     }
 
     public ServiceAngles serviceAngles(ProjectData projectData) {

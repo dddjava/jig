@@ -49,6 +49,10 @@ subprojects {
         }
     }
 
+    javadoc {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
     jar {
         metaInf { from(rootDir) { include 'LICENSE' } }
     }

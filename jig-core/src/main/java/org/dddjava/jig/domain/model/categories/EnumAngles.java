@@ -1,6 +1,10 @@
 package org.dddjava.jig.domain.model.categories;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.networks.TypeDependencies;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +17,10 @@ public class EnumAngles {
         this.list = list;
     }
 
-    public static EnumAngles of(EnumAngleSource enumAngleSource) {
+    public static EnumAngles of(TypeIdentifiers enumTypeIdentifies, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, FieldDeclarations staticFieldDeclarations) {
         List<EnumAngle> list = new ArrayList<>();
-        for (TypeIdentifier typeIdentifier : enumAngleSource.getTypeIdentifiers().list()) {
-            list.add(EnumAngle.of(typeIdentifier, enumAngleSource.getCharacterizedTypes(), enumAngleSource.getAllTypeDependencies(), enumAngleSource.getAllFieldDeclarations(), enumAngleSource.getAllStaticFieldDeclarations()));
+        for (TypeIdentifier typeIdentifier : enumTypeIdentifies.list()) {
+            list.add(EnumAngle.of(typeIdentifier, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
         }
         return new EnumAngles(list);
     }

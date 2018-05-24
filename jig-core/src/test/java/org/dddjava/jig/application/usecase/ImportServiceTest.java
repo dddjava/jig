@@ -3,6 +3,7 @@ package org.dddjava.jig.application.usecase;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ public class ImportServiceTest {
 
     @Test
     void パッケージ依存() {
-        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources(), new ProjectData());
         PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1));
 
         // パッケージのリストアップ

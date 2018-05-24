@@ -1,5 +1,7 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.implementation.ProjectData;
+
 import java.util.Arrays;
 
 public enum JigDocumentHandler {
@@ -7,7 +9,8 @@ public enum JigDocumentHandler {
     ServiceMethodCallHierarchy(JigDocument.ServiceMethodCallHierarchy) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            return jigHandlerContext.serviceMethodCallHierarchyController.serviceMethodCallHierarchy();
+            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+            return jigHandlerContext.serviceMethodCallHierarchyController.serviceMethodCallHierarchy(projectData);
         }
     },
     PackageDependency(JigDocument.PackageDependency) {
@@ -19,19 +22,22 @@ public enum JigDocumentHandler {
     ApplicationList(JigDocument.ApplicationList) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            return jigHandlerContext.classListController.applicationList();
+            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+            return jigHandlerContext.classListController.applicationList(projectData);
         }
     },
     DomainList(JigDocument.DomainList) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            return jigHandlerContext.classListController.domainList();
+            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+            return jigHandlerContext.classListController.domainList(projectData);
         }
     },
     EnumUsage(JigDocument.EnumUsage) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            return jigHandlerContext.enumUsageController.enumUsage();
+            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+            return jigHandlerContext.enumUsageController.enumUsage(projectData);
         }
     };
 

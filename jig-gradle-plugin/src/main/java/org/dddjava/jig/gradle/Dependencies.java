@@ -72,7 +72,7 @@ public class Dependencies {
                         characteristicService,
                         relationRepository,
                         annotationDeclarationRepository,
-                        dependencyService()),
+                        dependencyRepository),
                 glossaryService(),
                 datasourceService()
         );

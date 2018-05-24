@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -30,9 +31,10 @@ class ReportServiceTest {
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = new ProjectData();
+        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources(), projectData);
 
-        assertThat(sut.serviceReport().rows())
+        assertThat(sut.serviceReport(projectData).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
@@ -44,19 +46,19 @@ class ReportServiceTest {
                         "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, , , [], [], []]"
                 );
 
-        assertThat(sut.datasourceReport().rows())
+        assertThat(sut.datasourceReport(projectData).rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsSequence(
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, get(FugaIdentifier), Fuga, [sut.piyo], [fuga], [], []]",
                         "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, register(Fuga), void, [], [], [], []]"
                 );
 
-        assertThat(sut.valueObjectReport(ValueKind.IDENTIFIER).rows())
+        assertThat(sut.valueObjectReport(ValueKind.IDENTIFIER, projectData).rows())
                 .extracting(reportRow -> reportRow.list().get(0))
                 .containsSequence(
                         "stub.domain.model.type.SimpleIdentifier");
 
-        assertThat(sut.enumReport().rows())
+        assertThat(sut.enumReport(projectData).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
@@ -68,7 +70,7 @@ class ReportServiceTest {
                         "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [AsmImplementationReaderTest, RelationEnum], , , ]"
                 );
 
-        assertThat(sut.decisionReport().rows())
+        assertThat(sut.decisionReport(projectData).rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
                         "[APPLICATION, stub.application.service.DecisionService, 分岐のあるメソッド(Object)]",

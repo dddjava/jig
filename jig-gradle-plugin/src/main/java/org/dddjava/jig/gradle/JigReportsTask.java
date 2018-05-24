@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.usecase.ImportService;
-import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.gradle.api.DefaultTask;
@@ -27,6 +27,7 @@ public class JigReportsTask extends DefaultTask {
 
         ExtensionContainer extensions = getProject().getExtensions();
         JigConfig config = extensions.findByType(JigConfig.class);
+        JigHandlerContext jigHandlerContext = dependencies.localViewContextWith(config);
 
         List<JigDocument> jigDocuments = config.documentTypes();
 
@@ -39,10 +40,10 @@ public class JigReportsTask extends DefaultTask {
                 localProject.getSpecificationSources(),
                 localProject.getSqlSources(),
                 localProject.getTypeNameSources(),
-                localProject.getPackageNameSources());
+                localProject.getPackageNameSources(),
+                jigHandlerContext.getProjectData());
 
         Path outputDirectory = Paths.get(config.getOutputDirectory());
-        JigHandlerContext jigHandlerContext = dependencies.localViewContextWith(config);
         for (JigDocument jigDocument : jigDocuments) {
             JigDocumentHandler.of(jigDocument)
                     .handleLocal(jigHandlerContext)

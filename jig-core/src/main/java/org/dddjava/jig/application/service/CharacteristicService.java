@@ -70,6 +70,10 @@ public class CharacteristicService {
         return characteristicRepository.getTypeIdentifiersOf(Characteristic.ENUM);
     }
 
+    public ValueTypes valueTypes() {
+        return valueTypes;
+    }
+
     public TypeIdentifiers getTypeIdentifiersOf(ValueKind valueKind) {
         return valueTypes.extract(valueKind);
     }

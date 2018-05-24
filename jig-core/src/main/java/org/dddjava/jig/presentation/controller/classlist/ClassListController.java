@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.categories.EnumReport;
-import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -18,11 +17,13 @@ import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationD
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceReport;
 import org.dddjava.jig.domain.model.validations.ValidationReport;
 import org.dddjava.jig.domain.model.values.ValueAngles;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.domain.model.values.ValueReport;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
@@ -60,35 +61,35 @@ public class ClassListController {
         this.angleService = angleService;
     }
 
-    public JigModelAndView<Reports> applicationList() {
+    public JigModelAndView<Reports> applicationList(ProjectData projectData) {
         LOGGER.info("入出力リストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                serviceReport(),
-                datasourceReport()
+                serviceReport(projectData),
+                datasourceReport(projectData)
         ));
 
         return new JigModelAndView<>(reports, viewResolver.applicationList());
     }
 
-    public JigModelAndView<Reports> domainList() {
+    public JigModelAndView<Reports> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                valueObjectReport(ValueKind.IDENTIFIER),
-                enumReport(),
-                valueObjectReport(ValueKind.NUMBER),
-                valueObjectReport(ValueKind.COLLECTION),
-                valueObjectReport(ValueKind.DATE),
-                valueObjectReport(ValueKind.TERM),
+                valueObjectReport(ValueKind.IDENTIFIER, projectData),
+                enumReport(projectData),
+                valueObjectReport(ValueKind.NUMBER, projectData),
+                valueObjectReport(ValueKind.COLLECTION, projectData),
+                valueObjectReport(ValueKind.DATE, projectData),
+                valueObjectReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(),
-                stringComparingReport(),
-                decisionReport()
+                stringComparingReport(projectData),
+                decisionReport(projectData)
         ));
 
         return new JigModelAndView<>(reports, viewResolver.domainList());
     }
 
-    Report<?> serviceReport() {
-        ServiceAngles serviceAngles = angleService.serviceAngles();
+    Report<?> serviceReport(ProjectData projectData) {
+        ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
         List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
             Function<TypeIdentifier, JapaneseName> japaneseNameResolver = glossaryService::japaneseNameFrom;
             Function<MethodDeclaration, JapaneseName> methodJapaneseNameResolver = glossaryService::japaneseNameFrom;
@@ -97,8 +98,8 @@ public class ClassListController {
         return new ServiceReport(list).toReport();
     }
 
-    Report<?> datasourceReport() {
-        DatasourceAngles datasourceAngles = angleService.datasourceAngles();
+    Report<?> datasourceReport(ProjectData projectData) {
+        DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
         List<DatasourceReport.Row> list = datasourceAngles.list().stream().map(angle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
             return new DatasourceReport.Row(angle, japaneseName, typeIdentifierFormatter);
@@ -106,13 +107,13 @@ public class ClassListController {
         return new DatasourceReport(list).toReport();
     }
 
-    Report<?> stringComparingReport() {
-        StringComparingAngle stringComparingAngle = angleService.stringComparing();
+    Report<?> stringComparingReport(ProjectData projectData) {
+        StringComparingAngle stringComparingAngle = angleService.stringComparing(projectData);
         return new StringComparingReport(stringComparingAngle).toReport();
     }
 
-    Report<?> valueObjectReport(ValueKind valueKind) {
-        ValueAngles valueAngles = angleService.valueAngles(valueKind);
+    Report<?> valueObjectReport(ValueKind valueKind, ProjectData projectData) {
+        ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
         List<ValueReport.Row> list = valueAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
@@ -120,8 +121,8 @@ public class ClassListController {
         return new ValueReport(valueKind, list).toReport();
     }
 
-    Report<?> enumReport() {
-        EnumAngles enumAngles = angleService.enumAngles();
+    Report<?> enumReport(ProjectData projectData) {
+        EnumAngles enumAngles = angleService.enumAngles(projectData);
         List<EnumReport.Row> list = enumAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
             return new EnumReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
@@ -138,8 +139,8 @@ public class ClassListController {
         return new ValidationReport(list).toReport();
     }
 
-    Report<?> decisionReport() {
-        DecisionAngles decisionAngles = angleService.decision();
+    Report<?> decisionReport(ProjectData projectData) {
+        DecisionAngles decisionAngles = angleService.decision(projectData);
         return new DecisionReport(decisionAngles).toReport();
     }
 }

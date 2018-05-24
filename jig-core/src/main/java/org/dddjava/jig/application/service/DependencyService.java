@@ -3,7 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
@@ -38,10 +37,6 @@ public class DependencyService {
         showDepth(packageDependencies);
 
         return packageDependencies.applyDepth(packageDepth);
-    }
-
-    public void registerDependency(TypeIdentifier typeIdentifier, TypeIdentifiers typeIdentifiers) {
-        dependencyRepository.registerDependency(typeIdentifier, typeIdentifiers);
     }
 
     private void showDepth(PackageDependencies packageDependencies) {

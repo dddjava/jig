@@ -3,11 +3,13 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,23 +21,33 @@ public class SpecificationService {
     final ImplementationFactory implementationFactory;
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
-    final DependencyService dependencyService;
+    final DependencyRepository dependencyRepository;
     final CharacteristicService characteristicService;
 
-    public SpecificationService(ImplementationFactory implementationFactory, CharacteristicService characteristicService, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyService dependencyService) {
+    public SpecificationService(ImplementationFactory implementationFactory, CharacteristicService characteristicService, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyRepository dependencyRepository) {
         this.implementationFactory = implementationFactory;
         this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
-        this.dependencyService = dependencyService;
+        this.dependencyRepository = dependencyRepository;
     }
 
-    public void importSpecification(ImplementationSources implementationSources) {
+    public void importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
         Implementations implementations = specification(implementationSources);
 
         characteristicService.registerCharacteristic(implementations);
 
         registerSpecifications(implementations);
+
+        projectData.setCharacterizedTypes(characteristicService.allCharacterizedTypes());
+        projectData.setTypeDependencies(dependencyRepository.findAllTypeDependency());
+        projectData.setFieldDeclarations(relationRepository.allFieldDeclarations());
+        projectData.setStaticFieldDeclarations(relationRepository.allStaticFieldDeclarations());
+        projectData.setMapperMethods(characteristicService.getMapperMethods());
+        projectData.setImplementationMethods(relationRepository.allImplementationMethods());
+        projectData.setMethodRelations(relationRepository.allMethodRelations());
+        projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());
+        projectData.setValueTypes(characteristicService.valueTypes());
     }
 
     Implementations specification(ImplementationSources implementationSources) {
@@ -71,6 +83,6 @@ public class SpecificationService {
             relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
         });
 
-        dependencyService.registerDependency(implementation.typeIdentifier(), implementation.useTypes());
+        dependencyRepository.registerDependency(implementation.typeIdentifier(), implementation.useTypes());
     }
 }

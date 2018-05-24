@@ -5,8 +5,10 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
@@ -48,8 +50,8 @@ public class SpecificationServiceImportImplementationTest {
         SpecificationService specificationService = new SpecificationService(
                 new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
                 characteristicService, relationRepository, annotationDeclarationRepository,
-                mock(DependencyService.class));
-        specificationService.importSpecification(implementationSources);
+                mock(DependencyRepository.class));
+        specificationService.importSpecification(implementationSources, new ProjectData());
     }
 
     @Test

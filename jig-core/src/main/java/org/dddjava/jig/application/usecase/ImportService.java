@@ -3,6 +3,7 @@ package org.dddjava.jig.application.usecase;
 import org.dddjava.jig.application.service.DatasourceService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.SpecificationService;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
@@ -25,10 +26,11 @@ public class ImportService {
         this.glossaryService = glossaryService;
     }
 
-    public void importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
-        specificationService.importSpecification(implementationSources);
+    public void importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources, ProjectData projectData) {
+        specificationService.importSpecification(implementationSources, projectData);
 
         datasourceService.importDatabaseAccess(sqlSources);
+        projectData.setSqls(datasourceService.allSqls());
 
         glossaryService.importJapanese(typeNameSources);
         glossaryService.importJapanese(packageNameSources);

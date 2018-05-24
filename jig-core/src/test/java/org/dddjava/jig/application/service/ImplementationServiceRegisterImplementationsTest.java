@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class ImplementationServiceRegisterImplementationsTest {
                 mock(CharacteristicService.class),
                 relationRepository,
                 mock(AnnotationDeclarationRepository.class),
-                mock(DependencyService.class));
+                mock(DependencyRepository.class));
 
         TypeIdentifier typeIdentifier = new TypeIdentifier("test.TestClass");
         Implementation implementation = new Implementation(

@@ -56,7 +56,8 @@ public class CommandLineApplication implements CommandLineRunner {
                 localProject.getSpecificationSources(),
                 localProject.getSqlSources(),
                 localProject.getTypeNameSources(),
-                localProject.getPackageNameSources());
+                localProject.getPackageNameSources(),
+                jigHandlerContext.getProjectData());
 
         Path outputDirectory = Paths.get(this.outputDirectory);
         for (JigDocument jigDocument : jigDocuments) {

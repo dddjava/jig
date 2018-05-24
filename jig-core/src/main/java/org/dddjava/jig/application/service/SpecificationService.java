@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -40,7 +41,8 @@ public class SpecificationService {
 
         registerSpecifications(implementations);
 
-        projectData.setCharacterizedTypes(characteristicService.allCharacterizedTypes());
+        projectData.setCharacterizedTypes(new CharacterizedTypes(implementations));
+
         projectData.setTypeDependencies(dependencyRepository.findAllTypeDependency());
         projectData.setFieldDeclarations(relationRepository.allFieldDeclarations());
         projectData.setStaticFieldDeclarations(relationRepository.allStaticFieldDeclarations());

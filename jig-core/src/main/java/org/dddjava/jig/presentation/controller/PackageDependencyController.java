@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -26,9 +27,9 @@ public class PackageDependencyController {
         this.viewResolver = viewResolver;
     }
 
-    public JigModelAndView<PackageDependencies> packageDependency(PackageDepth depth) {
+    public JigModelAndView<PackageDependencies> packageDependency(PackageDepth depth, ProjectData projectData) {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
-        PackageDependencies packageDependencies = dependencyService.packageDependencies(depth);
+        PackageDependencies packageDependencies = dependencyService.packageDependencies(depth, projectData);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(packageDependencies, viewResolver.dependencyWriter(japaneseNameFinder));
     }

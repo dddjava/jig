@@ -16,7 +16,8 @@ public enum JigDocumentHandler {
     PackageDependency(JigDocument.PackageDependency) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            return jigHandlerContext.packageDependencyController.packageDependency(jigHandlerContext.packageDepth());
+            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+            return jigHandlerContext.packageDependencyController.packageDependency(jigHandlerContext.packageDepth(), projectData);
         }
     },
     ApplicationList(JigDocument.ApplicationList) {

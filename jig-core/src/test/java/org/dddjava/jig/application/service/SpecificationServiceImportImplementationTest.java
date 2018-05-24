@@ -11,7 +11,6 @@ import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacteristicRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCharacterizedMethodRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,8 +31,7 @@ public class SpecificationServiceImportImplementationTest {
 
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
     static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
-    static CharacteristicService characteristicService = new CharacteristicService(
-            new OnMemoryCharacteristicRepository(), new OnMemoryCharacterizedMethodRepository());
+    static CharacteristicService characteristicService = new CharacteristicService(new OnMemoryCharacterizedMethodRepository());
     private static ProjectData projectData;
 
     @BeforeAll

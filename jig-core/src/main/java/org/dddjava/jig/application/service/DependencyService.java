@@ -1,10 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.networks.DependencyRepository;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,23 +17,16 @@ public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
-    private final CharacteristicRepository characteristicRepository;
-    private final DependencyRepository dependencyRepository;
-
-    public DependencyService(CharacteristicRepository characteristicRepository, DependencyRepository dependencyRepository) {
-        this.characteristicRepository = characteristicRepository;
-        this.dependencyRepository = dependencyRepository;
-    }
-
     /**
      * パッケージ依存を取得する
      */
-    public PackageDependencies packageDependencies(PackageDepth packageDepth) {
+    public PackageDependencies packageDependencies(PackageDepth packageDepth, ProjectData projectData) {
         LOGGER.info("パッケージ依存情報を取得します(深度: {})", packageDepth.value());
-        TypeIdentifiers modelTypes = characteristicRepository.getTypeIdentifiersOf(Characteristic.MODEL);
+        TypeIdentifiers modelTypes = projectData.characterizedTypes().stream()
+                .filter(Characteristic.MODEL)
+                .typeIdentifiers();
 
-        PackageDependencies packageDependencies = dependencyRepository
-                .findAllTypeDependency()
+        PackageDependencies packageDependencies = projectData.typeDependencies()
                 .toPackageDependenciesWith(modelTypes);
 
         showDepth(packageDependencies);

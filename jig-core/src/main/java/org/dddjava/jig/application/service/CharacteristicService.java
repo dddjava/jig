@@ -1,6 +1,9 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.*;
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
+import org.dddjava.jig.domain.model.characteristic.MethodCharacteristic;
+import org.dddjava.jig.domain.model.characteristic.TypeCharacteristics;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
@@ -15,11 +18,9 @@ import java.util.List;
 @Service
 public class CharacteristicService {
 
-    CharacteristicRepository characteristicRepository;
     CharacterizedMethodRepository characterizedMethodRepository;
 
-    public CharacteristicService(CharacteristicRepository characteristicRepository, CharacterizedMethodRepository characterizedMethodRepository) {
-        this.characteristicRepository = characteristicRepository;
+    public CharacteristicService(CharacterizedMethodRepository characterizedMethodRepository) {
         this.characterizedMethodRepository = characterizedMethodRepository;
     }
 
@@ -37,7 +38,6 @@ public class CharacteristicService {
      */
     public void registerCharacteristic(Implementation implementation) {
         TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
-        characteristicRepository.register(typeCharacteristics);
 
         List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
         for (MethodImplementation methodImplementation : methodImplementations) {
@@ -71,9 +71,5 @@ public class CharacteristicService {
 
     public MethodDeclarations getMapperMethods() {
         return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.MAPPER_METHOD);
-    }
-
-    public CharacterizedTypes allCharacterizedTypes() {
-        return characteristicRepository.allCharacterizedTypes();
     }
 }

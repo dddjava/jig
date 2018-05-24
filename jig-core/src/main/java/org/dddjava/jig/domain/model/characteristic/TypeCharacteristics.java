@@ -21,4 +21,8 @@ public class TypeCharacteristics {
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
+
+    public Characteristics characteristics() {
+        return new Characteristics(set);
+    }
 }

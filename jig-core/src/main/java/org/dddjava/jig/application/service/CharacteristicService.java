@@ -104,4 +104,8 @@ public class CharacteristicService {
     public MethodDeclarations getMapperMethods() {
         return characterizedMethodRepository.getCharacterizedMethods(MethodCharacteristic.MAPPER_METHOD);
     }
+
+    public CharacterizedTypes allCharacterizedTypes() {
+        return characteristicRepository.allCharacterizedTypes();
+    }
 }

@@ -1,6 +1,10 @@
 package org.dddjava.jig.domain.model.characteristic;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * 型の特徴の集合
@@ -30,5 +34,13 @@ public class Characteristics {
             }
         }
         return Layer.OTHER;
+    }
+
+    public static Collector<Characteristics, ?, Characteristics> collector() {
+        return Collectors.reducing(new Characteristics(Collections.emptySet()), (a, b) -> {
+            HashSet<Characteristic> characteristics = new HashSet<>(a.characteristics);
+            characteristics.addAll(b.characteristics);
+            return new Characteristics(characteristics);
+        });
     }
 }

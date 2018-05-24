@@ -1,26 +1,28 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.values.ValueKind;
-import org.dddjava.jig.domain.model.values.*;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.values.ValueAngle;
+import org.dddjava.jig.domain.model.values.ValueAngles;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -45,23 +47,13 @@ public class AngleService {
     }
 
     public ServiceAngles serviceAngles() {
-        List<ServiceAngle> list = characteristicService.getServiceMethods().list().stream()
-                .map(methodDeclaration -> {
-                    TypeIdentifiers userTypes = relationRepository.findUserTypes(methodDeclaration);
-                    Characteristics userCharacteristics = characteristicService.findCharacteristics(userTypes);
+        MethodDeclarations serviceMethods = characteristicService.getServiceMethods();
 
-                    MethodDeclarations userServiceMethods = relationRepository.findUserMethods(methodDeclaration)
-                            .filter(userMethod -> characteristicService
-                                    .findCharacteristics(userMethod.declaringType())
-                                    .has(Characteristic.SERVICE).isSatisfy());
+        MethodRelations methodRelations = relationRepository.allMethodRelations();
+        CharacterizedTypes characterizedTypes = characteristicService.allCharacterizedTypes();
+        MethodUsingFields methodUsingFields = relationRepository.allMethodUsingFields();
 
-                    TypeIdentifiers usingFieldTypeIdentifiers = relationRepository.findUseFields(methodDeclaration).toTypeIdentifies();
-
-                    MethodDeclarations usingRepositoryMethods = relationRepository.findUseMethods(methodDeclaration)
-                            .filter(m -> characteristicService.findCharacteristics(m.declaringType()).has(Characteristic.REPOSITORY).isSatisfy());
-                    return new ServiceAngle(methodDeclaration, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
-                }).collect(toList());
-        return new ServiceAngles(list);
+        return ServiceAngles.of(serviceMethods, methodRelations, characterizedTypes, methodUsingFields);
     }
 
     public DatasourceAngles datasourceAngles() {

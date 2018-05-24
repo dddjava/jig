@@ -12,4 +12,6 @@ public interface CharacteristicRepository {
     Characteristics findCharacteristics(TypeIdentifier typeIdentifier);
 
     Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers);
+
+    CharacterizedTypes allCharacterizedTypes();
 }

@@ -38,4 +38,8 @@ public class TypeIdentifiers {
     public String asSimpleText() {
         return identifiers.stream().map(TypeIdentifier::asSimpleText).distinct().collect(joining(", ", "[", "]"));
     }
+
+    public boolean contains(TypeIdentifier typeIdentifier) {
+        return identifiers.contains(typeIdentifier);
+    }
 }

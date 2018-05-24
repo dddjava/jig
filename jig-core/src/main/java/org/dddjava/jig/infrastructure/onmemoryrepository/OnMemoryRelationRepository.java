@@ -6,10 +6,15 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingField;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelation;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -55,6 +60,14 @@ public class OnMemoryRelationRepository implements RelationRepository {
     Map<MethodDeclaration, FieldDeclarations> methodUseFieldsMap = new HashMap<>();
 
     @Override
+    public MethodUsingFields allMethodUsingFields() {
+        return new MethodUsingFields(methodUseFieldsMap.entrySet().stream()
+                .flatMap(entry -> entry.getValue().list().stream()
+                        .map(value -> new MethodUsingField(entry.getKey(), value)))
+                .collect(Collectors.toList()));
+    }
+
+    @Override
     public void registerMethodUseFields(MethodDeclaration methodDeclaration, FieldDeclarations fieldDeclarations) {
         methodUseFieldsMap.put(methodDeclaration, fieldDeclarations);
 
@@ -76,6 +89,14 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     Map<MethodDeclaration, MethodDeclarations> methodUseMethodsMap = new HashMap<>();
+
+    @Override
+    public MethodRelations allMethodRelations() {
+        return new MethodRelations(methodUseMethodsMap.entrySet().stream()
+                .flatMap(entry -> entry.getValue().list().stream()
+                        .map(value -> new MethodRelation(entry.getKey(), value)))
+                .collect(Collectors.toList()));
+    }
 
     @Override
     public void registerMethodUseMethods(MethodDeclaration methodDeclaration, MethodDeclarations methodDeclarations) {

@@ -21,11 +21,14 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
         }
     }
 
+    List<TypeCharacteristics> list = new ArrayList<>();
+
     @Override
     public void register(TypeCharacteristics typeCharacteristics) {
         map.entrySet().stream()
                 .filter(entry -> typeCharacteristics.has(entry.getKey()) == Satisfaction.SATISFY)
                 .forEach(entry -> entry.getValue().add(typeCharacteristics.typeIdentifier()));
+        list.add(typeCharacteristics);
     }
 
     @Override
@@ -53,5 +56,10 @@ public class OnMemoryCharacteristicRepository implements CharacteristicRepositor
             }
         }
         return new Characteristics(set);
+    }
+
+    @Override
+    public CharacterizedTypes allCharacterizedTypes() {
+        return new CharacterizedTypes(list);
     }
 }

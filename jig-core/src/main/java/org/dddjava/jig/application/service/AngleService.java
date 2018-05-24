@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.ValueType;
+import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.domain.model.values.*;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;

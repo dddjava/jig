@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.characteristic;
+package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -52,7 +52,7 @@ public enum ValueType {
         List<ValueType> list = Arrays.stream(values())
                 .filter(characteristic -> characteristic.matches(implementation))
                 .collect(Collectors.toList());
-        return new ValueTypes(list);
+        return new ValueTypes(implementation.typeIdentifier(), list);
     }
 
     abstract boolean matches(Implementation implementation);

@@ -41,6 +41,8 @@ public class Dependencies {
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     final DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
 
+    final CharacteristicService characteristicService = new CharacteristicService(characteristicRepository, characterizedMethodRepository);
+
     LocalProject localProject(Project project) {
         JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
         if (javaPluginConvention == null) {
@@ -67,7 +69,7 @@ public class Dependencies {
         return new ImportService(
                 new SpecificationService(
                         new AsmImplementationFactory(specificationContext),
-                        characteristicService(),
+                        characteristicService,
                         relationRepository,
                         annotationDeclarationRepository,
                         dependencyService()),
@@ -107,13 +109,9 @@ public class Dependencies {
         return new DependencyService(characteristicRepository, dependencyRepository);
     }
 
-    private CharacteristicService characteristicService() {
-        return new CharacteristicService(characteristicRepository, characterizedMethodRepository);
-    }
-
     private AngleService angleService() {
         return new AngleService(
-                characteristicService(),
+                characteristicService,
                 relationRepository,
                 datasourceService()
         );

@@ -1,8 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.characteristic.CharacteristicRepository;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
-import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -10,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
+import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
@@ -34,11 +32,10 @@ import static org.mockito.Mockito.mock;
 
 public class SpecificationServiceImportImplementationTest {
 
-    static CharacteristicRepository characteristicRepository = new OnMemoryCharacteristicRepository();
-    static CharacterizedMethodRepository characterizedMethodRepository = new OnMemoryCharacterizedMethodRepository();
-
     static RelationRepository relationRepository = new OnMemoryRelationRepository();
     static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
+    static CharacteristicService characteristicService = new CharacteristicService(
+            new OnMemoryCharacteristicRepository(), new OnMemoryCharacterizedMethodRepository());
 
     @BeforeAll
     static void before() throws URISyntaxException {
@@ -50,8 +47,7 @@ public class SpecificationServiceImportImplementationTest {
 
         SpecificationService specificationService = new SpecificationService(
                 new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
-                new CharacteristicService(characteristicRepository, characterizedMethodRepository),
-                relationRepository, annotationDeclarationRepository,
+                characteristicService, relationRepository, annotationDeclarationRepository,
                 mock(DependencyService.class));
         specificationService.importSpecification(implementationSources);
     }
@@ -67,7 +63,7 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 識別子() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(ValueType.IDENTIFIER).list())
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.IDENTIFIER).list())
                 .extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(
                         SimpleIdentifier.class.getTypeName(),
@@ -78,25 +74,25 @@ public class SpecificationServiceImportImplementationTest {
 
     @Test
     void 数値() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(ValueType.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.NUMBER).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleNumber.class.getTypeName());
     }
 
     @Test
     void 日付() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(ValueType.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.DATE).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleDate.class.getTypeName());
     }
 
     @Test
     void 期間() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(ValueType.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.TERM).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactly(SimpleTerm.class.getTypeName());
     }
 
     @Test
     void コレクション() {
-        assertThat(characteristicRepository.getTypeIdentifiersOf(ValueType.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
+        assertThat(characteristicService.getTypeIdentifiersOf(ValueType.COLLECTION).list()).extracting(TypeIdentifier::fullQualifiedName)
                 .containsExactlyInAnyOrder(
                         SimpleCollection.class.getTypeName(),
                         SetCollection.class.getTypeName());

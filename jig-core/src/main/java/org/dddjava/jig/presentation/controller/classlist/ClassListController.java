@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.categories.EnumReport;
-import org.dddjava.jig.domain.model.characteristic.ValueType;
+import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;

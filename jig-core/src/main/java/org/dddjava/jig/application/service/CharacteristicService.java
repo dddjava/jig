@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.values.ValueType;
+import org.dddjava.jig.domain.model.values.ValueTypeContainer;
+import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +22,9 @@ public class CharacteristicService {
 
     CharacteristicRepository characteristicRepository;
     CharacterizedMethodRepository characterizedMethodRepository;
+
+    // TODO パラメタでまわせるようにする
+    ValueTypeContainer valueTypeContainer = new ValueTypeContainer();
 
     public CharacteristicService(CharacteristicRepository characteristicRepository, CharacterizedMethodRepository characterizedMethodRepository) {
         this.characteristicRepository = characteristicRepository;
@@ -42,7 +48,7 @@ public class CharacteristicService {
         characteristicRepository.register(typeCharacteristics);
 
         ValueTypes valueTypes = ValueType.from(implementation);
-        characteristicRepository.register(implementation.typeIdentifier(), valueTypes);
+        valueTypeContainer.add(valueTypes);
 
         List<MethodImplementation> methodImplementations = implementation.instanceMethodSpecifications();
         for (MethodImplementation methodImplementation : methodImplementations) {
@@ -81,7 +87,7 @@ public class CharacteristicService {
     }
 
     public TypeIdentifiers getTypeIdentifiersOf(ValueType valueType) {
-        return characteristicRepository.getTypeIdentifiersOf(valueType);
+        return valueTypeContainer.extract(valueType);
     }
 
     public MethodDeclarations getServiceMethods() {

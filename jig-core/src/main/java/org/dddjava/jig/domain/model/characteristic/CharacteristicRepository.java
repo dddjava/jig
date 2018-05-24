@@ -12,8 +12,4 @@ public interface CharacteristicRepository {
     Characteristics findCharacteristics(TypeIdentifier typeIdentifier);
 
     Characteristics findCharacteristics(TypeIdentifiers typeIdentifiers);
-
-    void register(TypeIdentifier typeIdentifier, ValueTypes valueTypes);
-
-    TypeIdentifiers getTypeIdentifiersOf(ValueType valueType);
 }

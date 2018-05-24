@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.characteristic.ValueType;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 

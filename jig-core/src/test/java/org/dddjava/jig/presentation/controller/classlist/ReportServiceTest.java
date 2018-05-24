@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.usecase.ImportService;
-import org.dddjava.jig.domain.model.characteristic.ValueType;
+import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -122,14 +122,6 @@ public class OnMemoryRelationRepository implements RelationRepository {
     }
 
     @Override
-    public TypeIdentifiers findUserTypes(MethodDeclaration methodDeclaration) {
-        return methodUseMethodsMap.entrySet().stream()
-                .filter(entry -> entry.getValue().contains(methodDeclaration))
-                .map(entry -> entry.getKey().declaringType())
-                .collect(TypeIdentifiers.collector());
-    }
-
-    @Override
     public MethodDeclarations findUserMethods(MethodDeclaration methodDeclaration) {
         return methodUseMethodsMap.entrySet().stream()
                 .filter(entry -> entry.getValue().contains(methodDeclaration))
@@ -160,19 +152,5 @@ public class OnMemoryRelationRepository implements RelationRepository {
         set.addAll(findUseByFieldTypes(typeIdentifier));
         set.addAll(findUseByMethodTypes(typeIdentifier));
         return new TypeIdentifiers(new ArrayList<>(set));
-    }
-
-    @Override
-    public FieldDeclarations findConstants(TypeIdentifier type) {
-        return staticFields.stream()
-                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))
-                .collect(FieldDeclarations.collector());
-    }
-
-    @Override
-    public FieldDeclarations findFieldsOf(TypeIdentifier type) {
-        return instanceFields.stream()
-                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(type))
-                .collect(FieldDeclarations.collector());
     }
 }

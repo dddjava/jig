@@ -114,6 +114,6 @@ public class MethodImplementation {
     }
 
     public void bind(Implementation implementation) {
-        MethodType.methodType(this).bind(this, implementation);
+        MethodKind.methodKind(this).bind(this, implementation);
     }
 }

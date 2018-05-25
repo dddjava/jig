@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 /**
  * メソッドの種類
  */
-public enum MethodType {
+public enum MethodKind {
     CONSTRUCTOR {
         @Override
         public void bind(MethodImplementation methodImplementation, Implementation implementation) {
@@ -23,7 +23,7 @@ public enum MethodType {
         }
     };
 
-    public static MethodType methodType(MethodImplementation methodImplementation) {
+    public static MethodKind methodKind(MethodImplementation methodImplementation) {
         if (methodImplementation.methodDeclaration.isConstructor()) {
             return CONSTRUCTOR;
         }

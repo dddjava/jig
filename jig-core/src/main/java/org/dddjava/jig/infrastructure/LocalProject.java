@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
@@ -47,16 +47,16 @@ public class LocalProject {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    public ImplementationSources getSpecificationSources() {
-        ArrayList<ImplementationSource> sources = new ArrayList<>();
+    public ByteCodeSources getSpecificationSources() {
+        ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
             for (Path path : extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (isClassFile(file)) {
-                            ImplementationSource implementationSource = new ImplementationSource(file);
-                            sources.add(implementationSource);
+                            ByteCodeSource byteCodeSource = new ByteCodeSource(file);
+                            sources.add(byteCodeSource);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -66,7 +66,7 @@ public class LocalProject {
             throw new UncheckedIOException(e);
         }
         LOGGER.info("*.class: {}件", sources.size());
-        return new ImplementationSources(sources);
+        return new ByteCodeSources(sources);
     }
 
     private Path[] extractClassPath() {

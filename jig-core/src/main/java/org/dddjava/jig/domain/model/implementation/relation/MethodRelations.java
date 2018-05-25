@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
 
 import java.util.ArrayList;
@@ -16,11 +16,11 @@ public class MethodRelations {
         this.list = list;
     }
 
-    public MethodRelations(Implementations implementations) {
+    public MethodRelations(ByteCodes byteCodes) {
         this(new ArrayList<>());
 
-        for (Implementation implementation : implementations.list()) {
-            for (MethodImplementation methodSpecification : implementation.instanceMethodSpecifications()) {
+        for (ByteCode byteCode : byteCodes.list()) {
+            for (MethodImplementation methodSpecification : byteCode.instanceMethodSpecifications()) {
                 MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
                 for (MethodDeclaration usingMethod : methodSpecification.usingMethods().list()) {
                     list.add(new MethodRelation(methodDeclaration, usingMethod));

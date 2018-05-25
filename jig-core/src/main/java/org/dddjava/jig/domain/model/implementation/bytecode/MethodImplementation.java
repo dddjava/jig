@@ -106,7 +106,7 @@ public class MethodImplementation {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
 
-    public void bind(Implementation implementation) {
-        MethodKind.methodKind(this).bind(this, implementation);
+    public void bind(ByteCode byteCode) {
+        MethodKind.methodKind(this).bind(this, byteCode);
     }
 }

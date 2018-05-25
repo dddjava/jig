@@ -2,10 +2,10 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
-import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
+import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,11 +31,11 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-public class AsmImplementationReaderTest {
+public class AsmByteCodeReaderTest {
 
     @Test
     void 付与されているアノテーションと記述が取得できる() throws Exception {
-        Implementation actual = exercise(Annotated.class);
+        ByteCode actual = exercise(Annotated.class);
 
         assertThat(actual.fieldAnnotationDeclarations())
                 .hasSize(1)
@@ -67,7 +67,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        Implementation actual = exercise(ClassDefinition.class);
+        ByteCode actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -82,7 +82,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        Implementation actual = exercise(FieldDefinition.class);
+        ByteCode actual = exercise(FieldDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -100,7 +100,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void メソッドで使用している型が取得できる() throws Exception {
-        Implementation actual = exercise(MethodInstruction.class);
+        ByteCode actual = exercise(MethodInstruction.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -130,7 +130,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
-        Implementation actual = exercise(MethodInstruction.class);
+        ByteCode actual = exercise(MethodInstruction.class);
 
         assertThat(actual.instanceMethodSpecifications())
                 .extracting(
@@ -149,7 +149,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        Implementation actual = exercise(DecisionClass.class);
+        ByteCode actual = exercise(DecisionClass.class);
 
         List<MethodImplementation> methodImplementations = actual.instanceMethodSpecifications();
 
@@ -168,7 +168,7 @@ public class AsmImplementationReaderTest {
 
     @Test
     void enumで使用するクラスのテスト() throws Exception {
-        Implementation actual = exercise(EnumDefinition.class);
+        ByteCode actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -182,14 +182,14 @@ public class AsmImplementationReaderTest {
     @ParameterizedTest
     @MethodSource
     void enumの種類を判別できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
-        Implementation actual = exercise(clz);
+        ByteCode actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
-                        Implementation::isEnum,
-                        Implementation::hasInstanceMethod,
-                        Implementation::hasField,
-                        Implementation::canExtend
+                        ByteCode::isEnum,
+                        ByteCode::hasInstanceMethod,
+                        ByteCode::hasField,
+                        ByteCode::canExtend
                 )
                 .containsExactly(
                         true,
@@ -208,10 +208,10 @@ public class AsmImplementationReaderTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private Implementation exercise(Class<?> definitionClass) throws URISyntaxException {
+    private ByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmImplementationFactory sut = new AsmImplementationFactory(new PropertyImplementationAnalyzeContext());
-        return sut.readSpecification(new ImplementationSource(path));
+        AsmByteCodeFactory sut = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
+        return sut.readSpecification(new ByteCodeSource(path));
     }
 }

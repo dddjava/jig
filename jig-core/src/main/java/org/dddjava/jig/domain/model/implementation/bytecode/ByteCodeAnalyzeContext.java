@@ -5,9 +5,9 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
  *
  * TODO 実装をどう特徴付けるかの話なのでimplementationからは取り除いた方が良さそう
  */
-public interface ImplementationAnalyzeContext {
+public interface ByteCodeAnalyzeContext {
 
-    boolean isModel(Implementation implementation);
+    boolean isModel(ByteCode byteCode);
 
-    boolean isRepository(Implementation implementation);
+    boolean isRepository(ByteCode byteCode);
 }

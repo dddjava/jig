@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 /**
  * 対象から実装を取得するファクトリ
  */
-public interface ImplementationFactory {
+public interface ByteCodeFactory {
 
-    Implementations readFrom(ImplementationSources implementationSources);
+    ByteCodes readFrom(ByteCodeSources byteCodeSources);
 }

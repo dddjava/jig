@@ -7,8 +7,8 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
-import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
+import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
+import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -52,10 +52,10 @@ public class Dependencies {
 
     ImplementationService importService() {
         // TODO extensionで変更できるようにする
-        PropertyImplementationAnalyzeContext specificationContext = new PropertyImplementationAnalyzeContext();
+        PropertyByteCodeAnalyzeContext specificationContext = new PropertyByteCodeAnalyzeContext();
 
         return new ImplementationService(
-                new AsmImplementationFactory(specificationContext),
+                new AsmByteCodeFactory(specificationContext),
                 glossaryService(),
                 new MyBatisSqlReader());
     }

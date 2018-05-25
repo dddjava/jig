@@ -3,12 +3,12 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 import java.nio.file.Path;
 
 /**
- * モデルが実装されたソース
+ * バイトコードのソース（classファイル）
  */
-public class ImplementationSource {
+public class ByteCodeSource {
     private final Path path;
 
-    public ImplementationSource(Path path) {
+    public ByteCodeSource(Path path) {
         this.path = path;
     }
 

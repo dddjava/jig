@@ -1,22 +1,22 @@
 package org.dddjava.jig.domain.model.declaration.annotation;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AnnotatedMethods {
-    private final Implementations implementations;
+    private final ByteCodes byteCodes;
 
-    public AnnotatedMethods(Implementations implementations) {
-        this.implementations = implementations;
+    public AnnotatedMethods(ByteCodes byteCodes) {
+        this.byteCodes = byteCodes;
     }
 
     public List<FieldAnnotationDeclaration> list() {
         List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
-        for (Implementation implementation : implementations.list()) {
-            fieldAnnotationDeclarations.addAll(implementation.fieldAnnotationDeclarations());
+        for (ByteCode byteCode : byteCodes.list()) {
+            fieldAnnotationDeclarations.addAll(byteCode.fieldAnnotationDeclarations());
         }
         return fieldAnnotationDeclarations;
     }

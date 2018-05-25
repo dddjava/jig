@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -19,11 +19,11 @@ public class ImplementationService {
 
     final GlossaryService glossaryService;
 
-    final ImplementationFactory implementationFactory;
+    final ByteCodeFactory byteCodeFactory;
     final SqlReader sqlReader;
 
-    public ImplementationService(ImplementationFactory implementationFactory, GlossaryService glossaryService, SqlReader sqlReader) {
-        this.implementationFactory = implementationFactory;
+    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader) {
+        this.byteCodeFactory = byteCodeFactory;
         this.glossaryService = glossaryService;
         this.sqlReader = sqlReader;
     }
@@ -31,11 +31,11 @@ public class ImplementationService {
     /**
      * プロジェクト情報を読み取る
      */
-    public ProjectData readProjectData(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
-        Implementations implementations = readImplementation(implementationSources);
+    public ProjectData readProjectData(ByteCodeSources byteCodeSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
+        ByteCodes byteCodes = readByteCode(byteCodeSources);
         Sqls sqls = readSql(sqlSources);
 
-        ProjectData projectData = ProjectData.from(implementations, sqls);
+        ProjectData projectData = ProjectData.from(byteCodes, sqls);
 
         glossaryService.importJapanese(typeNameSources);
         glossaryService.importJapanese(packageNameSources);
@@ -44,14 +44,14 @@ public class ImplementationService {
     }
 
     /**
-     * ソースから実装を読み取る
+     * ソースからバイトコードを読み取る
      */
-    public Implementations readImplementation(ImplementationSources implementationSources) {
-        if (implementationSources.notFound()) {
+    public ByteCodes readByteCode(ByteCodeSources byteCodeSources) {
+        if (byteCodeSources.notFound()) {
             throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
         }
 
-        return implementationFactory.readFrom(implementationSources);
+        return byteCodeFactory.readFrom(byteCodeSources);
     }
 
     /**

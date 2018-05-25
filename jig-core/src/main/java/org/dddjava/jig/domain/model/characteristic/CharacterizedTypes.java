@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.characteristic;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +14,11 @@ public class CharacterizedTypes {
         this.list = list;
     }
 
-    public CharacterizedTypes(Implementations implementations) {
+    public CharacterizedTypes(ByteCodes byteCodes) {
         this(new ArrayList<>());
 
-        for (Implementation implementation : implementations.list()) {
-            TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(implementation);
+        for (ByteCode byteCode : byteCodes.list()) {
+            TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(byteCode);
             list.add(typeCharacteristics);
         }
     }

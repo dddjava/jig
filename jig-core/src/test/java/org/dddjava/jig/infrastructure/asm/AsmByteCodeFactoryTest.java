@@ -2,11 +2,11 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
+import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
@@ -20,22 +20,22 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AsmImplementationFactoryTest {
+public class AsmByteCodeFactoryTest {
 
     private static ProjectData projectData;
 
     @BeforeAll
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
-        URI location = AsmImplementationFactoryTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = AsmByteCodeFactoryTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
-        ImplementationSources implementationSources = localProject.getSpecificationSources();
+        ByteCodeSources byteCodeSources = localProject.getSpecificationSources();
 
-        AsmImplementationFactory implementationFactory = new AsmImplementationFactory(new PropertyImplementationAnalyzeContext());
-        Implementations implementations = implementationFactory.readFrom(implementationSources);
+        AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
+        ByteCodes byteCodes = implementationFactory.readFrom(byteCodeSources);
 
-        projectData = ProjectData.from(implementations, null);
+        projectData = ProjectData.from(byteCodes, null);
     }
 
     @Test

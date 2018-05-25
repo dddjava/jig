@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * モデルの実装
+ * バイトコード
  */
-public class Implementation {
+public class ByteCode {
 
-    final ImplementationAnalyzeContext implementationAnalyzeContext;
+    final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
 
     final TypeIdentifier typeIdentifier;
     final TypeIdentifier parentTypeIdentifier;
@@ -36,13 +36,13 @@ public class Implementation {
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public Implementation(ImplementationAnalyzeContext implementationAnalyzeContext,
-                          TypeIdentifier typeIdentifier,
-                          TypeIdentifier parentTypeIdentifier,
-                          TypeIdentifiers interfaceTypeIdentifiers,
-                          List<TypeIdentifier> useTypes,
-                          boolean canExtend) {
-        this.implementationAnalyzeContext = implementationAnalyzeContext;
+    public ByteCode(ByteCodeAnalyzeContext byteCodeAnalyzeContext,
+                    TypeIdentifier typeIdentifier,
+                    TypeIdentifier parentTypeIdentifier,
+                    TypeIdentifiers interfaceTypeIdentifiers,
+                    List<TypeIdentifier> useTypes,
+                    boolean canExtend) {
+        this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
@@ -87,11 +87,11 @@ public class Implementation {
     }
 
     public boolean isModel() {
-        return implementationAnalyzeContext.isModel(this);
+        return byteCodeAnalyzeContext.isModel(this);
     }
 
     public boolean isRepository() {
-        return implementationAnalyzeContext.isRepository(this);
+        return byteCodeAnalyzeContext.isRepository(this);
     }
 
     public TypeIdentifiers useTypes() {

@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +20,12 @@ public class TypeDependencies {
         this.list = list;
     }
 
-    public TypeDependencies(Implementations implementations) {
+    public TypeDependencies(ByteCodes byteCodes) {
         this(new ArrayList<>());
 
-        for (Implementation implementation : implementations.list()) {
-            TypeIdentifier form = implementation.typeIdentifier();
-            for (TypeIdentifier to : implementation.useTypes().list()) {
+        for (ByteCode byteCode : byteCodes.list()) {
+            TypeIdentifier form = byteCode.typeIdentifier();
+            for (TypeIdentifier to : byteCode.useTypes().list()) {
                 list.add(new TypeDependency(form, to));
             }
         }

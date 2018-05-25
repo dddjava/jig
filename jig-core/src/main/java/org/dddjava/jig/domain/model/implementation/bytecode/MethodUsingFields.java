@@ -14,11 +14,11 @@ public class MethodUsingFields {
         this.list = list;
     }
 
-    public MethodUsingFields(Implementations implementations) {
+    public MethodUsingFields(ByteCodes byteCodes) {
         this(new ArrayList<>());
 
-        for (Implementation implementation : implementations.list()) {
-            for (MethodImplementation methodSpecification : implementation.instanceMethodSpecifications()) {
+        for (ByteCode byteCode : byteCodes.list()) {
+            for (MethodImplementation methodSpecification : byteCode.instanceMethodSpecifications()) {
                 MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
                 for (FieldDeclaration usingField : methodSpecification.usingFields().list()) {
                     list.add(new MethodUsingField(methodDeclaration, usingField));

@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.declaration.field;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,19 +28,19 @@ public class FieldDeclarations {
         return new FieldDeclarations(Collections.emptyList());
     }
 
-    public static FieldDeclarations ofInstanceField(Implementations implementations) {
+    public static FieldDeclarations ofInstanceField(ByteCodes byteCodes) {
         List<FieldDeclaration> list = new ArrayList<>();
-        for (Implementation implementation : implementations.list()) {
-            FieldDeclarations fieldDeclarations = implementation.fieldDeclarations();
+        for (ByteCode byteCode : byteCodes.list()) {
+            FieldDeclarations fieldDeclarations = byteCode.fieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new FieldDeclarations(list);
     }
 
-    public static FieldDeclarations ofStaticField(Implementations implementations) {
+    public static FieldDeclarations ofStaticField(ByteCodes byteCodes) {
         List<FieldDeclaration> list = new ArrayList<>();
-        for (Implementation implementation : implementations.list()) {
-            FieldDeclarations fieldDeclarations = implementation.staticFieldDeclarations();
+        for (ByteCode byteCode : byteCodes.list()) {
+            FieldDeclarations fieldDeclarations = byteCode.staticFieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new FieldDeclarations(list);

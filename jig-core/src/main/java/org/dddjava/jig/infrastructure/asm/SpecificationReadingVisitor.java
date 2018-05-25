@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationAnalyzeContext;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeAnalyzeContext;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -24,24 +24,24 @@ import java.util.stream.Collectors;
 
 class SpecificationReadingVisitor extends ClassVisitor {
 
-    final ImplementationAnalyzeContext implementationAnalyzeContext;
-    Implementation implementation;
+    final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
+    ByteCode byteCode;
 
-    public SpecificationReadingVisitor(ImplementationAnalyzeContext implementationAnalyzeContext) {
+    public SpecificationReadingVisitor(ByteCodeAnalyzeContext byteCodeAnalyzeContext) {
         super(Opcodes.ASM6);
-        this.implementationAnalyzeContext = implementationAnalyzeContext;
+        this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
     }
 
-    public Implementation specification() {
-        return implementation;
+    public ByteCode specification() {
+        return byteCode;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
-        this.implementation = new Implementation(
-                implementationAnalyzeContext,
+        this.byteCode = new ByteCode(
+                byteCodeAnalyzeContext,
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
@@ -53,40 +53,40 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        TypeAnnotationDeclaration typeAnnotationDeclaration = implementation.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
-        implementation.registerTypeAnnotation(typeAnnotationDeclaration);
+        TypeAnnotationDeclaration typeAnnotationDeclaration = byteCode.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        byteCode.registerTypeAnnotation(typeAnnotationDeclaration);
         return super.visitAnnotation(descriptor, visible);
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(implementation::registerUseType);
+        genericsTypes.forEach(byteCode::registerUseType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            implementation.registerUseType(toTypeIdentifier(elementType));
+            byteCode.registerUseType(toTypeIdentifier(elementType));
         }
 
-        FieldDeclaration fieldDeclaration = implementation.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
+        FieldDeclaration fieldDeclaration = byteCode.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールドだけ相手にする
-            implementation.registerField(fieldDeclaration);
+            byteCode.registerField(fieldDeclaration);
         } else {
             if (!name.equals("$VALUES")) {
                 // 定数だけどenumの $VALUES は除く
-                implementation.registerStaticField(fieldDeclaration);
+                byteCode.registerStaticField(fieldDeclaration);
             }
         }
         return new FieldVisitor(this.api) {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                implementation.registerUseType(annotationTypeIdentifier);
+                byteCode.registerUseType(annotationTypeIdentifier);
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        implementation.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                        byteCode.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
             }
         };
     }
@@ -94,7 +94,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(implementation.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(byteCode.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -103,7 +103,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             }
         }
         MethodImplementation methodImplementation = new MethodImplementation(methodDeclaration, useTypes, access);
-        methodImplementation.bind(implementation);
+        methodImplementation.bind(byteCode);
 
         return new MethodVisitor(this.api) {
 

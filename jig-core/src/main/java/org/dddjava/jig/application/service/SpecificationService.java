@@ -6,12 +6,10 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclaration
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.*;
+import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
@@ -23,12 +21,10 @@ import org.springframework.stereotype.Service;
 public class SpecificationService {
 
     final ImplementationFactory implementationFactory;
-    final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
 
-    public SpecificationService(ImplementationFactory implementationFactory, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository) {
+    public SpecificationService(ImplementationFactory implementationFactory, AnnotationDeclarationRepository annotationDeclarationRepository) {
         this.implementationFactory = implementationFactory;
-        this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
     }
 
@@ -43,14 +39,6 @@ public class SpecificationService {
             for (FieldAnnotationDeclaration fieldAnnotationDeclaration : implementation.fieldAnnotationDeclarations()) {
                 annotationDeclarationRepository.register(fieldAnnotationDeclaration);
             }
-
-            for (MethodImplementation methodSpecification : implementation.instanceMethodSpecifications()) {
-                MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
-
-                for (TypeIdentifier interfaceTypeIdentifier : implementation.interfaceTypeIdentifiers.list()) {
-                    relationRepository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
-                }
-            }
         }
 
         for (MethodImplementation methodSpecification : implementations.instanceMethodSpecifications()) {
@@ -61,7 +49,7 @@ public class SpecificationService {
 
         projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(implementations));
         projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(implementations));
-        projectData.setImplementationMethods(relationRepository.allImplementationMethods());
+        projectData.setImplementationMethods(new ImplementationMethods(implementations));
         projectData.setMethodRelations(new MethodRelations(implementations));
         projectData.setMethodUsingFields(new MethodUsingFields(implementations));
 

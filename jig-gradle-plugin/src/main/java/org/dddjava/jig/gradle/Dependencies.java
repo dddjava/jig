@@ -3,7 +3,6 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -13,7 +12,6 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
@@ -31,7 +29,6 @@ import java.io.File;
 public class Dependencies {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
 
-    final RelationRepository relationRepository = new OnMemoryRelationRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
 
@@ -61,7 +58,6 @@ public class Dependencies {
         return new ImportService(
                 new SpecificationService(
                         new AsmImplementationFactory(specificationContext),
-                        relationRepository,
                         annotationDeclarationRepository
                 ),
                 glossaryService(),

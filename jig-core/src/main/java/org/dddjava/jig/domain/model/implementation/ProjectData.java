@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.implementation;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
@@ -23,7 +23,6 @@ public class ProjectData {
 
     // データソースアクセス
     private ImplementationMethods implementationMethods;
-    private MethodDeclarations mapperMethods;
     private Sqls sqls;
 
     // 関連
@@ -34,11 +33,8 @@ public class ProjectData {
     // 特徴とセットになったもの
     private ValueTypes valueTypes;
     private CharacterizedTypes characterizedTypes;
+    private CharacterizedMethods characterizedMethods;
 
-
-    public void setMapperMethods(MethodDeclarations mapperMethods) {
-        this.mapperMethods = mapperMethods;
-    }
 
     public void setImplementationMethods(ImplementationMethods implementationMethods) {
         this.implementationMethods = implementationMethods;
@@ -76,8 +72,8 @@ public class ProjectData {
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public MethodDeclarations mapperMethods() {
-        return mapperMethods;
+    public void setCharacterizedMethods(CharacterizedMethods characterizedMethods) {
+        this.characterizedMethods = characterizedMethods;
     }
 
     public ImplementationMethods implementationMethods() {
@@ -114,5 +110,9 @@ public class ProjectData {
 
     public MethodUsingFields methodUsingFields() {
         return methodUsingFields;
+    }
+
+    public CharacterizedMethods characterizedMethods() {
+        return characterizedMethods;
     }
 }

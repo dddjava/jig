@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -30,7 +31,7 @@ public class AngleService {
      * サービス分析する
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
-        MethodDeclarations serviceMethods = characteristicService.getServiceMethods();
+        MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods(projectData.characterizedTypes());
 
         return ServiceAngles.of(serviceMethods,
                 projectData.methodRelations(),
@@ -42,10 +43,11 @@ public class AngleService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(ProjectData projectData) {
-        MethodDeclarations repositoryMethods = characteristicService.getRepositoryMethods();
+        CharacterizedMethods characterizedMethods = projectData.characterizedMethods();
 
-        return DatasourceAngles.of(repositoryMethods,
-                projectData.mapperMethods(),
+        return DatasourceAngles.of(
+                characterizedMethods.repositoryMethods(projectData.characterizedTypes()),
+                characterizedMethods.mapperMethods(projectData.characterizedTypes()),
                 projectData.implementationMethods(),
                 projectData.methodRelations(),
                 projectData.sqls());
@@ -84,7 +86,7 @@ public class AngleService {
      * 分岐箇所を分析する
      */
     public DecisionAngles decision(ProjectData projectData) {
-        MethodDeclarations methods = characteristicService.getDecisionMethods();
+        MethodDeclarations methods = projectData.characterizedMethods().decisionMethods();
 
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
         return DecisionAngles.of(methods, characterizedTypes);

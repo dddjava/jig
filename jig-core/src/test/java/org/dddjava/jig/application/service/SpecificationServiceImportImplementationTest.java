@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
@@ -8,7 +7,6 @@ import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
@@ -24,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpecificationServiceImportImplementationTest {
 
-    static AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     private static ProjectData projectData;
 
     @BeforeAll
@@ -35,9 +32,7 @@ public class SpecificationServiceImportImplementationTest {
         LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         ImplementationSources implementationSources = localProject.getSpecificationSources();
 
-        SpecificationService specificationService = new SpecificationService(
-                new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
-                annotationDeclarationRepository);
+        SpecificationService specificationService = new SpecificationService(new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()));
         projectData = specificationService.importSpecification(implementationSources, new ProjectData());
     }
 

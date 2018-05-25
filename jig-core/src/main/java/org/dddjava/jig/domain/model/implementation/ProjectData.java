@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.implementation;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -20,6 +22,9 @@ public class ProjectData {
     // フィールド
     private FieldDeclarations staticFieldDeclarations;
     private FieldDeclarations fieldDeclarations;
+    // アノテーション
+    private AnnotatedFields annotatedFields;
+    private AnnotatedMethods annotatedMethods;
 
     // データソースアクセス
     private ImplementationMethods implementationMethods;
@@ -114,5 +119,21 @@ public class ProjectData {
 
     public CharacterizedMethods characterizedMethods() {
         return characterizedMethods;
+    }
+
+    public void setAnnotatedFields(AnnotatedFields annotatedFields) {
+        this.annotatedFields = annotatedFields;
+    }
+
+    public void setAnnotatedMethods(AnnotatedMethods annotatedMethods) {
+        this.annotatedMethods = annotatedMethods;
+    }
+
+    public AnnotatedFields annotatedFields() {
+        return annotatedFields;
+    }
+
+    public AnnotatedMethods annotatedMethods() {
+        return annotatedMethods;
     }
 }

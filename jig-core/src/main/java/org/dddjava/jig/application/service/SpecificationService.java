@@ -2,12 +2,14 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.*;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationFactory;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
@@ -21,11 +23,9 @@ import org.springframework.stereotype.Service;
 public class SpecificationService {
 
     final ImplementationFactory implementationFactory;
-    final AnnotationDeclarationRepository annotationDeclarationRepository;
 
-    public SpecificationService(ImplementationFactory implementationFactory, AnnotationDeclarationRepository annotationDeclarationRepository) {
+    public SpecificationService(ImplementationFactory implementationFactory) {
         this.implementationFactory = implementationFactory;
-        this.annotationDeclarationRepository = annotationDeclarationRepository;
     }
 
     public ProjectData importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
@@ -35,17 +35,8 @@ public class SpecificationService {
 
         Implementations implementations = implementationFactory.readFrom(implementationSources);
 
-        for (Implementation implementation : implementations.list()) {
-            for (FieldAnnotationDeclaration fieldAnnotationDeclaration : implementation.fieldAnnotationDeclarations()) {
-                annotationDeclarationRepository.register(fieldAnnotationDeclaration);
-            }
-        }
-
-        for (MethodImplementation methodSpecification : implementations.instanceMethodSpecifications()) {
-            for (MethodAnnotationDeclaration methodAnnotationDeclaration : methodSpecification.methodAnnotationDeclarations()) {
-                annotationDeclarationRepository.register(methodAnnotationDeclaration);
-            }
-        }
+        projectData.setAnnotatedFields(new AnnotatedFields(implementations));
+        projectData.setAnnotatedMethods(new AnnotatedMethods(implementations));
 
         projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(implementations));
         projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(implementations));

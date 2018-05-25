@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionReport;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
+import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -45,18 +45,15 @@ public class ClassListController {
     ViewResolver viewResolver;
 
     TypeIdentifierFormatter typeIdentifierFormatter;
-    AnnotationDeclarationRepository annotationDeclarationRepository;
     GlossaryService glossaryService;
     AngleService angleService;
 
     public ClassListController(ViewResolver viewResolver,
                                TypeIdentifierFormatter typeIdentifierFormatter,
-                               AnnotationDeclarationRepository annotationDeclarationRepository,
                                GlossaryService glossaryService,
                                AngleService angleService) {
         this.viewResolver = viewResolver;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
-        this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.glossaryService = glossaryService;
         this.angleService = angleService;
     }
@@ -80,7 +77,7 @@ public class ClassListController {
                 valueObjectReport(ValueKind.COLLECTION, projectData),
                 valueObjectReport(ValueKind.DATE, projectData),
                 valueObjectReport(ValueKind.TERM, projectData),
-                validateAnnotationReport(),
+                validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
                 decisionReport(projectData)
         ));
@@ -130,9 +127,10 @@ public class ClassListController {
         return new EnumReport(list).toReport();
     }
 
-    Report<?> validateAnnotationReport() {
+    Report<?> validateAnnotationReport(ProjectData projectData) {
         List<ValidationReport.Row> list = new ArrayList<>();
-        for (ValidationAnnotationDeclaration annotationDeclaration : annotationDeclarationRepository.findValidationAnnotation()) {
+        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
+        for (ValidationAnnotationDeclaration annotationDeclaration : validationAnnotatedMembers.list()) {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
             list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }

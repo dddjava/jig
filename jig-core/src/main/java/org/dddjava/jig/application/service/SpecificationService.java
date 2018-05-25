@@ -3,13 +3,13 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
+import org.dddjava.jig.domain.model.implementation.bytecode.*;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
@@ -32,9 +32,41 @@ public class SpecificationService {
     }
 
     public ProjectData importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
-        Implementations implementations = specification(implementationSources);
+        if (implementationSources.notFound()) {
+            throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
+        }
 
-        registerSpecifications(implementations);
+        Implementations implementations = implementationFactory.readFrom(implementationSources);
+
+        for (Implementation implementation : implementations.list()) {
+            for (FieldDeclaration fieldDeclaration : implementation.fieldDeclarations().list()) {
+                relationRepository.registerField(fieldDeclaration);
+            }
+            for (FieldDeclaration fieldDeclaration : implementation.staticFieldDeclarations().list()) {
+                relationRepository.registerConstants(fieldDeclaration);
+            }
+            for (FieldAnnotationDeclaration fieldAnnotationDeclaration : implementation.fieldAnnotationDeclarations()) {
+                annotationDeclarationRepository.register(fieldAnnotationDeclaration);
+            }
+
+            for (MethodImplementation methodSpecification : implementation.instanceMethodSpecifications()) {
+                MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
+
+                for (TypeIdentifier interfaceTypeIdentifier : implementation.interfaceTypeIdentifiers.list()) {
+                    relationRepository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
+                }
+
+                relationRepository.registerMethodUseFields(methodDeclaration, methodSpecification.usingFields());
+
+                relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
+            }
+        }
+
+        for (MethodImplementation methodSpecification : implementations.instanceMethodSpecifications()) {
+            for (MethodAnnotationDeclaration methodAnnotationDeclaration : methodSpecification.methodAnnotationDeclarations()) {
+                annotationDeclarationRepository.register(methodAnnotationDeclaration);
+            }
+        }
 
         projectData.setFieldDeclarations(relationRepository.allFieldDeclarations());
         projectData.setStaticFieldDeclarations(relationRepository.allStaticFieldDeclarations());
@@ -48,38 +80,5 @@ public class SpecificationService {
         projectData.setValueTypes(new ValueTypes(implementations));
 
         return projectData;
-    }
-
-    Implementations specification(ImplementationSources implementationSources) {
-        if (implementationSources.notFound()) {
-            throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
-        }
-
-        return implementationFactory.readFrom(implementationSources);
-    }
-
-    void registerSpecifications(Implementations implementations) {
-        implementations.list().forEach(this::registerSpecification);
-
-        implementations.instanceMethodSpecifications().forEach(methodSpecification ->
-                methodSpecification.methodAnnotationDeclarations().forEach(annotationDeclarationRepository::register));
-    }
-
-    void registerSpecification(Implementation implementation) {
-        implementation.fieldDeclarations().list().forEach(relationRepository::registerField);
-        implementation.staticFieldDeclarations().list().forEach(relationRepository::registerConstants);
-        implementation.fieldAnnotationDeclarations().forEach(annotationDeclarationRepository::register);
-
-        implementation.instanceMethodSpecifications().forEach(methodSpecification -> {
-            MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
-
-            for (TypeIdentifier interfaceTypeIdentifier : implementation.interfaceTypeIdentifiers.list()) {
-                relationRepository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
-            }
-
-            relationRepository.registerMethodUseFields(methodDeclaration, methodSpecification.usingFields());
-
-            relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
-        });
     }
 }

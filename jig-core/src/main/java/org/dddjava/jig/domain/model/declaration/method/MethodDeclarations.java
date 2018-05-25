@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -34,23 +33,7 @@ public class MethodDeclarations {
         ).collect(Collectors.joining(", ", "[", "]"));
     }
 
-    public MethodDeclarations distinct() {
-        return list.stream().distinct().collect(MethodDeclarations.collector());
-    }
-
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.stream().anyMatch(methodDeclaration::equals);
-    }
-
-    public MethodDeclarations intersection(MethodDeclarations others) {
-        return list.stream()
-                .filter(others.list::contains)
-                .collect(collector());
-    }
-
-    public MethodDeclarations union(MethodDeclarations others) {
-        ArrayList<MethodDeclaration> newList = new ArrayList<>(list);
-        newList.addAll(others.list);
-        return new MethodDeclarations(newList);
     }
 }

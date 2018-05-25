@@ -19,7 +19,6 @@ import java.util.Set;
 public class MethodImplementation {
 
     public final MethodDeclaration methodDeclaration;
-    private final TypeIdentifier returnType;
     private final int access;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
@@ -34,14 +33,12 @@ public class MethodImplementation {
     private boolean lookupSwitchInstruction = false;
 
     public MethodImplementation(MethodDeclaration methodDeclaration,
-                                TypeIdentifier returnType,
                                 List<TypeIdentifier> useTypes,
                                 int access) {
         this.methodDeclaration = methodDeclaration;
-        this.returnType = returnType;
         this.access = access;
 
-        this.useTypes.add(returnType);
+        this.useTypes.add(methodDeclaration.returnType());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
     }
@@ -83,10 +80,6 @@ public class MethodImplementation {
 
     public void registerInvokeDynamic(TypeIdentifier type) {
         useTypes.add(type);
-    }
-
-    public TypeIdentifier returnType() {
-        return returnType;
     }
 
     public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {

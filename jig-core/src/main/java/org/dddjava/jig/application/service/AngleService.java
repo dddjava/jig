@@ -21,14 +21,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AngleService {
 
-    CharacteristicService characteristicService;
-
-    public AngleService(CharacteristicService characteristicService) {
-        this.characteristicService = characteristicService;
-    }
-
     /**
-     * サービス分析する
+     * サービスを分析する
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
         MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods(projectData.characterizedTypes());

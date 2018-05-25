@@ -102,12 +102,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-        MethodImplementation methodImplementation = new MethodImplementation(
-                methodDeclaration,
-                methodDescriptorToReturnIdentifier(descriptor),
-                useTypes,
-                access
-        );
+        MethodImplementation methodImplementation = new MethodImplementation(methodDeclaration, useTypes, access);
         methodImplementation.bind(implementation);
 
         return new MethodVisitor(this.api) {

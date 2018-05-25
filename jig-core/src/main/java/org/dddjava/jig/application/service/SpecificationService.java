@@ -25,11 +25,9 @@ public class SpecificationService {
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
     final DependencyRepository dependencyRepository;
-    final CharacteristicService characteristicService;
 
-    public SpecificationService(ImplementationFactory implementationFactory, CharacteristicService characteristicService, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyRepository dependencyRepository) {
+    public SpecificationService(ImplementationFactory implementationFactory, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyRepository dependencyRepository) {
         this.implementationFactory = implementationFactory;
-        this.characteristicService = characteristicService;
         this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
         this.dependencyRepository = dependencyRepository;

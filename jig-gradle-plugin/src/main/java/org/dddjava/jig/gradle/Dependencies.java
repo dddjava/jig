@@ -2,7 +2,6 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.application.usecase.ImportService;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethodRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
@@ -32,14 +31,11 @@ import java.io.File;
 public class Dependencies {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
 
-    final CharacterizedMethodRepository characterizedMethodRepository = new OnMemoryCharacterizedMethodRepository();
     final RelationRepository relationRepository = new OnMemoryRelationRepository();
     final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     final DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
-
-    final CharacteristicService characteristicService = new CharacteristicService(characterizedMethodRepository);
 
     LocalProject localProject(Project project) {
         JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
@@ -67,7 +63,6 @@ public class Dependencies {
         return new ImportService(
                 new SpecificationService(
                         new AsmImplementationFactory(specificationContext),
-                        characteristicService,
                         relationRepository,
                         annotationDeclarationRepository,
                         dependencyRepository),
@@ -112,7 +107,7 @@ public class Dependencies {
     }
 
     private AngleService angleService() {
-        return new AngleService(characteristicService);
+        return new AngleService();
     }
 
     private ViewResolver jigViewResolver(String outputOmitPrefix) {

@@ -2,7 +2,10 @@ package org.dddjava.jig.domain.model.declaration.field;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +26,24 @@ public class FieldDeclarations {
 
     public static FieldDeclarations empty() {
         return new FieldDeclarations(Collections.emptyList());
+    }
+
+    public static FieldDeclarations ofInstanceField(Implementations implementations) {
+        List<FieldDeclaration> list = new ArrayList<>();
+        for (Implementation implementation : implementations.list()) {
+            FieldDeclarations fieldDeclarations = implementation.fieldDeclarations();
+            list.addAll(fieldDeclarations.list());
+        }
+        return new FieldDeclarations(list);
+    }
+
+    public static FieldDeclarations ofStaticField(Implementations implementations) {
+        List<FieldDeclaration> list = new ArrayList<>();
+        for (Implementation implementation : implementations.list()) {
+            FieldDeclarations fieldDeclarations = implementation.staticFieldDeclarations();
+            list.addAll(fieldDeclarations.list());
+        }
+        return new FieldDeclarations(list);
     }
 
     public List<FieldDeclaration> list() {

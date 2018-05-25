@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -39,12 +39,6 @@ public class SpecificationService {
         Implementations implementations = implementationFactory.readFrom(implementationSources);
 
         for (Implementation implementation : implementations.list()) {
-            for (FieldDeclaration fieldDeclaration : implementation.fieldDeclarations().list()) {
-                relationRepository.registerField(fieldDeclaration);
-            }
-            for (FieldDeclaration fieldDeclaration : implementation.staticFieldDeclarations().list()) {
-                relationRepository.registerConstants(fieldDeclaration);
-            }
             for (FieldAnnotationDeclaration fieldAnnotationDeclaration : implementation.fieldAnnotationDeclarations()) {
                 annotationDeclarationRepository.register(fieldAnnotationDeclaration);
             }
@@ -68,8 +62,8 @@ public class SpecificationService {
             }
         }
 
-        projectData.setFieldDeclarations(relationRepository.allFieldDeclarations());
-        projectData.setStaticFieldDeclarations(relationRepository.allStaticFieldDeclarations());
+        projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(implementations));
+        projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(implementations));
         projectData.setImplementationMethods(relationRepository.allImplementationMethods());
         projectData.setMethodRelations(relationRepository.allMethodRelations());
         projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -22,7 +22,7 @@ public class MethodImplementation {
     private final int access;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
-    private final List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
+    private final List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
 
     private final List<FieldDeclaration> usingFields = new ArrayList<>();
     private final List<MethodDeclaration> usingMethods = new ArrayList<>();
@@ -73,17 +73,17 @@ public class MethodImplementation {
         useTypes.add(type);
     }
 
-    public void registerAnnotation(MethodAnnotationDeclaration methodAnnotationDeclaration) {
-        methodAnnotationDeclarations.add(methodAnnotationDeclaration);
-        useTypes.add(methodAnnotationDeclaration.annotationType());
+    public void registerAnnotation(AnnotatedMethod annotatedMethod) {
+        annotatedMethods.add(annotatedMethod);
+        useTypes.add(annotatedMethod.annotationType());
     }
 
     public void registerInvokeDynamic(TypeIdentifier type) {
         useTypes.add(type);
     }
 
-    public List<MethodAnnotationDeclaration> methodAnnotationDeclarations() {
-        return methodAnnotationDeclarations;
+    public List<AnnotatedMethod> methodAnnotationDeclarations() {
+        return annotatedMethods;
     }
 
     public Set<TypeIdentifier> useTypes() {

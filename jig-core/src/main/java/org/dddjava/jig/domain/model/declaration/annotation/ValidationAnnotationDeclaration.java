@@ -8,18 +8,18 @@ public class ValidationAnnotationDeclaration {
     final TypeIdentifier declaringType;
     final AnnotationDescription description;
 
-    public ValidationAnnotationDeclaration(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
-        annotationType = fieldAnnotationDeclaration.annotationType();
-        annotateSimpleName = fieldAnnotationDeclaration.fieldDeclaration().nameText();
-        declaringType = fieldAnnotationDeclaration.fieldDeclaration().declaringType();
-        description = fieldAnnotationDeclaration.description();
+    public ValidationAnnotationDeclaration(AnnotatedField annotatedField) {
+        annotationType = annotatedField.annotationType();
+        annotateSimpleName = annotatedField.fieldDeclaration().nameText();
+        declaringType = annotatedField.fieldDeclaration().declaringType();
+        description = annotatedField.description();
     }
 
-    public ValidationAnnotationDeclaration(MethodAnnotationDeclaration methodAnnotationDeclaration) {
-        annotationType = methodAnnotationDeclaration.annotationType();
-        annotateSimpleName = methodAnnotationDeclaration.methodDeclaration().asSimpleText();
-        declaringType = methodAnnotationDeclaration.methodDeclaration().declaringType();
-        description = methodAnnotationDeclaration.description();
+    public ValidationAnnotationDeclaration(AnnotatedMethod annotatedMethod) {
+        annotationType = annotatedMethod.annotationType();
+        annotateSimpleName = annotatedMethod.methodDeclaration().asSimpleText();
+        declaringType = annotatedMethod.methodDeclaration().declaringType();
+        description = annotatedMethod.description();
     }
 
     public String annotateSimpleName() {

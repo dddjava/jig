@@ -9,14 +9,14 @@ import java.util.stream.Stream;
 
 public class CharacterizedTypeStream {
 
-    Stream<TypeCharacteristics> stream;
+    Stream<CharacterizedType> stream;
 
-    public CharacterizedTypeStream(Stream<TypeCharacteristics> stream) {
+    public CharacterizedTypeStream(Stream<CharacterizedType> stream) {
         this.stream = stream;
     }
 
     public Characteristics characteristics() {
-        return stream.map(TypeCharacteristics::characteristics).collect(Characteristics.collector());
+        return stream.map(CharacterizedType::characteristics).collect(Characteristics.collector());
     }
 
     public CharacterizedTypeStream filter(TypeIdentifiers typeIdentifiers) {
@@ -25,16 +25,16 @@ public class CharacterizedTypeStream {
     }
 
     public TypeIdentifiers typeIdentifiers() {
-        return stream.map(TypeCharacteristics::typeIdentifier).collect(TypeIdentifiers.collector());
+        return stream.map(CharacterizedType::typeIdentifier).collect(TypeIdentifiers.collector());
     }
 
     public CharacterizedTypeStream filter(Characteristic characteristic) {
         return new CharacterizedTypeStream(stream.filter(typeCharacteristics -> typeCharacteristics.has(characteristic).isSatisfy()));
     }
 
-    public TypeCharacteristics pickup(TypeIdentifier typeIdentifier) {
+    public CharacterizedType pickup(TypeIdentifier typeIdentifier) {
         return stream.filter(typeCharacteristics -> typeCharacteristics.typeIdentifier().equals(typeIdentifier))
                 .findFirst()
-                .orElseGet(() -> new TypeCharacteristics(typeIdentifier, Collections.emptySet()));
+                .orElseGet(() -> new CharacterizedType(typeIdentifier, Collections.emptySet()));
     }
 }

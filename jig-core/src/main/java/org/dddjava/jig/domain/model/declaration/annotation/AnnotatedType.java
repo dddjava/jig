@@ -1,14 +1,13 @@
 package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
-public class TypeAnnotationDeclaration {
+public class AnnotatedType {
 
     final TypeIdentifier declaringType;
     final TypeIdentifier annotationType;
 
-    public TypeAnnotationDeclaration(TypeIdentifier declaringType, TypeIdentifier annotationType) {
+    public AnnotatedType(TypeIdentifier declaringType, TypeIdentifier annotationType) {
         this.declaringType = declaringType;
         this.annotationType = annotationType;
     }

@@ -78,8 +78,8 @@ public enum Characteristic {
         return false;
     }
 
-    public static TypeCharacteristics resolveCharacteristics(ByteCode byteCode) {
-        return new TypeCharacteristics(
+    public static CharacterizedType resolveCharacteristics(ByteCode byteCode) {
+        return new CharacterizedType(
                 byteCode.typeIdentifier(),
                 Arrays.stream(values())
                         .filter(characteristic -> characteristic.matches(byteCode))

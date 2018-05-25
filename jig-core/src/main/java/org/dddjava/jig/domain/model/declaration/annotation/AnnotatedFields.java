@@ -13,11 +13,11 @@ public class AnnotatedFields {
         this.byteCodes = byteCodes;
     }
 
-    public List<MethodAnnotationDeclaration> list() {
-        List<MethodAnnotationDeclaration> methodAnnotationDeclarations = new ArrayList<>();
+    public List<AnnotatedMethod> list() {
+        List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
         for (MethodImplementation methodSpecification : byteCodes.instanceMethodSpecifications()) {
-            methodAnnotationDeclarations.addAll(methodSpecification.methodAnnotationDeclarations());
+            annotatedMethods.addAll(methodSpecification.methodAnnotationDeclarations());
         }
-        return methodAnnotationDeclarations;
+        return annotatedMethods;
     }
 }

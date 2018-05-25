@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -24,10 +24,10 @@ public class ByteCode {
     final boolean canExtend;
 
     public TypeIdentifiers interfaceTypeIdentifiers;
-    final List<TypeAnnotationDeclaration> typeAnnotationDeclarations = new ArrayList<>();
+    final List<AnnotatedType> annotatedTypes = new ArrayList<>();
     final List<FieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
-    final List<FieldAnnotationDeclaration> fieldAnnotationDeclarations = new ArrayList<>();
+    final List<AnnotatedField> annotatedFields = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
     final List<MethodImplementation> instanceMethodImplementations = new ArrayList<>();
@@ -75,7 +75,7 @@ public class ByteCode {
 
     public boolean hasAnnotation(String annotation) {
         TypeIdentifier annotationType = new TypeIdentifier(annotation);
-        return typeAnnotationDeclarations.stream().anyMatch(typeAnnotationDeclaration -> typeAnnotationDeclaration.typeIs(annotationType));
+        return annotatedTypes.stream().anyMatch(annotatedType -> annotatedType.typeIs(annotationType));
     }
 
     public FieldDeclarations fieldDeclarations() {
@@ -112,9 +112,9 @@ public class ByteCode {
         return instanceMethodImplementations;
     }
 
-    public void registerTypeAnnotation(TypeAnnotationDeclaration typeAnnotationDeclaration) {
-        typeAnnotationDeclarations.add(typeAnnotationDeclaration);
-        useTypes.add(typeAnnotationDeclaration.type());
+    public void registerTypeAnnotation(AnnotatedType annotatedType) {
+        annotatedTypes.add(annotatedType);
+        useTypes.add(annotatedType.type());
     }
 
     public void registerField(FieldDeclaration field) {
@@ -131,20 +131,20 @@ public class ByteCode {
         useTypes.add(typeIdentifier);
     }
 
-    public void registerFieldAnnotation(FieldAnnotationDeclaration fieldAnnotationDeclaration) {
-        fieldAnnotationDeclarations.add(fieldAnnotationDeclaration);
+    public void registerFieldAnnotation(AnnotatedField annotatedField) {
+        annotatedFields.add(annotatedField);
     }
 
-    public TypeAnnotationDeclaration newAnnotationDeclaration(TypeIdentifier annotationTypeIdentifier) {
-        return new TypeAnnotationDeclaration(typeIdentifier, annotationTypeIdentifier);
+    public AnnotatedType newAnnotationDeclaration(TypeIdentifier annotationTypeIdentifier) {
+        return new AnnotatedType(typeIdentifier, annotationTypeIdentifier);
     }
 
     public FieldDeclaration newFieldDeclaration(String name, TypeIdentifier fieldTypeIdentifier) {
         return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
     }
 
-    public List<FieldAnnotationDeclaration> fieldAnnotationDeclarations() {
-        return fieldAnnotationDeclarations;
+    public List<AnnotatedField> fieldAnnotationDeclarations() {
+        return annotatedFields;
     }
 
     public void registerInstanceMethodSpecification(MethodImplementation methodImplementation) {

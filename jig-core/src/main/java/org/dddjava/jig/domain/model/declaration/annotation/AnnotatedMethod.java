@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
-public class MethodAnnotationDeclaration {
+public class AnnotatedMethod {
 
     final MethodDeclaration methodDeclaration;
     final TypeIdentifier annotationType;
     final AnnotationDescription description;
 
-    public MethodAnnotationDeclaration(MethodDeclaration methodDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
+    public AnnotatedMethod(MethodDeclaration methodDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
         this.methodDeclaration = methodDeclaration;
         this.annotationType = annotationType;
         this.description = description;

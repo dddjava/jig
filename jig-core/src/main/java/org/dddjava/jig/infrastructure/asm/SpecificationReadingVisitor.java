@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotationDeclaration;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
@@ -53,8 +53,8 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        TypeAnnotationDeclaration typeAnnotationDeclaration = byteCode.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
-        byteCode.registerTypeAnnotation(typeAnnotationDeclaration);
+        AnnotatedType annotatedType = byteCode.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        byteCode.registerTypeAnnotation(annotatedType);
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -86,7 +86,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
                 byteCode.registerUseType(annotationTypeIdentifier);
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        byteCode.registerFieldAnnotation(new FieldAnnotationDeclaration(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                        byteCode.registerFieldAnnotation(new AnnotatedField(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
             }
         };
     }
@@ -110,7 +110,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodImplementation.registerAnnotation(new MethodAnnotationDeclaration(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
+                        methodImplementation.registerAnnotation(new AnnotatedMethod(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
             }
 
             @Override

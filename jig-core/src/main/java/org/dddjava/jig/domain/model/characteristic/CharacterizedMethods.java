@@ -32,9 +32,9 @@ public class CharacterizedMethods {
     private MethodDeclarations methodsOf(MethodCharacteristic methodCharacteristic, CharacterizedTypes characterizedTypes) {
         return list.stream()
                 .filter(characterizedMethod -> {
-                    TypeCharacteristics typeCharacteristics = characterizedTypes.stream()
+                    CharacterizedType characterizedType = characterizedTypes.stream()
                             .pickup(characterizedMethod.methodDeclaration().declaringType());
-                    return characterizedMethod.has(methodCharacteristic, typeCharacteristics);
+                    return characterizedMethod.has(methodCharacteristic, characterizedType);
                 })
                 .map(CharacterizedMethod::methodDeclaration)
                 .collect(MethodDeclarations.collector());

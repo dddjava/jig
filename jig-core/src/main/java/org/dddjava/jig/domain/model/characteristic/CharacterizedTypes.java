@@ -8,9 +8,9 @@ import java.util.List;
 
 public class CharacterizedTypes {
 
-    List<TypeCharacteristics> list;
+    List<CharacterizedType> list;
 
-    public CharacterizedTypes(List<TypeCharacteristics> list) {
+    public CharacterizedTypes(List<CharacterizedType> list) {
         this.list = list;
     }
 
@@ -18,8 +18,8 @@ public class CharacterizedTypes {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            TypeCharacteristics typeCharacteristics = Characteristic.resolveCharacteristics(byteCode);
-            list.add(typeCharacteristics);
+            CharacterizedType characterizedType = Characteristic.resolveCharacteristics(byteCode);
+            list.add(characterizedType);
         }
     }
 

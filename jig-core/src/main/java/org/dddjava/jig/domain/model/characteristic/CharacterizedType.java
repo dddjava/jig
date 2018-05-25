@@ -4,12 +4,15 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Set;
 
-public class TypeCharacteristics {
+/**
+ * 特徴付きの型
+ */
+public class CharacterizedType {
 
     private final TypeIdentifier typeIdentifier;
     private final Set<Characteristic> set;
 
-    public TypeCharacteristics(TypeIdentifier typeIdentifier, Set<Characteristic> set) {
+    public CharacterizedType(TypeIdentifier typeIdentifier, Set<Characteristic> set) {
         this.typeIdentifier = typeIdentifier;
         this.set = set;
     }

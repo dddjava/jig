@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
@@ -39,6 +40,30 @@ public class ProjectData {
     private ValueTypes valueTypes;
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
+
+    /**
+     * 実装をプロジェクトデータに変換する
+     */
+    public static ProjectData from(Implementations implementations, Sqls sqls) {
+        ProjectData projectData = new ProjectData();
+        projectData.setAnnotatedFields(new AnnotatedFields(implementations));
+        projectData.setAnnotatedMethods(new AnnotatedMethods(implementations));
+
+        projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(implementations));
+        projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(implementations));
+        projectData.setImplementationMethods(new ImplementationMethods(implementations));
+        projectData.setMethodRelations(new MethodRelations(implementations));
+        projectData.setMethodUsingFields(new MethodUsingFields(implementations));
+
+        projectData.setTypeDependencies(new TypeDependencies(implementations));
+        projectData.setCharacterizedTypes(new CharacterizedTypes(implementations));
+        projectData.setCharacterizedMethods(new CharacterizedMethods(implementations.instanceMethodSpecifications()));
+        projectData.setValueTypes(new ValueTypes(implementations));
+
+        projectData.setSqls(sqls);
+
+        return projectData;
+    }
 
 
     public void setImplementationMethods(ImplementationMethods implementationMethods) {

@@ -5,6 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.SpecificationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
@@ -27,13 +28,16 @@ public class ImportService {
         this.glossaryService = glossaryService;
     }
 
-    public void importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources, ProjectData projectData) {
-        specificationService.importSpecification(implementationSources, projectData);
+    public ProjectData importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
+        Implementations implementations = specificationService.readImplementation(implementationSources);
 
         Sqls sqls = datasourceService.load(sqlSources);
-        projectData.setSqls(sqls);
+
+        ProjectData projectData = ProjectData.from(implementations, sqls);
 
         glossaryService.importJapanese(typeNameSources);
         glossaryService.importJapanese(packageNameSources);
+
+        return projectData;
     }
 }

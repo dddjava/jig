@@ -38,8 +38,7 @@ public class ImportServiceTest {
 
     @Test
     void パッケージ依存() {
-        ProjectData projectData = new ProjectData();
-        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources(), projectData);
+        ProjectData projectData = importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
         PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1), projectData);
 
         // パッケージのリストアップ

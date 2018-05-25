@@ -1,6 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
@@ -52,12 +53,14 @@ public class CommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        importService.importSources(
+        ProjectData projectData = importService.importSources(
                 localProject.getSpecificationSources(),
                 localProject.getSqlSources(),
                 localProject.getTypeNameSources(),
-                localProject.getPackageNameSources(),
-                jigHandlerContext.getProjectData());
+                localProject.getPackageNameSources()
+        );
+
+        jigHandlerContext.setProjectData(projectData);
 
         Path outputDirectory = Paths.get(this.outputDirectory);
         for (JigDocument jigDocument : jigDocuments) {

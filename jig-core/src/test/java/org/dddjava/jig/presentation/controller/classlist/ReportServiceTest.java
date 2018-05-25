@@ -31,8 +31,7 @@ class ReportServiceTest {
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        ProjectData projectData = new ProjectData();
-        importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources(), projectData);
+        ProjectData projectData = importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
 
         assertThat(sut.serviceReport(projectData).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))

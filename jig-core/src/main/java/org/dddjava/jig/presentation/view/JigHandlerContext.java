@@ -45,4 +45,8 @@ public class JigHandlerContext {
     public ArgumentResolver argumentResolver() {
         return () -> projectData;
     }
+
+    public void setProjectData(ProjectData projectData) {
+        this.projectData = projectData;
+    }
 }

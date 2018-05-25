@@ -30,9 +30,9 @@ public class ByteCode {
     final List<AnnotatedField> annotatedFields = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    final List<MethodImplementation> instanceMethodImplementations = new ArrayList<>();
-    final List<MethodImplementation> staticMethodImplementations = new ArrayList<>();
-    final List<MethodImplementation> constructorSpecifications = new ArrayList<>();
+    final List<MethodByteCode> instanceMethodByteCodes = new ArrayList<>();
+    final List<MethodByteCode> staticMethodByteCodes = new ArrayList<>();
+    final List<MethodByteCode> constructorSpecifications = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
@@ -95,21 +95,21 @@ public class ByteCode {
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodImplementation methodImplementation : instanceMethodImplementations) {
-            useTypes.addAll(methodImplementation.useTypes());
+        for (MethodByteCode methodByteCode : instanceMethodByteCodes) {
+            useTypes.addAll(methodByteCode.useTypes());
         }
-        for (MethodImplementation methodImplementation : staticMethodImplementations) {
-            useTypes.addAll(methodImplementation.useTypes());
+        for (MethodByteCode methodByteCode : staticMethodByteCodes) {
+            useTypes.addAll(methodByteCode.useTypes());
         }
-        for (MethodImplementation methodImplementation : constructorSpecifications) {
-            useTypes.addAll(methodImplementation.useTypes());
+        for (MethodByteCode methodByteCode : constructorSpecifications) {
+            useTypes.addAll(methodByteCode.useTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public List<MethodImplementation> instanceMethodSpecifications() {
-        return instanceMethodImplementations;
+    public List<MethodByteCode> instanceMethodSpecifications() {
+        return instanceMethodByteCodes;
     }
 
     public void registerTypeAnnotation(AnnotatedType annotatedType) {
@@ -147,15 +147,15 @@ public class ByteCode {
         return annotatedFields;
     }
 
-    public void registerInstanceMethodSpecification(MethodImplementation methodImplementation) {
-        instanceMethodImplementations.add(methodImplementation);
+    public void registerInstanceMethodSpecification(MethodByteCode methodByteCode) {
+        instanceMethodByteCodes.add(methodByteCode);
     }
 
-    public void registerStaticMethodSpecification(MethodImplementation methodImplementation) {
-        staticMethodImplementations.add(methodImplementation);
+    public void registerStaticMethodSpecification(MethodByteCode methodByteCode) {
+        staticMethodByteCodes.add(methodByteCode);
     }
 
-    public void registerConstructorSpecification(MethodImplementation methodImplementation) {
-        constructorSpecifications.add(methodImplementation);
+    public void registerConstructorSpecification(MethodByteCode methodByteCode) {
+        constructorSpecifications.add(methodByteCode);
     }
 }

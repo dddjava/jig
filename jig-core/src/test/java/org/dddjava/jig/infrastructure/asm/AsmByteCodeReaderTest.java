@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -151,12 +151,12 @@ public class AsmByteCodeReaderTest {
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
         ByteCode actual = exercise(DecisionClass.class);
 
-        List<MethodImplementation> methodImplementations = actual.instanceMethodSpecifications();
+        List<MethodByteCode> methodByteCodes = actual.instanceMethodSpecifications();
 
-        assertThat(methodImplementations)
+        assertThat(methodByteCodes)
                 .extracting(
                         methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
-                        MethodImplementation::hasDecision)
+                        MethodByteCode::hasDecision)
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", false),
                         tuple("ifがあるメソッド()", true),

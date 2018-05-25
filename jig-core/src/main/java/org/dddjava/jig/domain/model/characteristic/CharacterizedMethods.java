@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.characteristic;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +10,10 @@ public class CharacterizedMethods {
 
     List<CharacterizedMethod> list;
 
-    public CharacterizedMethods(List<MethodImplementation> methodImplementations) {
+    public CharacterizedMethods(List<MethodByteCode> methodByteCodes) {
         list = new ArrayList<>();
-        for (MethodImplementation methodImplementation : methodImplementations) {
-            list.add(new CharacterizedMethod(methodImplementation));
+        for (MethodByteCode methodByteCode : methodByteCodes) {
+            list.add(new CharacterizedMethod(methodByteCode));
         }
     }
 

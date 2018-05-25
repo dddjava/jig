@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class ImplementationMethods {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodImplementation methodSpecification : byteCode.instanceMethodSpecifications()) {
+            for (MethodByteCode methodSpecification : byteCode.instanceMethodSpecifications()) {
                 MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
 
                 for (TypeIdentifier interfaceTypeIdentifier : byteCode.interfaceTypeIdentifiers.list()) {

@@ -17,7 +17,7 @@ public class ByteCodes {
         return list;
     }
 
-    public List<MethodImplementation> instanceMethodSpecifications() {
+    public List<MethodByteCode> instanceMethodSpecifications() {
         return list.stream()
                 .map(ByteCode::instanceMethodSpecifications)
                 .flatMap(List::stream)

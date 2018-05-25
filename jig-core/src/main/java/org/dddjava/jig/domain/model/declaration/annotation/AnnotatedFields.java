@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class AnnotatedFields {
 
     public List<AnnotatedMethod> list() {
         List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
-        for (MethodImplementation methodSpecification : byteCodes.instanceMethodSpecifications()) {
+        for (MethodByteCode methodSpecification : byteCodes.instanceMethodSpecifications()) {
             annotatedMethods.addAll(methodSpecification.methodAnnotationDeclarations());
         }
         return annotatedMethods;

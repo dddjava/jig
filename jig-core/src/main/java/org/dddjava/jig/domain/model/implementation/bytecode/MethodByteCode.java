@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * メソッドの実装
  */
-public class MethodImplementation {
+public class MethodByteCode {
 
     public final MethodDeclaration methodDeclaration;
     private final int access;
@@ -32,9 +32,9 @@ public class MethodImplementation {
     // switchがある
     private boolean lookupSwitchInstruction = false;
 
-    public MethodImplementation(MethodDeclaration methodDeclaration,
-                                List<TypeIdentifier> useTypes,
-                                int access) {
+    public MethodByteCode(MethodDeclaration methodDeclaration,
+                          List<TypeIdentifier> useTypes,
+                          int access) {
         this.methodDeclaration = methodDeclaration;
         this.access = access;
 

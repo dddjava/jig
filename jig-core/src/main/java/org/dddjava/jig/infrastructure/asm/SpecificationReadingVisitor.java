@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeAnalyzeContext;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -102,20 +102,20 @@ class SpecificationReadingVisitor extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-        MethodImplementation methodImplementation = new MethodImplementation(methodDeclaration, useTypes, access);
-        methodImplementation.bind(byteCode);
+        MethodByteCode methodByteCode = new MethodByteCode(methodDeclaration, useTypes, access);
+        methodByteCode.bind(byteCode);
 
         return new MethodVisitor(this.api) {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodImplementation.registerAnnotation(new AnnotatedMethod(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
+                        methodByteCode.registerAnnotation(new AnnotatedMethod(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
             }
 
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                methodImplementation.registerFieldInstruction(
+                methodByteCode.registerFieldInstruction(
                         new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
@@ -123,7 +123,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                methodImplementation.registerMethodInstruction(
+                methodByteCode.registerMethodInstruction(
                         new MethodDeclaration(
                                 new TypeIdentifier(owner),
                                 toMethodSignature(name, descriptor),
@@ -136,7 +136,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    methodImplementation.registerClassReference(toTypeIdentifier((Type) value));
+                    methodByteCode.registerClassReference(toTypeIdentifier((Type) value));
                 }
 
                 super.visitLdcInsn(value);
@@ -150,9 +150,9 @@ class SpecificationReadingVisitor extends ClassVisitor {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
-                            methodImplementation.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
+                            methodByteCode.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
-                                methodImplementation.registerInvokeDynamic(toTypeIdentifier(argumentType));
+                                methodByteCode.registerInvokeDynamic(toTypeIdentifier(argumentType));
                             }
                         }
                     }
@@ -160,7 +160,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
-                        methodImplementation.registerMethodInstruction(
+                        methodByteCode.registerMethodInstruction(
                                 new MethodDeclaration(
                                         new TypeIdentifier(handle.getOwner()),
                                         toMethodSignature(handle.getName(), handle.getDesc()),
@@ -175,14 +175,14 @@ class SpecificationReadingVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                methodImplementation.registerLookupSwitchInstruction();
+                methodByteCode.registerLookupSwitchInstruction();
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
             @Override
             public void visitJumpInsn(int opcode, Label label) {
                 // 何かしらの分岐がある
-                methodImplementation.registerJumpInstruction();
+                methodByteCode.registerJumpInstruction();
                 super.visitJumpInsn(opcode, label);
             }
         };

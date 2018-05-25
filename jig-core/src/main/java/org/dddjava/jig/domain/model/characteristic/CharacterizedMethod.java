@@ -1,25 +1,25 @@
 package org.dddjava.jig.domain.model.characteristic;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodImplementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 /**
  * 特徴付きのメソッド
  */
 public class CharacterizedMethod {
 
-    private final MethodImplementation methodImplementation;
+    private final MethodByteCode methodByteCode;
 
-    public CharacterizedMethod(MethodImplementation methodImplementation) {
-        this.methodImplementation = methodImplementation;
+    public CharacterizedMethod(MethodByteCode methodByteCode) {
+        this.methodByteCode = methodByteCode;
     }
 
     public MethodDeclaration methodDeclaration() {
-        return methodImplementation.methodDeclaration;
+        return methodByteCode.methodDeclaration;
     }
 
     public boolean hasDecision() {
-        return methodImplementation.hasDecision();
+        return methodByteCode.hasDecision();
     }
 
     public boolean has(MethodCharacteristic methodCharacteristic, CharacterizedType characterizedType) {

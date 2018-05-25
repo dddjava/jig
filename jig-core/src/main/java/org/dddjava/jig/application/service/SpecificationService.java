@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationFactor
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.networks.DependencyRepository;
+import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +24,11 @@ public class SpecificationService {
     final ImplementationFactory implementationFactory;
     final RelationRepository relationRepository;
     final AnnotationDeclarationRepository annotationDeclarationRepository;
-    final DependencyRepository dependencyRepository;
 
-    public SpecificationService(ImplementationFactory implementationFactory, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository, DependencyRepository dependencyRepository) {
+    public SpecificationService(ImplementationFactory implementationFactory, RelationRepository relationRepository, AnnotationDeclarationRepository annotationDeclarationRepository) {
         this.implementationFactory = implementationFactory;
         this.relationRepository = relationRepository;
         this.annotationDeclarationRepository = annotationDeclarationRepository;
-        this.dependencyRepository = dependencyRepository;
     }
 
     public ProjectData importSpecification(ImplementationSources implementationSources, ProjectData projectData) {
@@ -38,13 +36,13 @@ public class SpecificationService {
 
         registerSpecifications(implementations);
 
-        projectData.setTypeDependencies(dependencyRepository.findAllTypeDependency());
         projectData.setFieldDeclarations(relationRepository.allFieldDeclarations());
         projectData.setStaticFieldDeclarations(relationRepository.allStaticFieldDeclarations());
         projectData.setImplementationMethods(relationRepository.allImplementationMethods());
         projectData.setMethodRelations(relationRepository.allMethodRelations());
         projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());
 
+        projectData.setTypeDependencies(new TypeDependencies(implementations));
         projectData.setCharacterizedTypes(new CharacterizedTypes(implementations));
         projectData.setCharacterizedMethods(new CharacterizedMethods(implementations.instanceMethodSpecifications()));
         projectData.setValueTypes(new ValueTypes(implementations));
@@ -84,7 +82,5 @@ public class SpecificationService {
 
             relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
         });
-
-        dependencyRepository.registerDependency(implementation.typeIdentifier(), implementation.useTypes());
     }
 }

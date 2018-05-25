@@ -4,7 +4,10 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementation;
+import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +18,17 @@ public class TypeDependencies {
 
     public TypeDependencies(List<TypeDependency> list) {
         this.list = list;
+    }
+
+    public TypeDependencies(Implementations implementations) {
+        this(new ArrayList<>());
+
+        for (Implementation implementation : implementations.list()) {
+            TypeIdentifier form = implementation.typeIdentifier();
+            for (TypeIdentifier to : implementation.useTypes().list()) {
+                list.add(new TypeDependency(form, to));
+            }
+        }
     }
 
     public PackageDependencies toPackageDependenciesWith(TypeIdentifiers availableTypes) {

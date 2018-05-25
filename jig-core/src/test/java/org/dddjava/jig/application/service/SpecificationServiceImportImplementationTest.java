@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
-import org.dddjava.jig.domain.model.networks.DependencyRepository;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
@@ -24,7 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class SpecificationServiceImportImplementationTest {
 
@@ -42,8 +40,7 @@ public class SpecificationServiceImportImplementationTest {
 
         SpecificationService specificationService = new SpecificationService(
                 new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()),
-                relationRepository, annotationDeclarationRepository,
-                mock(DependencyRepository.class));
+                relationRepository, annotationDeclarationRepository);
         projectData = specificationService.importSpecification(implementationSources, new ProjectData());
     }
 

@@ -10,18 +10,31 @@ import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 
+/**
+ * プロジェクトから読み取った情報
+ *
+ * TODO 名前や構成を見直す
+ */
 public class ProjectData {
 
-    private MethodDeclarations mapperMethods;
-    private ImplementationMethods implementationMethods;
-    private MethodRelations methodRelations;
-    private Sqls sqls;
-    private MethodUsingFields methodUsingFields;
-    private ValueTypes valueTypes;
+    // フィールド
     private FieldDeclarations staticFieldDeclarations;
-    private CharacterizedTypes characterizedTypes;
-    private TypeDependencies typeDependencies;
     private FieldDeclarations fieldDeclarations;
+
+    // データソースアクセス
+    private ImplementationMethods implementationMethods;
+    private MethodDeclarations mapperMethods;
+    private Sqls sqls;
+
+    // 関連
+    private MethodRelations methodRelations;
+    private MethodUsingFields methodUsingFields;
+    private TypeDependencies typeDependencies;
+
+    // 特徴とセットになったもの
+    private ValueTypes valueTypes;
+    private CharacterizedTypes characterizedTypes;
+
 
     public void setMapperMethods(MethodDeclarations mapperMethods) {
         this.mapperMethods = mapperMethods;

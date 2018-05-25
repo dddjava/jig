@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.*;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
@@ -49,10 +50,6 @@ public class SpecificationService {
                 for (TypeIdentifier interfaceTypeIdentifier : implementation.interfaceTypeIdentifiers.list()) {
                     relationRepository.registerImplementation(methodDeclaration, methodDeclaration.with(interfaceTypeIdentifier));
                 }
-
-                relationRepository.registerMethodUseFields(methodDeclaration, methodSpecification.usingFields());
-
-                relationRepository.registerMethodUseMethods(methodDeclaration, methodSpecification.usingMethods());
             }
         }
 
@@ -65,8 +62,8 @@ public class SpecificationService {
         projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(implementations));
         projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(implementations));
         projectData.setImplementationMethods(relationRepository.allImplementationMethods());
-        projectData.setMethodRelations(relationRepository.allMethodRelations());
-        projectData.setMethodUsingFields(relationRepository.allMethodUsingFields());
+        projectData.setMethodRelations(new MethodRelations(implementations));
+        projectData.setMethodUsingFields(new MethodUsingFields(implementations));
 
         projectData.setTypeDependencies(new TypeDependencies(implementations));
         projectData.setCharacterizedTypes(new CharacterizedTypes(implementations));

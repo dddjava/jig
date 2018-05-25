@@ -30,7 +30,6 @@ public class ImportService {
 
     public ProjectData importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
         Implementations implementations = specificationService.readImplementation(implementationSources);
-
         Sqls sqls = datasourceService.load(sqlSources);
 
         ProjectData projectData = ProjectData.from(implementations, sqls);

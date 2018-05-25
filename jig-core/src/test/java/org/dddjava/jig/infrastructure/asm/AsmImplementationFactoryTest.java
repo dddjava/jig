@@ -1,4 +1,4 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.Implementations;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
-import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
@@ -21,20 +20,20 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SpecificationServiceImportImplementationTest {
+public class AsmImplementationFactoryTest {
 
     private static ProjectData projectData;
 
     @BeforeAll
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
-        URI location = SpecificationServiceImportImplementationTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = AsmImplementationFactoryTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         ImplementationSources implementationSources = localProject.getSpecificationSources();
 
-        SpecificationService specificationService = new SpecificationService(new AsmImplementationFactory(new PropertyImplementationAnalyzeContext()));
-        Implementations implementations = specificationService.readImplementation(implementationSources);
+        AsmImplementationFactory implementationFactory = new AsmImplementationFactory(new PropertyImplementationAnalyzeContext());
+        Implementations implementations = implementationFactory.readFrom(implementationSources);
 
         projectData = ProjectData.from(implementations, null);
     }

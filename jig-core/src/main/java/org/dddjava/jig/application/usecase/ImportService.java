@@ -6,6 +6,7 @@ import org.dddjava.jig.application.service.SpecificationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,8 @@ public class ImportService {
     public void importSources(ImplementationSources implementationSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources, ProjectData projectData) {
         specificationService.importSpecification(implementationSources, projectData);
 
-        datasourceService.importDatabaseAccess(sqlSources);
-        projectData.setSqls(datasourceService.allSqls());
+        Sqls sqls = datasourceService.load(sqlSources);
+        projectData.setSqls(sqls);
 
         glossaryService.importJapanese(typeNameSources);
         glossaryService.importJapanese(packageNameSources);

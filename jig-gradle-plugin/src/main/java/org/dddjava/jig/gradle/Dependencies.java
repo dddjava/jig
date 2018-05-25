@@ -3,7 +3,6 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.application.usecase.ImportService;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDeclarationRepository;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlRepository;
 import org.dddjava.jig.domain.model.implementation.relation.RelationRepository;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.domain.model.networks.DependencyRepository;
@@ -13,7 +12,10 @@ import org.dddjava.jig.infrastructure.PropertyImplementationAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmImplementationFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.*;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAnnotationDeclarationRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryDependencyRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryRelationRepository;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
@@ -32,7 +34,6 @@ public class Dependencies {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
 
     final RelationRepository relationRepository = new OnMemoryRelationRepository();
-    final SqlRepository sqlRepository = new OnMemorySqlRepository();
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
     final AnnotationDeclarationRepository annotationDeclarationRepository = new OnMemoryAnnotationDeclarationRepository();
     final DependencyRepository dependencyRepository = new OnMemoryDependencyRepository();
@@ -123,8 +124,7 @@ public class Dependencies {
 
     private DatasourceService datasourceService() {
         return new DatasourceService(
-                new MyBatisSqlReader(),
-                sqlRepository
+                new MyBatisSqlReader()
         );
     }
 

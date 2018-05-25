@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -36,8 +36,8 @@ public class JigReportsTask extends DefaultTask {
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         LocalProject localProject = dependencies.localProject(getProject());
-        ImportService importService = dependencies.importService();
-        ProjectData projectData = importService.importSources(
+        ImplementationService implementationService = dependencies.importService();
+        ProjectData projectData = implementationService.readProjectData(
                 localProject.getSpecificationSources(),
                 localProject.getSqlSources(),
                 localProject.getTypeNameSources(),

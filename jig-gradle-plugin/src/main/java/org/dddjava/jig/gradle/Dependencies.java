@@ -1,7 +1,9 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.application.usecase.ImportService;
+import org.dddjava.jig.application.service.AngleService;
+import org.dddjava.jig.application.service.DependencyService;
+import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -48,15 +50,14 @@ public class Dependencies {
         );
     }
 
-    ImportService importService() {
+    ImplementationService importService() {
         // TODO extensionで変更できるようにする
         PropertyImplementationAnalyzeContext specificationContext = new PropertyImplementationAnalyzeContext();
 
-        return new ImportService(
-                new SpecificationService(new AsmImplementationFactory(specificationContext)),
+        return new ImplementationService(
+                new AsmImplementationFactory(specificationContext),
                 glossaryService(),
-                datasourceService()
-        );
+                new MyBatisSqlReader());
     }
 
     ClassListController classListController(String outputOmitPrefix) {
@@ -105,12 +106,6 @@ public class Dependencies {
         return new GlossaryService(
                 new JavaparserJapaneseReader(),
                 japaneseNameRepository
-        );
-    }
-
-    private DatasourceService datasourceService() {
-        return new DatasourceService(
-                new MyBatisSqlReader()
         );
     }
 

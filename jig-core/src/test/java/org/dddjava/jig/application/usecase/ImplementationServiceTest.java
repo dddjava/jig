@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.usecase;
 
 import org.dddjava.jig.application.service.DependencyService;
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -26,19 +27,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "jig.model.pattern = stub.domain.model.+")
-public class ImportServiceTest {
+public class ImplementationServiceTest {
 
     @Autowired
     DependencyService sut;
 
     @Autowired
-    ImportService importService;
+    ImplementationService implementationService;
     @Autowired
     LocalProject localProject;
 
     @Test
     void パッケージ依存() {
-        ProjectData projectData = importService.importSources(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = implementationService.readProjectData(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
         PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1), projectData);
 
         // パッケージのリストアップ

@@ -45,4 +45,9 @@ public class MethodSignature {
     public boolean isLambda() {
         return methodName.startsWith("lambda$");
     }
+
+    public boolean isConstructor() {
+        // 名前以外の判別方法があればそれにしたい
+        return methodName.equals("<init>");
+    }
 }

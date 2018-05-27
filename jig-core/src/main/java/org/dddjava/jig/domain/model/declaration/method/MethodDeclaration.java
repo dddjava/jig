@@ -62,8 +62,7 @@ public class MethodDeclaration {
     }
 
     public boolean isConstructor() {
-        // 名前以外の判別方法があればそれにしたい
-        return asSignatureSimpleText().startsWith("<init>");
+        return methodSignature.isConstructor();
     }
 
     public boolean isLambda() {

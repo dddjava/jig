@@ -143,7 +143,7 @@ public class AsmByteCodeReaderTest {
                 })
                 .containsExactlyInAnyOrder(
                         tuple("method(MethodArgument)", "[Bar.toBaz(), Foo.toBar()]"),
-                        tuple("lambda()", "[Stream.empty(), Stream.forEach(Consumer), MethodInstruction.lambda$lambda$0(Object)]")
+                        tuple("lambda()", "[MethodInstruction.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]")
                 );
     }
 

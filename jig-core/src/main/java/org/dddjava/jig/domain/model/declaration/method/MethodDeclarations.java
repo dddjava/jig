@@ -28,9 +28,10 @@ public class MethodDeclarations {
     }
 
     public String asSimpleText() {
-        return list.stream().map(methodIdentifier ->
-                methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText()
-        ).collect(Collectors.joining(", ", "[", "]"));
+        return list.stream()
+                .map(methodIdentifier -> methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText())
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {

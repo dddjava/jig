@@ -2,8 +2,8 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -43,7 +42,7 @@ public class CommandLineApplication implements CommandLineRunner {
     JigHandlerContext jigHandlerContext;
 
     @Override
-    public void run(String... args) throws IOException {
+    public void run(String... args) {
         List<JigDocument> jigDocuments =
                 documentTypeText.isEmpty()
                         ? Arrays.asList(JigDocument.values())

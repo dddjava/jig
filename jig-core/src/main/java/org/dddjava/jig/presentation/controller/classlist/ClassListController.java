@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.decisions.DecisionReport;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
@@ -130,7 +130,7 @@ public class ClassListController {
     Report<?> validateAnnotationReport(ProjectData projectData) {
         List<ValidationReport.Row> list = new ArrayList<>();
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
-        for (ValidationAnnotationDeclaration annotationDeclaration : validationAnnotatedMembers.list()) {
+        for (ValidationAnnotatedMember annotationDeclaration : validationAnnotatedMembers.list()) {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
             list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
         }

@@ -5,28 +5,28 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 /**
  * バリデーションアノテーションのついたメンバ
  */
-public class ValidationAnnotationDeclaration {
+public class ValidationAnnotatedMember {
     final TypeIdentifier annotationType;
-    final String annotateSimpleName;
+    final String simpleNameText;
     final TypeIdentifier declaringType;
     final AnnotationDescription description;
 
-    public ValidationAnnotationDeclaration(AnnotatedField annotatedField) {
+    public ValidationAnnotatedMember(AnnotatedField annotatedField) {
         annotationType = annotatedField.annotationType();
-        annotateSimpleName = annotatedField.fieldDeclaration().nameText();
+        simpleNameText = annotatedField.fieldDeclaration().nameText();
         declaringType = annotatedField.fieldDeclaration().declaringType();
         description = annotatedField.description();
     }
 
-    public ValidationAnnotationDeclaration(AnnotatedMethod annotatedMethod) {
+    public ValidationAnnotatedMember(AnnotatedMethod annotatedMethod) {
         annotationType = annotatedMethod.annotationType();
-        annotateSimpleName = annotatedMethod.methodDeclaration().asSignatureSimpleText();
+        simpleNameText = annotatedMethod.methodDeclaration().asSignatureSimpleText();
         declaringType = annotatedMethod.methodDeclaration().declaringType();
         description = annotatedMethod.description();
     }
 
-    public String annotateSimpleName() {
-        return annotateSimpleName;
+    public String asSimpleNameText() {
+        return simpleNameText;
     }
 
     public TypeIdentifier declaringType() {

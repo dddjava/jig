@@ -17,15 +17,15 @@ public class ValidationAnnotatedMembers {
         this.annotatedMethods = annotatedMethods;
     }
 
-    public List<ValidationAnnotationDeclaration> list() {
-        Stream<ValidationAnnotationDeclaration> fieldStream = annotatedFields.list().stream()
+    public List<ValidationAnnotatedMember> list() {
+        Stream<ValidationAnnotatedMember> fieldStream = annotatedFields.list().stream()
                 // TODO 正規表現の絞り込みをやめる
                 .filter(fieldAnnotationDeclaration -> fieldAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
-                .map(ValidationAnnotationDeclaration::new);
-        Stream<ValidationAnnotationDeclaration> methodStream = annotatedMethods.list().stream()
+                .map(ValidationAnnotatedMember::new);
+        Stream<ValidationAnnotatedMember> methodStream = annotatedMethods.list().stream()
                 // TODO 正規表現の絞り込みをやめる
                 .filter(fieldAnnotationDeclaration -> fieldAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
-                .map(ValidationAnnotationDeclaration::new);
+                .map(ValidationAnnotatedMember::new);
 
         return Stream.concat(fieldStream, methodStream)
                 .collect(Collectors.toList());

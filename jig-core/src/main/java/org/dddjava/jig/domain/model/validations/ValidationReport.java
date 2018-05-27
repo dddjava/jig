@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.validations;
 
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotationDeclaration;
+import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
@@ -41,18 +41,18 @@ public class ValidationReport {
     }
 
     public static class Row {
-        ValidationAnnotationDeclaration annotationDeclaration;
+        ValidationAnnotatedMember annotatedMember;
         JapaneseName japaneseName;
         TypeIdentifierFormatter identifierFormatter;
 
-        public Row(ValidationAnnotationDeclaration annotationDeclaration, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
-            this.annotationDeclaration = annotationDeclaration;
+        public Row(ValidationAnnotatedMember annotatedMember, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
+            this.annotatedMember = annotatedMember;
             this.japaneseName = japaneseName;
             this.identifierFormatter = identifierFormatter;
         }
 
         String クラス名() {
-            return annotationDeclaration.declaringType().format(identifierFormatter);
+            return annotatedMember.declaringType().format(identifierFormatter);
         }
 
         String クラス和名() {
@@ -60,15 +60,15 @@ public class ValidationReport {
         }
 
         String フィールドorメソッド() {
-            return annotationDeclaration.annotateSimpleName();
+            return annotatedMember.asSimpleNameText();
         }
 
         String アノテーション名() {
-            return annotationDeclaration.annotationType().asSimpleText();
+            return annotatedMember.annotationType().asSimpleText();
         }
 
         String アノテーション記述() {
-            return annotationDeclaration.annotationDescription().asText();
+            return annotatedMember.annotationDescription().asText();
         }
     }
 }

@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * アノテーションの記述
+ */
 public class AnnotationDescription {
 
     final List<String> list = new ArrayList<>();

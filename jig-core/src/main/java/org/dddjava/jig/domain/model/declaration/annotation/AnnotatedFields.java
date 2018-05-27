@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * アノテーションのついたフィールド一覧
+ */
 public class AnnotatedFields {
     private final ByteCodes byteCodes;
 

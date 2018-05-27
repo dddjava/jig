@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/**
+ * フィールド定義一覧
+ */
 public class FieldDeclarations {
 
     List<FieldDeclaration> list;

@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * アノテーションのついた型
+ */
 public class AnnotatedType {
 
     final TypeIdentifier declaringType;

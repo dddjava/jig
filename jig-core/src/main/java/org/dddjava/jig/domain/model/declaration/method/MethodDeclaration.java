@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Objects;
 
+/**
+ * メソッド定義
+ */
 public class MethodDeclaration {
 
     private final TypeIdentifier declaringType;

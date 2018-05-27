@@ -6,6 +6,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
+/**
+ * メソッドシグネチャ
+ */
 public class MethodSignature {
 
     private final String methodName;

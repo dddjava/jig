@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * アノテーションのついたフィールド
+ */
 public class AnnotatedField {
 
     final FieldDeclaration fieldDeclaration;

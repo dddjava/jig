@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * アノテーションのついたメソッド
+ */
 public class AnnotatedMethod {
 
     final MethodDeclaration methodDeclaration;

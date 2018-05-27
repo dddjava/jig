@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * バリデーションアノテーションのついたメンバ一覧
+ */
 public class ValidationAnnotatedMembers {
 
     private final AnnotatedFields annotatedFields;

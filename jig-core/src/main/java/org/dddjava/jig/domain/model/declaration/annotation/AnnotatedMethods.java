@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * アノテーションのついたメソッド一覧
+ */
 public class AnnotatedMethods {
     private final ByteCodes byteCodes;
 

@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * バリデーションアノテーションのついたメンバ
+ */
 public class ValidationAnnotationDeclaration {
     final TypeIdentifier annotationType;
     final String annotateSimpleName;

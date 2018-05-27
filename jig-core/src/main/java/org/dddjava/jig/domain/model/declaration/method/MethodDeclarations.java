@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+/**
+ * メソッド定義一覧
+ */
 public class MethodDeclarations {
 
     List<MethodDeclaration> list;

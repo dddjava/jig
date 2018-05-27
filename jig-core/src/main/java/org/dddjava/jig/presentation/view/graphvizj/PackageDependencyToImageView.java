@@ -40,7 +40,7 @@ public class PackageDependencyToImageView implements JigView<PackageDependencies
                         if (packageJapaneseName.exists()) {
                             labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
                         }
-                        return IndividualAttribute.of(packageIdentifier)
+                        return Node.of(packageIdentifier)
                                 .label(labelText).asText();
                     })
                     .collect(joining("\n"));

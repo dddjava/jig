@@ -47,25 +47,25 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             String labelText = angles.stream()
                     .map(angle -> {
                         MethodDeclaration method = angle.method();
-                        IndividualAttribute individualAttribute = IndividualAttribute.of(method);
+                        Node node = Node.of(method);
                         if (method.isLambda()) {
-                            individualAttribute.label("(lambda)").shape("ellipse").color("gray");
+                            node.label("(lambda)").lambda();
                         } else {
                             // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
                             String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
-                            individualAttribute.label(methodText);
+                            node.label(methodText);
 
                             // 非publicは色なし
                             if (angle.methodCharacteristics().isNotPublicMethod()) {
-                                individualAttribute.style("solid").color("black");
+                                node.notPublicMethod();
                             }
 
                             // ハンドラを強調（赤色）
                             if (angle.usingFromController().isSatisfy()) {
-                                individualAttribute.color("red");
+                                node.handlerMethod();
                             }
                         }
-                        return individualAttribute.asText();
+                        return node.asText();
                     }).collect(joining("\n"));
 
             // クラス名でグルーピングする
@@ -85,15 +85,12 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
 
             // 凡例
-            IndividualAttribute ハンドラメソッド = new IndividualAttribute("ハンドラメソッド").color("red");
-            IndividualAttribute 非publicメソッド = new IndividualAttribute("非publicメソッド").style("solid").color("black");
-            IndividualAttribute lambda = new IndividualAttribute("lambda").shape("ellipse").color("gray");
             String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                     .add("label=凡例;")
-                    .add(ハンドラメソッド.asText())
+                    .add(new Node("ハンドラメソッド").handlerMethod().asText())
                     .add("通常のメソッド;")
-                    .add(非publicメソッド.asText())
-                    .add(lambda.asText())
+                    .add(new Node("非publicメソッド").notPublicMethod().asText())
+                    .add(new Node("lambda").lambda().asText())
                     .toString();
 
             String graphText = new StringJoiner("\n", "digraph JIG {", "}")

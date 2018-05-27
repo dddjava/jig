@@ -7,34 +7,34 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import java.util.StringJoiner;
 
 /**
- * 個別の属性を設定する
+ * ノードの表現
  */
-public class IndividualAttribute {
+public class Node {
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");
 
-    public IndividualAttribute(String identifier) {
+    public Node(String identifier) {
         this.identifier = identifier;
     }
 
-    public static IndividualAttribute of(PackageIdentifier identifier) {
-        return new IndividualAttribute(identifier.asText());
+    public static Node of(PackageIdentifier identifier) {
+        return new Node(identifier.asText());
     }
 
-    public static IndividualAttribute of(TypeIdentifier identifier) {
-        return new IndividualAttribute(identifier.fullQualifiedName());
+    public static Node of(TypeIdentifier identifier) {
+        return new Node(identifier.fullQualifiedName());
     }
 
-    public static IndividualAttribute of(MethodDeclaration identifier) {
-        return new IndividualAttribute(identifier.asFullText());
+    public static Node of(MethodDeclaration identifier) {
+        return new Node(identifier.asFullText());
     }
 
-    public IndividualAttribute label(String value) {
+    public Node label(String value) {
         attribute.add("label=\"" + value + "\"");
         return this;
     }
 
-    public IndividualAttribute color(String value) {
+    public Node color(String value) {
         attribute.add("color=\"" + value + "\"");
         return this;
     }
@@ -44,13 +44,25 @@ public class IndividualAttribute {
         return '"' + identifier + '"' + attribute + ';';
     }
 
-    public IndividualAttribute style(String value) {
+    public Node style(String value) {
         attribute.add("style=\"" + value + "\"");
         return this;
     }
 
-    public IndividualAttribute shape(String value) {
+    public Node shape(String value) {
         attribute.add("shape=\"" + value + "\"");
         return this;
+    }
+
+    Node notPublicMethod() {
+        return style("solid").color("black");
+    }
+
+    Node lambda() {
+        return shape("ellipse").color("gray");
+    }
+
+    Node handlerMethod() {
+        return color("red");
     }
 }

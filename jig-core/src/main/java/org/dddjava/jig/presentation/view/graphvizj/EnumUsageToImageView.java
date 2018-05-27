@@ -28,7 +28,7 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
     public void render(EnumAngles enumAngles, OutputStream outputStream) throws IOException {
         String enumsText = enumAngles.list().stream()
                 .map(enumAngle ->
-                        IndividualAttribute.of(enumAngle.typeIdentifier())
+                        Node.of(enumAngle.typeIdentifier())
                                 .color("gold").asText())
                 .collect(joining("\n"));
 
@@ -44,7 +44,7 @@ public class EnumUsageToImageView implements JigView<EnumAngles> {
                 enumAngles.list().stream().flatMap(enumAngle -> enumAngle.userTypeIdentifiers().list().stream()))
                 .distinct()
                 .map(typeIdentifier ->
-                        IndividualAttribute.of(typeIdentifier)
+                        Node.of(typeIdentifier)
                                 .label(appendJapaneseName(typeIdentifier)).asText())
                 .collect(joining("\n"));
 

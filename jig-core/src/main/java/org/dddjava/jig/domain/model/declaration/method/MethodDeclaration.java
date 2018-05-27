@@ -68,4 +68,8 @@ public class MethodDeclaration {
     public boolean isLambda() {
         return methodSignature.isLambda();
     }
+
+    String asSimpleTextWithDeclaringType() {
+        return declaringType().asSimpleText() + "." + asSimpleText();
+    }
 }

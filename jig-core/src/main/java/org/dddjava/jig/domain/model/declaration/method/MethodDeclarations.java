@@ -29,7 +29,7 @@ public class MethodDeclarations {
 
     public String asSimpleText() {
         return list.stream()
-                .map(methodIdentifier -> methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.asSimpleText())
+                .map(MethodDeclaration::asSimpleTextWithDeclaringType)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
     }

@@ -12,7 +12,6 @@ repositories {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'org.dddjava.jig-gradle-plugin'
 
     version = '2018.6.1-SNAPSHOT'
     group = 'org.dddjava.jig'
@@ -69,6 +68,7 @@ String findSettingValue(String envName, String propertyName) {
 project(':jig-core') {
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'org.dddjava.jig-gradle-plugin'
 
     ext {
         artifactId = 'jig-core'

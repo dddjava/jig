@@ -31,12 +31,12 @@ public class TypeIdentifiers {
         return Collectors.collectingAndThen(Collectors.toList(), TypeIdentifiers::new);
     }
 
-    public String asText() {
-        return identifiers.stream().map(TypeIdentifier::fullQualifiedName).distinct().collect(joining(", ", "[", "]"));
-    }
-
     public String asSimpleText() {
-        return identifiers.stream().map(TypeIdentifier::asSimpleText).distinct().collect(joining(", ", "[", "]"));
+        return identifiers.stream()
+                .distinct()
+                .map(TypeIdentifier::asSimpleText)
+                .sorted()
+                .collect(joining(", ", "[", "]"));
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

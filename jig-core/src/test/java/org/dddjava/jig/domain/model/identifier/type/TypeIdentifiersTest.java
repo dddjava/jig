@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,20 +17,19 @@ class TypeIdentifiersTest {
 
     @ParameterizedTest
     @MethodSource
-    void test(List<String> identifiers, String simpleText, String text) {
+    void test(List<String> identifiers, String simpleText) {
         TypeIdentifiers sut = identifiers.stream().map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
 
         assertThat(sut.asSimpleText()).isEqualTo(simpleText);
-        assertThat(sut.asText()).isEqualTo(text);
     }
 
     static Stream<Arguments> test() {
         return Stream.of(
-                Arguments.of(Collections.emptyList(), "[]", "[]"),
-                Arguments.of(Collections.singletonList("a.hoge"), "[hoge]", "[a.hoge]"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga]"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "a.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga]"),
-                Arguments.of(Arrays.asList("a.hoge", "a.fuga", "b.fuga"), "[hoge, fuga]", "[a.hoge, a.fuga, b.fuga]")
+                Arguments.of(Collections.emptyList(), "[]"),
+                Arguments.of(Collections.singletonList("a.Hoge"), "[Hoge]"),
+                Arguments.of(Arrays.asList("a.Hoge", "a.Fuga"), "[Fuga, Hoge]"),
+                Arguments.of(Arrays.asList("a.Hoge", "a.Fuga", "a.Fuga"), "[Fuga, Hoge]"),
+                Arguments.of(Arrays.asList("a.Hoge", "a.Fuga", "b.Fuga"), "[Fuga, Fuga, Hoge]")
         );
     }
 

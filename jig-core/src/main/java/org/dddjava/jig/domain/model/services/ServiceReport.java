@@ -73,7 +73,7 @@ public class ServiceReport {
         }
 
         String メソッド() {
-            return serviceAngle.method().asSimpleText();
+            return serviceAngle.method().asSignatureSimpleText();
         }
 
         String メソッド戻り値の型() {

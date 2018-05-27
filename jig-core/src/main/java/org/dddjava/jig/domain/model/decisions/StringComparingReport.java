@@ -18,7 +18,7 @@ public class StringComparingReport {
         メソッド名 {
             @Override
             public String convert(MethodDeclaration row) {
-                return row.methodSignature().asSimpleText();
+                return row.asSignatureSimpleText();
             }
         };
     }

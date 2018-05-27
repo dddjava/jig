@@ -62,7 +62,7 @@ public class DatasourceReport {
         }
 
         String メソッド() {
-            return datasourceAngle.method().asSimpleText();
+            return datasourceAngle.method().asSignatureSimpleText();
         }
 
         String メソッド戻り値の型() {

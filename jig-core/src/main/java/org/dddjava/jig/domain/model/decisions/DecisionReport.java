@@ -15,13 +15,13 @@ public class DecisionReport {
         クラス名 {
             @Override
             public String convert(DecisionAngle row) {
-                return row.declaringType().fullQualifiedName();
+                return row.methodDeclaration().declaringType().fullQualifiedName();
             }
         },
         メソッド名 {
             @Override
             public String convert(DecisionAngle row) {
-                return row.methodSignature().asSimpleText();
+                return row.methodDeclaration().asSignatureSimpleText();
             }
         };
     }

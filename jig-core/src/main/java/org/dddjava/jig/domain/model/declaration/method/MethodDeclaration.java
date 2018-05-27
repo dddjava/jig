@@ -24,7 +24,7 @@ public class MethodDeclaration {
         return fullText;
     }
 
-    public String asSimpleText() {
+    public String asSignatureSimpleText() {
         return methodSignature.asSimpleText();
     }
 
@@ -54,7 +54,7 @@ public class MethodDeclaration {
     }
 
     public String asSimpleTextWithReturnType() {
-        return asSimpleText() + " : " + returnTypeIdentifier.asSimpleText();
+        return asSignatureSimpleText() + " : " + returnTypeIdentifier.asSimpleText();
     }
 
     public TypeIdentifier returnType() {
@@ -62,7 +62,8 @@ public class MethodDeclaration {
     }
 
     public boolean isConstructor() {
-        return methodSignature().asSimpleText().startsWith("<init>");
+        // 名前以外の判別方法があればそれにしたい
+        return asSignatureSimpleText().startsWith("<init>");
     }
 
     public boolean isLambda() {
@@ -70,6 +71,6 @@ public class MethodDeclaration {
     }
 
     String asSimpleTextWithDeclaringType() {
-        return declaringType().asSimpleText() + "." + asSimpleText();
+        return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }
 }

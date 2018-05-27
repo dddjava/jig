@@ -17,7 +17,7 @@ public class ValidationAnnotationDeclaration {
 
     public ValidationAnnotationDeclaration(AnnotatedMethod annotatedMethod) {
         annotationType = annotatedMethod.annotationType();
-        annotateSimpleName = annotatedMethod.methodDeclaration().asSimpleText();
+        annotateSimpleName = annotatedMethod.methodDeclaration().asSignatureSimpleText();
         declaringType = annotatedMethod.methodDeclaration().declaringType();
         description = annotatedMethod.description();
     }

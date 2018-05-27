@@ -57,7 +57,7 @@ public class AsmByteCodeReaderTest {
                             .first()
                             .satisfies(methodAnnotationDeclaration -> {
                                 assertThat(methodAnnotationDeclaration.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
-                                assertThat(methodAnnotationDeclaration.methodDeclaration().asSimpleText()).isEqualTo("method()");
+                                assertThat(methodAnnotationDeclaration.methodDeclaration().asSignatureSimpleText()).isEqualTo("method()");
 
                                 String descriptionText = methodAnnotationDeclaration.description().asText();
                                 assertThat(descriptionText).isEqualTo("[string = \"am\", arrayString = [...], number = 23, clz = Ljava/lang/reflect/Method;, enumValue = DUMMY2]");
@@ -134,7 +134,7 @@ public class AsmByteCodeReaderTest {
 
         assertThat(actual.instanceMethodSpecifications())
                 .extracting(
-                        methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
+                        methodSpecification -> methodSpecification.methodDeclaration.asSignatureSimpleText(),
                         methodSpecification -> methodSpecification.usingMethods().asSimpleText()
                 )
                 .filteredOn(tuple -> {
@@ -155,7 +155,7 @@ public class AsmByteCodeReaderTest {
 
         assertThat(methodByteCodes)
                 .extracting(
-                        methodSpecification -> methodSpecification.methodDeclaration.asSimpleText(),
+                        methodSpecification -> methodSpecification.methodDeclaration.asSignatureSimpleText(),
                         MethodByteCode::hasDecision)
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", false),

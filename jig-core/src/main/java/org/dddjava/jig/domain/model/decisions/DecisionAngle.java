@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.characteristic.Layer;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 public class DecisionAngle {
 
@@ -21,12 +19,8 @@ public class DecisionAngle {
         return new DecisionAngle(methodDeclaration, characterizedTypes.stream().pickup(methodDeclaration.declaringType()).characteristics());
     }
 
-    public TypeIdentifier declaringType() {
-        return methodDeclaration.declaringType();
-    }
-
-    public MethodSignature methodSignature() {
-        return methodDeclaration.methodSignature();
+    public MethodDeclaration methodDeclaration() {
+        return methodDeclaration;
     }
 
     public Layer typeLayer() {

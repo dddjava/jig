@@ -23,7 +23,7 @@ class MethodDeclarationTest {
                 new TypeIdentifier("hoge.fuga.Foo"));
 
         assertThat(methodDeclaration.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa, b.Bbb, a.Aaa)");
-        assertThat(methodDeclaration.asSimpleText()).isEqualTo("abc(Aaa, Bbb, Aaa)");
+        assertThat(methodDeclaration.asSignatureSimpleText()).isEqualTo("abc(Aaa, Bbb, Aaa)");
         assertThat(methodDeclaration.asSimpleTextWithReturnType()).isEqualTo("abc(Aaa, Bbb, Aaa) : Foo");
     }
 }

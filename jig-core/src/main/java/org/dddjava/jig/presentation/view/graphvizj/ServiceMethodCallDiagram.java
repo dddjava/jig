@@ -12,11 +12,11 @@ import java.util.StringJoiner;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
-public class ServiceAngleToImageView extends GraphvizjView<ServiceAngles> {
+public class ServiceMethodCallDiagram extends GraphvizjView<ServiceAngles> {
 
     final JapaneseNameFinder japaneseNameFinder;
 
-    public ServiceAngleToImageView(JapaneseNameFinder japaneseNameFinder) {
+    public ServiceMethodCallDiagram(JapaneseNameFinder japaneseNameFinder) {
         this.japaneseNameFinder = japaneseNameFinder;
     }
 

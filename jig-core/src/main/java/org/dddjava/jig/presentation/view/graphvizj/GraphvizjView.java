@@ -11,7 +11,7 @@ import java.io.OutputStream;
 
 public abstract class GraphvizjView<T> implements JigView<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceAngleToImageView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphvizjView.class);
 
     public void render(T model, OutputStream outputStream) throws IOException {
         String graphText = graphText(model);

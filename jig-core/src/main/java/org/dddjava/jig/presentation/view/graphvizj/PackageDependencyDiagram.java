@@ -10,12 +10,12 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class PackageDependencyToImageView extends GraphvizjView<PackageDependencies> {
+public class PackageDependencyDiagram extends GraphvizjView<PackageDependencies> {
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameFinder japaneseNameFinder;
 
-    public PackageDependencyToImageView(PackageIdentifierFormatter formatter, JapaneseNameFinder japaneseNameFinder) {
+    public PackageDependencyDiagram(PackageIdentifierFormatter formatter, JapaneseNameFinder japaneseNameFinder) {
         this.formatter = formatter;
         this.japaneseNameFinder = japaneseNameFinder;
     }

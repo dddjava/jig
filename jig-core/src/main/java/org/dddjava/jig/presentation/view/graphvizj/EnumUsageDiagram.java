@@ -11,11 +11,11 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class EnumUsageToImageView extends GraphvizjView<EnumAngles> {
+public class EnumUsageDiagram extends GraphvizjView<EnumAngles> {
 
     private final JapaneseNameFinder japaneseNameFinder;
 
-    public EnumUsageToImageView(JapaneseNameFinder japaneseNameFinder) {
+    public EnumUsageDiagram(JapaneseNameFinder japaneseNameFinder) {
         this.japaneseNameFinder = japaneseNameFinder;
     }
 

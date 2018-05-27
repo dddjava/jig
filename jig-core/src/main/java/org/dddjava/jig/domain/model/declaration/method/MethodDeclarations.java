@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.declaration.method;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -23,10 +22,6 @@ public class MethodDeclarations {
         return Collectors.collectingAndThen(Collectors.toList(), MethodDeclarations::new);
     }
 
-    public MethodDeclarations filter(Predicate<MethodDeclaration> predicate) {
-        return list.stream().filter(predicate).collect(collector());
-    }
-
     public String asSimpleText() {
         return list.stream()
                 .map(MethodDeclaration::asSimpleTextWithDeclaringType)
@@ -35,6 +30,6 @@ public class MethodDeclarations {
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
-        return list.stream().anyMatch(methodDeclaration::equals);
+        return list.contains(methodDeclaration);
     }
 }

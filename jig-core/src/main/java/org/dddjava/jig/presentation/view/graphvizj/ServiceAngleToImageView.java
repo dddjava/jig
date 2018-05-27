@@ -49,7 +49,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                         MethodDeclaration method = angle.method();
                         IndividualAttribute individualAttribute = IndividualAttribute.of(method);
                         if (method.isLambda()) {
-                            individualAttribute.label("(lambda)");
+                            individualAttribute.label("(lambda)").shape("ellipse").color("gray");
                         } else {
                             // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
                             String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
@@ -57,8 +57,7 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
 
                             // 非publicは色なし
                             if (angle.methodCharacteristics().isNotPublicMethod()) {
-                                individualAttribute.style("solid");
-                                individualAttribute.color("black");
+                                individualAttribute.style("solid").color("black");
                             }
 
                             // ハンドラを強調（赤色）
@@ -88,11 +87,13 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
             // 凡例
             IndividualAttribute ハンドラメソッド = new IndividualAttribute("ハンドラメソッド").color("red");
             IndividualAttribute 非publicメソッド = new IndividualAttribute("非publicメソッド").style("solid").color("black");
+            IndividualAttribute lambda = new IndividualAttribute("lambda").shape("ellipse").color("gray");
             String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                     .add("label=凡例;")
                     .add(ハンドラメソッド.asText())
                     .add("通常のメソッド;")
                     .add(非publicメソッド.asText())
+                    .add(lambda.asText())
                     .toString();
 
             String graphText = new StringJoiner("\n", "digraph JIG {", "}")

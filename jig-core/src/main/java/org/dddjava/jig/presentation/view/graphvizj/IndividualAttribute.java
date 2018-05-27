@@ -48,4 +48,9 @@ public class IndividualAttribute {
         attribute.add("style=\"" + value + "\"");
         return this;
     }
+
+    public IndividualAttribute shape(String value) {
+        attribute.add("shape=\"" + value + "\"");
+        return this;
+    }
 }

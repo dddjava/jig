@@ -8,5 +8,7 @@ public enum MethodCharacteristic {
     HAS_DECISION,
     SERVICE_METHOD,
     REPOSITORY_METHOD,
-    MAPPER_METHOD;
+    MAPPER_METHOD,
+    PUBLIC,
+    NOT_PUBLIC;
 }

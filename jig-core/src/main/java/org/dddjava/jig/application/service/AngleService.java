@@ -30,7 +30,8 @@ public class AngleService {
         return ServiceAngles.of(serviceMethods,
                 projectData.methodRelations(),
                 projectData.characterizedTypes(),
-                projectData.methodUsingFields());
+                projectData.methodUsingFields(),
+                projectData.characterizedMethods());
     }
 
     /**

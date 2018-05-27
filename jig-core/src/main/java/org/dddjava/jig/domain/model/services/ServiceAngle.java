@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.services;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.characteristic.Satisfaction;
+import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -18,13 +15,15 @@ public class ServiceAngle {
     private final MethodDeclarations userServiceMethods;
     TypeIdentifiers usingFieldTypeIdentifiers;
     MethodDeclarations usingRepositoryMethods;
+    private final MethodCharacteristics methodCharacteristics;
 
-    public ServiceAngle(MethodDeclaration methodDeclaration, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods) {
+    public ServiceAngle(MethodDeclaration methodDeclaration, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods, MethodCharacteristics methodCharacteristics) {
         this.methodDeclaration = methodDeclaration;
         this.userCharacteristics = userCharacteristics;
         this.userServiceMethods = userServiceMethods;
         this.usingFieldTypeIdentifiers = usingFieldTypeIdentifiers;
         this.usingRepositoryMethods = usingRepositoryMethods;
+        this.methodCharacteristics = methodCharacteristics;
     }
 
     public MethodDeclaration method() {
@@ -52,7 +51,7 @@ public class ServiceAngle {
         return userServiceMethods;
     }
 
-    public static ServiceAngle of(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields) {
+    public static ServiceAngle of(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
 
         Characteristics userCharacteristics = characterizedTypes.stream()
                 .filter(methodRelations.stream().filterTo(serviceMethod).fromTypeIdentifiers())
@@ -71,6 +70,12 @@ public class ServiceAngle {
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
 
-        return new ServiceAngle(serviceMethod, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods);
+        MethodCharacteristics methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
+
+        return new ServiceAngle(serviceMethod, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods, methodCharacteristics);
+    }
+
+    public MethodCharacteristics methodCharacteristics() {
+        return methodCharacteristics;
     }
 }

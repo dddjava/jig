@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.services;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -24,10 +25,11 @@ public class ServiceAngles {
     public static ServiceAngles of(MethodDeclarations serviceMethods,
                                    MethodRelations methodRelations,
                                    CharacterizedTypes characterizedTypes,
-                                   MethodUsingFields methodUsingFields) {
+                                   MethodUsingFields methodUsingFields,
+                                   CharacterizedMethods characterizedMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (MethodDeclaration serviceMethod : serviceMethods.list()) {
-            list.add(ServiceAngle.of(serviceMethod, methodRelations, characterizedTypes, methodUsingFields));
+            list.add(ServiceAngle.of(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, characterizedMethods));
         }
         return new ServiceAngles(list);
     }

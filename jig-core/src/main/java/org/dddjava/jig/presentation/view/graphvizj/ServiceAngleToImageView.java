@@ -54,6 +54,13 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                             // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
                             String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
                             individualAttribute.label(methodText);
+
+                            // 非publicは色なし
+                            if (angle.methodCharacteristics().isNotPublicMethod()) {
+                                individualAttribute.style("solid");
+                                individualAttribute.color("black");
+                            }
+
                             // ハンドラを強調（赤色）
                             if (angle.usingFromController().isSatisfy()) {
                                 individualAttribute.color("red");
@@ -78,10 +85,14 @@ public class ServiceAngleToImageView implements JigView<ServiceAngles> {
                     .collect(joining("\n"));
 
 
+            // 凡例
+            IndividualAttribute ハンドラメソッド = new IndividualAttribute("ハンドラメソッド").color("red");
+            IndividualAttribute 非publicメソッド = new IndividualAttribute("非publicメソッド").style("solid").color("black");
             String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                     .add("label=凡例;")
-                    .add("ハンドラメソッド[color=red];")
+                    .add(ハンドラメソッド.asText())
                     .add("通常のメソッド;")
+                    .add(非publicメソッド.asText())
                     .toString();
 
             String graphText = new StringJoiner("\n", "digraph JIG {", "}")

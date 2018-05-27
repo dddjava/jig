@@ -13,7 +13,7 @@ public class IndividualAttribute {
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");
 
-    private IndividualAttribute(String identifier) {
+    public IndividualAttribute(String identifier) {
         this.identifier = identifier;
     }
 
@@ -42,5 +42,10 @@ public class IndividualAttribute {
     public String asText() {
         // "hoge"[label="fuga",color="piyo"];
         return '"' + identifier + '"' + attribute + ';';
+    }
+
+    public IndividualAttribute style(String value) {
+        attribute.add("style=\"" + value + "\"");
+        return this;
     }
 }

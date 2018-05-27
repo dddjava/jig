@@ -1,9 +1,11 @@
 package org.dddjava.jig.domain.model.characteristic;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CharacterizedMethods {
@@ -45,5 +47,13 @@ public class CharacterizedMethods {
                 .filter(CharacterizedMethod::hasDecision)
                 .map(CharacterizedMethod::methodDeclaration)
                 .collect(MethodDeclarations.collector());
+    }
+
+    public MethodCharacteristics characteristicsOf(MethodDeclaration methodDeclaration) {
+        return list.stream()
+                .filter(characterizedMethod -> characterizedMethod.methodDeclaration().equals(methodDeclaration))
+                .findFirst()
+                .map(CharacterizedMethod::characteristics)
+                .orElseGet(() -> new MethodCharacteristics(Collections.emptyList()));
     }
 }

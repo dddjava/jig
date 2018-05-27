@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
-public class EnumUsageDiagram extends GraphvizjView<EnumAngles> {
+public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
 
     private final JapaneseNameFinder japaneseNameFinder;
 
@@ -20,7 +20,7 @@ public class EnumUsageDiagram extends GraphvizjView<EnumAngles> {
     }
 
     @Override
-    protected String graphText(EnumAngles enumAngles) {
+    public String edit(EnumAngles enumAngles) {
         String enumsText = enumAngles.list().stream()
                 .map(enumAngle ->
                         Node.of(enumAngle.typeIdentifier())

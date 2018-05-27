@@ -12,7 +12,7 @@ import java.util.StringJoiner;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
-public class ServiceMethodCallDiagram extends GraphvizjView<ServiceAngles> {
+public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     final JapaneseNameFinder japaneseNameFinder;
 
@@ -21,7 +21,7 @@ public class ServiceMethodCallDiagram extends GraphvizjView<ServiceAngles> {
     }
 
     @Override
-    protected String graphText(ServiceAngles serviceAngles) {
+    public String edit(ServiceAngles serviceAngles) {
         List<ServiceAngle> angles = serviceAngles.list();
 
         // メソッド間の関連

@@ -10,7 +10,7 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class PackageDependencyDiagram extends GraphvizjView<PackageDependencies> {
+public class PackageDependencyDiagram implements DotTextEditor<PackageDependencies> {
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameFinder japaneseNameFinder;
@@ -21,7 +21,7 @@ public class PackageDependencyDiagram extends GraphvizjView<PackageDependencies>
     }
 
     @Override
-    protected String graphText(PackageDependencies packageDependencies) {
+    public String edit(PackageDependencies packageDependencies) {
         RelationText relationText = new RelationText();
         for (PackageDependency packageDependency : packageDependencies.list()) {
             relationText.add(packageDependency.from(), packageDependency.to());

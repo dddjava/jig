@@ -57,6 +57,7 @@ public class CharacterizedMethod {
     public MethodCharacteristics characteristics() {
         Collection<MethodCharacteristic> collection = new HashSet<>();
         for (MethodCharacteristic characteristic: MethodCharacteristic.values()) {
+            if (characteristic == HANDLER) continue; // TODO
             if (has(characteristic)) collection.add(characteristic);
         }
         return new MethodCharacteristics(collection);

@@ -3,6 +3,8 @@ package org.dddjava.jig.domain.model.characteristic;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
+import static org.dddjava.jig.domain.model.characteristic.MethodCharacteristic.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -37,12 +39,16 @@ public class CharacterizedMethod {
                 return characterizedType.has(Characteristic.REPOSITORY).isSatisfy();
             case MAPPER_METHOD:
                 return characterizedType.has(Characteristic.MAPPER).isSatisfy();
-            case HANDLER:
-                // TODO
             case MODEL_METHOD:
                 return characterizedType.has(Characteristic.MODEL).isSatisfy();
             case BOOL_QUERY:
                 return methodDeclaration().returnType().isBoolean();
+            case PUBLIC:
+                return methodByteCode.accessor() == PUBLIC;
+            case NOT_PUBLIC:
+                return methodByteCode.accessor() == NOT_PUBLIC;
+            case HANDLER:
+                // TODO
         }
 
         throw new IllegalArgumentException(methodCharacteristic.name());
@@ -50,22 +56,9 @@ public class CharacterizedMethod {
 
     public MethodCharacteristics characteristics() {
         Collection<MethodCharacteristic> collection = new HashSet<>();
-
-        if (hasDecision()) {
-            collection.add(MethodCharacteristic.HAS_DECISION);
+        for (MethodCharacteristic characteristic: MethodCharacteristic.values()) {
+            if (has(characteristic)) collection.add(characteristic);
         }
-
-        collection.add(methodByteCode.accessor());
-
-        if (has(MethodCharacteristic.MODEL_METHOD)) {
-            collection.add(MethodCharacteristic.MODEL_METHOD);
-        }
-
-        if (has(MethodCharacteristic.BOOL_QUERY)) {
-            collection.add(MethodCharacteristic.BOOL_QUERY);
-        }
-
-
         return new MethodCharacteristics(collection);
     }
 }

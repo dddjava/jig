@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class JigModelAndView<T> {
 
@@ -13,7 +12,7 @@ public class JigModelAndView<T> {
         this.view = view;
     }
 
-    public void render(OutputStream outputStream) throws IOException {
-        view.render(model, outputStream);
+    public void render(JigDocumentLocation jigDocumentLocation) throws IOException {
+        view.render(model, jigDocumentLocation);
     }
 }

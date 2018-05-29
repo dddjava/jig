@@ -2,12 +2,12 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
+import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class GraphvizjView<T> implements JigView<T> {
 
@@ -19,13 +19,15 @@ public class GraphvizjView<T> implements JigView<T> {
         this.editor = editor;
     }
 
-    public void render(T model, OutputStream outputStream) throws IOException {
+    @Override
+    public void render(T model, JigDocumentLocation jigDocumentLocation) throws IOException {
         String graphText = editor.edit(model);
 
         LOGGER.debug(graphText);
 
-        Graphviz.fromString(graphText)
-                .render(Format.PNG)
-                .toOutputStream(outputStream);
+        jigDocumentLocation.writeDocument(outputStream ->
+                Graphviz.fromString(graphText)
+                        .render(Format.PNG)
+                        .toOutputStream(outputStream));
     }
 }

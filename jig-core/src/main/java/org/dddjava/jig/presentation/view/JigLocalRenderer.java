@@ -4,9 +4,7 @@ import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -28,11 +26,8 @@ public class JigLocalRenderer<T> {
                 LOGGER.info("{} を作成しました。", outputDirectory.toAbsolutePath());
             }
 
-            Path outputFilePath = outputDirectory.resolve(jigDocument.fileName());
-            try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
-                modelAndView.render(outputStream);
-                LOGGER.info("{} を出力しました。", outputFilePath.toAbsolutePath());
-            }
+            JigDocumentLocation jigDocumentLocation = new JigDocumentLocation(jigDocument, outputDirectory);
+            modelAndView.render(jigDocumentLocation);
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }

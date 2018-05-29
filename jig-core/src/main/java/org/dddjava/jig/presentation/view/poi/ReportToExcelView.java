@@ -8,19 +8,19 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.domain.basic.report.ReportRow;
 import org.dddjava.jig.domain.basic.report.Reports;
+import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class ReportToExcelView implements JigView<Reports> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
 
     @Override
-    public void render(Reports reports, OutputStream outputStream) throws IOException {
+    public void render(Reports reports, JigDocumentLocation jigDocumentLocation) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             reports.each(report -> {
                 Sheet sheet = book.createSheet(report.title().value());
@@ -38,7 +38,8 @@ public class ReportToExcelView implements JigView<Reports> {
                         0, sheet.getRow(0).getLastCellNum() - 1
                 ));
             });
-            book.write(outputStream);
+
+            jigDocumentLocation.writeDocument(book::write);
         }
     }
 

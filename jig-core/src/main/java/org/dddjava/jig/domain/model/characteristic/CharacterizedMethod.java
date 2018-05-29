@@ -12,9 +12,11 @@ import java.util.HashSet;
 public class CharacterizedMethod {
 
     private final MethodByteCode methodByteCode;
+    private final CharacterizedType characterizedType;
 
-    public CharacterizedMethod(MethodByteCode methodByteCode) {
+    public CharacterizedMethod(MethodByteCode methodByteCode, CharacterizedType characterizedType) {
         this.methodByteCode = methodByteCode;
+        this.characterizedType = characterizedType;
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -25,7 +27,7 @@ public class CharacterizedMethod {
         return methodByteCode.hasDecision();
     }
 
-    public boolean has(MethodCharacteristic methodCharacteristic, CharacterizedType characterizedType) {
+    public boolean has(MethodCharacteristic methodCharacteristic) {
         switch (methodCharacteristic) {
             case HAS_DECISION:
                 return hasDecision();
@@ -37,6 +39,10 @@ public class CharacterizedMethod {
                 return characterizedType.has(Characteristic.MAPPER).isSatisfy();
             case HANDLER:
                 // TODO
+            case MODEL_METHOD:
+                return characterizedType.has(Characteristic.MODEL).isSatisfy();
+            case BOOL_QUERY:
+                return methodDeclaration().returnType().isBoolean();
         }
 
         throw new IllegalArgumentException(methodCharacteristic.name());
@@ -51,9 +57,14 @@ public class CharacterizedMethod {
 
         collection.add(methodByteCode.accessor());
 
-        // TODO 所属してる型で判別してるやつをどうするか
-        // 列挙を別にしてしまう or このクラスにCharacterizedTypeをどうにかして持たせる
-        // 多分後者
+        if (has(MethodCharacteristic.MODEL_METHOD)) {
+            collection.add(MethodCharacteristic.MODEL_METHOD);
+        }
+
+        if (has(MethodCharacteristic.BOOL_QUERY)) {
+            collection.add(MethodCharacteristic.BOOL_QUERY);
+        }
+
 
         return new MethodCharacteristics(collection);
     }

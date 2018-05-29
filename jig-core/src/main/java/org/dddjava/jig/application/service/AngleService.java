@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
@@ -10,6 +11,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -25,7 +27,7 @@ public class AngleService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
-        MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods(projectData.characterizedTypes());
+        MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods();
 
         return ServiceAngles.of(serviceMethods,
                 projectData.methodRelations(),
@@ -41,8 +43,8 @@ public class AngleService {
         CharacterizedMethods characterizedMethods = projectData.characterizedMethods();
 
         return DatasourceAngles.of(
-                characterizedMethods.repositoryMethods(projectData.characterizedTypes()),
-                characterizedMethods.mapperMethods(projectData.characterizedTypes()),
+                characterizedMethods.repositoryMethods(),
+                characterizedMethods.mapperMethods(),
                 projectData.implementationMethods(),
                 projectData.methodRelations(),
                 projectData.sqls());
@@ -86,4 +88,14 @@ public class AngleService {
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
         return DecisionAngles.of(methods, characterizedTypes);
     }
+
+    /**
+     * 真偽値を返すモデルのメソッドを分析する
+     */
+    public BoolQueryModelMethodAngles boolQueryModelMethodAngle(ProjectData projectData) {
+        CharacterizedMethods methods = projectData.characterizedMethods();
+        MethodRelations relations = projectData.methodRelations();
+        return BoolQueryModelMethodAngles.of(methods, relations);
+    }
+
 }

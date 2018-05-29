@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,31 +14,34 @@ public class CharacterizedMethods {
 
     List<CharacterizedMethod> list;
 
-    public CharacterizedMethods(List<MethodByteCode> methodByteCodes) {
+    public CharacterizedMethods(List<MethodByteCode> methodByteCodes, CharacterizedTypes characterizedTypes) {
         list = new ArrayList<>();
         for (MethodByteCode methodByteCode : methodByteCodes) {
-            list.add(new CharacterizedMethod(methodByteCode));
+            CharacterizedType characterizedType = characterizedTypes.stream().pickup(methodByteCode.methodDeclaration.declaringType());
+            list.add(new CharacterizedMethod(methodByteCode, characterizedType));
         }
     }
 
-    public MethodDeclarations serviceMethods(CharacterizedTypes characterizedTypes) {
-        return methodsOf(MethodCharacteristic.SERVICE_METHOD, characterizedTypes);
+    private CharacterizedMethods(List<CharacterizedMethod> list) {
+        this.list = list;
     }
 
-    public MethodDeclarations repositoryMethods(CharacterizedTypes characterizedTypes) {
-        return methodsOf(MethodCharacteristic.REPOSITORY_METHOD, characterizedTypes);
+    public MethodDeclarations serviceMethods() {
+        return methodsOf(MethodCharacteristic.SERVICE_METHOD);
     }
 
-    public MethodDeclarations mapperMethods(CharacterizedTypes characterizedTypes) {
-        return methodsOf(MethodCharacteristic.MAPPER_METHOD, characterizedTypes);
+    public MethodDeclarations repositoryMethods() {
+        return methodsOf(MethodCharacteristic.REPOSITORY_METHOD);
     }
 
-    private MethodDeclarations methodsOf(MethodCharacteristic methodCharacteristic, CharacterizedTypes characterizedTypes) {
+    public MethodDeclarations mapperMethods() {
+        return methodsOf(MethodCharacteristic.MAPPER_METHOD);
+    }
+
+    private MethodDeclarations methodsOf(MethodCharacteristic methodCharacteristic) {
         return list.stream()
                 .filter(characterizedMethod -> {
-                    CharacterizedType characterizedType = characterizedTypes.stream()
-                            .pickup(characterizedMethod.methodDeclaration().declaringType());
-                    return characterizedMethod.has(methodCharacteristic, characterizedType);
+                    return characterizedMethod.has(methodCharacteristic);
                 })
                 .map(CharacterizedMethod::methodDeclaration)
                 .collect(MethodDeclarations.collector());
@@ -56,4 +61,13 @@ public class CharacterizedMethods {
                 .map(CharacterizedMethod::characteristics)
                 .orElseGet(() -> new MethodCharacteristics(Collections.emptyList()));
     }
+
+    public MethodDeclarations modelBoolQueryMethods() {
+        return list.stream()
+                .filter(characterizedMethod -> characterizedMethod.has(MethodCharacteristic.MODEL_METHOD))
+                .filter(characterizedMethod -> characterizedMethod.has(MethodCharacteristic.BOOL_QUERY))
+                .map(CharacterizedMethod::methodDeclaration)
+                .collect(MethodDeclarations.collector());
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedMethod;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
@@ -56,8 +57,9 @@ public class ProjectData {
         projectData.setMethodUsingFields(new MethodUsingFields(byteCodes));
 
         projectData.setTypeDependencies(new TypeDependencies(byteCodes));
-        projectData.setCharacterizedTypes(new CharacterizedTypes(byteCodes));
-        projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodSpecifications()));
+        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes);
+        projectData.setCharacterizedTypes(characterizedTypes);
+        projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodSpecifications(), characterizedTypes));
         projectData.setValueTypes(new ValueTypes(byteCodes));
 
         projectData.setSqls(sqls);

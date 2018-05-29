@@ -1,5 +1,9 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+
+import static java.util.stream.Collectors.toList;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
@@ -22,7 +26,7 @@ public class MethodDeclarations {
     }
 
     public static Collector<MethodDeclaration, ?, MethodDeclarations> collector() {
-        return Collectors.collectingAndThen(Collectors.toList(), MethodDeclarations::new);
+        return Collectors.collectingAndThen(toList(), MethodDeclarations::new);
     }
 
     public String asSimpleText() {
@@ -34,5 +38,14 @@ public class MethodDeclarations {
 
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.contains(methodDeclaration);
+    }
+
+    public TypeIdentifiers declaringTypes() {
+        return new TypeIdentifiers(
+                list.stream()
+                .map(MethodDeclaration::declaringType)
+                .distinct()
+                .collect(toList())
+        );
     }
 }

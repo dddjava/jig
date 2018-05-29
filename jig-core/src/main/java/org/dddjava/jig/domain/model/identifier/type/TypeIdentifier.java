@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.identifier.type;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -69,5 +70,10 @@ public class TypeIdentifier {
             return this;
         }
         return new TypeIdentifier(value.replaceFirst("\\$\\d+", ""));
+    }
+
+    public boolean isBoolean() {
+        Class<?>[] booleanTypes = {Boolean.class, boolean.class};
+        return Arrays.stream(booleanTypes).anyMatch(clazz -> clazz.getName().equals(value));
     }
 }

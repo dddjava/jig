@@ -4,6 +4,9 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
+import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngle;
+import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
+import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodReport;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.categories.EnumReport;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -12,8 +15,8 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionReport;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
+import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
@@ -79,11 +82,13 @@ public class ClassListController {
                 valueObjectReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
-                decisionReport(projectData)
+                decisionReport(projectData),
+                booleanReport(projectData)
         ));
 
         return new JigModelAndView<>(reports, viewResolver.domainList());
     }
+
 
     Report<?> serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
@@ -140,5 +145,17 @@ public class ClassListController {
     Report<?> decisionReport(ProjectData projectData) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
         return new DecisionReport(decisionAngles).toReport();
+    }
+
+    Report<?> booleanReport(ProjectData projectData) {
+        BoolQueryModelMethodAngles angles = angleService.boolQueryModelMethodAngle(projectData);
+
+        List<BoolQueryModelMethodReport.Row> list = new ArrayList<>();
+        for (BoolQueryModelMethodAngle angle : angles.list()) {
+            JapaneseName japaneseClassName = glossaryService.japaneseNameFrom(angle.declaringTypeIdentifier());
+            JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method());
+            list.add(new BoolQueryModelMethodReport.Row(angle, japaneseMethodName, japaneseClassName ,typeIdentifierFormatter));
+        }
+        return new BoolQueryModelMethodReport(list).toReport();
     }
 }

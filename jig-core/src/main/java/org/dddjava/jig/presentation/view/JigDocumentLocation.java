@@ -31,6 +31,16 @@ public class JigDocumentLocation {
         }
     }
 
+    public void writeDebugText(String s) {
+        try {
+            Path outputFilePath = directory.resolve(jigDocument.fileName() + ".txt");
+            Files.write(outputFilePath, s.getBytes());
+            LOGGER.info("{} を出力しました。", outputFilePath.toAbsolutePath());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     public interface JigDocumentWriter {
         void writeTo(OutputStream outputStream) throws IOException;
     }

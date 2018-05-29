@@ -7,8 +7,6 @@ import org.dddjava.jig.presentation.view.JigView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class GraphvizjView<T> implements JigView<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphvizjView.class);
@@ -20,14 +18,13 @@ public class GraphvizjView<T> implements JigView<T> {
     }
 
     @Override
-    public void render(T model, JigDocumentLocation jigDocumentLocation) throws IOException {
+    public void render(T model, JigDocumentLocation jigDocumentLocation) {
         String graphText = editor.edit(model);
-
-        LOGGER.debug(graphText);
 
         jigDocumentLocation.writeDocument(outputStream ->
                 Graphviz.fromString(graphText)
                         .render(Format.PNG)
                         .toOutputStream(outputStream));
+        jigDocumentLocation.writeDebugText(graphText);
     }
 }

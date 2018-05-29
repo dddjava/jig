@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.StringJoiner;
 
 public class ReportToExcelView implements JigView<Reports> {
 
@@ -22,12 +23,16 @@ public class ReportToExcelView implements JigView<Reports> {
     @Override
     public void render(Reports reports, JigDocumentLocation jigDocumentLocation) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
+            StringJoiner debugText = new StringJoiner("\n");
             reports.each(report -> {
                 Sheet sheet = book.createSheet(report.title().value());
                 writeRow(report.headerRow(), sheet.createRow(0));
+                debugText.add(sheet.getSheetName());
+                debugText.add(report.headerRow().list().toString());
 
                 for (ReportRow row : report.rows()) {
                     writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
+                    debugText.add(row.list().toString());
                 }
 
                 for (int i = 0; i < report.headerRow().list().size(); i++) {
@@ -40,6 +45,7 @@ public class ReportToExcelView implements JigView<Reports> {
             });
 
             jigDocumentLocation.writeDocument(book::write);
+            jigDocumentLocation.writeDebugText(debugText.toString());
         }
     }
 

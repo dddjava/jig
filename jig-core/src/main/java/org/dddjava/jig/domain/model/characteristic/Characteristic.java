@@ -37,7 +37,8 @@ public enum Characteristic {
     MAPPER {
         @Override
         boolean matches(ByteCode byteCode) {
-            return byteCode.hasAnnotation("org.apache.ibatis.annotations.Mapper");
+            // WET: org.dddjava.jig.infrastructure.LocalProject.isMapperClassFile
+            return byteCode.typeIdentifier().asSimpleText().endsWith("Mapper");
         }
     },
     ENUM {

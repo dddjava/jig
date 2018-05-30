@@ -121,6 +121,7 @@ public class LocalProject {
     }
 
     private boolean isMapperClassFile(Path path) {
+        // WET: org.dddjava.jig.domain.model.characteristic.Characteristic.MAPPER
         return path.toString().endsWith("Mapper.class");
     }
 

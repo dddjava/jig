@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
@@ -15,6 +16,8 @@ import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,11 +26,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class AngleService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AngleService.class);
+
     /**
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
         MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods();
+
+        if (serviceMethods.empty()) {
+            LOGGER.warn(Warning.サービス検出異常.text());
+        }
 
         return ServiceAngles.of(serviceMethods,
                 projectData.methodRelations(),

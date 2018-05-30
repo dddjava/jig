@@ -2,12 +2,12 @@ package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * メソッド定義一覧
@@ -47,5 +47,9 @@ public class MethodDeclarations {
                 .distinct()
                 .collect(toList())
         );
+    }
+
+    public boolean empty() {
+        return list.isEmpty();
     }
 }

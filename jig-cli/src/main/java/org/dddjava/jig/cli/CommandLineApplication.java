@@ -1,6 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,33 +43,37 @@ public class CommandLineApplication implements CommandLineRunner {
     @Autowired
     JigHandlerContext jigHandlerContext;
 
+    @Autowired
+    Environment environment;
+
     @Override
     public void run(String... args) {
-        List<JigDocument> jigDocuments =
-                documentTypeText.isEmpty()
-                        ? Arrays.asList(JigDocument.values())
-                        : JigDocument.resolve(documentTypeText);
-
-
         long startTime = System.currentTimeMillis();
+        try {
+            List<JigDocument> jigDocuments =
+                    documentTypeText.isEmpty()
+                            ? Arrays.asList(JigDocument.values())
+                            : JigDocument.resolve(documentTypeText);
 
-        LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        ProjectData projectData = implementationService.readProjectData(
-                localProject.getSpecificationSources(),
-                localProject.getSqlSources(),
-                localProject.getTypeNameSources(),
-                localProject.getPackageNameSources()
-        );
+            LOGGER.info("プロジェクト情報の取り込みをはじめます");
+            ProjectData projectData = implementationService.readProjectData(
+                    localProject.getSpecificationSources(),
+                    localProject.getSqlSources(),
+                    localProject.getTypeNameSources(),
+                    localProject.getPackageNameSources()
+            );
 
-        jigHandlerContext.setProjectData(projectData);
+            jigHandlerContext.setProjectData(projectData);
 
-        Path outputDirectory = Paths.get(this.outputDirectory);
-        for (JigDocument jigDocument : jigDocuments) {
-            JigDocumentHandler.of(jigDocument)
-                    .handleLocal(jigHandlerContext)
-                    .render(outputDirectory);
+            Path outputDirectory = Paths.get(this.outputDirectory);
+            for (JigDocument jigDocument : jigDocuments) {
+                JigDocumentHandler.of(jigDocument)
+                        .handleLocal(jigHandlerContext)
+                        .render(outputDirectory);
+            }
+        } catch (ClassFindFailException e) {
+            LOGGER.warn(e.warning().textWithSpringEnvironment(environment));
         }
-
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 }

@@ -1,13 +1,19 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 /**
  * 依存関係サービス
@@ -17,6 +23,9 @@ public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
+    @Autowired
+    Environment environment;
+
     /**
      * パッケージ依存を取得する
      */
@@ -25,6 +34,11 @@ public class DependencyService {
         TypeIdentifiers modelTypes = projectData.characterizedTypes().stream()
                 .filter(Characteristic.MODEL)
                 .typeIdentifiers();
+
+        if (modelTypes.empty()) {
+            LOGGER.warn(Warning.モデル検出異常.textWithSpringEnvironment(environment));
+            return new PackageDependencies(Collections.emptyList(), new PackageIdentifiers(Collections.emptyList()));
+        }
 
         PackageDependencies packageDependencies = projectData.typeDependencies()
                 .toPackageDependenciesWith(modelTypes);

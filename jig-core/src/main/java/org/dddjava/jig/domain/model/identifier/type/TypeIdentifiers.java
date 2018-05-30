@@ -42,4 +42,8 @@ public class TypeIdentifiers {
     public boolean contains(TypeIdentifier typeIdentifier) {
         return identifiers.contains(typeIdentifier);
     }
+
+    public boolean empty() {
+        return identifiers.isEmpty();
+    }
 }

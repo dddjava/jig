@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
@@ -48,7 +49,7 @@ public class ImplementationService {
      */
     public ByteCodes readByteCode(ByteCodeSources byteCodeSources) {
         if (byteCodeSources.notFound()) {
-            throw new RuntimeException("解析対象のクラスが存在しないため処理を中断します。");
+            throw new ClassFindFailException();
         }
 
         return byteCodeFactory.readFrom(byteCodeSources);

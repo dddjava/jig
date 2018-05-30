@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -61,7 +62,11 @@ public class MyBatisSqlReader implements SqlReader {
 
     private Sqls extractSql(Configuration config) {
         List<Sql> list = new ArrayList<>();
-        for (Object obj : config.getMappedStatements()) {
+        // このジェネリクスが信用できない・・・
+        Collection<?> mappedStatements = config.getMappedStatements();
+
+        LOGGER.info("MappedStatements: {}件", mappedStatements.size());
+        for (Object obj : mappedStatements) {
             // Ambiguityが入っていることがあるので型を確認する
             if (obj instanceof MappedStatement) {
                 MappedStatement mappedStatement = (MappedStatement) obj;
@@ -75,6 +80,8 @@ public class MyBatisSqlReader implements SqlReader {
                 list.add(sql);
             }
         }
+
+        LOGGER.info("取得したSQL: {}件", list.size());
         return new Sqls(list);
     }
 

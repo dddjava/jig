@@ -11,10 +11,10 @@ public enum Warning {
             .add("ビルドされていないか、出力先ディレクトリの指定が誤っています。")
             .add("")
             .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
-            .add("- build.classes: {0}")) {
+            .add("- directory.classes: {0}")) {
         @Override
         public String textWithSpringEnvironment(Environment environment) {
-            return text(getProperty(environment, "build.classes"));
+            return text(getProperty(environment, "directory.classes"));
         }
     },
     サービス検出異常(new Message()

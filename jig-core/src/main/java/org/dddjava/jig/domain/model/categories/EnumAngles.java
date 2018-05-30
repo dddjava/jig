@@ -28,4 +28,8 @@ public class EnumAngles {
     public List<EnumAngle> list() {
         return list;
     }
+
+    public TypeIdentifiers typeIdentifiers() {
+        return list.stream().map(EnumAngle::typeIdentifier).collect(TypeIdentifiers.collector());
+    }
 }

@@ -3,11 +3,11 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.categories.EnumAngle;
 import org.dddjava.jig.domain.model.categories.EnumAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
 import java.util.StringJoiner;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -21,10 +21,14 @@ public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
 
     @Override
     public String edit(EnumAngles enumAngles) {
-        String enumsText = enumAngles.list().stream()
-                .map(enumAngle ->
-                        Node.of(enumAngle.typeIdentifier())
-                                .color("gold").asText())
+
+        TypeIdentifiers enumTypes = enumAngles.typeIdentifiers();
+
+        String enumsText = enumTypes.list().stream()
+                .map(enumType -> Node.of(enumType)
+                        .color("gold")
+                        .label(appendJapaneseName(enumType))
+                        .asText())
                 .collect(joining("\n"));
 
         RelationText relationText = new RelationText();
@@ -34,10 +38,11 @@ public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
             }
         }
 
-        String userLabel = Stream.concat(
-                enumAngles.list().stream().map(EnumAngle::typeIdentifier),
-                enumAngles.list().stream().flatMap(enumAngle -> enumAngle.userTypeIdentifiers().list().stream()))
+        String userLabel = enumAngles.list().stream().flatMap(enumAngle -> enumAngle.userTypeIdentifiers().list().stream())
+                // 重複を除く
                 .distinct()
+                // enumを除く
+                .filter(typeIdentifier -> !enumTypes.contains(typeIdentifier))
                 .map(typeIdentifier ->
                         Node.of(typeIdentifier)
                                 .label(appendJapaneseName(typeIdentifier)).asText())

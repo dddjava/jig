@@ -51,9 +51,14 @@ public class AngleService {
     public DatasourceAngles datasourceAngles(ProjectData projectData) {
         CharacterizedMethods characterizedMethods = projectData.characterizedMethods();
 
+        MethodDeclarations mapperMethodDeclarations = characterizedMethods.mapperMethods();
+        if (mapperMethodDeclarations.empty()) {
+            LOGGER.warn(Warning.Mapperメソッド検出異常.text());
+        }
+
         return DatasourceAngles.of(
                 characterizedMethods.repositoryMethods(),
-                characterizedMethods.mapperMethods(),
+                mapperMethodDeclarations,
                 projectData.implementationMethods(),
                 projectData.methodRelations(),
                 projectData.sqls());

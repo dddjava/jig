@@ -31,7 +31,13 @@ public enum Warning {
         public String textWithSpringEnvironment(Environment environment) {
             return text(getProperty(environment, "jig.model.pattern"));
         }
-    };
+    },
+    Mapperメソッド検出異常(new Message()
+            .add("Mapperメソッドが見つからないため、データソース一覧のCRUDが空になります。")
+            .add("CRUDの検出は以下の条件を満たす必要があります。")
+            .add("")
+            .add("- MyBatisのMapperインタフェースを使用している")
+            .add("- Mapperインタフェース名が *Mapper である")),;
 
     String messageFormatPattern;
 

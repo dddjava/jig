@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller.classlist;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +85,7 @@ class ReportServiceTest {
         @Bean
         LocalProject localProject() {
             // jig-coreプロジェクトを読み取り対象にする
-            return new LocalProject(
+            return new DefaultLocalProject(
                     TestSupport.getModuleRootPath().toString(),
                     // classの出力ディレクトリ
                     Paths.get(TestSupport.defaultPackageClassURI()).toString(),

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,7 +82,7 @@ public class ImplementationServiceTest {
         LocalProject localProject() {
             // 読み込む対象のソースを取得
             Path path = Paths.get(TestSupport.defaultPackageClassURI());
-            return new LocalProject(
+            return new DefaultLocalProject(
                     path.toString(),
                     path.toString(),
                     // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう

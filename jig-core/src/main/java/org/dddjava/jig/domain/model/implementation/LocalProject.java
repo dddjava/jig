@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure;
+package org.dddjava.jig.domain.model.implementation;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;

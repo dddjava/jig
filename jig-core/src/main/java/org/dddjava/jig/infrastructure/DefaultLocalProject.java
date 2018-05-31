@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure;
 
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;

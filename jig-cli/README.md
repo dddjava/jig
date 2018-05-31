@@ -49,10 +49,10 @@ outputDirectory=./
 
 以下の一覧を出力します。
 
-- 機能情報の一覧
+- 機能情報の一覧: application.xlsx
     - サービス
     - データソース
-- モデル情報の一覧
+- モデル情報の一覧: domain.xlsx
     - 識別子
     - 数値
     - 列挙子
@@ -62,20 +62,7 @@ outputDirectory=./
 - バリデーション情報の一覧
 - 文字列比較箇所の一覧
 - 条件分岐箇所の一覧
-
-### 出力項目
-
-出力項目は以下を参照してください。
-
-- 機能情報の出力項目
-    - [サービス](../jig-core/src/main/java/jig/domain/model/report/ServiceReport.java)
-    - [データソース](../jig-core/src/main/java/jig/domain/model/report/DatasourceReport.java)
-- モデル情報の出力項目
-    - [列挙子](../jig-core/src/main/java/jig/domain/model/report/CategoryReport.java)
-    - [その他](../jig-core/src/main/java/jig/domain/model/report/GenericModelReport.java)
-- [バリデーション情報の出力項目](../jig-core/src/main/java/jig/domain/model/report/ValidationReport.java)
-- [文字列比較箇所の出力項目](../jig-core/src/main/java/jig/domain/model/report/StringComparingReport.java)
-- [条件分岐箇所の出力項目](../jig-core/src/main/java/jig/domain/model/report/DecisionReport.java)
+- 真偽値を返すメソッドの一覧
 
 #### 補足: データソースのテーブル名
 

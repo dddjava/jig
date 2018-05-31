@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * SQL一覧
+ */
 public class Sqls {
 
     List<Sql> list;

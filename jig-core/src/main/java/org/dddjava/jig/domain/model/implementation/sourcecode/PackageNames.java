@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 
 import java.util.List;
 
+/**
+ * パッケージ名一覧
+ */
 public class PackageNames {
     List<PackageJapaneseName> list;
 

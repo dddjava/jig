@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+/**
+ * インタフェースを実装しているメソッド
+ */
 public class ImplementationMethod {
 
     MethodDeclaration implementationMethod;

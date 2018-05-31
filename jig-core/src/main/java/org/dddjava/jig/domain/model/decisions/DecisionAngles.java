@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 判断の切り口一覧
+ */
 public class DecisionAngles {
 
     List<DecisionAngle> list;

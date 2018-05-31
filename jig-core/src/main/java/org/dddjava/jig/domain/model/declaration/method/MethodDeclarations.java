@@ -43,9 +43,9 @@ public class MethodDeclarations {
     public TypeIdentifiers declaringTypes() {
         return new TypeIdentifiers(
                 list.stream()
-                .map(MethodDeclaration::declaringType)
-                .distinct()
-                .collect(toList())
+                        .map(MethodDeclaration::declaringType)
+                        .distinct()
+                        .collect(toList())
         );
     }
 

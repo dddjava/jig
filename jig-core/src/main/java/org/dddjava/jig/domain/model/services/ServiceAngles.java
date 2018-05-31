@@ -10,6 +10,9 @@ import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * サービスの切り口一覧
+ */
 public class ServiceAngles {
 
     List<ServiceAngle> list;

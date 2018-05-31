@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 特徴付けられた型一覧
+ */
 public class CharacterizedTypes {
 
     List<CharacterizedType> list;

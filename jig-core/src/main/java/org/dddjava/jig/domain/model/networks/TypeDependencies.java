@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * 型依存関係一覧
+ */
 public class TypeDependencies {
 
     List<TypeDependency> list;

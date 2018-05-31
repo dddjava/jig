@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
 import java.util.Objects;
 
+/**
+ * SQL識別子
+ */
 public class SqlIdentifier {
 
     String value;

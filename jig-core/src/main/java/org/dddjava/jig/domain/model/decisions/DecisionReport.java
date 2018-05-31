@@ -3,8 +3,14 @@ package org.dddjava.jig.domain.model.decisions;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
 
+/**
+ * 判断レポート
+ */
 public class DecisionReport {
 
+    /**
+     * レポート項目
+     */
     enum Items implements ConvertibleItem<DecisionAngle> {
         レイヤー {
             @Override

@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.characteristic;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
-import static org.dddjava.jig.domain.model.characteristic.MethodCharacteristic.*;
-
 import java.util.Collection;
 import java.util.HashSet;
 
+import static org.dddjava.jig.domain.model.characteristic.MethodCharacteristic.*;
+
 /**
- * 特徴付きのメソッド
+ * 特徴付けられたメソッド
  */
 public class CharacterizedMethod {
 
@@ -56,7 +56,7 @@ public class CharacterizedMethod {
 
     public MethodCharacteristics characteristics() {
         Collection<MethodCharacteristic> collection = new HashSet<>();
-        for (MethodCharacteristic characteristic: MethodCharacteristic.values()) {
+        for (MethodCharacteristic characteristic : MethodCharacteristic.values()) {
             if (characteristic == HANDLER) continue; // TODO
             if (has(characteristic)) collection.add(characteristic);
         }

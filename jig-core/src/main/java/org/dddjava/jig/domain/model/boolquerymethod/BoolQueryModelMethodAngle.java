@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
+/**
+ * 真偽値を返すモデルの切り口
+ */
 public class BoolQueryModelMethodAngle {
     MethodDeclaration method;
     MethodDeclarations usages;

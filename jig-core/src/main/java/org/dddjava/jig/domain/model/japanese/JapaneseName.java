@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.japanese;
 
 import java.util.stream.Stream;
 
+/**
+ * 和名
+ */
 public class JapaneseName {
 
     final String value;

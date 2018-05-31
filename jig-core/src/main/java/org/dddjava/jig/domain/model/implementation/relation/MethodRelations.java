@@ -8,6 +8,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * メソッドの使用しているメソッド一覧
+ */
 public class MethodRelations {
 
     List<MethodRelation> list;

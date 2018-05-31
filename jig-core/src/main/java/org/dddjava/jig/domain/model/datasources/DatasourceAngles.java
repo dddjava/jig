@@ -9,6 +9,9 @@ import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * データソースの切り口一覧
+ */
 public class DatasourceAngles {
 
     List<DatasourceAngle> list;

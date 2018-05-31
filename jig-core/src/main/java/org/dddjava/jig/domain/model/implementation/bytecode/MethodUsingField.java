@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+/**
+ * メソッドが使用しているフィールド
+ */
 public class MethodUsingField {
 
     MethodDeclaration methodDeclaration;

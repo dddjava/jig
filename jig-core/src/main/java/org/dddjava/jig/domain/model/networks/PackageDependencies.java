@@ -7,6 +7,9 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * パッケージの依存関係一覧
+ */
 public class PackageDependencies {
 
     PackageIdentifiers packages;

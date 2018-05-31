@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.implementation.datasource;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * SQLの情報源
+ */
 public class SqlSources {
     private final URL[] urls;
     private final List<String> classNames;

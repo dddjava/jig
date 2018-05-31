@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * 型和名
+ */
 public class TypeJapaneseName {
     TypeIdentifier typeIdentifier;
     JapaneseName japaneseName;

@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.function.Predicate;
 
+/**
+ * 型の依存関係
+ */
 public class TypeDependency {
 
     final TypeIdentifier from;

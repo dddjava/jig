@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.identifier.namespace;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+/**
+ * パッケージ識別子
+ */
 public class PackageIdentifier {
 
     String value;

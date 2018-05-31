@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.Optional;
 
+/**
+ * 和名発見機
+ */
 public interface JapaneseNameFinder {
 
     PackageJapaneseName find(PackageIdentifier packageIdentifier);

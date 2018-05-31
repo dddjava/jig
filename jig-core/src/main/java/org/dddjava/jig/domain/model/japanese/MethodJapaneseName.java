@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+/**
+ * メソッド和名
+ */
 public class MethodJapaneseName {
     MethodDeclaration methodDeclaration;
     JapaneseName japaneseName;

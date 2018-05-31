@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.characteristic.Layer;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+/**
+ * 判断の切り口
+ */
 public class DecisionAngle {
 
     MethodDeclaration methodDeclaration;

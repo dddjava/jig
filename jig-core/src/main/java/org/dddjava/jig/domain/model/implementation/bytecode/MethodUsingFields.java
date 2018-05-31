@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * メソッドが使用しているフィールド一覧
+ */
 public class MethodUsingFields {
 
     List<MethodUsingField> list;

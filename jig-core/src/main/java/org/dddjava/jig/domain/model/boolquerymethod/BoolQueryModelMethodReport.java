@@ -8,8 +8,14 @@ import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * 真偽値を返すモデルのメソッドレポート
+ */
 public class BoolQueryModelMethodReport {
 
+    /**
+     * レポート項目
+     */
     private enum Items implements ConvertibleItem<Row> {
         メソッド(Row::メソッド名),
         メソッド和名(Row::メソッド和名),

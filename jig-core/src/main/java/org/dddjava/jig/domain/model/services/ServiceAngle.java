@@ -8,6 +8,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 
+/**
+ * サービスの切り口
+ */
 public class ServiceAngle {
 
     MethodDeclaration methodDeclaration;

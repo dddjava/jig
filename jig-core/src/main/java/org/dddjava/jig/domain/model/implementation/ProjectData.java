@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.implementation;
 
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethod;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;

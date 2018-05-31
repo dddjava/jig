@@ -4,12 +4,13 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 特徴付けられたメソッド一覧
+ */
 public class CharacterizedMethods {
 
     List<CharacterizedMethod> list;
@@ -20,10 +21,6 @@ public class CharacterizedMethods {
             CharacterizedType characterizedType = characterizedTypes.stream().pickup(methodByteCode.methodDeclaration.declaringType());
             list.add(new CharacterizedMethod(methodByteCode, characterizedType));
         }
-    }
-
-    private CharacterizedMethods(List<CharacterizedMethod> list) {
-        this.list = list;
     }
 
     public MethodDeclarations serviceMethods() {

@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * モデルの特徴
+ * 型の特徴
  */
 public enum Characteristic {
     CONTROLLER {

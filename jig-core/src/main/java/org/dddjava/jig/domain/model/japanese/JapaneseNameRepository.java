@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
+/**
+ * 和名リポジトリ
+ */
 public interface JapaneseNameRepository {
 
     JapaneseName get(TypeIdentifier typeIdentifier);

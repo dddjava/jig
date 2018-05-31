@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
 import java.util.List;
 
+/**
+ * 型名一覧
+ */
 public class TypeNames {
 
     List<TypeJapaneseName> list;

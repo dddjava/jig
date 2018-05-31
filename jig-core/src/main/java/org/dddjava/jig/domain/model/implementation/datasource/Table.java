@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
+/**
+ * テーブル
+ */
 public class Table {
 
     String value;

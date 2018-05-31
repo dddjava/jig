@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * モデル名のソース
+ * 型名のソース
  */
 public class TypeNameSources {
 

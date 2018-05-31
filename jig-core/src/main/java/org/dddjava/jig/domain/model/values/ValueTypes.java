@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 値の型一覧
+ */
 public class ValueTypes {
     private List<ValueType> list;
 

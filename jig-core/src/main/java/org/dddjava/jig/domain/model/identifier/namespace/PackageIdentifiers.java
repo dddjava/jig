@@ -6,6 +6,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * パッケージ識別子一覧
+ */
 public class PackageIdentifiers {
 
     List<PackageIdentifier> list;

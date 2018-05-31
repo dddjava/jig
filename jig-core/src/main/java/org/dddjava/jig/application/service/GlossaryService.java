@@ -24,23 +24,38 @@ public class GlossaryService {
         this.repository = repository;
     }
 
+    /**
+     * パッケージ和名を取得する
+     */
     public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
         return repository.get(packageIdentifier);
     }
 
+    /**
+     * 型和名を取得する
+     */
     public JapaneseName japaneseNameFrom(TypeIdentifier typeIdentifier) {
         return repository.get(typeIdentifier);
     }
 
+    /**
+     * メソッド和名を取得する
+     */
     public JapaneseName japaneseNameFrom(MethodDeclaration methodDeclaration) {
         return repository.get(methodDeclaration);
     }
 
+    /**
+     * Javadocから和名を取り込む
+     */
     public void importJapanese(PackageNameSources packageNameSources) {
         PackageNames packageNames = reader.readPackages(packageNameSources);
         packageNames.register(repository);
     }
 
+    /**
+     * Javadocから和名を取り込む
+     */
     public void importJapanese(TypeNameSources typeNameSources) {
         TypeNames typeNames = reader.readTypes(typeNameSources);
 

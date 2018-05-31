@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * テーブル一覧
+ */
 public class Tables {
     private final List<Table> tables;
 

@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.stream.Stream;
 
+/**
+ * メソッドが使用しているフィールド一覧ストリーム
+ */
 public class MethodUsingFieldStream {
 
     Stream<MethodUsingField> stream;

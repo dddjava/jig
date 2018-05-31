@@ -10,6 +10,9 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * SQLの種類
+ */
 public enum SqlType {
     INSERT("insert\\s+into\\s+([^\\s(]+).+"),
     SELECT("select.+\\sfrom\\s+([^\\s(]+)\\b.*",

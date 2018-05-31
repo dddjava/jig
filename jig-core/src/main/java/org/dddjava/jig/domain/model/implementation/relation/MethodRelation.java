@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+/**
+ * メソッドの使用しているメソッド
+ */
 public class MethodRelation {
     MethodDeclaration from;
     MethodDeclaration to;

@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 
 import java.util.Objects;
 
+/**
+ * パッケージの依存関係
+ */
 public class PackageDependency {
     PackageIdentifier from;
     PackageIdentifier to;

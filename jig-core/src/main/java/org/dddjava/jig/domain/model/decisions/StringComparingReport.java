@@ -1,13 +1,19 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.List;
 
+/**
+ * 文字列比較レポート
+ */
 public class StringComparingReport {
 
+    /**
+     * レポート項目
+     */
     enum Items implements ConvertibleItem<MethodDeclaration> {
         クラス名 {
             @Override

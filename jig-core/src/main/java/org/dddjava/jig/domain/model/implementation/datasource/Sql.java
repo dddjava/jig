@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
+/**
+ * SQL
+ */
 public class Sql {
 
     SqlIdentifier identifier;

@@ -8,8 +8,14 @@ import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * 値レポート
+ */
 public class ValueReport {
 
+    /**
+     * レポート項目
+     */
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),

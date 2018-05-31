@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.stream.Stream;
 
+/**
+ * メソッドの使用しているメソッド一覧ストリーム
+ */
 public class MethodRelationStream {
 
     Stream<MethodRelation> stream;

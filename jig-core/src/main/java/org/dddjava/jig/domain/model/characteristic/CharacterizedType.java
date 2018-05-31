@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import java.util.Set;
 
 /**
- * 特徴付きの型
+ * 特徴付けられた型
  */
 public class CharacterizedType {
 

@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.identifier.namespace;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * パッケージの深さ
+ */
 public class PackageDepth {
     int value;
 

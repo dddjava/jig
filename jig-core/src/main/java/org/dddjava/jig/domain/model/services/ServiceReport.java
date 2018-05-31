@@ -12,8 +12,14 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.joining;
 
+/**
+ * サービスレポート
+ */
 public class ServiceReport {
 
+    /**
+     * レポート項目
+     */
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),

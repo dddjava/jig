@@ -154,7 +154,7 @@ public class ClassListController {
         for (BoolQueryModelMethodAngle angle : angles.list()) {
             JapaneseName japaneseClassName = glossaryService.japaneseNameFrom(angle.declaringTypeIdentifier());
             JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method());
-            list.add(new BoolQueryModelMethodReport.Row(angle, japaneseMethodName, japaneseClassName ,typeIdentifierFormatter));
+            list.add(new BoolQueryModelMethodReport.Row(angle, japaneseMethodName, japaneseClassName, typeIdentifierFormatter));
         }
         return new BoolQueryModelMethodReport(list).toReport();
     }

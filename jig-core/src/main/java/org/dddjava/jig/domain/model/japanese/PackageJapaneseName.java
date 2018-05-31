@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 
+/**
+ * パッケージ和名
+ */
 public class PackageJapaneseName {
     PackageIdentifier packageIdentifier;
     JapaneseName japaneseName;

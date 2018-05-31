@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Stream;
 
+/**
+ * 特徴付けられた型一覧のストリーム
+ */
 public class CharacterizedTypeStream {
 
     Stream<CharacterizedType> stream;

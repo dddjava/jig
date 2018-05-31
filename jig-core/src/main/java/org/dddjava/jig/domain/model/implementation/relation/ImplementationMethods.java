@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * インタフェースを実装しているメソッド
+ */
 public class ImplementationMethods {
     List<ImplementationMethod> list;
 

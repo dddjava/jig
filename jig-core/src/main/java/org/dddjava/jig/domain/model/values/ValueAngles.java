@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.networks.TypeDependencies;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 値の切り口一覧
+ */
 public class ValueAngles {
 
     List<ValueAngle> list;

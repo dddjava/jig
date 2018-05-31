@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.networks;
 
+/**
+ * 依存関係の数
+ */
 public class DependencyNumber {
     int value;
 

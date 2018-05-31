@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 
+/**
+ * 値の切り口
+ */
 public class ValueAngle {
 
     ValueKind valueKind;

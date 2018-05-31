@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
+/**
+ * クエリ
+ */
 public class Query {
 
     String text;

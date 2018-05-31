@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.stream.Stream;
 
+/**
+ * 型の依存関係一覧ストリーム
+ */
 public class TypeDependencyStream {
 
     Stream<TypeDependency> stream;

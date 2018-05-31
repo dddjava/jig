@@ -1,15 +1,21 @@
 package org.dddjava.jig.domain.model.datasources;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
+import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.japanese.JapaneseName;
 
 import java.util.List;
 import java.util.function.Function;
 
+/**
+ * データソースレポート
+ */
 public class DatasourceReport {
 
+    /**
+     * レポート項目
+     */
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.joining;
 
 /**
- * 型の識別子の集合
+ * 型の識別子一覧
  */
 public class TypeIdentifiers {
 

@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * 区分レポート
  */
-public class EnumReport {
+public class CategoryReport {
 
     /**
      * レポート項目
@@ -41,7 +41,7 @@ public class EnumReport {
 
     private final List<Row> list;
 
-    public EnumReport(List<Row> list) {
+    public CategoryReport(List<Row> list) {
         this.list = list;
     }
 
@@ -50,18 +50,18 @@ public class EnumReport {
     }
 
     public static class Row {
-        EnumAngle enumAngle;
+        CategoryAngle categoryAngle;
         JapaneseName japaneseName;
         TypeIdentifierFormatter identifierFormatter;
 
-        public Row(EnumAngle enumAngle, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
-            this.enumAngle = enumAngle;
+        public Row(CategoryAngle categoryAngle, JapaneseName japaneseName, TypeIdentifierFormatter identifierFormatter) {
+            this.categoryAngle = categoryAngle;
             this.japaneseName = japaneseName;
             this.identifierFormatter = identifierFormatter;
         }
 
         String クラス名() {
-            return enumAngle.typeIdentifier().format(identifierFormatter);
+            return categoryAngle.typeIdentifier().format(identifierFormatter);
         }
 
         String クラス和名() {
@@ -69,27 +69,27 @@ public class EnumReport {
         }
 
         String 定数宣言() {
-            return enumAngle.constantsDeclarations().toNameText();
+            return categoryAngle.constantsDeclarations().toNameText();
         }
 
         String フィールド() {
-            return enumAngle.fieldDeclarations().toSignatureText();
+            return categoryAngle.fieldDeclarations().toSignatureText();
         }
 
         String 使用箇所() {
-            return enumAngle.userTypeIdentifiers().asSimpleText();
+            return categoryAngle.userTypeIdentifiers().asSimpleText();
         }
 
         String パラメーター有り() {
-            return enumAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED).toSymbolText();
         }
 
         String 振る舞い有り() {
-            return enumAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR).toSymbolText();
         }
 
         String 多態() {
-            return enumAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM).toSymbolText();
         }
     }
 }

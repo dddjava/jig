@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.networks.TypeDependencies;
 /**
  * 区分の切り口
  */
-public class EnumAngle {
+public class CategoryAngle {
 
     Characteristics characteristics;
     TypeIdentifier typeIdentifier;
@@ -18,7 +18,7 @@ public class EnumAngle {
     FieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    public EnumAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, FieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
+    public CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, FieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
         this.characteristics = characteristics;
         this.typeIdentifier = typeIdentifier;
         this.userTypeIdentifiers = userTypeIdentifiers;
@@ -26,7 +26,7 @@ public class EnumAngle {
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public static EnumAngle of(TypeIdentifier typeIdentifier, CharacterizedTypes characterizedTypes, TypeDependencies allTypeDependencies, FieldDeclarations allFieldDeclarations, FieldDeclarations allStaticFieldDeclarations) {
+    public static CategoryAngle of(TypeIdentifier typeIdentifier, CharacterizedTypes characterizedTypes, TypeDependencies allTypeDependencies, FieldDeclarations allFieldDeclarations, FieldDeclarations allStaticFieldDeclarations) {
         Characteristics characteristics = characterizedTypes.stream()
                 .pickup(typeIdentifier)
                 .characteristics();
@@ -38,7 +38,7 @@ public class EnumAngle {
                 .filterDeclareTypeIs(typeIdentifier);
         FieldDeclarations fieldDeclarations = allFieldDeclarations
                 .filterDeclareTypeIs(typeIdentifier);
-        return new EnumAngle(characteristics, typeIdentifier, userTypeIdentifiers, constantsDeclarations, fieldDeclarations);
+        return new CategoryAngle(characteristics, typeIdentifier, userTypeIdentifiers, constantsDeclarations, fieldDeclarations);
     }
 
     public TypeIdentifier typeIdentifier() {

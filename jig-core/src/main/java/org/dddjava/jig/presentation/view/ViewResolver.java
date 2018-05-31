@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.basic.report.Reports;
-import org.dddjava.jig.domain.model.categories.EnumAngles;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
@@ -34,7 +34,7 @@ public class ViewResolver {
         return new ReportToExcelView();
     }
 
-    public JigView<EnumAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
+    public JigView<CategoryAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
         return new GraphvizjView<>(new EnumUsageDiagram(japaneseNameFinder));
     }
 

@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngle;
 import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
 import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodReport;
-import org.dddjava.jig.domain.model.categories.EnumAngles;
-import org.dddjava.jig.domain.model.categories.EnumReport;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.categories.CategoryReport;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -75,7 +75,7 @@ public class ClassListController {
         LOGGER.info("ビジネスルールリストを出力します");
         Reports reports = new Reports(Arrays.asList(
                 valueObjectReport(ValueKind.IDENTIFIER, projectData),
-                enumReport(projectData),
+                categoryReport(projectData),
                 valueObjectReport(ValueKind.NUMBER, projectData),
                 valueObjectReport(ValueKind.COLLECTION, projectData),
                 valueObjectReport(ValueKind.DATE, projectData),
@@ -123,13 +123,13 @@ public class ClassListController {
         return new ValueReport(valueKind, list).toReport();
     }
 
-    Report<?> enumReport(ProjectData projectData) {
-        EnumAngles enumAngles = angleService.enumAngles(projectData);
-        List<EnumReport.Row> list = enumAngles.list().stream().map(enumAngle -> {
+    Report<?> categoryReport(ProjectData projectData) {
+        CategoryAngles categoryAngles = angleService.enumAngles(projectData);
+        List<CategoryReport.Row> list = categoryAngles.list().stream().map(enumAngle -> {
             JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new EnumReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+            return new CategoryReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
-        return new EnumReport(list).toReport();
+        return new CategoryReport(list).toReport();
     }
 
     Report<?> validateAnnotationReport(ProjectData projectData) {

@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.categories.EnumAngle;
-import org.dddjava.jig.domain.model.categories.EnumAngles;
+import org.dddjava.jig.domain.model.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
@@ -11,7 +11,7 @@ import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
+public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
 
     private final JapaneseNameFinder japaneseNameFinder;
 
@@ -20,9 +20,9 @@ public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
     }
 
     @Override
-    public String edit(EnumAngles enumAngles) {
+    public String edit(CategoryAngles categoryAngles) {
 
-        TypeIdentifiers enumTypes = enumAngles.typeIdentifiers();
+        TypeIdentifiers enumTypes = categoryAngles.typeIdentifiers();
 
         String enumsText = enumTypes.list().stream()
                 .map(enumType -> Node.of(enumType)
@@ -32,13 +32,13 @@ public class EnumUsageDiagram implements DotTextEditor<EnumAngles> {
                 .collect(joining("\n"));
 
         RelationText relationText = new RelationText();
-        for (EnumAngle enumAngle : enumAngles.list()) {
-            for (TypeIdentifier userType : enumAngle.userTypeIdentifiers().list()) {
-                relationText.add(userType, enumAngle.typeIdentifier());
+        for (CategoryAngle categoryAngle : categoryAngles.list()) {
+            for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
+                relationText.add(userType, categoryAngle.typeIdentifier());
             }
         }
 
-        String userLabel = enumAngles.list().stream().flatMap(enumAngle -> enumAngle.userTypeIdentifiers().list().stream())
+        String userLabel = categoryAngles.list().stream().flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
                 // 重複を除く
                 .distinct()
                 // enumを除く

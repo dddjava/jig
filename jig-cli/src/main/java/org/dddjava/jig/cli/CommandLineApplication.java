@@ -56,12 +56,7 @@ public class CommandLineApplication implements CommandLineRunner {
                             : JigDocument.resolve(documentTypeText);
 
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
-            ProjectData projectData = implementationService.readProjectData(
-                    localProject.getSpecificationSources(),
-                    localProject.getSqlSources(),
-                    localProject.getTypeNameSources(),
-                    localProject.getPackageNameSources()
-            );
+            ProjectData projectData = implementationService.readProjectData(localProject);
 
             jigHandlerContext.setProjectData(projectData);
 

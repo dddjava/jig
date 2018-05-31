@@ -13,9 +13,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import java.nio.file.Paths;
+import static org.assertj.core.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.nio.file.Paths;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -31,7 +31,7 @@ class ReportServiceTest {
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        ProjectData projectData = implementationService.readProjectData(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = implementationService.readProjectData(localProject);
 
         assertThat(sut.serviceReport(projectData).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))

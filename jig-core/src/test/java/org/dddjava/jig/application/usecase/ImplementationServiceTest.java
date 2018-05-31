@@ -17,12 +17,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -39,7 +39,7 @@ public class ImplementationServiceTest {
 
     @Test
     void パッケージ依存() {
-        ProjectData projectData = implementationService.readProjectData(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = implementationService.readProjectData(localProject);
         PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1), projectData);
 
         // パッケージのリストアップ

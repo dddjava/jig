@@ -8,8 +8,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
+import org.dddjava.jig.infrastructure.LocalProject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,14 +31,14 @@ public class ImplementationService {
     /**
      * プロジェクト情報を読み取る
      */
-    public ProjectData readProjectData(ByteCodeSources byteCodeSources, SqlSources sqlSources, TypeNameSources typeNameSources, PackageNameSources packageNameSources) {
-        ByteCodes byteCodes = readByteCode(byteCodeSources);
-        Sqls sqls = readSql(sqlSources);
+    public ProjectData readProjectData(LocalProject target) {
+        ByteCodes byteCodes = readByteCode(target.getSpecificationSources());
+        Sqls sqls = readSql(target.getSqlSources());
 
         ProjectData projectData = ProjectData.from(byteCodes, sqls);
 
-        glossaryService.importJapanese(typeNameSources);
-        glossaryService.importJapanese(packageNameSources);
+        glossaryService.importJapanese(target.getTypeNameSources());
+        glossaryService.importJapanese(target.getPackageNameSources());
 
         return projectData;
     }

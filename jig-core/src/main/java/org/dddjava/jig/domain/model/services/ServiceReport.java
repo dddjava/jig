@@ -22,10 +22,10 @@ public class ServiceReport {
      */
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
-        クラス和名(Row::クラス和名),
-        メソッド(Row::メソッド),
+        メソッド名(Row::メソッド),
         メソッド戻り値の型(Row::メソッド戻り値の型),
         イベントハンドラ(Row::イベントハンドラ),
+        クラス和名(Row::クラス和名),
         メソッド和名(Row::メソッド和名),
         メソッド戻り値の型の和名(Row::返す型の和名),
         メソッド引数の型の和名(Row::引数の型の和名),

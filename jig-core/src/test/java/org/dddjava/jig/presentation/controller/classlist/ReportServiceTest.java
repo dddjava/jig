@@ -37,19 +37,19 @@ class ReportServiceTest {
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
-                        "[stub.application.service.CanonicalService, サービス和名, fuga(FugaIdentifier), Fuga, , , 普通のドメインモデル, [普通の識別子], [FugaRepository, HogeRepository], [FugaRepository.get(FugaIdentifier), HogeRepository.method()]]",
-                        "[stub.application.service.CanonicalService, サービス和名, method(), void, , , , [], [], []]",
-                        "[stub.application.service.DecisionService, 分岐のあるサービス, 分岐のあるメソッド(Object), void, , , , [], [], []]",
-                        "[stub.application.service.SimpleService, フィールドを持たないサービス, RESTコントローラーから呼ばれる(), void, ◯, , , [], [], []]",
-                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれない(), void, , , , [], [], []]",
-                        "[stub.application.service.SimpleService, フィールドを持たないサービス, コントローラーから呼ばれる(), void, ◯, , , [], [], []]"
+                        "[stub.application.service.CanonicalService, fuga(FugaIdentifier), Fuga, , サービス和名, , 普通のドメインモデル, [普通の識別子], [FugaRepository, HogeRepository], [FugaRepository.get(FugaIdentifier), HogeRepository.method()]]",
+                        "[stub.application.service.CanonicalService, method(), void, , サービス和名, , , [], [], []]",
+                        "[stub.application.service.DecisionService, 分岐のあるメソッド(Object), void, , 分岐のあるサービス, , , [], [], []]",
+                        "[stub.application.service.SimpleService, RESTコントローラーから呼ばれる(), void, ◯, フィールドを持たないサービス, , , [], [], []]",
+                        "[stub.application.service.SimpleService, コントローラーから呼ばれない(), void, , フィールドを持たないサービス, , , [], [], []]",
+                        "[stub.application.service.SimpleService, コントローラーから呼ばれる(), void, ◯, フィールドを持たないサービス, , , [], [], []]"
                 );
 
         assertThat(sut.datasourceReport(projectData).rows())
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsSequence(
-                        "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, get(FugaIdentifier), Fuga, [sut.piyo], [fuga], [], []]",
-                        "[stub.domain.model.type.fuga.FugaRepository, リポジトリ和名, register(Fuga), void, [], [], [], []]"
+                        "[stub.domain.model.type.fuga.FugaRepository, get(FugaIdentifier), Fuga, リポジトリ和名, [sut.piyo], [fuga], [], []]",
+                        "[stub.domain.model.type.fuga.FugaRepository, register(Fuga), void, リポジトリ和名, [], [], [], []]"
                 );
 
         assertThat(sut.valueObjectReport(ValueKind.IDENTIFIER, projectData).rows())

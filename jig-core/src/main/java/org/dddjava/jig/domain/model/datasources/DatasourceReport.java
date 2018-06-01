@@ -18,9 +18,9 @@ public class DatasourceReport {
      */
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
-        クラス和名(Row::クラス和名),
-        メソッド(Row::メソッド),
+        メソッド名(Row::メソッド),
         メソッド戻り値の型(Row::メソッド戻り値の型),
+        クラス和名(Row::クラス和名),
         INSERT(Row::insertTables),
         SELECT(Row::selectTables),
         UPDATE(Row::updateTables),

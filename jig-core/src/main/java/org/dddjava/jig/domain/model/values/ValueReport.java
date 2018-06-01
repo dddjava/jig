@@ -19,6 +19,7 @@ public class ValueReport {
     private enum Items implements ConvertibleItem<Row> {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
+        使用箇所数(Row::使用箇所数),
         使用箇所(Row::使用箇所);
 
         Function<Row, String> func;
@@ -66,6 +67,10 @@ public class ValueReport {
 
         String 使用箇所() {
             return valueAngle.userTypeIdentifiers().asSimpleText();
+        }
+
+        String 使用箇所数() {
+            return valueAngle.dependencyNumber().asText();
         }
     }
 }

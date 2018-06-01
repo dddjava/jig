@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.nio.file.Paths;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -62,12 +62,12 @@ class ReportServiceTest {
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
                 .extracting(reportRow -> reportRow.list().toString())
                 .containsExactly(
-                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], [AsmByteCodeReaderTest, RelationEnum], , ◯, ]",
-                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], [AsmByteCodeReaderTest, RelationEnum], ◯, , ]",
-                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], [AsmByteCodeReaderTest, RelationEnum], , , ◯]",
-                        "[stub.domain.model.kind.RelationEnum, , [A, B, C], [RichEnum field], [], ◯, , ]",
-                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], [AsmByteCodeReaderTest, RelationEnum], ◯, ◯, ◯]",
-                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], [AsmByteCodeReaderTest, RelationEnum], , , ]"
+                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], 2, [AsmByteCodeReaderTest, RelationEnum], , ◯, ]",
+                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], 2, [AsmByteCodeReaderTest, RelationEnum], ◯, , ]",
+                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], 2, [AsmByteCodeReaderTest, RelationEnum], , , ◯]",
+                        "[stub.domain.model.kind.RelationEnum, , [A, B, C], [RichEnum field], 0, [], ◯, , ]",
+                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], 2, [AsmByteCodeReaderTest, RelationEnum], ◯, ◯, ◯]",
+                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], 2, [AsmByteCodeReaderTest, RelationEnum], , , ]"
                 );
 
         assertThat(sut.decisionReport(projectData).rows())

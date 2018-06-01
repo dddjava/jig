@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.networks.DependencyNumber;
 
 import java.util.List;
 import java.util.function.Function;
@@ -21,6 +22,7 @@ public class BoolQueryModelMethodReport {
         メソッド和名(Row::メソッド和名),
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
+        使用箇所数(Row::使用箇所数),
         使用箇所(Row::使用箇所);
 
         Function<Row, String> func;
@@ -78,5 +80,8 @@ public class BoolQueryModelMethodReport {
             return angle.userTypeIdentifiers().asSimpleText();
         }
 
+        String 使用箇所数() {
+            return new DependencyNumber(angle.userTypeIdentifiers().list().size()).asText();
+        }
     }
 }

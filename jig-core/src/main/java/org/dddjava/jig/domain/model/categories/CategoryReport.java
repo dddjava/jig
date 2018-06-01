@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.networks.DependencyNumber;
 
 import java.util.List;
 import java.util.function.Function;
@@ -22,6 +23,7 @@ public class CategoryReport {
         クラス和名(Row::クラス和名),
         定数宣言(Row::定数宣言),
         フィールド(Row::フィールド),
+        使用箇所数(Row::使用箇所数),
         使用箇所(Row::使用箇所),
         パラメーター有り(Row::パラメーター有り),
         振る舞い有り(Row::振る舞い有り),
@@ -78,6 +80,10 @@ public class CategoryReport {
 
         String 使用箇所() {
             return categoryAngle.userTypeIdentifiers().asSimpleText();
+        }
+
+        String 使用箇所数() {
+            return new DependencyNumber(categoryAngle.userTypeIdentifiers().list().size()).asText();
         }
 
         String パラメーター有り() {

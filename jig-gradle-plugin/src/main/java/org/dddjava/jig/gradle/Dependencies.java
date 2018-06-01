@@ -5,7 +5,8 @@ import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
@@ -42,7 +43,7 @@ public class Dependencies {
         File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
         File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
 
-        return new LocalProject(
+        return new DefaultLocalProject(
                 project.getProjectDir().toString(),
                 classesOutputDir.getAbsolutePath(),
                 resourceOutputDir.getAbsolutePath(),

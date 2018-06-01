@@ -3,7 +3,8 @@ package org.dddjava.jig.presentation.controller.classlist;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import java.nio.file.Paths;
+import static org.assertj.core.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.nio.file.Paths;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -31,7 +32,7 @@ class ReportServiceTest {
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
-        ProjectData projectData = implementationService.readProjectData(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = implementationService.readProjectData(localProject);
 
         assertThat(sut.serviceReport(projectData).rows())
                 .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub."))
@@ -84,7 +85,7 @@ class ReportServiceTest {
         @Bean
         LocalProject localProject() {
             // jig-coreプロジェクトを読み取り対象にする
-            return new LocalProject(
+            return new DefaultLocalProject(
                     TestSupport.getModuleRootPath().toString(),
                     // classの出力ディレクトリ
                     Paths.get(TestSupport.defaultPackageClassURI()).toString(),

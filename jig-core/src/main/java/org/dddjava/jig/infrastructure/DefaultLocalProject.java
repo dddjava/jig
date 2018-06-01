@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure;
 
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
@@ -23,19 +24,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class LocalProject {
+public class DefaultLocalProject implements LocalProject {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLocalProject.class);
 
     private final Path projectPath;
     Path classesDirectory;
     Path resourcesDirectory;
     Path sourcesDirectory;
 
-    public LocalProject(@Value("${project.path}") String projectPath,
-                        @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
-                        @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
-                        @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
+    public DefaultLocalProject(@Value("${project.path}") String projectPath,
+                               @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
+                               @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
+                               @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);
@@ -47,6 +48,7 @@ public class LocalProject {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
+    @Override
     public ByteCodeSources getSpecificationSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
@@ -93,6 +95,7 @@ public class LocalProject {
         return path.toString().endsWith("package-info.java");
     }
 
+    @Override
     public SqlSources getSqlSources() {
         try {
             Path[] array = extractClassPath();
@@ -130,12 +133,14 @@ public class LocalProject {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
+    @Override
     public PackageNameSources getPackageNameSources() {
         List<Path> paths = pathsOf(this::isPackageInfoFile);
         LOGGER.info("package-info.java: {}件", paths.size());
         return new PackageNameSources(paths);
     }
 
+    @Override
     public TypeNameSources getTypeNameSources() {
         List<Path> paths = pathsOf(this::isJavaFile);
         LOGGER.info("*.java: {}件", paths.size());

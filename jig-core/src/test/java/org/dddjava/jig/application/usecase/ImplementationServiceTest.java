@@ -6,7 +6,8 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -39,7 +40,7 @@ public class ImplementationServiceTest {
 
     @Test
     void パッケージ依存() {
-        ProjectData projectData = implementationService.readProjectData(localProject.getSpecificationSources(), localProject.getSqlSources(), localProject.getTypeNameSources(), localProject.getPackageNameSources());
+        ProjectData projectData = implementationService.readProjectData(localProject);
         PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1), projectData);
 
         // パッケージのリストアップ
@@ -81,7 +82,7 @@ public class ImplementationServiceTest {
         LocalProject localProject() {
             // 読み込む対象のソースを取得
             Path path = Paths.get(TestSupport.defaultPackageClassURI());
-            return new LocalProject(
+            return new DefaultLocalProject(
                     path.toString(),
                     path.toString(),
                     // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう

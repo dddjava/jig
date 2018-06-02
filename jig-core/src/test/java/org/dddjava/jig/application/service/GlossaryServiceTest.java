@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.domain.model.implementation.LocalProject;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
@@ -67,7 +67,7 @@ class GlossaryServiceTest {
                 new TypeIdentifier(MethodJavadocStub.class),
                 new MethodSignature(
                         "method",
-                        Collections.emptyList()),
+                        new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())),
                 new TypeIdentifier("void")
         );
         Assertions.assertThat(sut.japaneseNameFrom(methodDeclaration).value())
@@ -77,7 +77,7 @@ class GlossaryServiceTest {
                 new TypeIdentifier(MethodJavadocStub.class),
                 new MethodSignature(
                         "overloadMethod",
-                        Collections.singletonList(new TypeIdentifier(String.class))),
+                        new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))),
                 new TypeIdentifier("void")
         );
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodDeclaration).value())

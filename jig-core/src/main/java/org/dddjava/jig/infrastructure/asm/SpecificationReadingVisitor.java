@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -192,7 +193,7 @@ class SpecificationReadingVisitor extends ClassVisitor {
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(this::toTypeIdentifier)
                 .collect(Collectors.toList());
-        return new MethodSignature(name, argumentTypes);
+        return new MethodSignature(name, new Arguments(argumentTypes));
     }
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

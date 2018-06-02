@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.joining;
-
 /**
  * メソッドシグネチャ
  */
@@ -13,12 +11,11 @@ public class MethodSignature {
 
     private final String methodName;
 
-    // TODO 重複ありで順番が重要なのでArgumentTypeIdentifiersとかを作る
-    List<TypeIdentifier> argumentTypeIdentifiers;
+    Arguments arguments;
 
-    public MethodSignature(String methodName, List<TypeIdentifier> argumentTypeIdentifiers) {
+    public MethodSignature(String methodName, Arguments arguments) {
         this.methodName = methodName;
-        this.argumentTypeIdentifiers = argumentTypeIdentifiers;
+        this.arguments = arguments;
     }
 
     public String asText() {
@@ -34,15 +31,15 @@ public class MethodSignature {
     }
 
     String argumentsAsText() {
-        return argumentTypeIdentifiers.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
+        return arguments.argumentsAsText();
     }
 
     String argumentsAsSimpleText() {
-        return argumentTypeIdentifiers.stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
+        return arguments.argumentsAsSimpleText();
     }
 
     public List<TypeIdentifier> arguments() {
-        return argumentTypeIdentifiers;
+        return arguments.typeIdentifiers().list();
     }
 
     public boolean isLambda() {

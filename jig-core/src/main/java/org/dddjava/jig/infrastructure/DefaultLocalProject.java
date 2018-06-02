@@ -49,7 +49,7 @@ public class DefaultLocalProject implements LocalProject {
     }
 
     @Override
-    public ByteCodeSources getSpecificationSources() {
+    public ByteCodeSources getByteCodeSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
             for (Path path : extractClassPath()) {

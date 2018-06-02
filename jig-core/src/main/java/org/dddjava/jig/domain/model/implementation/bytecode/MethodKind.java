@@ -7,19 +7,19 @@ public enum MethodKind {
     CONSTRUCTOR {
         @Override
         public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerConstructorSpecification(methodByteCode);
+            byteCode.registerConstructorByteCodes(methodByteCode);
         }
     },
     STATIC_METHOD {
         @Override
         public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerStaticMethodSpecification(methodByteCode);
+            byteCode.registerStaticMethodByteCodes(methodByteCode);
         }
     },
     INSTANCE_METHOD {
         @Override
         public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerInstanceMethodSpecification(methodByteCode);
+            byteCode.registerInstanceMethodByteCodes(methodByteCode);
         }
     };
 

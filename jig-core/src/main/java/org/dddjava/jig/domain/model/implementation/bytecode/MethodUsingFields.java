@@ -21,9 +21,9 @@ public class MethodUsingFields {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodSpecification : byteCode.instanceMethodSpecifications()) {
-                MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
-                for (FieldDeclaration usingField : methodSpecification.usingFields().list()) {
+            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (FieldDeclaration usingField : methodByteCode.usingFields().list()) {
                     list.add(new MethodUsingField(methodDeclaration, usingField));
                 }
             }

@@ -23,9 +23,9 @@ public class MethodRelations {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodSpecification : byteCode.instanceMethodSpecifications()) {
-                MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
-                for (MethodDeclaration usingMethod : methodSpecification.usingMethods().list()) {
+            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
                     list.add(new MethodRelation(methodDeclaration, usingMethod));
                 }
             }

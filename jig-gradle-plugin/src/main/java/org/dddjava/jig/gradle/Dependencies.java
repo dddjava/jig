@@ -54,10 +54,10 @@ public class Dependencies {
 
     ImplementationService importService() {
         // TODO extensionで変更できるようにする
-        PropertyByteCodeAnalyzeContext specificationContext = new PropertyByteCodeAnalyzeContext();
+        PropertyByteCodeAnalyzeContext propertyByteCodeAnalyzeContext = new PropertyByteCodeAnalyzeContext();
 
         return new ImplementationService(
-                new AsmByteCodeFactory(specificationContext),
+                new AsmByteCodeFactory(propertyByteCodeAnalyzeContext),
                 glossaryService(),
                 new MyBatisSqlReader());
     }

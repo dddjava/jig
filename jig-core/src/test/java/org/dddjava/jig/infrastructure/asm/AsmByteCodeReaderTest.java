@@ -48,11 +48,11 @@ public class AsmByteCodeReaderTest {
                     assertThat(descriptionText).isEqualTo("[string = \"af\", arrayString = [...], number = 13, clz = Ljava/lang/reflect/Field;, arrayClz = [...], enumValue = DUMMY1, annotation = Ljava/lang/Deprecated;[...]]");
                 });
 
-        assertThat(actual.instanceMethodSpecifications())
+        assertThat(actual.instanceMethodByteCodes())
                 .hasSize(1)
                 .first()
-                .satisfies(methodSpecification -> {
-                    assertThat(methodSpecification.methodAnnotationDeclarations())
+                .satisfies(methodByteCode -> {
+                    assertThat(methodByteCode.methodAnnotationDeclarations())
                             .hasSize(1)
                             .first()
                             .satisfies(methodAnnotationDeclaration -> {
@@ -132,10 +132,10 @@ public class AsmByteCodeReaderTest {
     void メソッドの使用しているメソッドが取得できる() throws Exception {
         ByteCode actual = exercise(MethodInstruction.class);
 
-        assertThat(actual.instanceMethodSpecifications())
+        assertThat(actual.instanceMethodByteCodes())
                 .extracting(
-                        methodSpecification -> methodSpecification.methodDeclaration.asSignatureSimpleText(),
-                        methodSpecification -> methodSpecification.usingMethods().asSimpleText()
+                        methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
+                        methodByteCode -> methodByteCode.usingMethods().asSimpleText()
                 )
                 .filteredOn(tuple -> {
                     Object methodDeclaration = tuple.toArray()[0];
@@ -151,11 +151,11 @@ public class AsmByteCodeReaderTest {
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
         ByteCode actual = exercise(DecisionClass.class);
 
-        List<MethodByteCode> methodByteCodes = actual.instanceMethodSpecifications();
+        List<MethodByteCode> methodByteCodes = actual.instanceMethodByteCodes();
 
         assertThat(methodByteCodes)
                 .extracting(
-                        methodSpecification -> methodSpecification.methodDeclaration.asSignatureSimpleText(),
+                        methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
                         MethodByteCode::hasDecision)
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", false),

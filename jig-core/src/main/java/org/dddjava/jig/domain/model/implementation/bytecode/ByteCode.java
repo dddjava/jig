@@ -32,7 +32,7 @@ public class ByteCode {
 
     final List<MethodByteCode> instanceMethodByteCodes = new ArrayList<>();
     final List<MethodByteCode> staticMethodByteCodes = new ArrayList<>();
-    final List<MethodByteCode> constructorSpecifications = new ArrayList<>();
+    final List<MethodByteCode> constructorByteCodes = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
@@ -66,7 +66,7 @@ public class ByteCode {
     }
 
     public boolean hasInstanceMethod() {
-        return !instanceMethodSpecifications().isEmpty();
+        return !instanceMethodByteCodes().isEmpty();
     }
 
     public boolean hasField() {
@@ -101,14 +101,14 @@ public class ByteCode {
         for (MethodByteCode methodByteCode : staticMethodByteCodes) {
             useTypes.addAll(methodByteCode.useTypes());
         }
-        for (MethodByteCode methodByteCode : constructorSpecifications) {
+        for (MethodByteCode methodByteCode : constructorByteCodes) {
             useTypes.addAll(methodByteCode.useTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public List<MethodByteCode> instanceMethodSpecifications() {
+    public List<MethodByteCode> instanceMethodByteCodes() {
         return instanceMethodByteCodes;
     }
 
@@ -147,15 +147,15 @@ public class ByteCode {
         return annotatedFields;
     }
 
-    public void registerInstanceMethodSpecification(MethodByteCode methodByteCode) {
+    public void registerInstanceMethodByteCodes(MethodByteCode methodByteCode) {
         instanceMethodByteCodes.add(methodByteCode);
     }
 
-    public void registerStaticMethodSpecification(MethodByteCode methodByteCode) {
+    public void registerStaticMethodByteCodes(MethodByteCode methodByteCode) {
         staticMethodByteCodes.add(methodByteCode);
     }
 
-    public void registerConstructorSpecification(MethodByteCode methodByteCode) {
-        constructorSpecifications.add(methodByteCode);
+    public void registerConstructorByteCodes(MethodByteCode methodByteCode) {
+        constructorByteCodes.add(methodByteCode);
     }
 }

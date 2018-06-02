@@ -32,7 +32,7 @@ public class ImplementationService {
      * プロジェクト情報を読み取る
      */
     public ProjectData readProjectData(LocalProject target) {
-        ByteCodes byteCodes = readByteCode(target.getSpecificationSources());
+        ByteCodes byteCodes = readByteCode(target.getByteCodeSources());
         Sqls sqls = readSql(target.getSqlSources());
 
         ProjectData projectData = ProjectData.from(byteCodes, sqls);

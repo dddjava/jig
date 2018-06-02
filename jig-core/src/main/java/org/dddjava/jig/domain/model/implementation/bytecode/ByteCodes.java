@@ -25,9 +25,9 @@ public class ByteCodes {
         return list;
     }
 
-    public List<MethodByteCode> instanceMethodSpecifications() {
+    public List<MethodByteCode> instanceMethodByteCodes() {
         return list.stream()
-                .map(ByteCode::instanceMethodSpecifications)
+                .map(ByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
@@ -42,8 +42,8 @@ public class ByteCodes {
 
     public AnnotatedMethods annotatedMethods() {
         List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
-        for (MethodByteCode methodSpecification : instanceMethodSpecifications()) {
-            annotatedMethods.addAll(methodSpecification.methodAnnotationDeclarations());
+        for (MethodByteCode methodByteCode : instanceMethodByteCodes()) {
+            annotatedMethods.addAll(methodByteCode.methodAnnotationDeclarations());
         }
         return new AnnotatedMethods(annotatedMethods);
     }

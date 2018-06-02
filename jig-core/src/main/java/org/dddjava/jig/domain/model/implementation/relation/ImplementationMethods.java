@@ -25,8 +25,8 @@ public class ImplementationMethods {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodSpecification : byteCode.instanceMethodSpecifications()) {
-                MethodDeclaration methodDeclaration = methodSpecification.methodDeclaration;
+            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
 
                 for (TypeIdentifier interfaceTypeIdentifier : byteCode.interfaceTypeIdentifiers.list()) {
                     MethodDeclaration implMethod = methodDeclaration.with(interfaceTypeIdentifier);

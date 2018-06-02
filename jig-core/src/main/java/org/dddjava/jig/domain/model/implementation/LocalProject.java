@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 
 public interface LocalProject {
-    ByteCodeSources getSpecificationSources();
+    ByteCodeSources getByteCodeSources();
 
     SqlSources getSqlSources();
 

@@ -60,7 +60,7 @@ public class ProjectData {
 
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes);
         projectData.setCharacterizedTypes(characterizedTypes);
-        projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodSpecifications(), characterizedTypes));
+        projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes));
         projectData.setValueTypes(new ValueTypes(byteCodes));
 
         projectData.setSqls(sqls);

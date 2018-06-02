@@ -31,7 +31,7 @@ public class AsmByteCodeAnalyzerTest {
         URI location = AsmByteCodeAnalyzerTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         LocalProject localProject = new DefaultLocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
-        ByteCodeSources byteCodeSources = localProject.getSpecificationSources();
+        ByteCodeSources byteCodeSources = localProject.getByteCodeSources();
 
         AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
         ByteCodes byteCodes = implementationFactory.readFrom(byteCodeSources);

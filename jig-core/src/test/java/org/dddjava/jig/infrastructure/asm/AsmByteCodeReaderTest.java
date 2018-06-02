@@ -212,6 +212,6 @@ public class AsmByteCodeReaderTest {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
-        return sut.readSpecification(new ByteCodeSource(path));
+        return sut.analyze(new ByteCodeSource(path));
     }
 }

@@ -17,23 +17,27 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class SpecificationReadingVisitor extends ClassVisitor {
-
+class ByteCodeAnalyzer extends ClassVisitor {
     final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
+
     ByteCode byteCode;
 
-    public SpecificationReadingVisitor(ByteCodeAnalyzeContext byteCodeAnalyzeContext) {
+    public ByteCodeAnalyzer(ByteCodeAnalyzeContext byteCodeAnalyzeContext) {
         super(Opcodes.ASM6);
         this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
     }
 
-    public ByteCode specification() {
+    ByteCode analyze(InputStream inputStream) throws IOException {
+        ClassReader classReader = new ClassReader(inputStream);
+        classReader.accept(this, ClassReader.SKIP_DEBUG);
         return byteCode;
     }
 

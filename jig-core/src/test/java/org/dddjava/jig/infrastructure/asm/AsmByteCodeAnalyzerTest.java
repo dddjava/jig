@@ -21,14 +21,14 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AsmByteCodeFactoryTest {
+public class AsmByteCodeAnalyzerTest {
 
     private static ProjectData projectData;
 
     @BeforeAll
     static void before() throws URISyntaxException {
         // 読み込む対象のソースを取得
-        URI location = AsmByteCodeFactoryTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
+        URI location = AsmByteCodeAnalyzerTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
         LocalProject localProject = new DefaultLocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         ByteCodeSources byteCodeSources = localProject.getSpecificationSources();

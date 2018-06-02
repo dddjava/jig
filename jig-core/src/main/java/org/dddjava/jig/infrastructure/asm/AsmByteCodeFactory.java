@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.*;
-import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AsmByteCodeFactory implements ByteCodeFactory {
+public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory {
 
     final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
 
@@ -24,19 +23,16 @@ public class AsmByteCodeFactory implements ByteCodeFactory {
     public ByteCodes readFrom(ByteCodeSources byteCodeSources) {
         List<ByteCode> list = new ArrayList<>();
         for (ByteCodeSource source : byteCodeSources.list()) {
-            ByteCode byteCode = readSpecification(source);
+            ByteCode byteCode = analyze(source);
             list.add(byteCode);
         }
         return new ByteCodes(list);
     }
 
-    ByteCode readSpecification(ByteCodeSource byteCodeSource) {
+    ByteCode analyze(ByteCodeSource byteCodeSource) {
         try (InputStream inputStream = Files.newInputStream(byteCodeSource.getPath())) {
-            SpecificationReadingVisitor visitor = new SpecificationReadingVisitor(byteCodeAnalyzeContext);
-            ClassReader classReader = new ClassReader(inputStream);
-            classReader.accept(visitor, ClassReader.SKIP_DEBUG);
-
-            return visitor.specification();
+            ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(byteCodeAnalyzeContext);
+            return analyzer.analyze(inputStream);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

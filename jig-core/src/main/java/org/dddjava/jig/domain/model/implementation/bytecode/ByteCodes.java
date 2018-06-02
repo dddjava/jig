@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,5 +46,23 @@ public class ByteCodes {
             annotatedMethods.addAll(methodSpecification.methodAnnotationDeclarations());
         }
         return new AnnotatedMethods(annotatedMethods);
+    }
+
+    public FieldDeclarations instanceFields() {
+        List<FieldDeclaration> list = new ArrayList<>();
+        for (ByteCode byteCode : list()) {
+            FieldDeclarations fieldDeclarations = byteCode.fieldDeclarations();
+            list.addAll(fieldDeclarations.list());
+        }
+        return new FieldDeclarations(list);
+    }
+
+    public FieldDeclarations staticFields() {
+        List<FieldDeclaration> list = new ArrayList<>();
+        for (ByteCode byteCode : list()) {
+            FieldDeclarations fieldDeclarations = byteCode.staticFieldDeclarations();
+            list.addAll(fieldDeclarations.list());
+        }
+        return new FieldDeclarations(list);
     }
 }

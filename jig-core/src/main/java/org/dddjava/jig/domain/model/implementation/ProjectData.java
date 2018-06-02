@@ -49,13 +49,15 @@ public class ProjectData {
         projectData.setAnnotatedFields(byteCodes.annotatedFields());
         projectData.setAnnotatedMethods(byteCodes.annotatedMethods());
 
-        projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(byteCodes));
-        projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(byteCodes));
+        projectData.setFieldDeclarations(byteCodes.instanceFields());
+        projectData.setStaticFieldDeclarations(byteCodes.staticFields());
+
         projectData.setImplementationMethods(new ImplementationMethods(byteCodes));
+
         projectData.setMethodRelations(new MethodRelations(byteCodes));
         projectData.setMethodUsingFields(new MethodUsingFields(byteCodes));
-
         projectData.setTypeDependencies(new TypeDependencies(byteCodes));
+
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes);
         projectData.setCharacterizedTypes(characterizedTypes);
         projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodSpecifications(), characterizedTypes));

@@ -46,8 +46,8 @@ public class ProjectData {
      */
     public static ProjectData from(ByteCodes byteCodes, Sqls sqls) {
         ProjectData projectData = new ProjectData();
-        projectData.setAnnotatedFields(new AnnotatedFields(byteCodes));
-        projectData.setAnnotatedMethods(new AnnotatedMethods(byteCodes));
+        projectData.setAnnotatedFields(byteCodes.annotatedFields());
+        projectData.setAnnotatedMethods(byteCodes.annotatedMethods());
 
         projectData.setFieldDeclarations(FieldDeclarations.ofInstanceField(byteCodes));
         projectData.setStaticFieldDeclarations(FieldDeclarations.ofStaticField(byteCodes));

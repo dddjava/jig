@@ -24,7 +24,7 @@ public class ValidationAnnotatedMembers {
                 .map(ValidationAnnotatedMember::new);
         Stream<ValidationAnnotatedMember> methodStream = annotatedMethods.list().stream()
                 // TODO 正規表現の絞り込みをやめる
-                .filter(fieldAnnotationDeclaration -> fieldAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
+                .filter(methodAnnotationDeclaration -> methodAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
                 .map(ValidationAnnotatedMember::new);
 
         return Stream.concat(fieldStream, methodStream)

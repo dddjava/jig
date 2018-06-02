@@ -44,10 +44,9 @@ public class CharacterizedMethod {
             case BOOL_QUERY:
                 return methodDeclaration().returnType().isBoolean();
             case PUBLIC:
-                return methodByteCode.accessor() == PUBLIC;
+                return methodByteCode.accessor().isPublic();
             case NOT_PUBLIC:
-                return methodByteCode.accessor() == NOT_PUBLIC;
-            case HANDLER:
+                return methodByteCode.accessor().isNotPublic();
                 // TODO
         }
 

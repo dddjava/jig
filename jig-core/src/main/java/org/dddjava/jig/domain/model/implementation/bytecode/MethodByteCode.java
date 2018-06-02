@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.characteristic.MethodCharacteristic;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
@@ -111,10 +110,8 @@ public class MethodByteCode {
         MethodKind.methodKind(this).bind(this, byteCode);
     }
 
-    public MethodCharacteristic accessor() {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) {
-            return MethodCharacteristic.PUBLIC;
-        }
-        return MethodCharacteristic.NOT_PUBLIC;
+    public Accessor accessor() {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return Accessor.PUBLIC;
+        return Accessor.NOT_PUBLIC;
     }
 }

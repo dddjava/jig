@@ -56,10 +56,6 @@ public class MethodDeclaration {
         return Objects.hash(fullText);
     }
 
-    public String asSimpleTextWithReturnType() {
-        return asSignatureSimpleText() + " : " + returnTypeIdentifier.asSimpleText();
-    }
-
     public TypeIdentifier returnType() {
         return returnTypeIdentifier;
     }

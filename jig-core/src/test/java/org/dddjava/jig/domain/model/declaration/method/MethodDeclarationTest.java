@@ -24,6 +24,5 @@ class MethodDeclarationTest {
 
         assertThat(methodDeclaration.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa, b.Bbb, a.Aaa)");
         assertThat(methodDeclaration.asSignatureSimpleText()).isEqualTo("abc(Aaa, Bbb, Aaa)");
-        assertThat(methodDeclaration.asSimpleTextWithReturnType()).isEqualTo("abc(Aaa, Bbb, Aaa) : Foo");
     }
 }

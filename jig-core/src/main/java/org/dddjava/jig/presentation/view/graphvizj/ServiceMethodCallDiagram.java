@@ -15,9 +15,11 @@ import static java.util.stream.Collectors.joining;
 public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     final JapaneseNameFinder japaneseNameFinder;
+    final MethodNodeLabelStyle methodNodeLabelStyle;
 
-    public ServiceMethodCallDiagram(JapaneseNameFinder japaneseNameFinder) {
+    public ServiceMethodCallDiagram(JapaneseNameFinder japaneseNameFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         this.japaneseNameFinder = japaneseNameFinder;
+        this.methodNodeLabelStyle = methodNodeLabelStyle;
     }
 
     @Override
@@ -40,9 +42,8 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                     if (method.isLambda()) {
                         node.label("(lambda)").lambda();
                     } else {
-                        // ラベルを 和名 + method(ArgumentTypes) : ReturnType にする
-                        String methodText = japaneseNameLineOf(method) + method.asSimpleTextWithReturnType();
-                        node.label(methodText);
+                        // ラベルに和名をつける
+                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.apply(method, japaneseNameFinder));
 
                         // 非publicは色なし
                         if (angle.methodCharacteristics().isNotPublicMethod()) {

@@ -4,9 +4,9 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
@@ -19,6 +19,7 @@ import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyControl
 import org.dddjava.jig.presentation.controller.classlist.ClassListController;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
+import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
@@ -100,7 +101,7 @@ public class Dependencies {
     }
 
     private ViewResolver jigViewResolver(String outputOmitPrefix) {
-        return new ViewResolver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix));
+        return new ViewResolver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), MethodNodeLabelStyle.SIMPLE.name());
     }
 
     private GlossaryService glossaryService() {

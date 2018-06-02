@@ -6,20 +6,22 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.presentation.view.graphvizj.EnumUsageDiagram;
-import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;
-import org.dddjava.jig.presentation.view.graphvizj.PackageDependencyDiagram;
-import org.dddjava.jig.presentation.view.graphvizj.ServiceMethodCallDiagram;
+import org.dddjava.jig.presentation.view.graphvizj.*;
 import org.dddjava.jig.presentation.view.poi.ReportToExcelView;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Locale;
 
 @Component
 public class ViewResolver {
 
-    private PackageIdentifierFormatter packageIdentifierFormatter;
+    private final PackageIdentifierFormatter packageIdentifierFormatter;
+    private final MethodNodeLabelStyle methodNodeLabelStyle;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
+        this.methodNodeLabelStyle = MethodNodeLabelStyle.valueOf(methodNodeLabelStyle.toUpperCase(Locale.ENGLISH));
     }
 
     public JigView<PackageDependencies> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
@@ -27,7 +29,7 @@ public class ViewResolver {
     }
 
     public JigView<ServiceAngles> serviceMethodCallHierarchy(JapaneseNameFinder japaneseNameFinder) {
-        return new GraphvizjView<>(new ServiceMethodCallDiagram(japaneseNameFinder));
+        return new GraphvizjView<>(new ServiceMethodCallDiagram(japaneseNameFinder, methodNodeLabelStyle));
     }
 
     public JigView<Reports> applicationList() {

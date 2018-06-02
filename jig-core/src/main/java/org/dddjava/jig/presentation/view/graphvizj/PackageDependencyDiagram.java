@@ -36,7 +36,6 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageDependenci
         RelationText bidirectional = new RelationText("edge [color=red];");
         for (BidirectionalDependency packageDependency : bidirectionalDependencies.list()) {
             bidirectional.add(packageDependency.left(), packageDependency.right());
-            bidirectional.add(packageDependency.right(), packageDependency.left());
         }
 
         String labelsText = packageDependencies.allPackages().stream()

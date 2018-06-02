@@ -11,7 +11,16 @@ import java.util.StringJoiner;
  */
 public class RelationText {
 
-    StringJoiner stringJoiner = new StringJoiner("\n");
+    StringJoiner stringJoiner;
+
+    public RelationText() {
+        this("");
+    }
+
+    public RelationText(String attribute) {
+        this.stringJoiner = new StringJoiner("\n");
+        stringJoiner.add(attribute);
+    }
 
     private void add(String from, String to) {
         // "hoge" -> "fuga";

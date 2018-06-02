@@ -3,6 +3,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
+import org.dddjava.jig.domain.model.networks.BidirectionalDependencies;
+import org.dddjava.jig.domain.model.networks.BidirectionalDependency;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.PackageDependency;
 
@@ -22,9 +24,19 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageDependenci
 
     @Override
     public String edit(PackageDependencies packageDependencies) {
-        RelationText relationText = new RelationText();
-        for (PackageDependency packageDependency : packageDependencies.list()) {
-            relationText.add(packageDependency.from(), packageDependency.to());
+
+        BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
+
+        RelationText unidirectionalRelation = new RelationText("edge [color=black];");
+        PackageDependencies unidirectionalDependencies = bidirectionalDependencies.filterBidirectionalFrom(packageDependencies);
+        for (PackageDependency packageDependency : unidirectionalDependencies.list()) {
+            unidirectionalRelation.add(packageDependency.from(), packageDependency.to());
+        }
+
+        RelationText bidirectional = new RelationText("edge [color=red];");
+        for (BidirectionalDependency packageDependency : bidirectionalDependencies.list()) {
+            bidirectional.add(packageDependency.left(), packageDependency.right());
+            bidirectional.add(packageDependency.right(), packageDependency.left());
         }
 
         String labelsText = packageDependencies.allPackages().stream()
@@ -41,7 +53,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageDependenci
 
         return new StringJoiner("\n", "digraph {", "}")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
-                .add(relationText.asText())
+                .add(unidirectionalRelation.asText())
+                .add(bidirectional.asText())
                 .add(labelsText)
                 .toString();
     }

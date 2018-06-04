@@ -82,7 +82,7 @@ public class ServiceReport {
         }
 
         String メソッド戻り値の型() {
-            return serviceAngle.returnType().asSimpleText();
+            return serviceAngle.method().returnType().asSimpleText();
         }
 
         String イベントハンドラ() {

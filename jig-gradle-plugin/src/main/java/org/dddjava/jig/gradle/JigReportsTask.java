@@ -41,7 +41,7 @@ public class JigReportsTask extends DefaultTask {
 
         jigHandlerContext.setProjectData(projectData);
 
-        Path outputDirectory = Paths.get(config.getOutputDirectory());
+        Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
         for (JigDocument jigDocument : jigDocuments) {
             JigDocumentHandler.of(jigDocument)
                     .handleLocal(jigHandlerContext)

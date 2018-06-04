@@ -2,7 +2,7 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
+import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
@@ -35,7 +35,7 @@ public class JigReportsTask extends DefaultTask {
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        LocalProject localProject = dependencies.localProject(getProject());
+        DefaultLocalProject localProject = dependencies.localProject(getProject());
         ImplementationService implementationService = dependencies.importService();
         ProjectData projectData = implementationService.readProjectData(localProject);
 

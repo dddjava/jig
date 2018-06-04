@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
@@ -28,7 +27,7 @@ class ReportServiceTest {
     @Autowired
     ImplementationService implementationService;
     @Autowired
-    LocalProject localProject;
+    DefaultLocalProject localProject;
 
     @Test
     void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
@@ -83,7 +82,7 @@ class ReportServiceTest {
     static class Config {
 
         @Bean
-        LocalProject localProject() {
+        DefaultLocalProject localProject() {
             // jig-coreプロジェクトを読み取り対象にする
             return new DefaultLocalProject(
                     TestSupport.getModuleRootPath().toString(),

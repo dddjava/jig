@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -29,7 +28,7 @@ class GlossaryServiceTest {
 
     @Test
     void パッケージ和名取得() {
-        LocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        DefaultLocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getPackageNameSources());
 
@@ -40,7 +39,7 @@ class GlossaryServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        LocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        DefaultLocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getTypeNameSources());
 
@@ -59,7 +58,7 @@ class GlossaryServiceTest {
 
     @Test
     void メソッド和名取得() {
-        LocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        DefaultLocalProject localProject = new DefaultLocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getTypeNameSources());
 

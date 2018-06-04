@@ -4,7 +4,6 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -29,7 +28,7 @@ public class Dependencies {
 
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
 
-    LocalProject localProject(Project project) {
+    DefaultLocalProject localProject(Project project) {
         return new DefaultLocalProject(new GradleProject(project) .allDependencyJavaProjects());
     }
 

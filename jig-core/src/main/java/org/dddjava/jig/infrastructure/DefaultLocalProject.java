@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
@@ -27,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class DefaultLocalProject implements LocalProject {
+public class DefaultLocalProject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLocalProject.class);
 
@@ -53,7 +52,6 @@ public class DefaultLocalProject implements LocalProject {
     }
 
 
-    @Override
     public ByteCodeSources getByteCodeSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
@@ -89,7 +87,6 @@ public class DefaultLocalProject implements LocalProject {
         return path.toString().endsWith("package-info.java");
     }
 
-    @Override
     public SqlSources getSqlSources() {
         try {
             Path[] array = origin.extractClassPath();
@@ -127,14 +124,12 @@ public class DefaultLocalProject implements LocalProject {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    @Override
     public PackageNameSources getPackageNameSources() {
         List<Path> paths = pathsOf(this::isPackageInfoFile);
         LOGGER.info("package-info.java: {}件", paths.size());
         return new PackageNameSources(paths);
     }
 
-    @Override
     public TypeNameSources getTypeNameSources() {
         List<Path> paths = pathsOf(this::isJavaFile);
         LOGGER.info("*.java: {}件", paths.size());

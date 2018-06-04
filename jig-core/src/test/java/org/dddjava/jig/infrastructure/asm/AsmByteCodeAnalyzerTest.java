@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,7 @@ public class AsmByteCodeAnalyzerTest {
         // 読み込む対象のソースを取得
         URI location = AsmByteCodeAnalyzerTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
-        LocalProject localProject = new DefaultLocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
+        DefaultLocalProject localProject = new DefaultLocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
         ByteCodeSources byteCodeSources = localProject.getByteCodeSources();
 
         AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());

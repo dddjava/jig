@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.infrastructure.DefaultLocalProject;
-import org.dddjava.jig.domain.model.implementation.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,7 @@ public class ImplementationServiceTest {
     @Autowired
     ImplementationService implementationService;
     @Autowired
-    LocalProject localProject;
+    DefaultLocalProject localProject;
 
     @Test
     void パッケージ依存() {
@@ -79,7 +78,7 @@ public class ImplementationServiceTest {
     static class Config {
 
         @Bean
-        LocalProject localProject() {
+        DefaultLocalProject localProject() {
             // 読み込む対象のソースを取得
             Path path = Paths.get(TestSupport.defaultPackageClassURI());
             return new DefaultLocalProject(

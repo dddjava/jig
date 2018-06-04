@@ -8,14 +8,17 @@ import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
-import java.nio.file.*;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,31 +31,33 @@ public class DefaultLocalProject implements LocalProject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLocalProject.class);
 
-    private final Path projectPath;
-    Path classesDirectory;
-    Path resourcesDirectory;
-    Path sourcesDirectory;
+    Origin origin;
 
-    public DefaultLocalProject(@Value("${project.path}") String projectPath,
-                               @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
-                               @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
-                               @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
+    //TODO: 消す
+    @Autowired
+    public DefaultLocalProject(Origin origin) {
+        this.origin = origin;
+    }
+
+    //TODO: 消す
+    @Deprecated
+    public DefaultLocalProject(String projectPath,
+                               String classesDirectory,
+                               String resourcesDirectory,
+                               String sourcesDirectory) {
+        this(new DefaultOrigin(projectPath, classesDirectory, resourcesDirectory, sourcesDirectory));
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);
         LOGGER.info("sources suffix  : {}", sourcesDirectory);
-
-        this.projectPath = Paths.get(projectPath);
-        this.classesDirectory = Paths.get(classesDirectory);
-        this.resourcesDirectory = Paths.get(resourcesDirectory);
-        this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
+
 
     @Override
     public ByteCodeSources getByteCodeSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
-            for (Path path : extractClassPath()) {
+            for (Path path : origin.extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -71,17 +76,6 @@ public class DefaultLocalProject implements LocalProject {
         return new ByteCodeSources(sources);
     }
 
-    private Path[] extractClassPath() {
-        try (Stream<Path> walk = Files.walk(projectPath)) {
-            return walk
-                    .filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
-                    .peek(path -> LOGGER.info("classes: {}", path))
-                    .toArray(Path[]::new);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
 
     private boolean isClassFile(Path path) {
         return path.toString().endsWith(".class");
@@ -98,7 +92,7 @@ public class DefaultLocalProject implements LocalProject {
     @Override
     public SqlSources getSqlSources() {
         try {
-            Path[] array = extractClassPath();
+            Path[] array = origin.extractClassPath();
 
             URL[] urls = new URL[array.length];
             List<String> classNames = new ArrayList<>();
@@ -150,7 +144,7 @@ public class DefaultLocalProject implements LocalProject {
     private List<Path> pathsOf(Predicate<Path> condition) {
         try {
             List<Path> paths = new ArrayList<>();
-            for (Path path : extractSourcePath()) {
+            for (Path path : origin.extractSourcePath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -165,14 +159,4 @@ public class DefaultLocalProject implements LocalProject {
         }
     }
 
-    private Path[] extractSourcePath() {
-        try (Stream<Path> walk = Files.walk(projectPath)) {
-            return walk.filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(sourcesDirectory))
-                    .peek(path -> LOGGER.info("sources: {}", path))
-                    .toArray(Path[]::new);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
 }

@@ -21,12 +21,8 @@ import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.api.tasks.SourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 public class Dependencies {
     private static final Logger LOGGER = LoggerFactory.getLogger(Dependencies.class);
@@ -34,22 +30,7 @@ public class Dependencies {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
 
     LocalProject localProject(Project project) {
-        JavaPluginConvention javaPluginConvention = project.getConvention().findPlugin(JavaPluginConvention.class);
-        if (javaPluginConvention == null) {
-            throw new AssertionError("JavaPluginが適用されていません。");
-        }
-
-        SourceSet mainSourceSet = javaPluginConvention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-        File srcDir = mainSourceSet.getJava().getSrcDirs().iterator().next();
-        File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
-        File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
-
-        return new DefaultLocalProject(
-                project.getProjectDir().toString(),
-                classesOutputDir.getAbsolutePath(),
-                resourceOutputDir.getAbsolutePath(),
-                srcDir.getAbsolutePath()
-        );
+        return new DefaultLocalProject(new GradleProject(project) .allDependencyJavaProjects());
     }
 
     ImplementationService importService() {

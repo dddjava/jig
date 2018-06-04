@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Component
 public class DefaultOrigin implements Origin {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLocalProject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
 
     private final Path projectPath;
     Path classesDirectory;

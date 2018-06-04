@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.infrastructure.DefaultLocalProject;
+import org.dddjava.jig.infrastructure.LocalProject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,7 +31,7 @@ public class ImplementationService {
     /**
      * プロジェクト情報を読み取る
      */
-    public ProjectData readProjectData(DefaultLocalProject target) {
+    public ProjectData readProjectData(LocalProject target) {
         ByteCodes byteCodes = readByteCode(target.getByteCodeSources());
         Sqls sqls = readSql(target.getSqlSources());
 

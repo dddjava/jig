@@ -3,7 +3,7 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.infrastructure.DefaultLocalProject;
+import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
@@ -38,7 +38,7 @@ public class CommandLineApplication implements CommandLineRunner {
     @Autowired
     ImplementationService implementationService;
     @Autowired
-    DefaultLocalProject localProject;
+    LocalProject localProject;
 
     @Autowired
     JigHandlerContext jigHandlerContext;

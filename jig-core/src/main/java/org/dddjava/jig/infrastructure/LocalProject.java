@@ -26,24 +26,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class DefaultLocalProject {
+public class LocalProject {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLocalProject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
 
     Origin origin;
 
     //TODO: 消す
     @Autowired
-    public DefaultLocalProject(Origin origin) {
+    public LocalProject(Origin origin) {
         this.origin = origin;
     }
 
     //TODO: 消す
     @Deprecated
-    public DefaultLocalProject(String projectPath,
-                               String classesDirectory,
-                               String resourcesDirectory,
-                               String sourcesDirectory) {
+    public LocalProject(String projectPath,
+                        String classesDirectory,
+                        String resourcesDirectory,
+                        String sourcesDirectory) {
         this(new DefaultOrigin(projectPath, classesDirectory, resourcesDirectory, sourcesDirectory));
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);

@@ -19,7 +19,7 @@ public class MethodSignature {
     }
 
     public String asText() {
-        return methodName + "(" + argumentsAsText() + ")";
+        return methodName + "(" + arguments.argumentsAsText() + ")";
     }
 
     public String methodName() {
@@ -27,15 +27,7 @@ public class MethodSignature {
     }
 
     public String asSimpleText() {
-        return methodName + "(" + argumentsAsSimpleText() + ")";
-    }
-
-    String argumentsAsText() {
-        return arguments.argumentsAsText();
-    }
-
-    String argumentsAsSimpleText() {
-        return arguments.argumentsAsSimpleText();
+        return methodName + "(" + arguments.argumentsAsSimpleText() + ")";
     }
 
     public List<TypeIdentifier> arguments() {

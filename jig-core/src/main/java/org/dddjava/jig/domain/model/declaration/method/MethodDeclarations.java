@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.Comparator;
@@ -33,7 +34,7 @@ public class MethodDeclarations {
         return list.stream()
                 .map(MethodDeclaration::asSimpleTextWithDeclaringType)
                 .sorted()
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(Text.collectionCollector());
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {

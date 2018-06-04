@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.services;
 
+import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -9,8 +10,6 @@ import org.dddjava.jig.domain.model.japanese.JapaneseName;
 
 import java.util.List;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * サービスレポート
@@ -102,7 +101,7 @@ public class ServiceReport {
             return serviceAngle.method().methodSignature().arguments().stream()
                     .map(japaneseNameResolver)
                     .map(JapaneseName::summarySentence)
-                    .collect(joining(" ,", "[", "]"));
+                    .collect(Text.collectionCollector());
         }
 
         String 使用しているフィールドの型() {

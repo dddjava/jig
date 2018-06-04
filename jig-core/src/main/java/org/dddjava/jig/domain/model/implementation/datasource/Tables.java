@@ -1,9 +1,10 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
+import org.dddjava.jig.domain.basic.Text;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * テーブル一覧
@@ -33,6 +34,6 @@ public class Tables {
         return tables.stream()
                 .map(Table::name)
                 .distinct()
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(Text.collectionCollector());
     }
 }

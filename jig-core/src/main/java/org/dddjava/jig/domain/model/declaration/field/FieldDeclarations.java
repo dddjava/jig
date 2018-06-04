@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.field;
 
+import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
@@ -36,13 +37,13 @@ public class FieldDeclarations {
     public String toNameText() {
         return list.stream()
                 .map(FieldDeclaration::nameText)
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(Text.collectionCollector());
     }
 
     public String toSignatureText() {
         return list.stream()
                 .map(FieldDeclaration::signatureText)
-                .collect(Collectors.joining(", ", "[", "]"));
+                .collect(Text.collectionCollector());
     }
 
     public TypeIdentifiers toTypeIdentifies() {

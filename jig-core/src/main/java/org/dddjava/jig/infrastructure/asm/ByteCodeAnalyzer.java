@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -99,7 +100,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(byteCode.typeIdentifier(), toMethodSignature(name, descriptor), methodDescriptorToReturnIdentifier(descriptor));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(byteCode.typeIdentifier(), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor)));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -129,10 +130,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
                 methodByteCode.registerMethodInstruction(
-                        new MethodDeclaration(
-                                new TypeIdentifier(owner),
-                                toMethodSignature(name, descriptor),
-                                methodDescriptorToReturnIdentifier(descriptor)));
+                        new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor))));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -166,10 +164,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
                         methodByteCode.registerMethodInstruction(
-                                new MethodDeclaration(
-                                        new TypeIdentifier(handle.getOwner()),
-                                        toMethodSignature(handle.getName(), handle.getDesc()),
-                                        methodDescriptorToReturnIdentifier(handle.getDesc()))
+                                new MethodDeclaration(new TypeIdentifier(handle.getOwner()), toMethodSignature(handle.getName(), handle.getDesc()), new MethodReturn(methodDescriptorToReturnIdentifier(handle.getDesc())))
                         );
                     }
                 }

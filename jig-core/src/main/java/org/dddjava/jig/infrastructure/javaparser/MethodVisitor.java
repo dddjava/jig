@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
@@ -32,7 +33,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodJapaneseName>> {
                                     new Arguments(Collections.emptyList())
                             ),
                             // TODO 戻り値を取得したい
-                            new TypeIdentifier("void")
+                            new MethodReturn(new TypeIdentifier("void"))
                     ),
                     new JapaneseName(javadocText)
             );

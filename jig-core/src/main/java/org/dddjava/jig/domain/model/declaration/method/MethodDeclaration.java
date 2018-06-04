@@ -11,14 +11,14 @@ public class MethodDeclaration {
 
     private final TypeIdentifier declaringType;
     private final MethodSignature methodSignature;
-    private final TypeIdentifier returnTypeIdentifier;
+    private final MethodReturn methodReturn;
 
     private final String fullText;
 
-    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, TypeIdentifier returnTypeIdentifier) {
+    public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, MethodReturn methodReturn) {
         this.declaringType = declaringType;
         this.methodSignature = methodSignature;
-        this.returnTypeIdentifier = returnTypeIdentifier;
+        this.methodReturn = methodReturn;
 
         this.fullText = declaringType.fullQualifiedName() + "." + methodSignature.asText();
     }
@@ -40,7 +40,7 @@ public class MethodDeclaration {
     }
 
     public MethodDeclaration with(TypeIdentifier typeIdentifier) {
-        return new MethodDeclaration(typeIdentifier, this.methodSignature, returnTypeIdentifier);
+        return new MethodDeclaration(typeIdentifier, this.methodSignature, methodReturn);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class MethodDeclaration {
     }
 
     public TypeIdentifier returnType() {
-        return returnTypeIdentifier;
+        return methodReturn.typeIdentifier;
     }
 
     public boolean isConstructor() {

@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
@@ -62,23 +63,15 @@ class GlossaryServiceTest {
 
         sut.importJapanese(localProject.getTypeNameSources());
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(
-                new TypeIdentifier(MethodJavadocStub.class),
-                new MethodSignature(
-                        "method",
-                        new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())),
-                new TypeIdentifier("void")
-        );
+        MethodDeclaration methodDeclaration = new MethodDeclaration(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
+                "method",
+                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())), new MethodReturn(new TypeIdentifier("void")));
         Assertions.assertThat(sut.japaneseNameFrom(methodDeclaration).value())
                 .isEqualTo("メソッドのJavadoc");
 
-        MethodDeclaration overloadMethodDeclaration = new MethodDeclaration(
-                new TypeIdentifier(MethodJavadocStub.class),
-                new MethodSignature(
-                        "overloadMethod",
-                        new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))),
-                new TypeIdentifier("void")
-        );
+        MethodDeclaration overloadMethodDeclaration = new MethodDeclaration(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
+                "overloadMethod",
+                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))), new MethodReturn(new TypeIdentifier("void")));
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodDeclaration).value())
                 .isEqualTo("引数ありのメソッド");
     }

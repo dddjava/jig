@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.method.*;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 
@@ -30,7 +27,7 @@ public class StringComparingAngle {
                 new MethodSignature(
                         "equals",
                         new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))),
-                new TypeIdentifier("boolean"));
+                new MethodReturn(new TypeIdentifier("boolean")));
 
         MethodDeclarations userMethods = methodRelations.stream()
                 .filterTo(equalsMethod)

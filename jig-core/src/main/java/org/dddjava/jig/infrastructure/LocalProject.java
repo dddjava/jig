@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -32,25 +31,9 @@ public class LocalProject {
 
     Layout layout;
 
-    //TODO: 消す
-    @Autowired
     public LocalProject(Layout layout) {
         this.layout = layout;
     }
-
-    //TODO: 消す
-    @Deprecated
-    public LocalProject(String projectPath,
-                        String classesDirectory,
-                        String resourcesDirectory,
-                        String sourcesDirectory) {
-        this(new DefaultLayout(projectPath, classesDirectory, resourcesDirectory, sourcesDirectory));
-        LOGGER.info("Project Path: {}", projectPath);
-        LOGGER.info("classes suffix  : {}", classesDirectory);
-        LOGGER.info("resources suffix: {}", resourcesDirectory);
-        LOGGER.info("sources suffix  : {}", sourcesDirectory);
-    }
-
 
     public ByteCodeSources getByteCodeSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();

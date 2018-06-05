@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.infrastructure.DefaultLayout;
+import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -29,7 +31,7 @@ class GlossaryServiceTest {
 
     @Test
     void パッケージ和名取得() {
-        LocalProject localProject = new LocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getPackageNameSources());
 
@@ -37,10 +39,15 @@ class GlossaryServiceTest {
                 .isEqualTo("テストで使用するスタブたち");
     }
 
+    private LocalProject localProjectOf(String projectPath, String dummy, String dummy1, String sourcesDirectory) {
+        Layout layout = new DefaultLayout(projectPath, dummy, dummy1, sourcesDirectory);
+        return new LocalProject(layout);
+    }
+
     @ParameterizedTest
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        LocalProject localProject = new LocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getTypeNameSources());
 
@@ -59,7 +66,7 @@ class GlossaryServiceTest {
 
     @Test
     void メソッド和名取得() {
-        LocalProject localProject = new LocalProject(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
         sut.importJapanese(localProject.getTypeNameSources());
 

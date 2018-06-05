@@ -1,13 +1,13 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.infrastructure.Origin;
+import org.dddjava.jig.infrastructure.Layout;
 
 import java.nio.file.Path;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-public class GradleProjects implements Origin {
+public class GradleProjects implements Layout {
     final Set<GradleProject> values;
 
     GradleProjects(Set<GradleProject> values) {

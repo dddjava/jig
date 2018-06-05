@@ -30,12 +30,12 @@ public class LocalProject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
 
-    Origin origin;
+    Layout layout;
 
     //TODO: 消す
     @Autowired
-    public LocalProject(Origin origin) {
-        this.origin = origin;
+    public LocalProject(Layout layout) {
+        this.layout = layout;
     }
 
     //TODO: 消す
@@ -44,7 +44,7 @@ public class LocalProject {
                         String classesDirectory,
                         String resourcesDirectory,
                         String sourcesDirectory) {
-        this(new DefaultOrigin(projectPath, classesDirectory, resourcesDirectory, sourcesDirectory));
+        this(new DefaultLayout(projectPath, classesDirectory, resourcesDirectory, sourcesDirectory));
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);
@@ -55,7 +55,7 @@ public class LocalProject {
     public ByteCodeSources getByteCodeSources() {
         ArrayList<ByteCodeSource> sources = new ArrayList<>();
         try {
-            for (Path path : origin.extractClassPath()) {
+            for (Path path : layout.extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -89,7 +89,7 @@ public class LocalProject {
 
     public SqlSources getSqlSources() {
         try {
-            Path[] array = origin.extractClassPath();
+            Path[] array = layout.extractClassPath();
 
             URL[] urls = new URL[array.length];
             List<String> classNames = new ArrayList<>();
@@ -139,7 +139,7 @@ public class LocalProject {
     private List<Path> pathsOf(Predicate<Path> condition) {
         try {
             List<Path> paths = new ArrayList<>();
-            for (Path path : origin.extractSourcePath()) {
+            for (Path path : layout.extractSourcePath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
@@ -25,7 +27,7 @@ public class ByteCode {
 
     public TypeIdentifiers interfaceTypeIdentifiers;
     final List<AnnotatedType> annotatedTypes = new ArrayList<>();
-    final List<FieldDeclaration> staticFieldDeclarations = new ArrayList<>();
+    final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
     final List<AnnotatedField> annotatedFields = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
@@ -82,8 +84,8 @@ public class ByteCode {
         return new FieldDeclarations(fieldDeclarations);
     }
 
-    public FieldDeclarations staticFieldDeclarations() {
-        return new FieldDeclarations(staticFieldDeclarations);
+    public StaticFieldDeclarations staticFieldDeclarations() {
+        return new StaticFieldDeclarations(staticFieldDeclarations);
     }
 
     public boolean isModel() {
@@ -122,7 +124,7 @@ public class ByteCode {
         useTypes.add(field.typeIdentifier());
     }
 
-    public void registerStaticField(FieldDeclaration field) {
+    public void registerStaticField(StaticFieldDeclaration field) {
         staticFieldDeclarations.add(field);
         useTypes.add(field.typeIdentifier());
     }
@@ -133,14 +135,6 @@ public class ByteCode {
 
     public void registerFieldAnnotation(AnnotatedField annotatedField) {
         annotatedFields.add(annotatedField);
-    }
-
-    public AnnotatedType newAnnotationDeclaration(TypeIdentifier annotationTypeIdentifier) {
-        return new AnnotatedType(typeIdentifier, annotationTypeIdentifier);
-    }
-
-    public FieldDeclaration newFieldDeclaration(String name, TypeIdentifier fieldTypeIdentifier) {
-        return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
     }
 
     public List<AnnotatedField> fieldAnnotationDeclarations() {

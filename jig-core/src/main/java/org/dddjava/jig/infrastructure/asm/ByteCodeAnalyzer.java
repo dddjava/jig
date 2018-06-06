@@ -5,10 +5,11 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -59,7 +60,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        AnnotatedType annotatedType = byteCode.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        AnnotatedType annotatedType = new AnnotatedType(byteCode.typeIdentifier(), typeDescriptorToIdentifier(descriptor));
         byteCode.registerTypeAnnotation(annotatedType);
         return super.visitAnnotation(descriptor, visible);
     }
@@ -75,26 +76,27 @@ class ByteCodeAnalyzer extends ClassVisitor {
             byteCode.registerUseType(toTypeIdentifier(elementType));
         }
 
-        FieldDeclaration fieldDeclaration = byteCode.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // インスタンスフィールドだけ相手にする
             byteCode.registerField(fieldDeclaration);
-        } else {
-            if (!name.equals("$VALUES")) {
-                // 定数だけどenumの $VALUES は除く
-                byteCode.registerStaticField(fieldDeclaration);
-            }
+            return new FieldVisitor(this.api) {
+                @Override
+                public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                    TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
+                    byteCode.registerUseType(annotationTypeIdentifier);
+                    return new MyAnnotationVisitor(this.api, annotationDescription ->
+                            byteCode.registerFieldAnnotation(new AnnotatedField(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                }
+            };
         }
-        return new FieldVisitor(this.api) {
-            @Override
-            public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                byteCode.registerUseType(annotationTypeIdentifier);
-                return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        byteCode.registerFieldAnnotation(new AnnotatedField(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
-            }
-        };
+        if (!name.equals("$VALUES")) {
+            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            // staticフィールドのうち、enumの $VALUES は除く
+            byteCode.registerStaticField(fieldDeclaration);
+        }
+        return super.visitField(access, name, descriptor, signature, value);
     }
 
     @Override

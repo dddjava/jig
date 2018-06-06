@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
@@ -33,20 +32,5 @@ public class JigHandlerContext {
 
     public PackageDepth packageDepth() {
         return packageDepth;
-    }
-
-    // TODO
-    ProjectData projectData = new ProjectData();
-
-    public ProjectData getProjectData() {
-        return projectData;
-    }
-
-    public ArgumentResolver argumentResolver() {
-        return () -> projectData;
-    }
-
-    public void setProjectData(ProjectData projectData) {
-        this.projectData = projectData;
     }
 }

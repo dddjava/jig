@@ -35,7 +35,7 @@ public class AsmByteCodeAnalyzerTest {
         AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
         ByteCodes byteCodes = implementationFactory.readFrom(byteCodeSources);
 
-        projectData = ProjectData.from(byteCodes, null);
+        projectData = new ProjectData(byteCodes, null);
     }
 
     @Test

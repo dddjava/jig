@@ -58,12 +58,10 @@ public class CommandLineApplication implements CommandLineRunner {
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
             ProjectData projectData = implementationService.readProjectData(localProject);
 
-            jigHandlerContext.setProjectData(projectData);
-
             Path outputDirectory = Paths.get(this.outputDirectory);
             for (JigDocument jigDocument : jigDocuments) {
                 JigDocumentHandler.of(jigDocument)
-                        .handleLocal(jigHandlerContext)
+                        .handleLocal(jigHandlerContext, projectData)
                         .render(outputDirectory);
             }
         } catch (ClassFindFailException e) {

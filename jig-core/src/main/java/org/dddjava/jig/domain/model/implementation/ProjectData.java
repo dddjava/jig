@@ -16,8 +16,6 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
 
 /**
  * プロジェクトから読み取った情報
- *
- * TODO 名前や構成を見直す
  */
 public class ProjectData {
 
@@ -42,72 +40,25 @@ public class ProjectData {
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
 
-    /**
-     * 実装をプロジェクトデータに変換する
-     */
-    public static ProjectData from(ByteCodes byteCodes, Sqls sqls) {
-        ProjectData projectData = new ProjectData();
-        projectData.setAnnotatedFields(byteCodes.annotatedFields());
-        projectData.setAnnotatedMethods(byteCodes.annotatedMethods());
+    public ProjectData(ByteCodes byteCodes, Sqls sqls) {
+        this.annotatedFields = byteCodes.annotatedFields();
+        this.annotatedMethods = byteCodes.annotatedMethods();
 
-        projectData.setFieldDeclarations(byteCodes.instanceFields());
-        projectData.setStaticFieldDeclarations(byteCodes.staticFields());
+        this.fieldDeclarations = byteCodes.instanceFields();
+        this.staticFieldDeclarations = byteCodes.staticFields();
 
-        projectData.setImplementationMethods(new ImplementationMethods(byteCodes));
+        this.implementationMethods = new ImplementationMethods(byteCodes);
 
-        projectData.setMethodRelations(new MethodRelations(byteCodes));
-        projectData.setMethodUsingFields(new MethodUsingFields(byteCodes));
-        projectData.setTypeDependencies(new TypeDependencies(byteCodes));
+        this.methodRelations = new MethodRelations(byteCodes);
+        this.methodUsingFields = new MethodUsingFields(byteCodes);
+        this.typeDependencies = new TypeDependencies(byteCodes);
 
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes);
-        projectData.setCharacterizedTypes(characterizedTypes);
-        projectData.setCharacterizedMethods(new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes));
-        projectData.setValueTypes(new ValueTypes(byteCodes));
-
-        projectData.setSqls(sqls);
-
-        return projectData;
-    }
-
-
-    public void setImplementationMethods(ImplementationMethods implementationMethods) {
-        this.implementationMethods = implementationMethods;
-    }
-
-    public void setMethodRelations(MethodRelations methodRelations) {
-        this.methodRelations = methodRelations;
-    }
-
-    public void setSqls(Sqls sqls) {
-        this.sqls = sqls;
-    }
-
-    public void setMethodUsingFields(MethodUsingFields methodUsingFields) {
-        this.methodUsingFields = methodUsingFields;
-    }
-
-    public void setValueTypes(ValueTypes valueTypes) {
-        this.valueTypes = valueTypes;
-    }
-
-    public void setStaticFieldDeclarations(StaticFieldDeclarations staticFieldDeclarations) {
-        this.staticFieldDeclarations = staticFieldDeclarations;
-    }
-
-    public void setCharacterizedTypes(CharacterizedTypes characterizedTypes) {
         this.characterizedTypes = characterizedTypes;
-    }
+        this.characterizedMethods = new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes);
+        this.valueTypes = new ValueTypes(byteCodes);
 
-    public void setTypeDependencies(TypeDependencies typeDependencies) {
-        this.typeDependencies = typeDependencies;
-    }
-
-    public void setFieldDeclarations(FieldDeclarations fieldDeclarations) {
-        this.fieldDeclarations = fieldDeclarations;
-    }
-
-    public void setCharacterizedMethods(CharacterizedMethods characterizedMethods) {
-        this.characterizedMethods = characterizedMethods;
+        this.sqls = sqls;
     }
 
     public ImplementationMethods implementationMethods() {
@@ -148,14 +99,6 @@ public class ProjectData {
 
     public CharacterizedMethods characterizedMethods() {
         return characterizedMethods;
-    }
-
-    public void setAnnotatedFields(AnnotatedFields annotatedFields) {
-        this.annotatedFields = annotatedFields;
-    }
-
-    public void setAnnotatedMethods(AnnotatedMethods annotatedMethods) {
-        this.annotatedMethods = annotatedMethods;
     }
 
     public AnnotatedFields annotatedFields() {

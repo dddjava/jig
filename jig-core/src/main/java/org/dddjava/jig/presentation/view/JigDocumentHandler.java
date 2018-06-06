@@ -8,36 +8,31 @@ public enum JigDocumentHandler {
 
     ServiceMethodCallHierarchy(JigDocument.ServiceMethodCallHierarchy) {
         @Override
-        public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.serviceMethodCallHierarchyController.serviceMethodCallHierarchy(projectData);
         }
     },
     PackageDependency(JigDocument.PackageDependency) {
         @Override
-        public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.packageDependencyController.packageDependency(jigHandlerContext.packageDepth(), projectData);
         }
     },
     ApplicationList(JigDocument.ApplicationList) {
         @Override
-        public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.classListController.applicationList(projectData);
         }
     },
     DomainList(JigDocument.DomainList) {
         @Override
-        public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.classListController.domainList(projectData);
         }
     },
     EnumUsage(JigDocument.EnumUsage) {
         @Override
-        public JigModelAndView handle(JigHandlerContext jigHandlerContext) {
-            ProjectData projectData = jigHandlerContext.argumentResolver().projectData();
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.enumUsageController.enumUsage(projectData);
         }
     };
@@ -55,9 +50,9 @@ public enum JigDocumentHandler {
                 .orElseThrow(() -> new IllegalArgumentException(jigDocument.name()));
     }
 
-    abstract JigModelAndView<?> handle(JigHandlerContext jigHandlerContext);
+    abstract JigModelAndView<?> handle(JigHandlerContext jigHandlerContext, ProjectData projectData);
 
-    public JigLocalRenderer<?> handleLocal(JigHandlerContext jigHandlerContext) {
-        return new JigLocalRenderer<>(this.jigDocument, handle(jigHandlerContext));
+    public JigLocalRenderer<?> handleLocal(JigHandlerContext jigHandlerContext, ProjectData projectData) {
+        return new JigLocalRenderer<>(this.jigDocument, handle(jigHandlerContext, projectData));
     }
 }

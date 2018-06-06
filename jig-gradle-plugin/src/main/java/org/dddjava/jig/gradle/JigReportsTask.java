@@ -39,12 +39,10 @@ public class JigReportsTask extends DefaultTask {
         ImplementationService implementationService = dependencies.importService();
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        jigHandlerContext.setProjectData(projectData);
-
         Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
         for (JigDocument jigDocument : jigDocuments) {
             JigDocumentHandler.of(jigDocument)
-                    .handleLocal(jigHandlerContext)
+                    .handleLocal(jigHandlerContext, projectData)
                     .render(outputDirectory);
         }
 

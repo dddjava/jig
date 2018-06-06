@@ -43,7 +43,6 @@ public class GradleProject {
 
     private SourceSet sourceSet() {
         JavaPluginConvention convention = project.getConvention().findPlugin(JavaPluginConvention.class);
-        if (convention == null) throw new IllegalStateException("Java プラグインが適用されていません。");
         return convention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
     }
 

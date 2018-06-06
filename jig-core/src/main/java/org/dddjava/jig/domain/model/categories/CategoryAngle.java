@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
@@ -15,10 +16,10 @@ public class CategoryAngle {
     Characteristics characteristics;
     TypeIdentifier typeIdentifier;
     TypeIdentifiers userTypeIdentifiers;
-    FieldDeclarations constantsDeclarations;
+    StaticFieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    public CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, FieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
+    public CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
         this.characteristics = characteristics;
         this.typeIdentifier = typeIdentifier;
         this.userTypeIdentifiers = userTypeIdentifiers;
@@ -26,7 +27,7 @@ public class CategoryAngle {
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public static CategoryAngle of(TypeIdentifier typeIdentifier, CharacterizedTypes characterizedTypes, TypeDependencies allTypeDependencies, FieldDeclarations allFieldDeclarations, FieldDeclarations allStaticFieldDeclarations) {
+    public static CategoryAngle of(TypeIdentifier typeIdentifier, CharacterizedTypes characterizedTypes, TypeDependencies allTypeDependencies, FieldDeclarations allFieldDeclarations, StaticFieldDeclarations allStaticFieldDeclarations) {
         Characteristics characteristics = characterizedTypes.stream()
                 .pickup(typeIdentifier)
                 .characteristics();
@@ -34,7 +35,7 @@ public class CategoryAngle {
                 .filterTo(typeIdentifier)
                 .removeSelf()
                 .fromTypeIdentifiers();
-        FieldDeclarations constantsDeclarations = allStaticFieldDeclarations
+        StaticFieldDeclarations constantsDeclarations = allStaticFieldDeclarations
                 .filterDeclareTypeIs(typeIdentifier);
         FieldDeclarations fieldDeclarations = allFieldDeclarations
                 .filterDeclareTypeIs(typeIdentifier);
@@ -53,7 +54,7 @@ public class CategoryAngle {
         return userTypeIdentifiers;
     }
 
-    public FieldDeclarations constantsDeclarations() {
+    public StaticFieldDeclarations constantsDeclarations() {
         return constantsDeclarations;
     }
 

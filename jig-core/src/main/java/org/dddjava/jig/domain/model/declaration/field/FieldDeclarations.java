@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -25,19 +24,8 @@ public class FieldDeclarations {
         return Collectors.collectingAndThen(Collectors.toList(), FieldDeclarations::new);
     }
 
-    public static FieldDeclarations empty() {
-        return new FieldDeclarations(Collections.emptyList());
-    }
-
-
     public List<FieldDeclaration> list() {
         return list;
-    }
-
-    public String toNameText() {
-        return list.stream()
-                .map(FieldDeclaration::nameText)
-                .collect(Text.collectionCollector());
     }
 
     public String toSignatureText() {

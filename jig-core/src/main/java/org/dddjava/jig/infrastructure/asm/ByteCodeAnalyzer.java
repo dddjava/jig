@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
@@ -91,7 +92,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             };
         }
         if (!name.equals("$VALUES")) {
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // staticフィールドのうち、enumの $VALUES は除く
             byteCode.registerStaticField(fieldDeclaration);
         }

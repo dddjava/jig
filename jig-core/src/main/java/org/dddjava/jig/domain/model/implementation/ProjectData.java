@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -21,7 +22,7 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
 public class ProjectData {
 
     // フィールド
-    private FieldDeclarations staticFieldDeclarations;
+    private StaticFieldDeclarations staticFieldDeclarations;
     private FieldDeclarations fieldDeclarations;
     // アノテーション
     private AnnotatedFields annotatedFields;
@@ -89,7 +90,7 @@ public class ProjectData {
         this.valueTypes = valueTypes;
     }
 
-    public void setStaticFieldDeclarations(FieldDeclarations staticFieldDeclarations) {
+    public void setStaticFieldDeclarations(StaticFieldDeclarations staticFieldDeclarations) {
         this.staticFieldDeclarations = staticFieldDeclarations;
     }
 
@@ -133,7 +134,7 @@ public class ProjectData {
         return fieldDeclarations;
     }
 
-    public FieldDeclarations staticFieldDeclarations() {
+    public StaticFieldDeclarations staticFieldDeclarations() {
         return staticFieldDeclarations;
     }
 

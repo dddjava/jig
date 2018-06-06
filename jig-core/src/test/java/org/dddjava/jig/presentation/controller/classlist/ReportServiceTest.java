@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller.classlist;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import java.nio.file.Paths;
+import static org.assertj.core.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.nio.file.Paths;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -84,13 +85,13 @@ class ReportServiceTest {
         @Bean
         LocalProject localProject() {
             // jig-coreプロジェクトを読み取り対象にする
-            return new LocalProject(
+            return new LocalProject(new DefaultLayout(
                     TestSupport.getModuleRootPath().toString(),
                     // classの出力ディレクトリ
                     Paths.get(TestSupport.defaultPackageClassURI()).toString(),
                     "src/test/resources",
                     // 日本語取得のためのソース読み取り場所
-                    "src/test/java");
+                    "src/test/java"));
         }
     }
 }

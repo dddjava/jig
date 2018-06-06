@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 @Component
-public class DefaultOrigin implements Origin {
+public class DefaultLayout implements Layout {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
 
@@ -22,10 +22,10 @@ public class DefaultOrigin implements Origin {
     Path resourcesDirectory;
     Path sourcesDirectory;
 
-    public DefaultOrigin(@Value("${project.path}") String projectPath,
-                               @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
-                               @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
-                               @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
+    public DefaultLayout(@Value("${project.path}") String projectPath,
+                         @Value("${directory.classes:build/classes/java/main}") String classesDirectory,
+                         @Value("${directory.resources:build/resources/main}") String resourcesDirectory,
+                         @Value("${directory.sources:src/main/java}") String sourcesDirectory) {
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);

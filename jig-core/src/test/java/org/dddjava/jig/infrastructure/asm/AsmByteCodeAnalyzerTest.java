@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.BeforeAll;
@@ -13,12 +14,12 @@ import stub.domain.model.type.*;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaName;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmByteCodeAnalyzerTest {
 
@@ -29,7 +30,7 @@ public class AsmByteCodeAnalyzerTest {
         // 読み込む対象のソースを取得
         URI location = AsmByteCodeAnalyzerTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
         Path value = Paths.get(location);
-        LocalProject localProject = new LocalProject(value.toString(), value.toString(), "not/read/resources", "not/read/sources");
+        LocalProject localProject = new LocalProject(new DefaultLayout(value.toString(), value.toString(), "not/read/resources", "not/read/sources"));
         ByteCodeSources byteCodeSources = localProject.getByteCodeSources();
 
         AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());

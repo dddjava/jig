@@ -135,14 +135,6 @@ public class ByteCode {
         annotatedFields.add(annotatedField);
     }
 
-    public AnnotatedType newAnnotationDeclaration(TypeIdentifier annotationTypeIdentifier) {
-        return new AnnotatedType(typeIdentifier, annotationTypeIdentifier);
-    }
-
-    public FieldDeclaration newFieldDeclaration(String name, TypeIdentifier fieldTypeIdentifier) {
-        return new FieldDeclaration(typeIdentifier, name, fieldTypeIdentifier);
-    }
-
     public List<AnnotatedField> fieldAnnotationDeclarations() {
         return annotatedFields;
     }

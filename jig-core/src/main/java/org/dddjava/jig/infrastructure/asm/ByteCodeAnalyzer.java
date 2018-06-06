@@ -59,7 +59,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        AnnotatedType annotatedType = byteCode.newAnnotationDeclaration(typeDescriptorToIdentifier(descriptor));
+        AnnotatedType annotatedType = new AnnotatedType(byteCode.typeIdentifier(), typeDescriptorToIdentifier(descriptor));
         byteCode.registerTypeAnnotation(annotatedType);
         return super.visitAnnotation(descriptor, visible);
     }
@@ -77,7 +77,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            FieldDeclaration fieldDeclaration = byteCode.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // インスタンスフィールドだけ相手にする
             byteCode.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
@@ -91,7 +91,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             };
         }
         if (!name.equals("$VALUES")) {
-            FieldDeclaration fieldDeclaration = byteCode.newFieldDeclaration(name, typeDescriptorToIdentifier(descriptor));
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // staticフィールドのうち、enumの $VALUES は除く
             byteCode.registerStaticField(fieldDeclaration);
         }

@@ -6,17 +6,19 @@ import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class GradleProject {
     final Project project;
 
     public GradleProject(Project project) {
+        if (isNonJavaProject(project)) {
+            throw new IllegalStateException("Java プラグインが適用されていません。");
+        }
         this.project = project;
     }
 
@@ -47,37 +49,27 @@ public class GradleProject {
 
 
     public GradleProjects allDependencyJavaProjects() {
-        Set<Project> projects = allDependencyJavaProjectsFrom(project);
-        return projects.stream()
-                .map(GradleProject::new).collect(GradleProjects.collector());
+        return allDependencyProjectsFrom(project)
+                .map(GradleProject::new)
+                .collect(GradleProjects.collector());
     }
 
-    private Set<Project> allDependencyJavaProjectsFrom(Project root) {
-        Set<Project> allDepends = new HashSet<>();
-        if (isJavaProject(root)) {
-            allDepends.add(root);
+    private Stream<Project> allDependencyProjectsFrom(Project root) {
+        if (isNonJavaProject(root)) {
+            return Stream.empty();
         }
 
         DependencySet dependencies = root.getConfigurations().getByName("compile").getAllDependencies();
-
-        Set<Project> children = dependencies.stream()
+        Stream<Project> descendantStream = dependencies.stream()
                 .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
                 .map(ProjectDependency.class::cast)
                 .map(ProjectDependency::getDependencyProject)
-                .filter(this::isJavaProject)
-                .collect(toSet());
+                .flatMap(this::allDependencyProjectsFrom);
 
-        if (children.isEmpty()) return allDepends;
-
-        Set<Project> descendants = children.stream()
-                .flatMap(project -> allDependencyJavaProjectsFrom(project).stream())
-                .collect(toSet());
-        allDepends.addAll(descendants);
-
-        return allDepends;
+        return Stream.concat(Stream.of(root), descendantStream);
     }
 
-    private boolean isJavaProject(Project root) {
-        return root.getConvention().findPlugin(JavaPluginConvention.class) != null;
+    private boolean isNonJavaProject(Project root) {
+        return root.getConvention().findPlugin(JavaPluginConvention.class) == null;
     }
 }

@@ -87,15 +87,15 @@ public class CategoryReport {
         }
 
         String パラメーター有り() {
-            return categoryAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED) ? "◯" : "";
         }
 
         String 振る舞い有り() {
-            return categoryAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR) ? "◯" : "";
         }
 
         String 多態() {
-            return categoryAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM).toSymbolText();
+            return categoryAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM) ? "◯" : "";
         }
     }
 }

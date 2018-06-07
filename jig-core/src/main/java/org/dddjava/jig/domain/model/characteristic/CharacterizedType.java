@@ -17,8 +17,8 @@ public class CharacterizedType {
         this.set = set;
     }
 
-    public Satisfaction has(Characteristic characteristic) {
-        return Satisfaction.of(set.contains(characteristic));
+    public boolean has(Characteristic characteristic) {
+        return set.contains(characteristic);
     }
 
     public TypeIdentifier typeIdentifier() {

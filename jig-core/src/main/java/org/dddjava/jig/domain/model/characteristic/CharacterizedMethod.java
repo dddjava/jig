@@ -34,13 +34,13 @@ public class CharacterizedMethod {
             case HAS_DECISION:
                 return hasDecision();
             case SERVICE_METHOD:
-                return characterizedType.has(Characteristic.SERVICE).isSatisfy();
+                return characterizedType.has(Characteristic.SERVICE);
             case REPOSITORY_METHOD:
-                return characterizedType.has(Characteristic.REPOSITORY).isSatisfy();
+                return characterizedType.has(Characteristic.REPOSITORY);
             case MAPPER_METHOD:
-                return characterizedType.has(Characteristic.MAPPER).isSatisfy();
+                return characterizedType.has(Characteristic.MAPPER);
             case MODEL_METHOD:
-                return characterizedType.has(Characteristic.MODEL).isSatisfy();
+                return characterizedType.has(Characteristic.MODEL);
             case BOOL_QUERY:
                 return methodDeclaration().returnType().isBoolean();
             case PUBLIC:

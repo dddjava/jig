@@ -40,7 +40,7 @@ public class ServiceAngle {
         return usingRepositoryMethods;
     }
 
-    public Satisfaction usingFromController() {
+    public boolean usingFromController() {
         // TODO MethodCharacteristic.HANDLERで判別させたい
         return userCharacteristics.has(Characteristic.CONTROLLER);
     }

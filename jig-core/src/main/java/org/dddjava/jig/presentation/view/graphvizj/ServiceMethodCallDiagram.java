@@ -51,7 +51,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                         }
 
                         // ハンドラを強調（赤色）
-                        if (angle.usingFromController().isSatisfy()) {
+                        if (angle.usingFromController()) {
                             node.handlerMethod();
                         }
                     }

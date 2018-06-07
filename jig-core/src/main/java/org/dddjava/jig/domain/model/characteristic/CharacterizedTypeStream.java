@@ -32,7 +32,7 @@ public class CharacterizedTypeStream {
     }
 
     public CharacterizedTypeStream filter(Characteristic characteristic) {
-        return new CharacterizedTypeStream(stream.filter(typeCharacteristics -> typeCharacteristics.has(characteristic).isSatisfy()));
+        return new CharacterizedTypeStream(stream.filter(typeCharacteristics -> typeCharacteristics.has(characteristic)));
     }
 
     public CharacterizedType pickup(TypeIdentifier typeIdentifier) {

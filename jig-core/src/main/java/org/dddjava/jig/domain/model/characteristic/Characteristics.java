@@ -17,8 +17,8 @@ public class Characteristics {
         this.characteristics = characteristics;
     }
 
-    public Satisfaction has(Characteristic characteristic) {
-        return Satisfaction.of(characteristics.contains(characteristic));
+    public boolean has(Characteristic characteristic) {
+        return characteristics.contains(characteristic);
     }
 
     public Layer toLayer() {

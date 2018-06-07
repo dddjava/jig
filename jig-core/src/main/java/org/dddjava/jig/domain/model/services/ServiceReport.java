@@ -86,7 +86,7 @@ public class ServiceReport {
         }
 
         String イベントハンドラ() {
-            return serviceAngle.usingFromController().toSymbolText();
+            return serviceAngle.usingFromController() ? "◯" : "";
         }
 
         String メソッド和名() {

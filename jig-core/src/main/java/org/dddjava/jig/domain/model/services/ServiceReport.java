@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
@@ -56,12 +56,12 @@ public class ServiceReport {
     public static class Row {
         ServiceAngle serviceAngle;
         Function<TypeIdentifier, JapaneseName> japaneseNameResolver;
-        Function<MethodDeclaration, JapaneseName> methodJapaneseNameResolver;
+        Function<MethodIdentifier, JapaneseName> methodJapaneseNameResolver;
         TypeIdentifierFormatter identifierFormatter;
 
         public Row(ServiceAngle serviceAngle,
                    Function<TypeIdentifier, JapaneseName> japaneseNameResolver,
-                   Function<MethodDeclaration, JapaneseName> methodJapaneseNameResolver,
+                   Function<MethodIdentifier, JapaneseName> methodJapaneseNameResolver,
                    TypeIdentifierFormatter identifierFormatter) {
             this.serviceAngle = serviceAngle;
             this.japaneseNameResolver = japaneseNameResolver;
@@ -90,7 +90,7 @@ public class ServiceReport {
         }
 
         String メソッド和名() {
-            return methodJapaneseNameResolver.apply(serviceAngle.method()).summarySentence();
+            return methodJapaneseNameResolver.apply(serviceAngle.method().identifier()).summarySentence();
         }
 
         String 返す型の和名() {

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
@@ -16,7 +16,7 @@ public interface JapaneseNameFinder {
 
     TypeJapaneseName find(TypeIdentifier typeIdentifier);
 
-    MethodJapaneseName find(MethodDeclaration methodDeclaration);
+    MethodJapaneseName find(MethodIdentifier methodIdentifier);
 
     // TODO 取得したときにはじめてJavadocを読みに行くようにしたい
     class GlossaryServiceAdapter implements JapaneseNameFinder {
@@ -39,8 +39,8 @@ public interface JapaneseNameFinder {
         }
 
         @Override
-        public MethodJapaneseName find(MethodDeclaration methodDeclaration) {
-            return new MethodJapaneseName(methodDeclaration, glossaryService.japaneseNameFrom(methodDeclaration));
+        public MethodJapaneseName find(MethodIdentifier methodIdentifier) {
+            return new MethodJapaneseName(methodIdentifier, glossaryService.japaneseNameFrom(methodIdentifier));
         }
     }
 }

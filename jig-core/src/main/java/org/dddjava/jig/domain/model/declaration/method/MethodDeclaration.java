@@ -62,6 +62,10 @@ public class MethodDeclaration {
     }
 
     public boolean matches(TypeIdentifier typeIdentifier, String methodName) {
-        return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
+        return methodIdentifier.matches(typeIdentifier, methodName);
+    }
+
+    public MethodIdentifier identifier() {
+        return methodIdentifier;
     }
 }

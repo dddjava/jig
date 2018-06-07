@@ -31,4 +31,12 @@ public class MethodIdentifier {
     public int hashCode() {
         return Objects.hash(declaringType, methodSignature.asText());
     }
+
+    public boolean matches(TypeIdentifier typeIdentifier, String methodName) {
+        return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
+    }
+
+    public boolean matchesIgnoreOverload(MethodIdentifier methodIdentifier) {
+        return matches(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
+    }
 }

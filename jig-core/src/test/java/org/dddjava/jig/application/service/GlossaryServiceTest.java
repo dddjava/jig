@@ -1,8 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -70,16 +69,17 @@ class GlossaryServiceTest {
 
         sut.importJapanese(localProject.getTypeNameSources());
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
+        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
-                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())), new MethodReturn(new TypeIdentifier("void")));
-        Assertions.assertThat(sut.japaneseNameFrom(methodDeclaration).value())
+                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())));
+        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
                 .isEqualTo("メソッドのJavadoc");
 
-        MethodDeclaration overloadMethodDeclaration = new MethodDeclaration(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
+        MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))), new MethodReturn(new TypeIdentifier("void")));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodDeclaration).value())
-                .isEqualTo("引数ありのメソッド");
+                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
+        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).value())
+                // オーバーロードは一意にならないのでどちらか
+                .matches("引数(なし|あり)のメソッド");
     }
 }

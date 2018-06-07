@@ -17,7 +17,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.decisions.StringComparingReport;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -94,7 +94,7 @@ public class ClassListController {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
         List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
             Function<TypeIdentifier, JapaneseName> japaneseNameResolver = glossaryService::japaneseNameFrom;
-            Function<MethodDeclaration, JapaneseName> methodJapaneseNameResolver = glossaryService::japaneseNameFrom;
+            Function<MethodIdentifier, JapaneseName> methodJapaneseNameResolver = glossaryService::japaneseNameFrom;
             return new ServiceReport.Row(angle, japaneseNameResolver, methodJapaneseNameResolver, typeIdentifierFormatter);
         }).collect(Collectors.toList());
         return new ServiceReport(list).toReport();
@@ -153,7 +153,7 @@ public class ClassListController {
         List<BoolQueryReport.Row> list = new ArrayList<>();
         for (BoolQueryAngle angle : angles.list()) {
             JapaneseName japaneseClassName = glossaryService.japaneseNameFrom(angle.declaringTypeIdentifier());
-            JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method());
+            JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method().identifier());
             list.add(new BoolQueryReport.Row(angle, japaneseMethodName, japaneseClassName, typeIdentifierFormatter));
         }
         return new BoolQueryReport(list).toReport();

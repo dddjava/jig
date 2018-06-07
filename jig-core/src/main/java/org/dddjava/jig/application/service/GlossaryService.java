@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.sourcecode.*;
@@ -41,8 +41,8 @@ public class GlossaryService {
     /**
      * メソッド和名を取得する
      */
-    public JapaneseName japaneseNameFrom(MethodDeclaration methodDeclaration) {
-        return repository.get(methodDeclaration);
+    public JapaneseName japaneseNameFrom(MethodIdentifier methodIdentifier) {
+        return repository.get(methodIdentifier);
     }
 
     /**

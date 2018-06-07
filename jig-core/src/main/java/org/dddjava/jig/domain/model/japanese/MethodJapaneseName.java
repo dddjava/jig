@@ -1,21 +1,21 @@
 package org.dddjava.jig.domain.model.japanese;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 
 /**
  * メソッド和名
  */
 public class MethodJapaneseName {
-    MethodDeclaration methodDeclaration;
+    MethodIdentifier methodIdentifier;
     JapaneseName japaneseName;
 
-    public MethodJapaneseName(MethodDeclaration methodDeclaration, JapaneseName japaneseName) {
-        this.methodDeclaration = methodDeclaration;
+    public MethodJapaneseName(MethodIdentifier methodIdentifier, JapaneseName japaneseName) {
+        this.methodIdentifier = methodIdentifier;
         this.japaneseName = japaneseName;
     }
 
-    public MethodDeclaration methodDeclaration() {
-        return methodDeclaration;
+    public MethodIdentifier methodIdentifier() {
+        return methodIdentifier;
     }
 
     public JapaneseName japaneseName() {

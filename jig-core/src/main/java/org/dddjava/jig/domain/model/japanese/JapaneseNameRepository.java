@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.japanese;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
@@ -19,7 +19,7 @@ public interface JapaneseNameRepository {
 
     void register(PackageJapaneseName packageJapaneseName);
 
-    JapaneseName get(MethodDeclaration methodDeclaration);
+    JapaneseName get(MethodIdentifier methodIdentifier);
 
     void register(MethodJapaneseName methodJapaneseName);
 }

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.networks.TypeDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.TypeDependencies;
 
 import java.util.ArrayList;
 import java.util.List;

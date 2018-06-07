@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
-import org.dddjava.jig.domain.model.networks.TypeDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 
 /**

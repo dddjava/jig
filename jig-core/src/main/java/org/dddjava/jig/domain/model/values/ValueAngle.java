@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.values;
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.networks.TypeDependencies;
+import org.dddjava.jig.domain.model.implementation.relation.TypeDependencies;
 
 /**
  * 値の切り口

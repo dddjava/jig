@@ -60,4 +60,8 @@ public class MethodDeclaration {
     public boolean sameIdentifier(MethodDeclaration methodDeclaration) {
         return methodIdentifier.equals(methodDeclaration.methodIdentifier);
     }
+
+    public boolean matches(TypeIdentifier typeIdentifier, String methodName) {
+        return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
+    }
 }

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.japanese;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
  * 型和名

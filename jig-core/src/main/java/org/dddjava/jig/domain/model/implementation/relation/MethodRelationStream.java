@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.stream.Stream;
 

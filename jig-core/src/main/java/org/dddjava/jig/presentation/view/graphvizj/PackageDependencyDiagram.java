@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.networks.BidirectionalDependencies;

@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.japanese;
 
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 import java.util.Optional;
 

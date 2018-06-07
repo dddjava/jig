@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.characteristic;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Collections;
 import java.util.Set;

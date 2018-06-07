@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

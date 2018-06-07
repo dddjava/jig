@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.PackageDependency;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.identifier.type;
+package org.dddjava.jig.domain.model.declaration.type;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 
 import java.util.Arrays;
 import java.util.Objects;

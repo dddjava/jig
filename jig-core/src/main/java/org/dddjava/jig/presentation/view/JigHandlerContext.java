@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;

@@ -2,8 +2,8 @@ package org.dddjava.jig.application.usecase;
 
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.infrastructure.DefaultLayout;

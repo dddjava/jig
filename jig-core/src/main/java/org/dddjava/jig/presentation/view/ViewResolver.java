@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.dddjava.jig.domain.model.services.ServiceAngles;

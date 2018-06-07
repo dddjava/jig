@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.decisions;
 
 import org.dddjava.jig.domain.model.declaration.method.*;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 
 import java.util.Collections;

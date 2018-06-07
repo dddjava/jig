@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.basic.Text;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;

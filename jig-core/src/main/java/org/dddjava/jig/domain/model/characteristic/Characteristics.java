@@ -21,21 +21,6 @@ public class Characteristics {
         return characteristics.contains(characteristic);
     }
 
-    public Layer toLayer() {
-        for (Characteristic characteristic : characteristics) {
-            if (characteristic == Characteristic.CONTROLLER) {
-                return Layer.PRESENTATION;
-            }
-            if (characteristic == Characteristic.SERVICE) {
-                return Layer.APPLICATION;
-            }
-            if (characteristic == Characteristic.REPOSITORY || characteristic == Characteristic.DATASOURCE) {
-                return Layer.DATASOURCE;
-            }
-        }
-        return Layer.OTHER;
-    }
-
     public static Collector<Characteristics, ?, Characteristics> collector() {
         return Collectors.reducing(new Characteristics(Collections.emptySet()), (a, b) -> {
             HashSet<Characteristic> characteristics = new HashSet<>(a.characteristics);

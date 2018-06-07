@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.characteristic;
+package org.dddjava.jig.domain.model.decisions;
 
 /**
  * 属するレイヤー

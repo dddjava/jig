@@ -13,18 +13,18 @@ public class MethodDeclaration {
     private final MethodSignature methodSignature;
     private final MethodReturn methodReturn;
 
-    private final String fullText;
+    MethodIdentifier methodIdentifier;
 
     public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, MethodReturn methodReturn) {
         this.declaringType = declaringType;
         this.methodSignature = methodSignature;
         this.methodReturn = methodReturn;
 
-        this.fullText = declaringType.fullQualifiedName() + "." + methodSignature.asText();
+        this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
     }
 
     public String asFullText() {
-        return fullText;
+        return methodIdentifier.asText();
     }
 
     public String asSignatureSimpleText() {
@@ -43,17 +43,18 @@ public class MethodDeclaration {
         return new MethodDeclaration(typeIdentifier, this.methodSignature, methodReturn);
     }
 
+    // TODO なくす
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MethodDeclaration that = (MethodDeclaration) o;
-        return Objects.equals(fullText, that.fullText);
+        return Objects.equals(methodIdentifier, that.methodIdentifier);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fullText);
+        return Objects.hash(methodIdentifier);
     }
 
     public TypeIdentifier returnType() {

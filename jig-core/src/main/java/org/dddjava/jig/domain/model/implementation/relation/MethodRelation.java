@@ -23,10 +23,10 @@ public class MethodRelation {
     }
 
     public boolean toIs(MethodDeclaration methodDeclaration) {
-        return to.equals(methodDeclaration);
+        return to.sameIdentifier(methodDeclaration);
     }
 
     public boolean fromIs(MethodDeclaration methodDeclaration) {
-        return from.equals(methodDeclaration);
+        return from.sameIdentifier(methodDeclaration);
     }
 }

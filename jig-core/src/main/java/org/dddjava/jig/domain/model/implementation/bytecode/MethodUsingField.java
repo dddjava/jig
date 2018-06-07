@@ -17,7 +17,7 @@ public class MethodUsingField {
     }
 
     public boolean userIs(MethodDeclaration methodDeclaration) {
-        return methodDeclaration.equals(this.methodDeclaration);
+        return methodDeclaration.sameIdentifier(this.methodDeclaration);
     }
 
     public FieldDeclaration field() {

@@ -16,7 +16,7 @@ public class ImplementationMethod {
     }
 
     public boolean interfaceMethodIs(MethodDeclaration methodDeclaration) {
-        return interfaceMethod.equals(methodDeclaration);
+        return interfaceMethod.sameIdentifier(methodDeclaration);
     }
 
     public MethodDeclaration implementationMethod() {

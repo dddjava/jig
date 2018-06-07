@@ -38,7 +38,7 @@ public class MethodDeclarations {
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
-        return list.contains(methodDeclaration);
+        return list.stream().anyMatch(methodDeclaration::sameIdentifier);
     }
 
     public TypeIdentifiers declaringTypes() {

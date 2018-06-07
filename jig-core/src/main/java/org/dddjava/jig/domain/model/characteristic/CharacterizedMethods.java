@@ -53,7 +53,7 @@ public class CharacterizedMethods {
 
     public MethodCharacteristics characteristicsOf(MethodDeclaration methodDeclaration) {
         return list.stream()
-                .filter(characterizedMethod -> characterizedMethod.methodDeclaration().equals(methodDeclaration))
+                .filter(characterizedMethod -> characterizedMethod.methodDeclaration().sameIdentifier(methodDeclaration))
                 .findFirst()
                 .map(CharacterizedMethod::characteristics)
                 .orElseGet(() -> new MethodCharacteristics(Collections.emptyList()));

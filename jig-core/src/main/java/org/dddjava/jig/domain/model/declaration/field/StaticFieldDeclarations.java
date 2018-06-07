@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.field;
 
 import org.dddjava.jig.domain.basic.Text;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.stream.Collector;

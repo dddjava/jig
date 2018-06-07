@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.implementation.relation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;

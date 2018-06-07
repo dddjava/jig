@@ -6,7 +6,7 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 

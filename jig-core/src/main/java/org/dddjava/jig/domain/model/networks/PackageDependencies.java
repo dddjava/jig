@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.networks;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 
 import java.util.List;
 

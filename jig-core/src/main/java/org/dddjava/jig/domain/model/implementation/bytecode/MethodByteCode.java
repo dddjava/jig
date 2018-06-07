@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;

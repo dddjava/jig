@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 

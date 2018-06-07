@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.HashSet;

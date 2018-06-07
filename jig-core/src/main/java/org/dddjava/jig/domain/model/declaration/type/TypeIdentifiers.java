@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.identifier.type;
+package org.dddjava.jig.domain.model.declaration.type;
 
 import org.dddjava.jig.domain.basic.Text;
 

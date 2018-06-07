@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 
 import java.util.List;

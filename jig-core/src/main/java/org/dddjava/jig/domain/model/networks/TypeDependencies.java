@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.networks;
 
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 

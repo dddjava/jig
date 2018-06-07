@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

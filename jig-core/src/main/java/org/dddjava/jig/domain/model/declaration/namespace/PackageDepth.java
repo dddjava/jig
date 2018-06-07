@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.identifier.namespace;
+package org.dddjava.jig.domain.model.declaration.namespace;
 
 import java.util.ArrayList;
 import java.util.List;

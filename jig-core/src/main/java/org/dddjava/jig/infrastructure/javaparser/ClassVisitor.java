@@ -6,7 +6,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;

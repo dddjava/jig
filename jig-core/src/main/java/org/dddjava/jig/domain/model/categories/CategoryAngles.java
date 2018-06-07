@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 
 import java.util.ArrayList;

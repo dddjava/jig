@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.boolquerymethod;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 /**
  * 真偽値を返すモデルの切り口

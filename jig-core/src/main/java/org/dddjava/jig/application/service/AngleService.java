@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
 import org.dddjava.jig.domain.model.services.ServiceAngles;

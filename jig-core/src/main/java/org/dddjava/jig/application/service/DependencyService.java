@@ -2,9 +2,9 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.identifier.namespace.PackageIdentifiers;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
 import org.slf4j.Logger;

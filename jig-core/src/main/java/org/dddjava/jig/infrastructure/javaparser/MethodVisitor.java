@@ -5,7 +5,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.identifier.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
 

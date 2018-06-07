@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.categories;
 
+import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
 import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.networks.DependencyNumber;
 
 import java.util.List;
 import java.util.function.Function;
@@ -83,7 +83,7 @@ public class CategoryReport {
         }
 
         String 使用箇所数() {
-            return new DependencyNumber(categoryAngle.userTypeIdentifiers().list().size()).asText();
+            return new UserNumber(categoryAngle.userTypeIdentifiers().list().size()).asText();
         }
 
         String パラメーター有り() {

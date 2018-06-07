@@ -70,7 +70,7 @@ public class ValueReport {
         }
 
         String 使用箇所数() {
-            return valueAngle.dependencyNumber().asText();
+            return valueAngle.userNumber().asText();
         }
     }
 }

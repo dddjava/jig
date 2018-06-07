@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.values;
 
+import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.networks.DependencyNumber;
 import org.dddjava.jig.domain.model.networks.TypeDependencies;
 
 /**
@@ -36,7 +36,7 @@ public class ValueAngle {
         return userTypeIdentifiers;
     }
 
-    public DependencyNumber dependencyNumber() {
-        return new DependencyNumber(userTypeIdentifiers().list().size());
+    public UserNumber userNumber() {
+        return new UserNumber(userTypeIdentifiers().list().size());
     }
 }

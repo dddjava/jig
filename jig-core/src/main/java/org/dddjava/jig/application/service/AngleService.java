@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
+import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
@@ -106,10 +106,10 @@ public class AngleService {
     /**
      * 真偽値を返すモデルのメソッドを分析する
      */
-    public BoolQueryModelMethodAngles boolQueryModelMethodAngle(ProjectData projectData) {
+    public BoolQueryAngles boolQueryModelMethodAngle(ProjectData projectData) {
         CharacterizedMethods methods = projectData.characterizedMethods();
         MethodRelations relations = projectData.methodRelations();
-        return BoolQueryModelMethodAngles.of(methods, relations);
+        return BoolQueryAngles.of(methods, relations);
     }
 
 }

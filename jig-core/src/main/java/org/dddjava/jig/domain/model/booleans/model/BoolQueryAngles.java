@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.boolquerymethod;
+package org.dddjava.jig.domain.model.booleans.model;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -11,24 +11,24 @@ import static java.util.stream.Collectors.toList;
 /**
  * 真偽値を返すモデルの切り口一覧
  */
-public class BoolQueryModelMethodAngles {
-    List<BoolQueryModelMethodAngle> values;
+public class BoolQueryAngles {
+    List<BoolQueryAngle> values;
 
-    public BoolQueryModelMethodAngles(List<BoolQueryModelMethodAngle> values) {
+    public BoolQueryAngles(List<BoolQueryAngle> values) {
         this.values = values;
     }
 
-    public static BoolQueryModelMethodAngles of(CharacterizedMethods methods, MethodRelations relations) {
+    public static BoolQueryAngles of(CharacterizedMethods methods, MethodRelations relations) {
         MethodDeclarations modelBoolQueryMethods = methods.modelBoolQueryMethods();
-        List<BoolQueryModelMethodAngle> list = modelBoolQueryMethods.list().stream()
-                .map(method -> new BoolQueryModelMethodAngle(
+        List<BoolQueryAngle> list = modelBoolQueryMethods.list().stream()
+                .map(method -> new BoolQueryAngle(
                         method,
                         relations.stream().filterTo(method).fromMethods()
                 )).collect(toList());
-        return new BoolQueryModelMethodAngles(list);
+        return new BoolQueryAngles(list);
     }
 
-    public List<BoolQueryModelMethodAngle> list() {
+    public List<BoolQueryAngle> list() {
         return values;
     }
 }

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.boolquerymethod;
+package org.dddjava.jig.domain.model.booleans.model;
 
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.basic.report.ConvertibleItem;
@@ -12,7 +12,7 @@ import java.util.function.Function;
 /**
  * 真偽値を返すモデルのメソッドレポート
  */
-public class BoolQueryModelMethodReport {
+public class BoolQueryReport {
 
     /**
      * レポート項目
@@ -39,7 +39,7 @@ public class BoolQueryModelMethodReport {
 
     private final List<Row> list;
 
-    public BoolQueryModelMethodReport(List<Row> list) {
+    public BoolQueryReport(List<Row> list) {
         this.list = list;
     }
 
@@ -48,12 +48,12 @@ public class BoolQueryModelMethodReport {
     }
 
     public static class Row {
-        BoolQueryModelMethodAngle angle;
+        BoolQueryAngle angle;
         JapaneseName japaneseMethodName;
         JapaneseName japaneseClassName;
         TypeIdentifierFormatter identifierFormatter;
 
-        public Row(BoolQueryModelMethodAngle angle, JapaneseName japaneseMethodName, JapaneseName japaneseClassName, TypeIdentifierFormatter identifierFormatter) {
+        public Row(BoolQueryAngle angle, JapaneseName japaneseMethodName, JapaneseName japaneseClassName, TypeIdentifierFormatter identifierFormatter) {
             this.angle = angle;
             this.japaneseMethodName = japaneseMethodName;
             this.japaneseClassName = japaneseClassName;

@@ -4,9 +4,9 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.basic.report.Reports;
-import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngle;
-import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodAngles;
-import org.dddjava.jig.domain.model.boolquerymethod.BoolQueryModelMethodReport;
+import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
+import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
+import org.dddjava.jig.domain.model.booleans.model.BoolQueryReport;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryReport;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -148,14 +148,14 @@ public class ClassListController {
     }
 
     Report<?> booleanReport(ProjectData projectData) {
-        BoolQueryModelMethodAngles angles = angleService.boolQueryModelMethodAngle(projectData);
+        BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
 
-        List<BoolQueryModelMethodReport.Row> list = new ArrayList<>();
-        for (BoolQueryModelMethodAngle angle : angles.list()) {
+        List<BoolQueryReport.Row> list = new ArrayList<>();
+        for (BoolQueryAngle angle : angles.list()) {
             JapaneseName japaneseClassName = glossaryService.japaneseNameFrom(angle.declaringTypeIdentifier());
             JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method());
-            list.add(new BoolQueryModelMethodReport.Row(angle, japaneseMethodName, japaneseClassName, typeIdentifierFormatter));
+            list.add(new BoolQueryReport.Row(angle, japaneseMethodName, japaneseClassName, typeIdentifierFormatter));
         }
-        return new BoolQueryModelMethodReport(list).toReport();
+        return new BoolQueryReport(list).toReport();
     }
 }

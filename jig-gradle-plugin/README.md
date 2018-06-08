@@ -38,7 +38,7 @@ jig {
     documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ClassList']
     outputDirectory = 'build/jig' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
-    deps = -1 //出力する最大のパッケージ階層(-1は制限なし）
+    depth = -1 //出力する最大のパッケージ階層(-1は制限なし）
 }
 ```
 

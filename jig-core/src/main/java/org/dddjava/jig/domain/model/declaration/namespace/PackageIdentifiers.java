@@ -35,4 +35,8 @@ public class PackageIdentifiers {
                 .max(Comparator.comparing(PackageDepth::value))
                 .orElseGet(() -> new PackageDepth(0));
     }
+
+    public boolean contains(PackageIdentifier packageIdentifier) {
+        return list.contains(packageIdentifier);
+    }
 }

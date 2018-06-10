@@ -1,8 +1,10 @@
 package org.dddjava.jig.domain.model.networks.packages;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -32,5 +34,12 @@ public class PackageDependencies {
 
     public DependencyNumber number() {
         return new DependencyNumber(list().size());
+    }
+
+    public PackageDependencies filterBothMatch(PackageIdentifiers packageIdentifiers) {
+        List<PackageDependency> list = dependencies.stream()
+                .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
+                .collect(Collectors.toList());
+        return new PackageDependencies(list);
     }
 }

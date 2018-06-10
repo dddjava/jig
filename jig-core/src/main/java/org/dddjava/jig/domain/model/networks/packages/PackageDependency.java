@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.networks.packages;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 
 import java.util.Objects;
 
@@ -45,5 +46,9 @@ public class PackageDependency {
 
     public boolean notSelfRelation() {
         return !from.equals(to);
+    }
+
+    public boolean bothMatch(PackageIdentifiers packageIdentifiers) {
+        return packageIdentifiers.contains(from) && packageIdentifiers.contains(to);
     }
 }

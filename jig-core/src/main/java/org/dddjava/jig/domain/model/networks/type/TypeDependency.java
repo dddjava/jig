@@ -3,8 +3,6 @@ package org.dddjava.jig.domain.model.networks.type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 
-import java.util.function.Predicate;
-
 /**
  * 型の依存関係
  */
@@ -16,10 +14,6 @@ public class TypeDependency {
     public TypeDependency(TypeIdentifier from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
-    }
-
-    public boolean bothMatch(Predicate<TypeIdentifier> predicate) {
-        return predicate.test(from) && predicate.test(to);
     }
 
     public PackageDependency toPackageDependency() {

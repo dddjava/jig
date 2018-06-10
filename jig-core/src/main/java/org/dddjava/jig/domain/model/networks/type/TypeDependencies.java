@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.networks.type;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
@@ -9,7 +8,6 @@ import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,20 +32,17 @@ public class TypeDependencies {
         }
     }
 
-    public PackageDependencies toPackageDependenciesWith(TypeIdentifiers availableTypes) {
-        Set<TypeIdentifier> available = availableTypes.set();
+    public TypeDependencyStream stream() {
+        return new TypeDependencyStream(list.stream());
+    }
+
+    public PackageDependencies packageDependencies() {
         List<PackageDependency> packageDependencyList = list.stream()
-                // 両方が引数に含まれるものだけにする
-                .filter(typeDependency -> typeDependency.bothMatch(available::contains))
                 .map(TypeDependency::toPackageDependency)
                 .filter(PackageDependency::notSelfRelation)
                 .distinct()
                 .collect(Collectors.toList());
 
         return new PackageDependencies(packageDependencyList);
-    }
-
-    public TypeDependencyStream stream() {
-        return new TypeDependencyStream(list.stream());
     }
 }

@@ -21,7 +21,7 @@ public class PackageNetwork {
     }
 
     public PackageDependencies packageDependencies() {
-        return packageDependencies;
+        return packageDependencies.filterBothMatch(packageIdentifiers);
     }
 
     public PackageNetwork applyDepth(PackageDepth depth) {

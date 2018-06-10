@@ -41,8 +41,7 @@ public class DependencyService {
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 
-        PackageDependencies packageDependencies = projectData.typeDependencies()
-                .toPackageDependenciesWith(availableTypes);
+        PackageDependencies packageDependencies = projectData.typeDependencies().packageDependencies();
 
         PackageNetwork packageNetwork = new PackageNetwork(availableTypes.packageIdentifiers(), packageDependencies);
         showDepth(packageNetwork);

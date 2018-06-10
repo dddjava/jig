@@ -12,6 +12,7 @@ public enum JigDocument {
     PackageDependency("package-dependency.png"),
     ApplicationList("application.xlsx"),
     DomainList("domain.xlsx"),
+    BranchList("branches.xlsx"),
     EnumUsage("enum-usage.png");
 
     private final String documentFileName;

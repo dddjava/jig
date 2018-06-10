@@ -30,6 +30,12 @@ public enum JigDocumentHandler {
             return jigHandlerContext.classListController.domainList(projectData);
         }
     },
+    BranchList(JigDocument.BranchList) {
+        @Override
+        public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
+            return jigHandlerContext.classListController.branchList(projectData);
+        }
+    },
     EnumUsage(JigDocument.EnumUsage) {
         @Override
         public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {

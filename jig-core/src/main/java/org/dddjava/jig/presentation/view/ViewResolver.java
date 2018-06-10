@@ -43,4 +43,8 @@ public class ViewResolver {
     public JigView<Reports> domainList() {
         return new ReportToExcelView();
     }
+
+    public JigView<Reports> branchList() {
+        return new ReportToExcelView();
+    }
 }

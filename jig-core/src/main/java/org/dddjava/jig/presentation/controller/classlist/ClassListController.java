@@ -82,13 +82,20 @@ public class ClassListController {
                 valueObjectReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
-                decisionReport(projectData),
                 booleanReport(projectData)
         ));
 
         return new JigModelAndView<>(reports, viewResolver.domainList());
     }
 
+    public JigModelAndView<Reports> branchList(ProjectData projectData) {
+        LOGGER.info("条件分岐リストを出力します");
+        Reports reports = new Reports(Arrays.asList(
+                decisionReport(projectData)
+        ));
+
+        return new JigModelAndView<>(reports, viewResolver.branchList());
+    }
 
     Report<?> serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);

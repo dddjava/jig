@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.datasource.Tables;
-import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 
 /**
  * データソースの切り口

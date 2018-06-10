@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 
 /**
  * サービスの切り口

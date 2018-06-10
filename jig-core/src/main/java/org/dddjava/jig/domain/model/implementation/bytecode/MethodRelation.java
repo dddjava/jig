@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.relation;
+package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 

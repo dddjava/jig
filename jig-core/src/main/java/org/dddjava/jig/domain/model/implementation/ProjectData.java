@@ -9,8 +9,8 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.relation.ImplementationMethods;
-import org.dddjava.jig.domain.model.implementation.relation.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 

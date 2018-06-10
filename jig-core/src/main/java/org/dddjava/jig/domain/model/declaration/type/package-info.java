@@ -1,4 +1,4 @@
 /**
- * 識別子
+ * 型
  */
 package org.dddjava.jig.domain.model.declaration.type;

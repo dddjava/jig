@@ -31,17 +31,17 @@ public class DependencyService {
      */
     public PackageDependencies packageDependencies(PackageDepth packageDepth, ProjectData projectData) {
         LOGGER.info("パッケージ依存情報を取得します(深度: {})", packageDepth.value());
-        TypeIdentifiers modelTypes = projectData.characterizedTypes().stream()
+        TypeIdentifiers availableTypes = projectData.characterizedTypes().stream()
                 .filter(Characteristic.MODEL)
                 .typeIdentifiers();
 
-        if (modelTypes.empty()) {
+        if (availableTypes.empty()) {
             LOGGER.warn(Warning.モデル検出異常.textWithSpringEnvironment(environment));
             return new PackageDependencies(Collections.emptyList(), new PackageIdentifiers(Collections.emptyList()));
         }
 
         PackageDependencies packageDependencies = projectData.typeDependencies()
-                .toPackageDependenciesWith(modelTypes);
+                .toPackageDependenciesWith(availableTypes);
 
         showDepth(packageDependencies);
 

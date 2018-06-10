@@ -63,6 +63,6 @@ public class Node {
     }
 
     Node handlerMethod() {
-        return color("red");
+        return color("greenyellow");
     }
 }

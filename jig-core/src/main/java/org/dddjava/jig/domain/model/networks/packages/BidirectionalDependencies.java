@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.networks;
+package org.dddjava.jig.domain.model.networks.packages;
 
 import java.util.ArrayList;
 import java.util.List;

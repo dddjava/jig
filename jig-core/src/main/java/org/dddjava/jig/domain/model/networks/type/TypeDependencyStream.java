@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.relation;
+package org.dddjava.jig.domain.model.networks.type;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;

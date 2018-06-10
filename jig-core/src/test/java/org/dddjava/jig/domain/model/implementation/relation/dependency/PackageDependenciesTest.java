@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
-import org.dddjava.jig.domain.model.networks.PackageDependency;
+import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

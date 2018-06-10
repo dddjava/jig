@@ -1,11 +1,11 @@
-package org.dddjava.jig.domain.model.implementation.relation;
+package org.dddjava.jig.domain.model.networks.type;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
-import org.dddjava.jig.domain.model.networks.PackageDependency;
+import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 
 import java.util.ArrayList;
 import java.util.List;

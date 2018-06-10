@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.networks;
+package org.dddjava.jig.domain.model.networks.packages;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 

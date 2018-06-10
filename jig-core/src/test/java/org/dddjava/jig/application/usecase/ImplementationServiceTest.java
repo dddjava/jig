@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.networks.PackageNetwork;
+import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;

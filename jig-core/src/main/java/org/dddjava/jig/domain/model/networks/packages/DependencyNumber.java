@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.networks;
+package org.dddjava.jig.domain.model.networks.packages;
 
 /**
  * 依存関係の数

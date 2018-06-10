@@ -27,9 +27,9 @@ public class DecisionAngles {
         return new DecisionAngles(list);
     }
 
-    public List<DecisionAngle> listOnlyLayer() {
+    public List<DecisionAngle> filter(Layer layer) {
         return list.stream()
-                .filter(decisionAngle -> decisionAngle.typeLayer() != Layer.OTHER)
+                .filter(decisionAngle -> decisionAngle.typeLayer() == layer)
                 .collect(Collectors.toList());
     }
 }

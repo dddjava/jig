@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.controller.classlist;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLayout;
@@ -14,9 +15,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.nio.file.Paths;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -31,7 +32,7 @@ class ReportServiceTest {
     LocalProject localProject;
 
     @Test
-    void stubパッケージを対象に各レポートの出力を検証する() throws Exception {
+    void stubパッケージを対象に各レポートの出力を検証する() {
         ProjectData projectData = implementationService.readProjectData(localProject);
 
         assertThat(sut.serviceReport(projectData).rows())
@@ -70,13 +71,15 @@ class ReportServiceTest {
                         "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], 2, [AsmByteCodeReaderTest, RelationEnum], , , ]"
                 );
 
-        assertThat(sut.decisionReport(projectData).rows())
+        assertThat(sut.decisionReport(projectData, Layer.APPLICATION).rows())
                 .extracting(reportRow -> reportRow.list().toString())
-                .containsExactly(
-                        "[APPLICATION, stub.application.service.DecisionService, 分岐のあるメソッド(Object)]",
-                        "[DATASOURCE, stub.infrastructure.datasource.DecisionDatasource, 分岐のあるメソッド(Object)]",
-                        "[PRESENTATION, stub.presentation.controller.DecisionController, 分岐のあるメソッド(Object)]"
-                );
+                .containsExactly("[stub.application.service.DecisionService, 分岐のあるメソッド(Object)]");
+        assertThat(sut.decisionReport(projectData, Layer.DATASOURCE).rows())
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsExactly("[stub.infrastructure.datasource.DecisionDatasource, 分岐のあるメソッド(Object)]");
+        assertThat(sut.decisionReport(projectData, Layer.PRESENTATION).rows())
+                .extracting(reportRow -> reportRow.list().toString())
+                .containsExactly("[stub.presentation.controller.DecisionController, 分岐のあるメソッド(Object)]");
     }
 
     @TestConfiguration

@@ -11,10 +11,7 @@ import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryReport;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceReport;
-import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.decisions.DecisionReport;
-import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
-import org.dddjava.jig.domain.model.decisions.StringComparingReport;
+import org.dddjava.jig.domain.model.decisions.*;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
@@ -91,7 +88,9 @@ public class ClassListController {
     public JigModelAndView<Reports> branchList(ProjectData projectData) {
         LOGGER.info("条件分岐リストを出力します");
         Reports reports = new Reports(Arrays.asList(
-                decisionReport(projectData)
+                decisionReport(projectData, Layer.PRESENTATION),
+                decisionReport(projectData, Layer.APPLICATION),
+                decisionReport(projectData, Layer.DATASOURCE)
         ));
 
         return new JigModelAndView<>(reports, viewResolver.branchList());
@@ -149,9 +148,9 @@ public class ClassListController {
         return new ValidationReport(list).toReport();
     }
 
-    Report<?> decisionReport(ProjectData projectData) {
+    Report<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new DecisionReport(decisionAngles).toReport();
+        return new DecisionReport(decisionAngles).toReport(layer);
     }
 
     Report<?> booleanReport(ProjectData projectData) {

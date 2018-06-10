@@ -12,12 +12,6 @@ public class DecisionReport {
      * レポート項目
      */
     enum Items implements ConvertibleItem<DecisionAngle> {
-        レイヤー {
-            @Override
-            public String convert(DecisionAngle row) {
-                return row.typeLayer().asText();
-            }
-        },
         クラス名 {
             @Override
             public String convert(DecisionAngle row) {
@@ -29,7 +23,7 @@ public class DecisionReport {
             public String convert(DecisionAngle row) {
                 return row.methodDeclaration().asSignatureSimpleText();
             }
-        };
+        }
     }
 
     private final DecisionAngles decisionAngles;
@@ -38,7 +32,7 @@ public class DecisionReport {
         this.decisionAngles = decisionAngles;
     }
 
-    public Report<?> toReport() {
-        return new Report<>("条件分岐箇所", decisionAngles.listOnlyLayer(), Items.values());
+    public Report<?> toReport(Layer layer) {
+        return new Report<>(layer.asText(), decisionAngles.filter(layer), Items.values());
     }
 }

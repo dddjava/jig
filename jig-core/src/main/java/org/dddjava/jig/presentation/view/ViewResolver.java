@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageNetwork;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 import org.dddjava.jig.presentation.view.poi.ReportToExcelView;
@@ -24,7 +24,7 @@ public class ViewResolver {
         this.methodNodeLabelStyle = MethodNodeLabelStyle.valueOf(methodNodeLabelStyle.toUpperCase(Locale.ENGLISH));
     }
 
-    public JigView<PackageDependencies> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
+    public JigView<PackageNetwork> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
         return new GraphvizjView<>(new PackageDependencyDiagram(packageIdentifierFormatter, japaneseNameFinder));
     }
 

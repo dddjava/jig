@@ -2,10 +2,9 @@ package org.dddjava.jig.application.usecase;
 
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageNetwork;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -18,12 +17,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -41,10 +40,10 @@ public class ImplementationServiceTest {
     @Test
     void パッケージ依存() {
         ProjectData projectData = implementationService.readProjectData(localProject);
-        PackageDependencies packageDependencies = sut.packageDependencies(new PackageDepth(-1), projectData);
+        PackageNetwork packageNetwork = sut.packageDependencies(projectData);
 
         // パッケージのリストアップ
-        List<String> packageNames = packageDependencies.allPackages().stream()
+        List<String> packageNames = packageNetwork.allPackages().stream()
                 .map(packageIdentifier -> packageIdentifier.format(value -> value))
                 // TODO 重複して入ってるけどどうしよう
                 .distinct()
@@ -61,7 +60,7 @@ public class ImplementationServiceTest {
                 );
 
         // パッケージの関連
-        assertThat(packageDependencies.list())
+        assertThat(packageNetwork.packageDependencies().list())
                 .extracting(dependency -> {
                     PackageIdentifier from = dependency.from();
                     PackageIdentifier to = dependency.to();

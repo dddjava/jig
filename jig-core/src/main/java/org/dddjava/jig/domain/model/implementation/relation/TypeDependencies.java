@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.relation;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -46,10 +44,7 @@ public class TypeDependencies {
                 .distinct()
                 .collect(Collectors.toList());
 
-        List<PackageIdentifier> availablePackages = available.stream().map(TypeIdentifier::packageIdentifier).collect(Collectors.toList());
-        PackageIdentifiers allPackages = new PackageIdentifiers(availablePackages);
-
-        return new PackageDependencies(packageDependencyList, allPackages);
+        return new PackageDependencies(packageDependencyList);
     }
 
     public TypeDependencyStream stream() {

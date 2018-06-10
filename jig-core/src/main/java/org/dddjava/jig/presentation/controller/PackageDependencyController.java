@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageNetwork;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
@@ -27,10 +27,10 @@ public class PackageDependencyController {
         this.viewResolver = viewResolver;
     }
 
-    public JigModelAndView<PackageDependencies> packageDependency(PackageDepth depth, ProjectData projectData) {
+    public JigModelAndView<PackageNetwork> packageDependency(PackageDepth depth, ProjectData projectData) {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
-        PackageDependencies packageDependencies = dependencyService.packageDependencies(depth, projectData);
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(projectData);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        return new JigModelAndView<>(packageDependencies, viewResolver.dependencyWriter(japaneseNameFinder));
+        return new JigModelAndView<>(packageNetwork.applyDepth(depth), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 }

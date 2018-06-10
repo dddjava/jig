@@ -3,16 +3,13 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
-import org.dddjava.jig.domain.model.networks.BidirectionalDependencies;
-import org.dddjava.jig.domain.model.networks.BidirectionalDependency;
-import org.dddjava.jig.domain.model.networks.PackageDependencies;
-import org.dddjava.jig.domain.model.networks.PackageDependency;
+import org.dddjava.jig.domain.model.networks.*;
 
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
 
-public class PackageDependencyDiagram implements DotTextEditor<PackageDependencies> {
+public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameFinder japaneseNameFinder;
@@ -23,7 +20,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageDependenci
     }
 
     @Override
-    public String edit(PackageDependencies packageDependencies) {
+    public String edit(PackageNetwork packageNetwork) {
+        PackageDependencies packageDependencies = packageNetwork.packageDependencies();
 
         BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
 
@@ -38,7 +36,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageDependenci
             bidirectional.add(packageDependency.left(), packageDependency.right());
         }
 
-        String labelsText = packageDependencies.allPackages().stream()
+        String labelsText = packageNetwork.allPackages().stream()
                 .map(packageIdentifier -> {
                     String labelText = packageIdentifier.format(formatter);
                     PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);

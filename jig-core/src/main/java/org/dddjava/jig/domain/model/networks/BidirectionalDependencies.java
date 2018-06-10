@@ -24,7 +24,7 @@ public class BidirectionalDependencies {
                 .stream()
                 .filter(this::notContains)
                 .collect(Collectors.toList());
-        return new PackageDependencies(simplexDependencies, packageDependencies.allPackages());
+        return new PackageDependencies(simplexDependencies);
     }
 
     private boolean notContains(PackageDependency packageDependency) {

@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.declaration.type;
 
 import org.dddjava.jig.domain.basic.Text;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 
 import java.util.*;
 import java.util.stream.Collector;
@@ -45,5 +47,10 @@ public class TypeIdentifiers {
 
     public boolean empty() {
         return identifiers.isEmpty();
+    }
+
+    public PackageIdentifiers packageIdentifiers() {
+        List<PackageIdentifier> availablePackages = identifiers.stream().map(TypeIdentifier::packageIdentifier).collect(Collectors.toList());
+        return new PackageIdentifiers(availablePackages);
     }
 }

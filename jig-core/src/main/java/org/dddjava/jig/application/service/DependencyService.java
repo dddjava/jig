@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.PackageNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,30 +30,32 @@ public class DependencyService {
     /**
      * パッケージ依存を取得する
      */
-    public PackageDependencies packageDependencies(PackageDepth packageDepth, ProjectData projectData) {
-        LOGGER.info("パッケージ依存情報を取得します(深度: {})", packageDepth.value());
+    public PackageNetwork packageDependencies(ProjectData projectData) {
+        LOGGER.info("パッケージ依存情報を取得します");
         TypeIdentifiers availableTypes = projectData.characterizedTypes().stream()
                 .filter(Characteristic.MODEL)
                 .typeIdentifiers();
 
         if (availableTypes.empty()) {
             LOGGER.warn(Warning.モデル検出異常.textWithSpringEnvironment(environment));
-            return new PackageDependencies(Collections.emptyList(), new PackageIdentifiers(Collections.emptyList()));
+            return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 
         PackageDependencies packageDependencies = projectData.typeDependencies()
                 .toPackageDependenciesWith(availableTypes);
 
-        showDepth(packageDependencies);
+        PackageNetwork packageNetwork = new PackageNetwork(availableTypes.packageIdentifiers(), packageDependencies);
+        showDepth(packageNetwork);
 
-        return packageDependencies.applyDepth(packageDepth);
+        return packageNetwork;
     }
 
     /**
      * 深度ごとの関連数をログ出力する
      */
-    private void showDepth(PackageDependencies packageDependencies) {
-        PackageDepth maxDepth = packageDependencies.allPackages().maxDepth();
+    private void showDepth(PackageNetwork packageNetwork) {
+        PackageDepth maxDepth = packageNetwork.allPackages().maxDepth();
+        PackageDependencies packageDependencies = packageNetwork.packageDependencies();
 
         LOGGER.info("最大深度: {}", maxDepth.value());
         for (PackageDepth depth : maxDepth.surfaceList()) {

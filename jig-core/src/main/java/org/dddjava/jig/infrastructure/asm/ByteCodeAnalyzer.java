@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeAnalyzeContext;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -28,13 +27,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class ByteCodeAnalyzer extends ClassVisitor {
-    final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
 
     ByteCode byteCode;
 
-    public ByteCodeAnalyzer(ByteCodeAnalyzeContext byteCodeAnalyzeContext) {
+    public ByteCodeAnalyzer() {
         super(Opcodes.ASM6);
-        this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
     }
 
     ByteCode analyze(InputStream inputStream) throws IOException {
@@ -48,7 +45,6 @@ class ByteCodeAnalyzer extends ClassVisitor {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
         this.byteCode = new ByteCode(
-                byteCodeAnalyzeContext,
                 new TypeIdentifier(name),
                 new TypeIdentifier(superName),
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),

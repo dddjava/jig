@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.basic.ClassFindFailException;
+import org.dddjava.jig.domain.model.characteristic.CharacteristicContext;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
@@ -21,11 +22,13 @@ public class ImplementationService {
 
     final ByteCodeFactory byteCodeFactory;
     final SqlReader sqlReader;
+    final CharacteristicContext characteristicContext;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader) {
+    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader, CharacteristicContext characteristicContext) {
         this.byteCodeFactory = byteCodeFactory;
         this.glossaryService = glossaryService;
         this.sqlReader = sqlReader;
+        this.characteristicContext = characteristicContext;
     }
 
     /**
@@ -35,7 +38,7 @@ public class ImplementationService {
         ByteCodes byteCodes = readByteCode(target.getByteCodeSources());
         Sqls sqls = readSql(target.getSqlSources());
 
-        ProjectData projectData = new ProjectData(byteCodes, sqls);
+        ProjectData projectData = new ProjectData(byteCodes, sqls, characteristicContext);
 
         glossaryService.importJapanese(target.getTypeNameSources());
         glossaryService.importJapanese(target.getPackageNameSources());

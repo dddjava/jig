@@ -7,7 +7,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
+import org.dddjava.jig.infrastructure.PropertyCharacteristicContext;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -29,17 +29,18 @@ public class Dependencies {
     final JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
 
     LocalProject localProject(Project project) {
-        return new LocalProject(new GradleProject(project) .allDependencyJavaProjects());
+        return new LocalProject(new GradleProject(project).allDependencyJavaProjects());
     }
 
     ImplementationService importService() {
         // TODO extensionで変更できるようにする
-        PropertyByteCodeAnalyzeContext propertyByteCodeAnalyzeContext = new PropertyByteCodeAnalyzeContext();
+        PropertyCharacteristicContext propertyByteCodeAnalyzeContext = new PropertyCharacteristicContext();
 
         return new ImplementationService(
-                new AsmByteCodeFactory(propertyByteCodeAnalyzeContext),
+                new AsmByteCodeFactory(),
                 glossaryService(),
-                new MyBatisSqlReader());
+                new MyBatisSqlReader(),
+                new PropertyCharacteristicContext());
     }
 
     ClassListController classListController(String outputOmitPrefix) {

@@ -1,6 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.*;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -12,12 +15,6 @@ import java.util.List;
 
 @Component
 public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory {
-
-    final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
-
-    public AsmByteCodeFactory(ByteCodeAnalyzeContext byteCodeAnalyzeContext) {
-        this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
-    }
 
     @Override
     public ByteCodes readFrom(ByteCodeSources byteCodeSources) {
@@ -31,7 +28,7 @@ public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implemen
 
     ByteCode analyze(ByteCodeSource byteCodeSource) {
         try (InputStream inputStream = Files.newInputStream(byteCodeSource.getPath())) {
-            ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer(byteCodeAnalyzeContext);
+            ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer();
             return analyzer.analyze(inputStream);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

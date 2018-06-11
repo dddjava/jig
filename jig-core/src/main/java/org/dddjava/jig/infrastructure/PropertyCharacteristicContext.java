@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeAnalyzeContext;
+import org.dddjava.jig.domain.model.characteristic.CharacteristicContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PropertyByteCodeAnalyzeContext implements ByteCodeAnalyzeContext {
+public class PropertyCharacteristicContext implements CharacteristicContext {
 
     @Value("${jig.model.pattern:.+\\.domain\\.model\\..+}")
     String modelPattern = ".+\\.domain\\.model\\..+";

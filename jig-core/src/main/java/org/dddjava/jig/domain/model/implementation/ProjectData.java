@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
+import org.dddjava.jig.domain.model.characteristic.CharacteristicContext;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
@@ -7,10 +8,10 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 
@@ -40,7 +41,7 @@ public class ProjectData {
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
 
-    public ProjectData(ByteCodes byteCodes, Sqls sqls) {
+    public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacteristicContext characteristicContext) {
         this.annotatedFields = byteCodes.annotatedFields();
         this.annotatedMethods = byteCodes.annotatedMethods();
 
@@ -53,7 +54,7 @@ public class ProjectData {
         this.methodUsingFields = new MethodUsingFields(byteCodes);
         this.typeDependencies = new TypeDependencies(byteCodes);
 
-        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes);
+        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes, characteristicContext);
         this.characterizedTypes = characterizedTypes;
         this.characterizedMethods = new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes);
         this.valueTypes = new ValueTypes(byteCodes);

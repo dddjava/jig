@@ -7,19 +7,19 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
+import org.dddjava.jig.infrastructure.PropertyCharacteristicContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaName;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AsmByteCodeAnalyzerTest {
 
@@ -33,10 +33,10 @@ public class AsmByteCodeAnalyzerTest {
         LocalProject localProject = new LocalProject(new DefaultLayout(value.toString(), value.toString(), "not/read/resources", "not/read/sources"));
         ByteCodeSources byteCodeSources = localProject.getByteCodeSources();
 
-        AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
+        AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory();
         ByteCodes byteCodes = implementationFactory.readFrom(byteCodeSources);
 
-        projectData = new ProjectData(byteCodes, null);
+        projectData = new ProjectData(byteCodes, null, new PropertyCharacteristicContext());
     }
 
     @Test

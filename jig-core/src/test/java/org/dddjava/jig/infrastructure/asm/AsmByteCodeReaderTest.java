@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
-import org.dddjava.jig.infrastructure.PropertyByteCodeAnalyzeContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -211,7 +210,7 @@ public class AsmByteCodeReaderTest {
     private ByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmByteCodeFactory sut = new AsmByteCodeFactory(new PropertyByteCodeAnalyzeContext());
+        AsmByteCodeFactory sut = new AsmByteCodeFactory();
         return sut.analyze(new ByteCodeSource(path));
     }
 }

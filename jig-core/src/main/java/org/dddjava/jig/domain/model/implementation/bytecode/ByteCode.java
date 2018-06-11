@@ -19,7 +19,6 @@ import java.util.Set;
  */
 public class ByteCode {
 
-    final ByteCodeAnalyzeContext byteCodeAnalyzeContext;
 
     final TypeIdentifier typeIdentifier;
     final TypeIdentifier parentTypeIdentifier;
@@ -38,13 +37,11 @@ public class ByteCode {
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public ByteCode(ByteCodeAnalyzeContext byteCodeAnalyzeContext,
-                    TypeIdentifier typeIdentifier,
+    public ByteCode(TypeIdentifier typeIdentifier,
                     TypeIdentifier parentTypeIdentifier,
                     TypeIdentifiers interfaceTypeIdentifiers,
                     List<TypeIdentifier> useTypes,
                     boolean canExtend) {
-        this.byteCodeAnalyzeContext = byteCodeAnalyzeContext;
         this.typeIdentifier = typeIdentifier;
         this.parentTypeIdentifier = parentTypeIdentifier;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
@@ -86,14 +83,6 @@ public class ByteCode {
 
     public StaticFieldDeclarations staticFieldDeclarations() {
         return new StaticFieldDeclarations(staticFieldDeclarations);
-    }
-
-    public boolean isModel() {
-        return byteCodeAnalyzeContext.isModel(this);
-    }
-
-    public boolean isRepository() {
-        return byteCodeAnalyzeContext.isRepository(this);
     }
 
     public TypeIdentifiers useTypes() {

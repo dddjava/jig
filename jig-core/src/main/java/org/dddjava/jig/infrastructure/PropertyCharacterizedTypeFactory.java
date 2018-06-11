@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.characteristic.CharacteristicContext;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PropertyCharacteristicContext implements CharacteristicContext {
+public class PropertyCharacterizedTypeFactory implements CharacterizedTypeFactory {
 
     @Value("${jig.model.pattern:.+\\.domain\\.model\\..+}")
     String modelPattern = ".+\\.domain\\.model\\..+";

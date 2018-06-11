@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
-import org.dddjava.jig.domain.model.characteristic.CharacteristicContext;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
@@ -41,7 +41,7 @@ public class ProjectData {
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
 
-    public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacteristicContext characteristicContext) {
+    public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
         this.annotatedFields = byteCodes.annotatedFields();
         this.annotatedMethods = byteCodes.annotatedMethods();
 
@@ -54,7 +54,7 @@ public class ProjectData {
         this.methodUsingFields = new MethodUsingFields(byteCodes);
         this.typeDependencies = new TypeDependencies(byteCodes);
 
-        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes, characteristicContext);
+        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
         this.characterizedMethods = new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes);
         this.valueTypes = new ValueTypes(byteCodes);

@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.PropertyCharacteristicContext;
+import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
@@ -36,7 +36,7 @@ public class AsmByteCodeAnalyzerTest {
         AsmByteCodeFactory implementationFactory = new AsmByteCodeFactory();
         ByteCodes byteCodes = implementationFactory.readFrom(byteCodeSources);
 
-        projectData = new ProjectData(byteCodes, null, new PropertyCharacteristicContext());
+        projectData = new ProjectData(byteCodes, null, new PropertyCharacterizedTypeFactory());
     }
 
     @Test

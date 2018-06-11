@@ -7,7 +7,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.PropertyCharacteristicContext;
+import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -34,13 +34,13 @@ public class Dependencies {
 
     ImplementationService importService() {
         // TODO extensionで変更できるようにする
-        PropertyCharacteristicContext propertyByteCodeAnalyzeContext = new PropertyCharacteristicContext();
+        PropertyCharacterizedTypeFactory propertyByteCodeAnalyzeContext = new PropertyCharacterizedTypeFactory();
 
         return new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService(),
                 new MyBatisSqlReader(),
-                new PropertyCharacteristicContext());
+                new PropertyCharacterizedTypeFactory());
     }
 
     ClassListController classListController(String outputOmitPrefix) {

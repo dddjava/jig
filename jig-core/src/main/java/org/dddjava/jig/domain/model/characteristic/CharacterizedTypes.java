@@ -17,11 +17,11 @@ public class CharacterizedTypes {
         this.list = list;
     }
 
-    public CharacterizedTypes(ByteCodes byteCodes, CharacteristicContext characteristicContext) {
+    public CharacterizedTypes(ByteCodes byteCodes, CharacterizedTypeFactory characterizedTypeFactory) {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            CharacterizedType characterizedType = Characteristic.resolveCharacteristics(byteCode, characteristicContext);
+            CharacterizedType characterizedType = characterizedTypeFactory.create(byteCode);
             list.add(characterizedType);
         }
     }

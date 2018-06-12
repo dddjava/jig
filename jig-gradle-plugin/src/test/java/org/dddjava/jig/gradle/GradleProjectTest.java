@@ -27,10 +27,10 @@ class GradleProjectTest {
 
 
         //TODO: もうちょっとアサーションを
-        assertThat(gradleProjects.extractClassPath())
+        assertThat(gradleProjects.extractLayoutClassPath())
                 .hasSize(fixture.classPathCount);
 
-        assertThat(gradleProjects.extractSourcePath())
+        assertThat(gradleProjects.extractLayoutSourcePath())
                 .hasSize(fixture.sourcePathCount);
     }
 

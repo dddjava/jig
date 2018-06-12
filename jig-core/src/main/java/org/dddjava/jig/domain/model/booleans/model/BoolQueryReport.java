@@ -18,10 +18,10 @@ public class BoolQueryReport {
      * レポート項目
      */
     private enum Items implements ConvertibleItem<Row> {
-        メソッド(Row::メソッド名),
-        メソッド和名(Row::メソッド和名),
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
+        メソッド(Row::メソッド名),
+        メソッド和名(Row::メソッド和名),
         使用箇所数(Row::使用箇所数),
         使用箇所(Row::使用箇所);
 

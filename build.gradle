@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.0.2.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
-    id 'com.jfrog.bintray' version '1.7.3' apply false
+    id 'com.jfrog.bintray' version '1.8.1' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2018.6.2' apply false
 }
 
@@ -74,46 +74,40 @@ project(':jig-core') {
         artifactId = 'jig-core'
     }
 
-    def pomConfig = {
-        licenses {
-            license {
-                name "The Apache Software License, Version 2.0"
-                url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution "repo"
-            }
-        }
-        developers {
-            developer {
-                id "irof"
-                name "irof"
-                email "irof@hogedriven.net"
-            }
-            developer {
-                id "haljik"
-                name "haljik"
-                email "seiji.kawakami@sora-works.com"
-            }
-        }
-
-        scm {
-            url "https://github.com/dddjava/Jig.git"
-        }
-    }
-
     publishing {
         publications {
             maven(MavenPublication) {
                 groupId project.group
                 artifactId project.artifactId
                 version project.version
-                pom.withXml {
-                    def root = asNode()
-                    root.appendNode('description','Core of Jig')
-                    root.appendNode('name', 'jig-core')
-                    root.appendNode('url','https://github.com/dddjava/Jig')
-                    root.children().last() + pomConfig
-                }
                 from components.java
+                pom {
+                    name = "jig-core"
+                    description = "Core of Jig"
+                    url = "https://github.com/dddjava/Jig"
+                    licenses {
+                        license {
+                            name = "The Apache Software License, Version 2.0"
+                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                            distribution = "repo"
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = "irof"
+                            name = "irof"
+                            email = "irof@hogedriven.net"
+                        }
+                        developer {
+                            id = "haljik"
+                            name = "haljik"
+                            email = "seiji.kawakami@sora-works.com"
+                        }
+                    }
+                    scm {
+                        url = "https://github.com/dddjava/Jig.git"
+                    }
+                }
             }
         }
     }

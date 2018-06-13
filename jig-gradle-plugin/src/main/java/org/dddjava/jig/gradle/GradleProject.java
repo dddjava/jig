@@ -6,6 +6,8 @@ import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -34,11 +36,9 @@ public class GradleProject {
     }
 
     public Set<Path> sourcePaths() {
-        SourceSet mainSourceSet = sourceSet();
-        File srcDir = mainSourceSet.getJava().getSrcDirs().iterator().next();
-        HashSet<Path> paths = new HashSet<>();
-        paths.add(srcDir.toPath());
-        return paths;
+        return sourceSet().getJava().getSrcDirs().stream()
+                .map(File::toPath)
+                .collect(toSet());
     }
 
     private SourceSet sourceSet() {

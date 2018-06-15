@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.controller.classlist;
+package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;

@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
-import org.dddjava.jig.presentation.controller.classlist.ClassListController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

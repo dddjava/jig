@@ -7,15 +7,11 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class MethodDeclaration {
 
-    private final TypeIdentifier declaringType;
-    private final MethodSignature methodSignature;
     private final MethodReturn methodReturn;
 
     MethodIdentifier methodIdentifier;
 
     public MethodDeclaration(TypeIdentifier declaringType, MethodSignature methodSignature, MethodReturn methodReturn) {
-        this.declaringType = declaringType;
-        this.methodSignature = methodSignature;
         this.methodReturn = methodReturn;
 
         this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
@@ -26,19 +22,19 @@ public class MethodDeclaration {
     }
 
     public String asSignatureSimpleText() {
-        return methodSignature.asSimpleText();
+        return methodSignature().asSimpleText();
     }
 
     public TypeIdentifier declaringType() {
-        return declaringType;
+        return methodIdentifier.declaringType();
     }
 
     public MethodSignature methodSignature() {
-        return methodSignature;
+        return methodIdentifier.methodSignature();
     }
 
     public MethodDeclaration with(TypeIdentifier typeIdentifier) {
-        return new MethodDeclaration(typeIdentifier, this.methodSignature, methodReturn);
+        return new MethodDeclaration(typeIdentifier, methodSignature(), methodReturn);
     }
 
     public TypeIdentifier returnType() {
@@ -46,11 +42,11 @@ public class MethodDeclaration {
     }
 
     public boolean isConstructor() {
-        return methodSignature.isConstructor();
+        return methodSignature().isConstructor();
     }
 
     public boolean isLambda() {
-        return methodSignature.isLambda();
+        return methodSignature().isLambda();
     }
 
     String asSimpleTextWithDeclaringType() {

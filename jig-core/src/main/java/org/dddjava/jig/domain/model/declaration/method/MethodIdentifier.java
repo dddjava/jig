@@ -39,4 +39,12 @@ public class MethodIdentifier {
     public boolean matchesIgnoreOverload(MethodIdentifier methodIdentifier) {
         return matches(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
     }
+
+    public TypeIdentifier declaringType() {
+        return declaringType;
+    }
+
+    public MethodSignature methodSignature() {
+        return methodSignature;
+    }
 }

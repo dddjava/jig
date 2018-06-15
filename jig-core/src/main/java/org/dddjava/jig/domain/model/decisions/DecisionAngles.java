@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.decisions;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.Method;
+import org.dddjava.jig.domain.model.declaration.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +15,11 @@ public class DecisionAngles {
 
     List<DecisionAngle> list;
 
-    public DecisionAngles(List<DecisionAngle> list) {
-        this.list = list;
-    }
-
-    public static DecisionAngles of(MethodDeclarations methods, CharacterizedTypes characterizedTypes) {
-        List<DecisionAngle> list = new ArrayList<>();
-        for (MethodDeclaration methodDeclaration : methods.list()) {
-            list.add(DecisionAngle.of(characterizedTypes, methodDeclaration));
+    public DecisionAngles(Methods methods, CharacterizedTypes characterizedTypes) {
+        list = new ArrayList<>();
+        for (Method method : methods.list()) {
+            list.add(new DecisionAngle(characterizedTypes, method));
         }
-        return new DecisionAngles(list);
     }
 
     public List<DecisionAngle> filter(Layer layer) {

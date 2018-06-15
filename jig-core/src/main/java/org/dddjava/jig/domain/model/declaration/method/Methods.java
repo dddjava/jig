@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -16,6 +17,11 @@ public class Methods {
 
     public MethodDeclarations declarations() {
         return list.stream().map(Method::declaration).collect(MethodDeclarations.collector());
+    }
+
+    public List<Method> list() {
+        list.sort(Comparator.comparing(method -> method.declaration().asFullNameText()));
+        return list;
     }
 
     public Methods filterHasDecision() {

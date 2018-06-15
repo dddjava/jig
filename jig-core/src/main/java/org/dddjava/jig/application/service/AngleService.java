@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
@@ -98,10 +99,10 @@ public class AngleService {
      * 分岐箇所を分析する
      */
     public DecisionAngles decision(ProjectData projectData) {
-        MethodDeclarations methods = projectData.methods().filterHasDecision().declarations();
+        Methods methods = projectData.methods().filterHasDecision();
 
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
-        return DecisionAngles.of(methods, characterizedTypes);
+        return new DecisionAngles(methods, characterizedTypes);
     }
 
     /**

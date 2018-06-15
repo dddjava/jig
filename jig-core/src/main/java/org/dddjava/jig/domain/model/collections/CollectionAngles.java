@@ -9,6 +9,9 @@ import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * コレクションの切り口一覧
+ */
 public class CollectionAngles {
 
     List<CollectionAngle> list;

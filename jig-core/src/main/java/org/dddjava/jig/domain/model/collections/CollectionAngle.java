@@ -8,6 +8,13 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 
+/**
+ * コレクションの切り口
+ *
+ * 以下を推測したい
+ * ・ロジックがいろいろ書かれていそう --> そのクラスのロジックの書き方を重点レビュー
+ * ・ロジックがほとんどなさそう --> そのクラスを使っているクラス側にロジックが書かれていないか、レビュー
+ */
 public class CollectionAngle {
 
     TypeIdentifier typeIdentifier;

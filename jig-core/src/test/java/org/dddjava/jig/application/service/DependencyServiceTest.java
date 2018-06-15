@@ -1,7 +1,5 @@
-package org.dddjava.jig.application.usecase;
+package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.application.service.DependencyService;
-import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
@@ -27,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
 @TestPropertySource(properties = "jig.model.pattern = stub.domain.model.+")
-public class ImplementationServiceTest {
+public class DependencyServiceTest {
 
     @Autowired
     DependencyService sut;

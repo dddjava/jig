@@ -3,6 +3,8 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -28,9 +30,9 @@ public class MethodByteCode {
     private final List<MethodDeclaration> usingMethods = new ArrayList<>();
 
     // 制御が飛ぶ処理がある（ifやbreak）
-    private boolean jumpInstruction = false;
+    private int jumpInstructionNumber = 0;
     // switchがある
-    private boolean lookupSwitchInstruction = false;
+    private int lookupSwitchInstructionNumber = 0;
 
     public MethodByteCode(MethodDeclaration methodDeclaration,
                           List<TypeIdentifier> useTypes,
@@ -62,11 +64,11 @@ public class MethodByteCode {
     }
 
     public void registerJumpInstruction() {
-        this.jumpInstruction = true;
+        this.jumpInstructionNumber++;
     }
 
     public void registerLookupSwitchInstruction() {
-        this.lookupSwitchInstruction = true;
+        this.lookupSwitchInstructionNumber++;
     }
 
     public void registerClassReference(TypeIdentifier type) {
@@ -98,10 +100,6 @@ public class MethodByteCode {
         return usingMethods.stream().collect(MethodDeclarations.collector());
     }
 
-    public boolean hasDecision() {
-        return jumpInstruction || lookupSwitchInstruction;
-    }
-
     boolean isStatic() {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
@@ -113,5 +111,9 @@ public class MethodByteCode {
     public Accessor accessor() {
         if ((access & Opcodes.ACC_PUBLIC) != 0) return Accessor.PUBLIC;
         return Accessor.NOT_PUBLIC;
+    }
+
+    public Method method() {
+        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber));
     }
 }

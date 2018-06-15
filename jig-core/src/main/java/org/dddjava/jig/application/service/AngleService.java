@@ -98,7 +98,7 @@ public class AngleService {
      * 分岐箇所を分析する
      */
     public DecisionAngles decision(ProjectData projectData) {
-        MethodDeclarations methods = projectData.characterizedMethods().decisionMethods();
+        MethodDeclarations methods = projectData.methods().filterHasDecision().declarations();
 
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
         return DecisionAngles.of(methods, characterizedTypes);
@@ -120,7 +120,7 @@ public class AngleService {
         TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
         return new CollectionAngles(collectionTypeIdentifiers,
                 projectData.fieldDeclarations(),
-                projectData.methodDeclarations(),
+                projectData.methods(),
                 projectData.typeDependencies());
     }
 }

@@ -44,13 +44,6 @@ public class CharacterizedMethods {
                 .collect(MethodDeclarations.collector());
     }
 
-    public MethodDeclarations decisionMethods() {
-        return list.stream()
-                .filter(CharacterizedMethod::hasDecision)
-                .map(CharacterizedMethod::methodDeclaration)
-                .collect(MethodDeclarations.collector());
-    }
-
     public MethodCharacteristics characteristicsOf(MethodDeclaration methodDeclaration) {
         return list.stream()
                 .filter(characterizedMethod -> characterizedMethod.methodDeclaration().sameIdentifier(methodDeclaration))

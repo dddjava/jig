@@ -155,13 +155,13 @@ public class AsmByteCodeReaderTest {
         assertThat(methodByteCodes)
                 .extracting(
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
-                        MethodByteCode::hasDecision)
+                        methodByteCode -> methodByteCode.method().decisionNumber().asText())
                 .containsExactlyInAnyOrder(
-                        tuple("分岐なしメソッド()", false),
-                        tuple("ifがあるメソッド()", true),
-                        tuple("switchがあるメソッド()", true),
+                        tuple("分岐なしメソッド()", "0"),
+                        tuple("ifがあるメソッド()", "1"),
+                        tuple("switchがあるメソッド()", "1"),
                         // forは ifeq と goto で構成されるのでifと区別つかない
-                        tuple("forがあるメソッド()", true)
+                        tuple("forがあるメソッド()", "2")
                 );
     }
 

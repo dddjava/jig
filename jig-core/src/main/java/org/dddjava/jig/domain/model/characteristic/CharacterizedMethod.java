@@ -25,14 +25,8 @@ public class CharacterizedMethod {
         return methodByteCode.methodDeclaration;
     }
 
-    public boolean hasDecision() {
-        return methodByteCode.hasDecision();
-    }
-
     public boolean has(MethodCharacteristic methodCharacteristic) {
         switch (methodCharacteristic) {
-            case HAS_DECISION:
-                return hasDecision();
             case SERVICE_METHOD:
                 return characterizedType.has(Characteristic.SERVICE);
             case REPOSITORY_METHOD:

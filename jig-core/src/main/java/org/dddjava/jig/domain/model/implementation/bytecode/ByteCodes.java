@@ -8,11 +8,13 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.Method;
+import org.dddjava.jig.domain.model.declaration.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * モデルの実装一式
@@ -32,13 +34,14 @@ public class ByteCodes {
         return list.stream()
                 .map(ByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
-    public MethodDeclarations instanceMethods() {
-        return instanceMethodByteCodes().stream()
-                .map(methodByteCode -> methodByteCode.methodDeclaration)
-                .collect(MethodDeclarations.collector());
+    public Methods instanceMethods() {
+        List<Method> list = instanceMethodByteCodes().stream()
+                .map(MethodByteCode::method)
+                .collect(toList());
+        return new Methods(list);
     }
 
     public AnnotatedFields annotatedFields() {

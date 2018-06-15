@@ -166,7 +166,7 @@ public class AsmByteCodeReaderTest {
     }
 
     @Test
-    void enumで使用するクラスのテスト() throws Exception {
+    void enumで使用している型が取得できる() throws Exception {
         ByteCode actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
@@ -180,7 +180,7 @@ public class AsmByteCodeReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void enumの種類を判別できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
+    void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
         ByteCode actual = exercise(clz);
 
         assertThat(actual)
@@ -198,7 +198,7 @@ public class AsmByteCodeReaderTest {
                 );
     }
 
-    static Stream<Arguments> enumの種類を判別できる() {
+    static Stream<Arguments> enumの特徴づけに必要な情報が取得できる() {
         return Stream.of(
                 Arguments.of(SimpleEnum.class, false, false, false),
                 Arguments.of(BehaviourEnum.class, true, false, false),

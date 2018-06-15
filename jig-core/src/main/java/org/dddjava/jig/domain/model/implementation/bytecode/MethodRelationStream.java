@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.stream.Stream;
@@ -17,8 +18,12 @@ public class MethodRelationStream {
         this.stream = stream;
     }
 
+    public MethodRelationStream filterTo(MethodIdentifier methodIdentifier) {
+        return new MethodRelationStream(stream.filter(methodRelation -> methodRelation.toIs(methodIdentifier)));
+    }
+
     public MethodRelationStream filterTo(MethodDeclaration methodDeclaration) {
-        return new MethodRelationStream(stream.filter(methodRelation -> methodRelation.toIs(methodDeclaration)));
+        return new MethodRelationStream(stream.filter(methodRelation -> methodRelation.toIs(methodDeclaration.identifier())));
     }
 
     public TypeIdentifiers fromTypeIdentifiers() {

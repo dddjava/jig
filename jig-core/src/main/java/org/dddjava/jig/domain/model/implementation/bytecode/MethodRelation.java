@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 
 /**
  * メソッドの使用しているメソッド
@@ -22,8 +23,8 @@ public class MethodRelation {
         return to;
     }
 
-    public boolean toIs(MethodDeclaration methodDeclaration) {
-        return to.sameIdentifier(methodDeclaration);
+    public boolean toIs(MethodIdentifier methodIdentifier) {
+        return to.identifier().equals(methodIdentifier);
     }
 
     public boolean fromIs(MethodDeclaration methodDeclaration) {

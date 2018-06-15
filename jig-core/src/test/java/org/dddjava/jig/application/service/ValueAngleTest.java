@@ -18,7 +18,6 @@ import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaName;
 import testing.TestSupport;
 
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 

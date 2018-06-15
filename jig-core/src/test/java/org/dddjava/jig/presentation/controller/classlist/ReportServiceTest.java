@@ -3,7 +3,6 @@ package org.dddjava.jig.presentation.controller.classlist;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -52,23 +51,6 @@ class ReportServiceTest {
                 .containsSequence(
                         "[stub.domain.model.type.fuga.FugaRepository, get(FugaIdentifier), Fuga, リポジトリ和名, [sut.piyo], [fuga], [], []]",
                         "[stub.domain.model.type.fuga.FugaRepository, register(Fuga), void, リポジトリ和名, [], [], [], []]"
-                );
-
-        assertThat(sut.valueObjectReport(ValueKind.IDENTIFIER, projectData).rows())
-                .extracting(reportRow -> reportRow.list().get(0))
-                .containsSequence(
-                        "stub.domain.model.type.SimpleIdentifier");
-
-        assertThat(sut.categoryReport(projectData).rows())
-                .filteredOn(reportRow -> reportRow.list().get(0).startsWith("stub.domain.model.kind."))
-                .extracting(reportRow -> reportRow.list().toString())
-                .containsExactly(
-                        "[stub.domain.model.kind.BehaviourEnum, , [A, B], [], 2, [AsmByteCodeReaderTest, RelationEnum], , ◯, ]",
-                        "[stub.domain.model.kind.ParameterizedEnum, , [A, B], [String param], 2, [AsmByteCodeReaderTest, RelationEnum], ◯, , ]",
-                        "[stub.domain.model.kind.PolymorphismEnum, , [A, B], [], 2, [AsmByteCodeReaderTest, RelationEnum], , , ◯]",
-                        "[stub.domain.model.kind.RelationEnum, , [A, B, C], [RichEnum field], 0, [], ◯, , ]",
-                        "[stub.domain.model.kind.RichEnum, , [A, B], [String param], 2, [AsmByteCodeReaderTest, RelationEnum], ◯, ◯, ◯]",
-                        "[stub.domain.model.kind.SimpleEnum, 列挙のみのEnum, [A, B, C, D], [], 2, [AsmByteCodeReaderTest, RelationEnum], , , ]"
                 );
 
         assertThat(sut.decisionReport(projectData, Layer.APPLICATION).rows())

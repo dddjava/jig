@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import stub.domain.model.type.*;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaName;
+import testing.TestSupport;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,12 +42,9 @@ public class ValueAngleTest {
     AngleService angleService = new AngleService();
 
     @Test
-    void readProjectData() throws URISyntaxException {
-        // テストクラスのルートを取得する
-        URI location = ValueAngleTest.class.getProtectionDomain().getCodeSource().getLocation().toURI();
-
+    void readProjectData() {
         Layout layoutMock = mock(Layout.class);
-        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(location)});
+        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);

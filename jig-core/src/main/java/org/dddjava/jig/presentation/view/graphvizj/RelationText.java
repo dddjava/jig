@@ -41,6 +41,6 @@ public class RelationText {
     }
 
     public void add(MethodDeclaration from, MethodDeclaration to) {
-        add(from.asFullText(), to.asFullText());
+        add(from.asFullNameText(), to.asFullNameText());
     }
 }

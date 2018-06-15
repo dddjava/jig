@@ -19,7 +19,7 @@ public class MethodDeclarations {
 
     public MethodDeclarations(List<MethodDeclaration> list) {
         this.list = list;
-        list.sort(Comparator.comparing(MethodDeclaration::asFullText));
+        list.sort(Comparator.comparing(MethodDeclaration::asFullNameText));
     }
 
     public List<MethodDeclaration> list() {

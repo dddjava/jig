@@ -17,7 +17,7 @@ public class MethodDeclaration {
         this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
     }
 
-    public String asFullText() {
+    public String asFullNameText() {
         return methodIdentifier.asText();
     }
 

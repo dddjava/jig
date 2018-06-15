@@ -17,7 +17,7 @@ class MethodDeclarationTest {
                 "abc",
                 new Arguments(Stream.of("a.Aaa", "b.Bbb", "a.Aaa").map(TypeIdentifier::new).collect(Collectors.toList()))), new MethodReturn(new TypeIdentifier("hoge.fuga.Foo")));
 
-        assertThat(methodDeclaration.asFullText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa, b.Bbb, a.Aaa)");
+        assertThat(methodDeclaration.asFullNameText()).isEqualTo("hoge.fuga.Piyo.abc(a.Aaa, b.Bbb, a.Aaa)");
         assertThat(methodDeclaration.asSignatureSimpleText()).isEqualTo("abc(Aaa, Bbb, Aaa)");
     }
 }

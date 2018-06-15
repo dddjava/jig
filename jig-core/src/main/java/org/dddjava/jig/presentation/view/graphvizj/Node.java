@@ -26,7 +26,7 @@ public class Node {
     }
 
     public static Node of(MethodDeclaration identifier) {
-        return new Node(identifier.asFullText());
+        return new Node(identifier.asFullNameText());
     }
 
     public Node label(String value) {

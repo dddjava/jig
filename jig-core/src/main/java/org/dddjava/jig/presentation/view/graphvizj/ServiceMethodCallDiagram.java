@@ -67,7 +67,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                                 + "{"
                                 + "label=\"" + japaneseNameLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
                                 + entry.getValue().stream()
-                                .map(serviceAngle -> serviceAngle.method().asFullText())
+                                .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")

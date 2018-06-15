@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.collections;
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
@@ -34,5 +35,13 @@ public class CollectionAngle {
 
     public UserNumber userNumber() {
         return new UserNumber(userTypeIdentifiers().list().size());
+    }
+
+    public MethodNumber methodNumber() {
+        return methods.number();
+    }
+
+    public MethodDeclarations methods() {
+        return methods;
     }
 }

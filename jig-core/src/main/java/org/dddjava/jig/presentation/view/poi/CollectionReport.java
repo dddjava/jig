@@ -18,7 +18,9 @@ public class CollectionReport {
         クラス名(Row::クラス名),
         クラス和名(Row::クラス和名),
         使用箇所数(Row::使用箇所数),
-        使用箇所(Row::使用箇所);
+        使用箇所(Row::使用箇所),
+        メソッド数(Row::メソッド数),
+        メソッド一覧(Row::メソッド一覧);
 
         Function<Row, String> func;
 
@@ -67,6 +69,14 @@ public class CollectionReport {
 
         String 使用箇所数() {
             return collectionAngle.userNumber().asText();
+        }
+
+        String メソッド数() {
+            return collectionAngle.methodNumber().asText();
+        }
+
+        String メソッド一覧() {
+            return collectionAngle.methods().asSignatureAndReturnTypeSimpleText();
         }
     }
 }

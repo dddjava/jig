@@ -60,4 +60,15 @@ public class MethodDeclarations {
                 .filter(methodDeclaration -> methodDeclaration.declaringType().equals(typeIdentifier))
                 .collect(collector());
     }
+
+    public MethodNumber number() {
+        return new MethodNumber(list.size());
+    }
+
+    public String asSignatureAndReturnTypeSimpleText() {
+        return list.stream()
+                .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)
+                .sorted()
+                .collect(Text.collectionCollector());
+    }
 }

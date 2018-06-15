@@ -25,6 +25,10 @@ public class MethodDeclaration {
         return methodSignature().asSimpleText();
     }
 
+    public String asSignatureAndReturnTypeSimpleText() {
+        return asSignatureSimpleText() + ":" + returnType().asSimpleText();
+    }
+
     public TypeIdentifier declaringType() {
         return methodIdentifier.declaringType();
     }

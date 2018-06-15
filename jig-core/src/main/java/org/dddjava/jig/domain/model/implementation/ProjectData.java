@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
@@ -20,6 +21,8 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
  */
 public class ProjectData {
 
+    // メソッド
+    private MethodDeclarations methodDeclarations;
     // フィールド
     private StaticFieldDeclarations staticFieldDeclarations;
     private FieldDeclarations fieldDeclarations;
@@ -42,6 +45,8 @@ public class ProjectData {
     private CharacterizedMethods characterizedMethods;
 
     public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
+        this.methodDeclarations = byteCodes.instanceMethods();
+
         this.annotatedFields = byteCodes.annotatedFields();
         this.annotatedMethods = byteCodes.annotatedMethods();
 
@@ -108,5 +113,9 @@ public class ProjectData {
 
     public AnnotatedMethods annotatedMethods() {
         return annotatedMethods;
+    }
+
+    public MethodDeclarations methodDeclarations() {
+        return methodDeclarations;
     }
 }

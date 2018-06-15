@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.basic.Text;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Comparator;
@@ -52,5 +53,11 @@ public class MethodDeclarations {
 
     public boolean empty() {
         return list.isEmpty();
+    }
+
+    public MethodDeclarations filterDeclareTypeIs(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(methodDeclaration -> methodDeclaration.declaringType().equals(typeIdentifier))
+                .collect(collector());
     }
 }

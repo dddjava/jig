@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.collections;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
@@ -11,10 +13,10 @@ public class CollectionAngles {
 
     List<CollectionAngle> list;
 
-    public CollectionAngles(TypeIdentifiers typeIdentifiers, TypeDependencies typeDependencies) {
+    public CollectionAngles(TypeIdentifiers typeIdentifiers, FieldDeclarations fieldDeclarations, MethodDeclarations methodDeclarations, TypeDependencies typeDependencies) {
         this.list = new ArrayList<>();
         for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
-            list.add(new CollectionAngle(typeDependencies, typeIdentifier));
+            list.add(new CollectionAngle(typeIdentifier, fieldDeclarations, methodDeclarations, typeDependencies));
         }
     }
 

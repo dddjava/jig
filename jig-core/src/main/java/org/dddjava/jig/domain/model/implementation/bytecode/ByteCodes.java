@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,12 @@ public class ByteCodes {
                 .map(ByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
+    }
+
+    public MethodDeclarations instanceMethods() {
+        return instanceMethodByteCodes().stream()
+                .map(methodByteCode -> methodByteCode.methodDeclaration)
+                .collect(MethodDeclarations.collector());
     }
 
     public AnnotatedFields annotatedFields() {

@@ -118,6 +118,9 @@ public class AngleService {
      */
     public CollectionAngles collectionAngles(ProjectData projectData) {
         TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
-        return new CollectionAngles(collectionTypeIdentifiers, projectData.typeDependencies());
+        return new CollectionAngles(collectionTypeIdentifiers,
+                projectData.fieldDeclarations(),
+                projectData.methodDeclarations(),
+                projectData.typeDependencies());
     }
 }

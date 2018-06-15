@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
@@ -112,4 +113,11 @@ public class AngleService {
         return BoolQueryAngles.of(methods, relations);
     }
 
+    /**
+     * コレクションを分析する
+     */
+    public CollectionAngles collectionAngles(ProjectData projectData) {
+        TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
+        return new CollectionAngles(collectionTypeIdentifiers, projectData.typeDependencies());
+    }
 }

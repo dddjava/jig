@@ -5,6 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.Layer;
@@ -71,7 +72,7 @@ public class ClassListController {
                 valueObjectReport(ValueKind.IDENTIFIER, projectData),
                 categoryReport(projectData),
                 valueObjectReport(ValueKind.NUMBER, projectData),
-                valueObjectReport(ValueKind.COLLECTION, projectData),
+                collectionReport(projectData),
                 valueObjectReport(ValueKind.DATE, projectData),
                 valueObjectReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(projectData),
@@ -124,6 +125,15 @@ public class ClassListController {
             return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
         }).collect(Collectors.toList());
         return new ValueReport(valueKind, list).toReport();
+    }
+
+    Report<?> collectionReport(ProjectData projectData) {
+        CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
+        List<CollectionReport.Row> list = collectionAngles.list().stream().map(enumAngle -> {
+            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
+            return new CollectionReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
+        }).collect(Collectors.toList());
+        return new CollectionReport(list).toReport();
     }
 
     Report<?> categoryReport(ProjectData projectData) {

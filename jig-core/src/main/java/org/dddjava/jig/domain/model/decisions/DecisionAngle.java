@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.decisions;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
@@ -32,5 +33,9 @@ public class DecisionAngle {
         if (typeCharacteristics.has(Characteristic.DATASOURCE)) return Layer.DATASOURCE;
 
         return Layer.OTHER;
+    }
+
+    public DecisionNumber decisionNumber() {
+        return method.decisionNumber();
     }
 }

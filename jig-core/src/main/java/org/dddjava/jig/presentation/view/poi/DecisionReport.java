@@ -26,6 +26,12 @@ public class DecisionReport {
             public String convert(DecisionAngle row) {
                 return row.methodDeclaration().asSignatureSimpleText();
             }
+        },
+        分岐数 {
+            @Override
+            public String convert(DecisionAngle row) {
+                return row.decisionNumber().asText();
+            }
         }
     }
 

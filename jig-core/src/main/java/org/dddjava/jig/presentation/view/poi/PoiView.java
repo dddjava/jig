@@ -6,19 +6,19 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.dddjava.jig.domain.basic.report.ReportRow;
-import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.poi.report.ReportRow;
+import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.StringJoiner;
 
-public class ReportToExcelView implements JigView<Reports> {
+public class PoiView implements JigView<Reports> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ReportToExcelView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PoiView.class);
 
     @Override
     public void render(Reports reports, JigDocumentLocation jigDocumentLocation) throws IOException {

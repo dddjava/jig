@@ -1,13 +1,13 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.basic.report.Reports;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
-import org.dddjava.jig.presentation.view.poi.ReportToExcelView;
+import org.dddjava.jig.presentation.view.poi.PoiView;
+import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +33,7 @@ public class ViewResolver {
     }
 
     public JigView<Reports> applicationList() {
-        return new ReportToExcelView();
+        return new PoiView();
     }
 
     public JigView<CategoryAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
@@ -41,10 +41,10 @@ public class ViewResolver {
     }
 
     public JigView<Reports> domainList() {
-        return new ReportToExcelView();
+        return new PoiView();
     }
 
     public JigView<Reports> branchList() {
-        return new ReportToExcelView();
+        return new PoiView();
     }
 }

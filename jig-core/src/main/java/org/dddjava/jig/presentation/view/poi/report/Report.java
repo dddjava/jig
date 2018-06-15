@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.basic.report;
+package org.dddjava.jig.presentation.view.poi.report;
 
 import java.util.List;
 import java.util.stream.Collectors;

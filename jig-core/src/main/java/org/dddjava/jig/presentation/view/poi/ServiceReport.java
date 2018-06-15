@@ -1,12 +1,13 @@
-package org.dddjava.jig.domain.model.services;
+package org.dddjava.jig.presentation.view.poi;
 
 import org.dddjava.jig.domain.basic.Text;
-import org.dddjava.jig.domain.basic.report.ConvertibleItem;
-import org.dddjava.jig.domain.basic.report.Report;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.presentation.view.poi.report.ConvertibleItem;
+import org.dddjava.jig.presentation.view.poi.report.Report;
 
 import java.util.List;
 import java.util.function.Function;

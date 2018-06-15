@@ -1,8 +1,9 @@
-package org.dddjava.jig.domain.model.decisions;
+package org.dddjava.jig.presentation.view.poi;
 
-import org.dddjava.jig.domain.basic.report.ConvertibleItem;
-import org.dddjava.jig.domain.basic.report.Report;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.presentation.view.poi.report.ConvertibleItem;
+import org.dddjava.jig.presentation.view.poi.report.Report;
 
 import java.util.List;
 

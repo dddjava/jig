@@ -1,10 +1,11 @@
-package org.dddjava.jig.domain.model.booleans.model;
+package org.dddjava.jig.presentation.view.poi;
 
 import org.dddjava.jig.domain.basic.UserNumber;
-import org.dddjava.jig.domain.basic.report.ConvertibleItem;
-import org.dddjava.jig.domain.basic.report.Report;
+import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.presentation.view.poi.report.ConvertibleItem;
+import org.dddjava.jig.presentation.view.poi.report.Report;
 
 import java.util.List;
 import java.util.function.Function;

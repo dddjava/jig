@@ -141,4 +141,12 @@ public class ByteCode {
     public void registerConstructorByteCodes(MethodByteCode methodByteCode) {
         constructorByteCodes.add(methodByteCode);
     }
+
+    public List<MethodByteCode> methodByteCodes() {
+        ArrayList<MethodByteCode> list = new ArrayList<>();
+        list.addAll(instanceMethodByteCodes);
+        list.addAll(staticMethodByteCodes);
+        list.addAll(constructorByteCodes);
+        return list;
+    }
 }

@@ -14,8 +14,7 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
-import stub.domain.model.booleans.BooleanQueryAngleTestTarget;
-import stub.domain.model.booleans.UserByMethod;
+import stub.domain.model.booleans.*;
 import testing.TestSupport;
 
 import java.nio.file.Path;
@@ -62,11 +61,12 @@ public class BoolQueryAngleTest {
                 .containsExactlyInAnyOrder(
                         tuple(methodOf("真偽値を返すメソッド"), Collections.emptyList()),
                         tuple(methodOf("呼び出される真偽値を返すメソッド"), Arrays.asList(
-                                new TypeIdentifier(UserByMethod.class)
-                                // #121の対象
-                                //new TypeIdentifier(UserByConstructor.class),
-                                //new TypeIdentifier(UserByStaticMethod.class),
-                                //new TypeIdentifier(UserByLambda.class)
+                                new TypeIdentifier(UserByConstructor.class),
+                                new TypeIdentifier(UserByField.class),
+                                new TypeIdentifier(UserByLambda.class),
+                                new TypeIdentifier(UserByMethod.class),
+                                new TypeIdentifier(UserByStaticField.class),
+                                new TypeIdentifier(UserByStaticMethod.class)
                         ))
                 )
                 .doesNotContain(

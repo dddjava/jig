@@ -20,7 +20,7 @@ public class MethodRelations {
         this(new ArrayList<>());
 
         for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+            for (MethodByteCode methodByteCode : byteCode.methodByteCodes()) {
                 MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
                 for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
                     list.add(new MethodRelation(methodDeclaration, usingMethod));

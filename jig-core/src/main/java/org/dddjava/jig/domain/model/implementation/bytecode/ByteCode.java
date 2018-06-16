@@ -86,13 +86,7 @@ public class ByteCode {
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodByteCode methodByteCode : instanceMethodByteCodes) {
-            useTypes.addAll(methodByteCode.useTypes());
-        }
-        for (MethodByteCode methodByteCode : staticMethodByteCodes) {
-            useTypes.addAll(methodByteCode.useTypes());
-        }
-        for (MethodByteCode methodByteCode : constructorByteCodes) {
+        for (MethodByteCode methodByteCode : methodByteCodes()) {
             useTypes.addAll(methodByteCode.useTypes());
         }
 

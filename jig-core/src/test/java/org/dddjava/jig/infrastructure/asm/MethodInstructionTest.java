@@ -80,11 +80,7 @@ public class MethodInstructionTest {
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
                         methodByteCode -> methodByteCode.usingMethods().asSimpleText()
                 )
-                .filteredOn(tuple -> {
-                    Object methodDeclaration = tuple.toArray()[0];
-                    return methodDeclaration.equals("method(MethodArgument)") || methodDeclaration.equals("lambda()");
-                })
-                .containsExactlyInAnyOrder(
+                .contains(
                         tuple("method(MethodArgument)", "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]"),
                         tuple("lambda()", "[MethodInstruction.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]")
                 );

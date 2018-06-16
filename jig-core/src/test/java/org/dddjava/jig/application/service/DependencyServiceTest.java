@@ -49,6 +49,7 @@ public class DependencyServiceTest {
         assertThat(packageNames)
                 .containsExactlyInAnyOrder(
                         "stub.domain.model",
+                        "stub.domain.model.booleans",
                         "stub.domain.model.kind",
                         "stub.domain.model.relation",
                         "stub.domain.model.relation.clz",

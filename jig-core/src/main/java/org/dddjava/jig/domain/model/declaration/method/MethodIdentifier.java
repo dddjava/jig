@@ -47,4 +47,9 @@ public class MethodIdentifier {
     public MethodSignature methodSignature() {
         return methodSignature;
     }
+
+    @Override
+    public String toString() {
+        return "MethodIdentifier{" + asText() + '}';
+    }
 }

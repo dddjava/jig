@@ -1,7 +1,7 @@
 package stub.domain.model;
 
-import stub.domain.model.relation.test.UseInAnnotation;
-import stub.domain.model.relation.test.VariableAnnotation;
+import stub.domain.model.relation.annotation.UseInAnnotation;
+import stub.domain.model.relation.annotation.VariableAnnotation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

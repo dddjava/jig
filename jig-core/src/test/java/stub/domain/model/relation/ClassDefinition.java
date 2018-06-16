@@ -1,7 +1,11 @@
 package stub.domain.model.relation;
 
-import stub.domain.model.relation.test.*;
+import stub.domain.model.relation.clz.GenericsParameter;
+import stub.domain.model.relation.clz.ImplementA;
+import stub.domain.model.relation.clz.ImplementB;
+import stub.domain.model.relation.clz.ClassAnnotation;
+import stub.domain.model.relation.clz.SuperClass;
 
-@RetentionClassAnnotation
-public class ClassDefinition extends SuperClass implements ImplementA, ImplementB<GenericArgument> {
+@ClassAnnotation
+public class ClassDefinition extends SuperClass implements ImplementA, ImplementB<GenericsParameter> {
 }

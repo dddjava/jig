@@ -1,6 +1,6 @@
 package stub.domain.model.relation;
 
-import stub.domain.model.relation.test.*;
+import stub.domain.model.relation.field.*;
 
 import java.util.List;
 
@@ -14,6 +14,6 @@ public class FieldDefinition {
 
     ArrayField[] arrayFields;
 
-    @RetentionClassAnnotation
-    Object obj = FieldReference.FIELD;
+    @FieldAnnotation
+    Object obj = ReferenceConstantOwnerAtFieldDefinition.FIELD;
 }

@@ -15,10 +15,13 @@ import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.FieldDefinition;
 import stub.domain.model.relation.MethodInstruction;
-import stub.domain.model.relation.foo.Bar;
-import stub.domain.model.relation.foo.Baz;
-import stub.domain.model.relation.foo.Foo;
-import stub.domain.model.relation.test.*;
+import stub.domain.model.relation.annotation.VariableAnnotation;
+import stub.domain.model.relation.clz.*;
+import stub.domain.model.relation.enumeration.ClassReference;
+import stub.domain.model.relation.enumeration.ConstructorArgument;
+import stub.domain.model.relation.enumeration.EnumField;
+import stub.domain.model.relation.field.*;
+import stub.domain.model.relation.method.*;
 import stub.misc.DecisionClass;
 
 import java.net.URISyntaxException;
@@ -71,11 +74,11 @@ public class AsmByteCodeReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(RetentionClassAnnotation.class),
+                        new TypeIdentifier(ClassAnnotation.class),
                         new TypeIdentifier(SuperClass.class),
                         new TypeIdentifier(ImplementA.class),
                         new TypeIdentifier(ImplementB.class),
-                        new TypeIdentifier(GenericArgument.class)
+                        new TypeIdentifier(GenericsParameter.class)
                 );
     }
 
@@ -86,14 +89,14 @@ public class AsmByteCodeReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(RetentionClassAnnotation.class),
+                        new TypeIdentifier(FieldAnnotation.class),
                         new TypeIdentifier(StaticField.class),
                         new TypeIdentifier(InstanceField.class),
                         new TypeIdentifier(GenericField.class),
                         new TypeIdentifier(ArrayField.class.getName() + "[]"),
                         new TypeIdentifier(ArrayField.class),
-                        new TypeIdentifier(FieldReference.class),
-                        new TypeIdentifier(ReferenceField.class)
+                        new TypeIdentifier(ReferenceConstantOwnerAtFieldDefinition.class),
+                        new TypeIdentifier(ReferenceConstantAtFieldDefinition.class)
                 );
     }
 
@@ -105,10 +108,10 @@ public class AsmByteCodeReaderTest {
         assertThat(identifiers.list())
                 .contains(
                         // メソッド定義
-                        new TypeIdentifier(RetentionClassAnnotation.class),
+                        new TypeIdentifier(MethodAnnotation.class),
                         new TypeIdentifier(MethodArgument.class),
                         new TypeIdentifier(MethodReturn.class),
-                        new TypeIdentifier(GenericArgument.class),
+                        new TypeIdentifier(ArgumentGenericsParameter.class),
                         new TypeIdentifier(FugaException.class),
                         new TypeIdentifier(ThrowingException.class)
                 )
@@ -118,8 +121,8 @@ public class AsmByteCodeReaderTest {
                         new TypeIdentifier(Bar.class),
                         new TypeIdentifier(Baz.class),
                         new TypeIdentifier(Instantiation.class),
-                        new TypeIdentifier(FieldReference.class),
-                        new TypeIdentifier(ReferenceField.class),
+                        new TypeIdentifier(ReferenceConstantOwnerInMethod.class),
+                        new TypeIdentifier(ReferenceConstantInMethod.class),
                         new TypeIdentifier(UseInLambda.class),
                         new TypeIdentifier(MethodReference.class),
                         new TypeIdentifier(EnclosedClass.NestedClass.class)
@@ -177,7 +180,7 @@ public class AsmByteCodeReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(InstanceField.class),
+                        new TypeIdentifier(EnumField.class),
                         new TypeIdentifier(ConstructorArgument.class),
                         new TypeIdentifier(ClassReference.class)
                 );

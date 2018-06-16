@@ -51,8 +51,11 @@ public class DependencyServiceTest {
                         "stub.domain.model",
                         "stub.domain.model.kind",
                         "stub.domain.model.relation",
-                        "stub.domain.model.relation.foo",
-                        "stub.domain.model.relation.test",
+                        "stub.domain.model.relation.clz",
+                        "stub.domain.model.relation.method",
+                        "stub.domain.model.relation.field",
+                        "stub.domain.model.relation.annotation",
+                        "stub.domain.model.relation.enumeration",
                         "stub.domain.model.type",
                         "stub.domain.model.type.fuga"
                 );
@@ -65,10 +68,11 @@ public class DependencyServiceTest {
                     return from.format(value -> value) + " -> " + to.format(value -> value);
                 })
                 .containsExactlyInAnyOrder(
-                        "stub.domain.model -> stub.domain.model.relation.test",
-                        "stub.domain.model.relation -> stub.domain.model.relation.test",
-                        "stub.domain.model.relation -> stub.domain.model.relation.foo",
-                        "stub.domain.model.relation.foo -> stub.domain.model.relation.test"
+                        "stub.domain.model -> stub.domain.model.relation.annotation",
+                        "stub.domain.model.relation -> stub.domain.model.relation.clz",
+                        "stub.domain.model.relation -> stub.domain.model.relation.field",
+                        "stub.domain.model.relation -> stub.domain.model.relation.method",
+                        "stub.domain.model.relation -> stub.domain.model.relation.enumeration"
                 );
     }
 

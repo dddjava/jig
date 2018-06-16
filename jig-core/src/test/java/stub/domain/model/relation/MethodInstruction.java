@@ -1,7 +1,7 @@
 package stub.domain.model.relation;
 
-import stub.domain.model.relation.foo.Foo;
-import stub.domain.model.relation.test.*;
+import stub.domain.model.relation.method.Foo;
+import stub.domain.model.relation.method.*;
 
 import java.util.List;
 import java.util.function.Function;
@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public class MethodInstruction {
 
-    @RetentionClassAnnotation
+    @MethodAnnotation
     void method(MethodArgument methodArgument) {
         // ローカル変数宣言だけ
         LocalValue localValue = null;
@@ -21,7 +21,7 @@ public class MethodInstruction {
 
     void fieldRef() {
         // 別クラスのフィールドを参照する
-        Object obj = FieldReference.FIELD;
+        Object obj = ReferenceConstantOwnerInMethod.FIELD;
     }
 
     void lambda() {
@@ -37,7 +37,7 @@ public class MethodInstruction {
         Function<MethodReference, String> method = MethodReference::toString;
     }
 
-    MethodReturn method(List<GenericArgument> list) throws FugaException {
+    MethodReturn method(List<ArgumentGenericsParameter> list) throws FugaException {
         new Instantiation();
         return null;
     }

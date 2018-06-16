@@ -104,20 +104,25 @@ public class AsmByteCodeReaderTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
+                        // メソッド定義
                         new TypeIdentifier(RetentionClassAnnotation.class),
+                        new TypeIdentifier(MethodArgument.class),
+                        new TypeIdentifier(MethodReturn.class),
+                        new TypeIdentifier(GenericArgument.class),
+                        new TypeIdentifier(FugaException.class),
+                        new TypeIdentifier(ThrowingException.class)
+                )
+                .contains(
+                        // メソッド内部
                         new TypeIdentifier(Foo.class),
                         new TypeIdentifier(Bar.class),
                         new TypeIdentifier(Baz.class),
                         new TypeIdentifier(Instantiation.class),
-                        new TypeIdentifier(FugaException.class),
-                        new TypeIdentifier(MethodArgument.class),
-                        new TypeIdentifier(GenericArgument.class),
                         new TypeIdentifier(FieldReference.class),
                         new TypeIdentifier(ReferenceField.class),
                         new TypeIdentifier(UseInLambda.class),
                         new TypeIdentifier(MethodReference.class),
-                        new TypeIdentifier(EnclosedClass.NestedClass.class),
-                        new TypeIdentifier(ThrowingException.class)
+                        new TypeIdentifier(EnclosedClass.NestedClass.class)
                 )
                 .doesNotContain(
                         // ローカル変数宣言だけで使用されている型は取得できない（コンパイルされたら消える）

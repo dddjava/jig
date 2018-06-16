@@ -1,6 +1,5 @@
 package stub.domain.model.relation;
 
-import stub.domain.model.relation.method.Foo;
 import stub.domain.model.relation.method.*;
 
 import java.util.List;
@@ -9,14 +8,15 @@ import java.util.stream.Stream;
 
 public class MethodInstruction {
 
+    InstructionField instructionField = null;
+
     @MethodAnnotation
-    void method(MethodArgument methodArgument) {
+    void method(MethodArgument methodArgument) throws Exception {
         // ローカル変数宣言だけ
         LocalValue localValue = null;
 
         // メソッド呼び出し
-        Foo foo = null;
-        foo.toBar().toBaz();
+        instructionField.invokeMethod().chainedInvokeMethod();
     }
 
     void fieldRef() {
@@ -37,7 +37,7 @@ public class MethodInstruction {
         Function<MethodReference, String> method = MethodReference::toString;
     }
 
-    MethodReturn method(List<ArgumentGenericsParameter> list) throws FugaException {
+    MethodReturn method(List<ArgumentGenericsParameter> list) throws CheckedException {
         new Instantiation();
         return null;
     }
@@ -46,7 +46,7 @@ public class MethodInstruction {
         new EnclosedClass.NestedClass();
     }
 
-    void causeException() throws ThrowingException {
-        throw new ThrowingException();
+    void causeException() {
+        throw new UncheckedExceptionA();
     }
 }

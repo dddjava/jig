@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import stub.domain.model.relation.ConstructorInstruction;
 import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.StaticMethodInstruction;
 import stub.domain.model.relation.method.*;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.tuple;
 public class MethodInstructionTest {
 
     @ParameterizedTest
-    @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class})
+    @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
         ByteCode actual = exercise(clz);
 

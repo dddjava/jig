@@ -1,9 +1,19 @@
 package org.dddjava.jig.domain.basic;
 
-import org.dddjava.jig.domain.model.declaration.method.*;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
+/**
+ * 一覧出力項目
+ *
+ * 出力項目の名前や取得方法、並び順の定義。
+ *
+ * TODO 配置場所や持ち方。列挙はともかく、処理は別クラスのはず
+ */
 public enum ReportItem {
     クラス名 {
         @Override

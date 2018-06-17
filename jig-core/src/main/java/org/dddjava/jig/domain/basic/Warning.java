@@ -5,6 +5,9 @@ import org.springframework.core.env.Environment;
 import java.text.MessageFormat;
 import java.util.StringJoiner;
 
+/**
+ * ユーザーへの警告
+ */
 public enum Warning {
     クラス検出異常(new Message()
             .add("解析対象の *.class ファイルが見つからないため、処理を中断しました。")

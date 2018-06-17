@@ -22,13 +22,13 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.poi.PoiView;
-import org.dddjava.jig.presentation.view.poi.report.Reporter;
-import org.dddjava.jig.presentation.view.poi.report.Reporters;
+import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
+import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
+import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,31 +37,29 @@ public class ClassListController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassListController.class);
 
-    TypeIdentifierFormatter typeIdentifierFormatter;
-    GlossaryService glossaryService;
+    ConvertContext convertContext;
     AngleService angleService;
 
     public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
                                GlossaryService glossaryService,
                                AngleService angleService) {
-        this.typeIdentifierFormatter = typeIdentifierFormatter;
-        this.glossaryService = glossaryService;
+        this.convertContext = new ConvertContext(glossaryService, typeIdentifierFormatter);
         this.angleService = angleService;
     }
 
-    public JigModelAndView<Reporters> applicationList(ProjectData projectData) {
+    public JigModelAndView<AngleReporters> applicationList(ProjectData projectData) {
         LOGGER.info("入出力リストを出力します");
-        Reporters reporters = new Reporters(Arrays.asList(
+        AngleReporters angleReporters = new AngleReporters(
                 serviceReport(projectData),
                 datasourceReport(projectData)
-        ));
+        );
 
-        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
     }
 
-    public JigModelAndView<Reporters> domainList(ProjectData projectData) {
+    public JigModelAndView<AngleReporters> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
-        Reporters reporters = new Reporters(Arrays.asList(
+        AngleReporters angleReporters = new AngleReporters(
                 valueObjectReport(ValueKind.IDENTIFIER, projectData),
                 categoryReport(projectData),
                 valueObjectReport(ValueKind.NUMBER, projectData),
@@ -71,67 +69,67 @@ public class ClassListController {
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
                 booleanReport(projectData)
-        ));
+        );
 
-        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
     }
 
-    public JigModelAndView<Reporters> branchList(ProjectData projectData) {
+    public JigModelAndView<AngleReporters> branchList(ProjectData projectData) {
         LOGGER.info("条件分岐リストを出力します");
-        Reporters reporters = new Reporters(Arrays.asList(
+        AngleReporters angleReporters = new AngleReporters(
                 decisionReport(projectData, Layer.PRESENTATION),
                 decisionReport(projectData, Layer.APPLICATION),
                 decisionReport(projectData, Layer.DATASOURCE)
-        ));
+        );
 
-        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
     }
 
-    Reporter serviceReport(ProjectData projectData) {
+    AngleReporter serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        return new Reporter("SERVICE", ServiceAngle.class, serviceAngles.list());
+        return new AngleReporter("SERVICE", ServiceAngle.class, serviceAngles.list());
     }
 
-    Reporter datasourceReport(ProjectData projectData) {
+    AngleReporter datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
-        return new Reporter("REPOSITORY", DatasourceAngle.class, datasourceAngles.list());
+        return new AngleReporter("REPOSITORY", DatasourceAngle.class, datasourceAngles.list());
     }
 
-    Reporter stringComparingReport(ProjectData projectData) {
+    AngleReporter stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
-        return new Reporter("文字列比較箇所", StringComparingAngle.class, stringComparingAngles.list());
+        return new AngleReporter("文字列比較箇所", StringComparingAngle.class, stringComparingAngles.list());
     }
 
-    Reporter valueObjectReport(ValueKind valueKind, ProjectData projectData) {
+    AngleReporter valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        return new Reporter(valueKind.name(), ValueAngle.class, valueAngles.list());
+        return new AngleReporter(valueKind.name(), ValueAngle.class, valueAngles.list());
     }
 
-    Reporter collectionReport(ProjectData projectData) {
+    AngleReporter collectionReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
-        return new Reporter("COLLECTION", CollectionAngle.class, collectionAngles.list());
+        return new AngleReporter("COLLECTION", CollectionAngle.class, collectionAngles.list());
     }
 
-    Reporter categoryReport(ProjectData projectData) {
+    AngleReporter categoryReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
-        return new Reporter("ENUM", CategoryAngle.class, categoryAngles.list());
+        return new AngleReporter("ENUM", CategoryAngle.class, categoryAngles.list());
     }
 
-    Reporter validateAnnotationReport(ProjectData projectData) {
+    AngleReporter validateAnnotationReport(ProjectData projectData) {
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());
-        return new Reporter("VALIDATION", ValidationAngle.class, list);
+        return new AngleReporter("VALIDATION", ValidationAngle.class, list);
     }
 
-    Reporter decisionReport(ProjectData projectData, Layer layer) {
+    AngleReporter decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new Reporter(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer));
+        return new AngleReporter(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer));
     }
 
-    Reporter booleanReport(ProjectData projectData) {
+    AngleReporter booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-        return new Reporter("真偽値を返すメソッド", BoolQueryAngle.class, angles.list());
+        return new AngleReporter("真偽値を返すメソッド", BoolQueryAngle.class, angles.list());
     }
 }

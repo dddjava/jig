@@ -1,29 +1,25 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.basic.ReportItemFor;
 import org.dddjava.jig.domain.basic.ReportItemsFor;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Reporter {
+public class AngleReporter {
 
     String title;
     Class<?> angleClass;
     List<?> angles;
 
-    public <T> Reporter(String title, Class<T> angleClass, List<T> angles) {
+    public <T> AngleReporter(String title, Class<T> angleClass, List<T> angles) {
         this.title = title;
         this.angleClass = angleClass;
         this.angles = angles;
     }
 
-    public Report toReport(GlossaryService glossaryService, TypeIdentifierFormatter typeIdentifierFormatter) {
-        ConvertContext convertContext = new ConvertContext(glossaryService, typeIdentifierFormatter);
-
+    public Report toReport(ConvertContext convertContext) {
         ItemConverter[] itemConverters = Arrays.stream(angleClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
                 .flatMap(method -> {

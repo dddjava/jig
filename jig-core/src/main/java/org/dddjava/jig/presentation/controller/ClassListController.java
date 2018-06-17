@@ -161,13 +161,6 @@ public class ClassListController {
 
     Report<?> booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-
-        List<BoolQueryReport.Row> list = new ArrayList<>();
-        for (BoolQueryAngle angle : angles.list()) {
-            JapaneseName japaneseClassName = glossaryService.japaneseNameFrom(angle.declaringTypeIdentifier());
-            JapaneseName japaneseMethodName = glossaryService.japaneseNameFrom(angle.method().identifier());
-            list.add(new BoolQueryReport.Row(angle, japaneseMethodName, japaneseClassName, typeIdentifierFormatter));
-        }
-        return new BoolQueryReport(list).toReport();
+        return new Reporter<>("真偽値を返すメソッド", BoolQueryAngle.class, angles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 }

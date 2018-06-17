@@ -26,6 +26,12 @@ public enum ReportItem {
             return obj.value(MethodDeclaration.class).asSignatureSimpleText();
         }
     },
+    メソッド和名 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.methodJapaneseName(obj.value(MethodDeclaration.class).identifier());
+        }
+    },
     メソッド数 {
         @Override
         public String convert(ReportContext obj) {

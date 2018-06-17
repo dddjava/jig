@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.basic;
 
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 
@@ -20,11 +21,15 @@ public class ReportContext {
         return clz.cast(value);
     }
 
-    public String typeJapaneseName(TypeIdentifier value) {
-        return glossaryService.japaneseNameFrom(value).summarySentence();
+    public String typeJapaneseName(TypeIdentifier typeIdentifier) {
+        return glossaryService.japaneseNameFrom(typeIdentifier).summarySentence();
     }
 
-    public String formatTypeIdentifier(TypeIdentifier value) {
-        return typeIdentifierFormatter.format(value.fullQualifiedName());
+    public String formatTypeIdentifier(TypeIdentifier typeIdentifier) {
+        return typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
+    }
+
+    public String methodJapaneseName(MethodIdentifier methodIdentifier) {
+        return glossaryService.japaneseNameFrom(methodIdentifier).summarySentence();
     }
 }

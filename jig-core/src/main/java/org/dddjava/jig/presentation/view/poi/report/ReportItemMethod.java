@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.domain.basic.ReportContext;
 import org.dddjava.jig.domain.basic.ReportItemFor;
+import org.dddjava.jig.presentation.view.poi.report.handler.Handlers;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -33,10 +33,14 @@ class ReportItemMethod implements Comparable<ReportItemMethod>, ItemConverter {
 
     @Override
     public String convert(Object angle) {
+        Handlers handlers = new Handlers(convertContext);
         try {
             Object item = itemMethod.invoke(angle);
-            ReportContext reportContext = new ReportContext(item, convertContext);
-            return reportItemFor.value().convert(reportContext);
+
+            return handlers.handle(reportItemFor.value(), item);
+
+            // ReportContext reportContext = new ReportContext(item, convertContext);
+            // return reportItemFor.value().convert(reportContext);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("実装ミス");
         }

@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
@@ -25,6 +26,7 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.poi.*;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
+import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -157,7 +159,7 @@ public class ClassListController {
 
     Report<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new DecisionReport(decisionAngles).toReport(layer);
+        return new Reporter<DecisionAngle>(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer)).toReport();
     }
 
     Report<?> booleanReport(ProjectData projectData) {

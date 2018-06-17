@@ -50,7 +50,7 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
             }
         }
 
-        RelationText valuesRelationText = new RelationText("edge [arrowhead=none];");
+        RelationText valuesRelationText = new RelationText("edge [arrowhead=none,style=dotted];");
         for (CategoryAngle categoryAngle : categoryAngles.list()) {
             // enumの定数列挙へのリンク
             valuesRelationText.add(categoryAngle.typeIdentifier(), categoryAngle.typeIdentifier().fullQualifiedName() + "_values");

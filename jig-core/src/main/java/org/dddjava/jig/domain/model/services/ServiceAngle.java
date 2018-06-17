@@ -1,11 +1,14 @@
 package org.dddjava.jig.domain.model.services;
 
+import org.dddjava.jig.domain.basic.ReportItem;
+import org.dddjava.jig.domain.basic.ReportItemFor;
 import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 
 /**
  * サービスの切り口
@@ -28,21 +31,35 @@ public class ServiceAngle {
         this.methodCharacteristics = methodCharacteristics;
     }
 
+    @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
+    public TypeIdentifier declaringType() {
+        return methodDeclaration.declaringType();
+    }
+
+    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッド和名)
+    @ReportItemFor(ReportItem.メソッド戻り値の型)
+    @ReportItemFor(ReportItem.メソッド戻り値の型の和名)
+    @ReportItemFor(ReportItem.メソッド引数の型の和名)
     public MethodDeclaration method() {
         return methodDeclaration;
     }
 
-    public TypeIdentifiers usingFields() {
-        return usingFieldTypeIdentifiers;
-    }
-
-    public MethodDeclarations usingRepositoryMethods() {
-        return usingRepositoryMethods;
-    }
-
+    @ReportItemFor(ReportItem.イベントハンドラ)
     public boolean usingFromController() {
         // TODO MethodCharacteristic.HANDLERで判別させたい
         return userCharacteristics.has(Characteristic.CONTROLLER);
+    }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "使用しているフィールドの型", order = 1)
+    public String usingFields() {
+        return usingFieldTypeIdentifiers.asSimpleText();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "使用しているリポジトリのメソッド", order = 2)
+    public String usingRepositoryMethods() {
+        return usingRepositoryMethods.asSimpleText();
     }
 
     public MethodDeclarations userServiceMethods() {

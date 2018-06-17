@@ -14,11 +14,10 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -26,7 +25,6 @@ import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.poi.DatasourceReport;
-import org.dddjava.jig.presentation.view.poi.ServiceReport;
 import org.dddjava.jig.presentation.view.poi.StringComparingReport;
 import org.dddjava.jig.presentation.view.poi.ValueReport;
 import org.dddjava.jig.presentation.view.poi.report.Report;
@@ -38,7 +36,6 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Controller
@@ -102,12 +99,7 @@ public class ClassListController {
 
     Report<?> serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        List<ServiceReport.Row> list = serviceAngles.list().stream().map(angle -> {
-            Function<TypeIdentifier, JapaneseName> japaneseNameResolver = glossaryService::japaneseNameFrom;
-            Function<MethodIdentifier, JapaneseName> methodJapaneseNameResolver = glossaryService::japaneseNameFrom;
-            return new ServiceReport.Row(angle, japaneseNameResolver, methodJapaneseNameResolver, typeIdentifierFormatter);
-        }).collect(Collectors.toList());
-        return new ServiceReport(list).toReport();
+        return new Reporter<>("SERVICE", ServiceAngle.class, serviceAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> datasourceReport(ProjectData projectData) {

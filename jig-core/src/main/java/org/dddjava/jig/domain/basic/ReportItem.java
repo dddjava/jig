@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.basic;
 
-import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodNumber;
+import org.dddjava.jig.domain.model.declaration.method.*;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
@@ -20,6 +17,19 @@ public enum ReportItem {
             return obj.value(MethodDeclaration.class).asSignatureSimpleText();
         }
     },
+    メソッド戻り値の型 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(MethodDeclaration.class).returnType().asSimpleText();
+        }
+    },
+
+    イベントハンドラ {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(Boolean.class) ? "◯" : "";
+        }
+    },
 
     クラス和名 {
         @Override
@@ -31,6 +41,20 @@ public enum ReportItem {
         @Override
         public String convert(ReportContext obj) {
             return obj.methodJapaneseName(obj.value(MethodDeclaration.class).identifier());
+        }
+    },
+    メソッド戻り値の型の和名 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.typeJapaneseName(obj.value(MethodDeclaration.class).returnType());
+        }
+    },
+    メソッド引数の型の和名 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(MethodDeclaration.class).methodSignature().arguments().stream()
+                    .map(obj::typeJapaneseName)
+                    .collect(Text.collectionCollector());
         }
     },
 
@@ -77,7 +101,7 @@ public enum ReportItem {
     汎用真偽値 {
         @Override
         public String convert(ReportContext obj) {
-            return obj.value(boolean.class) ? "◯" : "";
+            return obj.value(Boolean.class) ? "◯" : "";
         }
     };
 

@@ -58,7 +58,7 @@ public class ServiceAngleTest {
                         serviceAngle -> serviceAngle.method().asSignatureSimpleText(),
                         serviceAngle -> serviceAngle.method().returnType(),
                         ServiceAngle::usingFromController,
-                        serviceAngle -> serviceAngle.usingRepositoryMethods().asSimpleText()
+                        serviceAngle -> serviceAngle.usingRepositoryMethods()
                 ).contains(
                 tuple(
                         new TypeIdentifier(CanonicalService.class),

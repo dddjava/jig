@@ -1,9 +1,9 @@
 package org.dddjava.jig.presentation.view.poi.report.handler;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
+import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 public class MethodDeclarationHandler implements ItemHandler {
@@ -23,6 +23,9 @@ public class MethodDeclarationHandler implements ItemHandler {
     public String handle(ReportItem item, Object obj) {
         MethodDeclaration methodDeclaration = (MethodDeclaration) obj;
         switch (item) {
+            case クラス名:
+            case クラス和名:
+                return new TypeIdentifierHandler(convertContext).handle(item, methodDeclaration.declaringType());
             case メソッド名:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド和名:
@@ -38,6 +41,6 @@ public class MethodDeclarationHandler implements ItemHandler {
                         .collect(Text.collectionCollector());
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

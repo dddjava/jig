@@ -24,6 +24,6 @@ public class StringHandler implements ItemHandler {
                 return str;
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

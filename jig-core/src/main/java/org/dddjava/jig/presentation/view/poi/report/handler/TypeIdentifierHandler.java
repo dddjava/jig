@@ -27,6 +27,6 @@ public class TypeIdentifierHandler implements ItemHandler {
                 return convertContext.glossaryService.japaneseNameFrom(typeIdentifier).summarySentence();
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

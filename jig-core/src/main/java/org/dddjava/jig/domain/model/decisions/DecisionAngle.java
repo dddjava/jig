@@ -1,14 +1,11 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.Method;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * 判断の切り口
@@ -24,18 +21,10 @@ public class DecisionAngle {
     }
 
     @ReportItemFor(ReportItem.クラス名)
-    public TypeIdentifier typeIdentifier() {
-        return method.declaration().declaringType();
-    }
-
     @ReportItemFor(ReportItem.メソッド名)
-    public MethodDeclaration methodDeclaration() {
-        return method.declaration();
-    }
-
     @ReportItemFor(ReportItem.分岐数)
-    public DecisionNumber decisionNumber() {
-        return method.decisionNumber();
+    public Method method() {
+        return method;
     }
 
     public Layer typeLayer() {

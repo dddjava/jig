@@ -1,9 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.handler;
 
 import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.basic.UserNumber;
-import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.declaration.method.MethodNumber;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 import java.util.Arrays;
@@ -21,41 +18,7 @@ public class Handlers {
                 new MethodHandler(convertContext),
                 new StringHandler(convertContext),
                 new TypeIdentifierHandler(convertContext),
-                new TypeIdentifiersHandler(convertContext),
-                // 移行用
-                new ItemHandler() {
-                    @Override
-                    public boolean canHandle(Object obj) {
-                        return obj instanceof DecisionNumber;
-                    }
-
-                    @Override
-                    public String handle(ReportItem item, Object obj) {
-                        return ((DecisionNumber) obj).asText();
-                    }
-                },
-                new ItemHandler() {
-                    @Override
-                    public boolean canHandle(Object obj) {
-                        return obj instanceof UserNumber;
-                    }
-
-                    @Override
-                    public String handle(ReportItem item, Object obj) {
-                        return ((UserNumber) obj).asText();
-                    }
-                },
-                new ItemHandler() {
-                    @Override
-                    public boolean canHandle(Object obj) {
-                        return obj instanceof MethodNumber;
-                    }
-
-                    @Override
-                    public String handle(ReportItem item, Object obj) {
-                        return ((MethodNumber) obj).asText();
-                    }
-                }
+                new TypeIdentifiersHandler(convertContext)
         );
     }
 

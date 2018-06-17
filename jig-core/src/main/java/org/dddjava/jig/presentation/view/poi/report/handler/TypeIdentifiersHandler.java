@@ -30,6 +30,6 @@ public class TypeIdentifiersHandler implements ItemHandler {
                 return typeIdentifiers.asSimpleText();
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

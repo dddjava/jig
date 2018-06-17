@@ -25,6 +25,6 @@ public class BooleanHandler implements ItemHandler {
                 return aBoolean ? "◯" : "";
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

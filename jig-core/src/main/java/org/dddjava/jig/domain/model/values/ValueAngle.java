@@ -1,11 +1,10 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
-import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * 値の切り口
@@ -36,13 +35,9 @@ public class ValueAngle {
         return typeIdentifier;
     }
 
+    @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return userTypeIdentifiers;
-    }
-
-    @ReportItemFor(ReportItem.使用箇所数)
-    public UserNumber userNumber() {
-        return new UserNumber(userTypeIdentifiers().list().size());
     }
 }

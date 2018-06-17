@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.categories;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
-import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
@@ -11,6 +8,8 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * 区分の切り口
@@ -67,10 +66,6 @@ public class CategoryAngle {
     }
 
     @ReportItemFor(value = ReportItem.使用箇所数, order = 3)
-    public UserNumber userNumber() {
-        return new UserNumber(userTypeIdentifiers.list().size());
-    }
-
     @ReportItemFor(value = ReportItem.使用箇所, order = 4)
     public TypeIdentifiers userTypeIdentifiers() {
         return userTypeIdentifiers;

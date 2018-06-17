@@ -21,6 +21,8 @@ public class MethodHandler implements ItemHandler {
     public String handle(ReportItem item, Object obj) {
         Method method = (Method) obj;
         switch (item) {
+            case クラス名:
+            case クラス和名:
             case メソッド名:
             case メソッド和名:
             case メソッド戻り値の型:
@@ -31,6 +33,6 @@ public class MethodHandler implements ItemHandler {
                 return method.decisionNumber().asText();
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

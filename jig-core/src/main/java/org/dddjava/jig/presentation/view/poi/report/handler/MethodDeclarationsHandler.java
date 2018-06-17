@@ -27,6 +27,6 @@ public class MethodDeclarationsHandler implements ItemHandler {
                 return methodDeclarations.asSignatureAndReturnTypeSimpleText();
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(item.name());
     }
 }

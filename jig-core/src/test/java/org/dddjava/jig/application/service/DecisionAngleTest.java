@@ -47,15 +47,15 @@ public class DecisionAngleTest {
         DecisionAngles decisionAngles = angleService.decision(projectData);
 
         assertThat(decisionAngles.filter(Layer.APPLICATION))
-                .extracting(decisionAngle -> decisionAngle.methodDeclaration().asFullNameText())
+                .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())
                 .contains("stub.application.service.DecisionService.分岐のあるメソッド(java.lang.Object)");
 
         assertThat(decisionAngles.filter(Layer.DATASOURCE))
-                .extracting(decisionAngle -> decisionAngle.methodDeclaration().asFullNameText())
+                .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())
                 .contains("stub.infrastructure.datasource.DecisionDatasource.分岐のあるメソッド(java.lang.Object)");
 
         assertThat(decisionAngles.filter(Layer.PRESENTATION))
-                .extracting(decisionAngle -> decisionAngle.methodDeclaration().asFullNameText())
+                .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())
                 .contains("stub.presentation.controller.DecisionController.分岐のあるメソッド(java.lang.Object)");
     }
 }

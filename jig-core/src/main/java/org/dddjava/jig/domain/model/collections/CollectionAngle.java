@@ -1,15 +1,13 @@
 package org.dddjava.jig.domain.model.collections;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
-import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodNumber;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * コレクションの切り口
@@ -42,20 +40,12 @@ public class CollectionAngle {
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
-    public UserNumber userNumber() {
-        return new UserNumber(userTypeIdentifiers().list().size());
-    }
-
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return userTypeIdentifiers;
     }
 
     @ReportItemFor(ReportItem.メソッド数)
-    public MethodNumber methodNumber() {
-        return methods.number();
-    }
-
     @ReportItemFor(ReportItem.メソッド一覧)
     public MethodDeclarations methods() {
         return methods;

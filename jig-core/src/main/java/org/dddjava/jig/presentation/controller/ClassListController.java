@@ -5,6 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
@@ -131,11 +132,7 @@ public class ClassListController {
 
     Report<?> collectionReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
-        List<CollectionReport.Row> list = collectionAngles.list().stream().map(enumAngle -> {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new CollectionReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
-        }).collect(Collectors.toList());
-        return new CollectionReport(list).toReport();
+        return new Reporter<>("COLLECTION", CollectionAngle.class, collectionAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> categoryReport(ProjectData projectData) {
@@ -159,7 +156,7 @@ public class ClassListController {
 
     Report<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new Reporter<DecisionAngle>(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer)).toReport();
+        return new Reporter<>(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer)).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> booleanReport(ProjectData projectData) {

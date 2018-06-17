@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.collections;
 
+import org.dddjava.jig.domain.basic.ReportItem;
+import org.dddjava.jig.domain.basic.ReportItemFor;
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -33,23 +35,30 @@ public class CollectionAngle {
         this.methods = methods.declarations().filterDeclareTypeIs(typeIdentifier);
     }
 
+    @ReportItemFor(item = ReportItem.クラス名, order = 1)
+    @ReportItemFor(item = ReportItem.クラス和名, order = 2)
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
-    public TypeIdentifiers userTypeIdentifiers() {
-        return userTypeIdentifiers;
-    }
-
+    @ReportItemFor(item = ReportItem.使用箇所数, order = 3)
     public UserNumber userNumber() {
         return new UserNumber(userTypeIdentifiers().list().size());
     }
 
+    @ReportItemFor(item = ReportItem.使用箇所, order = 4)
+    public TypeIdentifiers userTypeIdentifiers() {
+        return userTypeIdentifiers;
+    }
+
+    @ReportItemFor(item = ReportItem.メソッド数, order = 5)
     public MethodNumber methodNumber() {
         return methods.number();
     }
 
+    @ReportItemFor(item = ReportItem.メソッド一覧, order = 6)
     public MethodDeclarations methods() {
         return methods;
     }
+
 }

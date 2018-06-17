@@ -3,30 +3,30 @@ package org.dddjava.jig.presentation.view.poi.report;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Report<ROW> {
+public class Report {
 
-    ConvertibleItem<ROW>[] convertibleItems;
+    ItemConverter[] itemConverters;
 
     String title;
-    List<ROW> rows;
+    List<?> rows;
 
-    public Report(String title, List<ROW> rows, ConvertibleItem<ROW>[] values) {
+    public Report(String title, List<?> rows, ItemConverter[] values) {
         this.title = title;
-        this.convertibleItems = values;
+        this.itemConverters = values;
         this.rows = rows;
     }
 
-    public Title title() {
-        return new Title(title);
+    public String title() {
+        return title;
     }
 
     public ReportRow headerRow() {
-        return ReportRow.of(convertibleItems, ConvertibleItem::name);
+        return ReportRow.of(itemConverters, ItemConverter::name);
     }
 
     public List<ReportRow> rows() {
         return rows.stream()
-                .map(row -> ReportRow.of(convertibleItems, converter -> converter.convert(row)))
+                .map(row -> ReportRow.of(itemConverters, converter -> converter.convert(row)))
                 .collect(Collectors.toList());
     }
 }

@@ -17,7 +17,7 @@ public class ReportRow {
         return list;
     }
 
-    public static <ROW> ReportRow of(ConvertibleItem<ROW>[] items, Function<ConvertibleItem<ROW>, String> itemToString) {
+    public static ReportRow of(ItemConverter[] items, Function<ItemConverter, String> itemToString) {
         return new ReportRow(Arrays.stream(items).map(itemToString).collect(Collectors.toList()));
     }
 }

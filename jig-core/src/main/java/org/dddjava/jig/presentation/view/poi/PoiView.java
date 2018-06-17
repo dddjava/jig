@@ -12,8 +12,8 @@ import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.ReportRow;
-import org.dddjava.jig.presentation.view.poi.report.Reporters;
 import org.dddjava.jig.presentation.view.poi.report.Reporter;
+import org.dddjava.jig.presentation.view.poi.report.Reporters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +36,11 @@ public class PoiView implements JigView<Reporters> {
     public void render(Reporters reporters, JigDocumentLocation jigDocumentLocation) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             StringJoiner debugText = new StringJoiner("\n");
-            List<Reporter<?>> list = reporters.list();
-            for (Reporter<?> reporter : list) {
-                Report<?> report = reporter.toReport(glossaryService, typeIdentifierFormatter);
+            List<Reporter> list = reporters.list();
+            for (Reporter reporter : list) {
+                Report report = reporter.toReport(glossaryService, typeIdentifierFormatter);
 
-                Sheet sheet = book.createSheet(report.title().value());
+                Sheet sheet = book.createSheet(report.title());
                 writeRow(report.headerRow(), sheet.createRow(0));
                 debugText.add(sheet.getSheetName());
                 debugText.add(report.headerRow().list().toString());

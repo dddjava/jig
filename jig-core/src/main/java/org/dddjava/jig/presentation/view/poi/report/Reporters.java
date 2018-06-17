@@ -4,13 +4,13 @@ import java.util.List;
 
 public class Reporters {
 
-    List<Reporter<?>> list;
+    List<Reporter> list;
 
-    public Reporters(List<Reporter<?>> list) {
+    public Reporters(List<Reporter> list) {
         this.list = list;
     }
 
-    public List<Reporter<?>> list() {
+    public List<Reporter> list() {
         return list;
     }
 }

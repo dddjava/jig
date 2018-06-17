@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-public interface ConvertibleItem<T> {
+public interface ItemConverter {
 
     String name();
 
-    String convert(T row);
+    String convert(Object item);
 }

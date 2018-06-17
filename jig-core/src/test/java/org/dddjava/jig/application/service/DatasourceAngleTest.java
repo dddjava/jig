@@ -54,10 +54,10 @@ public class DatasourceAngleTest {
                         datasourceAngle -> datasourceAngle.method().declaringType(),
                         datasourceAngle -> datasourceAngle.method().asSignatureSimpleText(),
                         datasourceAngle -> datasourceAngle.method().returnType(),
-                        datasourceAngle -> datasourceAngle.insertTables().asText(),
-                        datasourceAngle -> datasourceAngle.selectTables().asText(),
-                        datasourceAngle -> datasourceAngle.updateTables().asText(),
-                        datasourceAngle -> datasourceAngle.deleteTables().asText()
+                        datasourceAngle -> datasourceAngle.insertTables(),
+                        datasourceAngle -> datasourceAngle.selectTables(),
+                        datasourceAngle -> datasourceAngle.updateTables(),
+                        datasourceAngle -> datasourceAngle.deleteTables()
                 ).contains(
                 tuple(
                         new TypeIdentifier(FugaRepository.class),

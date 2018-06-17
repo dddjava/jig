@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -24,7 +25,6 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.poi.DatasourceReport;
 import org.dddjava.jig.presentation.view.poi.StringComparingReport;
 import org.dddjava.jig.presentation.view.poi.ValueReport;
 import org.dddjava.jig.presentation.view.poi.report.Report;
@@ -104,11 +104,7 @@ public class ClassListController {
 
     Report<?> datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
-        List<DatasourceReport.Row> list = datasourceAngles.list().stream().map(angle -> {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(angle.method().declaringType());
-            return new DatasourceReport.Row(angle, japaneseName, typeIdentifierFormatter);
-        }).collect(Collectors.toList());
-        return new DatasourceReport(list).toReport();
+        return new Reporter<>("REPOSITORY", DatasourceAngle.class, datasourceAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> stringComparingReport(ProjectData projectData) {

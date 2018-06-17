@@ -1,13 +1,14 @@
 package org.dddjava.jig.domain.model.datasources;
 
+import org.dddjava.jig.domain.basic.ReportItem;
+import org.dddjava.jig.domain.basic.ReportItemFor;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.datasource.Tables;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 
 /**
  * データソースの切り口
@@ -36,27 +37,35 @@ public class DatasourceAngle {
         return new DatasourceAngle(methodDeclaration, sqls);
     }
 
+    @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
+    public TypeIdentifier declaringType() {
+        return methodDeclaration.declaringType();
+    }
+
+    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッド戻り値の型)
     public MethodDeclaration method() {
         return methodDeclaration;
     }
 
-    public TypeIdentifier returnType() {
-        return methodDeclaration.returnType();
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "INSERT", order = 1)
+    public String insertTables() {
+        return sqls.tables(SqlType.INSERT).asText();
     }
 
-    public Tables deleteTables() {
-        return sqls.tables(SqlType.DELETE);
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "SELECT", order = 2)
+    public String selectTables() {
+        return sqls.tables(SqlType.SELECT).asText();
     }
 
-    public Tables updateTables() {
-        return sqls.tables(SqlType.UPDATE);
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "UPDATE", order = 3)
+    public String updateTables() {
+        return sqls.tables(SqlType.UPDATE).asText();
     }
 
-    public Tables selectTables() {
-        return sqls.tables(SqlType.SELECT);
-    }
-
-    public Tables insertTables() {
-        return sqls.tables(SqlType.INSERT);
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "DELETE", order = 4)
+    public String deleteTables() {
+        return sqls.tables(SqlType.DELETE).asText();
     }
 }

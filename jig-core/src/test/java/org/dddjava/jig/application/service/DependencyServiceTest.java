@@ -43,8 +43,6 @@ public class DependencyServiceTest {
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()
                 .map(packageIdentifier -> packageIdentifier.format(value -> value))
-                // TODO 重複して入ってるけどどうしよう
-                .distinct()
                 .collect(Collectors.toList());
         assertThat(packageNames)
                 .containsExactlyInAnyOrder(

@@ -50,7 +50,10 @@ public class TypeIdentifiers {
     }
 
     public PackageIdentifiers packageIdentifiers() {
-        List<PackageIdentifier> availablePackages = identifiers.stream().map(TypeIdentifier::packageIdentifier).collect(Collectors.toList());
+        List<PackageIdentifier> availablePackages = identifiers.stream()
+                .map(TypeIdentifier::packageIdentifier)
+                .distinct()
+                .collect(Collectors.toList());
         return new PackageIdentifiers(availablePackages);
     }
 }

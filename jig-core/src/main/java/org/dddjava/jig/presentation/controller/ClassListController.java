@@ -10,10 +10,7 @@ import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.decisions.DecisionAngle;
-import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.decisions.Layer;
-import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
+import org.dddjava.jig.domain.model.decisions.*;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -25,7 +22,6 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.poi.StringComparingReport;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
@@ -107,8 +103,8 @@ public class ClassListController {
     }
 
     Report<?> stringComparingReport(ProjectData projectData) {
-        StringComparingAngle stringComparingAngle = angleService.stringComparing(projectData);
-        return new StringComparingReport(stringComparingAngle).toReport();
+        StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
+        return new Reporter<>("文字列比較箇所", StringComparingAngle.class, stringComparingAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> valueObjectReport(ValueKind valueKind, ProjectData projectData) {

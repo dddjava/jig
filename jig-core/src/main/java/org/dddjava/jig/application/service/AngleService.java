@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
@@ -91,8 +91,8 @@ public class AngleService {
     /**
      * 文字列比較を分析する
      */
-    public StringComparingAngle stringComparing(ProjectData projectData) {
-        return StringComparingAngle.of(projectData.methodRelations());
+    public StringComparingAngles stringComparing(ProjectData projectData) {
+        return StringComparingAngles.of(projectData.methodRelations());
     }
 
     /**

@@ -37,7 +37,8 @@ public class CategoryAngle {
         TypeIdentifiers userTypeIdentifiers = allTypeDependencies.stream()
                 .filterTo(typeIdentifier)
                 .removeSelf()
-                .fromTypeIdentifiers();
+                .fromTypeIdentifiers()
+                .normalize();
         StaticFieldDeclarations constantsDeclarations = allStaticFieldDeclarations
                 .filterDeclareTypeIs(typeIdentifier);
         FieldDeclarations fieldDeclarations = allFieldDeclarations

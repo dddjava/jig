@@ -56,4 +56,8 @@ public class TypeIdentifiers {
                 .collect(Collectors.toList());
         return new PackageIdentifiers(availablePackages);
     }
+
+    public TypeIdentifiers normalize() {
+        return identifiers.stream().map(TypeIdentifier::normalize).distinct().collect(collector());
+    }
 }

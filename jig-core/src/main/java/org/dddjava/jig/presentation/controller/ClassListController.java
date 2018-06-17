@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
@@ -16,6 +17,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -68,7 +70,8 @@ public class ClassListController {
                 valueObjectReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
-                booleanReport(projectData)
+                booleanReport(projectData),
+                smellReport(projectData)
         );
 
         return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
@@ -131,5 +134,14 @@ public class ClassListController {
     AngleReporter booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
         return new AngleReporter("真偽値を返すメソッド", BoolQueryAngle.class, angles.list());
+    }
+
+    AngleReporter smellReport(ProjectData projectData) {
+        List<MethodSmellAngle> list = projectData.methods().list().stream()
+                .filter(method -> projectData.characterizedTypes().stream().pickup(method.declaration().declaringType()).has(Characteristic.MODEL))
+                .map(method -> new MethodSmellAngle(method, projectData.methodUsingFields()))
+                .filter(MethodSmellAngle::hasSmell)
+                .collect(Collectors.toList());
+        return new AngleReporter("注意メソッド", MethodSmellAngle.class, list);
     }
 }

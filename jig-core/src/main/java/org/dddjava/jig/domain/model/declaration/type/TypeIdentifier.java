@@ -76,4 +76,18 @@ public class TypeIdentifier {
         Class<?>[] booleanTypes = {Boolean.class, boolean.class};
         return Arrays.stream(booleanTypes).anyMatch(clazz -> clazz.getName().equals(value));
     }
+
+    public boolean isPrimitive() {
+        switch (value) {
+            case "int":
+            case "long":
+            case "boolean":
+            case "double":
+            case "float":
+            case "byte":
+            case "char":
+                return true;
+        }
+        return false;
+    }
 }

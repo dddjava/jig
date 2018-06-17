@@ -1,14 +1,12 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
-
 import java.util.List;
 
-public class Reports {
+public class Reporters {
 
     List<Reporter<?>> list;
 
-    public Reports(List<Reporter<?>> list) {
+    public Reporters(List<Reporter<?>> list) {
         this.list = list;
     }
 

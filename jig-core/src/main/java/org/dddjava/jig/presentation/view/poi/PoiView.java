@@ -12,8 +12,8 @@ import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.ReportRow;
-import org.dddjava.jig.presentation.view.poi.report.Reports;
-import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
+import org.dddjava.jig.presentation.view.poi.report.Reporters;
+import org.dddjava.jig.presentation.view.poi.report.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class PoiView implements JigView<Reports> {
+public class PoiView implements JigView<Reporters> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PoiView.class);
     private final GlossaryService glossaryService;
@@ -33,10 +33,10 @@ public class PoiView implements JigView<Reports> {
     }
 
     @Override
-    public void render(Reports reports, JigDocumentLocation jigDocumentLocation) throws IOException {
+    public void render(Reporters reporters, JigDocumentLocation jigDocumentLocation) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             StringJoiner debugText = new StringJoiner("\n");
-            List<Reporter<?>> list = reports.list();
+            List<Reporter<?>> list = reporters.list();
             for (Reporter<?> reporter : list) {
                 Report<?> report = reporter.toReport(glossaryService, typeIdentifierFormatter);
 

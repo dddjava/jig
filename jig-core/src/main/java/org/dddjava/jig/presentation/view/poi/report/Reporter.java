@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.poi.reporter;
+package org.dddjava.jig.presentation.view.poi.report;
 
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.basic.ReportContext;
@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.basic.ReportItem;
 import org.dddjava.jig.domain.basic.ReportItemFor;
 import org.dddjava.jig.domain.basic.ReportItemsFor;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.presentation.view.poi.report.ConvertibleItem;
-import org.dddjava.jig.presentation.view.poi.report.Report;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

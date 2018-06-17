@@ -22,8 +22,8 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.poi.PoiView;
-import org.dddjava.jig.presentation.view.poi.report.Reports;
-import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
+import org.dddjava.jig.presentation.view.poi.report.Reporters;
+import org.dddjava.jig.presentation.view.poi.report.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -49,19 +49,19 @@ public class ClassListController {
         this.angleService = angleService;
     }
 
-    public JigModelAndView<Reports> applicationList(ProjectData projectData) {
+    public JigModelAndView<Reporters> applicationList(ProjectData projectData) {
         LOGGER.info("入出力リストを出力します");
-        Reports reports = new Reports(Arrays.asList(
+        Reporters reporters = new Reporters(Arrays.asList(
                 serviceReport(projectData),
                 datasourceReport(projectData)
         ));
 
-        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
-    public JigModelAndView<Reports> domainList(ProjectData projectData) {
+    public JigModelAndView<Reporters> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
-        Reports reports = new Reports(Arrays.asList(
+        Reporters reporters = new Reporters(Arrays.asList(
                 valueObjectReport(ValueKind.IDENTIFIER, projectData),
                 categoryReport(projectData),
                 valueObjectReport(ValueKind.NUMBER, projectData),
@@ -73,18 +73,18 @@ public class ClassListController {
                 booleanReport(projectData)
         ));
 
-        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
-    public JigModelAndView<Reports> branchList(ProjectData projectData) {
+    public JigModelAndView<Reporters> branchList(ProjectData projectData) {
         LOGGER.info("条件分岐リストを出力します");
-        Reports reports = new Reports(Arrays.asList(
+        Reporters reporters = new Reporters(Arrays.asList(
                 decisionReport(projectData, Layer.PRESENTATION),
                 decisionReport(projectData, Layer.APPLICATION),
                 decisionReport(projectData, Layer.DATASOURCE)
         ));
 
-        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
+        return new JigModelAndView<>(reporters, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
     Reporter<?> serviceReport(ProjectData projectData) {

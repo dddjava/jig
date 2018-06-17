@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.booleans.model;
 
-import org.dddjava.jig.domain.basic.ReportItem;
-import org.dddjava.jig.domain.basic.ReportItemFor;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;

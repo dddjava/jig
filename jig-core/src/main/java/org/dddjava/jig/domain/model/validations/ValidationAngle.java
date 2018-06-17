@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.validations;
 
-import org.dddjava.jig.domain.basic.ReportItem;
-import org.dddjava.jig.domain.basic.ReportItemFor;
+import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 

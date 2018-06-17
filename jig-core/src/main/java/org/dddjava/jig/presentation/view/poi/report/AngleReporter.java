@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.domain.basic.ReportItemFor;
-import org.dddjava.jig.domain.basic.ReportItemsFor;
+import org.dddjava.jig.domain.model.report.ReportItemFor;
+import org.dddjava.jig.domain.model.report.ReportItemsFor;
 
 import java.util.Arrays;
 import java.util.List;

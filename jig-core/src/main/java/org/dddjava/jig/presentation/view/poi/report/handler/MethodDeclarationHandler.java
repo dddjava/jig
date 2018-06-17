@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.handler;
 
-import org.dddjava.jig.domain.basic.ReportItem;
+import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;

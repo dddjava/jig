@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngle;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
+import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
@@ -24,7 +25,10 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.poi.*;
+import org.dddjava.jig.presentation.view.poi.DatasourceReport;
+import org.dddjava.jig.presentation.view.poi.ServiceReport;
+import org.dddjava.jig.presentation.view.poi.StringComparingReport;
+import org.dddjava.jig.presentation.view.poi.ValueReport;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
@@ -136,11 +140,7 @@ public class ClassListController {
 
     Report<?> categoryReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
-        List<CategoryReport.Row> list = categoryAngles.list().stream().map(enumAngle -> {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new CategoryReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
-        }).collect(Collectors.toList());
-        return new CategoryReport(list).toReport();
+        return new Reporter<>("ENUM", CategoryAngle.class, categoryAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> validateAnnotationReport(ProjectData projectData) {

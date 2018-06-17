@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.Layout;
@@ -51,12 +50,12 @@ public class EnumAngleTest {
         assertThat(categoryAngles.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,
-                        categoryAngle -> categoryAngle.constantsDeclarations().toNameText(),
-                        categoryAngle -> categoryAngle.fieldDeclarations().toSignatureText(),
+                        categoryAngle -> categoryAngle.constantsDeclarations(),
+                        categoryAngle -> categoryAngle.fieldDeclarations(),
                         categoryAngle -> categoryAngle.userTypeIdentifiers().asSimpleText(),
-                        categoryAngle -> categoryAngle.characteristics().has(Characteristic.ENUM_PARAMETERIZED),
-                        categoryAngle -> categoryAngle.characteristics().has(Characteristic.ENUM_BEHAVIOUR),
-                        categoryAngle -> categoryAngle.characteristics().has(Characteristic.ENUM_POLYMORPHISM)
+                        categoryAngle -> categoryAngle.hasParameter(),
+                        categoryAngle -> categoryAngle.hasBehaviour(),
+                        categoryAngle -> categoryAngle.isPolymorphism()
                 ).contains(
                 tuple(
                         new TypeIdentifier("stub.domain.model.kind.BehaviourEnum"),

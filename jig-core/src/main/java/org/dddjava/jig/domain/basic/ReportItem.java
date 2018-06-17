@@ -72,6 +72,13 @@ public enum ReportItem {
         public String convert(ReportContext obj) {
             return obj.value(String.class);
         }
+    },
+
+    汎用真偽値 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(boolean.class) ? "◯" : "";
+        }
     };
 
     public abstract String convert(ReportContext obj);

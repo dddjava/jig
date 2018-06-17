@@ -12,7 +12,6 @@ import org.dddjava.jig.presentation.view.poi.report.Report;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -30,13 +29,22 @@ public class Reporter<T> {
 
     public Report<?> toReport(GlossaryService glossaryService, TypeIdentifierFormatter typeIdentifierFormatter) {
 
-        class ItemMethod {
+        class ItemMethod implements Comparable<ItemMethod> {
             ReportItemFor reportItemFor;
             java.lang.reflect.Method method;
 
             public ItemMethod(ReportItemFor reportItemFor, Method method) {
                 this.reportItemFor = reportItemFor;
                 this.method = method;
+            }
+
+            @Override
+            public int compareTo(ItemMethod o) {
+                int compare = Integer.compare(this.reportItemFor.order(), o.reportItemFor.order());
+                if (compare != 0) {
+                    return compare;
+                }
+                return reportItemFor.item().compareTo(o.reportItemFor.item());
             }
         }
 
@@ -51,7 +59,7 @@ public class Reporter<T> {
                     // 1つだけのはそのまま
                     return Stream.of(new ItemMethod(method.getAnnotation(ReportItemFor.class), method));
                 })
-                .sorted(Comparator.comparing(itemMethod -> itemMethod.reportItemFor.order()))
+                .sorted()
                 .map(itemMethod -> {
                     ReportItem item = itemMethod.reportItemFor.item();
                     return new ConvertibleItem() {

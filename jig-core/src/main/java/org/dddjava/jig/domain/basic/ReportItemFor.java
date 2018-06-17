@@ -9,7 +9,7 @@ public @interface ReportItemFor {
 
     ReportItem item();
 
-    int order();
+    int order() default 0;
 
     String label() default "";
 }

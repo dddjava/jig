@@ -14,16 +14,17 @@ public enum ReportItem {
             return obj.formatTypeIdentifier(obj.value(TypeIdentifier.class));
         }
     },
-    クラス和名 {
-        @Override
-        public String convert(ReportContext obj) {
-            return obj.typeJapaneseName(obj.value(TypeIdentifier.class));
-        }
-    },
     メソッド名 {
         @Override
         public String convert(ReportContext obj) {
             return obj.value(MethodDeclaration.class).asSignatureSimpleText();
+        }
+    },
+
+    クラス和名 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.typeJapaneseName(obj.value(TypeIdentifier.class));
         }
     },
     メソッド和名 {
@@ -32,6 +33,20 @@ public enum ReportItem {
             return obj.methodJapaneseName(obj.value(MethodDeclaration.class).identifier());
         }
     },
+
+    使用箇所数 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(UserNumber.class).asText();
+        }
+    },
+    使用箇所 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(TypeIdentifiers.class).asSimpleText();
+        }
+    },
+
     メソッド数 {
         @Override
         public String convert(ReportContext obj) {
@@ -44,24 +59,14 @@ public enum ReportItem {
             return obj.value(MethodDeclarations.class).asSignatureAndReturnTypeSimpleText();
         }
     },
+
     分岐数 {
         @Override
         public String convert(ReportContext obj) {
             return obj.value(DecisionNumber.class).asText();
         }
     },
-    使用箇所 {
-        @Override
-        public String convert(ReportContext obj) {
-            return obj.value(TypeIdentifiers.class).asSimpleText();
-        }
-    },
-    使用箇所数 {
-        @Override
-        public String convert(ReportContext obj) {
-            return obj.value(UserNumber.class).asText();
-        }
-    },
+
     汎用文字列 {
         @Override
         public String convert(ReportContext obj) {

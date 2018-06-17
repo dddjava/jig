@@ -6,25 +6,40 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.ReportRow;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
+import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.StringJoiner;
 
 public class PoiView implements JigView<Reports> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PoiView.class);
+    private final GlossaryService glossaryService;
+    private final TypeIdentifierFormatter typeIdentifierFormatter;
+
+    public PoiView(GlossaryService glossaryService, TypeIdentifierFormatter typeIdentifierFormatter) {
+        this.glossaryService = glossaryService;
+        this.typeIdentifierFormatter = typeIdentifierFormatter;
+    }
 
     @Override
     public void render(Reports reports, JigDocumentLocation jigDocumentLocation) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             StringJoiner debugText = new StringJoiner("\n");
-            reports.each(report -> {
+            List<Reporter<?>> list = reports.list();
+            for (Reporter<?> reporter : list) {
+                Report<?> report = reporter.toReport(glossaryService, typeIdentifierFormatter);
+
                 Sheet sheet = book.createSheet(report.title().value());
                 writeRow(report.headerRow(), sheet.createRow(0));
                 debugText.add(sheet.getSheetName());
@@ -42,7 +57,7 @@ public class PoiView implements JigView<Reports> {
                         0, sheet.getLastRowNum(),
                         0, sheet.getRow(0).getLastCellNum() - 1
                 ));
-            });
+            }
 
             jigDocumentLocation.writeDocument(book::write);
             jigDocumentLocation.writeDebugText(debugText.toString());

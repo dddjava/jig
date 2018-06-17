@@ -45,7 +45,6 @@ public class Dependencies {
 
     ClassListController classListController(String outputOmitPrefix) {
         return new ClassListController(
-                jigViewResolver(outputOmitPrefix),
                 new PrefixRemoveIdentifierFormatter(outputOmitPrefix),
                 glossaryService(),
                 angleService()

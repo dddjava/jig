@@ -21,8 +21,7 @@ import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
-import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.poi.report.Report;
+import org.dddjava.jig.presentation.view.poi.PoiView;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
 import org.slf4j.Logger;
@@ -38,17 +37,13 @@ public class ClassListController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassListController.class);
 
-    ViewResolver viewResolver;
-
     TypeIdentifierFormatter typeIdentifierFormatter;
     GlossaryService glossaryService;
     AngleService angleService;
 
-    public ClassListController(ViewResolver viewResolver,
-                               TypeIdentifierFormatter typeIdentifierFormatter,
+    public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
                                GlossaryService glossaryService,
                                AngleService angleService) {
-        this.viewResolver = viewResolver;
         this.typeIdentifierFormatter = typeIdentifierFormatter;
         this.glossaryService = glossaryService;
         this.angleService = angleService;
@@ -61,7 +56,7 @@ public class ClassListController {
                 datasourceReport(projectData)
         ));
 
-        return new JigModelAndView<>(reports, viewResolver.applicationList());
+        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
     public JigModelAndView<Reports> domainList(ProjectData projectData) {
@@ -78,7 +73,7 @@ public class ClassListController {
                 booleanReport(projectData)
         ));
 
-        return new JigModelAndView<>(reports, viewResolver.domainList());
+        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
     public JigModelAndView<Reports> branchList(ProjectData projectData) {
@@ -89,54 +84,54 @@ public class ClassListController {
                 decisionReport(projectData, Layer.DATASOURCE)
         ));
 
-        return new JigModelAndView<>(reports, viewResolver.branchList());
+        return new JigModelAndView<>(reports, new PoiView(glossaryService, typeIdentifierFormatter));
     }
 
-    Report<?> serviceReport(ProjectData projectData) {
+    Reporter<?> serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        return new Reporter<>("SERVICE", ServiceAngle.class, serviceAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("SERVICE", ServiceAngle.class, serviceAngles.list());
     }
 
-    Report<?> datasourceReport(ProjectData projectData) {
+    Reporter<?> datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
-        return new Reporter<>("REPOSITORY", DatasourceAngle.class, datasourceAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("REPOSITORY", DatasourceAngle.class, datasourceAngles.list());
     }
 
-    Report<?> stringComparingReport(ProjectData projectData) {
+    Reporter<?> stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
-        return new Reporter<>("文字列比較箇所", StringComparingAngle.class, stringComparingAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("文字列比較箇所", StringComparingAngle.class, stringComparingAngles.list());
     }
 
-    Report<?> valueObjectReport(ValueKind valueKind, ProjectData projectData) {
+    Reporter<?> valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        return new Reporter<>(valueKind.name(), ValueAngle.class, valueAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>(valueKind.name(), ValueAngle.class, valueAngles.list());
     }
 
-    Report<?> collectionReport(ProjectData projectData) {
+    Reporter<?> collectionReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
-        return new Reporter<>("COLLECTION", CollectionAngle.class, collectionAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("COLLECTION", CollectionAngle.class, collectionAngles.list());
     }
 
-    Report<?> categoryReport(ProjectData projectData) {
+    Reporter<?> categoryReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
-        return new Reporter<>("ENUM", CategoryAngle.class, categoryAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("ENUM", CategoryAngle.class, categoryAngles.list());
     }
 
-    Report<?> validateAnnotationReport(ProjectData projectData) {
+    Reporter<?> validateAnnotationReport(ProjectData projectData) {
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());
-        return new Reporter<>("VALIDATION", ValidationAngle.class, list).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("VALIDATION", ValidationAngle.class, list);
     }
 
-    Report<?> decisionReport(ProjectData projectData, Layer layer) {
+    Reporter<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new Reporter<>(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer)).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer));
     }
 
-    Report<?> booleanReport(ProjectData projectData) {
+    Reporter<?> booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-        return new Reporter<>("真偽値を返すメソッド", BoolQueryAngle.class, angles.list()).toReport(glossaryService, typeIdentifierFormatter);
+        return new Reporter<>("真偽値を返すメソッド", BoolQueryAngle.class, angles.list());
     }
 }

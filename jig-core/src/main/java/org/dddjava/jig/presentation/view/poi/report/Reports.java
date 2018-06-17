@@ -1,17 +1,18 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
+
 import java.util.List;
-import java.util.function.Consumer;
 
 public class Reports {
 
-    List<Report<?>> list;
+    List<Reporter<?>> list;
 
-    public Reports(List<Report<?>> list) {
+    public Reports(List<Reporter<?>> list) {
         this.list = list;
     }
 
-    public void each(Consumer<Report<?>> consumer) {
-        list.forEach(consumer);
+    public List<Reporter<?>> list() {
+        return list;
     }
 }

@@ -17,16 +17,15 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
+import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.poi.StringComparingReport;
-import org.dddjava.jig.presentation.view.poi.ValueReport;
 import org.dddjava.jig.presentation.view.poi.report.Report;
 import org.dddjava.jig.presentation.view.poi.report.Reports;
 import org.dddjava.jig.presentation.view.poi.reporter.Reporter;
@@ -114,11 +113,7 @@ public class ClassListController {
 
     Report<?> valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        List<ValueReport.Row> list = valueAngles.list().stream().map(enumAngle -> {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(enumAngle.typeIdentifier());
-            return new ValueReport.Row(enumAngle, japaneseName, typeIdentifierFormatter);
-        }).collect(Collectors.toList());
-        return new ValueReport(valueKind, list).toReport();
+        return new Reporter<>(valueKind.name(), ValueAngle.class, valueAngles.list()).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> collectionReport(ProjectData projectData) {

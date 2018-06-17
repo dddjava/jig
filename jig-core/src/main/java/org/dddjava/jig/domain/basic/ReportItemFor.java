@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 public @interface ReportItemFor {
 
-    ReportItem item();
+    ReportItem value();
 
     int order() default 0;
 

@@ -35,28 +35,28 @@ public class CollectionAngle {
         this.methods = methods.declarations().filterDeclareTypeIs(typeIdentifier);
     }
 
-    @ReportItemFor(item = ReportItem.クラス名)
-    @ReportItemFor(item = ReportItem.クラス和名)
+    @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
-    @ReportItemFor(item = ReportItem.使用箇所数)
+    @ReportItemFor(ReportItem.使用箇所数)
     public UserNumber userNumber() {
         return new UserNumber(userTypeIdentifiers().list().size());
     }
 
-    @ReportItemFor(item = ReportItem.使用箇所)
+    @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return userTypeIdentifiers;
     }
 
-    @ReportItemFor(item = ReportItem.メソッド数)
+    @ReportItemFor(ReportItem.メソッド数)
     public MethodNumber methodNumber() {
         return methods.number();
     }
 
-    @ReportItemFor(item = ReportItem.メソッド一覧)
+    @ReportItemFor(ReportItem.メソッド一覧)
     public MethodDeclarations methods() {
         return methods;
     }

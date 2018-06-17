@@ -44,7 +44,7 @@ public class Reporter<T> {
                 if (compare != 0) {
                     return compare;
                 }
-                return reportItemFor.item().compareTo(o.reportItemFor.item());
+                return reportItemFor.value().compareTo(o.reportItemFor.value());
             }
         }
 
@@ -61,7 +61,7 @@ public class Reporter<T> {
                 })
                 .sorted()
                 .map(itemMethod -> {
-                    ReportItem item = itemMethod.reportItemFor.item();
+                    ReportItem item = itemMethod.reportItemFor.value();
                     return new ConvertibleItem() {
                         @Override
                         public String name() {

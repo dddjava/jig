@@ -23,17 +23,17 @@ public class DecisionAngle {
         this.typeCharacteristics = characterizedTypes.stream().pickup(method.declaration().declaringType()).characteristics();
     }
 
-    @ReportItemFor(item = ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス名)
     public TypeIdentifier typeIdentifier() {
         return method.declaration().declaringType();
     }
 
-    @ReportItemFor(item = ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッド名)
     public MethodDeclaration methodDeclaration() {
         return method.declaration();
     }
 
-    @ReportItemFor(item = ReportItem.分岐数)
+    @ReportItemFor(ReportItem.分岐数)
     public DecisionNumber decisionNumber() {
         return method.decisionNumber();
     }

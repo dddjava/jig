@@ -13,23 +13,23 @@ public class ValidationAngle {
         this.validationAnnotatedMember = validationAnnotatedMember;
     }
 
-    @ReportItemFor(item = ReportItem.クラス名)
-    @ReportItemFor(item = ReportItem.クラス和名)
+    @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier typeIdentifier() {
         return validationAnnotatedMember.declaringType();
     }
 
-    @ReportItemFor(item = ReportItem.汎用文字列, order = 11, label = "フィールドorメソッド")
+    @ReportItemFor(value = ReportItem.汎用文字列, order = 11, label = "フィールドorメソッド")
     public String memberName() {
         return validationAnnotatedMember.asSimpleNameText();
     }
 
-    @ReportItemFor(item = ReportItem.汎用文字列, order = 12, label = "アノテーション名")
+    @ReportItemFor(value = ReportItem.汎用文字列, order = 12, label = "アノテーション名")
     public String annotationName() {
         return validationAnnotatedMember.annotationType().asSimpleText();
     }
 
-    @ReportItemFor(item = ReportItem.汎用文字列, order = 13, label = "アノテーション記述")
+    @ReportItemFor(value = ReportItem.汎用文字列, order = 13, label = "アノテーション記述")
     public String annotationDescription() {
         return validationAnnotatedMember.annotationDescription().asText();
     }

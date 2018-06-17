@@ -20,25 +20,25 @@ public class BoolQueryAngle {
         this.usages = usages;
     }
 
-    @ReportItemFor(item = ReportItem.クラス名)
-    @ReportItemFor(item = ReportItem.クラス和名)
+    @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier declaringTypeIdentifier() {
         return method.declaringType();
     }
 
-    @ReportItemFor(item = ReportItem.メソッド名)
-    @ReportItemFor(item = ReportItem.メソッド和名)
+    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッド和名)
     public MethodDeclaration method() {
         return method;
     }
 
-    @ReportItemFor(item = ReportItem.使用箇所数)
+    @ReportItemFor(ReportItem.使用箇所数)
     public UserNumber userNumber() {
         // TODO typeIdentifiersに移動？
         return new UserNumber(userTypeIdentifiers().list().size());
     }
 
-    @ReportItemFor(item = ReportItem.使用箇所)
+    @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return usages.declaringTypes();
     }

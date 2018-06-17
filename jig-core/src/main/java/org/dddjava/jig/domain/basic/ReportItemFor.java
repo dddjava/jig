@@ -10,4 +10,6 @@ public @interface ReportItemFor {
     ReportItem item();
 
     int order();
+
+    String label() default "";
 }

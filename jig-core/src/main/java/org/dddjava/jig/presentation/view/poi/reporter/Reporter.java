@@ -57,7 +57,8 @@ public class Reporter<T> {
                     return new ConvertibleItem() {
                         @Override
                         public String name() {
-                            return item.name();
+                            String label = itemMethod.reportItemFor.label();
+                            return label.isEmpty() ? item.name() : label;
                         }
 
                         @Override

@@ -61,6 +61,12 @@ public enum ReportItem {
         public String convert(ReportContext obj) {
             return obj.value(UserNumber.class).asText();
         }
+    },
+    汎用文字列 {
+        @Override
+        public String convert(ReportContext obj) {
+            return obj.value(String.class);
+        }
     };
 
     public abstract String convert(ReportContext obj);

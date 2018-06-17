@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -20,6 +19,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.validations.ValidationAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -145,13 +144,11 @@ public class ClassListController {
     }
 
     Report<?> validateAnnotationReport(ProjectData projectData) {
-        List<ValidationReport.Row> list = new ArrayList<>();
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
-        for (ValidationAnnotatedMember annotationDeclaration : validationAnnotatedMembers.list()) {
-            JapaneseName japaneseName = glossaryService.japaneseNameFrom(annotationDeclaration.declaringType());
-            list.add(new ValidationReport.Row(annotationDeclaration, japaneseName, typeIdentifierFormatter));
-        }
-        return new ValidationReport(list).toReport();
+        List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
+                .map(ValidationAngle::new)
+                .collect(Collectors.toList());
+        return new Reporter<>("VALIDATION", ValidationAngle.class, list).toReport(glossaryService, typeIdentifierFormatter);
     }
 
     Report<?> decisionReport(ProjectData projectData, Layer layer) {

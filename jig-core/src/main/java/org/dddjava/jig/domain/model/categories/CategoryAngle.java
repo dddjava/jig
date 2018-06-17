@@ -53,8 +53,12 @@ public class CategoryAngle {
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, order = 1, label = "定数宣言")
-    public String constantsDeclarations() {
+    public String constantsDeclarationsName() {
         return constantsDeclarations.toNameText();
+    }
+
+    public StaticFieldDeclarations constantsDeclarations() {
+        return constantsDeclarations;
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, order = 2, label = "フィールド")

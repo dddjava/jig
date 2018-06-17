@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
@@ -31,11 +32,28 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
                         .asText())
                 .collect(joining("\n"));
 
+        String enumValuesText = categoryAngles.list().stream()
+                .map(categoryAngle -> {
+                    String values = categoryAngle.constantsDeclarations().list().stream()
+                            .map(StaticFieldDeclaration::nameText)
+                            .collect(joining("|"));
+                    return new Node(categoryAngle.typeIdentifier().fullQualifiedName() + "_values")
+                            .label(values)
+                            .asText();
+                })
+                .collect(joining("\n"));
+
         RelationText relationText = new RelationText();
         for (CategoryAngle categoryAngle : categoryAngles.list()) {
             for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
                 relationText.add(userType, categoryAngle.typeIdentifier());
             }
+        }
+
+        RelationText valuesRelationText = new RelationText("edge [arrowhead=none];");
+        for (CategoryAngle categoryAngle : categoryAngles.list()) {
+            // enumの定数列挙へのリンク
+            valuesRelationText.add(categoryAngle.typeIdentifier(), categoryAngle.typeIdentifier().fullQualifiedName() + "_values");
         }
 
         String userLabel = categoryAngles.list().stream().flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
@@ -45,7 +63,8 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .filter(typeIdentifier -> !enumTypes.contains(typeIdentifier))
                 .map(typeIdentifier ->
                         Node.of(typeIdentifier)
-                                .label(appendJapaneseName(typeIdentifier)).asText())
+                                .label(appendJapaneseName(typeIdentifier))
+                                .asText())
                 .collect(joining("\n"));
 
         String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
@@ -61,6 +80,9 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .add(enumsText)
                 .add(relationText.asText())
                 .add(userLabel)
+                .add("node [shape=record,style=bold,color=black,fontsize=10];")
+                .add(enumValuesText)
+                .add(valuesRelationText.asText())
                 .toString();
     }
 

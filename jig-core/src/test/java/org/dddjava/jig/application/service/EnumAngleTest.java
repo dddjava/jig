@@ -50,7 +50,7 @@ public class EnumAngleTest {
         assertThat(categoryAngles.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,
-                        categoryAngle -> categoryAngle.constantsDeclarations(),
+                        categoryAngle -> categoryAngle.constantsDeclarationsName(),
                         categoryAngle -> categoryAngle.fieldDeclarations(),
                         categoryAngle -> categoryAngle.userTypeIdentifiers().asSimpleText(),
                         categoryAngle -> categoryAngle.hasParameter(),

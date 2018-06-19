@@ -1,30 +1,29 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import org.dddjava.jig.presentation.view.JigDocumentLocation;
 import org.dddjava.jig.presentation.view.JigView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GraphvizjView<T> implements JigView<T> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphvizjView.class);
-
     DotTextEditor<T> editor;
+    DiagramFormat diagramFormat;
 
-    public GraphvizjView(DotTextEditor<T> editor) {
+    public GraphvizjView(DotTextEditor<T> editor, DiagramFormat diagramFormat) {
         this.editor = editor;
+        this.diagramFormat = diagramFormat;
     }
 
     @Override
     public void render(T model, JigDocumentLocation jigDocumentLocation) {
         String graphText = editor.edit(model);
 
-        jigDocumentLocation.writeDocument(outputStream ->
-                Graphviz.fromString(graphText)
-                        .render(Format.PNG)
-                        .toOutputStream(outputStream));
+        jigDocumentLocation.writeDiagram(
+                outputStream ->
+                        Graphviz.fromString(graphText)
+                                .render(diagramFormat.graphvizjFormat())
+                                .toOutputStream(outputStream),
+                diagramFormat);
         jigDocumentLocation.writeDebugText(graphText);
     }
 }

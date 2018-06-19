@@ -52,7 +52,7 @@ public class PoiView implements JigView<AngleReporters> {
                 ));
             }
 
-            jigDocumentLocation.writeDocument(book::write);
+            jigDocumentLocation.writeXlsx(book::write);
             jigDocumentLocation.writeDebugText(debugText.toString());
         }
     }

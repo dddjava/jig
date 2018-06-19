@@ -18,6 +18,7 @@ import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
 import org.dddjava.jig.presentation.view.JigHandlerContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
+import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.gradle.api.Project;
 import org.slf4j.Logger;
@@ -81,7 +82,7 @@ public class Dependencies {
     }
 
     private ViewResolver jigViewResolver(String outputOmitPrefix) {
-        return new ViewResolver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), MethodNodeLabelStyle.SIMPLE.name());
+        return new ViewResolver(new PrefixRemoveIdentifierFormatter(outputOmitPrefix), MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name());
     }
 
     private GlossaryService glossaryService() {

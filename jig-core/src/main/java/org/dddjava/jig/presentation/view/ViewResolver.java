@@ -16,21 +16,27 @@ public class ViewResolver {
 
     private final PackageIdentifierFormatter packageIdentifierFormatter;
     private final MethodNodeLabelStyle methodNodeLabelStyle;
+    private final DiagramFormat diagramFormat;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle, @Value("${diagram.format:SVG}") String diagramFormat) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.methodNodeLabelStyle = MethodNodeLabelStyle.valueOf(methodNodeLabelStyle.toUpperCase(Locale.ENGLISH));
+        this.diagramFormat = DiagramFormat.valueOf(diagramFormat.toUpperCase(Locale.ENGLISH));
     }
 
     public JigView<PackageNetwork> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
-        return new GraphvizjView<>(new PackageDependencyDiagram(packageIdentifierFormatter, japaneseNameFinder));
+        return newGraphvizjView(new PackageDependencyDiagram(packageIdentifierFormatter, japaneseNameFinder));
     }
 
     public JigView<ServiceAngles> serviceMethodCallHierarchy(JapaneseNameFinder japaneseNameFinder) {
-        return new GraphvizjView<>(new ServiceMethodCallDiagram(japaneseNameFinder, methodNodeLabelStyle));
+        return newGraphvizjView(new ServiceMethodCallDiagram(japaneseNameFinder, methodNodeLabelStyle));
     }
 
     public JigView<CategoryAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
-        return new GraphvizjView<>(new EnumUsageDiagram(japaneseNameFinder));
+        return newGraphvizjView(new EnumUsageDiagram(japaneseNameFinder));
+    }
+
+    private <T> JigView<T> newGraphvizjView(DotTextEditor<T> diagram) {
+        return new GraphvizjView<T>(diagram, diagramFormat);
     }
 }

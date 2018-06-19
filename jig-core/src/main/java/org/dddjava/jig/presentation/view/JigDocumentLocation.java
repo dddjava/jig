@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 public class JigDocumentLocation {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentLocation.class);
@@ -21,8 +23,18 @@ public class JigDocumentLocation {
         this.directory = directory;
     }
 
-    public void writeDocument(JigDocumentWriter writer) {
-        Path outputFilePath = directory.resolve(jigDocument.fileName());
+    public void writeDiagram(JigDocumentWriter writer, DiagramFormat diagramFormat) {
+        Path outputFilePath = directory.resolve(jigDocument.fileName() + "." + diagramFormat.name().toLowerCase(Locale.ENGLISH));
+        try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
+            writer.writeTo(outputStream);
+            LOGGER.info("{} を出力しました。", outputFilePath.toAbsolutePath());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void writeXlsx(JigDocumentWriter writer) {
+        Path outputFilePath = directory.resolve(jigDocument.fileName() + ".xlsx");
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
             writer.writeTo(outputStream);
             LOGGER.info("{} を出力しました。", outputFilePath.toAbsolutePath());

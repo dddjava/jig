@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
  * 取り扱うドキュメントの種類
  */
 public enum JigDocument {
-    ServiceMethodCallHierarchy("service-method-call-hierarchy.png"),
-    PackageDependency("package-dependency.png"),
-    ApplicationList("application.xlsx"),
-    DomainList("domain.xlsx"),
-    BranchList("branches.xlsx"),
-    EnumUsage("enum-usage.png");
+    ServiceMethodCallHierarchy("service-method-call-hierarchy"),
+    PackageDependency("package-dependency"),
+    ApplicationList("application"),
+    DomainList("domain"),
+    BranchList("branches"),
+    EnumUsage("enum-usage");
 
     private final String documentFileName;
 

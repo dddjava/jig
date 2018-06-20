@@ -32,7 +32,7 @@ public class ServiceAngles {
                                    CharacterizedMethods characterizedMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (MethodDeclaration serviceMethod : serviceMethods.list()) {
-            list.add(ServiceAngle.of(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, characterizedMethods));
+            list.add(new ServiceAngle(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, characterizedMethods));
         }
         return new ServiceAngles(list);
     }

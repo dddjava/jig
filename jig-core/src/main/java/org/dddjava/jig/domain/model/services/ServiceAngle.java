@@ -22,15 +22,6 @@ public class ServiceAngle {
     MethodDeclarations usingRepositoryMethods;
     private final MethodCharacteristics methodCharacteristics;
 
-    public ServiceAngle(MethodDeclaration methodDeclaration, Characteristics userCharacteristics, MethodDeclarations userServiceMethods, TypeIdentifiers usingFieldTypeIdentifiers, MethodDeclarations usingRepositoryMethods, MethodCharacteristics methodCharacteristics) {
-        this.methodDeclaration = methodDeclaration;
-        this.userCharacteristics = userCharacteristics;
-        this.userServiceMethods = userServiceMethods;
-        this.usingFieldTypeIdentifiers = usingFieldTypeIdentifiers;
-        this.usingRepositoryMethods = usingRepositoryMethods;
-        this.methodCharacteristics = methodCharacteristics;
-    }
-
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier declaringType() {
@@ -66,31 +57,25 @@ public class ServiceAngle {
         return userServiceMethods;
     }
 
-    public static ServiceAngle of(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
+    public MethodCharacteristics methodCharacteristics() {
+        return methodCharacteristics;
+    }
 
-        Characteristics userCharacteristics = characterizedTypes.stream()
+    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
+        this.methodDeclaration = serviceMethod;
+        this.userCharacteristics = characterizedTypes.stream()
                 .filter(methodRelations.stream().filterTo(serviceMethod).fromTypeIdentifiers())
                 .characteristics();
-
-        MethodDeclarations userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
+        this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
                 .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
                 .fromMethods();
-
-        TypeIdentifiers usingFieldTypeIdentifiers = methodUsingFields.stream()
+        this.usingFieldTypeIdentifiers = methodUsingFields.stream()
                 .filter(serviceMethod)
                 .fields()
                 .toTypeIdentifies();
-
-        MethodDeclarations usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
+        this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
-
-        MethodCharacteristics methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
-
-        return new ServiceAngle(serviceMethod, userCharacteristics, userServiceMethods, usingFieldTypeIdentifiers, usingRepositoryMethods, methodCharacteristics);
-    }
-
-    public MethodCharacteristics methodCharacteristics() {
-        return methodCharacteristics;
+        this.methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
     }
 }

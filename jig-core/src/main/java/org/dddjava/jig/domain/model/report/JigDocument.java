@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.domain.model.report;
 
 import java.util.Arrays;
 import java.util.List;

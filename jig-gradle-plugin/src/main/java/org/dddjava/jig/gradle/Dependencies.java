@@ -16,7 +16,7 @@ import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
 import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
-import org.dddjava.jig.presentation.view.JigHandlerContext;
+import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;

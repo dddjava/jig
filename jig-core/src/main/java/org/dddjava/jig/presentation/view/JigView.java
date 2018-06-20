@@ -4,5 +4,5 @@ import java.io.IOException;
 
 public interface JigView<T> {
 
-    void render(T model, JigDocumentLocation jigDocumentLocation) throws IOException;
+    void render(T model, JigDocumentWriter jigDocumentWriter) throws IOException;
 }

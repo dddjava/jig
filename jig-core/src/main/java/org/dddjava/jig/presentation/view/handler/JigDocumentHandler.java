@@ -1,6 +1,8 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigModelAndView;
 
 import java.util.Arrays;
 

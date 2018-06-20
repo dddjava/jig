@@ -1,6 +1,9 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
+import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
+import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +29,8 @@ public class JigLocalRenderer<T> {
                 LOGGER.info("{} を作成しました。", outputDirectory.toAbsolutePath());
             }
 
-            JigDocumentLocation jigDocumentLocation = new JigDocumentLocation(jigDocument, outputDirectory);
-            modelAndView.render(jigDocumentLocation);
+            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+            modelAndView.render(jigDocumentWriter);
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }

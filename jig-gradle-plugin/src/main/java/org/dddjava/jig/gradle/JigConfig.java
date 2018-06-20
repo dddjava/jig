@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.domain.model.report.JigDocument;
 
 import java.util.ArrayList;
 import java.util.Arrays;

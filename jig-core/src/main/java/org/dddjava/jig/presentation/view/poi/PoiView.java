@@ -6,7 +6,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.dddjava.jig.presentation.view.JigDocumentLocation;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.*;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class PoiView implements JigView<AngleReporters> {
     }
 
     @Override
-    public void render(AngleReporters angleReporters, JigDocumentLocation jigDocumentLocation) throws IOException {
+    public void render(AngleReporters angleReporters, JigDocumentWriter jigDocumentWriter) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
             StringJoiner debugText = new StringJoiner("\n");
             List<AngleReporter> list = angleReporters.list();
@@ -52,8 +52,8 @@ public class PoiView implements JigView<AngleReporters> {
                 ));
             }
 
-            jigDocumentLocation.writeXlsx(book::write);
-            jigDocumentLocation.writeDebugText(debugText.toString());
+            jigDocumentWriter.writeXlsx(book::write);
+            jigDocumentWriter.writeDebugText(debugText.toString());
         }
     }
 

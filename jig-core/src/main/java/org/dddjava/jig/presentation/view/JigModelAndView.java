@@ -12,7 +12,7 @@ public class JigModelAndView<T> {
         this.view = view;
     }
 
-    public void render(JigDocumentLocation jigDocumentLocation) throws IOException {
-        view.render(model, jigDocumentLocation);
+    public void render(JigDocumentWriter jigDocumentWriter) throws IOException {
+        view.render(model, jigDocumentWriter);
     }
 }

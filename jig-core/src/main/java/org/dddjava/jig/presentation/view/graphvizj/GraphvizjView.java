@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import guru.nidi.graphviz.engine.Graphviz;
-import org.dddjava.jig.presentation.view.JigDocumentLocation;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 
 public class GraphvizjView<T> implements JigView<T> {
@@ -15,15 +15,15 @@ public class GraphvizjView<T> implements JigView<T> {
     }
 
     @Override
-    public void render(T model, JigDocumentLocation jigDocumentLocation) {
+    public void render(T model, JigDocumentWriter jigDocumentWriter) {
         String graphText = editor.edit(model);
 
-        jigDocumentLocation.writeDiagram(
+        jigDocumentWriter.writeDiagram(
                 outputStream ->
                         Graphviz.fromString(graphText)
                                 .render(diagramFormat.graphvizjFormat())
                                 .toOutputStream(outputStream),
                 diagramFormat);
-        jigDocumentLocation.writeDebugText(graphText);
+        jigDocumentWriter.writeDebugText(graphText);
     }
 }

@@ -2,9 +2,6 @@ package org.dddjava.jig.domain.model.characteristic;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * 型の特徴
  */

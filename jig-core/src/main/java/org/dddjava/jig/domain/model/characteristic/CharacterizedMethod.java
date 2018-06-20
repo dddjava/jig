@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.dddjava.jig.domain.model.characteristic.MethodCharacteristic.*;
+import static org.dddjava.jig.domain.model.characteristic.MethodCharacteristic.HANDLER;
 
 /**
  * 特徴付けられたメソッド

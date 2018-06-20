@@ -2,8 +2,8 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
 import org.gradle.api.DefaultTask;

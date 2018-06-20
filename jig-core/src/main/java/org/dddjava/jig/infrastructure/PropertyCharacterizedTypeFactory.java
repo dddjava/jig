@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

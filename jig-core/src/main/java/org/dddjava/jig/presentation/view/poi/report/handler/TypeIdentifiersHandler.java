@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.poi.report.handler;
 
-import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.domain.basic.UserNumber;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 public class TypeIdentifiersHandler implements ItemHandler {

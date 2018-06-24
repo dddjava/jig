@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 
-import java.util.List;
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
@@ -22,11 +21,11 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
 
     @Override
     public String edit(ServiceAngles model) {
-        List<ServiceAngle> angles = model.returnsBooleanList();
+        ServiceAngles booleanServiceAngles = model.filterReturnsBoolean();
 
         // メソッド間の関連
         RelationText relationText = new RelationText();
-        for (ServiceAngle serviceAngle : angles) {
+        for (ServiceAngle serviceAngle : booleanServiceAngles.list()) {
             for (MethodDeclaration methodDeclaration : serviceAngle.userServiceMethods().list()) {
                 relationText.add(methodDeclaration, serviceAngle.method());
             }
@@ -36,7 +35,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
         }
 
         // booleanサービスメソッドの表示方法
-        String booleanServiceMethodsText = angles.stream()
+        String booleanServiceMethodsText = booleanServiceAngles.list().stream()
                 .map(angle -> {
                     MethodDeclaration method = angle.method();
                     Node node = Node.of(method);
@@ -51,16 +50,12 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
 
 
         // 使用メソッドのラベル
-        String userApplicationMethodsText = angles.stream().flatMap(serviceAngle -> serviceAngle.userServiceMethods().list().stream())
-                .distinct()
+        String userApplicationMethodsText = booleanServiceAngles.userServiceMethods().list().stream()
                 // booleanメソッドを除く
-                .filter(userMethod -> angles.stream().noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(userMethod)))
+                .filter(userMethod -> booleanServiceAngles.notContains(userMethod))
                 .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
                 .collect(joining("\n"));
-        String userControllerMethodsText = angles.stream().flatMap(serviceAngle -> serviceAngle.userControllerMethods().list().stream())
-                .distinct()
-                // booleanメソッドを除く
-                .filter(userMethod -> angles.stream().noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(userMethod)))
+        String userControllerMethodsText = booleanServiceAngles.userControllerMethods().list().stream()
                 .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
                 .collect(joining("\n"));
 

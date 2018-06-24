@@ -38,9 +38,29 @@ public class ServiceAngles {
         return new ServiceAngles(list);
     }
 
-    public List<ServiceAngle> returnsBooleanList() {
-        return list.stream()
+    public ServiceAngles filterReturnsBoolean() {
+        List<ServiceAngle> collect = list.stream()
                 .filter(serviceAngle -> serviceAngle.method().returnType().isBoolean())
                 .collect(Collectors.toList());
+        return new ServiceAngles(collect);
+    }
+
+    public MethodDeclarations userServiceMethods() {
+        return list.stream()
+                .flatMap(serviceAngle -> serviceAngle.userServiceMethods().list().stream())
+                .distinct()
+                .collect(MethodDeclarations.collector());
+    }
+
+    public MethodDeclarations userControllerMethods() {
+        return list.stream()
+                .flatMap(serviceAngle -> serviceAngle.userControllerMethods().list().stream())
+                .distinct()
+                .collect(MethodDeclarations.collector());
+    }
+
+    public boolean notContains(MethodDeclaration methodDeclaration) {
+        return list.stream()
+                .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
 }

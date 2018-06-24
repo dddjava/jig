@@ -10,6 +10,8 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.report.ReportItem;
 import org.dddjava.jig.domain.model.report.ReportItemFor;
 
+import java.util.stream.Stream;
+
 /**
  * サービスの切り口
  */
@@ -25,6 +27,33 @@ public class ServiceAngle {
     TypeIdentifiers usingFieldTypeIdentifiers;
     MethodDeclarations usingRepositoryMethods;
     private final MethodCharacteristics methodCharacteristics;
+    boolean useStream;
+
+    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
+        this.methodDeclaration = serviceMethod;
+        this.userMethods = methodRelations.stream().filterTo(serviceMethod).fromMethods();
+        this.userCharacteristics = characterizedTypes.stream()
+                .filter(methodRelations.stream().filterTo(serviceMethod).fromTypeIdentifiers())
+                .characteristics();
+        this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
+                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
+                .fromMethods();
+        this.usingFieldTypeIdentifiers = methodUsingFields.stream()
+                .filter(serviceMethod)
+                .fields()
+                .toTypeIdentifies();
+        this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
+                .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
+                .toMethods();
+        this.methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
+
+        this.userControllerMethods = methodRelations.stream().filterTo(serviceMethod)
+                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.CONTROLLER).typeIdentifiers())
+                .fromMethods();
+
+        MethodDeclarations usingMethods = methodRelations.stream().filterFrom(serviceMethod).toMethods();
+        this.useStream = usingMethods.list().stream().anyMatch(methodDeclaration -> methodDeclaration.returnType().equals(new TypeIdentifier(Stream.class)));
+    }
 
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
@@ -57,6 +86,11 @@ public class ServiceAngle {
         return usingRepositoryMethods.asSimpleText();
     }
 
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 3)
+    public boolean useStream() {
+        return useStream;
+    }
+
     public MethodDeclarations userServiceMethods() {
         return userServiceMethods;
     }
@@ -71,29 +105,6 @@ public class ServiceAngle {
 
     public MethodDeclarations userControllerMethods() {
         return userControllerMethods;
-    }
-
-    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
-        this.methodDeclaration = serviceMethod;
-        this.userMethods = methodRelations.stream().filterTo(serviceMethod).fromMethods();
-        this.userCharacteristics = characterizedTypes.stream()
-                .filter(methodRelations.stream().filterTo(serviceMethod).fromTypeIdentifiers())
-                .characteristics();
-        this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
-                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
-                .fromMethods();
-        this.usingFieldTypeIdentifiers = methodUsingFields.stream()
-                .filter(serviceMethod)
-                .fields()
-                .toTypeIdentifies();
-        this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
-                .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
-                .toMethods();
-        this.methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
-
-        this.userControllerMethods = methodRelations.stream().filterTo(serviceMethod)
-                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.CONTROLLER).typeIdentifiers())
-                .fromMethods();
     }
 
 }

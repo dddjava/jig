@@ -3,7 +3,10 @@ package org.dddjava.jig.presentation.view.handler;
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
-import org.dddjava.jig.presentation.controller.*;
+import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.EnumUsageController;
+import org.dddjava.jig.presentation.controller.PackageDependencyController;
+import org.dddjava.jig.presentation.controller.ServiceDiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;
@@ -24,17 +27,15 @@ public class JigDocumentHandlers {
 
     Object[] controllers;
 
-    public JigDocumentHandlers(ServiceMethodCallHierarchyController serviceMethodCallHierarchyController,
+    public JigDocumentHandlers(ServiceDiagramController serviceDiagramController,
                                ClassListController classListController,
                                PackageDependencyController packageDependencyController,
-                               EnumUsageController enumUsageController,
-                               BooleanServiceTraceController booleanServiceTraceController) {
+                               EnumUsageController enumUsageController) {
         this.controllers = new Object[]{
-                serviceMethodCallHierarchyController,
+                serviceDiagramController,
                 classListController,
                 packageDependencyController,
-                enumUsageController,
-                booleanServiceTraceController
+                enumUsageController
         };
     }
 

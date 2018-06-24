@@ -14,15 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ServiceMethodCallHierarchyController {
+public class ServiceDiagramController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceMethodCallHierarchyController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDiagramController.class);
 
     AngleService angleService;
     GlossaryService glossaryService;
     ViewResolver viewResolver;
 
-    public ServiceMethodCallHierarchyController(AngleService angleService, GlossaryService glossaryService, ViewResolver viewResolver) {
+    public ServiceDiagramController(AngleService angleService, GlossaryService glossaryService, ViewResolver viewResolver) {
         this.angleService = angleService;
         this.glossaryService = glossaryService;
         this.viewResolver = viewResolver;
@@ -34,5 +34,13 @@ public class ServiceMethodCallHierarchyController {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(japaneseNameFinder));
+    }
+
+    @DocumentMapping(JigDocument.BooleanService)
+    public JigModelAndView<?> booleanServiceTrace(ProjectData projectData) {
+        LOGGER.info("真偽値を返すサービスメソッド追跡ダイアグラムを出力します");
+        ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
+        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
+        return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(japaneseNameFinder));
     }
 }

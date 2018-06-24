@@ -64,8 +64,8 @@ public class Dependencies {
                 depth);
     }
 
-    ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
-        return new ServiceMethodCallHierarchyController(
+    ServiceDiagramController serviceMethodCallHierarchyController(String outputOmitPrefix) {
+        return new ServiceDiagramController(
                 angleService(),
                 glossaryService(),
                 jigViewResolver(outputOmitPrefix));
@@ -95,11 +95,7 @@ public class Dependencies {
                 serviceMethodCallHierarchyController(config.outputOmitPrefix),
                 classListController(config.outputOmitPrefix),
                 packageDependencyController(config.outputOmitPrefix, config.depth),
-                enumUsageController(config.outputOmitPrefix),
-                new BooleanServiceTraceController(
-                        angleService(),
-                        glossaryService(),
-                        jigViewResolver(config.outputOmitPrefix))
+                enumUsageController(config.outputOmitPrefix)
         );
     }
 }

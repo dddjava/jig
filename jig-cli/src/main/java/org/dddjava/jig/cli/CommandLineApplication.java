@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.view.handler.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
+import org.dddjava.jig.presentation.view.handler.JigLocalRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +60,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
             Path outputDirectory = Paths.get(this.outputDirectory);
             for (JigDocument jigDocument : jigDocuments) {
-                JigDocumentHandler.of(jigDocument)
-                        .handleLocal(jigHandlerContext, projectData)
+                new JigLocalRenderer<>(jigDocument, jigHandlerContext.resolveHandlerMethod(jigDocument, projectData))
                         .render(outputDirectory);
             }
         } catch (ClassFindFailException e) {

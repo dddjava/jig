@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.decisions.*;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
@@ -23,6 +24,7 @@ import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.PoiView;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
@@ -49,6 +51,7 @@ public class ClassListController {
         this.angleService = angleService;
     }
 
+    @DocumentMapping(JigDocument.ApplicationList)
     public JigModelAndView<AngleReporters> applicationList(ProjectData projectData) {
         LOGGER.info("入出力リストを出力します");
         AngleReporters angleReporters = new AngleReporters(
@@ -59,6 +62,7 @@ public class ClassListController {
         return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
     }
 
+    @DocumentMapping(JigDocument.DomainList)
     public JigModelAndView<AngleReporters> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
         AngleReporters angleReporters = new AngleReporters(
@@ -77,6 +81,7 @@ public class ClassListController {
         return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
     }
 
+    @DocumentMapping(JigDocument.BranchList)
     public JigModelAndView<AngleReporters> branchList(ProjectData projectData) {
         LOGGER.info("条件分岐リストを出力します");
         AngleReporters angleReporters = new AngleReporters(

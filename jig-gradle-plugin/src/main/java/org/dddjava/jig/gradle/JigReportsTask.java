@@ -4,8 +4,8 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.view.handler.JigDocumentHandler;
 import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
+import org.dddjava.jig.presentation.view.handler.JigLocalRenderer;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -41,8 +41,7 @@ public class JigReportsTask extends DefaultTask {
 
         Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
         for (JigDocument jigDocument : jigDocuments) {
-            JigDocumentHandler.of(jigDocument)
-                    .handleLocal(jigHandlerContext, projectData)
+            new JigLocalRenderer<>(jigDocument, jigHandlerContext.resolveHandlerMethod(jigDocument, projectData))
                     .render(outputDirectory);
         }
 

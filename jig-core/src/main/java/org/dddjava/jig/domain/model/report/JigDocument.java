@@ -13,7 +13,8 @@ public enum JigDocument {
     ApplicationList("application"),
     DomainList("domain"),
     BranchList("branches"),
-    EnumUsage("enum-usage");
+    EnumUsage("enum-usage"),
+    BooleanService("boolean-service");
 
     private final String documentFileName;
 

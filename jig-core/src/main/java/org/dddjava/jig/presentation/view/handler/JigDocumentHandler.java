@@ -43,6 +43,12 @@ public enum JigDocumentHandler {
         public JigModelAndView handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
             return jigHandlerContext.enumUsageController.enumUsage(projectData);
         }
+    },
+    BooleanService(JigDocument.BooleanService) {
+        @Override
+        JigModelAndView<?> handle(JigHandlerContext jigHandlerContext, ProjectData projectData) {
+            return jigHandlerContext.booleanServiceTraceController.diagram(projectData);
+        }
     };
 
     private final JigDocument jigDocument;

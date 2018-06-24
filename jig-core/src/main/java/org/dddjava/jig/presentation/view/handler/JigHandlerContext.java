@@ -1,10 +1,7 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.presentation.controller.ClassListController;
-import org.dddjava.jig.presentation.controller.EnumUsageController;
-import org.dddjava.jig.presentation.controller.PackageDependencyController;
-import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
+import org.dddjava.jig.presentation.controller.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +12,7 @@ public class JigHandlerContext {
     ClassListController classListController;
     PackageDependencyController packageDependencyController;
     EnumUsageController enumUsageController;
+    BooleanServiceTraceController booleanServiceTraceController;
 
     PackageDepth packageDepth;
 
@@ -22,11 +20,13 @@ public class JigHandlerContext {
                              ClassListController classListController,
                              PackageDependencyController packageDependencyController,
                              EnumUsageController enumUsageController,
+                             BooleanServiceTraceController booleanServiceTraceController,
                              @Value("${depth:-1}") int packageDepth) {
         this.serviceMethodCallHierarchyController = serviceMethodCallHierarchyController;
         this.classListController = classListController;
         this.packageDependencyController = packageDependencyController;
         this.enumUsageController = enumUsageController;
+        this.booleanServiceTraceController = booleanServiceTraceController;
         this.packageDepth = new PackageDepth(packageDepth);
     }
 

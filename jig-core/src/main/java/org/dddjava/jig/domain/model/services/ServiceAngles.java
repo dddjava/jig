@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * サービスの切り口一覧
@@ -35,5 +36,11 @@ public class ServiceAngles {
             list.add(new ServiceAngle(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, characterizedMethods));
         }
         return new ServiceAngles(list);
+    }
+
+    public List<ServiceAngle> returnsBooleanList() {
+        return list.stream()
+                .filter(serviceAngle -> serviceAngle.method().returnType().isBoolean())
+                .collect(Collectors.toList());
     }
 }

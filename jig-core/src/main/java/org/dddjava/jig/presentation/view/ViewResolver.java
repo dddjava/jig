@@ -39,4 +39,8 @@ public class ViewResolver {
     private <T> JigView<T> newGraphvizjView(DotTextEditor<T> diagram) {
         return new GraphvizjView<T>(diagram, diagramFormat);
     }
+
+    public JigView<ServiceAngles> booleanServiceTrace(JapaneseNameFinder japaneseNameFinder) {
+        return newGraphvizjView(new BooleanServiceTraceDiagram(japaneseNameFinder, methodNodeLabelStyle));
+    }
 }

@@ -12,10 +12,14 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import testing.TestSupport;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -39,6 +43,11 @@ public class EnumAngleTest {
 
     @Test
     void readProjectData() {
+        Logger logger = LoggerFactory.getLogger("");
+        Map<String, Object> map = Collections.singletonMap("aaa", "bbb");
+        logger.error("", map);
+
+
         Layout layoutMock = mock(Layout.class);
         when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);

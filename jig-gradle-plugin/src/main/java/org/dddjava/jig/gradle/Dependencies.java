@@ -12,10 +12,7 @@ import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
-import org.dddjava.jig.presentation.controller.ClassListController;
-import org.dddjava.jig.presentation.controller.EnumUsageController;
-import org.dddjava.jig.presentation.controller.PackageDependencyController;
-import org.dddjava.jig.presentation.controller.ServiceMethodCallHierarchyController;
+import org.dddjava.jig.presentation.controller.*;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
@@ -98,6 +95,10 @@ public class Dependencies {
                 classListController(config.outputOmitPrefix),
                 packageDependencyController(config.outputOmitPrefix),
                 enumUsageController(config.outputOmitPrefix),
+                new BooleanServiceTraceController(
+                        angleService(),
+                        glossaryService(),
+                        jigViewResolver(config.outputOmitPrefix)),
                 config.depth
         );
     }

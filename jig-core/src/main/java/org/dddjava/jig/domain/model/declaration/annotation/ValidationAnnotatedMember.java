@@ -9,11 +9,13 @@ public class ValidationAnnotatedMember {
     final TypeIdentifier annotationType;
     final String simpleNameText;
     final TypeIdentifier declaringType;
+    final TypeIdentifier memberType;
     final AnnotationDescription description;
 
     public ValidationAnnotatedMember(AnnotatedField annotatedField) {
         annotationType = annotatedField.annotationType();
         simpleNameText = annotatedField.fieldDeclaration().nameText();
+        memberType = annotatedField.fieldDeclaration().typeIdentifier();
         declaringType = annotatedField.fieldDeclaration().declaringType();
         description = annotatedField.description();
     }
@@ -21,6 +23,7 @@ public class ValidationAnnotatedMember {
     public ValidationAnnotatedMember(AnnotatedMethod annotatedMethod) {
         annotationType = annotatedMethod.annotationType();
         simpleNameText = annotatedMethod.methodDeclaration().asSignatureSimpleText();
+        memberType = annotatedMethod.methodDeclaration().returnType();
         declaringType = annotatedMethod.methodDeclaration().declaringType();
         description = annotatedMethod.description();
     }
@@ -39,5 +42,9 @@ public class ValidationAnnotatedMember {
 
     public AnnotationDescription annotationDescription() {
         return description;
+    }
+
+    public TypeIdentifier type() {
+        return memberType;
     }
 }

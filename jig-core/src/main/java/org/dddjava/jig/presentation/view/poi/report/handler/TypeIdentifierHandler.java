@@ -25,6 +25,8 @@ public class TypeIdentifierHandler implements ItemHandler {
                 return convertContext.typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
             case クラス和名:
                 return convertContext.glossaryService.japaneseNameFrom(typeIdentifier).summarySentence();
+            case 単純クラス名:
+                return typeIdentifier.asSimpleText();
         }
 
         throw new IllegalArgumentException(item.name());

@@ -4,8 +4,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
-import org.dddjava.jig.presentation.view.handler.JigLocalRenderer;
+import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -28,7 +27,7 @@ public class JigReportsTask extends DefaultTask {
 
         ExtensionContainer extensions = getProject().getExtensions();
         JigConfig config = extensions.findByType(JigConfig.class);
-        JigHandlerContext jigHandlerContext = dependencies.localViewContextWith(config);
+        JigDocumentHandlers jigDocumentHandlers = dependencies.localViewContextWith(config);
 
         List<JigDocument> jigDocuments = config.documentTypes();
 
@@ -41,8 +40,7 @@ public class JigReportsTask extends DefaultTask {
 
         Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
         for (JigDocument jigDocument : jigDocuments) {
-            new JigLocalRenderer<>(jigDocument, jigHandlerContext.resolveHandlerMethod(jigDocument, projectData))
-                    .render(outputDirectory);
+            jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);

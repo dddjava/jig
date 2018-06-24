@@ -16,7 +16,7 @@ import org.dddjava.jig.presentation.controller.*;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
-import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
+import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +56,12 @@ public class Dependencies {
                 jigViewResolver(outputOmitPrefix));
     }
 
-    PackageDependencyController packageDependencyController(String outputOmitPrefix) {
+    PackageDependencyController packageDependencyController(String outputOmitPrefix, int depth) {
         return new PackageDependencyController(
                 dependencyService(),
                 glossaryService(),
-                jigViewResolver(outputOmitPrefix));
+                jigViewResolver(outputOmitPrefix),
+                depth);
     }
 
     ServiceMethodCallHierarchyController serviceMethodCallHierarchyController(String outputOmitPrefix) {
@@ -89,17 +90,16 @@ public class Dependencies {
         );
     }
 
-    public JigHandlerContext localViewContextWith(JigConfig config) {
-        return new JigHandlerContext(
+    public JigDocumentHandlers localViewContextWith(JigConfig config) {
+        return new JigDocumentHandlers(
                 serviceMethodCallHierarchyController(config.outputOmitPrefix),
                 classListController(config.outputOmitPrefix),
-                packageDependencyController(config.outputOmitPrefix),
+                packageDependencyController(config.outputOmitPrefix, config.depth),
                 enumUsageController(config.outputOmitPrefix),
                 new BooleanServiceTraceController(
                         angleService(),
                         glossaryService(),
-                        jigViewResolver(config.outputOmitPrefix)),
-                config.depth
+                        jigViewResolver(config.outputOmitPrefix))
         );
     }
 }

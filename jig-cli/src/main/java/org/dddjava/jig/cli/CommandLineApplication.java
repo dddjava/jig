@@ -5,8 +5,7 @@ import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.presentation.view.handler.JigHandlerContext;
-import org.dddjava.jig.presentation.view.handler.JigLocalRenderer;
+import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class CommandLineApplication implements CommandLineRunner {
     LocalProject localProject;
 
     @Autowired
-    JigHandlerContext jigHandlerContext;
+    JigDocumentHandlers jigDocumentHandlers;
 
     @Autowired
     Environment environment;
@@ -60,8 +59,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
             Path outputDirectory = Paths.get(this.outputDirectory);
             for (JigDocument jigDocument : jigDocuments) {
-                new JigLocalRenderer<>(jigDocument, jigHandlerContext.resolveHandlerMethod(jigDocument, projectData))
-                        .render(outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().textWithSpringEnvironment(environment));

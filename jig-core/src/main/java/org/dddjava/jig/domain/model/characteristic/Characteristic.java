@@ -10,7 +10,8 @@ public enum Characteristic {
         @Override
         boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
             return byteCode.hasAnnotation("org.springframework.stereotype.Controller")
-                    || byteCode.hasAnnotation("org.springframework.web.bind.annotation.RestController");
+                    || byteCode.hasAnnotation("org.springframework.web.bind.annotation.RestController")
+                    || byteCode.hasAnnotation("org.springframework.web.bind.annotation.ControllerAdvice");
         }
     },
     SERVICE {

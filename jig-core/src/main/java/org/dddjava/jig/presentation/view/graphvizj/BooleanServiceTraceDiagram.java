@@ -1,16 +1,13 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
 public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> {
@@ -30,13 +27,16 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
         // メソッド間の関連
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
-            for (MethodDeclaration methodDeclaration : serviceAngle.userMethods().list()) {
+            for (MethodDeclaration methodDeclaration : serviceAngle.userServiceMethods().list()) {
+                relationText.add(methodDeclaration, serviceAngle.method());
+            }
+            for (MethodDeclaration methodDeclaration : serviceAngle.userControllerMethods().list()) {
                 relationText.add(methodDeclaration, serviceAngle.method());
             }
         }
 
         // booleanサービスメソッドの表示方法
-        String labelText = angles.stream()
+        String booleanServiceMethodsText = angles.stream()
                 .map(angle -> {
                     MethodDeclaration method = angle.method();
                     Node node = Node.of(method);
@@ -44,62 +44,42 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
                         node.label("(lambda)").lambda();
                     } else {
                         // ラベルに和名をつける
-                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.apply(method, japaneseNameFinder));
+                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.typeNameAndMethodName(method, japaneseNameFinder));
                     }
                     return node.asText();
                 }).collect(joining("\n"));
 
+
         // 使用メソッドのラベル
-        String userMethodLabelText = angles.stream().flatMap(serviceAngle -> serviceAngle.userMethods().list().stream())
+        String userApplicationMethodsText = angles.stream().flatMap(serviceAngle -> serviceAngle.userServiceMethods().list().stream())
                 .distinct()
                 // booleanメソッドを除く
                 .filter(userMethod -> angles.stream().noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(userMethod)))
-                .map(userMethod ->
-                        Node.of(userMethod)
-                                .label(methodNodeLabelStyle.apply(userMethod, japaneseNameFinder))
-                                .asText()
-                ).collect(joining("\n"));
-
-        // クラス名でグルーピングする
-        String subgraphText = Stream.concat(angles.stream().map(ServiceAngle::method), angles.stream().flatMap(serviceAngle -> serviceAngle.userMethods().list().stream()))
-                .collect(groupingBy(MethodDeclaration::declaringType))
-                .entrySet().stream()
-                .map(entry ->
-                        "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
-                                + "{"
-                                + "label=\"" + japaneseNameLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
-                                + entry.getValue().stream()
-                                .map(MethodDeclaration::asFullNameText)
-                                .map(text -> "\"" + text + "\";")
-                                .collect(joining("\n"))
-                                + "}")
+                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
                 .collect(joining("\n"));
-        // 凡例
-        String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
-                .add("label=凡例;")
-                .add("メソッド;")
-                .add(new Node("lambda").lambda().asText())
-                .toString();
+        String userControllerMethodsText = angles.stream().flatMap(serviceAngle -> serviceAngle.userControllerMethods().list().stream())
+                .distinct()
+                // booleanメソッドを除く
+                .filter(userMethod -> angles.stream().noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(userMethod)))
+                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
+                .collect(joining("\n"));
+
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(relationText.asText())
-                .add("/* labelText */")
-                .add(labelText)
-                .add("/* userMethodLabel */")
-                .add(userMethodLabelText)
-                .add("/* subgraphText */")
-                .add(subgraphText)
-                .add(legendText)
+                .add("{")
+                .add("node [shape=none,style=none,fontsize=30];")
+                .add("edge [arrowhead=none];")
+                .add("\"Controller Method\" -> \"Service Method\" -> \"boolean Service Method\";")
+                .add("}")
+                .add("{").add("rank=same;").add("\"boolean Service Method\"").add("/* labelText */").add(booleanServiceMethodsText).add("}")
+                .add("{").add("rank=same;").add("\"Service Method\"").add("/* userApplicationMethodsText */").add(userApplicationMethodsText).add("}")
+                .add("{").add("rank=same;").add("\"Controller Method\"").add("/* userControllerMethodsText */").add(userControllerMethodsText).add("}")
                 .toString();
 
         return graphText;
-    }
-
-    private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {
-        String japaneseName = japaneseNameFinder.find(typeIdentifier).japaneseName().summarySentence();
-        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {

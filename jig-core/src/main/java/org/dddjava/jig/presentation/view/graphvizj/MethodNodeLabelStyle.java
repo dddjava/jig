@@ -35,4 +35,8 @@ public enum MethodNodeLabelStyle {
 
         return method.asSignatureSimpleText() + " : " + method.returnType().asSimpleText();
     }
+
+    public String typeNameAndMethodName(MethodDeclaration methodDeclaration, JapaneseNameFinder japaneseNameFinder) {
+        return methodDeclaration.declaringType().asSimpleText() + "." + apply(methodDeclaration, japaneseNameFinder);
+    }
 }

@@ -20,11 +20,10 @@ public class MethodDeclarations {
 
     public MethodDeclarations(List<MethodDeclaration> list) {
         this.list = list;
-        list.sort(Comparator.comparing(MethodDeclaration::asFullNameText));
     }
 
     public List<MethodDeclaration> list() {
-        return list;
+        return list.stream().sorted(Comparator.comparing(MethodDeclaration::asFullNameText)).collect(Collectors.toList());
     }
 
     public static Collector<MethodDeclaration, ?, MethodDeclarations> collector() {
@@ -46,6 +45,7 @@ public class MethodDeclarations {
         return new TypeIdentifiers(
                 list.stream()
                         .map(MethodDeclaration::declaringType)
+                        .sorted(Comparator.comparing(TypeIdentifier::fullQualifiedName))
                         .distinct()
                         .collect(toList())
         );

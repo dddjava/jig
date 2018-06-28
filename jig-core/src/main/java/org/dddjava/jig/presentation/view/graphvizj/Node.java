@@ -30,7 +30,7 @@ public class Node {
     }
 
     public Node label(String value) {
-        attribute.add("label=\"" + value + "\"");
+        attribute.add("label=\"" + value.replace("\"", "\\\"") + "\"");
         return this;
     }
 

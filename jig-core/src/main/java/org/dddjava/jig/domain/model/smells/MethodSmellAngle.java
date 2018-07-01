@@ -36,11 +36,7 @@ public class MethodSmellAngle {
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用")
     public boolean notUseField() {
-        return methodUsingFields.stream()
-                .filter(method.declaration())
-                .fields()
-                .toTypeIdentifies()
-                .empty();
+        return methodUsingFields.usingFieldTypeIdentifiers(method.declaration()).empty();
     }
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受")

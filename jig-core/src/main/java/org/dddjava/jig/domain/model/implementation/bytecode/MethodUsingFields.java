@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,14 @@ public class MethodUsingFields {
         }
     }
 
-    public MethodUsingFieldStream stream() {
+    private MethodUsingFieldStream stream() {
         return new MethodUsingFieldStream(list.stream());
+    }
+
+    public TypeIdentifiers usingFieldTypeIdentifiers(MethodDeclaration method) {
+        return stream()
+                .filter(method)
+                .fields()
+                .toTypeIdentifies();
     }
 }

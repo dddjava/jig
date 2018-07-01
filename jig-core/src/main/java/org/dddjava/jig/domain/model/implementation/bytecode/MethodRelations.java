@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,22 @@ public class MethodRelations {
                 }
             }
         }
+    }
+
+    public MethodDeclarations userMethodsOf(MethodDeclaration method) {
+        return stream().filterTo(method).fromMethods();
+    }
+
+    public MethodDeclarations usingMethodsOf(MethodDeclaration method) {
+        return stream().filterFrom(method).toMethods();
+    }
+
+    public MethodDeclarations userMethodsOf(MethodIdentifier method) {
+        return stream().filterTo(method).fromMethods();
+    }
+
+    public TypeIdentifiers userMethodDeclaringTypesOf(MethodDeclaration method) {
+        return stream().filterTo(method).fromTypeIdentifiers();
     }
 
     public MethodRelationStream stream() {

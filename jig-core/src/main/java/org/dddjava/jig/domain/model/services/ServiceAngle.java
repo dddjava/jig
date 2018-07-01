@@ -31,27 +31,25 @@ public class ServiceAngle {
 
     ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
         this.methodDeclaration = serviceMethod;
-        this.userMethods = methodRelations.stream().filterTo(serviceMethod).fromMethods();
+        this.userMethods = methodRelations.userMethodsOf(serviceMethod);
         this.userCharacteristics = characterizedTypes.stream()
-                .filter(methodRelations.stream().filterTo(serviceMethod).fromTypeIdentifiers())
+                .filter(methodRelations.userMethodDeclaringTypesOf(serviceMethod))
                 .characteristics();
-        this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
-                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
-                .fromMethods();
-        this.usingFieldTypeIdentifiers = methodUsingFields.stream()
-                .filter(serviceMethod)
-                .fields()
-                .toTypeIdentifies();
+
+        this.usingFieldTypeIdentifiers = methodUsingFields.usingFieldTypeIdentifiers(serviceMethod);
         this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
         this.methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
 
+        this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
+                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
+                .fromMethods();
         this.userControllerMethods = methodRelations.stream().filterTo(serviceMethod)
                 .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.CONTROLLER).typeIdentifiers())
                 .fromMethods();
 
-        MethodDeclarations usingMethods = methodRelations.stream().filterFrom(serviceMethod).toMethods();
+        MethodDeclarations usingMethods = methodRelations.usingMethodsOf(serviceMethod);
         this.useStream = usingMethods.list().stream().anyMatch(methodDeclaration -> methodDeclaration.returnType().equals(new TypeIdentifier(Stream.class)));
     }
 

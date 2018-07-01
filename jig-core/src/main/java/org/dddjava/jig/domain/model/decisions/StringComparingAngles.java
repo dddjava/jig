@@ -32,9 +32,7 @@ public class StringComparingAngles {
                         "equals",
                         new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))));
 
-        List<StringComparingAngle> list = methodRelations.stream()
-                .filterTo(equalsMethod)
-                .fromMethods()
+        List<StringComparingAngle> list = methodRelations.userMethodsOf(equalsMethod)
                 .list()
                 .stream()
                 .map(StringComparingAngle::new)

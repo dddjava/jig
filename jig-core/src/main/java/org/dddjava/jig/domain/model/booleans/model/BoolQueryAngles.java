@@ -23,7 +23,7 @@ public class BoolQueryAngles {
         List<BoolQueryAngle> list = modelBoolQueryMethods.list().stream()
                 .map(method -> new BoolQueryAngle(
                         method,
-                        relations.stream().filterTo(method).fromMethods()
+                        relations.userMethodsOf(method)
                 )).collect(toList());
         return new BoolQueryAngles(list);
     }

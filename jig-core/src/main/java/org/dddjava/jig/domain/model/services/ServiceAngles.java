@@ -18,7 +18,7 @@ public class ServiceAngles {
 
     List<ServiceAngle> list;
 
-    public ServiceAngles(List<ServiceAngle> list) {
+    private ServiceAngles(List<ServiceAngle> list) {
         this.list = list;
     }
 
@@ -26,16 +26,16 @@ public class ServiceAngles {
         return list;
     }
 
-    public static ServiceAngles of(MethodDeclarations serviceMethods,
-                                   MethodRelations methodRelations,
-                                   CharacterizedTypes characterizedTypes,
-                                   MethodUsingFields methodUsingFields,
-                                   CharacterizedMethods characterizedMethods) {
+    public ServiceAngles(MethodDeclarations serviceMethods,
+                         MethodRelations methodRelations,
+                         CharacterizedTypes characterizedTypes,
+                         MethodUsingFields methodUsingFields,
+                         CharacterizedMethods characterizedMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (MethodDeclaration serviceMethod : serviceMethods.list()) {
             list.add(new ServiceAngle(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, characterizedMethods));
         }
-        return new ServiceAngles(list);
+        this.list = list;
     }
 
     public ServiceAngles filterReturnsBoolean() {

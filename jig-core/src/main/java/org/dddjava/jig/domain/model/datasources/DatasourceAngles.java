@@ -16,16 +16,12 @@ public class DatasourceAngles {
 
     List<DatasourceAngle> list;
 
-    public DatasourceAngles(List<DatasourceAngle> list) {
-        this.list = list;
-    }
-
-    public static DatasourceAngles of(MethodDeclarations repositoryMethods, MethodDeclarations mapperMethodDeclarations, ImplementationMethods implementationMethods, MethodRelations methodRelations, Sqls sqls) {
+    public DatasourceAngles(MethodDeclarations repositoryMethods, MethodDeclarations mapperMethodDeclarations, ImplementationMethods implementationMethods, MethodRelations methodRelations, Sqls sqls) {
         List<DatasourceAngle> list = new ArrayList<>();
         for (MethodDeclaration methodDeclaration : repositoryMethods.list()) {
             list.add(DatasourceAngle.of(methodDeclaration, mapperMethodDeclarations, implementationMethods, methodRelations, sqls));
         }
-        return new DatasourceAngles(list);
+        this.list = list;
     }
 
     public List<DatasourceAngle> list() {

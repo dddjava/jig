@@ -20,11 +20,7 @@ public class StringComparingAngles {
 
     private final List<StringComparingAngle> list;
 
-    public StringComparingAngles(List<StringComparingAngle> list) {
-        this.list = list;
-    }
-
-    public static StringComparingAngles of(MethodRelations methodRelations) {
+    public StringComparingAngles(MethodRelations methodRelations) {
         // String#equals(Object)
         MethodIdentifier equalsMethod = new MethodIdentifier(
                 new TypeIdentifier(String.class),
@@ -37,7 +33,7 @@ public class StringComparingAngles {
                 .stream()
                 .map(StringComparingAngle::new)
                 .collect(Collectors.toList());
-        return new StringComparingAngles(list);
+        this.list = list;
     }
 
     public List<StringComparingAngle> list() {

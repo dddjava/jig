@@ -13,14 +13,10 @@ import java.util.List;
  */
 public class MethodRelations {
 
-    List<MethodRelation> list;
-
-    public MethodRelations(List<MethodRelation> list) {
-        this.list = list;
-    }
+    private final List<MethodRelation> list;
 
     public MethodRelations(ByteCodes byteCodes) {
-        this(new ArrayList<>());
+        List<MethodRelation> list = new ArrayList<>();
 
         for (ByteCode byteCode : byteCodes.list()) {
             for (MethodByteCode methodByteCode : byteCode.methodByteCodes()) {
@@ -30,6 +26,7 @@ public class MethodRelations {
                 }
             }
         }
+        this.list = list;
     }
 
     public MethodDeclarations userMethodsOf(MethodDeclaration method) {

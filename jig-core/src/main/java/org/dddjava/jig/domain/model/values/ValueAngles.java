@@ -13,16 +13,12 @@ public class ValueAngles {
 
     List<ValueAngle> list;
 
-    public ValueAngles(List<ValueAngle> list) {
-        this.list = list;
-    }
-
-    public static ValueAngles of(ValueKind valueKind, ValueTypes valueTypes, TypeDependencies typeDependencies) {
+    public ValueAngles(ValueKind valueKind, ValueTypes valueTypes, TypeDependencies typeDependencies) {
         List<ValueAngle> list = new ArrayList<>();
         for (TypeIdentifier typeIdentifier : valueTypes.extract(valueKind).list()) {
             list.add(ValueAngle.of(valueKind, typeDependencies, typeIdentifier));
         }
-        return new ValueAngles(list);
+        this.list = list;
     }
 
     public List<ValueAngle> list() {

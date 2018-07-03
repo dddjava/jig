@@ -40,7 +40,7 @@ public class AngleService {
             LOGGER.warn(Warning.サービス検出異常.text());
         }
 
-        return ServiceAngles.of(serviceMethods,
+        return new ServiceAngles(serviceMethods,
                 projectData.methodRelations(),
                 projectData.characterizedTypes(),
                 projectData.methodUsingFields(),
@@ -58,7 +58,7 @@ public class AngleService {
             LOGGER.warn(Warning.Mapperメソッド検出異常.text());
         }
 
-        return DatasourceAngles.of(
+        return new DatasourceAngles(
                 characterizedMethods.repositoryMethods(),
                 mapperMethodDeclarations,
                 projectData.implementationMethods(),
@@ -74,7 +74,7 @@ public class AngleService {
                 .filter(Characteristic.ENUM)
                 .typeIdentifiers();
 
-        return CategoryAngles.of(enumTypeIdentifies,
+        return new CategoryAngles(enumTypeIdentifies,
                 projectData.characterizedTypes(),
                 projectData.typeDependencies(),
                 projectData.fieldDeclarations(),
@@ -85,14 +85,14 @@ public class AngleService {
      * 値を分析する
      */
     public ValueAngles valueAngles(ValueKind valueKind, ProjectData projectData) {
-        return ValueAngles.of(valueKind, projectData.valueTypes(), projectData.typeDependencies());
+        return new ValueAngles(valueKind, projectData.valueTypes(), projectData.typeDependencies());
     }
 
     /**
      * 文字列比較を分析する
      */
     public StringComparingAngles stringComparing(ProjectData projectData) {
-        return StringComparingAngles.of(projectData.methodRelations());
+        return new StringComparingAngles(projectData.methodRelations());
     }
 
     /**
@@ -111,7 +111,7 @@ public class AngleService {
     public BoolQueryAngles boolQueryModelMethodAngle(ProjectData projectData) {
         CharacterizedMethods methods = projectData.characterizedMethods();
         MethodRelations relations = projectData.methodRelations();
-        return BoolQueryAngles.of(methods, relations);
+        return new BoolQueryAngles(methods, relations);
     }
 
     /**

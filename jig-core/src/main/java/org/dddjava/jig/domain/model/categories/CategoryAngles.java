@@ -17,16 +17,12 @@ public class CategoryAngles {
 
     List<CategoryAngle> list;
 
-    public CategoryAngles(List<CategoryAngle> list) {
-        this.list = list;
-    }
-
-    public static CategoryAngles of(TypeIdentifiers enumTypeIdentifies, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngles(TypeIdentifiers enumTypeIdentifies, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
         for (TypeIdentifier typeIdentifier : enumTypeIdentifies.list()) {
             list.add(CategoryAngle.of(typeIdentifier, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
         }
-        return new CategoryAngles(list);
+        this.list = list;
     }
 
     public List<CategoryAngle> list() {

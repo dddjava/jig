@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.0.2.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
-    id 'org.dddjava.jig-gradle-plugin' version '2018.6.5' apply false
+    id 'org.dddjava.jig-gradle-plugin' version '2018.7.1' apply false
 }
 
 repositories {
@@ -13,7 +13,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.7.1'
+    version = '2018.7.2-SNAPSHOT'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'

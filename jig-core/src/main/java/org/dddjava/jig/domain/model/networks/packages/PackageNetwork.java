@@ -10,10 +10,16 @@ public class PackageNetwork {
 
     PackageIdentifiers packageIdentifiers;
     PackageDependencies packageDependencies;
+    PackageDepth appliedDepth;
 
     public PackageNetwork(PackageIdentifiers packageIdentifiers, PackageDependencies packageDependencies) {
+        this(packageIdentifiers, packageDependencies, new PackageDepth(-1));
+    }
+
+    private PackageNetwork(PackageIdentifiers packageIdentifiers, PackageDependencies packageDependencies, PackageDepth appliedDepth) {
         this.packageIdentifiers = packageIdentifiers;
         this.packageDependencies = packageDependencies;
+        this.appliedDepth = appliedDepth;
     }
 
     public PackageIdentifiers allPackages() {
@@ -28,6 +34,8 @@ public class PackageNetwork {
         if (depth.unlimited()) return this;
         return new PackageNetwork(
                 packageIdentifiers.applyDepth(depth),
-                packageDependencies.applyDepth(depth));
+                packageDependencies.applyDepth(depth),
+                depth
+        );
     }
 }

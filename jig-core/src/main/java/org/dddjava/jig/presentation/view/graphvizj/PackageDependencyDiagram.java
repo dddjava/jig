@@ -21,6 +21,11 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
     @Override
     public DotTexts edit(PackageNetwork packageNetwork) {
+        String value = toDotText(packageNetwork);
+        return new DotTexts(value);
+    }
+
+    private String toDotText(PackageNetwork packageNetwork) {
         PackageDependencies packageDependencies = packageNetwork.packageDependencies();
 
         BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
@@ -48,11 +53,11 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
                 })
                 .collect(joining("\n"));
 
-        return new DotTexts(new StringJoiner("\n", "digraph {", "}")
+        return new StringJoiner("\n", "digraph {", "}")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
                 .add(labelsText)
-                .toString());
+                .toString();
     }
 }

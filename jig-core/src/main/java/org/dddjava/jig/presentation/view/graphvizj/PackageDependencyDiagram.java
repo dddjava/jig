@@ -1,15 +1,18 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.networks.packages.*;
+import org.dddjava.jig.presentation.view.DocumentSuffix;
 
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.*;
 
+import java.util.List;
 import java.util.StringJoiner;
 
-public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
+public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> {
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameFinder japaneseNameFinder;
@@ -20,12 +23,14 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     @Override
-    public DotTexts edit(PackageNetwork packageNetwork) {
-        String value = toDotText(packageNetwork);
-        return new DotTexts(value);
+    public DotTexts edit(PackageNetworks packageNetworks) {
+        List<DotText> values = packageNetworks.list().stream()
+                .map(this::toDotText)
+                .collect(toList());
+        return new DotTexts(values);
     }
 
-    private String toDotText(PackageNetwork packageNetwork) {
+    private DotText toDotText(PackageNetwork packageNetwork) {
         PackageDependencies packageDependencies = packageNetwork.packageDependencies();
 
         BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
@@ -53,11 +58,14 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
                 })
                 .collect(joining("\n"));
 
-        return new StringJoiner("\n", "digraph {", "}")
+        String text = new StringJoiner("\n", "digraph {", "}")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
                 .add(labelsText)
                 .toString();
+        PackageDepth packageDepth = packageNetwork.appliedDepth();
+        DocumentSuffix documentSuffix = new DocumentSuffix(packageDepth.unlimited() ? "" : "-depth" + packageDepth.value());
+        return new DotText(documentSuffix, text);
     }
 }

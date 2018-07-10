@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class ViewResolver {
         this.diagramFormat = DiagramFormat.valueOf(diagramFormat.toUpperCase(Locale.ENGLISH));
     }
 
-    public JigView<PackageNetwork> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
+    public JigView<PackageNetworks> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {
         return newGraphvizjView(new PackageDependencyDiagram(packageIdentifierFormatter, japaneseNameFinder));
     }
 

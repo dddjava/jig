@@ -38,4 +38,8 @@ public class PackageNetwork {
                 depth
         );
     }
+
+    public PackageDepth appliedDepth() {
+        return appliedDepth;
+    }
 }

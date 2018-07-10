@@ -16,14 +16,17 @@ public class GraphvizjView<T> implements JigView<T> {
 
     @Override
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
-        String graphText = editor.edit(model);
+        DotTexts dotTexts = editor.edit(model);
 
-        jigDocumentWriter.writeDiagram(
-                outputStream ->
-                        Graphviz.fromString(graphText)
-                                .render(diagramFormat.graphvizjFormat())
-                                .toOutputStream(outputStream),
-                diagramFormat);
-        jigDocumentWriter.writeDebugText(graphText);
+        for (DotText dot : dotTexts.list()) {
+            JigDocumentWriter writer = jigDocumentWriter.apply(dot.documentSuffix());
+            writer.writeDiagram(
+                    outputStream ->
+                            Graphviz.fromString(dot.text())
+                                    .render(diagramFormat.graphvizjFormat())
+                                    .toOutputStream(outputStream),
+                    diagramFormat);
+            writer.writeDebugText(dot.text());
+        }
     }
 }

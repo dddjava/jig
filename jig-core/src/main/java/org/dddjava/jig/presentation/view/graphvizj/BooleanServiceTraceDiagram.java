@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 
-import java.util.StringJoiner;
-
 import static java.util.stream.Collectors.joining;
+
+import java.util.StringJoiner;
 
 public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> {
 
@@ -20,7 +20,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     }
 
     @Override
-    public String edit(ServiceAngles model) {
+    public DotTexts edit(ServiceAngles model) {
         ServiceAngles booleanServiceAngles = model.filterReturnsBoolean();
 
         // メソッド間の関連
@@ -74,7 +74,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
                 .add("{").add("rank=same;").add("\"Controller Method\"").add("/* userControllerMethodsText */").add(userControllerMethodsText).add("}")
                 .toString();
 
-        return graphText;
+        return new DotTexts(graphText);
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {

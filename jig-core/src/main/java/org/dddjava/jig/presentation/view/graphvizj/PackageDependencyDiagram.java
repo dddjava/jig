@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.networks.packages.*;
 
-import java.util.StringJoiner;
-
 import static java.util.stream.Collectors.joining;
+
+import java.util.StringJoiner;
 
 public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
@@ -20,7 +20,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     @Override
-    public String edit(PackageNetwork packageNetwork) {
+    public DotTexts edit(PackageNetwork packageNetwork) {
         PackageDependencies packageDependencies = packageNetwork.packageDependencies();
 
         BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
@@ -48,11 +48,11 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
                 })
                 .collect(joining("\n"));
 
-        return new StringJoiner("\n", "digraph {", "}")
+        return new DotTexts(new StringJoiner("\n", "digraph {", "}")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
                 .add(labelsText)
-                .toString();
+                .toString());
     }
 }

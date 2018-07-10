@@ -6,11 +6,10 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 import java.util.StringJoiner;
-
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.joining;
 
 public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
@@ -23,7 +22,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
     }
 
     @Override
-    public String edit(ServiceAngles serviceAngles) {
+    public DotTexts edit(ServiceAngles serviceAngles) {
         List<ServiceAngle> angles = serviceAngles.list();
 
         // メソッド間の関連
@@ -92,7 +91,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(legendText)
                 .toString();
 
-        return graphText;
+        return new DotTexts(graphText);
     }
 
     private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {

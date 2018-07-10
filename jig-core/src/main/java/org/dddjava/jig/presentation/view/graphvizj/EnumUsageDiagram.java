@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
-import java.util.StringJoiner;
-
 import static java.util.stream.Collectors.joining;
+
+import java.util.StringJoiner;
 
 public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
 
@@ -21,7 +21,7 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
     }
 
     @Override
-    public String edit(CategoryAngles categoryAngles) {
+    public DotTexts edit(CategoryAngles categoryAngles) {
 
         TypeIdentifiers enumTypes = categoryAngles.typeIdentifiers();
 
@@ -73,7 +73,7 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .add("enum以外[color=lightgoldenrodyellow];")
                 .toString();
 
-        return new StringJoiner("\n", "digraph JIG {", "}")
+        return new DotTexts(new StringJoiner("\n", "digraph JIG {", "}")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrodyellow];")
                 .add(legendText)
@@ -83,7 +83,7 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .add("node [shape=record,style=bold,color=black,fontsize=10];")
                 .add(enumValuesText)
                 .add(valuesRelationText.asText())
-                .toString();
+                .toString());
     }
 
     private String appendJapaneseName(TypeIdentifier typeIdentifier) {

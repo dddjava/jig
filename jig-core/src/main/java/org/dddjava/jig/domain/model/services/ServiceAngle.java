@@ -59,7 +59,7 @@ public class ServiceAngle {
         return methodDeclaration.declaringType();
     }
 
-    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド和名)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     @ReportItemFor(ReportItem.メソッド戻り値の型の和名)

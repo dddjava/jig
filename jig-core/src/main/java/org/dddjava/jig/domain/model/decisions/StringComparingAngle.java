@@ -18,7 +18,7 @@ public class StringComparingAngle {
         return methodDeclaration.declaringType();
     }
 
-    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッドシグネチャ)
     public MethodDeclaration methodDeclaration() {
         return methodDeclaration;
     }

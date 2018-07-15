@@ -21,7 +21,7 @@ public class DecisionAngle {
     }
 
     @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.分岐数)
     public Method method() {
         return method;

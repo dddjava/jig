@@ -7,7 +7,7 @@ package org.dddjava.jig.domain.model.report;
  */
 public enum ReportItem {
     クラス名,
-    メソッド名,
+    メソッドシグネチャ,
     メソッド戻り値の型,
 
     イベントハンドラ,

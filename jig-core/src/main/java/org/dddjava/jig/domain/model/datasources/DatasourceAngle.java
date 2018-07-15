@@ -43,7 +43,7 @@ public class DatasourceAngle {
         return methodDeclaration.declaringType();
     }
 
-    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     public MethodDeclaration method() {
         return methodDeclaration;

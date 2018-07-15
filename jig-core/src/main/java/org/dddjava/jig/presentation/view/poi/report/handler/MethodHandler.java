@@ -23,7 +23,7 @@ public class MethodHandler implements ItemHandler {
         switch (item) {
             case クラス名:
             case クラス和名:
-            case メソッド名:
+            case メソッドシグネチャ:
             case メソッド和名:
             case メソッド戻り値の型:
             case メソッド戻り値の型の和名:

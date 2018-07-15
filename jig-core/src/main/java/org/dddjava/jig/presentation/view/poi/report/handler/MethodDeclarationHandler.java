@@ -26,7 +26,7 @@ public class MethodDeclarationHandler implements ItemHandler {
             case クラス名:
             case クラス和名:
                 return new TypeIdentifierHandler(convertContext).handle(item, methodDeclaration.declaringType());
-            case メソッド名:
+            case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド和名:
                 return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).summarySentence();

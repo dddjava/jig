@@ -20,7 +20,7 @@ public class BoolQueryAngle {
 
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    @ReportItemFor(ReportItem.メソッド名)
+    @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド和名)
     public MethodDeclaration method() {
         return method;

@@ -9,6 +9,8 @@ import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerAngle;
+import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.*;
@@ -55,6 +57,7 @@ public class ClassListController {
     public JigModelAndView<AngleReporters> applicationList(ProjectData projectData) {
         LOGGER.info("入出力リストを出力します");
         AngleReporters angleReporters = new AngleReporters(
+                controllerReport(projectData),
                 serviceReport(projectData),
                 datasourceReport(projectData)
         );
@@ -91,6 +94,11 @@ public class ClassListController {
         );
 
         return new JigModelAndView<>(angleReporters, new PoiView(convertContext));
+    }
+
+    AngleReporter controllerReport(ProjectData projectData) {
+        ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
+        return new AngleReporter("CONTROLLER", ControllerAngle.class, controllerAngles.list());
     }
 
     AngleReporter serviceReport(ProjectData projectData) {

@@ -1,5 +1,11 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+
+import java.util.List;
+
 /**
  * メソッド
  */
@@ -7,10 +13,12 @@ public class Method {
 
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
+    List<AnnotatedMethod> annotatedMethods;
 
-    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber) {
+    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, List<AnnotatedMethod> annotatedMethods) {
         this.methodDeclaration = methodDeclaration;
         this.decisionNumber = decisionNumber;
+        this.annotatedMethods = annotatedMethods;
     }
 
     public MethodDeclaration declaration() {
@@ -23,5 +31,19 @@ public class Method {
 
     public boolean hasDecision() {
         return decisionNumber.notZero();
+    }
+
+    public boolean isControllerMethod(CharacterizedTypes characterizedTypes) {
+        return annotatedMethods.stream()
+                .anyMatch(annotatedMethod -> {
+                            String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                            // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
+                            // そのため独自アノテーションに対応できない
+                            return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping");
+                        }
+                )
+                && characterizedTypes.stream().pickup(methodDeclaration.declaringType()).has(Characteristic.CONTROLLER);
     }
 }

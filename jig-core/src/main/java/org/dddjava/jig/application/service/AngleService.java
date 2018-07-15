@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
@@ -29,6 +30,14 @@ import org.springframework.stereotype.Service;
 public class AngleService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AngleService.class);
+
+    /**
+     * コントローラーを分析する
+     */
+    public ControllerAngles controllerAngles(ProjectData projectData) {
+        Methods methods = projectData.controllerMethods();
+        return new ControllerAngles(methods);
+    }
 
     /**
      * サービスを分析する

@@ -114,6 +114,6 @@ public class MethodByteCode {
     }
 
     public Method method() {
-        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber));
+        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), annotatedMethods);
     }
 }

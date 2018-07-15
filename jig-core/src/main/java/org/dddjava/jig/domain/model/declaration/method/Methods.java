@@ -1,7 +1,10 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,5 +30,9 @@ public class Methods {
     public Methods filterHasDecision() {
         List<Method> list = this.list.stream().filter(Method::hasDecision).collect(toList());
         return new Methods(list);
+    }
+
+    public Methods controllerMethods(CharacterizedTypes characterizedTypes) {
+        return new Methods(list.stream().filter(method -> method.isControllerMethod(characterizedTypes)).collect(Collectors.toList()));
     }
 }

@@ -118,4 +118,8 @@ public class ProjectData {
     public Methods methods() {
         return methods;
     }
+
+    public Methods controllerMethods() {
+        return methods().controllerMethods(characterizedTypes);
+    }
 }

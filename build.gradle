@@ -13,7 +13,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.7.3-SNAPSHOT'
+    version = '2018.7.3'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'

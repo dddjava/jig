@@ -1,9 +1,12 @@
-package org.dddjava.jig.presentation.view.report;
+package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.presentation.view.report.ReportItem;
+import org.dddjava.jig.presentation.view.report.ReportItemFor;
+import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("COLLECTION")
 public class CollectionReportAdapter {

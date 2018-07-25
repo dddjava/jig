@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
@@ -19,7 +18,6 @@ import org.dddjava.jig.domain.model.report.JigDocument;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
-import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -116,7 +114,7 @@ public class ClassListController {
 
     AngleReporter valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        return new AngleReporter(valueKind.name(), ValueAngle.class, valueAngles.list());
+        return new AngleReporter(valueKind.name(), ValueReportAdapter.class, valueAngles.list());
     }
 
     AngleReporter collectionReport(ProjectData projectData) {
@@ -139,7 +137,7 @@ public class ClassListController {
 
     AngleReporter decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new AngleReporter(layer.asText(), DecisionAngle.class, decisionAngles.filter(layer));
+        return new AngleReporter(layer.asText(), DecisionReportAdapter.class, decisionAngles.filter(layer));
     }
 
     AngleReporter booleanReport(ProjectData projectData) {

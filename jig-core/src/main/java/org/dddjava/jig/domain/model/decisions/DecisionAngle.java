@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.method.Method;
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * 判断の切り口
@@ -20,9 +18,6 @@ public class DecisionAngle {
         this.typeCharacteristics = characterizedTypes.stream().pickup(method.declaration().declaringType()).characteristics();
     }
 
-    @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.メソッドシグネチャ)
-    @ReportItemFor(ReportItem.分岐数)
     public Method method() {
         return method;
     }

@@ -13,54 +13,24 @@ import java.util.stream.Stream;
 public class AngleReporter {
 
     String title;
-    Class<?> angleClass;
     List<?> angles;
-
     Class<?> adapterClass;
 
-    @Deprecated
-    public <T> AngleReporter(String title, Class<T> angleClass, List<T> angles) {
+    public AngleReporter(String title, Class<?> adapterClass, List<?> angles) {
         this.title = title;
-        this.angleClass = angleClass;
-        this.angles = angles;
-    }
-
-    public AngleReporter(Class<?> adapterClass, List<?> angles) {
         this.adapterClass = adapterClass;
         this.angles = angles;
     }
 
-    public Report toReport(ConvertContext convertContext) {
-        if (adapterClass != null) {
-            return toReportWithAdapter(convertContext);
-        }
-
-        ItemConverter[] itemConverters = Arrays.stream(angleClass.getMethods())
-                .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
-                .flatMap(method -> {
-                    // 複数アノテーションがついていたら展開
-                    if (method.isAnnotationPresent(ReportItemsFor.class)) {
-                        return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
-                                .map(reportItemFor -> new ReportItemMethod(reportItemFor, method, convertContext));
-                    }
-
-                    // 1つだけのはそのまま
-                    ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
-                    return Stream.of(new ReportItemMethod(reportItemFor, method, convertContext));
-                })
-                .sorted()
-                .toArray(ItemConverter[]::new);
-
-        return new Report(title, angles, itemConverters);
+    public AngleReporter(Class<?> adapterClass, List<?> angles) {
+        this(adapterClass.getAnnotation(ReportTitle.class).value(), adapterClass, angles);
     }
 
-    private Report toReportWithAdapter(ConvertContext convertContext) {
+    public Report toReport(ConvertContext convertContext) {
         try {
             // TODO angleを受け取るコンストラクタを識別する
             Constructor<?> constructor = adapterClass.getDeclaredConstructor();
             Object adapter = constructor.newInstance();
-
-            this.title = adapterClass.getAnnotation(ReportTitle.class).value();
 
             ItemConverter[] itemConverters = Arrays.stream(adapterClass.getMethods())
                     .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))

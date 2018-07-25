@@ -21,17 +21,17 @@ public class MethodSmellReportAdapter {
         return angle.methodDeclaration();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "条件分岐数")
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "条件分岐数", order = 1)
     public String decisionNumber(MethodSmellAngle angle) {
         return angle.decisionNumber();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用")
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用", order = 2)
     public boolean notUseField(MethodSmellAngle angle) {
         return angle.notUseField();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受")
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受", order = 3)
     public boolean primitiveInterface(MethodSmellAngle angle) {
         return angle.primitiveInterface();
     }

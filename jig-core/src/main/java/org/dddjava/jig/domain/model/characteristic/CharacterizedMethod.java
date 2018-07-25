@@ -41,7 +41,7 @@ public class CharacterizedMethod {
                 return methodByteCode.accessor().isPublic();
             case NOT_PUBLIC:
                 return methodByteCode.accessor().isNotPublic();
-                // TODO
+            // TODO
         }
 
         throw new IllegalArgumentException(methodCharacteristic.name());

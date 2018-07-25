@@ -7,10 +7,11 @@ import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 
-import static java.util.stream.Collectors.*;
-
 import java.util.List;
 import java.util.StringJoiner;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> {
 

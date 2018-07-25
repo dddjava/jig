@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
-import static java.util.stream.Collectors.joining;
-
 import java.util.StringJoiner;
+
+import static java.util.stream.Collectors.joining;
 
 public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
 

@@ -36,6 +36,7 @@ public class DefaultLayout implements Layout {
         this.resourcesDirectory = Paths.get(resourcesDirectory);
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
+
     @Override
     public Path[] extractClassPath() {
         try (Stream<Path> walk = Files.walk(projectPath)) {

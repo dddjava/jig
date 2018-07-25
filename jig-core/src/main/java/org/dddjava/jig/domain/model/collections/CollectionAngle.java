@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * コレクションの切り口
@@ -33,22 +31,15 @@ public class CollectionAngle {
         this.methods = methods.declarations().filterDeclareTypeIs(typeIdentifier);
     }
 
-    @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
-    @ReportItemFor(ReportItem.使用箇所数)
-    @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return userTypeIdentifiers;
     }
 
-    @ReportItemFor(ReportItem.メソッド数)
-    @ReportItemFor(ReportItem.メソッド一覧)
     public MethodDeclarations methods() {
         return methods;
     }
-
 }

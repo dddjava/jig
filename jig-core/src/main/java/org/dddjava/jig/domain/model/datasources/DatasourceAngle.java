@@ -7,8 +7,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethod
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 /**
  * データソースの切り口
@@ -37,34 +35,26 @@ public class DatasourceAngle {
         return new DatasourceAngle(methodDeclaration, sqls);
     }
 
-    @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.クラス和名)
     public TypeIdentifier declaringType() {
         return methodDeclaration.declaringType();
     }
 
-    @ReportItemFor(ReportItem.メソッドシグネチャ)
-    @ReportItemFor(ReportItem.メソッド戻り値の型)
     public MethodDeclaration method() {
         return methodDeclaration;
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "INSERT", order = 1)
     public String insertTables() {
         return sqls.tables(SqlType.INSERT).asText();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "SELECT", order = 2)
     public String selectTables() {
         return sqls.tables(SqlType.SELECT).asText();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "UPDATE", order = 3)
     public String updateTables() {
         return sqls.tables(SqlType.UPDATE).asText();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "DELETE", order = 4)
     public String deleteTables() {
         return sqls.tables(SqlType.DELETE).asText();
     }

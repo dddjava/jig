@@ -18,6 +18,7 @@ public class AngleReporter {
 
     Class<?> adapterClass;
 
+    @Deprecated
     public <T> AngleReporter(String title, Class<T> angleClass, List<T> angles) {
         this.title = title;
         this.angleClass = angleClass;

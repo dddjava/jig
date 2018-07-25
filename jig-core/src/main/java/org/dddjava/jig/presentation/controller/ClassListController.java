@@ -18,7 +18,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMe
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.report.JigDocument;
-import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
@@ -31,6 +30,7 @@ import org.dddjava.jig.presentation.view.poi.PoiView;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
+import org.dddjava.jig.presentation.view.report.ServiceReportAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -103,7 +103,7 @@ public class ClassListController {
 
     AngleReporter serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        return new AngleReporter("SERVICE", ServiceAngle.class, serviceAngles.list());
+        return new AngleReporter(ServiceReportAdapter.class, serviceAngles.list());
     }
 
     AngleReporter datasourceReport(ProjectData projectData) {

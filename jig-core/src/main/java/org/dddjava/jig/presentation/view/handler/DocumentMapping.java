@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

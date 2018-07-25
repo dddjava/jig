@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.report.ReportItem;
-import org.dddjava.jig.domain.model.report.ReportItemFor;
 
 @ReportTitle("COLLECTION")
 public class CollectionReportAdapter {

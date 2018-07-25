@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.report;
+package org.dddjava.jig.presentation.view.report;
 
 /**
  * 一覧出力項目

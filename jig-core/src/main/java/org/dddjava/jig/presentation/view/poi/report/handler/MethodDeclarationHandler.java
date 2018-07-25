@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.poi.report.handler;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.report.ReportItem;
+import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 public class MethodDeclarationHandler implements ItemHandler {

@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
-import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.domain.model.report.ReportItemFor;
+import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.poi.report.handler.Handlers;
 
 import java.lang.reflect.InvocationTargetException;

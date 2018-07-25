@@ -3,7 +3,7 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;

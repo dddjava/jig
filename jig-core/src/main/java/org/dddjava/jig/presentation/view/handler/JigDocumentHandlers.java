@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.report.JigDocument;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;

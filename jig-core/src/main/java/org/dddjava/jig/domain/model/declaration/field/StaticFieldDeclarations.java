@@ -37,4 +37,11 @@ public class StaticFieldDeclarations {
                 .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(typeIdentifier))
                 .collect(StaticFieldDeclarations.collector());
     }
+
+    public StaticFieldDeclarations filterFieldTypeIs(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(fieldDeclaration -> fieldDeclaration.typeIdentifier().equals(typeIdentifier))
+                .collect(StaticFieldDeclarations.collector());
+
+    }
 }

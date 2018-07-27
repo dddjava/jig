@@ -3,14 +3,15 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
-import java.util.StringJoiner;
-
 import static java.util.stream.Collectors.joining;
+
+import java.util.StringJoiner;
 
 public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
 
@@ -34,7 +35,8 @@ public class EnumUsageDiagram implements DotTextEditor<CategoryAngles> {
 
         String enumValuesText = categoryAngles.list().stream()
                 .map(categoryAngle -> {
-                    String values = categoryAngle.constantsDeclarations().list().stream()
+                    StaticFieldDeclarations enumValues = categoryAngle.typeSafeConstantsDeclarations();
+                    String values = enumValues.list().stream()
                             .map(StaticFieldDeclaration::nameText)
                             .collect(joining("|"));
                     return new Node(categoryAngle.typeIdentifier().fullQualifiedName() + "_values")

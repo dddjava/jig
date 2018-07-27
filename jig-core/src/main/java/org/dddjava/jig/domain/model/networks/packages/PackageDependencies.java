@@ -42,4 +42,8 @@ public class PackageDependencies {
                 .collect(Collectors.toList());
         return new PackageDependencies(list);
     }
+
+    public boolean available() {
+        return !dependencies.isEmpty();
+    }
 }

@@ -2,7 +2,8 @@ package org.dddjava.jig.domain.model.networks.packages;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 
-import java.util.Collections;
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 
 public class PackageNetworks {
@@ -15,7 +16,11 @@ public class PackageNetworks {
     }
 
     public List<PackageNetwork> list() {
-        if (depth.unlimited()) return Collections.singletonList(origin);
-        return Collections.singletonList(origin.applyDepth(depth));
+        PackageDepth maxDepth = origin.maxDepthWith(depth);
+
+        return maxDepth.surfaceList().stream()
+                .map(depth -> origin.applyDepth(depth))
+                .filter(PackageNetwork::available)
+                .collect(toList());
     }
 }

@@ -31,7 +31,6 @@ public class PackageNetwork {
     }
 
     public PackageNetwork applyDepth(PackageDepth depth) {
-        if (depth.unlimited()) return this;
         return new PackageNetwork(
                 packageIdentifiers.applyDepth(depth),
                 packageDependencies.applyDepth(depth),
@@ -41,5 +40,13 @@ public class PackageNetwork {
 
     public PackageDepth appliedDepth() {
         return appliedDepth;
+    }
+
+    public boolean available() {
+        return packageDependencies().available();
+    }
+
+    public PackageDepth maxDepthWith(PackageDepth depth) {
+        return depth.unlimited() ? packageIdentifiers.maxDepth() : depth;
     }
 }

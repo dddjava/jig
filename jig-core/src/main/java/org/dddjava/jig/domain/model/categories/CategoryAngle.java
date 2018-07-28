@@ -52,8 +52,8 @@ public class CategoryAngle {
         return constantsDeclarations.toNameText();
     }
 
-    public StaticFieldDeclarations typeSafeConstantsDeclarations() {
-        return constantsDeclarations.filterFieldTypeIs(typeIdentifier);
+    public StaticFieldDeclarations constantsDeclarations() {
+        return constantsDeclarations;
     }
 
     public String fieldDeclarations() {
@@ -75,5 +75,4 @@ public class CategoryAngle {
     public boolean isPolymorphism() {
         return characteristics.has(Characteristic.ENUM_POLYMORPHISM);
     }
-
 }

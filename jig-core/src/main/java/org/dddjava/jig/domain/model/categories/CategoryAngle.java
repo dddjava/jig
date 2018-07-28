@@ -20,7 +20,7 @@ public class CategoryAngle {
     StaticFieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    public CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
+    CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
         this.characteristics = characteristics;
         this.typeIdentifier = typeIdentifier;
         this.userTypeIdentifiers = userTypeIdentifiers;

@@ -49,11 +49,11 @@ public class CategoryAngle {
     }
 
     public String constantsDeclarationsName() {
-        return constantsDeclarations.toNameText();
+        return constantsDeclarations().toNameText();
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return constantsDeclarations;
+        return constantsDeclarations.filterTypeSafeConstants();
     }
 
     public String fieldDeclarations() {

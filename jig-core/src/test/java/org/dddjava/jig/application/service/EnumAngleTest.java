@@ -95,6 +95,11 @@ public class EnumAngleTest {
                         new TypeIdentifier("stub.domain.model.kind.SimpleEnum"),
                         "[A, B, C, D]", "[]", "[AsmByteCodeReaderTest, RelationEnum]",
                         false, false, false
+                ),
+                tuple(
+                        new TypeIdentifier("stub.domain.model.kind.HasStaticFieldEnum"),
+                        "[A, B]", "[]", "[]",
+                        false, false, false
                 )
         );
     }

@@ -32,4 +32,8 @@ public class StaticFieldDeclaration {
     public TypeIdentifier declaringType() {
         return declaringType;
     }
+
+    public boolean isTypeSafe() {
+        return typeIdentifier.equals(declaringType);
+    }
 }

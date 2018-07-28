@@ -37,4 +37,10 @@ public class StaticFieldDeclarations {
                 .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(typeIdentifier))
                 .collect(StaticFieldDeclarations.collector());
     }
+
+    public StaticFieldDeclarations filterTypeSafeConstants() {
+        return list.stream()
+                .filter(StaticFieldDeclaration::isTypeSafe)
+                .collect(StaticFieldDeclarations.collector());
+    }
 }

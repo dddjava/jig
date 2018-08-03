@@ -42,7 +42,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
             unidirectionalRelation.add(packageDependency.from(), packageDependency.to());
         }
 
-        RelationText bidirectional = new RelationText("edge [color=red];");
+        RelationText bidirectional = new RelationText("edge [color=red,dir=both,style=bold];");
         for (BidirectionalDependency packageDependency : bidirectionalDependencies.list()) {
             bidirectional.add(packageDependency.left(), packageDependency.right());
         }

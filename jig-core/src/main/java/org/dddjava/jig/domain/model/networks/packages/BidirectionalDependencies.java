@@ -38,13 +38,17 @@ public class BidirectionalDependencies {
 
     public static BidirectionalDependencies from(PackageDependencies packageDependencies) {
         List<BidirectionalDependency> list = new ArrayList<>();
+        BidirectionalDependencies bidirectionalDependencies = new BidirectionalDependencies(list);
+
         for (PackageDependency left : packageDependencies.list()) {
             for (PackageDependency right : packageDependencies.list()) {
                 if (left.from().equals(right.to()) && left.to().equals(right.from())) {
-                    list.add(new BidirectionalDependency(left.from(), left.to()));
+                    if (bidirectionalDependencies.notContains(left)) {
+                        list.add(new BidirectionalDependency(left.from(), left.to()));
+                    }
                 }
             }
         }
-        return new BidirectionalDependencies(list);
+        return bidirectionalDependencies;
     }
 }

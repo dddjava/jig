@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.declaration.method;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 
 import java.util.List;
 
@@ -45,5 +46,22 @@ public class Method {
                         }
                 )
                 && characterizedTypes.stream().pickup(methodDeclaration.declaringType()).has(Characteristic.CONTROLLER);
+    }
+
+    public AnnotationDescription requestMappingDescription() {
+        return annotatedMethods.stream()
+                // WET
+                .filter(annotatedMethod -> {
+                            String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                            // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
+                            // そのため独自アノテーションに対応できない
+                            return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping");
+                        }
+                )
+                .findFirst()
+                .map(AnnotatedMethod::description)
+                .orElseGet(AnnotationDescription::new);
     }
 }

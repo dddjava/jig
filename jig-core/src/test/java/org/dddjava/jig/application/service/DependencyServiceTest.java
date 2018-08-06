@@ -15,12 +15,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import testing.TestConfiguration;
 import testing.TestSupport;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig
 @ExtendWith(SpringExtension.class)
@@ -56,7 +56,9 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation.annotation",
                         "stub.domain.model.relation.enumeration",
                         "stub.domain.model.type",
-                        "stub.domain.model.type.fuga"
+                        "stub.domain.model.type.fuga",
+                        "stub.domain.model.relation.staticmethod.to_constant_field",
+                        "stub.domain.model.relation.staticmethod"
                 );
 
         // パッケージの関連
@@ -71,7 +73,8 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation -> stub.domain.model.relation.clz",
                         "stub.domain.model.relation -> stub.domain.model.relation.field",
                         "stub.domain.model.relation -> stub.domain.model.relation.method",
-                        "stub.domain.model.relation -> stub.domain.model.relation.enumeration"
+                        "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
+                        "stub.domain.model.relation.staticmethod -> stub.domain.model.relation.staticmethod.to_constant_field"
                 );
     }
 

@@ -53,11 +53,11 @@ public class MethodInstruction {
     }
 
 
-    static void accessPrimitiveConstantField() {
+    void accessPrimitiveConstantField() {
         Object obj = IntConstantFieldHolder.INT_CONSTANT;
     }
 
-    static void accessPrimitiveWrapperConstantField() {
+    void accessPrimitiveWrapperConstantField() {
         Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
     }
 }

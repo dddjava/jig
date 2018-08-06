@@ -57,8 +57,9 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation.enumeration",
                         "stub.domain.model.type",
                         "stub.domain.model.type.fuga",
-                        "stub.domain.model.relation.staticmethod.to_constant_field",
-                        "stub.domain.model.relation.staticmethod"
+                        "stub.domain.model.relation.static_method.to_constant_field",
+                        "stub.domain.model.relation.static_method.to_static_field",
+                        "stub.domain.model.relation.static_method"
                 );
 
         // パッケージの関連
@@ -74,7 +75,8 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation -> stub.domain.model.relation.field",
                         "stub.domain.model.relation -> stub.domain.model.relation.method",
                         "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
-                        "stub.domain.model.relation.staticmethod -> stub.domain.model.relation.staticmethod.to_constant_field"
+                        "stub.domain.model.relation.static_method -> stub.domain.model.relation.static_method.to_constant_field",
+                        "stub.domain.model.relation.static_method -> stub.domain.model.relation.static_method.to_static_field"
                 );
     }
 

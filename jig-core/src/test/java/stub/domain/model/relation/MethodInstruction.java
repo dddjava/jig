@@ -1,6 +1,6 @@
 package stub.domain.model.relation;
 
-import stub.domain.model.relation.constant.to_primitive_constant.IntConstantFieldHolder;
+import stub.domain.model.relation.constant.to_primitive_constant.ConstantFieldHolder;
 import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
 
@@ -54,10 +54,15 @@ public class MethodInstruction {
 
 
     void accessPrimitiveConstantField() {
-        Object obj = IntConstantFieldHolder.INT_CONSTANT;
+        Object obj = ConstantFieldHolder.INT_CONSTANT;
+    }
+
+    void accessStringConstantField() {
+        Object obj = ConstantFieldHolder.STRING_CONSTANT;
     }
 
     void accessPrimitiveWrapperConstantField() {
         Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
     }
+
 }

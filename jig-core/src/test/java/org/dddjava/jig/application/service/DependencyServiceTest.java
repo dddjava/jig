@@ -74,7 +74,6 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation -> stub.domain.model.relation.field",
                         "stub.domain.model.relation -> stub.domain.model.relation.method",
                         "stub.domain.model.relation -> stub.domain.model.relation.enumeration",
-                        "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_constant",
                         "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant"
                 );
     }

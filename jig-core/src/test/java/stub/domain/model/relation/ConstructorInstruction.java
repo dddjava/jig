@@ -1,5 +1,7 @@
 package stub.domain.model.relation;
 
+import stub.domain.model.relation.constant.to_primitive_constant.ConstantFieldHolder;
+import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
 
 import java.util.List;
@@ -30,6 +32,15 @@ public class ConstructorInstruction {
         // メソッド参照
         Function<MethodReference, String> method = MethodReference::toString;
 
+        //primitive定数へのアクセス
+        Object intConstant = ConstantFieldHolder.INT_CONSTANT;
+
+        //String定数へのアクセス
+        Object stringConstant = ConstantFieldHolder.STRING_CONSTANT;
+
+        //Wrapper定数へのアクセス
+        Object integerConstant = IntegerConstantFieldHolder.INTEGER_CONSTANT;
+
         // コンストラクタ呼び出し
         new Instantiation();
 
@@ -38,6 +49,7 @@ public class ConstructorInstruction {
 
         // 例外のスロー
         throw new UncheckedExceptionA();
+
     }
 
     ConstructorInstruction(List<ArgumentGenericsParameter> list) throws CheckedException {

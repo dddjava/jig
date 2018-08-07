@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import stub.domain.model.relation.ConstructorInstruction;
 import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.StaticMethodInstruction;
+import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
 
 import java.net.URISyntaxException;
@@ -57,7 +58,9 @@ public class MethodInstructionTest {
                         new TypeIdentifier(UseInLambda.class),
                         new TypeIdentifier(MethodReference.class),
                         new TypeIdentifier(UncheckedExceptionA.class),
-                        new TypeIdentifier(EnclosedClass.NestedClass.class)
+                        new TypeIdentifier(EnclosedClass.NestedClass.class),
+                        new TypeIdentifier(Integer.class),
+                        new TypeIdentifier(IntegerConstantFieldHolder.class)
                 )
                 .doesNotContain(
                         // ローカル変数宣言だけで使用されている型は取得できない（コンパイルされたら消える）

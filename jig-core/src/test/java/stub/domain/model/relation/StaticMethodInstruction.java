@@ -1,5 +1,7 @@
 package stub.domain.model.relation;
 
+import stub.domain.model.relation.constant.to_primitive_constant.ConstantFieldHolder;
+import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
 
 import java.util.List;
@@ -48,5 +50,18 @@ public class StaticMethodInstruction {
 
     static void causeException() {
         throw new UncheckedExceptionA();
+    }
+
+
+    static void accessPrimitiveConstantField() {
+        Object obj = ConstantFieldHolder.INT_CONSTANT;
+    }
+
+    static void accessStringConstantField() {
+        Object obj = ConstantFieldHolder.STRING_CONSTANT;
+    }
+
+    static void accessPrimitiveWrapperConstantField() {
+        Object obj = IntegerConstantFieldHolder.INTEGER_CONSTANT;
     }
 }

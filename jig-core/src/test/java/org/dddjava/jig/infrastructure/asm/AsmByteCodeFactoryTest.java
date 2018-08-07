@@ -1,5 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -34,35 +37,50 @@ import static org.assertj.core.api.Assertions.tuple;
 public class AsmByteCodeFactoryTest {
 
     @Test
-    void 付与されているアノテーションと記述が取得できる() throws Exception {
+    void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         ByteCode actual = exercise(Annotated.class);
 
-        assertThat(actual.fieldAnnotationDeclarations())
-                .hasSize(1)
-                .first()
-                .satisfies(fieldAnnotationDeclaration -> {
-                    assertThat(fieldAnnotationDeclaration.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
-                    assertThat(fieldAnnotationDeclaration.fieldDeclaration().nameText()).isEqualTo("field");
+        List<AnnotatedField> annotatedFields = actual.fieldAnnotationDeclarations();
+        assertThat(annotatedFields).hasSize(1);
 
-                    String descriptionText = fieldAnnotationDeclaration.description().asText();
-                    assertThat(descriptionText).isEqualTo("[string = \"af\", arrayString = [...], number = 13, clz = Ljava/lang/reflect/Field;, arrayClz = [...], enumValue = DUMMY1, annotation = Ljava/lang/Deprecated;[...]]");
-                });
+        AnnotatedField annotatedField = annotatedFields.get(0);
+        assertThat(annotatedField.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+        assertThat(annotatedField.fieldDeclaration().nameText()).isEqualTo("field");
+        AnnotationDescription description = annotatedField.description();
+        assertThat(description.asText())
+                .contains(
+                        "string = \"af\"",
+                        "arrayString = [...]",
+                        "number = 13",
+                        "clz = Ljava/lang/reflect/Field;",
+                        "arrayClz = [...]",
+                        "enumValue = DUMMY1",
+                        "annotation = Ljava/lang/Deprecated;[...]"
+                );
+    }
 
-        assertThat(actual.instanceMethodByteCodes())
-                .hasSize(1)
-                .first()
-                .satisfies(methodByteCode -> {
-                    assertThat(methodByteCode.methodAnnotationDeclarations())
-                            .hasSize(1)
-                            .first()
-                            .satisfies(methodAnnotationDeclaration -> {
-                                assertThat(methodAnnotationDeclaration.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
-                                assertThat(methodAnnotationDeclaration.methodDeclaration().asSignatureSimpleText()).isEqualTo("method()");
+    @Test
+    void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
+        ByteCode actual = exercise(Annotated.class);
 
-                                String descriptionText = methodAnnotationDeclaration.description().asText();
-                                assertThat(descriptionText).isEqualTo("[string = \"am\", arrayString = [...], number = 23, clz = Ljava/lang/reflect/Method;, enumValue = DUMMY2]");
-                            });
-                });
+        List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
+        assertThat(instanceMethodByteCodes).hasSize(1);
+
+        List<AnnotatedMethod> annotatedMethods = instanceMethodByteCodes.get(0).methodAnnotationDeclarations();
+        assertThat(annotatedMethods).hasSize(1);
+
+        AnnotatedMethod annotatedMethod = annotatedMethods.get(0);
+        assertThat(annotatedMethod.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+        assertThat(annotatedMethod.methodDeclaration().asSignatureSimpleText()).isEqualTo("method()");
+        AnnotationDescription description = annotatedMethod.description();
+        assertThat(description.asText())
+                .contains(
+                        "string = \"am\"",
+                        "arrayString = [...]",
+                        "number = 23",
+                        "clz = Ljava/lang/reflect/Method;",
+                        "enumValue = DUMMY2"
+                );
     }
 
     @Test

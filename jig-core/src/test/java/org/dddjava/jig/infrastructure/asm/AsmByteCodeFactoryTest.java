@@ -40,7 +40,7 @@ public class AsmByteCodeFactoryTest {
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         ByteCode actual = exercise(Annotated.class);
 
-        List<AnnotatedField> annotatedFields = actual.fieldAnnotationDeclarations();
+        List<AnnotatedField> annotatedFields = actual.annotatedFields();
         assertThat(annotatedFields).hasSize(1);
 
         AnnotatedField annotatedField = annotatedFields.get(0);
@@ -66,7 +66,7 @@ public class AsmByteCodeFactoryTest {
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         assertThat(instanceMethodByteCodes).hasSize(1);
 
-        List<AnnotatedMethod> annotatedMethods = instanceMethodByteCodes.get(0).methodAnnotationDeclarations();
+        List<AnnotatedMethod> annotatedMethods = instanceMethodByteCodes.get(0).annotatedMethods();
         assertThat(annotatedMethods).hasSize(1);
 
         AnnotatedMethod annotatedMethod = annotatedMethods.get(0);

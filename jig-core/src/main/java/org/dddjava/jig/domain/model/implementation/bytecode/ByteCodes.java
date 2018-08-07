@@ -47,7 +47,7 @@ public class ByteCodes {
     public AnnotatedFields annotatedFields() {
         List<AnnotatedField> annotatedFields = new ArrayList<>();
         for (ByteCode byteCode : list()) {
-            annotatedFields.addAll(byteCode.fieldAnnotationDeclarations());
+            annotatedFields.addAll(byteCode.annotatedFields());
         }
         return new AnnotatedFields(annotatedFields);
     }
@@ -55,7 +55,7 @@ public class ByteCodes {
     public AnnotatedMethods annotatedMethods() {
         List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
         for (MethodByteCode methodByteCode : instanceMethodByteCodes()) {
-            annotatedMethods.addAll(methodByteCode.methodAnnotationDeclarations());
+            annotatedMethods.addAll(methodByteCode.annotatedMethods());
         }
         return new AnnotatedMethods(annotatedMethods);
     }

@@ -120,7 +120,7 @@ public class ByteCode {
         annotatedFields.add(annotatedField);
     }
 
-    public List<AnnotatedField> fieldAnnotationDeclarations() {
+    public List<AnnotatedField> annotatedFields() {
         return annotatedFields;
     }
 

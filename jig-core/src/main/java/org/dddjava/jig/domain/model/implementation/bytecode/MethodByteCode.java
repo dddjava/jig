@@ -84,7 +84,7 @@ public class MethodByteCode {
         useTypes.add(type);
     }
 
-    public List<AnnotatedMethod> methodAnnotationDeclarations() {
+    public List<AnnotatedMethod> annotatedMethods() {
         return annotatedMethods;
     }
 

@@ -252,8 +252,20 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
         @Override
         public AnnotationVisitor visitArray(String name) {
-            annotationDescription.addArray(name);
-            return super.visitArray(name);
+
+            return new AnnotationVisitor(api) {
+                List<Object> list = new ArrayList<>();
+
+                @Override
+                public void visit(String name, Object value) {
+                    list.add(value);
+                }
+
+                @Override
+                public void visitEnd() {
+                    annotationDescription.addArray(name, list);
+                }
+            };
         }
 
         @Override

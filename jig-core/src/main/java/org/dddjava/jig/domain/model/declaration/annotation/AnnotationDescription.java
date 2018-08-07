@@ -18,8 +18,8 @@ public class AnnotationDescription {
         list.add(name + " = " + descriptor + "[...]");
     }
 
-    public void addArray(String name) {
-        list.add(name + " = [...]");
+    public void addArray(String name, List<Object> list) {
+        this.list.add(name + " = " + list.toString());
     }
 
     public void addEnum(String name, String value) {
@@ -27,10 +27,6 @@ public class AnnotationDescription {
     }
 
     public void addParam(String name, Object value) {
-        if (value instanceof String) {
-            list.add(name + " = \"" + value + "\"");
-        } else {
-            list.add(name + " = " + value);
-        }
+        list.add(name + " = " + value);
     }
 }

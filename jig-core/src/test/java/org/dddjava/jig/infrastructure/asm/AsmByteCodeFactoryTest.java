@@ -41,11 +41,12 @@ public class AsmByteCodeFactoryTest {
         ByteCode actual = exercise(Annotated.class);
 
         List<AnnotatedField> annotatedFields = actual.annotatedFields();
-        assertThat(annotatedFields).hasSize(1);
+        AnnotatedField annotatedField = annotatedFields.stream()
+                .filter(e -> e.fieldDeclaration().nameText().equals("field"))
+                .findFirst().orElseThrow(AssertionError::new);
 
-        AnnotatedField annotatedField = annotatedFields.get(0);
-        assertThat(annotatedField.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
-        assertThat(annotatedField.fieldDeclaration().nameText()).isEqualTo("field");
+        assertThat(annotatedField.annotationType()).isEqualTo(new TypeIdentifier(VariableAnnotation.class));
+
         AnnotationDescription description = annotatedField.description();
         assertThat(description.asText())
                 .contains(
@@ -64,14 +65,14 @@ public class AsmByteCodeFactoryTest {
         ByteCode actual = exercise(Annotated.class);
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
-        assertThat(instanceMethodByteCodes).hasSize(1);
+        AnnotatedMethod annotatedMethod = instanceMethodByteCodes.stream()
+                .filter(e -> e.method().declaration().asSignatureSimpleText().equals("method()"))
+                .flatMap(e -> e.annotatedMethods().stream())
+                // 今はアノテーション1つなのでこれでOK
+                .findFirst().orElseThrow(AssertionError::new);
 
-        List<AnnotatedMethod> annotatedMethods = instanceMethodByteCodes.get(0).annotatedMethods();
-        assertThat(annotatedMethods).hasSize(1);
-
-        AnnotatedMethod annotatedMethod = annotatedMethods.get(0);
         assertThat(annotatedMethod.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
-        assertThat(annotatedMethod.methodDeclaration().asSignatureSimpleText()).isEqualTo("method()");
+
         AnnotationDescription description = annotatedMethod.description();
         assertThat(description.asText())
                 .contains(

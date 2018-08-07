@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-public class AsmByteCodeReaderTest {
+public class AsmByteCodeFactoryTest {
 
     @Test
     void 付与されているアノテーションと記述が取得できる() throws Exception {

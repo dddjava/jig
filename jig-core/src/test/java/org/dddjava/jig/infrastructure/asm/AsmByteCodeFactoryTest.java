@@ -50,13 +50,13 @@ public class AsmByteCodeFactoryTest {
         AnnotationDescription description = annotatedField.description();
         assertThat(description.asText())
                 .contains(
-                        "string = af",
-                        "arrayString = [bf]",
-                        "number = 13",
-                        "clz = Ljava/lang/reflect/Field;",
-                        "arrayClz = [Ljava/lang/Object;, Ljava/lang/Object;]",
-                        "enumValue = DUMMY1",
-                        "annotation = Ljava/lang/Deprecated;[...]"
+                        "string=af",
+                        "arrayString=[bf]",
+                        "number=13",
+                        "clz=Ljava/lang/reflect/Field;",
+                        "arrayClz=[Ljava/lang/Object;, Ljava/lang/Object;]",
+                        "enumValue=DUMMY1",
+                        "annotation=Ljava/lang/Deprecated;[...]"
                 );
     }
 
@@ -76,11 +76,11 @@ public class AsmByteCodeFactoryTest {
         AnnotationDescription description = annotatedMethod.description();
         assertThat(description.asText())
                 .contains(
-                        "string = am",
-                        "arrayString = [bm]",
-                        "number = 23",
-                        "clz = Ljava/lang/reflect/Method;",
-                        "enumValue = DUMMY2"
+                        "string=am",
+                        "arrayString=[bm]",
+                        "number=23",
+                        "clz=Ljava/lang/reflect/Method;",
+                        "enumValue=DUMMY2"
                 );
     }
 

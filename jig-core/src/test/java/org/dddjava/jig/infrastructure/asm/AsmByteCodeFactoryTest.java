@@ -58,6 +58,9 @@ public class AsmByteCodeFactoryTest {
                         "enumValue=DUMMY1",
                         "annotation=Ljava/lang/Deprecated;[...]"
                 );
+
+        assertThat(description.textOf("arrayString"))
+                .isEqualTo("[bf]");
     }
 
     @Test

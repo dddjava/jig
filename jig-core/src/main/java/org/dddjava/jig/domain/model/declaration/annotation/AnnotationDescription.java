@@ -30,4 +30,8 @@ public class AnnotationDescription {
     public void addParam(String name, Object value) {
         map.put(name, String.valueOf(value));
     }
+
+    public String textOf(String name) {
+        return map.get(name);
+    }
 }

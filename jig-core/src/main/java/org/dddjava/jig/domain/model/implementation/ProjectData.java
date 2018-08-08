@@ -107,11 +107,11 @@ public class ProjectData {
         return characterizedMethods;
     }
 
-    public FieldAnnotations annotatedFields() {
+    public FieldAnnotations fieldAnnotations() {
         return fieldAnnotations;
     }
 
-    public MethodAnnotations annotatedMethods() {
+    public MethodAnnotations methodAnnotations() {
         return methodAnnotations;
     }
 

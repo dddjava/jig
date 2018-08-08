@@ -17,9 +17,9 @@ public class ControllerAngles {
         return list;
     }
 
-    public ControllerAngles(Methods handlerMethods) {
+    public ControllerAngles(Methods controllerMethods) {
         List<ControllerAngle> list = new ArrayList<>();
-        for (Method method : handlerMethods.list()) {
+        for (Method method : controllerMethods.list()) {
             list.add(new ControllerAngle(method));
         }
         this.list = list;

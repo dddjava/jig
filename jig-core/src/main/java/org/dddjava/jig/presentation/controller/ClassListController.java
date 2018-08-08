@@ -132,7 +132,7 @@ public class ClassListController {
     }
 
     AngleReporter validateAnnotationReport(ProjectData projectData) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
+        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.fieldAnnotations(), projectData.methodAnnotations());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());

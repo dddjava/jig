@@ -79,8 +79,8 @@ class ByteCodeAnalyzer extends ClassVisitor {
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
                     byteCode.registerUseType(annotationTypeIdentifier);
-                    return new MyAnnotationVisitor(this.api, annotationDescription ->
-                            byteCode.registerFieldAnnotation(new FieldAnnotation(new Annotation(annotationTypeIdentifier, annotationDescription), fieldDeclaration)));
+                    return new MyAnnotationVisitor(this.api, annotationTypeIdentifier, annotation ->
+                            byteCode.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }
             };
         }
@@ -110,8 +110,8 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodByteCode.registerAnnotation(new MethodAnnotation(new Annotation(typeDescriptorToIdentifier(descriptor), annotationDescription), methodDeclaration)));
+                return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
+                        methodByteCode.registerAnnotation(new MethodAnnotation(annotation, methodDeclaration)));
             }
 
             @Override
@@ -222,10 +222,12 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     private static class MyAnnotationVisitor extends AnnotationVisitor {
         final AnnotationDescription annotationDescription = new AnnotationDescription();
-        final Consumer<AnnotationDescription> finisher;
+        private final TypeIdentifier annotationType;
+        final Consumer<Annotation> finisher;
 
-        public MyAnnotationVisitor(int api, Consumer<AnnotationDescription> finisher) {
+        public MyAnnotationVisitor(int api, TypeIdentifier annotationType, Consumer<Annotation> finisher) {
             super(api);
+            this.annotationType = annotationType;
             this.finisher = finisher;
         }
 
@@ -267,7 +269,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
         @Override
         public void visitEnd() {
-            finisher.accept(annotationDescription);
+            finisher.accept(new Annotation(annotationType, annotationDescription));
         }
     }
 }

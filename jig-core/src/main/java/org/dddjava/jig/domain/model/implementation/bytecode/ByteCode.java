@@ -97,6 +97,14 @@ public class ByteCode {
         return instanceMethodByteCodes;
     }
 
+    public List<TypeAnnotation> typeAnnotations() {
+        return typeAnnotations;
+    }
+
+    public List<FieldAnnotation> annotatedFields() {
+        return fieldAnnotations;
+    }
+
     public void registerTypeAnnotation(TypeAnnotation typeAnnotation) {
         typeAnnotations.add(typeAnnotation);
         useTypes.add(typeAnnotation.type());
@@ -118,10 +126,6 @@ public class ByteCode {
 
     public void registerFieldAnnotation(FieldAnnotation fieldAnnotation) {
         fieldAnnotations.add(fieldAnnotation);
-    }
-
-    public List<FieldAnnotation> annotatedFields() {
-        return fieldAnnotations;
     }
 
     public void registerInstanceMethodByteCodes(MethodByteCode methodByteCode) {

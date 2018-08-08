@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.controllers;
 
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
 
@@ -17,10 +18,10 @@ public class ControllerAngles {
         return list;
     }
 
-    public ControllerAngles(Methods controllerMethods) {
+    public ControllerAngles(Methods controllerMethods, TypeAnnotations typeAnnotations) {
         List<ControllerAngle> list = new ArrayList<>();
         for (Method method : controllerMethods.list()) {
-            list.add(new ControllerAngle(method));
+            list.add(new ControllerAngle(method, typeAnnotations.filter(method.declaration().identifier().declaringType())));
         }
         this.list = list;
     }

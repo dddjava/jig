@@ -35,8 +35,7 @@ public class AngleService {
      * コントローラーを分析する
      */
     public ControllerAngles controllerAngles(ProjectData projectData) {
-        Methods controllerMethods = projectData.controllerMethods();
-        return new ControllerAngles(controllerMethods);
+        return new ControllerAngles(projectData.controllerMethods(), projectData.typeAnnotations());
     }
 
     /**

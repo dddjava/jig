@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.controllers;
 
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 
 /**
@@ -9,9 +10,11 @@ import org.dddjava.jig.domain.model.declaration.method.Method;
 public class ControllerAngle {
 
     private final Method method;
+    private final ControllerAnnotation controllerAnnotation;
 
-    public ControllerAngle(Method method) {
+    public ControllerAngle(Method method, TypeAnnotations typeAnnotations) {
         this.method = method;
+        this.controllerAnnotation = new ControllerAnnotation(typeAnnotations, method.methodAnnotations());
     }
 
     public Method method() {

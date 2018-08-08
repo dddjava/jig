@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
@@ -42,6 +39,14 @@ public class ByteCodes {
                 .map(MethodByteCode::method)
                 .collect(toList());
         return new Methods(list);
+    }
+
+    public TypeAnnotations typeAnnotations() {
+        List<TypeAnnotation> list = new ArrayList<>();
+        for (ByteCode byteCode : list()) {
+            list.addAll(byteCode.typeAnnotations());
+        }
+        return new TypeAnnotations(list);
     }
 
     public FieldAnnotations annotatedFields() {

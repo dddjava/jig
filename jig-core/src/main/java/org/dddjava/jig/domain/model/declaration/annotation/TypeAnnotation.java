@@ -19,6 +19,10 @@ public class TypeAnnotation {
         return annotation.annotationType.equals(annotationType);
     }
 
+    public boolean declaringAt(TypeIdentifier typeIdentifier) {
+        return declaringType.equals(typeIdentifier);
+    }
+
     public TypeIdentifier type() {
         return annotation.annotationType;
     }

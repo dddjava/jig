@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 
 import java.util.List;
 
@@ -63,5 +63,9 @@ public class Method {
                 .findFirst()
                 .map(MethodAnnotation::description)
                 .orElseGet(AnnotationDescription::new);
+    }
+
+    public List<MethodAnnotation> methodAnnotations() {
+        return methodAnnotations;
     }
 }

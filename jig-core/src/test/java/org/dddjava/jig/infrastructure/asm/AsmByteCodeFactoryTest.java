@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
@@ -40,14 +40,14 @@ public class AsmByteCodeFactoryTest {
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         ByteCode actual = exercise(Annotated.class);
 
-        List<AnnotatedField> annotatedFields = actual.annotatedFields();
-        AnnotatedField annotatedField = annotatedFields.stream()
+        List<FieldAnnotation> fieldAnnotations = actual.annotatedFields();
+        FieldAnnotation fieldAnnotation = fieldAnnotations.stream()
                 .filter(e -> e.fieldDeclaration().nameText().equals("field"))
                 .findFirst().orElseThrow(AssertionError::new);
 
-        assertThat(annotatedField.annotationType()).isEqualTo(new TypeIdentifier(VariableAnnotation.class));
+        assertThat(fieldAnnotation.annotationType()).isEqualTo(new TypeIdentifier(VariableAnnotation.class));
 
-        AnnotationDescription description = annotatedField.description();
+        AnnotationDescription description = fieldAnnotation.description();
         assertThat(description.asText())
                 .contains(
                         "string=af",
@@ -68,15 +68,15 @@ public class AsmByteCodeFactoryTest {
         ByteCode actual = exercise(Annotated.class);
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
-        AnnotatedMethod annotatedMethod = instanceMethodByteCodes.stream()
+        MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
                 .filter(e -> e.method().declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
 
-        assertThat(annotatedMethod.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
+        assertThat(methodAnnotation.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
 
-        AnnotationDescription description = annotatedMethod.description();
+        AnnotationDescription description = methodAnnotation.description();
         assertThat(description.asText())
                 .contains(
                         "string=am",
@@ -109,7 +109,7 @@ public class AsmByteCodeFactoryTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(FieldAnnotation.class),
+                        new TypeIdentifier(stub.domain.model.relation.field.FieldAnnotation.class),
                         new TypeIdentifier(StaticField.class),
                         new TypeIdentifier(InstanceField.class),
                         new TypeIdentifier(GenericField.class),

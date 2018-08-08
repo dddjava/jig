@@ -12,20 +12,20 @@ public class ValidationAnnotatedMember {
     final TypeIdentifier memberType;
     final AnnotationDescription description;
 
-    public ValidationAnnotatedMember(AnnotatedField annotatedField) {
-        annotationType = annotatedField.annotationType();
-        simpleNameText = annotatedField.fieldDeclaration().nameText();
-        memberType = annotatedField.fieldDeclaration().typeIdentifier();
-        declaringType = annotatedField.fieldDeclaration().declaringType();
-        description = annotatedField.description();
+    public ValidationAnnotatedMember(FieldAnnotation fieldAnnotation) {
+        annotationType = fieldAnnotation.annotationType();
+        simpleNameText = fieldAnnotation.fieldDeclaration().nameText();
+        memberType = fieldAnnotation.fieldDeclaration().typeIdentifier();
+        declaringType = fieldAnnotation.fieldDeclaration().declaringType();
+        description = fieldAnnotation.description();
     }
 
-    public ValidationAnnotatedMember(AnnotatedMethod annotatedMethod) {
-        annotationType = annotatedMethod.annotationType();
-        simpleNameText = annotatedMethod.methodDeclaration().asSignatureSimpleText();
-        memberType = annotatedMethod.methodDeclaration().returnType();
-        declaringType = annotatedMethod.methodDeclaration().declaringType();
-        description = annotatedMethod.description();
+    public ValidationAnnotatedMember(MethodAnnotation methodAnnotation) {
+        annotationType = methodAnnotation.annotationType();
+        simpleNameText = methodAnnotation.methodDeclaration().asSignatureSimpleText();
+        memberType = methodAnnotation.methodDeclaration().returnType();
+        declaringType = methodAnnotation.methodDeclaration().declaringType();
+        description = methodAnnotation.description();
     }
 
     public String asSimpleNameText() {

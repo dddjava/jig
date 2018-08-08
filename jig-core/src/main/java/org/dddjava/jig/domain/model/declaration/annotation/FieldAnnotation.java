@@ -4,15 +4,16 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
- * アノテーションのついたフィールド
+ * フィールドにつけられたアノテーション
  */
-public class AnnotatedField {
+public class FieldAnnotation {
 
-    final FieldDeclaration fieldDeclaration;
     final TypeIdentifier annotationType;
     final AnnotationDescription description;
 
-    public AnnotatedField(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
+    final FieldDeclaration fieldDeclaration;
+
+    public FieldAnnotation(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
         this.fieldDeclaration = fieldDeclaration;
         this.annotationType = annotationType;
         this.description = description;

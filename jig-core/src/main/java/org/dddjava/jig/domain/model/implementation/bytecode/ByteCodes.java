@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
@@ -44,20 +44,20 @@ public class ByteCodes {
         return new Methods(list);
     }
 
-    public AnnotatedFields annotatedFields() {
-        List<AnnotatedField> annotatedFields = new ArrayList<>();
+    public FieldAnnotations annotatedFields() {
+        List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
         for (ByteCode byteCode : list()) {
-            annotatedFields.addAll(byteCode.annotatedFields());
+            fieldAnnotations.addAll(byteCode.annotatedFields());
         }
-        return new AnnotatedFields(annotatedFields);
+        return new FieldAnnotations(fieldAnnotations);
     }
 
-    public AnnotatedMethods annotatedMethods() {
-        List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
+    public MethodAnnotations annotatedMethods() {
+        List<MethodAnnotation> methodAnnotations = new ArrayList<>();
         for (MethodByteCode methodByteCode : instanceMethodByteCodes()) {
-            annotatedMethods.addAll(methodByteCode.annotatedMethods());
+            methodAnnotations.addAll(methodByteCode.annotatedMethods());
         }
-        return new AnnotatedMethods(annotatedMethods);
+        return new MethodAnnotations(methodAnnotations);
     }
 
     public FieldDeclarations instanceFields() {

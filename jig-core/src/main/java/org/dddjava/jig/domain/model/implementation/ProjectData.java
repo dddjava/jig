@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.implementation;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedFields;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethods;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
@@ -27,8 +27,8 @@ public class ProjectData {
     private StaticFieldDeclarations staticFieldDeclarations;
     private FieldDeclarations fieldDeclarations;
     // アノテーション
-    private AnnotatedFields annotatedFields;
-    private AnnotatedMethods annotatedMethods;
+    private FieldAnnotations fieldAnnotations;
+    private MethodAnnotations methodAnnotations;
 
     // データソースアクセス
     private ImplementationMethods implementationMethods;
@@ -47,8 +47,8 @@ public class ProjectData {
     public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
         this.methods = byteCodes.instanceMethods();
 
-        this.annotatedFields = byteCodes.annotatedFields();
-        this.annotatedMethods = byteCodes.annotatedMethods();
+        this.fieldAnnotations = byteCodes.annotatedFields();
+        this.methodAnnotations = byteCodes.annotatedMethods();
 
         this.fieldDeclarations = byteCodes.instanceFields();
         this.staticFieldDeclarations = byteCodes.staticFields();
@@ -107,12 +107,12 @@ public class ProjectData {
         return characterizedMethods;
     }
 
-    public AnnotatedFields annotatedFields() {
-        return annotatedFields;
+    public FieldAnnotations annotatedFields() {
+        return fieldAnnotations;
     }
 
-    public AnnotatedMethods annotatedMethods() {
-        return annotatedMethods;
+    public MethodAnnotations annotatedMethods() {
+        return methodAnnotations;
     }
 
     public Methods methods() {

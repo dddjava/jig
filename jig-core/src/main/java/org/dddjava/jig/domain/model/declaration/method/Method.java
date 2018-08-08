@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 
 import java.util.List;
@@ -14,12 +14,12 @@ public class Method {
 
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
-    List<AnnotatedMethod> annotatedMethods;
+    List<MethodAnnotation> methodAnnotations;
 
-    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, List<AnnotatedMethod> annotatedMethods) {
+    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, List<MethodAnnotation> methodAnnotations) {
         this.methodDeclaration = methodDeclaration;
         this.decisionNumber = decisionNumber;
-        this.annotatedMethods = annotatedMethods;
+        this.methodAnnotations = methodAnnotations;
     }
 
     public MethodDeclaration declaration() {
@@ -35,7 +35,7 @@ public class Method {
     }
 
     public boolean isControllerMethod(CharacterizedTypes characterizedTypes) {
-        return annotatedMethods.stream()
+        return methodAnnotations.stream()
                 .anyMatch(annotatedMethod -> {
                             String annotationName = annotatedMethod.annotationType().fullQualifiedName();
                             // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
@@ -49,7 +49,7 @@ public class Method {
     }
 
     public AnnotationDescription requestMappingDescription() {
-        return annotatedMethods.stream()
+        return methodAnnotations.stream()
                 // WET
                 .filter(annotatedMethod -> {
                             String annotationName = annotatedMethod.annotationType().fullQualifiedName();
@@ -61,7 +61,7 @@ public class Method {
                         }
                 )
                 .findFirst()
-                .map(AnnotatedMethod::description)
+                .map(MethodAnnotation::description)
                 .orElseGet(AnnotationDescription::new);
     }
 }

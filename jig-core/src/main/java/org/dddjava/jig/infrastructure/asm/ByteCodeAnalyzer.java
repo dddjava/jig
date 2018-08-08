@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedField;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedType;
+import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
@@ -56,8 +56,8 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        AnnotatedType annotatedType = new AnnotatedType(byteCode.typeIdentifier(), typeDescriptorToIdentifier(descriptor));
-        byteCode.registerTypeAnnotation(annotatedType);
+        TypeAnnotation typeAnnotation = new TypeAnnotation(byteCode.typeIdentifier(), typeDescriptorToIdentifier(descriptor));
+        byteCode.registerTypeAnnotation(typeAnnotation);
         return super.visitAnnotation(descriptor, visible);
     }
 
@@ -83,7 +83,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
                     byteCode.registerUseType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationDescription ->
-                            byteCode.registerFieldAnnotation(new AnnotatedField(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                            byteCode.registerFieldAnnotation(new FieldAnnotation(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
                 }
             };
         }
@@ -114,7 +114,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodByteCode.registerAnnotation(new AnnotatedMethod(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
+                        methodByteCode.registerAnnotation(new MethodAnnotation(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
             }
 
             @Override

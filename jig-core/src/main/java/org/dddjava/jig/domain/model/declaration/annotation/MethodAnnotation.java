@@ -4,15 +4,16 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
- * アノテーションのついたメソッド
+ * メソッドにつけられたアノテーション
  */
-public class AnnotatedMethod {
+public class MethodAnnotation {
 
-    final MethodDeclaration methodDeclaration;
     final TypeIdentifier annotationType;
     final AnnotationDescription description;
 
-    public AnnotatedMethod(MethodDeclaration methodDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
+    final MethodDeclaration methodDeclaration;
+
+    public MethodAnnotation(MethodDeclaration methodDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
         this.methodDeclaration = methodDeclaration;
         this.annotationType = annotationType;
         this.description = description;

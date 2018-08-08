@@ -3,14 +3,15 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
- * アノテーションのついた型
+ * 型につけられたアノテーション
  */
-public class AnnotatedType {
+public class TypeAnnotation {
 
-    final TypeIdentifier declaringType;
     final TypeIdentifier annotationType;
 
-    public AnnotatedType(TypeIdentifier declaringType, TypeIdentifier annotationType) {
+    final TypeIdentifier declaringType;
+
+    public TypeAnnotation(TypeIdentifier declaringType, TypeIdentifier annotationType) {
         this.declaringType = declaringType;
         this.annotationType = annotationType;
     }

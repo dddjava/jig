@@ -9,20 +9,20 @@ import java.util.stream.Stream;
  */
 public class ValidationAnnotatedMembers {
 
-    private final AnnotatedFields annotatedFields;
-    private final AnnotatedMethods annotatedMethods;
+    private final FieldAnnotations fieldAnnotations;
+    private final MethodAnnotations methodAnnotations;
 
-    public ValidationAnnotatedMembers(AnnotatedFields annotatedFields, AnnotatedMethods annotatedMethods) {
-        this.annotatedFields = annotatedFields;
-        this.annotatedMethods = annotatedMethods;
+    public ValidationAnnotatedMembers(FieldAnnotations fieldAnnotations, MethodAnnotations methodAnnotations) {
+        this.fieldAnnotations = fieldAnnotations;
+        this.methodAnnotations = methodAnnotations;
     }
 
     public List<ValidationAnnotatedMember> list() {
-        Stream<ValidationAnnotatedMember> fieldStream = annotatedFields.list().stream()
+        Stream<ValidationAnnotatedMember> fieldStream = fieldAnnotations.list().stream()
                 // TODO 正規表現の絞り込みをやめる
                 .filter(fieldAnnotationDeclaration -> fieldAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
                 .map(ValidationAnnotatedMember::new);
-        Stream<ValidationAnnotatedMember> methodStream = annotatedMethods.list().stream()
+        Stream<ValidationAnnotatedMember> methodStream = methodAnnotations.list().stream()
                 // TODO 正規表現の絞り込みをやめる
                 .filter(methodAnnotationDeclaration -> methodAnnotationDeclaration.annotationType().fullQualifiedName().matches("(javax.validation|org.hibernate.validator).+"))
                 .map(ValidationAnnotatedMember::new);

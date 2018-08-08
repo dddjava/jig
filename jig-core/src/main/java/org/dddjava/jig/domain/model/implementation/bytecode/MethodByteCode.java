@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotatedMethod;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
@@ -24,7 +24,7 @@ public class MethodByteCode {
     private final int access;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
-    private final List<AnnotatedMethod> annotatedMethods = new ArrayList<>();
+    private final List<MethodAnnotation> methodAnnotations = new ArrayList<>();
 
     private final List<FieldDeclaration> usingFields = new ArrayList<>();
     private final List<MethodDeclaration> usingMethods = new ArrayList<>();
@@ -75,17 +75,17 @@ public class MethodByteCode {
         useTypes.add(type);
     }
 
-    public void registerAnnotation(AnnotatedMethod annotatedMethod) {
-        annotatedMethods.add(annotatedMethod);
-        useTypes.add(annotatedMethod.annotationType());
+    public void registerAnnotation(MethodAnnotation methodAnnotation) {
+        methodAnnotations.add(methodAnnotation);
+        useTypes.add(methodAnnotation.annotationType());
     }
 
     public void registerInvokeDynamic(TypeIdentifier type) {
         useTypes.add(type);
     }
 
-    public List<AnnotatedMethod> annotatedMethods() {
-        return annotatedMethods;
+    public List<MethodAnnotation> annotatedMethods() {
+        return methodAnnotations;
     }
 
     public Set<TypeIdentifier> useTypes() {
@@ -114,6 +114,6 @@ public class MethodByteCode {
     }
 
     public Method method() {
-        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), annotatedMethods);
+        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), methodAnnotations);
     }
 }

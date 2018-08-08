@@ -3,9 +3,9 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,9 @@ public class CommandLineApplication implements CommandLineRunner {
     @Autowired
     Environment environment;
 
+    @Autowired
+    ExtraScript extraScript;
+
     @Override
     public void run(String... args) {
         long startTime = System.currentTimeMillis();
@@ -61,6 +64,8 @@ public class CommandLineApplication implements CommandLineRunner {
             for (JigDocument jigDocument : jigDocuments) {
                 jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
             }
+
+            extraScript.invoke(projectData);
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().textWithSpringEnvironment(environment));
         }

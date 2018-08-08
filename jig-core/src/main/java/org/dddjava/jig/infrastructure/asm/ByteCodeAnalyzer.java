@@ -53,9 +53,10 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        TypeAnnotation typeAnnotation = new TypeAnnotation(byteCode.typeIdentifier(), typeDescriptorToIdentifier(descriptor));
-        byteCode.registerTypeAnnotation(typeAnnotation);
-        return super.visitAnnotation(descriptor, visible);
+        return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
+                byteCode.registerTypeAnnotation(new TypeAnnotation(annotation, byteCode.typeIdentifier()))
+        );
+
     }
 
     @Override

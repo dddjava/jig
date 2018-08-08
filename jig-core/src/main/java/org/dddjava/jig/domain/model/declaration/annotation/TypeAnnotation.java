@@ -7,20 +7,19 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class TypeAnnotation {
 
-    final TypeIdentifier annotationType;
-
+    final Annotation annotation;
     final TypeIdentifier declaringType;
 
-    public TypeAnnotation(TypeIdentifier declaringType, TypeIdentifier annotationType) {
+    public TypeAnnotation(Annotation annotation, TypeIdentifier declaringType) {
         this.declaringType = declaringType;
-        this.annotationType = annotationType;
+        this.annotation = annotation;
     }
 
     public boolean typeIs(TypeIdentifier annotationType) {
-        return this.annotationType.equals(annotationType);
+        return annotation.annotationType.equals(annotationType);
     }
 
     public TypeIdentifier type() {
-        return annotationType;
+        return annotation.annotationType;
     }
 }

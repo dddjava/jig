@@ -1,9 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
@@ -83,7 +80,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
                     byteCode.registerUseType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationDescription ->
-                            byteCode.registerFieldAnnotation(new FieldAnnotation(fieldDeclaration, annotationTypeIdentifier, annotationDescription)));
+                            byteCode.registerFieldAnnotation(new FieldAnnotation(new Annotation(annotationTypeIdentifier, annotationDescription), fieldDeclaration)));
                 }
             };
         }
@@ -114,7 +111,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, annotationDescription ->
-                        methodByteCode.registerAnnotation(new MethodAnnotation(methodDeclaration, typeDescriptorToIdentifier(descriptor), annotationDescription)));
+                        methodByteCode.registerAnnotation(new MethodAnnotation(new Annotation(typeDescriptorToIdentifier(descriptor), annotationDescription), methodDeclaration)));
             }
 
             @Override

@@ -8,15 +8,12 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class FieldAnnotation {
 
-    final TypeIdentifier annotationType;
-    final AnnotationDescription description;
-
+    final Annotation annotation;
     final FieldDeclaration fieldDeclaration;
 
-    public FieldAnnotation(FieldDeclaration fieldDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
+    public FieldAnnotation(Annotation annotation, FieldDeclaration fieldDeclaration) {
+        this.annotation = annotation;
         this.fieldDeclaration = fieldDeclaration;
-        this.annotationType = annotationType;
-        this.description = description;
     }
 
     public FieldDeclaration fieldDeclaration() {
@@ -24,10 +21,10 @@ public class FieldAnnotation {
     }
 
     public TypeIdentifier annotationType() {
-        return annotationType;
+        return annotation.annotationType;
     }
 
     public AnnotationDescription description() {
-        return description;
+        return annotation.description;
     }
 }

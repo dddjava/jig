@@ -8,19 +8,16 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class MethodAnnotation {
 
-    final TypeIdentifier annotationType;
-    final AnnotationDescription description;
-
+    final Annotation annotation;
     final MethodDeclaration methodDeclaration;
 
-    public MethodAnnotation(MethodDeclaration methodDeclaration, TypeIdentifier annotationType, AnnotationDescription description) {
+    public MethodAnnotation(Annotation annotation, MethodDeclaration methodDeclaration) {
+        this.annotation = annotation;
         this.methodDeclaration = methodDeclaration;
-        this.annotationType = annotationType;
-        this.description = description;
     }
 
     public TypeIdentifier annotationType() {
-        return annotationType;
+        return annotation.annotationType;
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -28,6 +25,6 @@ public class MethodAnnotation {
     }
 
     public AnnotationDescription description() {
-        return description;
+        return annotation.description;
     }
 }

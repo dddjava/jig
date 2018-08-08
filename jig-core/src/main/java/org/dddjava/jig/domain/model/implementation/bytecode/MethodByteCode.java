@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
@@ -114,6 +115,6 @@ public class MethodByteCode {
     }
 
     public Method method() {
-        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), methodAnnotations);
+        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), new MethodAnnotations(methodAnnotations));
     }
 }

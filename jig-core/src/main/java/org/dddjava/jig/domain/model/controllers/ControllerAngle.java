@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.controllers;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 
@@ -21,7 +20,7 @@ public class ControllerAngle {
         return method;
     }
 
-    public AnnotationDescription requestMappingPath() {
-        return method.requestMappingDescription();
+    public ControllerAnnotation controllerAnnotation() {
+        return controllerAnnotation;
     }
 }

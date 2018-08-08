@@ -18,7 +18,6 @@ public class ControllerReportAdapter {
 
     // @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
     public String path(ControllerAngle angle) {
-        // TODO 現在のdescriptionだとvalueやpathの値の取得ができない
-        return angle.requestMappingPath().asText();
+        return angle.controllerAnnotation().methodPathText();
     }
 }

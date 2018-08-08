@@ -20,7 +20,11 @@ public class AnnotationDescription {
     }
 
     public void addArray(String name, List<Object> list) {
-        this.map.put(name, list.toString());
+        if (list.size() == 1) {
+            this.map.put(name, list.get(0).toString());
+        } else {
+            this.map.put(name, list.toString());
+        }
     }
 
     public void addEnum(String name, String value) {

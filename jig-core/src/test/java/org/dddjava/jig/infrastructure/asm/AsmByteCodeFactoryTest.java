@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -51,7 +51,7 @@ public class AsmByteCodeFactoryTest {
         assertThat(description.asText())
                 .contains(
                         "string=af",
-                        "arrayString=[bf]",
+                        "arrayString=bf",
                         "number=13",
                         "clz=Ljava/lang/reflect/Field;",
                         "arrayClz=[Ljava/lang/Object;, Ljava/lang/Object;]",
@@ -59,8 +59,7 @@ public class AsmByteCodeFactoryTest {
                         "annotation=Ljava/lang/Deprecated;[...]"
                 );
 
-        assertThat(description.textOf("arrayString"))
-                .isEqualTo("[bf]");
+        assertThat(description.textOf("arrayString")).isEqualTo("bf");
     }
 
     @Test
@@ -80,7 +79,7 @@ public class AsmByteCodeFactoryTest {
         assertThat(description.asText())
                 .contains(
                         "string=am",
-                        "arrayString=[bm]",
+                        "arrayString=[bm1, bm2]",
                         "number=23",
                         "clz=Ljava/lang/reflect/Method;",
                         "enumValue=DUMMY2"

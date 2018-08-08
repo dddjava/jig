@@ -16,8 +16,8 @@ public class ControllerReportAdapter {
         return angle.method();
     }
 
-    // @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
     public String path(ControllerAngle angle) {
-        return angle.controllerAnnotation().methodPathText();
+        return angle.controllerAnnotation().pathText();
     }
 }

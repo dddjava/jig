@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import java.nio.file.Path;
@@ -70,5 +72,13 @@ public class CommandLineApplication implements CommandLineRunner {
             LOGGER.warn(e.warning().textWithSpringEnvironment(environment));
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    ExtraScript extraScript() {
+        return projectData -> {
+            // 何もしない
+        };
     }
 }

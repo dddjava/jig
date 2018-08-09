@@ -101,15 +101,17 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
                     Type repositoryType = types.get(repositoryTypeIdentifier);
 
-                    ParameterizedType parameterizedType = repositoryType.superType();
-                    if (parameterizedType.typeIdentifier().equals(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"))) {
-                        // JpaRepository<T, ID>のTをとる
+                    ParameterizedTypes parameterizedTypes = repositoryType.interfaceTypes();
+                    Optional<ParameterizedType> one = parameterizedTypes.findOne(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"));
+                    one.ifPresent(parameterizedType -> {
                         TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
 
                         Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().findOne(new TypeIdentifier("javax.persistence.Table"));
                         String tableName = annotation.descriptionTextOf("name");
                         repositoryTableMap.put(repositoryTypeIdentifier, tableName);
-                    } else {
+                    });
+
+                    if (!one.isPresent()) {
                         LOGGER.warn("{} is not JpaRepository.", repositoryTypeIdentifier.fullQualifiedName());
                     }
                 }

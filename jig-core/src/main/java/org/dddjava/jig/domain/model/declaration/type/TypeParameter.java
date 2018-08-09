@@ -12,4 +12,8 @@ public class TypeParameter {
     public TypeParameter(TypeIdentifier typeIdentifier) {
         this.typeIdentifier = typeIdentifier;
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
+    }
 }

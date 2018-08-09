@@ -16,4 +16,8 @@ public class Type {
     public TypeIdentifier identifier() {
         return typeIdentifier;
     }
+
+    public ParameterizedType superType() {
+        return superType;
+    }
 }

@@ -5,14 +5,16 @@ import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.controllers.ControllerAngle;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
+import org.dddjava.jig.domain.model.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,6 +30,8 @@ import java.util.*;
 @Component
 @ConditionalOnProperty(prefix = "jig.cli", name = "extra", havingValue = "api-jpa-crud")
 public class ApiJpaCrudListingScript implements ExtraScript {
+
+    static final Logger LOGGER = LoggerFactory.getLogger(ApiJpaCrudListingScript.class);
 
     @Value("${outputDirectory}")
     String outputDirectory;
@@ -66,13 +70,21 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
         TypeAnnotations typeAnnotations = projectData.typeAnnotations();
+        Types types = projectData.types();
 
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
 
-            writer.append("ハンドラメソッド").append('\t')
-                    .append("PATH").append('\t')
-                    .append("使用しているリポジトリのメソッド").append('\t')
+            writer.append("ハンドラメソッド")
+                    .append('\t')
+                    .append("PATH")
+                    .append('\t')
+                    .append("使用しているリポジトリのメソッド")
+                    .append('\t')
                     .append("READ")
+                    .append('\t')
+                    .append("CREATE or UPDATE")
+                    .append('\t')
+                    .append("DELETE")
                     .append('\n');
 
             for (ControllerAngle controllerAngle : controllerAngles.list()) {
@@ -80,19 +92,45 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
                 List<MethodDeclaration> repositoryMethods = apiMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
 
-                // TODO この形だとexistsやcountが無理なのでJpaRepository<T, ID>のTをとりたい。
+                Map<TypeIdentifier, String> repositoryTableMap = new HashMap<>();
+                for (MethodDeclaration repositoryMethod : repositoryMethods) {
+                    TypeIdentifier repositoryTypeIdentifier = repositoryMethod.declaringType();
+                    if (repositoryTableMap.containsKey(repositoryTypeIdentifier)) {
+                        continue;
+                    }
+
+                    Type repositoryType = types.get(repositoryTypeIdentifier);
+
+                    ParameterizedType parameterizedType = repositoryType.superType();
+                    if (parameterizedType.typeIdentifier().equals(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"))) {
+                        // JpaRepository<T, ID>のTをとる
+                        TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
+
+                        Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().findOne(new TypeIdentifier("javax.persistence.Table"));
+                        String tableName = annotation.descriptionTextOf("name");
+                        repositoryTableMap.put(repositoryTypeIdentifier, tableName);
+                    } else {
+                        LOGGER.warn("{} is not JpaRepository.", repositoryTypeIdentifier.fullQualifiedName());
+                    }
+                }
+
                 // READ
                 String readTables = repositoryMethods.stream()
-                        .filter(repositoryMethod -> repositoryMethod.methodSignature().methodName().startsWith("find"))
-                        .map(repositoryMethod -> {
-                            // 戻り値についているTableアノテーションを読む
-                            TypeIdentifier typeIdentifier = repositoryMethod.returnType();
-                            Annotations annotations = typeAnnotations.filter(typeIdentifier).annotations();
-                            List<String> tableNames = annotations.descriptionTextsOf("name");
-                            return tableNames;
+                        .filter(repositoryMethod -> {
+                            String methodName = repositoryMethod.methodSignature().methodName();
+                            return methodName.startsWith("find") || methodName.startsWith("get") || methodName.startsWith("exists") || methodName.startsWith("count");
                         })
-                        .flatMap(List::stream)
-                        .distinct()
+                        .map(MethodDeclaration::declaringType).distinct().map(repositoryTableMap::get)
+                        .collect(Text.collectionCollector());
+                // CREATE or UPDATE
+                String createOrUpdateTables = repositoryMethods.stream()
+                        .filter(repositoryMethod -> repositoryMethod.methodSignature().methodName().startsWith("save"))
+                        .map(MethodDeclaration::declaringType).distinct().map(repositoryTableMap::get)
+                        .collect(Text.collectionCollector());
+                // DELETE
+                String deleteTables = repositoryMethods.stream()
+                        .filter(repositoryMethod -> repositoryMethod.methodSignature().methodName().startsWith("delete"))
+                        .map(MethodDeclaration::declaringType).distinct().map(repositoryTableMap::get)
                         .collect(Text.collectionCollector());
 
                 writer.append(controllerMethodDeclaration.asFullNameText())
@@ -102,6 +140,10 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                         .append(new MethodDeclarations(repositoryMethods).asSimpleText())
                         .append('\t')
                         .append(readTables)
+                        .append('\t')
+                        .append(createOrUpdateTables)
+                        .append('\t')
+                        .append(deleteTables)
                         .append('\n');
             }
 

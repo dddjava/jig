@@ -22,4 +22,8 @@ public class TypeParameters {
                 .map(e -> e.typeIdentifier.asSimpleText())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
+
+    public TypeParameter get(int i) {
+        return list.get(i);
+    }
 }

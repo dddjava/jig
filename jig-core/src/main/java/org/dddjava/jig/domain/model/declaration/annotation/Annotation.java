@@ -14,4 +14,8 @@ public class Annotation {
         this.annotationType = annotationType;
         this.description = description;
     }
+
+    public String descriptionTextOf(String name) {
+        return description.textOf(name);
+    }
 }

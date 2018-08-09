@@ -2,10 +2,7 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -31,8 +28,14 @@ public class Annotations {
 
     public List<String> descriptionTextsOf(String name) {
         return list.stream()
-                .map(e -> e.description.textOf(name))
+                .map(e -> e.descriptionTextOf(name))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    public Annotation findOne(TypeIdentifier typeIdentifier) {
+        return list.stream().filter(e -> e.annotationType.equals(typeIdentifier))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(typeIdentifier.fullQualifiedName()));
     }
 }

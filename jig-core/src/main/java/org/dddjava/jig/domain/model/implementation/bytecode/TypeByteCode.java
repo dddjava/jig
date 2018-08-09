@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
@@ -151,5 +152,9 @@ public class TypeByteCode {
 
     public ParameterizedType parameterizedSuperType() {
         return parameterizedSuperType;
+    }
+
+    public Type type() {
+        return new Type(typeIdentifier, parameterizedSuperType);
     }
 }

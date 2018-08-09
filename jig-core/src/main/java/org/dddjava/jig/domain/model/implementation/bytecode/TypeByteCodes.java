@@ -7,6 +7,8 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
+import org.dddjava.jig.domain.model.declaration.type.Type;
+import org.dddjava.jig.domain.model.declaration.type.Types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,5 +83,13 @@ public class TypeByteCodes {
             list.addAll(fieldDeclarations.list());
         }
         return new StaticFieldDeclarations(list);
+    }
+
+    public Types types() {
+        List<Type> list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : list()) {
+            list.add(typeByteCode.type());
+        }
+        return new Types(list);
     }
 }

@@ -9,10 +9,11 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.values.ValueTypes;
@@ -22,6 +23,7 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
  */
 public class ProjectData {
 
+    private Types types;
     // メソッド
     private Methods methods;
     // フィールド
@@ -47,6 +49,7 @@ public class ProjectData {
     private CharacterizedMethods characterizedMethods;
 
     public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
+        this.types = typeByteCodes.types();
         this.methods = typeByteCodes.instanceMethods();
 
         this.typeAnnotations = typeByteCodes.typeAnnotations();
@@ -120,6 +123,10 @@ public class ProjectData {
 
     public MethodAnnotations methodAnnotations() {
         return methodAnnotations;
+    }
+
+    public Types types() {
+        return types;
     }
 
     public Methods methods() {

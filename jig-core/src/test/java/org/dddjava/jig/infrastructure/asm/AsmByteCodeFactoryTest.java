@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -98,6 +99,17 @@ public class AsmByteCodeFactoryTest {
                         new TypeIdentifier(ImplementA.class),
                         new TypeIdentifier(ImplementB.class),
                         new TypeIdentifier(GenericsParameter.class)
+                );
+
+        ParameterizedType parameterizedSuperType = actual.parameterizedSuperType();
+        assertThat(parameterizedSuperType)
+                .extracting(
+                        parameterizedType -> parameterizedSuperType.typeIdentifier(),
+                        parameterizedType -> parameterizedSuperType.typeParameters()
+                )
+                .containsExactly(
+                        new TypeIdentifier(SuperClass.class),
+                        null
                 );
     }
 

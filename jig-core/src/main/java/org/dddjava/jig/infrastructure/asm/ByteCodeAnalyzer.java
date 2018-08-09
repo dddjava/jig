@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
@@ -41,9 +42,14 @@ class ByteCodeAnalyzer extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
+        ParameterizedType parameterizedSuperType = new ParameterizedType(
+                new TypeIdentifier(superName),
+                null
+        );
+
         this.byteCode = new ByteCode(
                 new TypeIdentifier(name),
-                new TypeIdentifier(superName),
+                parameterizedSuperType,
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
                 useTypes,
                 (access & Opcodes.ACC_FINAL) == 0);

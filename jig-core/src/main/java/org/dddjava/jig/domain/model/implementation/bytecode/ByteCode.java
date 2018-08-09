@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
@@ -21,7 +22,7 @@ public class ByteCode {
 
 
     final TypeIdentifier typeIdentifier;
-    final TypeIdentifier parentTypeIdentifier;
+    final ParameterizedType parameterizedSuperType;
     final boolean canExtend;
 
     public TypeIdentifiers interfaceTypeIdentifiers;
@@ -38,17 +39,17 @@ public class ByteCode {
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
     public ByteCode(TypeIdentifier typeIdentifier,
-                    TypeIdentifier parentTypeIdentifier,
+                    ParameterizedType parameterizedSuperType,
                     TypeIdentifiers interfaceTypeIdentifiers,
                     List<TypeIdentifier> useTypes,
                     boolean canExtend) {
         this.typeIdentifier = typeIdentifier;
-        this.parentTypeIdentifier = parentTypeIdentifier;
+        this.parameterizedSuperType = parameterizedSuperType;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
         this.canExtend = canExtend;
 
         this.useTypes.addAll(useTypes);
-        this.useTypes.add(parentTypeIdentifier);
+        this.useTypes.add(parameterizedSuperType.typeIdentifier());
         this.useTypes.addAll(interfaceTypeIdentifiers.list());
     }
 
@@ -61,7 +62,7 @@ public class ByteCode {
     }
 
     public boolean isEnum() {
-        return parentTypeIdentifier.equals(new TypeIdentifier(Enum.class));
+        return parameterizedSuperType.typeIdentifier().equals(new TypeIdentifier(Enum.class));
     }
 
     public boolean hasInstanceMethod() {
@@ -146,5 +147,9 @@ public class ByteCode {
         list.addAll(staticMethodByteCodes);
         list.addAll(constructorByteCodes);
         return list;
+    }
+
+    public ParameterizedType parameterizedSuperType() {
+        return parameterizedSuperType;
     }
 }

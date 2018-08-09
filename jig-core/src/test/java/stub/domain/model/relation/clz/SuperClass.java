@@ -1,4 +1,4 @@
 package stub.domain.model.relation.clz;
 
-public class SuperClass {
+public class SuperClass<T> {
 }

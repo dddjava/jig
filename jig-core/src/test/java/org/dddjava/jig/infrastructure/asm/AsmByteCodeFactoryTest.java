@@ -4,11 +4,12 @@ import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,6 +19,7 @@ import stub.domain.model.kind.*;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.FieldDefinition;
+import stub.domain.model.relation.InterfaceDefinition;
 import stub.domain.model.relation.annotation.VariableAnnotation;
 import stub.domain.model.relation.clz.*;
 import stub.domain.model.relation.enumeration.ClassReference;
@@ -105,11 +107,36 @@ public class AsmByteCodeFactoryTest {
         assertThat(parameterizedSuperType)
                 .extracting(
                         ParameterizedType::asSimpleText,
-                        parameterizedType -> parameterizedSuperType.typeIdentifier()
-                        )
+                        ParameterizedType::typeIdentifier
+                )
                 .containsExactly(
                         "SuperClass<Integer, Long>",
                         new TypeIdentifier(SuperClass.class)
+                );
+    }
+
+    @Test
+    void インタフェース定義に使用している型が取得できる() throws Exception {
+        TypeByteCode actual = exercise(InterfaceDefinition.class);
+
+        TypeIdentifiers identifiers = actual.useTypes();
+        assertThat(identifiers.list())
+                .contains(
+                        new TypeIdentifier(ClassAnnotation.class),
+                        new TypeIdentifier(Comparable.class),
+                        new TypeIdentifier(GenericsParameter.class)
+                );
+
+        ParameterizedTypes parameterizedInterfaceTypes = actual.parameterizedInterfaceTypes();
+        ParameterizedType parameterizedType = parameterizedInterfaceTypes.list().get(0);
+        assertThat(parameterizedType)
+                .extracting(
+                        ParameterizedType::asSimpleText,
+                        ParameterizedType::typeIdentifier
+                )
+                .containsExactly(
+                        "Comparable<GenericsParameter>",
+                        new TypeIdentifier(Comparable.class)
                 );
     }
 

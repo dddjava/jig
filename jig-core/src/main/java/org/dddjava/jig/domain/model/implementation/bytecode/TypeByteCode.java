@@ -6,10 +6,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,10 +20,15 @@ public class TypeByteCode {
 
 
     final TypeIdentifier typeIdentifier;
-    final ParameterizedType parameterizedSuperType;
+
     final boolean canExtend;
 
+    final ParameterizedType parameterizedSuperType;
+    final ParameterizedTypes parameterizedInterfaceTypes;
+
+    @Deprecated
     public TypeIdentifiers interfaceTypeIdentifiers;
+
     final List<TypeAnnotation> typeAnnotations = new ArrayList<>();
     final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
@@ -41,12 +43,13 @@ public class TypeByteCode {
 
     public TypeByteCode(TypeIdentifier typeIdentifier,
                         ParameterizedType parameterizedSuperType,
-                        TypeIdentifiers interfaceTypeIdentifiers,
+                        ParameterizedTypes parameterizedInterfaceTypes,
                         List<TypeIdentifier> useTypes,
                         boolean canExtend) {
         this.typeIdentifier = typeIdentifier;
         this.parameterizedSuperType = parameterizedSuperType;
-        this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;
+        this.parameterizedInterfaceTypes = parameterizedInterfaceTypes;
+        this.interfaceTypeIdentifiers = parameterizedInterfaceTypes.identifiers();
         this.canExtend = canExtend;
 
         this.useTypes.addAll(useTypes);
@@ -156,5 +159,9 @@ public class TypeByteCode {
 
     public Type type() {
         return new Type(typeIdentifier, parameterizedSuperType);
+    }
+
+    public ParameterizedTypes parameterizedInterfaceTypes() {
+        return parameterizedInterfaceTypes;
     }
 }

@@ -158,7 +158,7 @@ public class TypeByteCode {
     }
 
     public Type type() {
-        return new Type(typeIdentifier, parameterizedSuperType);
+        return new Type(typeIdentifier, parameterizedSuperType, parameterizedInterfaceTypes);
     }
 
     public ParameterizedTypes parameterizedInterfaceTypes() {

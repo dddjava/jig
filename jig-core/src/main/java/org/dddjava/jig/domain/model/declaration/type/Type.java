@@ -7,10 +7,12 @@ public class Type {
 
     TypeIdentifier typeIdentifier;
     ParameterizedType superType;
+    ParameterizedTypes interfaceTypes;
 
-    public Type(TypeIdentifier typeIdentifier, ParameterizedType superType) {
+    public Type(TypeIdentifier typeIdentifier, ParameterizedType superType, ParameterizedTypes interfaceTypes) {
         this.typeIdentifier = typeIdentifier;
         this.superType = superType;
+        this.interfaceTypes = interfaceTypes;
     }
 
     public TypeIdentifier identifier() {
@@ -19,5 +21,9 @@ public class Type {
 
     public ParameterizedType superType() {
         return superType;
+    }
+
+    public ParameterizedTypes interfaceTypes() {
+        return interfaceTypes;
     }
 }

@@ -2,5 +2,4 @@ rootProject.name = 'jig'
 
 include 'jig-core',
         'jig-cli',
-        'jig-gradle-plugin',
-        'jig-gradle-plugin/stub'
+        'jig-gradle-plugin'

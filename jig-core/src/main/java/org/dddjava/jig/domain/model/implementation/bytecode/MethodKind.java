@@ -6,20 +6,20 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 public enum MethodKind {
     CONSTRUCTOR {
         @Override
-        public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerConstructorByteCodes(methodByteCode);
+        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
+            typeByteCode.registerConstructorByteCodes(methodByteCode);
         }
     },
     STATIC_METHOD {
         @Override
-        public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerStaticMethodByteCodes(methodByteCode);
+        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
+            typeByteCode.registerStaticMethodByteCodes(methodByteCode);
         }
     },
     INSTANCE_METHOD {
         @Override
-        public void bind(MethodByteCode methodByteCode, ByteCode byteCode) {
-            byteCode.registerInstanceMethodByteCodes(methodByteCode);
+        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
+            typeByteCode.registerInstanceMethodByteCodes(methodByteCode);
         }
     };
 
@@ -33,5 +33,5 @@ public enum MethodKind {
         return INSTANCE_METHOD;
     }
 
-    public abstract void bind(MethodByteCode methodByteCode, ByteCode byteCode);
+    public abstract void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode);
 }

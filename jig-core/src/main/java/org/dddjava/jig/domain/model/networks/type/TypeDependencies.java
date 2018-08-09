@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.networks.type;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 
@@ -21,12 +21,12 @@ public class TypeDependencies {
         this.list = list;
     }
 
-    public TypeDependencies(ByteCodes byteCodes) {
+    public TypeDependencies(TypeByteCodes typeByteCodes) {
         this(new ArrayList<>());
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            TypeIdentifier form = byteCode.typeIdentifier();
-            for (TypeIdentifier to : byteCode.useTypes().list()) {
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            TypeIdentifier form = typeByteCode.typeIdentifier();
+            for (TypeIdentifier to : typeByteCode.useTypes().list()) {
                 list.add(new TypeDependency(form, to));
             }
         }

@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * バイトコード
  */
-public class ByteCode {
+public class TypeByteCode {
 
 
     final TypeIdentifier typeIdentifier;
@@ -38,11 +38,11 @@ public class ByteCode {
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public ByteCode(TypeIdentifier typeIdentifier,
-                    ParameterizedType parameterizedSuperType,
-                    TypeIdentifiers interfaceTypeIdentifiers,
-                    List<TypeIdentifier> useTypes,
-                    boolean canExtend) {
+    public TypeByteCode(TypeIdentifier typeIdentifier,
+                        ParameterizedType parameterizedSuperType,
+                        TypeIdentifiers interfaceTypeIdentifiers,
+                        List<TypeIdentifier> useTypes,
+                        boolean canExtend) {
         this.typeIdentifier = typeIdentifier;
         this.parameterizedSuperType = parameterizedSuperType;
         this.interfaceTypeIdentifiers = interfaceTypeIdentifiers;

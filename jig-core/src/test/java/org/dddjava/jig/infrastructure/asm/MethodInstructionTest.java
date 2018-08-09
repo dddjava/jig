@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +27,7 @@ public class MethodInstructionTest {
     @ParameterizedTest
     @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
-        ByteCode actual = exercise(clz);
+        TypeByteCode actual = exercise(clz);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -76,7 +76,7 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
-        ByteCode actual = exercise(MethodInstruction.class);
+        TypeByteCode actual = exercise(MethodInstruction.class);
 
         assertThat(actual.instanceMethodByteCodes())
                 .extracting(
@@ -89,7 +89,7 @@ public class MethodInstructionTest {
                 );
     }
 
-    private ByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();

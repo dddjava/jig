@@ -1,23 +1,23 @@
 package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 /**
  * 値の型
  */
 public class ValueType {
-    ByteCode byteCode;
+    TypeByteCode typeByteCode;
 
-    public ValueType(ByteCode byteCode) {
-        this.byteCode = byteCode;
+    public ValueType(TypeByteCode typeByteCode) {
+        this.typeByteCode = typeByteCode;
     }
 
     public boolean is(ValueKind valueKind) {
-        return valueKind.matches(byteCode);
+        return valueKind.matches(typeByteCode);
     }
 
     public TypeIdentifier typeIdentifier() {
-        return byteCode.typeIdentifier();
+        return typeByteCode.typeIdentifier();
     }
 }

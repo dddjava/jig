@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +13,11 @@ import java.util.List;
 public class ValueTypes {
     private List<ValueType> list;
 
-    public ValueTypes(ByteCodes byteCodes) {
+    public ValueTypes(TypeByteCodes typeByteCodes) {
         list = new ArrayList<>();
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            list.add(new ValueType(byteCode));
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            list.add(new ValueType(typeByteCode));
         }
     }
 

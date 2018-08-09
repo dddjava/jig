@@ -15,11 +15,11 @@ public class MethodRelations {
 
     private final List<MethodRelation> list;
 
-    public MethodRelations(ByteCodes byteCodes) {
+    public MethodRelations(TypeByteCodes typeByteCodes) {
         List<MethodRelation> list = new ArrayList<>();
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodByteCode : byteCode.methodByteCodes()) {
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
                 MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
                 for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
                     list.add(new MethodRelation(methodDeclaration, usingMethod));

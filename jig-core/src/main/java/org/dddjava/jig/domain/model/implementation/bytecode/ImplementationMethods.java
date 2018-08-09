@@ -18,14 +18,14 @@ public class ImplementationMethods {
         this.list = list;
     }
 
-    public ImplementationMethods(ByteCodes byteCodes) {
+    public ImplementationMethods(TypeByteCodes typeByteCodes) {
         this(new ArrayList<>());
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
                 MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
 
-                for (TypeIdentifier interfaceTypeIdentifier : byteCode.interfaceTypeIdentifiers.list()) {
+                for (TypeIdentifier interfaceTypeIdentifier : typeByteCode.interfaceTypeIdentifiers.list()) {
                     MethodDeclaration implMethod = methodDeclaration.with(interfaceTypeIdentifier);
                     list.add(new ImplementationMethod(methodDeclaration, implMethod));
                 }

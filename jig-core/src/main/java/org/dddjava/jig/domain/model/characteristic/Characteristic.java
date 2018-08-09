@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.characteristic;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 /**
  * 型の特徴
@@ -8,72 +8,72 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 public enum Characteristic {
     CONTROLLER {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.hasAnnotation("org.springframework.stereotype.Controller")
-                    || byteCode.hasAnnotation("org.springframework.web.bind.annotation.RestController")
-                    || byteCode.hasAnnotation("org.springframework.web.bind.annotation.ControllerAdvice");
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.hasAnnotation("org.springframework.stereotype.Controller")
+                    || typeByteCode.hasAnnotation("org.springframework.web.bind.annotation.RestController")
+                    || typeByteCode.hasAnnotation("org.springframework.web.bind.annotation.ControllerAdvice");
         }
     },
     SERVICE {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.hasAnnotation("org.springframework.stereotype.Service");
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.hasAnnotation("org.springframework.stereotype.Service");
         }
     },
     REPOSITORY {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return characterizedTypeFactory.isRepository(byteCode);
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return characterizedTypeFactory.isRepository(typeByteCode);
         }
     },
     DATASOURCE {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.hasAnnotation("org.springframework.stereotype.Repository");
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.hasAnnotation("org.springframework.stereotype.Repository");
         }
     },
     MAPPER {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
             // WET: org.dddjava.jig.infrastructure.LocalProject.isMapperClassFile
-            return byteCode.typeIdentifier().asSimpleText().endsWith("Mapper");
+            return typeByteCode.typeIdentifier().asSimpleText().endsWith("Mapper");
         }
     },
     ENUM {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.isEnum();
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.isEnum();
         }
     },
     // TODO characteristicじゃなくす
     ENUM_BEHAVIOUR {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.isEnum() && byteCode.hasInstanceMethod();
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.isEnum() && typeByteCode.hasInstanceMethod();
         }
     },
     // TODO characteristicじゃなくす
     ENUM_PARAMETERIZED {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.isEnum() && byteCode.hasField();
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.isEnum() && typeByteCode.hasField();
         }
     },
     // TODO characteristicじゃなくす
     ENUM_POLYMORPHISM {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return byteCode.isEnum() && byteCode.canExtend();
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return typeByteCode.isEnum() && typeByteCode.canExtend();
         }
     },
     MODEL {
         @Override
-        boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return characterizedTypeFactory.isModel(byteCode);
+        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+            return characterizedTypeFactory.isModel(typeByteCode);
         }
     };
 
-    boolean matches(ByteCode byteCode, CharacterizedTypeFactory characterizedTypeFactory) {
+    boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
         return false;
     }
 

@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
@@ -46,26 +46,26 @@ public class ProjectData {
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
 
-    public ProjectData(ByteCodes byteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
-        this.methods = byteCodes.instanceMethods();
+    public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
+        this.methods = typeByteCodes.instanceMethods();
 
-        this.typeAnnotations = byteCodes.typeAnnotations();
-        this.fieldAnnotations = byteCodes.annotatedFields();
-        this.methodAnnotations = byteCodes.annotatedMethods();
+        this.typeAnnotations = typeByteCodes.typeAnnotations();
+        this.fieldAnnotations = typeByteCodes.annotatedFields();
+        this.methodAnnotations = typeByteCodes.annotatedMethods();
 
-        this.fieldDeclarations = byteCodes.instanceFields();
-        this.staticFieldDeclarations = byteCodes.staticFields();
+        this.fieldDeclarations = typeByteCodes.instanceFields();
+        this.staticFieldDeclarations = typeByteCodes.staticFields();
 
-        this.implementationMethods = new ImplementationMethods(byteCodes);
+        this.implementationMethods = new ImplementationMethods(typeByteCodes);
 
-        this.methodRelations = new MethodRelations(byteCodes);
-        this.methodUsingFields = new MethodUsingFields(byteCodes);
-        this.typeDependencies = new TypeDependencies(byteCodes);
+        this.methodRelations = new MethodRelations(typeByteCodes);
+        this.methodUsingFields = new MethodUsingFields(typeByteCodes);
+        this.typeDependencies = new TypeDependencies(typeByteCodes);
 
-        CharacterizedTypes characterizedTypes = new CharacterizedTypes(byteCodes, characterizedTypeFactory);
+        CharacterizedTypes characterizedTypes = new CharacterizedTypes(typeByteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
-        this.characterizedMethods = new CharacterizedMethods(byteCodes.instanceMethodByteCodes(), characterizedTypes);
-        this.valueTypes = new ValueTypes(byteCodes);
+        this.characterizedMethods = new CharacterizedMethods(typeByteCodes.instanceMethodByteCodes(), characterizedTypes);
+        this.valueTypes = new ValueTypes(typeByteCodes);
 
         this.sqls = sqls;
     }

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.*;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -24,16 +24,16 @@ import java.util.stream.Collectors;
 
 class ByteCodeAnalyzer extends ClassVisitor {
 
-    ByteCode byteCode;
+    TypeByteCode typeByteCode;
 
     public ByteCodeAnalyzer() {
         super(Opcodes.ASM6);
     }
 
-    ByteCode analyze(InputStream inputStream) throws IOException {
+    TypeByteCode analyze(InputStream inputStream) throws IOException {
         ClassReader classReader = new ClassReader(inputStream);
         classReader.accept(this, ClassReader.SKIP_DEBUG);
-        return byteCode;
+        return typeByteCode;
     }
 
     @Override
@@ -42,7 +42,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
         ParameterizedType parameterizedSuperType = parameterizedSuperType(superName, signature);
 
-        this.byteCode = new ByteCode(
+        this.typeByteCode = new TypeByteCode(
                 new TypeIdentifier(name),
                 parameterizedSuperType,
                 Arrays.stream(interfaces).map(TypeIdentifier::new).collect(TypeIdentifiers.collector()),
@@ -55,7 +55,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                byteCode.registerTypeAnnotation(new TypeAnnotation(annotation, byteCode.typeIdentifier()))
+                typeByteCode.registerTypeAnnotation(new TypeAnnotation(annotation, typeByteCode.typeIdentifier()))
         );
 
     }
@@ -63,33 +63,33 @@ class ByteCodeAnalyzer extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(byteCode::registerUseType);
+        genericsTypes.forEach(typeByteCode::registerUseType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            byteCode.registerUseType(toTypeIdentifier(elementType));
+            typeByteCode.registerUseType(toTypeIdentifier(elementType));
         }
 
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // インスタンスフィールドだけ相手にする
-            byteCode.registerField(fieldDeclaration);
+            typeByteCode.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    byteCode.registerUseType(annotationTypeIdentifier);
+                    typeByteCode.registerUseType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationTypeIdentifier, annotation ->
-                            byteCode.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
+                            typeByteCode.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }
             };
         }
         if (!name.equals("$VALUES")) {
-            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(byteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // staticフィールドのうち、enumの $VALUES は除く
-            byteCode.registerStaticField(fieldDeclaration);
+            typeByteCode.registerStaticField(fieldDeclaration);
         }
         return super.visitField(access, name, descriptor, signature, value);
     }
@@ -97,7 +97,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(byteCode.typeIdentifier(), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor)));
+        MethodDeclaration methodDeclaration = new MethodDeclaration(typeByteCode.typeIdentifier(), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor)));
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -106,7 +106,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             }
         }
         MethodByteCode methodByteCode = new MethodByteCode(methodDeclaration, useTypes, access);
-        methodByteCode.bind(byteCode);
+        methodByteCode.bind(typeByteCode);
 
         return new MethodVisitor(this.api) {
 

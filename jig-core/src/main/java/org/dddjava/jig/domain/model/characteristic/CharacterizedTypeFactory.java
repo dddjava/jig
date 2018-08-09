@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.characteristic;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
  */
 public interface CharacterizedTypeFactory {
 
-    default CharacterizedType create(ByteCode byteCode) {
+    default CharacterizedType create(TypeByteCode typeByteCode) {
         return new CharacterizedType(
-                byteCode.typeIdentifier(),
+                typeByteCode.typeIdentifier(),
                 Arrays.stream(Characteristic.values())
-                        .filter(characteristic -> characteristic.matches(byteCode, this))
+                        .filter(characteristic -> characteristic.matches(typeByteCode, this))
                         .collect(Collectors.toSet()));
     }
 
-    boolean isModel(ByteCode byteCode);
+    boolean isModel(TypeByteCode typeByteCode);
 
-    boolean isRepository(ByteCode byteCode);
+    boolean isRepository(TypeByteCode typeByteCode);
 }

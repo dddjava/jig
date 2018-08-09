@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -35,10 +35,10 @@ public class ImplementationService {
      * プロジェクト情報を読み取る
      */
     public ProjectData readProjectData(LocalProject target) {
-        ByteCodes byteCodes = readByteCode(target.getByteCodeSources());
+        TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
         Sqls sqls = readSql(target.getSqlSources());
 
-        ProjectData projectData = new ProjectData(byteCodes, sqls, characterizedTypeFactory);
+        ProjectData projectData = new ProjectData(typeByteCodes, sqls, characterizedTypeFactory);
 
         glossaryService.importJapanese(target.getTypeNameSources());
         glossaryService.importJapanese(target.getPackageNameSources());
@@ -49,7 +49,7 @@ public class ImplementationService {
     /**
      * ソースからバイトコードを読み取る
      */
-    public ByteCodes readByteCode(ByteCodeSources byteCodeSources) {
+    public TypeByteCodes readByteCode(ByteCodeSources byteCodeSources) {
         if (byteCodeSources.notFound()) {
             throw new ClassFindFailException();
         }

@@ -105,8 +105,8 @@ public class MethodByteCode {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
 
-    public void bind(ByteCode byteCode) {
-        MethodKind.methodKind(this).bind(this, byteCode);
+    public void bind(TypeByteCode typeByteCode) {
+        MethodKind.methodKind(this).bind(this, typeByteCode);
     }
 
     public Accessor accessor() {

@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        ByteCode actual = exercise(Annotated.class);
+        TypeByteCode actual = exercise(Annotated.class);
 
         List<FieldAnnotation> fieldAnnotations = actual.annotatedFields();
         FieldAnnotation fieldAnnotation = fieldAnnotations.stream()
@@ -65,7 +65,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        ByteCode actual = exercise(Annotated.class);
+        TypeByteCode actual = exercise(Annotated.class);
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
@@ -89,7 +89,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        ByteCode actual = exercise(ClassDefinition.class);
+        TypeByteCode actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -115,7 +115,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        ByteCode actual = exercise(FieldDefinition.class);
+        TypeByteCode actual = exercise(FieldDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -133,7 +133,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        ByteCode actual = exercise(DecisionClass.class);
+        TypeByteCode actual = exercise(DecisionClass.class);
 
         List<MethodByteCode> methodByteCodes = actual.instanceMethodByteCodes();
 
@@ -152,7 +152,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void enumで使用している型が取得できる() throws Exception {
-        ByteCode actual = exercise(EnumDefinition.class);
+        TypeByteCode actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -166,14 +166,14 @@ public class AsmByteCodeFactoryTest {
     @ParameterizedTest
     @MethodSource
     void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
-        ByteCode actual = exercise(clz);
+        TypeByteCode actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
-                        ByteCode::isEnum,
-                        ByteCode::hasInstanceMethod,
-                        ByteCode::hasField,
-                        ByteCode::canExtend
+                        TypeByteCode::isEnum,
+                        TypeByteCode::hasInstanceMethod,
+                        TypeByteCode::hasField,
+                        TypeByteCode::canExtend
                 )
                 .containsExactly(
                         true,
@@ -192,7 +192,7 @@ public class AsmByteCodeFactoryTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private ByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();

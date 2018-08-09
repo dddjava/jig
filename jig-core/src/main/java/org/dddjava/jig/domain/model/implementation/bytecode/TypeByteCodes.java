@@ -16,20 +16,20 @@ import static java.util.stream.Collectors.toList;
 /**
  * モデルの実装一式
  */
-public class ByteCodes {
-    private final List<ByteCode> list;
+public class TypeByteCodes {
+    private final List<TypeByteCode> list;
 
-    public ByteCodes(List<ByteCode> list) {
+    public TypeByteCodes(List<TypeByteCode> list) {
         this.list = list;
     }
 
-    public List<ByteCode> list() {
+    public List<TypeByteCode> list() {
         return list;
     }
 
     public List<MethodByteCode> instanceMethodByteCodes() {
         return list.stream()
-                .map(ByteCode::instanceMethodByteCodes)
+                .map(TypeByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
                 .collect(toList());
     }
@@ -43,16 +43,16 @@ public class ByteCodes {
 
     public TypeAnnotations typeAnnotations() {
         List<TypeAnnotation> list = new ArrayList<>();
-        for (ByteCode byteCode : list()) {
-            list.addAll(byteCode.typeAnnotations());
+        for (TypeByteCode typeByteCode : list()) {
+            list.addAll(typeByteCode.typeAnnotations());
         }
         return new TypeAnnotations(list);
     }
 
     public FieldAnnotations annotatedFields() {
         List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
-        for (ByteCode byteCode : list()) {
-            fieldAnnotations.addAll(byteCode.annotatedFields());
+        for (TypeByteCode typeByteCode : list()) {
+            fieldAnnotations.addAll(typeByteCode.annotatedFields());
         }
         return new FieldAnnotations(fieldAnnotations);
     }
@@ -67,8 +67,8 @@ public class ByteCodes {
 
     public FieldDeclarations instanceFields() {
         List<FieldDeclaration> list = new ArrayList<>();
-        for (ByteCode byteCode : list()) {
-            FieldDeclarations fieldDeclarations = byteCode.fieldDeclarations();
+        for (TypeByteCode typeByteCode : list()) {
+            FieldDeclarations fieldDeclarations = typeByteCode.fieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new FieldDeclarations(list);
@@ -76,8 +76,8 @@ public class ByteCodes {
 
     public StaticFieldDeclarations staticFields() {
         List<StaticFieldDeclaration> list = new ArrayList<>();
-        for (ByteCode byteCode : list()) {
-            StaticFieldDeclarations fieldDeclarations = byteCode.staticFieldDeclarations();
+        for (TypeByteCode typeByteCode : list()) {
+            StaticFieldDeclarations fieldDeclarations = typeByteCode.staticFieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new StaticFieldDeclarations(list);

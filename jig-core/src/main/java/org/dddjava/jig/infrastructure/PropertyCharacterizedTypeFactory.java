@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +15,12 @@ public class PropertyCharacterizedTypeFactory implements CharacterizedTypeFactor
     String repositoryPattern = ".+Repository";
 
     @Override
-    public boolean isModel(ByteCode byteCode) {
-        return byteCode.typeIdentifier().fullQualifiedName().matches(modelPattern);
+    public boolean isModel(TypeByteCode typeByteCode) {
+        return typeByteCode.typeIdentifier().fullQualifiedName().matches(modelPattern);
     }
 
     @Override
-    public boolean isRepository(ByteCode byteCode) {
-        return byteCode.typeIdentifier().fullQualifiedName().matches(repositoryPattern);
+    public boolean isRepository(TypeByteCode typeByteCode) {
+        return typeByteCode.typeIdentifier().fullQualifiedName().matches(repositoryPattern);
     }
 }

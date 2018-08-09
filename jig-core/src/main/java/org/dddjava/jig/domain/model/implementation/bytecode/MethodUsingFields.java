@@ -18,11 +18,11 @@ public class MethodUsingFields {
         this.list = list;
     }
 
-    public MethodUsingFields(ByteCodes byteCodes) {
+    public MethodUsingFields(TypeByteCodes typeByteCodes) {
         this(new ArrayList<>());
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            for (MethodByteCode methodByteCode : byteCode.instanceMethodByteCodes()) {
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
                 MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
                 for (FieldDeclaration usingField : methodByteCode.usingFields().list()) {
                     list.add(new MethodUsingField(methodDeclaration, usingField));

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.characteristic;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +17,11 @@ public class CharacterizedTypes {
         this.list = list;
     }
 
-    public CharacterizedTypes(ByteCodes byteCodes, CharacterizedTypeFactory characterizedTypeFactory) {
+    public CharacterizedTypes(TypeByteCodes typeByteCodes, CharacterizedTypeFactory characterizedTypeFactory) {
         this(new ArrayList<>());
 
-        for (ByteCode byteCode : byteCodes.list()) {
-            CharacterizedType characterizedType = characterizedTypeFactory.create(byteCode);
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            CharacterizedType characterizedType = characterizedTypeFactory.create(typeByteCode);
             list.add(characterizedType);
         }
     }

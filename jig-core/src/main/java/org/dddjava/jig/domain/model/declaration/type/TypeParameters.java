@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.type;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 型パラメーター一覧
@@ -10,5 +11,15 @@ public class TypeParameters {
 
     public TypeParameters(List<TypeParameter> list) {
         this.list = list;
+    }
+
+    public List<TypeParameter> list() {
+        return list;
+    }
+
+    public String asSimpleText() {
+        return list.stream()
+                .map(e -> e.typeIdentifier.asSimpleText())
+                .collect(Collectors.joining(", ", "<", ">"));
     }
 }

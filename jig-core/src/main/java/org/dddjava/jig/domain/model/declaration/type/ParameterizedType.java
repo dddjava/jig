@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.type;
 
+import java.util.Collections;
+
 /**
  * パラメータ化された型
  *
@@ -15,11 +17,20 @@ public class ParameterizedType {
         this.typeParameters = typeParameters;
     }
 
+    public ParameterizedType(TypeIdentifier typeIdentifier) {
+        // 非総称型
+        this(typeIdentifier, new TypeParameters(Collections.emptyList()));
+    }
+
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
     public TypeParameters typeParameters() {
         return typeParameters;
+    }
+
+    public String asSimpleText() {
+        return typeIdentifier.asSimpleText() + typeParameters.asSimpleText();
     }
 }

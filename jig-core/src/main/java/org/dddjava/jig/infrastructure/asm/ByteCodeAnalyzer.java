@@ -7,9 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.objectweb.asm.*;
@@ -42,10 +40,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
 
-        ParameterizedType parameterizedSuperType = new ParameterizedType(
-                new TypeIdentifier(superName),
-                null
-        );
+        ParameterizedType parameterizedSuperType = parameterizedSuperType(superName, signature);
 
         this.byteCode = new ByteCode(
                 new TypeIdentifier(name),
@@ -225,6 +220,55 @@ class ByteCodeAnalyzer extends ClassVisitor {
             );
         }
         return useTypes;
+    }
+
+    private ParameterizedType parameterizedSuperType(String superName, String signature) {
+        // ジェネリクスを使用している場合だけsignatureが入る
+        if (signature == null) {
+            return new ParameterizedType(new TypeIdentifier(superName));
+        }
+
+        SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
+        };
+
+        List<TypeParameter> typeParameters = new ArrayList<>();
+
+        new SignatureReader(signature).accept(
+                new SignatureVisitor(this.api) {
+                    @Override
+                    public SignatureVisitor visitSuperclass() {
+
+                        return new SignatureVisitor(this.api) {
+                            @Override
+                            public void visitClassType(String name) {
+                                super.visitClassType(name);
+                            }
+
+                            @Override
+                            public SignatureVisitor visitTypeArgument(char wildcard) {
+                                if (wildcard == '=') {
+                                    return new SignatureVisitor(this.api) {
+                                        @Override
+                                        public void visitClassType(String name) {
+                                            typeParameters.add(new TypeParameter(new TypeIdentifier(name)));
+                                        }
+
+                                        @Override
+                                        public SignatureVisitor visitTypeArgument(char wildcard) {
+                                            // ジェネリクスのネストは対応しない
+                                            return noOpVisitor;
+                                        }
+                                    };
+                                }
+                                // 境界型は対応しない
+                                return noOpVisitor;
+                            }
+                        };
+                    }
+                }
+        );
+
+        return new ParameterizedType(new TypeIdentifier(superName), new TypeParameters(typeParameters));
     }
 
     private static class MyAnnotationVisitor extends AnnotationVisitor {

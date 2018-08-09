@@ -104,12 +104,12 @@ public class AsmByteCodeFactoryTest {
         ParameterizedType parameterizedSuperType = actual.parameterizedSuperType();
         assertThat(parameterizedSuperType)
                 .extracting(
-                        parameterizedType -> parameterizedSuperType.typeIdentifier(),
-                        parameterizedType -> parameterizedSuperType.typeParameters()
-                )
+                        ParameterizedType::asSimpleText,
+                        parameterizedType -> parameterizedSuperType.typeIdentifier()
+                        )
                 .containsExactly(
-                        new TypeIdentifier(SuperClass.class),
-                        null
+                        "SuperClass<Integer, Long>",
+                        new TypeIdentifier(SuperClass.class)
                 );
     }
 

@@ -1,6 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.assertj.core.api.SoftAssertions;
+import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
@@ -16,9 +17,18 @@ import java.util.List;
 
 public class IntegrationTest {
 
+    @Before
+    public void clean() {
+        File outputDir = new File("./build/jig/stub");
+        if (outputDir.exists()) {
+            for (File file : outputDir.listFiles()) {
+                file.delete();
+            }
+        }
+    }
+
     @Test
     public void スタブプロジェクトへの適用でパッケージ図とリポジトリが出力されること() throws IOException {
-
         URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
         List<File> classpaths = Files.readAllLines(Paths.get(resource.getPath())).stream()
                 .map(path -> new File(path))
@@ -40,4 +50,5 @@ public class IntegrationTest {
                 .contains("[com.example.infrastructure.FromDataSource, register(From), void, , [], [], [], []]");
         softly.assertAll();
     }
+
 }

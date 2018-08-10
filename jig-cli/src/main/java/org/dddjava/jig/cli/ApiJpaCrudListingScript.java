@@ -5,7 +5,10 @@ import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.controllers.ControllerAngle;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.declaration.annotation.*;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
@@ -43,14 +46,14 @@ public class ApiJpaCrudListingScript implements ExtraScript {
     @Override
     public void invoke(ProjectData projectData) {
 
-        MethodDeclarations allRepositoryMethods = projectData.characterizedMethods().repositoryMethods();
         MethodRelations methodRelations = projectData.methodRelations();
 
         TypeIdentifiers repositories = projectData.repositories();
         TypeAnnotations typeAnnotations = projectData.typeAnnotations();
-        Types types = projectData.types();
+
         Map<TypeIdentifier, String> entityTableMap = jpaEntityTableNameMap(typeAnnotations);
-        Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositories);
+        Types types = projectData.types();
+        Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(types, repositories, entityTableMap);
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
@@ -162,7 +165,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
      * {@code @Repository} の TypeIdentifier をKey、
      * {@code JpaRepository<ENTITY, ID>} のENTITYに付与された {@code @Table} の name属性をValueとしたMap
      */
-    private Map<TypeIdentifier, String> jpaRepositoryTableNameMap(TypeAnnotations typeAnnotations, Types types, TypeIdentifiers repositories) {
+    private Map<TypeIdentifier, String> jpaRepositoryTableNameMap(Types types, TypeIdentifiers repositories, Map<TypeIdentifier, String> entityTableMap) {
         Map<TypeIdentifier, String> repositoryTableMap = new HashMap<>();
         for (TypeIdentifier repositoryTypeIdentifier : repositories.list()) {
             if (repositoryTableMap.containsKey(repositoryTypeIdentifier)) {
@@ -174,11 +177,9 @@ public class ApiJpaCrudListingScript implements ExtraScript {
             ParameterizedTypes parameterizedTypes = repositoryType.interfaceTypes();
             Optional<ParameterizedType> one = parameterizedTypes.findOne(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"));
             one.ifPresent(parameterizedType -> {
+                // 一つ目がENTITY
                 TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
-
-                Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().get(new TypeIdentifier("javax.persistence.Table"));
-                String tableName = annotation.descriptionTextOf("name");
-                repositoryTableMap.put(repositoryTypeIdentifier, tableName);
+                repositoryTableMap.put(repositoryTypeIdentifier, entityTableMap.get(jpaEntityType.typeIdentifier()));
             });
 
             if (!one.isPresent()) {

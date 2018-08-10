@@ -18,6 +18,6 @@ public class ControllerReportAdapter {
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
     public String path(ControllerAngle angle) {
-        return angle.controllerAnnotation().pathText();
+        return angle.controllerAnnotation().pathTexts();
     }
 }

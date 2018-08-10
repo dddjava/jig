@@ -26,7 +26,7 @@ public class ControllerAnnotation {
         this.methodAnnotations = methodAnnotations.annotations().filterAny(mappingAnnotations);
     }
 
-    public String pathText() {
+    public String pathTexts() {
         List<String> typePaths = typeAnnotations.descriptionTextsOf("value");
         typePaths.addAll(typeAnnotations.descriptionTextsOf("path"));
         if (typePaths.isEmpty()) typePaths.add("");
@@ -34,20 +34,25 @@ public class ControllerAnnotation {
         List<String> methodPaths = methodAnnotations.descriptionTextsOf("value");
         methodPaths.addAll(methodAnnotations.descriptionTextsOf("path"));
 
-        StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
+        StringJoiner pathTexts = new StringJoiner(", ", "[", "]");
         for (String typePath : typePaths) {
             for (String methodPath : methodPaths) {
-                if (typePath.isEmpty()) {
-                    stringJoiner.add(methodPath);
-                } else if (methodPath.startsWith("/")) {
-                    String pathText = typePath + methodPath;
-                    stringJoiner.add(pathText);
-                } else {
-                    String pathText = typePath + "/" + methodPath;
-                    stringJoiner.add(pathText);
-                }
+                String pathText = combinePath(typePath, methodPath);
+                pathTexts.add(pathText);
             }
         }
-        return stringJoiner.toString();
+        return pathTexts.toString();
+    }
+
+    private String combinePath(String typePath, String methodPath) {
+        String pathText;
+        if (typePath.isEmpty()) {
+            pathText = methodPath;
+        } else if (methodPath.startsWith("/")) {
+            pathText = typePath + methodPath;
+        } else {
+            pathText = typePath + "/" + methodPath;
+        }
+        return pathText;
     }
 }

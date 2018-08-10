@@ -18,4 +18,8 @@ public class Annotation {
     public String descriptionTextOf(String name) {
         return description.textOf(name);
     }
+
+    public TypeIdentifier identifier() {
+        return annotationType;
+    }
 }

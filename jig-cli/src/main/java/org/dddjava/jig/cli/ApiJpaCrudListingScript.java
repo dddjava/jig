@@ -47,21 +47,9 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
         MethodDeclarations controllerMethods = projectData.controllerMethods().declarations();
 
-        Map<MethodIdentifier, List<MethodDeclaration>> apiMap = new HashMap<>();
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(repositoryMethods, methodRelations, controllerMethods);
 
-        for (MethodDeclaration repositoryMethod : repositoryMethods.list()) {
-            List<MethodDeclaration> userControllerMethods = new ArrayList<>();
-
-            collectControllerMethods(userControllerMethods, repositoryMethod, methodRelations, controllerMethods);
-
-            for (MethodDeclaration userControllerMethod : userControllerMethods) {
-                MethodIdentifier identifier = userControllerMethod.identifier();
-                apiMap.putIfAbsent(identifier, new ArrayList<>());
-                apiMap.get(identifier).add(repositoryMethod);
-            }
-        }
-
-        output(apiMap, projectData);
+        output(apiUseRepositoryMethodsMap, projectData);
     }
 
     private void output(Map<MethodIdentifier, List<MethodDeclaration>> apiMap, ProjectData projectData) {
@@ -163,6 +151,30 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         return repositoryTableMap;
     }
 
+    /**
+     * ハンドラメソッド（{@code @RequestMapping}）の MethodIdentifier をKey、
+     * 使用している{@code @Repository} のMethodDeclarationをValueとしたMap
+     */
+    private Map<MethodIdentifier, List<MethodDeclaration>> methodIdentifierListMap(MethodDeclarations repositoryMethods, MethodRelations methodRelations, MethodDeclarations controllerMethods) {
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = new HashMap<>();
+
+        for (MethodDeclaration repositoryMethod : repositoryMethods.list()) {
+            List<MethodDeclaration> userControllerMethods = new ArrayList<>();
+
+            collectControllerMethods(userControllerMethods, repositoryMethod, methodRelations, controllerMethods);
+
+            for (MethodDeclaration userControllerMethod : userControllerMethods) {
+                MethodIdentifier identifier = userControllerMethod.identifier();
+                apiUseRepositoryMethodsMap.putIfAbsent(identifier, new ArrayList<>());
+                apiUseRepositoryMethodsMap.get(identifier).add(repositoryMethod);
+            }
+        }
+        return apiUseRepositoryMethodsMap;
+    }
+
+    /**
+     * メソッドの呼び出し元をControllerまで探索していく
+     */
     private void collectControllerMethods(List<MethodDeclaration> collector, MethodDeclaration methodDeclaration, MethodRelations methodRelations, MethodDeclarations controllerMethods) {
         MethodDeclarations methodDeclarations = methodRelations.userMethodsOf(methodDeclaration);
         List<MethodDeclaration> list = methodDeclarations.list();

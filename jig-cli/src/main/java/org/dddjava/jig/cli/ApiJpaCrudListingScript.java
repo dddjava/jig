@@ -45,6 +45,11 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         MethodDeclarations allRepositoryMethods = projectData.characterizedMethods().repositoryMethods();
         MethodRelations methodRelations = projectData.methodRelations();
 
+        TypeIdentifiers repositories = projectData.repositories();
+        TypeAnnotations typeAnnotations = projectData.typeAnnotations();
+        Types types = projectData.types();
+        Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositories);
+
         MethodDeclarations controllerMethods = projectData.controllerMethods().declarations();
 
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(allRepositoryMethods, methodRelations, controllerMethods);
@@ -53,8 +58,6 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
-        TypeAnnotations typeAnnotations = projectData.typeAnnotations();
-        Types types = projectData.types();
 
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
 
@@ -75,8 +78,6 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                 MethodDeclaration controllerMethodDeclaration = controllerAngle.method().declaration();
 
                 List<MethodDeclaration> repositoryMethods = apiUseRepositoryMethodsMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
-
-                Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositoryMethods);
 
                 // READ
                 String readTables = repositoryMethods.stream()
@@ -120,10 +121,9 @@ public class ApiJpaCrudListingScript implements ExtraScript {
      * {@code @Repository} の TypeIdentifier をKey、
      * {@code JpaRepository<ENTITY, ID>} のENTITYに付与された {@code @Table} の name属性をValueとしたMap
      */
-    private Map<TypeIdentifier, String> jpaRepositoryTableNameMap(TypeAnnotations typeAnnotations, Types types, List<MethodDeclaration> repositoryMethods) {
+    private Map<TypeIdentifier, String> jpaRepositoryTableNameMap(TypeAnnotations typeAnnotations, Types types, TypeIdentifiers repositories) {
         Map<TypeIdentifier, String> repositoryTableMap = new HashMap<>();
-        for (MethodDeclaration repositoryMethod : repositoryMethods) {
-            TypeIdentifier repositoryTypeIdentifier = repositoryMethod.declaringType();
+        for (TypeIdentifier repositoryTypeIdentifier : repositories.list()) {
             if (repositoryTableMap.containsKey(repositoryTypeIdentifier)) {
                 continue;
             }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
@@ -9,6 +10,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
@@ -135,5 +137,11 @@ public class ProjectData {
 
     public Methods controllerMethods() {
         return methods().controllerMethods(characterizedTypes);
+    }
+
+    public TypeIdentifiers repositories() {
+        return characterizedTypes().stream()
+                .filter(Characteristic.REPOSITORY)
+                .typeIdentifiers();
     }
 }

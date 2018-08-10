@@ -28,8 +28,6 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'org.dddjava.jig-gradle-plugin'
-
-jigReports.dependsOn(compileJava)
 ```
 
 

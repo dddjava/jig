@@ -38,7 +38,7 @@ public class IntegrationTest {
         BuildResult result = GradleRunner.create()
                 .withGradleVersion("4.9")
                 .withProjectDir(new File("./stub"))
-                .withArguments("compileJava", "jigReports")
+                .withArguments("clean", "jigReports")
                 .withPluginClasspath(classpaths)
                 .build();
 

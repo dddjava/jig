@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * コントローラーアノテーション
+ * コントローラーアノテーションの一覧
  */
-public class ControllerAnnotation {
+public class ControllerAnnotations {
 
     private final Annotations typeAnnotations;
     private final Annotations methodAnnotations;
 
-    public ControllerAnnotation(TypeAnnotations typeAnnotations, MethodAnnotations methodAnnotations) {
+    public ControllerAnnotations(TypeAnnotations typeAnnotations, MethodAnnotations methodAnnotations) {
         TypeIdentifier[] mappingAnnotations = {
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.GetMapping"),

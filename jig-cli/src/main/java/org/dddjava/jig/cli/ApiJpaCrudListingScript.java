@@ -42,17 +42,13 @@ public class ApiJpaCrudListingScript implements ExtraScript {
     @Override
     public void invoke(ProjectData projectData) {
 
-        MethodDeclarations repositoryMethods = projectData.characterizedMethods().repositoryMethods();
+        MethodDeclarations allRepositoryMethods = projectData.characterizedMethods().repositoryMethods();
         MethodRelations methodRelations = projectData.methodRelations();
 
         MethodDeclarations controllerMethods = projectData.controllerMethods().declarations();
 
-        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(repositoryMethods, methodRelations, controllerMethods);
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(allRepositoryMethods, methodRelations, controllerMethods);
 
-        output(apiUseRepositoryMethodsMap, projectData);
-    }
-
-    private void output(Map<MethodIdentifier, List<MethodDeclaration>> apiMap, ProjectData projectData) {
         Path outputPath = Paths.get(outputDirectory, "api-jpa-crud.txt");
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
@@ -78,7 +74,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
             for (ControllerAngle controllerAngle : controllerAngles.list()) {
                 MethodDeclaration controllerMethodDeclaration = controllerAngle.method().declaration();
 
-                List<MethodDeclaration> repositoryMethods = apiMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
+                List<MethodDeclaration> repositoryMethods = apiUseRepositoryMethodsMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
 
                 Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositoryMethods);
 

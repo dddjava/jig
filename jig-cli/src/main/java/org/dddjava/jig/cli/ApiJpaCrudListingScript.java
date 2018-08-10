@@ -54,7 +54,11 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
-        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(allRepositoryMethods, methodRelations, controllerAngles, repositories);
+        Function<MethodDeclaration, MethodDeclarations> callMethodsResolver = methodRelations::usingMethodsOf;
+
+        // @Repositoryのメソッドを収集対象にする
+        Predicate<MethodDeclaration> isRepositoryMethod = e -> repositories.contains(e.declaringType());
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(controllerAngles, isRepositoryMethod, callMethodsResolver);
 
         Path outputPath = Paths.get(outputDirectory, "api-jpa-crud.txt");
 
@@ -149,31 +153,29 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
     /**
      * ハンドラメソッド（{@code @RequestMapping}）の MethodIdentifier をKey、
-     * 使用している{@code @Repository} のMethodDeclarationをValueとしたMap
+     * isCollectTargetMethodに合致したMethodDeclarationをValueとしたMap
      */
-    private Map<MethodIdentifier, List<MethodDeclaration>> methodIdentifierListMap(MethodDeclarations repositoryMethods, MethodRelations methodRelations, ControllerAngles controllerAngles, TypeIdentifiers repositories) {
+    private Map<MethodIdentifier, List<MethodDeclaration>> methodIdentifierListMap(ControllerAngles controllerAngles, Predicate<MethodDeclaration> isCollectTargetMethod, Function<MethodDeclaration, MethodDeclarations> callMethodsResolver) {
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = new HashMap<>();
 
         for (ControllerAngle controllerAngle : controllerAngles.list()) {
             List<MethodDeclaration> collector = new ArrayList<>();
-            Predicate<MethodDeclaration> isRepositoryMethod = e -> repositories.contains(e.declaringType());
-            Function<MethodDeclaration, MethodDeclarations> callMethods = methodRelations::usingMethodsOf;
-            collectCallRepositoryMethods(collector, isRepositoryMethod, callMethods, controllerAngle.method().declaration());
+            collectMethods(collector, isCollectTargetMethod, callMethodsResolver, controllerAngle.method().declaration());
 
             apiUseRepositoryMethodsMap.put(controllerAngle.method().declaration().identifier(), collector);
         }
         return apiUseRepositoryMethodsMap;
     }
 
-    private void collectCallRepositoryMethods(List<MethodDeclaration> collector,
-                                              Predicate<MethodDeclaration> isRepositoryMethod,
-                                              Function<MethodDeclaration, MethodDeclarations> callMethodResolver,
-                                              MethodDeclaration method) {
+    private void collectMethods(List<MethodDeclaration> collector,
+                                Predicate<MethodDeclaration> isCollectTargetMethod,
+                                Function<MethodDeclaration, MethodDeclarations> callMethodResolver,
+                                MethodDeclaration method) {
         MethodDeclarations calledMethods = callMethodResolver.apply(method);
 
         for (MethodDeclaration calledMethod : calledMethods.list()) {
             // Repositoryなら追加
-            if (isRepositoryMethod.test(calledMethod)) {
+            if (isCollectTargetMethod.test(calledMethod)) {
                 collector.add(calledMethod);
             }
             // 自己呼び出しはそれ以上読まない
@@ -181,7 +183,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                 continue;
             }
             // 再帰
-            collectCallRepositoryMethods(collector, isRepositoryMethod, callMethodResolver, calledMethod);
+            collectMethods(collector, isCollectTargetMethod, callMethodResolver, calledMethod);
         }
     }
 }

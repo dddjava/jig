@@ -33,7 +33,7 @@ public class Annotations {
                 .collect(Collectors.toList());
     }
 
-    public Annotation findOne(TypeIdentifier typeIdentifier) {
+    public Annotation get(TypeIdentifier typeIdentifier) {
         return list.stream().filter(e -> e.annotationType.equals(typeIdentifier))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(typeIdentifier.fullQualifiedName()));

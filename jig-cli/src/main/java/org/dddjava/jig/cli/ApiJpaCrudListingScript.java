@@ -135,7 +135,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
             one.ifPresent(parameterizedType -> {
                 TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
 
-                Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().findOne(new TypeIdentifier("javax.persistence.Table"));
+                Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().get(new TypeIdentifier("javax.persistence.Table"));
                 String tableName = annotation.descriptionTextOf("name");
                 repositoryTableMap.put(repositoryTypeIdentifier, tableName);
             });

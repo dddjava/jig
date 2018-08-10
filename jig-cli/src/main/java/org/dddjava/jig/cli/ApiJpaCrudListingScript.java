@@ -5,8 +5,7 @@ import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.controllers.ControllerAngle;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.declaration.annotation.Annotation;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
@@ -50,6 +49,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         TypeIdentifiers repositories = projectData.repositories();
         TypeAnnotations typeAnnotations = projectData.typeAnnotations();
         Types types = projectData.types();
+        Map<TypeIdentifier, String> entityTableMap = jpaEntityTableNameMap(typeAnnotations);
         Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositories);
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
@@ -59,6 +59,21 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         // @Repositoryのメソッドを収集対象にする
         Predicate<MethodDeclaration> isRepositoryMethod = e -> repositories.contains(e.declaringType());
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(controllerAngles, isRepositoryMethod, callMethodsResolver);
+
+        // @Entityの他entity参照メソッドを収集対象にする
+        MethodAnnotations methodAnnotations = projectData.methodAnnotations();
+        Predicate<MethodDeclaration> isJpaEntityFetchMethod = e -> {
+            Optional<MethodAnnotation> mayBeMethodAnnotation = methodAnnotations.findOne(e);
+            return mayBeMethodAnnotation.map(
+                    methodAnnotation ->
+                            methodAnnotation.annotationType().equals(new TypeIdentifier("javax.persistence.OneToOne"))
+                                    || methodAnnotation.annotationType().equals(new TypeIdentifier("javax.persistence.ManyToOne"))
+                    // TODO XxxToMany の場合は戻り値のジェネリクス対応後になる
+                    // || methodAnnotation.annotationType().equals(new TypeIdentifier("javax.persistence.OneToMany"))
+                    // || methodAnnotation.annotationType().equals(new TypeIdentifier("javax.persistence.ManyToMany"))
+            ).filter(b -> b).isPresent();
+        };
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseJpaEntityFetchMethodsMap = methodIdentifierListMap(controllerAngles, isJpaEntityFetchMethod, callMethodsResolver);
 
         Path outputPath = Paths.get(outputDirectory, "api-jpa-crud.txt");
 
@@ -72,6 +87,8 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                     .append("使用しているリポジトリのメソッド")
                     .append('\t')
                     .append("READ")
+                    .append('\t')
+                    .append("READ(EntityMethod)")
                     .append('\t')
                     .append("CREATE or UPDATE")
                     .append('\t')
@@ -90,6 +107,11 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                             return methodName.startsWith("find") || methodName.startsWith("get") || methodName.startsWith("exists") || methodName.startsWith("count");
                         })
                         .map(MethodDeclaration::declaringType).distinct().map(repositoryTableMap::get)
+                        .collect(Text.collectionCollector());
+                // READ(EntityMethod)
+                String lazyReadTables = apiUseJpaEntityFetchMethodsMap.get(controllerMethodDeclaration.identifier()).stream()
+                        .map(MethodDeclaration::returnType)
+                        .distinct().map(entityTableMap::get)
                         .collect(Text.collectionCollector());
                 // CREATE or UPDATE
                 String createOrUpdateTables = repositoryMethods.stream()
@@ -110,15 +132,30 @@ public class ApiJpaCrudListingScript implements ExtraScript {
                         .append('\t')
                         .append(readTables)
                         .append('\t')
+                        .append(lazyReadTables)
+                        .append('\t')
                         .append(createOrUpdateTables)
                         .append('\t')
                         .append(deleteTables)
                         .append('\n');
             }
 
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             throw new FileWriteFailureException(e);
         }
+
+    }
+
+    private Map<TypeIdentifier, String> jpaEntityTableNameMap(TypeAnnotations typeAnnotations) {
+        Map<TypeIdentifier, String> map = new HashMap<>();
+        for (TypeAnnotation typeAnnotation : typeAnnotations.list()) {
+            if (!typeAnnotation.typeIs(new TypeIdentifier("javax.persistence.Table"))) {
+                continue;
+            }
+            map.put(typeAnnotation.declaringType(), typeAnnotation.annotation().descriptionTextOf("name"));
+        }
+        return map;
     }
 
     /**

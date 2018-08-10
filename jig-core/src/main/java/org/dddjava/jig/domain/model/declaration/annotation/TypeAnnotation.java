@@ -26,4 +26,12 @@ public class TypeAnnotation {
     public TypeIdentifier type() {
         return annotation.annotationType;
     }
+
+    public TypeIdentifier declaringType() {
+        return declaringType;
+    }
+
+    public Annotation annotation() {
+        return annotation;
+    }
 }

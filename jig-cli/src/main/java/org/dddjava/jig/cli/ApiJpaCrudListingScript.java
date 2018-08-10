@@ -92,29 +92,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
                 List<MethodDeclaration> repositoryMethods = apiMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
 
-                Map<TypeIdentifier, String> repositoryTableMap = new HashMap<>();
-                for (MethodDeclaration repositoryMethod : repositoryMethods) {
-                    TypeIdentifier repositoryTypeIdentifier = repositoryMethod.declaringType();
-                    if (repositoryTableMap.containsKey(repositoryTypeIdentifier)) {
-                        continue;
-                    }
-
-                    Type repositoryType = types.get(repositoryTypeIdentifier);
-
-                    ParameterizedTypes parameterizedTypes = repositoryType.interfaceTypes();
-                    Optional<ParameterizedType> one = parameterizedTypes.findOne(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"));
-                    one.ifPresent(parameterizedType -> {
-                        TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
-
-                        Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().findOne(new TypeIdentifier("javax.persistence.Table"));
-                        String tableName = annotation.descriptionTextOf("name");
-                        repositoryTableMap.put(repositoryTypeIdentifier, tableName);
-                    });
-
-                    if (!one.isPresent()) {
-                        LOGGER.warn("{} is not JpaRepository.", repositoryTypeIdentifier.fullQualifiedName());
-                    }
-                }
+                Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositoryMethods);
 
                 // READ
                 String readTables = repositoryMethods.stream()
@@ -152,6 +130,37 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         } catch (IOException e) {
             throw new FileWriteFailureException(e);
         }
+    }
+
+    /**
+     * {@code @Repository} の TypeIdentifier をKey、
+     * {@code JpaRepository<ENTITY, ID>} のENTITYに付与された {@code @Table} の name属性をValueとしたMap
+     */
+    private Map<TypeIdentifier, String> jpaRepositoryTableNameMap(TypeAnnotations typeAnnotations, Types types, List<MethodDeclaration> repositoryMethods) {
+        Map<TypeIdentifier, String> repositoryTableMap = new HashMap<>();
+        for (MethodDeclaration repositoryMethod : repositoryMethods) {
+            TypeIdentifier repositoryTypeIdentifier = repositoryMethod.declaringType();
+            if (repositoryTableMap.containsKey(repositoryTypeIdentifier)) {
+                continue;
+            }
+
+            Type repositoryType = types.get(repositoryTypeIdentifier);
+
+            ParameterizedTypes parameterizedTypes = repositoryType.interfaceTypes();
+            Optional<ParameterizedType> one = parameterizedTypes.findOne(new TypeIdentifier("org.springframework.data.jpa.repository.JpaRepository"));
+            one.ifPresent(parameterizedType -> {
+                TypeParameter jpaEntityType = parameterizedType.typeParameters().get(0);
+
+                Annotation annotation = typeAnnotations.filter(jpaEntityType.typeIdentifier()).annotations().findOne(new TypeIdentifier("javax.persistence.Table"));
+                String tableName = annotation.descriptionTextOf("name");
+                repositoryTableMap.put(repositoryTypeIdentifier, tableName);
+            });
+
+            if (!one.isPresent()) {
+                LOGGER.warn("{} is not JpaRepository.", repositoryTypeIdentifier.fullQualifiedName());
+            }
+        }
+        return repositoryTableMap;
     }
 
     private void collectControllerMethods(List<MethodDeclaration> collector, MethodDeclaration methodDeclaration, MethodRelations methodRelations, MethodDeclarations controllerMethods) {

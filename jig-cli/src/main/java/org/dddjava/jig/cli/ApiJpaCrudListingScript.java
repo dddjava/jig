@@ -26,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Component
 @ConditionalOnProperty(prefix = "jig.cli", name = "extra", havingValue = "api-jpa-crud")
@@ -50,13 +52,11 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         Types types = projectData.types();
         Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(typeAnnotations, types, repositories);
 
-        MethodDeclarations controllerMethods = projectData.controllerMethods().declarations();
+        ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
-        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(allRepositoryMethods, methodRelations, controllerMethods);
+        Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(allRepositoryMethods, methodRelations, controllerAngles, repositories);
 
         Path outputPath = Paths.get(outputDirectory, "api-jpa-crud.txt");
-
-        ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
 
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {
@@ -151,38 +151,37 @@ public class ApiJpaCrudListingScript implements ExtraScript {
      * ハンドラメソッド（{@code @RequestMapping}）の MethodIdentifier をKey、
      * 使用している{@code @Repository} のMethodDeclarationをValueとしたMap
      */
-    private Map<MethodIdentifier, List<MethodDeclaration>> methodIdentifierListMap(MethodDeclarations repositoryMethods, MethodRelations methodRelations, MethodDeclarations controllerMethods) {
+    private Map<MethodIdentifier, List<MethodDeclaration>> methodIdentifierListMap(MethodDeclarations repositoryMethods, MethodRelations methodRelations, ControllerAngles controllerAngles, TypeIdentifiers repositories) {
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = new HashMap<>();
 
-        for (MethodDeclaration repositoryMethod : repositoryMethods.list()) {
-            List<MethodDeclaration> userControllerMethods = new ArrayList<>();
+        for (ControllerAngle controllerAngle : controllerAngles.list()) {
+            List<MethodDeclaration> collector = new ArrayList<>();
+            Predicate<MethodDeclaration> isRepositoryMethod = e -> repositories.contains(e.declaringType());
+            Function<MethodDeclaration, MethodDeclarations> callMethods = methodRelations::usingMethodsOf;
+            collectCallRepositoryMethods(collector, isRepositoryMethod, callMethods, controllerAngle.method().declaration());
 
-            collectControllerMethods(userControllerMethods, repositoryMethod, methodRelations, controllerMethods);
-
-            for (MethodDeclaration userControllerMethod : userControllerMethods) {
-                MethodIdentifier identifier = userControllerMethod.identifier();
-                apiUseRepositoryMethodsMap.putIfAbsent(identifier, new ArrayList<>());
-                apiUseRepositoryMethodsMap.get(identifier).add(repositoryMethod);
-            }
+            apiUseRepositoryMethodsMap.put(controllerAngle.method().declaration().identifier(), collector);
         }
         return apiUseRepositoryMethodsMap;
     }
 
-    /**
-     * メソッドの呼び出し元をControllerまで探索していく
-     */
-    private void collectControllerMethods(List<MethodDeclaration> collector, MethodDeclaration methodDeclaration, MethodRelations methodRelations, MethodDeclarations controllerMethods) {
-        MethodDeclarations methodDeclarations = methodRelations.userMethodsOf(methodDeclaration);
-        List<MethodDeclaration> list = methodDeclarations.list();
-        for (MethodDeclaration userMethod : list) {
-            if (controllerMethods.contains(userMethod)) {
-                // controllerなら追加
-                collector.add(userMethod);
-            } else if ( // 無限ループ対策（完全ではない）
-                    !methodDeclaration.equals(userMethod)) {
-                // controllerじゃない場合は再帰
-                collectControllerMethods(collector, userMethod, methodRelations, controllerMethods);
+    private void collectCallRepositoryMethods(List<MethodDeclaration> collector,
+                                              Predicate<MethodDeclaration> isRepositoryMethod,
+                                              Function<MethodDeclaration, MethodDeclarations> callMethodResolver,
+                                              MethodDeclaration method) {
+        MethodDeclarations calledMethods = callMethodResolver.apply(method);
+
+        for (MethodDeclaration calledMethod : calledMethods.list()) {
+            // Repositoryなら追加
+            if (isRepositoryMethod.test(calledMethod)) {
+                collector.add(calledMethod);
             }
+            // 自己呼び出しはそれ以上読まない
+            if (calledMethod.equals(method)) {
+                continue;
+            }
+            // 再帰
+            collectCallRepositoryMethods(collector, isRepositoryMethod, callMethodResolver, calledMethod);
         }
     }
 }

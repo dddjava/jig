@@ -98,7 +98,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
             for (ControllerAngle controllerAngle : controllerAngles.list()) {
                 MethodDeclaration controllerMethodDeclaration = controllerAngle.method().declaration();
 
-                List<MethodDeclaration> repositoryMethods = apiUseRepositoryMethodsMap.getOrDefault(controllerMethodDeclaration.identifier(), Collections.emptyList());
+                List<MethodDeclaration> repositoryMethods = apiUseRepositoryMethodsMap.get(controllerMethodDeclaration.identifier());
 
                 // READ
                 String readTables = repositoryMethods.stream()

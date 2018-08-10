@@ -181,10 +181,25 @@ project(':jig-gradle-plugin') {
     apply plugin: 'com.gradle.plugin-publish'
     apply plugin: 'maven-publish'
 
+    // Write the plugin's classpath to a file to share with the tests
+    task createClasspathManifest {
+        def outputDir = file("$buildDir/$name")
+
+        inputs.files sourceSets.main.runtimeClasspath
+        outputs.dir outputDir
+
+        doLast {
+            outputDir.mkdirs()
+            file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+        }
+    }
+
     dependencies {
         compile project(':jig-core')
         compile gradleApi()
         compile localGroovy()
+        // Add the classpath file to the test runtime classpath
+        testRuntime files(createClasspathManifest)
     }
 
     jar {
@@ -248,5 +263,7 @@ project(':jig-gradle-plugin') {
 
     tasks.publishPlugins.dependsOn tasks.setupPluginUpload
     build.dependsOn(publishToMavenLocal)
+
+    test.dependsOn(createClasspathManifest)
 
 }

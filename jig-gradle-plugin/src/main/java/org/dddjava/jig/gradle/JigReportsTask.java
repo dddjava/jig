@@ -2,9 +2,9 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -24,7 +24,6 @@ public class JigReportsTask extends DefaultTask {
 
     @TaskAction
     void outputReports() {
-
         ExtensionContainer extensions = getProject().getExtensions();
         JigConfig config = extensions.findByType(JigConfig.class);
         JigDocumentHandlers jigDocumentHandlers = dependencies.localViewContextWith(config);
@@ -35,7 +34,7 @@ public class JigReportsTask extends DefaultTask {
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         LocalProject localProject = dependencies.localProject(getProject());
-        ImplementationService implementationService = dependencies.importService();
+        ImplementationService implementationService = dependencies.importService(config);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
         Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());

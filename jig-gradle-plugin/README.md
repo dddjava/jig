@@ -28,13 +28,16 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'org.dddjava.jig-gradle-plugin'
-
-jigReports.dependsOn(compileJava)
 ```
 
-## 設定(値はデフォルト)
+
+## デフォルト設定を変更したいとき
+
+以下の例ようにプロパティを指定してください。例の値はデフォルトです。
 ```
 jig {
+    modelPattern = '.+\\.domain\\.model\\..+'
+    repositoryPattern = '.+Repository'
     documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
     outputDirectory = 'build/jig' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン

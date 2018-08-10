@@ -12,7 +12,10 @@ import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
-import org.dddjava.jig.presentation.controller.*;
+import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.EnumUsageController;
+import org.dddjava.jig.presentation.controller.PackageDependencyController;
+import org.dddjava.jig.presentation.controller.ServiceDiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
@@ -30,15 +33,17 @@ public class Dependencies {
         return new LocalProject(new GradleProject(project).allDependencyJavaProjects());
     }
 
-    ImplementationService importService() {
-        // TODO extensionで変更できるようにする
-        PropertyCharacterizedTypeFactory propertyByteCodeAnalyzeContext = new PropertyCharacterizedTypeFactory();
+    ImplementationService importService(JigConfig config) {
+        PropertyCharacterizedTypeFactory propertyCharacterizedTypeFactory = new PropertyCharacterizedTypeFactory(
+                config.getModelPattern(),
+                config.getRepositoryPattern()
+        );
 
         return new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService(),
                 new MyBatisSqlReader(),
-                new PropertyCharacterizedTypeFactory());
+                propertyCharacterizedTypeFactory);
     }
 
     ClassListController classListController(String outputOmitPrefix) {

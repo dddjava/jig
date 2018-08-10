@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 
 public class JigConfig {
 
+    String modelPattern = ".+\\.domain\\.model\\..+";
+
+    String repositoryPattern = ".+Repository";
+
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "build/jig";
@@ -17,12 +21,27 @@ public class JigConfig {
 
     int depth = -1;
 
-
     List<JigDocument> documentTypes() {
         if (documentTypes.isEmpty()) return Arrays.asList(JigDocument.values());
         return documentTypes.stream()
                 .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
+    }
+
+    public String getModelPattern() {
+        return modelPattern;
+    }
+
+    public void setModelPattern(String modelPattern) {
+        this.modelPattern = modelPattern;
+    }
+
+    public String getRepositoryPattern() {
+        return repositoryPattern;
+    }
+
+    public void setRepositoryPattern(String repositoryPattern) {
+        this.repositoryPattern = repositoryPattern;
     }
 
     List<String> getDocumentTypes() {

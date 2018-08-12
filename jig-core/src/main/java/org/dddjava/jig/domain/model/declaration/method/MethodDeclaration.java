@@ -41,8 +41,13 @@ public class MethodDeclaration {
         return new MethodDeclaration(typeIdentifier, methodSignature(), methodReturn);
     }
 
+    @Deprecated
     public TypeIdentifier returnType() {
-        return methodReturn.typeIdentifier;
+        return methodReturn().parameterizedType().typeIdentifier();
+    }
+
+    public MethodReturn methodReturn() {
+        return methodReturn;
     }
 
     public boolean isConstructor() {

@@ -22,6 +22,10 @@ public class ParameterizedType {
         this(typeIdentifier, new TypeParameters(Collections.emptyList()));
     }
 
+    public ParameterizedType(TypeIdentifier typeIdentifier, TypeParameter typeParameter) {
+        this(typeIdentifier, new TypeParameters(Collections.singletonList(typeParameter)));
+    }
+
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }

@@ -100,7 +100,9 @@ class ByteCodeAnalyzer extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(typeByteCode.typeIdentifier(), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor)));
+        MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
+
+        MethodDeclaration methodDeclaration = new MethodDeclaration(typeByteCode.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -223,6 +225,52 @@ class ByteCodeAnalyzer extends ClassVisitor {
             );
         }
         return useTypes;
+    }
+
+    private MethodReturn extractParameterizedReturnType(String signature, String descriptor) {
+
+        TypeIdentifier[] collector = new TypeIdentifier[2];
+        // ジェネリクスを使用している場合だけsignatureが入る
+        if (signature != null) {
+            new SignatureReader(signature).accept(
+                    new SignatureVisitor(this.api) {
+
+                        @Override
+                        public SignatureVisitor visitReturnType() {
+                            return new SignatureVisitor(this.api) {
+                                @Override
+                                public void visitClassType(String name) {
+                                    // 戻り値の型
+                                    collector[0] = new TypeIdentifier(name);
+                                }
+
+                                @Override
+                                public SignatureVisitor visitTypeArgument(char wildcard) {
+                                    if (wildcard != '=') {
+                                        // 境界型は対応しない
+                                        return super.visitTypeArgument(wildcard);
+                                    }
+                                    return new SignatureVisitor(this.api) {
+                                        @Override
+                                        public void visitClassType(String name) {
+                                            // 型引数の型
+                                            collector[1] = new TypeIdentifier(name);
+                                        }
+                                    };
+                                }
+                            };
+                        }
+                    }
+            );
+        }
+
+        // ジェネリクスを使用しているが戻り値型が解決できないときの対応
+        if (collector[0] == null) {
+            TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
+            return new MethodReturn(returnTypeIdentifier);
+        }
+
+        return new MethodReturn(new ParameterizedType(collector[0], new TypeParameter(collector[1])));
     }
 
     private ParameterizedType parameterizedSuperType(String superName, String signature) {

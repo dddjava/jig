@@ -3,6 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.method.Method;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -138,6 +140,32 @@ public class AsmByteCodeFactoryTest {
                         "Comparable<GenericsParameter>",
                         new TypeIdentifier(Comparable.class)
                 );
+    }
+
+    @Test
+    void 戻り値のジェネリクスが取得できる() throws Exception {
+        TypeByteCode actual = exercise(InterfaceDefinition.class);
+
+        TypeIdentifiers identifiers = actual.useTypes();
+        assertThat(identifiers.list())
+                .contains(
+                        new TypeIdentifier(List.class),
+                        new TypeIdentifier(String.class)
+                );
+
+        List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
+        MethodByteCode methodByteCode = instanceMethodByteCodes.stream()
+                .filter(e -> e.method().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
+                // 今はアノテーション1つなのでこれでOK
+                .findFirst().orElseThrow(AssertionError::new);
+        Method method = methodByteCode.method();
+
+        MethodReturn methodReturn = method.declaration().methodReturn();
+
+        ParameterizedType parameterizedType =
+                methodReturn.parameterizedType();
+
+        assertThat(parameterizedType.asSimpleText()).isEqualTo("List<String>");
     }
 
     @Test

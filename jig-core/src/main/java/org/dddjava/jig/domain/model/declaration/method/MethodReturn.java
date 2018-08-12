@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
@@ -7,9 +8,17 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class MethodReturn {
 
-    TypeIdentifier typeIdentifier;
+    ParameterizedType parameterizedType;
 
     public MethodReturn(TypeIdentifier typeIdentifier) {
-        this.typeIdentifier = typeIdentifier;
+        this(new ParameterizedType(typeIdentifier));
+    }
+
+    public MethodReturn(ParameterizedType parameterizedType) {
+        this.parameterizedType = parameterizedType;
+    }
+
+    public ParameterizedType parameterizedType() {
+        return parameterizedType;
     }
 }

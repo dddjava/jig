@@ -13,6 +13,10 @@ public class PackageDepth {
         this.value = value;
     }
 
+    public PackageDepth() {
+        this(-1);
+    }
+
     public int value() {
         return value;
     }

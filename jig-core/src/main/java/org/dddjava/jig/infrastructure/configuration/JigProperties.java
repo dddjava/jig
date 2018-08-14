@@ -1,43 +1,36 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+
 public class JigProperties {
-    String modelPattern = ".+\\.domain\\.model\\..+";
+    ModelPattern modelPattern;
 
-    String repositoryPattern = ".+Repository";
+    RepositoryPattern repositoryPattern;
 
-    String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
+    OutputOmitPrefix outputOmitPrefix;
 
-    int depth = -1;
+    PackageDepth depth;
 
-    public String getModelPattern() {
-        return modelPattern;
+    public JigProperties(ModelPattern modelPattern, RepositoryPattern repositoryPattern, OutputOmitPrefix outputOmitPrefix, PackageDepth depth) {
+        this.modelPattern = modelPattern;
+        this.repositoryPattern = repositoryPattern;
+        this.outputOmitPrefix = outputOmitPrefix;
+        this.depth = depth;
     }
 
-    public void setModelPattern(String modelPattern) {
-        this.modelPattern = modelPattern;
+    public String getModelPattern() {
+        return modelPattern.pattern;
     }
 
     public String getRepositoryPattern() {
-        return repositoryPattern;
-    }
-
-    public void setRepositoryPattern(String repositoryPattern) {
-        this.repositoryPattern = repositoryPattern;
+        return repositoryPattern.pattern;
     }
 
     public String getOutputOmitPrefix() {
-        return outputOmitPrefix;
-    }
-
-    public void setOutputOmitPrefix(String outputOmitPrefix) {
-        this.outputOmitPrefix = outputOmitPrefix;
+        return outputOmitPrefix.pattern;
     }
 
     public int getDepth() {
-        return depth;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
+        return depth.value();
     }
 }

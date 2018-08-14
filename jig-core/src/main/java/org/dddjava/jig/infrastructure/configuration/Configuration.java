@@ -24,15 +24,13 @@ import org.dddjava.jig.presentation.controller.ServiceDiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
+import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
     final LocalProject localProject;
     final ImplementationService implementationService;
-    final ClassListController classListController;
-    final EnumUsageController enumUsageController;
-    final PackageDependencyController packageDependencyController;
-    final ServiceDiagramController serviceDiagramController;
+    final JigDocumentHandlers documentHandlers;
 
     public Configuration(Layout layout, JigProperties properties) {
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
@@ -48,36 +46,46 @@ public class Configuration {
         SqlReader sqlReader = new MyBatisSqlReader();
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
         AngleService angleService = new AngleService();
-        PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix());
-        ViewResolver viewResolver = new ViewResolver(typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name());
+        PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
+                properties.getOutputOmitPrefix()
+        );
+        ViewResolver viewResolver = new ViewResolver(
+                typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
+        );
         DependencyService dependencyService = new DependencyService();
-
-        this.localProject = new LocalProject(layout);
-        this.implementationService = new ImplementationService(
-                byteCodeFactory,
-                glossaryService,
-                sqlReader,
-                characterizedTypeFactory);
-        this.classListController = new ClassListController(
+        ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,
                 angleService
         );
-        this.enumUsageController = new EnumUsageController(
+        EnumUsageController enumUsageController = new EnumUsageController(
                 angleService,
                 glossaryService,
                 viewResolver
         );
-        this.packageDependencyController = new PackageDependencyController(
+        PackageDependencyController packageDependencyController = new PackageDependencyController(
                 dependencyService,
                 glossaryService,
                 viewResolver,
                 properties.getDepth()
         );
-        this.serviceDiagramController = new ServiceDiagramController(
+        ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 angleService,
                 glossaryService,
                 viewResolver
+        );
+        this.localProject = new LocalProject(layout);
+        this.implementationService = new ImplementationService(
+                byteCodeFactory,
+                glossaryService,
+                sqlReader,
+                characterizedTypeFactory
+        );
+        this.documentHandlers = new JigDocumentHandlers(
+                serviceDiagramController,
+                classListController,
+                packageDependencyController,
+                enumUsageController
         );
     }
 
@@ -88,19 +96,8 @@ public class Configuration {
     public ImplementationService importService() {
         return implementationService;
     }
-    public ClassListController classListController() {
-        return classListController;
-    }
 
-    public EnumUsageController enumUsageController() {
-        return enumUsageController;
-    }
-
-    public PackageDependencyController packageDependencyController() {
-        return packageDependencyController;
-    }
-
-    public ServiceDiagramController serviceMethodCallHierarchyController() {
-        return serviceDiagramController;
+    public JigDocumentHandlers documentHandlers() {
+        return documentHandlers;
     }
 }

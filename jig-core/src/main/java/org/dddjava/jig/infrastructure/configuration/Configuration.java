@@ -47,7 +47,7 @@ public class Configuration {
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
         AngleService angleService = new AngleService();
         PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
-                properties.getOutputOmitPrefix().pattern
+                properties.getOutputOmitPrefix()
         );
         ViewResolver viewResolver = new ViewResolver(
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()

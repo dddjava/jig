@@ -1,5 +1,10 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.ModelPattern;
+import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
+import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.presentation.view.report.JigDocument;
 
 import java.util.ArrayList;
@@ -26,6 +31,15 @@ public class JigConfig {
         return documentTypes.stream()
                 .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
+    }
+
+    public JigProperties asProperties() {
+        return new JigProperties(
+                new ModelPattern(modelPattern),
+                new RepositoryPattern(repositoryPattern),
+                new OutputOmitPrefix(outputOmitPrefix),
+                new PackageDepth(depth)
+        );
     }
 
     public String getModelPattern() {

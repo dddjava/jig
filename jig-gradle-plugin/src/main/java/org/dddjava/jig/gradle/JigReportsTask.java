@@ -1,10 +1,10 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.configuration.*;
+import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.gradle.api.DefaultTask;
@@ -26,13 +26,7 @@ public class JigReportsTask extends DefaultTask {
         ExtensionContainer extensions = getProject().getExtensions();
         JigConfig config = extensions.findByType(JigConfig.class);
 
-        JigProperties jigProperties = new JigProperties(
-                new ModelPattern(config.getModelPattern()),
-                new RepositoryPattern(config.getRepositoryPattern()),
-                new OutputOmitPrefix(config.getOutputOmitPrefix()),
-                new PackageDepth(config.getDepth())
-        );
-
+        JigProperties jigProperties = config.asProperties();
         GradleProjects layout = new GradleProject(getProject()).allDependencyJavaProjects();
         Configuration configuration = new Configuration(layout, jigProperties);
 

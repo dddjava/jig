@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.w3c.dom.DocumentType;
+import org.dddjava.jig.presentation.view.report.JigDocument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ public class JigProperties {
 
     String repositoryPattern = ".+Repository";
 
-    List<DocumentType> documentTypes = new ArrayList<>();
+    List<JigDocument> documentTypes = new ArrayList<>();
 
     String outputDirectory = "build/jig";
 
@@ -34,11 +34,11 @@ public class JigProperties {
         this.repositoryPattern = repositoryPattern;
     }
 
-    public List<DocumentType> getDocumentTypes() {
+    public List<JigDocument> getDocumentTypes() {
         return documentTypes;
     }
 
-    public void setDocumentTypes(List<DocumentType> documentTypes) {
+    public void setDocumentTypes(List<JigDocument> documentTypes) {
         this.documentTypes = documentTypes;
     }
 

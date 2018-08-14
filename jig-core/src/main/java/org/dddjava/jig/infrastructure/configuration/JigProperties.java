@@ -18,19 +18,19 @@ public class JigProperties {
         this.depth = depth;
     }
 
-    public String getModelPattern() {
-        return modelPattern.pattern;
+    public ModelPattern getModelPattern() {
+        return modelPattern;
     }
 
-    public String getRepositoryPattern() {
-        return repositoryPattern.pattern;
+    public RepositoryPattern getRepositoryPattern() {
+        return repositoryPattern;
     }
 
-    public String getOutputOmitPrefix() {
-        return outputOmitPrefix.pattern;
+    public OutputOmitPrefix getOutputOmitPrefix() {
+        return outputOmitPrefix;
     }
 
-    public int getDepth() {
-        return depth.value();
+    public PackageDepth getDepth() {
+        return depth;
     }
 }

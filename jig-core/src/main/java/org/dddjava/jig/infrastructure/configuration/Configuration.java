@@ -35,8 +35,8 @@ public class Configuration {
     public Configuration(Layout layout, JigProperties properties) {
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
-                properties.getModelPattern(),
-                properties.getRepositoryPattern()
+                properties.getModelPattern().pattern,
+                properties.getRepositoryPattern().pattern
         );
         JapaneseReader japaneseReader = new JavaparserJapaneseReader();
         GlossaryService glossaryService = new GlossaryService(
@@ -47,7 +47,7 @@ public class Configuration {
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
         AngleService angleService = new AngleService();
         PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
-                properties.getOutputOmitPrefix()
+                properties.getOutputOmitPrefix().pattern
         );
         ViewResolver viewResolver = new ViewResolver(
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
@@ -67,7 +67,7 @@ public class Configuration {
                 dependencyService,
                 glossaryService,
                 viewResolver,
-                properties.getDepth()
+                properties.getDepth().value()
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 angleService,

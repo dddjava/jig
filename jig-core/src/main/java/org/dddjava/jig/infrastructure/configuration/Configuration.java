@@ -35,8 +35,8 @@ public class Configuration {
     public Configuration(Layout layout, JigProperties properties) {
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
-                properties.getModelPattern().pattern,
-                properties.getRepositoryPattern().pattern
+                properties.getModelPattern(),
+                properties.getRepositoryPattern()
         );
         JapaneseReader japaneseReader = new JavaparserJapaneseReader();
         GlossaryService glossaryService = new GlossaryService(

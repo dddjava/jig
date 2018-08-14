@@ -22,8 +22,7 @@ public class PropertyCharacterizedTypeFactory implements CharacterizedTypeFactor
     @Autowired
     public PropertyCharacterizedTypeFactory(@Value("${jig.model.pattern:.+\\.domain\\.model\\..+}") String modelPattern,
                                             @Value("${jig.repository.pattern:.+Repository}") String repositoryPattern) {
-        this.modelPattern = new ModelPattern(modelPattern);
-        this.repositoryPattern = new RepositoryPattern(repositoryPattern);
+        this(new ModelPattern(modelPattern),new RepositoryPattern(repositoryPattern));
     }
 
     public PropertyCharacterizedTypeFactory(ModelPattern modelPattern, RepositoryPattern repositoryPattern) {

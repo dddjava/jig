@@ -32,6 +32,7 @@ public class Configuration {
     final LocalProject localProject;
     final ImplementationService implementationService;
     final JigDocumentHandlers documentHandlers;
+    final AngleService angleService;
 
     public Configuration(Layout layout, JigProperties properties) {
         this(layout, properties, null);
@@ -50,7 +51,7 @@ public class Configuration {
         );
         SqlReader sqlReader = new MyBatisSqlReader();
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
-        AngleService angleService = new AngleService();
+        this.angleService = new AngleService();
         PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
@@ -92,6 +93,10 @@ public class Configuration {
                 packageDependencyController,
                 enumUsageController
         );
+    }
+
+    public AngleService angleService() {
+        return angleService;
     }
 
     public LocalProject localProject() {

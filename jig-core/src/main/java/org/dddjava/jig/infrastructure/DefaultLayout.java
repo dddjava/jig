@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 @Component
 public class DefaultLayout implements Layout {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLayout.class);
 
     private final Path projectPath;
     Path classesDirectory;

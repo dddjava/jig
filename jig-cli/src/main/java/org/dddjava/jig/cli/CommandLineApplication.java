@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Bean;
 import java.nio.file.Path;
 import java.util.List;
 
-@SpringBootApplication(scanBasePackages = "org.dddjava.jig")
+@SpringBootApplication
 public class CommandLineApplication implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineApplication.class);

@@ -25,6 +25,7 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
+import org.springframework.core.env.Environment;
 
 public class Configuration {
 
@@ -33,6 +34,10 @@ public class Configuration {
     final JigDocumentHandlers documentHandlers;
 
     public Configuration(Layout layout, JigProperties properties) {
+        this(layout, properties, null);
+    }
+
+    public Configuration(Layout layout, JigProperties properties, Environment environment) {
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
                 properties.getModelPattern(),
@@ -52,7 +57,7 @@ public class Configuration {
         ViewResolver viewResolver = new ViewResolver(
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
         );
-        DependencyService dependencyService = new DependencyService();
+        DependencyService dependencyService = new DependencyService(environment);
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,

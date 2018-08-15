@@ -24,8 +24,11 @@ public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
-    @Autowired
     Environment environment;
+
+    public DependencyService(Environment environment) {
+        this.environment = environment;
+    }
 
     /**
      * パッケージ依存を取得する

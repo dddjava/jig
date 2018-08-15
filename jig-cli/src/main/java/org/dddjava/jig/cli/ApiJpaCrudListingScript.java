@@ -15,10 +15,10 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -37,14 +36,13 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ApiJpaCrudListingScript.class);
 
-    @Value("${outputDirectory}")
-    String outputDirectory;
-
     @Autowired
-    AngleService angleService;
+    CliConfig cliConfig;
 
     @Override
     public void invoke(ProjectData projectData) {
+        Configuration configuration = cliConfig.configuration();
+        AngleService angleService = configuration.angleService();
 
         MethodRelations methodRelations = projectData.methodRelations();
 
@@ -54,6 +52,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         Map<TypeIdentifier, String> entityTableMap = jpaEntityTableNameMap(typeAnnotations);
         Types types = projectData.types();
         Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(types, repositories, entityTableMap);
+
 
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
 
@@ -78,7 +77,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         };
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseJpaEntityFetchMethodsMap = methodIdentifierListMap(controllerAngles, isJpaEntityFetchMethod, callMethodsResolver);
 
-        Path outputPath = Paths.get(outputDirectory, "api-jpa-crud.txt");
+        Path outputPath = cliConfig.outputDirectory().resolve("api-jpa-crud.txt");
 
 
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath)) {

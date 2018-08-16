@@ -1,18 +1,13 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.configuration.*;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import testing.TestConfiguration;
 import testing.TestSupport;
 
 import static org.assertj.core.api.Assertions.*;
@@ -22,21 +17,17 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SpringJUnitConfig
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = "jig.model.pattern = stub.domain.model.+")
 public class DependencyServiceTest {
-
-    @Autowired
-    DependencyService sut;
-
-    @Autowired
-    ImplementationService implementationService;
-    @Autowired
-    LocalProject localProject;
 
     @Test
     void パッケージ依存() {
+
+        LocalProject localProject = configuration().localProject();
+        ImplementationService implementationService = configuration().importService();
+
+        DependencyService sut = configuration().dependencyService();
+
+
         ProjectData projectData = implementationService.readProjectData(localProject);
         PackageNetwork packageNetwork = sut.packageDependencies(projectData);
 
@@ -78,20 +69,24 @@ public class DependencyServiceTest {
                 );
     }
 
-    @TestConfiguration
-    static class Config {
-
-        @Bean
-        LocalProject localProject() {
-            // 読み込む対象のソースを取得
-            Path path = Paths.get(TestSupport.defaultPackageClassURI());
-            return new LocalProject(new DefaultLayout(
-                    path.toString(),
-                    path.toString(),
-                    // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
-                    "not/read/resources",
-                    // TODO ソースディレクトリの安定した取得方法が欲しい
-                    "not/read/sources"));
-        }
+    Configuration configuration() {
+        Path path = Paths.get(TestSupport.defaultPackageClassURI());
+        return new Configuration(
+                new DefaultLayout(
+                        path.toString(),
+                        path.toString(),
+                        // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
+                        "not/read/resources",
+                        // TODO ソースディレクトリの安定した取得方法が欲しい
+                        "not/read/sources"
+                ),
+                new JigProperties(
+                        new ModelPattern("stub.domain.model.+"),
+                        new RepositoryPattern(),
+                        new OutputOmitPrefix(),
+                        new PackageDepth()
+                )
+        );
     }
+
 }

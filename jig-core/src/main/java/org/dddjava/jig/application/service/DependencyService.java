@@ -11,17 +11,12 @@ import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.StringJoiner;
 
 /**
  * 依存関係サービス
  */
-@Service
 public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
@@ -31,30 +26,6 @@ public class DependencyService {
     public DependencyService(ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
     }
-
-    @Autowired
-    public DependencyService(Environment environment) {
-        this.configurationContext = new ConfigurationContext() {
-            @Override
-            public String classFileDetectionWarningMessage() {
-                String propertyValue = environment.getProperty("directory.classes");
-                String variable = new StringJoiner(System.lineSeparator())
-                        .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
-                        .add("- directory.classes: " + propertyValue).toString();
-                return variable;
-            }
-
-            @Override
-            public String modelDetectionWarningMessage() {
-                String propertyValue = environment.getProperty("jig.model.pattern");
-                String variable = new StringJoiner(System.lineSeparator())
-                        .add("以下の値を確認してください。")
-                        .add("- - jig.model.pattern: " + propertyValue).toString();
-                return variable;
-            }
-        };
-    }
-
 
     /**
      * パッケージ依存を取得する

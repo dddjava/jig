@@ -28,12 +28,15 @@ import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.springframework.core.env.Environment;
 
+import java.util.StringJoiner;
+
 public class Configuration {
 
     final LocalProject localProject;
     final ImplementationService implementationService;
     final JigDocumentHandlers documentHandlers;
     final AngleService angleService;
+    final DependencyService dependencyService;
 
     public Configuration(Layout layout, JigProperties properties) {
         this(layout, properties, new DependencyService(new ConfigurationContext() {
@@ -50,10 +53,29 @@ public class Configuration {
     }
 
     public Configuration(Layout layout, JigProperties properties, Environment environment) {
-        this(layout, properties, new DependencyService(environment));
+        this(layout, properties, new DependencyService(new ConfigurationContext() {
+            @Override
+            public String classFileDetectionWarningMessage() {
+                String propertyValue = environment.getProperty("directory.classes");
+                String variable = new StringJoiner(System.lineSeparator())
+                        .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
+                        .add("- directory.classes: " + propertyValue).toString();
+                return variable;
+            }
+
+            @Override
+            public String modelDetectionWarningMessage() {
+                String propertyValue = environment.getProperty("jig.model.pattern");
+                String variable = new StringJoiner(System.lineSeparator())
+                        .add("以下の値を確認してください。")
+                        .add("- jig.model.pattern: " + propertyValue).toString();
+                return variable;
+            }
+        }));
     }
 
     public Configuration(Layout layout, JigProperties properties, DependencyService dependencyService) {
+        this.dependencyService = dependencyService;
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
                 properties.getModelPattern(),
@@ -123,5 +145,9 @@ public class Configuration {
 
     public JigDocumentHandlers documentHandlers() {
         return documentHandlers;
+    }
+
+    public DependencyService dependencyService() {
+        return dependencyService;
     }
 }

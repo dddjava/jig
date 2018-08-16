@@ -36,7 +36,7 @@ public class Configuration {
     final DependencyService dependencyService;
 
     public Configuration(Layout layout, JigProperties properties) {
-        this(layout, properties, new DependencyService(new ConfigurationContext() {
+        this(layout, properties, new ConfigurationContext() {
             @Override
             public String classFileDetectionWarningMessage() {
                 return "";
@@ -46,7 +46,7 @@ public class Configuration {
             public String modelDetectionWarningMessage() {
                 return "";
             }
-        }));
+        });
     }
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {

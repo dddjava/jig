@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
@@ -35,10 +36,24 @@ public class Configuration {
     final AngleService angleService;
 
     public Configuration(Layout layout, JigProperties properties) {
-        this(layout, properties, null);
+        this(layout, properties, new DependencyService(new ConfigurationContext() {
+            @Override
+            public String classFileDetectionWarningMessage() {
+                return "";
+            }
+
+            @Override
+            public String modelDetectionWarningMessage() {
+                return "";
+            }
+        }));
     }
 
     public Configuration(Layout layout, JigProperties properties, Environment environment) {
+        this(layout, properties, new DependencyService(environment));
+    }
+
+    public Configuration(Layout layout, JigProperties properties, DependencyService dependencyService) {
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
                 properties.getModelPattern(),
@@ -58,7 +73,6 @@ public class Configuration {
         ViewResolver viewResolver = new ViewResolver(
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
         );
-        DependencyService dependencyService = new DependencyService(environment);
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,

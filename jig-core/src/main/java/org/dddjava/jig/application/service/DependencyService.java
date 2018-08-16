@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
@@ -15,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.StringJoiner;
 
 /**
  * 依存関係サービス
@@ -24,11 +26,35 @@ public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
-    Environment environment;
+    ConfigurationContext configurationContext;
 
-    public DependencyService(Environment environment) {
-        this.environment = environment;
+    public DependencyService(ConfigurationContext configurationContext) {
+        this.configurationContext = configurationContext;
     }
+
+    @Autowired
+    public DependencyService(Environment environment) {
+        this.configurationContext = new ConfigurationContext() {
+            @Override
+            public String classFileDetectionWarningMessage() {
+                String propertyValue = environment.getProperty("directory.classes");
+                String variable = new StringJoiner(System.lineSeparator())
+                        .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
+                        .add("- directory.classes: " + propertyValue).toString();
+                return variable;
+            }
+
+            @Override
+            public String modelDetectionWarningMessage() {
+                String propertyValue = environment.getProperty("jig.model.pattern");
+                String variable = new StringJoiner(System.lineSeparator())
+                        .add("以下の値を確認してください。")
+                        .add("- - jig.model.pattern: " + propertyValue).toString();
+                return variable;
+            }
+        };
+    }
+
 
     /**
      * パッケージ依存を取得する
@@ -40,7 +66,7 @@ public class DependencyService {
                 .typeIdentifiers();
 
         if (availableTypes.empty()) {
-            LOGGER.warn(Warning.モデル検出異常.textWithSpringEnvironment(environment));
+            LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 

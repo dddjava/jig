@@ -38,15 +38,6 @@ public enum Warning {
             .add("")
             .add("{0}")) {
         @Override
-        public String textWithSpringEnvironment(Environment environment) {
-            String propertyValue = getProperty(environment, "jig.model.pattern");
-            String variable = new StringJoiner(System.lineSeparator())
-                    .add("以下の値を確認してください。")
-                    .add("- - jig.model.pattern: " + propertyValue).toString();
-            return text(variable);
-        }
-
-        @Override
         public String with(ConfigurationContext context) {
             return text(context.modelDetectionWarningMessage());
         }

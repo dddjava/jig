@@ -52,6 +52,10 @@ public class Configuration {
         }));
     }
 
+    public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
+        this(layout, properties, new DependencyService(configurationContext));
+    }
+
     public Configuration(Layout layout, JigProperties properties, Environment environment) {
         this(layout, properties, new DependencyService(new ConfigurationContext() {
             @Override

@@ -50,7 +50,61 @@ public class Configuration {
     }
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
-        this(layout, properties, new DependencyService(configurationContext));
+        DependencyService dependencyService1 = new DependencyService(configurationContext);
+        this.dependencyService = dependencyService1;
+        JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
+        CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
+                properties.getModelPattern(),
+                properties.getRepositoryPattern()
+        );
+        JapaneseReader japaneseReader = new JavaparserJapaneseReader();
+        GlossaryService glossaryService = new GlossaryService(
+                japaneseReader,
+                japaneseNameRepository
+        );
+        SqlReader sqlReader = new MyBatisSqlReader();
+        ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
+        this.angleService = new AngleService();
+        PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
+                properties.getOutputOmitPrefix()
+        );
+        ViewResolver viewResolver = new ViewResolver(
+                typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
+        );
+        ClassListController classListController = new ClassListController(
+                typeIdentifierFormatter,
+                glossaryService,
+                angleService
+        );
+        EnumUsageController enumUsageController = new EnumUsageController(
+                angleService,
+                glossaryService,
+                viewResolver
+        );
+        PackageDependencyController packageDependencyController = new PackageDependencyController(
+                dependencyService1,
+                glossaryService,
+                viewResolver,
+                properties.getDepth().value()
+        );
+        ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
+                angleService,
+                glossaryService,
+                viewResolver
+        );
+        this.localProject = new LocalProject(layout);
+        this.implementationService = new ImplementationService(
+                byteCodeFactory,
+                glossaryService,
+                sqlReader,
+                characterizedTypeFactory
+        );
+        this.documentHandlers = new JigDocumentHandlers(
+                serviceDiagramController,
+                classListController,
+                packageDependencyController,
+                enumUsageController
+        );
     }
 
     public Configuration(Layout layout, JigProperties properties, DependencyService dependencyService) {

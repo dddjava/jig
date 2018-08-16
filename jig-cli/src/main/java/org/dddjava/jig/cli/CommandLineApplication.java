@@ -41,7 +41,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
         long startTime = System.currentTimeMillis();
         try {
-            ImplementationService implementationService = configuration.importService();
+            ImplementationService implementationService = configuration.implementationService();
             LocalProject localProject = configuration.localProject();
             JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 

@@ -117,7 +117,7 @@ public class Configuration {
         return localProject;
     }
 
-    public ImplementationService importService() {
+    public ImplementationService implementationService() {
         return implementationService;
     }
 

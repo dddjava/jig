@@ -23,7 +23,7 @@ public class DependencyServiceTest {
     void パッケージ依存() {
 
         LocalProject localProject = configuration().localProject();
-        ImplementationService implementationService = configuration().importService();
+        ImplementationService implementationService = configuration().implementationService();
 
         DependencyService sut = configuration().dependencyService();
 

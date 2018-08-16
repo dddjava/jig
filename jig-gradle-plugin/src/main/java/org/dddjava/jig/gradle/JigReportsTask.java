@@ -38,7 +38,7 @@ public class JigReportsTask extends DefaultTask {
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         LocalProject localProject = configuration.localProject();
-        ImplementationService implementationService = configuration.importService();
+        ImplementationService implementationService = configuration.implementationService();
 
         ProjectData projectData = implementationService.readProjectData(localProject);
 

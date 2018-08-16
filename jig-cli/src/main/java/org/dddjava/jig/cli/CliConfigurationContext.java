@@ -14,7 +14,7 @@ public class CliConfigurationContext implements ConfigurationContext {
 
     private final static String CLASSFILE_DETECTION_WARNING = new StringJoiner(System.lineSeparator())
             .add("以下のコマンドラインパラメータを調整してみてください。この値はディレクトリの絞り込みに使用されます。")
-            .add("-{0}={1}")
+            .add("--{0}={1}")
             .toString();
 
     @Override
@@ -24,7 +24,7 @@ public class CliConfigurationContext implements ConfigurationContext {
 
     private final static String MODEL_DETECTION_WARNING = new StringJoiner(System.lineSeparator())
             .add("以下のコマンドラインパラメータを調整してみてください。")
-            .add("-{0}={1}")
+            .add("--{0}={1}")
             .toString();
 
     @Override

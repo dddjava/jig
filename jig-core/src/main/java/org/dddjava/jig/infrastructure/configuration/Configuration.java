@@ -34,6 +34,7 @@ public class Configuration {
     final JigDocumentHandlers documentHandlers;
     final AngleService angleService;
     final DependencyService dependencyService;
+    final ConfigurationContext configurationContext;
 
     public Configuration(Layout layout, JigProperties properties) {
         this(layout, properties, new ConfigurationContext() {
@@ -50,6 +51,7 @@ public class Configuration {
     }
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
+        this.configurationContext = configurationContext;
         DependencyService dependencyService1 = new DependencyService(configurationContext);
         this.dependencyService = dependencyService1;
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
@@ -125,5 +127,9 @@ public class Configuration {
 
     public DependencyService dependencyService() {
         return dependencyService;
+    }
+
+    public ConfigurationContext configurationContext() {
+        return configurationContext;
     }
 }

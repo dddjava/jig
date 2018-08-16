@@ -40,9 +40,6 @@ class CliConfig {
     @Value("${depth}")
     int depth;
 
-    @Autowired
-    Environment environment;
-
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()
                 ? Arrays.asList(JigDocument.values())

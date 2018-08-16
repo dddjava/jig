@@ -36,10 +36,11 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        List<JigDocument> jigDocuments = cliConfig.jigDocuments();
+        Configuration configuration = cliConfig.configuration();
+
         long startTime = System.currentTimeMillis();
         try {
-            List<JigDocument> jigDocuments = cliConfig.jigDocuments();
-            Configuration configuration = cliConfig.configuration();
             ImplementationService implementationService = configuration.importService();
             LocalProject localProject = configuration.localProject();
             JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
@@ -55,7 +56,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
             extraScript.invoke(projectData);
         } catch (ClassFindFailException e) {
-            LOGGER.warn(e.warning().textWithSpringEnvironment(cliConfig.environment));
+            LOGGER.warn(e.warning().with(configuration.configurationContext()));
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

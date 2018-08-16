@@ -15,15 +15,6 @@ public enum Warning {
             .add("")
             .add("{0}")) {
         @Override
-        public String textWithSpringEnvironment(Environment environment) {
-            String propertyValue = getProperty(environment, "directory.classes");
-            String variable = new StringJoiner(System.lineSeparator())
-                    .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
-                    .add("- directory.classes: " + propertyValue).toString();
-            return text(variable);
-        }
-
-        @Override
         public String with(ConfigurationContext context) {
             return text(context.classFileDetectionWarningMessage());
         }
@@ -54,12 +45,6 @@ public enum Warning {
 
     Warning(Message messageFormatPattern) {
         this.messageFormatPattern = messageFormatPattern.toString();
-    }
-
-    // TODO spring依存させないいい感じの方法
-    // メッセージに出力するキー名と取得するキー名を記述する箇所を散らばらせたくない。
-    public String textWithSpringEnvironment(Environment environment) {
-        throw new UnsupportedOperationException();
     }
 
     public String with(ConfigurationContext configurationContext) {

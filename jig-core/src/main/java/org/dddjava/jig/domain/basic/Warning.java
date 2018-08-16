@@ -13,11 +13,14 @@ public enum Warning {
             .add("解析対象の *.class ファイルが見つからないため、処理を中断しました。")
             .add("ビルドされていないか、出力先ディレクトリの指定が誤っています。")
             .add("")
-            .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
-            .add("- directory.classes: {0}")) {
+            .add("{0}")) {
         @Override
         public String textWithSpringEnvironment(Environment environment) {
-            return text(getProperty(environment, "directory.classes"));
+            String propertyValue = getProperty(environment, "directory.classes");
+            String variable = new StringJoiner(System.lineSeparator())
+                    .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
+                    .add("- directory.classes: " + propertyValue).toString();
+            return text(variable);
         }
     },
     サービス検出異常(new Message()
@@ -28,11 +31,14 @@ public enum Warning {
             .add("モデルが検出できないため、パッケージ関連図が空になります。")
             .add("パッケージ構成が想定と異なる可能性があります。")
             .add("")
-            .add("以下の値を確認してください。")
-            .add("- jig.model.pattern: {0}")) {
+            .add("{0}")) {
         @Override
         public String textWithSpringEnvironment(Environment environment) {
-            return text(getProperty(environment, "jig.model.pattern"));
+            String propertyValue = getProperty(environment, "jig.model.pattern");
+            String variable = new StringJoiner(System.lineSeparator())
+                    .add("以下の値を確認してください。")
+                    .add("- - jig.model.pattern: " + propertyValue).toString();
+            return text(variable);
         }
     },
     Mapperメソッド検出異常(new Message()
@@ -40,7 +46,8 @@ public enum Warning {
             .add("CRUDの検出は以下の条件を満たす必要があります。")
             .add("")
             .add("- MyBatisのMapperインタフェースを使用している")
-            .add("- Mapperインタフェース名が *Mapper である")),;
+            .add("- Mapperインタフェース名が *Mapper である")),
+    ;
 
     String messageFormatPattern;
 

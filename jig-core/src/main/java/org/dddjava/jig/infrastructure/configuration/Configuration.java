@@ -26,9 +26,6 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
-import org.springframework.core.env.Environment;
-
-import java.util.StringJoiner;
 
 public class Configuration {
 
@@ -54,28 +51,6 @@ public class Configuration {
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this(layout, properties, new DependencyService(configurationContext));
-    }
-
-    public Configuration(Layout layout, JigProperties properties, Environment environment) {
-        this(layout, properties, new DependencyService(new ConfigurationContext() {
-            @Override
-            public String classFileDetectionWarningMessage() {
-                String propertyValue = environment.getProperty("directory.classes");
-                String variable = new StringJoiner(System.lineSeparator())
-                        .add("以下の値を確認してください。この値はディレクトリの絞り込みに使用されます。")
-                        .add("- directory.classes: " + propertyValue).toString();
-                return variable;
-            }
-
-            @Override
-            public String modelDetectionWarningMessage() {
-                String propertyValue = environment.getProperty("jig.model.pattern");
-                String variable = new StringJoiner(System.lineSeparator())
-                        .add("以下の値を確認してください。")
-                        .add("- jig.model.pattern: " + propertyValue).toString();
-                return variable;
-            }
-        }));
     }
 
     public Configuration(Layout layout, JigProperties properties, DependencyService dependencyService) {

@@ -1,6 +1,8 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.basic.ClassFindFailException;
+import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -28,23 +30,28 @@ public class JigReportsTask extends DefaultTask {
 
         JigProperties jigProperties = config.asProperties();
         GradleProjects layout = new GradleProject(getProject()).allDependencyJavaProjects();
-        Configuration configuration = new Configuration(layout, jigProperties);
+        JigConfigurationContext configurationContext = new JigConfigurationContext(config);
+        Configuration configuration = new Configuration(layout, jigProperties, configurationContext);
 
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
         List<JigDocument> jigDocuments = config.documentTypes();
 
+        LocalProject localProject = configuration.localProject();
+        ImplementationService implementationService = configuration.implementationService();
+        Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
+
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        LocalProject localProject = configuration.localProject();
-        ImplementationService implementationService = configuration.implementationService();
+        try {
+            ProjectData projectData = implementationService.readProjectData(localProject);
 
-        ProjectData projectData = implementationService.readProjectData(localProject);
-
-        Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
-        for (JigDocument jigDocument : jigDocuments) {
-            jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
+            for (JigDocument jigDocument : jigDocuments) {
+                jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
+            }
+        } catch(ClassFindFailException e) {
+            LOGGER.info(Warning.クラス検出異常.with(configurationContext));
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);

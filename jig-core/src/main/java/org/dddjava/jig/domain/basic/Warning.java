@@ -22,6 +22,11 @@ public enum Warning {
                     .add("- directory.classes: " + propertyValue).toString();
             return text(variable);
         }
+
+        @Override
+        public String with(ConfigurationContext context) {
+            return text(context.classFileDetectionWarningMessage());
+        }
     },
     サービス検出異常(new Message()
             .add("サービスクラスが見つからないため、サービス関連図やサービス一覧が空になります。")
@@ -39,6 +44,11 @@ public enum Warning {
                     .add("以下の値を確認してください。")
                     .add("- - jig.model.pattern: " + propertyValue).toString();
             return text(variable);
+        }
+
+        @Override
+        public String with(ConfigurationContext context) {
+            return text(context.modelDetectionWarningMessage());
         }
     },
     Mapperメソッド検出異常(new Message()
@@ -58,6 +68,10 @@ public enum Warning {
     // TODO spring依存させないいい感じの方法
     // メッセージに出力するキー名と取得するキー名を記述する箇所を散らばらせたくない。
     public String textWithSpringEnvironment(Environment environment) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String with(ConfigurationContext configurationContext) {
         throw new UnsupportedOperationException();
     }
 

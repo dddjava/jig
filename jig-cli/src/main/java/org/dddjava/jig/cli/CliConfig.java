@@ -63,7 +63,7 @@ class CliConfig {
                         new OutputOmitPrefix(outputOmitPrefix),
                         new PackageDepth(depth)
                 ),
-                environment
+                new CliConfigurationContext(this)
         );
     }
 

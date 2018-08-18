@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 
 import org.dddjava.jig.presentation.view.poi.report.handler.Handlers;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -13,14 +14,14 @@ public class Report {
     List<?> angles;
 
     private final List<ReportItemMethod> reportItemMethods;
-    private final Object adapter;
+    private final Class<?> adapterClass;
     private final ConvertContext convertContext;
 
-    public Report(String title, List<?> angles, List<ReportItemMethod> reportItemMethods, Object adapter, ConvertContext convertContext) {
+    public Report(String title, List<?> angles, List<ReportItemMethod> reportItemMethods, Class<?> adapterClass, ConvertContext convertContext) {
         this.title = title;
         this.angles = angles;
         this.reportItemMethods = reportItemMethods;
-        this.adapter = adapter;
+        this.adapterClass = adapterClass;
         this.convertContext = convertContext;
     }
 
@@ -46,10 +47,15 @@ public class Report {
     private String convert(ReportItemMethod reportItemMethod, Object angle) {
         Handlers handlers = new Handlers(convertContext);
         try {
+            // TODO angleを受け取るコンストラクタを識別する
+            Constructor<?> constructor = adapterClass.getDeclaredConstructor();
+            Object adapter = constructor.newInstance();
+
+
             Object item = reportItemMethod.method.invoke(adapter, angle);
 
             return handlers.handle(reportItemMethod.reportItemFor.value(), item);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
             throw new RuntimeException("実装ミス", e);
         }
     }

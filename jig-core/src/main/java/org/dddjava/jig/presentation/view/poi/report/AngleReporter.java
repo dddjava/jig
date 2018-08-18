@@ -4,8 +4,6 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportItemsFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -29,32 +27,22 @@ public class AngleReporter {
     }
 
     public Report toReport(ConvertContext convertContext) {
-        try {
-            // TODO angleを受け取るコンストラクタを識別する
-            Constructor<?> constructor = adapterClass.getDeclaredConstructor();
-            Object adapter = constructor.newInstance();
+        List<ReportItemMethod> reportItemMethods = Arrays.stream(adapterClass.getMethods())
+                .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
+                .flatMap(method -> {
+                    // 複数アノテーションがついていたら展開
+                    if (method.isAnnotationPresent(ReportItemsFor.class)) {
+                        return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
+                                .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
+                    }
 
-            List<ReportItemMethod> reportItemMethods = Arrays.stream(adapterClass.getMethods())
-                    .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
-                    .flatMap(method -> {
-                        // 複数アノテーションがついていたら展開
-                        if (method.isAnnotationPresent(ReportItemsFor.class)) {
-                            return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
-                                    .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
-                        }
+                    // 1つだけのはそのまま
+                    ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
+                    return Stream.of(new ReportItemMethod(method, reportItemFor));
+                })
+                .sorted()
+                .collect(toList());
 
-                        // 1つだけのはそのまま
-                        ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
-                        return Stream.of(new ReportItemMethod(method, reportItemFor));
-                    })
-                    .sorted()
-                    .collect(toList());
-
-            return new Report(title, angles, reportItemMethods, adapter, convertContext);
-
-        } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new AssertionError(e);
-        }
+        return new Report(title, angles, reportItemMethods, adapterClass, convertContext);
     }
-
 }

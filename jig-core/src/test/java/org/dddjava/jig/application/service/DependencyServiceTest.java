@@ -10,12 +10,12 @@ import org.dddjava.jig.infrastructure.configuration.*;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DependencyServiceTest {
 

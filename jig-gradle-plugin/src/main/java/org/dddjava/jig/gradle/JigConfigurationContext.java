@@ -26,7 +26,7 @@ public class JigConfigurationContext implements ConfigurationContext {
             .toString();
 
     @Override
-    public String  modelDetectionWarningMessage() {
+    public String modelDetectionWarningMessage() {
         return MessageFormat.format(MODEL_DETECTION_WARNING, "modelPattern", config.modelPattern);
     }
 

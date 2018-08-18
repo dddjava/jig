@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.networks.packages;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class PackageNetworks {
     PackageNetwork origin;

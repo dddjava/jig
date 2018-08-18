@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -50,7 +50,7 @@ public class JigReportsTask extends DefaultTask {
             for (JigDocument jigDocument : jigDocuments) {
                 jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
             }
-        } catch(ClassFindFailException e) {
+        } catch (ClassFindFailException e) {
             LOGGER.info(Warning.クラス検出異常.with(configurationContext));
         }
 

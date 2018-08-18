@@ -4,6 +4,6 @@ public interface ConfigurationContext {
 
     String classFileDetectionWarningMessage();
 
-    String  modelDetectionWarningMessage();
+    String modelDetectionWarningMessage();
 }
 

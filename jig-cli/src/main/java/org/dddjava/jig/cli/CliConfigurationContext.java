@@ -1,4 +1,5 @@
 package org.dddjava.jig.cli;
+
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 
 import java.text.MessageFormat;
@@ -28,7 +29,7 @@ public class CliConfigurationContext implements ConfigurationContext {
             .toString();
 
     @Override
-    public String  modelDetectionWarningMessage() {
+    public String modelDetectionWarningMessage() {
         return MessageFormat.format(MODEL_DETECTION_WARNING, "jig.model.pattern", cliConfig.modelPattern);
     }
 

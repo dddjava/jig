@@ -12,6 +12,7 @@ public class RepositoryPattern {
     public RepositoryPattern() {
         this(".+Repository");
     }
+
     public boolean matches(TypeByteCode typeByteCode) {
         return typeByteCode.typeIdentifier().fullQualifiedName().matches(pattern);
     }

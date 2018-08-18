@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 public class AngleReporter {
 
     String title;
@@ -32,7 +34,7 @@ public class AngleReporter {
             Constructor<?> constructor = adapterClass.getDeclaredConstructor();
             Object adapter = constructor.newInstance();
 
-            ItemConverter[] itemConverters = Arrays.stream(adapterClass.getMethods())
+            List<ReportItemMethod> reportItemMethods = Arrays.stream(adapterClass.getMethods())
                     .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
                     .flatMap(method -> {
                         // 複数アノテーションがついていたら展開
@@ -45,11 +47,10 @@ public class AngleReporter {
                         ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
                         return Stream.of(new ReportItemMethod(method, reportItemFor));
                     })
-                    .map(pair -> new AngleReportAdapterMethodInvoker(adapter, pair.annotation, pair.method, convertContext))
                     .sorted()
-                    .toArray(ItemConverter[]::new);
+                    .collect(toList());
 
-            return new Report(title, angles, itemConverters);
+            return new Report(title, angles, reportItemMethods, adapter, convertContext);
 
         } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new AssertionError(e);

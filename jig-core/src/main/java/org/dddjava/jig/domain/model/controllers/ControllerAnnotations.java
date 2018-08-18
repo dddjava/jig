@@ -17,13 +17,12 @@ public class ControllerAnnotations {
     private final Annotations methodAnnotations;
 
     public ControllerAnnotations(TypeAnnotations typeAnnotations, MethodAnnotations methodAnnotations) {
-        TypeIdentifier[] mappingAnnotations = {
+        this.typeAnnotations = typeAnnotations.annotations().filterAny(
+                new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
+        this.methodAnnotations = methodAnnotations.annotations().filterAny(
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.GetMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.PostMapping")
-        };
-        this.typeAnnotations = typeAnnotations.annotations().filterAny(mappingAnnotations);
-        this.methodAnnotations = methodAnnotations.annotations().filterAny(mappingAnnotations);
+                new TypeIdentifier("org.springframework.web.bind.annotation.PostMapping"));
     }
 
     public String pathTexts() {

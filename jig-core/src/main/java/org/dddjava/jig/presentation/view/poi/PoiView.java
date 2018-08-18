@@ -8,7 +8,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
-import org.dddjava.jig.presentation.view.poi.report.*;
+import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
+import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
+import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
+import org.dddjava.jig.presentation.view.poi.report.ReportRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,19 +34,17 @@ public class PoiView implements JigView<AngleReporters> {
             StringJoiner debugText = new StringJoiner("\n");
             List<AngleReporter> list = angleReporters.list();
             for (AngleReporter angleReporter : list) {
-                Report report = angleReporter.toReport(convertContext);
-
-                Sheet sheet = book.createSheet(report.title());
-                writeRow(report.headerRow(), sheet.createRow(0));
+                Sheet sheet = book.createSheet(angleReporter.title());
+                writeRow(angleReporter.headerRow(), sheet.createRow(0));
                 debugText.add(sheet.getSheetName());
-                debugText.add(report.headerRow().list().toString());
+                debugText.add(angleReporter.headerRow().list().toString());
 
-                for (ReportRow row : report.rows()) {
+                for (ReportRow row : angleReporter.rows(convertContext)) {
                     writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
                     debugText.add(row.list().toString());
                 }
 
-                for (int i = 0; i < report.headerRow().list().size(); i++) {
+                for (int i = 0; i < angleReporter.headerRow().list().size(); i++) {
                     sheet.autoSizeColumn(i);
                 }
                 sheet.setAutoFilter(new CellRangeAddress(

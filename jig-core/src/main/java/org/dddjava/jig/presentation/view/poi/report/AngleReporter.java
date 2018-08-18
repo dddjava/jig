@@ -1,9 +1,12 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.dddjava.jig.presentation.view.poi.report.handler.Handlers;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportItemsFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -15,19 +18,14 @@ public class AngleReporter {
     String title;
     List<?> angles;
     Class<?> adapterClass;
+    private List<ReportItemMethod> reportItemMethods;
 
     public AngleReporter(String title, Class<?> adapterClass, List<?> angles) {
         this.title = title;
         this.adapterClass = adapterClass;
         this.angles = angles;
-    }
 
-    public AngleReporter(Class<?> adapterClass, List<?> angles) {
-        this(adapterClass.getAnnotation(ReportTitle.class).value(), adapterClass, angles);
-    }
-
-    public Report toReport(ConvertContext convertContext) {
-        List<ReportItemMethod> reportItemMethods = Arrays.stream(adapterClass.getMethods())
+        reportItemMethods = Arrays.stream(adapterClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
                 .flatMap(method -> {
                     // 複数アノテーションがついていたら展開
@@ -42,7 +40,44 @@ public class AngleReporter {
                 })
                 .sorted()
                 .collect(toList());
+    }
 
-        return new Report(title, angles, reportItemMethods, adapterClass, convertContext);
+    public AngleReporter(Class<?> adapterClass, List<?> angles) {
+        this(adapterClass.getAnnotation(ReportTitle.class).value(), adapterClass, angles);
+    }
+
+    public String title() {
+        return title;
+    }
+
+    public ReportRow headerRow() {
+        return new ReportRow(reportItemMethods.stream().map(ReportItemMethod::label).collect(toList()));
+    }
+
+    public List<ReportRow> rows(ConvertContext convertContext) {
+        Handlers handlers = new Handlers(convertContext);
+        return angles.stream()
+                .map(row -> {
+                    List<String> convertedRow = reportItemMethods.stream()
+                            .map(reportItemMethod -> convert(reportItemMethod, row, handlers))
+                            .collect(toList());
+                    return new ReportRow(convertedRow);
+                })
+                .collect(toList());
+    }
+
+    private String convert(ReportItemMethod reportItemMethod, Object angle, Handlers handlers) {
+        try {
+            // TODO angleを受け取るコンストラクタを識別する
+            Constructor<?> constructor = adapterClass.getDeclaredConstructor();
+            Object adapter = constructor.newInstance();
+
+
+            Object item = reportItemMethod.method.invoke(adapter, angle);
+
+            return handlers.handle(reportItemMethod.reportItemFor.value(), item);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
+            throw new RuntimeException("実装ミス", e);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -85,8 +86,18 @@ public class DependencyServiceTest {
                         new RepositoryPattern(),
                         new OutputOmitPrefix(),
                         new PackageDepth()
-                )
-        );
+                ),
+                new ConfigurationContext() {
+                    @Override
+                    public String classFileDetectionWarningMessage() {
+                        return "";
+                    }
+
+                    @Override
+                    public String modelDetectionWarningMessage() {
+                        return "";
+                    }
+                });
     }
 
 }

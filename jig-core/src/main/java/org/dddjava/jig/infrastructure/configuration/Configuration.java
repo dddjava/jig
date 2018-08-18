@@ -36,20 +36,6 @@ public class Configuration {
     final DependencyService dependencyService;
     final ConfigurationContext configurationContext;
 
-    public Configuration(Layout layout, JigProperties properties) {
-        this(layout, properties, new ConfigurationContext() {
-            @Override
-            public String classFileDetectionWarningMessage() {
-                return "";
-            }
-
-            @Override
-            public String modelDetectionWarningMessage() {
-                return "";
-            }
-        });
-    }
-
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
         DependencyService dependencyService1 = new DependencyService(configurationContext);

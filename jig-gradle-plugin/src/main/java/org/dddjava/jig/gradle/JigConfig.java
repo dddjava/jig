@@ -5,7 +5,7 @@ import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.ModelPattern;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
-import org.dddjava.jig.presentation.view.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocument;
 
 import java.util.ArrayList;
 import java.util.Arrays;

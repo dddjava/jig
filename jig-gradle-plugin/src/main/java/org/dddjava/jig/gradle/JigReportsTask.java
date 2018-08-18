@@ -8,7 +8,7 @@ import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
-import org.dddjava.jig.presentation.view.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;

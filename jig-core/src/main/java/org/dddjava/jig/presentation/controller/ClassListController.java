@@ -25,7 +25,7 @@ import org.dddjava.jig.presentation.view.poi.PoiView;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
-import org.dddjava.jig.presentation.view.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.report.application.ControllerReportAdapter;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReportAdapter;
 import org.dddjava.jig.presentation.view.report.application.ServiceReportAdapter;

@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
-import org.dddjava.jig.presentation.view.report.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.report.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

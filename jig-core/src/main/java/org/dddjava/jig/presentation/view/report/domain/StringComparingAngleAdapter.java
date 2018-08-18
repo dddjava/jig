@@ -2,7 +2,6 @@ package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -17,10 +16,6 @@ public class StringComparingAngleAdapter {
     }
 
     @ReportItemFor(ReportItem.クラス名)
-    public TypeIdentifier declaringType() {
-        return angle.declaringType();
-    }
-
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     public MethodDeclaration methodDeclaration() {
         return angle.methodDeclaration();

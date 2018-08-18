@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -18,10 +17,6 @@ public class MethodSmellReportAdapter {
 
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    public TypeIdentifier typeIdentifier() {
-        return angle.typeIdentifier();
-    }
-
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     public MethodDeclaration methodDeclaration() {

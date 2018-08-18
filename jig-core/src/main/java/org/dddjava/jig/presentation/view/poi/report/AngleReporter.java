@@ -38,13 +38,14 @@ public class AngleReporter {
                         // 複数アノテーションがついていたら展開
                         if (method.isAnnotationPresent(ReportItemsFor.class)) {
                             return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
-                                    .map(reportItemFor -> new AngleReportAdapterMethodInvoker(adapter, reportItemFor, method, convertContext));
+                                    .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
                         }
 
                         // 1つだけのはそのまま
                         ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
-                        return Stream.of(new AngleReportAdapterMethodInvoker(adapter, reportItemFor, method, convertContext));
+                        return Stream.of(new ReportItemMethod(method, reportItemFor));
                     })
+                    .map(pair -> new AngleReportAdapterMethodInvoker(adapter, pair.annotation, pair.method, convertContext))
                     .sorted()
                     .toArray(ItemConverter[]::new);
 
@@ -54,4 +55,5 @@ public class AngleReporter {
             throw new AssertionError(e);
         }
     }
+
 }

@@ -11,7 +11,6 @@ import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -20,7 +19,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Optional;
 
-@Component
 public class JigDocumentHandlers {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentHandlers.class);

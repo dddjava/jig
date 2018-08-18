@@ -13,7 +13,6 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -21,7 +20,7 @@ public class PackageDependencyController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PackageDependencyController.class);
 
-    private final PackageDepth depth;
+    private final PackageDepth packageDepth;
 
     DependencyService dependencyService;
     GlossaryService glossaryService;
@@ -30,11 +29,11 @@ public class PackageDependencyController {
     public PackageDependencyController(DependencyService dependencyService,
                                        GlossaryService glossaryService,
                                        ViewResolver viewResolver,
-                                       @Value("${depth:-1}") int packageDepth) {
+                                       PackageDepth packageDepth) {
         this.dependencyService = dependencyService;
         this.glossaryService = glossaryService;
         this.viewResolver = viewResolver;
-        this.depth = new PackageDepth(packageDepth);
+        this.packageDepth = packageDepth;
     }
 
     @DocumentMapping(JigDocument.PackageDependency)
@@ -42,6 +41,6 @@ public class PackageDependencyController {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
         PackageNetwork packageNetwork = dependencyService.packageDependencies(projectData);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        return new JigModelAndView<>(new PackageNetworks(packageNetwork, depth), viewResolver.dependencyWriter(japaneseNameFinder));
+        return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 }

@@ -6,22 +6,17 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
-@Component
 public class ViewResolver {
 
     private final PackageIdentifierFormatter packageIdentifierFormatter;
     private final MethodNodeLabelStyle methodNodeLabelStyle;
     private final DiagramFormat diagramFormat;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle, @Value("${diagram.format:SVG}") String diagramFormat) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, DiagramFormat diagramFormat) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-        this.methodNodeLabelStyle = MethodNodeLabelStyle.valueOf(methodNodeLabelStyle.toUpperCase(Locale.ENGLISH));
-        this.diagramFormat = DiagramFormat.valueOf(diagramFormat.toUpperCase(Locale.ENGLISH));
+        this.methodNodeLabelStyle = methodNodeLabelStyle;
+        this.diagramFormat = diagramFormat;
     }
 
     public JigView<PackageNetworks> dependencyWriter(JapaneseNameFinder japaneseNameFinder) {

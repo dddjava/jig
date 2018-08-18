@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources
 import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
 public class LocalProject {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);

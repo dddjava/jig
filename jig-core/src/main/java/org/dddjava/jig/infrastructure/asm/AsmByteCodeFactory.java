@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,7 +12,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory {
 
     @Override

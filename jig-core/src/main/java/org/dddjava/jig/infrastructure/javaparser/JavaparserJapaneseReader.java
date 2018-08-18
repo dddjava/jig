@@ -6,13 +6,11 @@ import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class JavaparserJapaneseReader implements JapaneseReader {
 
     private static Logger LOGGER = LoggerFactory.getLogger(JavaparserJapaneseReader.class);

@@ -11,7 +11,6 @@ import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.implementation.datasource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -27,7 +26,6 @@ import java.util.List;
  * クラスパスにMapperが依存しているクラスが存在しない場合、MyBatisがMapperを読み取れないため解析できません。
  * それでも出力したい場合は、実行時に該当のクラスをクラスパスに含めてください。
  */
-@Component
 public class MyBatisSqlReader implements SqlReader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlReader.class);

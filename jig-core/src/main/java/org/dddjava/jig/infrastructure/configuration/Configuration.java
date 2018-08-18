@@ -71,7 +71,10 @@ public class Configuration {
                 properties.getOutputOmitPrefix()
         );
         ViewResolver viewResolver = new ViewResolver(
-                typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE.name(), DiagramFormat.SVG.name()
+                // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
+                // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
+                // @Value("${diagram.format:SVG}") String diagramFormat
+                typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
@@ -87,7 +90,7 @@ public class Configuration {
                 dependencyService1,
                 glossaryService,
                 viewResolver,
-                properties.getDepth().value()
+                properties.getDepth()
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 angleService,

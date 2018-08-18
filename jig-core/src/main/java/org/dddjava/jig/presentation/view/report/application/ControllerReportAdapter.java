@@ -9,15 +9,21 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("CONTROLLER")
 public class ControllerReportAdapter {
 
+    ControllerAngle angle;
+
+    public ControllerReportAdapter(ControllerAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
-    public Method method(ControllerAngle angle) {
+    public Method method() {
         return angle.method();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
-    public String path(ControllerAngle angle) {
+    public String path() {
         return angle.controllerAnnotations().pathTexts();
     }
 }

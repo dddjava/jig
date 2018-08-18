@@ -11,21 +11,27 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("COLLECTION")
 public class CollectionReportAdapter {
 
+    CollectionAngle angle;
+
+    public CollectionReportAdapter(CollectionAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    public TypeIdentifier typeIdentifier(CollectionAngle angle) {
+    public TypeIdentifier typeIdentifier() {
         return angle.typeIdentifier();
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
-    public TypeIdentifiers userTypeIdentifiers(CollectionAngle angle) {
+    public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
     }
 
     @ReportItemFor(ReportItem.メソッド数)
     @ReportItemFor(ReportItem.メソッド一覧)
-    public MethodDeclarations methods(CollectionAngle angle) {
+    public MethodDeclarations methods() {
         return angle.methods();
     }
 }

@@ -9,29 +9,35 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("VALIDATION")
 public class ValidationReportAdapter {
 
+    ValidationAngle angle;
+
+    public ValidationReportAdapter(ValidationAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    public TypeIdentifier typeIdentifier(ValidationAngle angle) {
+    public TypeIdentifier typeIdentifier() {
         return angle.typeIdentifier();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, order = 1, label = "メンバ名")
-    public String memberName(ValidationAngle angle) {
+    public String memberName() {
         return angle.memberName();
     }
 
     @ReportItemFor(value = ReportItem.単純クラス名, label = "メンバクラス名", order = 2)
-    public TypeIdentifier memberType(ValidationAngle angle) {
+    public TypeIdentifier memberType() {
         return angle.memberType();
     }
 
     @ReportItemFor(value = ReportItem.単純クラス名, order = 3, label = "アノテーションクラス名")
-    public TypeIdentifier annotationType(ValidationAngle angle) {
+    public TypeIdentifier annotationType() {
         return angle.annotationType();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, order = 4, label = "アノテーション記述")
-    public String annotationDescription(ValidationAngle angle) {
+    public String annotationDescription() {
         return angle.annotationDescription();
     }
 }

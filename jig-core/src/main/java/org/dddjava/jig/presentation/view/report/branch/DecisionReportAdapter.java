@@ -7,10 +7,16 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
 public class DecisionReportAdapter {
 
+    DecisionAngle angle;
+
+    public DecisionReportAdapter(DecisionAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.分岐数)
-    public Method method(DecisionAngle angle) {
+    public Method method() {
         return angle.method();
     }
 }

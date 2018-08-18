@@ -10,35 +10,41 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("REPOSITORY")
 public class RepositoryReportAdapter {
 
+    DatasourceAngle angle;
+
+    public RepositoryReportAdapter(DatasourceAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    public TypeIdentifier declaringType(DatasourceAngle angle) {
+    public TypeIdentifier declaringType() {
         return angle.declaringType();
     }
 
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
-    public MethodDeclaration method(DatasourceAngle angle) {
+    public MethodDeclaration method() {
         return angle.method();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "INSERT", order = 1)
-    public String insertTables(DatasourceAngle angle) {
+    public String insertTables() {
         return angle.insertTables();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "SELECT", order = 2)
-    public String selectTables(DatasourceAngle angle) {
+    public String selectTables() {
         return angle.selectTables();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "UPDATE", order = 3)
-    public String updateTables(DatasourceAngle angle) {
+    public String updateTables() {
         return angle.updateTables();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "DELETE", order = 4)
-    public String deleteTables(DatasourceAngle angle) {
+    public String deleteTables() {
         return angle.deleteTables();
     }
 }

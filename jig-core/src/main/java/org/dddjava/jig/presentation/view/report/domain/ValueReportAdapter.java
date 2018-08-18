@@ -8,15 +8,21 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
 public class ValueReportAdapter {
 
+    ValueAngle angle;
+
+    public ValueReportAdapter(ValueAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
-    public TypeIdentifier typeIdentifier(ValueAngle angle) {
+    public TypeIdentifier typeIdentifier() {
         return angle.typeIdentifier();
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
-    public TypeIdentifiers userTypeIdentifiers(ValueAngle angle) {
+    public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
     }
 }

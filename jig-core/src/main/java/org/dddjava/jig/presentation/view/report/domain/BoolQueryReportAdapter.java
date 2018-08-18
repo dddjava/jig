@@ -10,17 +10,23 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("真偽値を返すメソッド")
 public class BoolQueryReportAdapter {
 
+    BoolQueryAngle angle;
+
+    public BoolQueryReportAdapter(BoolQueryAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス和名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド和名)
-    public MethodDeclaration method(BoolQueryAngle angle) {
+    public MethodDeclaration method() {
         return angle.method();
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
-    public TypeIdentifiers userTypeIdentifiers(BoolQueryAngle angle) {
+    public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
     }
 }

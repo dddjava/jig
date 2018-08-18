@@ -10,13 +10,19 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("文字列比較箇所")
 public class StringComparingAngleAdapter {
 
+    StringComparingAngle angle;
+
+    public StringComparingAngleAdapter(StringComparingAngle angle) {
+        this.angle = angle;
+    }
+
     @ReportItemFor(ReportItem.クラス名)
-    public TypeIdentifier declaringType(StringComparingAngle angle) {
+    public TypeIdentifier declaringType() {
         return angle.declaringType();
     }
 
     @ReportItemFor(ReportItem.メソッドシグネチャ)
-    public MethodDeclaration methodDeclaration(StringComparingAngle angle) {
+    public MethodDeclaration methodDeclaration() {
         return angle.methodDeclaration();
     }
 }

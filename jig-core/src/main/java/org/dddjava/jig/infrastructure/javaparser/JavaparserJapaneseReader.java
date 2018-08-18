@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.implementation.sourcecode.*;
 import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Component
 public class JavaparserJapaneseReader implements JapaneseReader {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserJapaneseReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
@@ -32,12 +36,16 @@ public class JavaparserJapaneseReader implements JapaneseReader {
         List<MethodJapaneseName> methodNames = new ArrayList<>();
 
         for (Path path : nameSources.list()) {
-            TypeSourceResult typeSourceResult = classReader.read(path);
-            TypeJapaneseName typeJapaneseName = typeSourceResult.typeJapaneseName;
-            if (typeJapaneseName != null) {
-                names.add(typeJapaneseName);
+            try {
+                TypeSourceResult typeSourceResult = classReader.read(path);
+                TypeJapaneseName typeJapaneseName = typeSourceResult.typeJapaneseName;
+                if (typeJapaneseName != null) {
+                    names.add(typeJapaneseName);
+                }
+                methodNames.addAll(typeSourceResult.methodJapaneseNames);
+            } catch (JavaParserFailException e) {
+                LOGGER.warn("Javadoc読み取りに失敗（処理続行）", e);
             }
-            methodNames.addAll(typeSourceResult.methodJapaneseNames);
         }
         return new TypeNames(names, methodNames);
     }

@@ -25,6 +25,8 @@ class ClassReader {
             return typeVisitor.toTypeSourceResult();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        } catch (Exception e) {
+            throw new JavaParserFailException(path, e);
         }
     }
 }

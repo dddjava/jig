@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -68,14 +69,24 @@ public class AngleReporter {
 
     private String convert(ReportItemMethod reportItemMethod, Object angle, Handlers handlers) {
         try {
-            // TODO angleを受け取るコンストラクタを識別する
-            Constructor<?> constructor = adapterClass.getDeclaredConstructor();
-            Object adapter = constructor.newInstance();
+            Optional<Constructor<?>> angleConstructor = Arrays.stream(adapterClass.getDeclaredConstructors())
+                    .filter(constructor -> constructor.getParameterCount() == 1)
+                    .filter(constructor -> constructor.getParameterTypes()[0] == angle.getClass())
+                    .findAny();
+            if (angleConstructor.isPresent()) {
+                Object adapter = angleConstructor
+                        .orElseThrow(() -> new RuntimeException("angleを引数にとるコンストラクタが必要です"))
+                        .newInstance(angle);
 
+                Object item = reportItemMethod.method.invoke(adapter);
+                return handlers.handle(reportItemMethod.reportItemFor.value(), item);
+            } else {
+                // TODO 引数なしコンストラクタ用（移行が終わったら削除）
+                Object adapter = adapterClass.getConstructor().newInstance();
+                Object item = reportItemMethod.method.invoke(adapter, angle);
+                return handlers.handle(reportItemMethod.reportItemFor.value(), item);
+            }
 
-            Object item = reportItemMethod.method.invoke(adapter, angle);
-
-            return handlers.handle(reportItemMethod.reportItemFor.value(), item);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | InstantiationException e) {
             throw new RuntimeException("実装ミス", e);
         }

@@ -47,11 +47,10 @@ public class ControllerAnglesTest {
 
         ControllerAngles angles = angleService.controllerAngles(projectData);
 
-        ControllerReportAdapter controllerReportAdapter = new ControllerReportAdapter();
         assertThat(angles.list())
                 .extracting(
                         angle -> angle.method().declaration().asFullNameText(),
-                        controllerReportAdapter::path
+                        angle -> new ControllerReportAdapter(angle).path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "[simple-class/simple-method]"),

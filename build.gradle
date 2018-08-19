@@ -145,17 +145,17 @@ project(':jig-core') {
         compile 'org.slf4j:slf4j-api'
         compile 'ch.qos.logback:logback-classic'
 
-        // class解析
+        // バイトコードの読み取り: infrastructure/asm
         compile 'org.ow2.asm:asm:6.1.1'
-        // datasource解析
+        // SQLの取得: infrastructure/mybatis
         compile 'org.mybatis:mybatis:3.4.6'
-        // javadocコメント取得
+        // javadocコメントの取得: infrastructure/javaparser
         compile 'com.github.javaparser:javaparser-core:3.6.6'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
-        // excel出力
+        // excel出力: presentation/poi
         compile 'org.apache.poi:poi:3.17'
         compile 'org.apache.poi:poi-ooxml:3.17'
-        // ダイアグラム出力
+        // ダイアグラム出力: presentation/graphvizj
         compile 'guru.nidi:graphviz-java:0.5.1'
 
         testCompile 'org.springframework:spring-web'

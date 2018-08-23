@@ -218,7 +218,7 @@ project(':jig-core') {
     }
 
     dependencies {
-        project(':jig-annotation')
+        compile project(':jig-annotation')
         compile 'org.springframework:spring-context'
         compile 'org.slf4j:slf4j-api'
         compile 'ch.qos.logback:logback-classic'

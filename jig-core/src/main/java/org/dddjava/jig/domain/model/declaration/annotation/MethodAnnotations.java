@@ -2,10 +2,10 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * メソッドにつけられたアノテーション一覧
@@ -30,5 +30,13 @@ public class MethodAnnotations {
         return list.stream()
                 .filter(e -> e.methodDeclaration.sameIdentifier(methodDeclaration))
                 .findFirst();
+    }
+
+    public MethodAnnotations filter(MethodDeclaration methodDeclaration) {
+        return new MethodAnnotations(
+                list.stream()
+                .filter(a -> a.methodDeclaration.sameIdentifier(methodDeclaration))
+                .collect(toList())
+        );
     }
 }

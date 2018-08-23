@@ -73,4 +73,5 @@ public class MethodDeclaration {
     public MethodIdentifier identifier() {
         return methodIdentifier;
     }
+
 }

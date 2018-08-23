@@ -11,11 +11,14 @@ import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.progress.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -131,5 +134,15 @@ public class AngleService {
                 projectData.fieldDeclarations(),
                 projectData.methods(),
                 projectData.typeDependencies());
+    }
+
+    /**
+     * 進捗を分析する
+     */
+    public ProgressAngles progressAngles(ProjectData projectData) {
+        MethodAnnotations methodAnnotations = projectData.methodAnnotations();
+        TypeAnnotations typeAnnotations = projectData.typeAnnotations();
+        MethodDeclarations declarations = projectData.methods().declarations();
+        return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }
 }

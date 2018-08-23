@@ -1,11 +1,13 @@
 package stub.presentation.controller;
 
+import org.dddjava.jig.annotation.incubation.Progress;
 import org.springframework.stereotype.Controller;
 
 /**
  * 分岐のあるコントローラー
  */
 @Controller
+@Progress("DecisionControllerのクラスに付けた進捗")
 public class DecisionController {
 
     void 分岐のあるメソッド(Object 条件) {

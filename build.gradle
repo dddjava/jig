@@ -65,6 +65,9 @@ String findSettingValue(String envName, String propertyName) {
     property ? property : ''
 }
 
+project(':jig-annotation') {
+}
+
 project(':jig-core') {
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
@@ -141,6 +144,7 @@ project(':jig-core') {
     }
 
     dependencies {
+        project(':jig-annotation')
         compile 'org.springframework:spring-context'
         compile 'org.slf4j:slf4j-api'
         compile 'ch.qos.logback:logback-classic'

@@ -38,7 +38,8 @@ public class AngleService {
      * コントローラーを分析する
      */
     public ControllerAngles controllerAngles(ProjectData projectData) {
-        return new ControllerAngles(projectData.controllerMethods(), projectData.typeAnnotations());
+        ProgressAngles progressAngles = progressAngles(projectData);
+        return new ControllerAngles(projectData.controllerMethods(), projectData.typeAnnotations(), progressAngles);
     }
 
     /**

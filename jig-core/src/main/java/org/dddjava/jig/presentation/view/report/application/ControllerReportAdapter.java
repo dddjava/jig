@@ -22,8 +22,13 @@ public class ControllerReportAdapter {
         return angle.method();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "パス")
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "パス", order = 1)
     public String path() {
         return angle.controllerAnnotations().pathTexts();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 2)
+    public String progress() {
+        return angle.progress();
     }
 }

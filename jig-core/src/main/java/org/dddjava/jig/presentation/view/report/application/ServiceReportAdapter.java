@@ -45,4 +45,9 @@ public class ServiceReportAdapter {
     public boolean useStream() {
         return angle.useStream();
     }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 4)
+    public String progress() {
+        return angle.progress();
+    }
 }

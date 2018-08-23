@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.progress.ProgressAngles;
 
 import java.util.stream.Stream;
 
@@ -26,9 +27,11 @@ public class ServiceAngle {
     MethodDeclarations usingRepositoryMethods;
     private final MethodCharacteristics methodCharacteristics;
     boolean useStream;
+    ProgressAngles progressAngles;
 
-    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
+    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods, ProgressAngles progressAngles) {
         this.methodDeclaration = serviceMethod;
+        this.progressAngles = progressAngles;
         this.userMethods = methodRelations.userMethodsOf(serviceMethod);
         this.userCharacteristics = characterizedTypes.stream()
                 .filter(methodRelations.userMethodDeclaringTypesOf(serviceMethod))
@@ -90,6 +93,10 @@ public class ServiceAngle {
 
     public MethodDeclarations userControllerMethods() {
         return userControllerMethods;
+    }
+
+    public String progress() {
+        return progressAngles.progressOf(methodDeclaration);
     }
 
 }

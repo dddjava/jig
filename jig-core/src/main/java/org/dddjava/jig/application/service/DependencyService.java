@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.annotation.incubation.Progress;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
@@ -11,12 +12,15 @@ import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
 /**
  * 依存関係サービス
  */
+@Progress("安定")
+@Service
 public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);

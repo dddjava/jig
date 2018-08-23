@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.annotation.incubation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 /**
  * 分析の切り口サービス
  */
+@Progress("解体したい")
 @Service
 public class AngleService {
 
@@ -144,6 +146,7 @@ public class AngleService {
     /**
      * 進捗を分析する
      */
+    @Progress("実験的機能")
     public ProgressAngles progressAngles(ProjectData projectData) {
         MethodAnnotations methodAnnotations = projectData.methodAnnotations();
         TypeAnnotations typeAnnotations = projectData.typeAnnotations();

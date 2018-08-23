@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.annotation.incubation.Progress;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 /**
  * 取り込みサービス
  */
+@Progress("安定")
 @Service
 public class ImplementationService {
 

@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.annotation.incubation.Progress;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 /**
  * 用語サービス
  */
+@Progress("安定")
 @Service
 public class GlossaryService {
 

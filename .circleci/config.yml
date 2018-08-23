@@ -45,7 +45,7 @@ jobs:
       - store_artifacts:
           path: example
           destination: example
-      - run: ./gradlew :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins
+      - run: ./gradlew :jig-annotation:bintrayUpload :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins
 workflows:
   version: 2
   usually:

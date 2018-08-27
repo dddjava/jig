@@ -8,7 +8,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 public class DefaultLayout implements Layout {
 
@@ -33,26 +32,30 @@ public class DefaultLayout implements Layout {
 
     @Override
     public Path[] extractClassPath() {
-        try (Stream<Path> walk = Files.walk(projectPath)) {
-            return walk
-                    .filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory))
-                    .peek(path -> LOGGER.info("classes: {}", path))
-                    .toArray(Path[]::new);
+        DefaultDirectoryVisitor visitor = new DefaultDirectoryVisitor(
+                path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory)
+        );
+        try {
+            Files.walkFileTree(projectPath, visitor);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+
+        return visitor.asArray();
     }
 
     @Override
     public Path[] extractSourcePath() {
-        try (Stream<Path> walk = Files.walk(projectPath)) {
-            return walk.filter(Files::isDirectory)
-                    .filter(path -> path.endsWith(sourcesDirectory))
-                    .peek(path -> LOGGER.info("sources: {}", path))
-                    .toArray(Path[]::new);
+        DefaultDirectoryVisitor visitor = new DefaultDirectoryVisitor(
+                path -> path.endsWith(sourcesDirectory)
+        );
+
+        try {
+            Files.walkFileTree(projectPath, visitor);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+
+        return visitor.asArray();
     }
 }

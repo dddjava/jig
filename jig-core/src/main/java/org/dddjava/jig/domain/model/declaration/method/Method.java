@@ -39,7 +39,10 @@ public class Method {
                             // そのため独自アノテーションに対応できない
                             return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
                                     || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping");
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
                         }
                 )
                 && characterizedTypes.stream().pickup(methodDeclaration.declaringType()).has(Characteristic.CONTROLLER);

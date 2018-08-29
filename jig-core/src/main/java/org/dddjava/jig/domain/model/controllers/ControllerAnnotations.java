@@ -22,7 +22,10 @@ public class ControllerAnnotations {
         this.methodAnnotations = methodAnnotations.annotations().filterAny(
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.GetMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.PostMapping"));
+                new TypeIdentifier("org.springframework.web.bind.annotation.PostMapping"),
+                new TypeIdentifier("org.springframework.web.bind.annotation.PutMapping"),
+                new TypeIdentifier("org.springframework.web.bind.annotation.DeleteMapping"),
+                new TypeIdentifier("org.springframework.web.bind.annotation.PatchMapping"));
     }
 
     public String pathTexts() {

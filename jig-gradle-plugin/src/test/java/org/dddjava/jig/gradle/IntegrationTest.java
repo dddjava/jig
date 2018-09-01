@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void スタブプロジェクトへの適用でパッケージ図とリポジトリが出力されること() throws IOException {
+    public void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
         URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
         List<File> classpaths = Files.readAllLines(Paths.get(resource.getPath())).stream()
                 .map(path -> new File(path))
@@ -43,11 +44,11 @@ public class IntegrationTest {
                 .build();
 
 
+        Path outputDirectory = Paths.get("build", "jig", "stub");
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
-        softly.assertThat(new File("./build/jig/stub/package-dependency-depth4.svg")).exists();
-        softly.assertThat(Files.readAllLines(Paths.get("./build/jig/stub/application.txt")))
-                .contains("[com.example.infrastructure.FromDataSource, register(From), void, , [], [], [], []]");
+        softly.assertThat(outputDirectory.resolve("package-dependency-depth4.svg")).exists();
+        softly.assertThat(outputDirectory.resolve("application.xlsx")).exists();
         softly.assertAll();
     }
 

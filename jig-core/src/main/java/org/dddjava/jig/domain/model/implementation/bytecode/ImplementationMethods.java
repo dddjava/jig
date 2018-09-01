@@ -2,9 +2,7 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -16,22 +14,6 @@ public class ImplementationMethods {
 
     public ImplementationMethods(List<ImplementationMethod> list) {
         this.list = list;
-    }
-
-    public ImplementationMethods(TypeByteCodes typeByteCodes) {
-        this(new ArrayList<>());
-
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
-
-                for (TypeIdentifier interfaceTypeIdentifier : typeByteCode.interfaceTypeIdentifiers.list()) {
-                    MethodDeclaration implMethod = methodDeclaration.with(interfaceTypeIdentifier);
-                    list.add(new ImplementationMethod(methodDeclaration, implMethod));
-                }
-            }
-        }
-
     }
 
     public ImplementationMethodStream stream() {

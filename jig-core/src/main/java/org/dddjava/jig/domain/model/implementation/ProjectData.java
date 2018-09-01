@@ -7,23 +7,30 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.*;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.networks.type.TypeDependency;
+import org.dddjava.jig.domain.model.values.ValueType;
 import org.dddjava.jig.domain.model.values.ValueTypes;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * プロジェクトから読み取った情報
  */
 public class ProjectData {
+
+    private final TypeByteCodes typeByteCodes;
 
     private Types types;
     // メソッド
@@ -37,20 +44,14 @@ public class ProjectData {
     private MethodAnnotations methodAnnotations;
 
     // データソースアクセス
-    private ImplementationMethods implementationMethods;
     private Sqls sqls;
 
-    // 関連
-    private MethodRelations methodRelations;
-    private MethodUsingFields methodUsingFields;
-    private TypeDependencies typeDependencies;
-
     // 特徴とセットになったもの
-    private ValueTypes valueTypes;
     private CharacterizedTypes characterizedTypes;
     private CharacterizedMethods characterizedMethods;
 
     public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
+        this.typeByteCodes = typeByteCodes;
         this.types = typeByteCodes.types();
         this.methods = typeByteCodes.instanceMethods();
 
@@ -61,26 +62,38 @@ public class ProjectData {
         this.fieldDeclarations = typeByteCodes.instanceFields();
         this.staticFieldDeclarations = typeByteCodes.staticFields();
 
-        this.implementationMethods = new ImplementationMethods(typeByteCodes);
-
-        this.methodRelations = new MethodRelations(typeByteCodes);
-        this.methodUsingFields = new MethodUsingFields(typeByteCodes);
-        this.typeDependencies = new TypeDependencies(typeByteCodes);
-
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(typeByteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
         this.characterizedMethods = new CharacterizedMethods(typeByteCodes.instanceMethodByteCodes(), characterizedTypes);
-        this.valueTypes = new ValueTypes(typeByteCodes);
 
         this.sqls = sqls;
     }
 
     public ImplementationMethods implementationMethods() {
-        return implementationMethods;
+        List<ImplementationMethod> list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (TypeIdentifier interfaceTypeIdentifier : typeByteCode.interfaceTypeIdentifiers.list()) {
+                    MethodDeclaration implMethod = methodDeclaration.with(interfaceTypeIdentifier);
+                    list.add(new ImplementationMethod(methodDeclaration, implMethod));
+                }
+            }
+        }
+        return new ImplementationMethods(list);
     }
 
     public MethodRelations methodRelations() {
-        return methodRelations;
+        List<MethodRelation> list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
+                    list.add(new MethodRelation(methodDeclaration, usingMethod));
+                }
+            }
+        }
+        return new MethodRelations(list);
     }
 
     public Sqls sqls() {
@@ -92,7 +105,14 @@ public class ProjectData {
     }
 
     public TypeDependencies typeDependencies() {
-        return typeDependencies;
+        ArrayList<TypeDependency> list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            TypeIdentifier form = typeByteCode.typeIdentifier();
+            for (TypeIdentifier to : typeByteCode.useTypes().list()) {
+                list.add(new TypeDependency(form, to));
+            }
+        }
+        return new TypeDependencies(list);
     }
 
     public FieldDeclarations fieldDeclarations() {
@@ -104,11 +124,25 @@ public class ProjectData {
     }
 
     public ValueTypes valueTypes() {
-        return valueTypes;
+        ArrayList<ValueType> list = new ArrayList<>();
+
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            list.add(new ValueType(typeByteCode));
+        }
+        return new ValueTypes(list);
     }
 
     public MethodUsingFields methodUsingFields() {
-        return methodUsingFields;
+        ArrayList<MethodUsingField> list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (FieldDeclaration usingField : methodByteCode.usingFields().list()) {
+                    list.add(new MethodUsingField(methodDeclaration, usingField));
+                }
+            }
+        }
+        return new MethodUsingFields(list);
     }
 
     public CharacterizedMethods characterizedMethods() {

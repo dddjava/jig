@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,17 +14,7 @@ public class MethodRelations {
 
     private final List<MethodRelation> list;
 
-    public MethodRelations(TypeByteCodes typeByteCodes) {
-        List<MethodRelation> list = new ArrayList<>();
-
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
-                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
-                    list.add(new MethodRelation(methodDeclaration, usingMethod));
-                }
-            }
-        }
+    public MethodRelations(List<MethodRelation> list) {
         this.list = list;
     }
 

@@ -23,7 +23,7 @@ public class DefaultDirectoryVisitor extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         if (filter.test(dir)) {
             paths.add(dir);
             LOGGER.info("classes: {}", dir);
@@ -33,7 +33,7 @@ public class DefaultDirectoryVisitor extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+    public FileVisitResult visitFileFailed(Path file, IOException exc) {
         LOGGER.warn("アクセスできないディレクトリです。{}", file);
         return FileVisitResult.CONTINUE;
     }

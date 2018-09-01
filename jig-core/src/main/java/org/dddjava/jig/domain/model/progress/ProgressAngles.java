@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,5 +23,4 @@ public class ProgressAngles {
                 .findAny()
                 .map(ProgressAngle::asText).orElse("");
     }
-
 }

@@ -11,5 +11,5 @@ public enum MethodCharacteristic {
     MAPPER_METHOD,
     PUBLIC,
     NOT_PUBLIC,
-    BOOL_QUERY;
+    BOOL_QUERY
 }

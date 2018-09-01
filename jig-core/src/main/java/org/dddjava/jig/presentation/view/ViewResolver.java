@@ -32,7 +32,7 @@ public class ViewResolver {
     }
 
     private <T> JigView<T> newGraphvizjView(DotTextEditor<T> diagram) {
-        return new GraphvizjView<T>(diagram, diagramFormat);
+        return new GraphvizjView<>(diagram, diagramFormat);
     }
 
     public JigView<ServiceAngles> booleanServiceTrace(JapaneseNameFinder japaneseNameFinder) {

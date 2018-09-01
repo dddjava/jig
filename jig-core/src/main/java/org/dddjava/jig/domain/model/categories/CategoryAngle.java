@@ -15,37 +15,38 @@ import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 public class CategoryAngle {
 
     Characteristics characteristics;
-    TypeIdentifier typeIdentifier;
+    Category category;
     TypeIdentifiers userTypeIdentifiers;
     StaticFieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    CategoryAngle(Characteristics characteristics, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
+    CategoryAngle(Characteristics characteristics, Category category, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
         this.characteristics = characteristics;
-        this.typeIdentifier = typeIdentifier;
+        this.category = category;
         this.userTypeIdentifiers = userTypeIdentifiers;
         this.constantsDeclarations = constantsDeclarations;
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public static CategoryAngle of(TypeIdentifier typeIdentifier, CharacterizedTypes characterizedTypes, TypeDependencies allTypeDependencies, FieldDeclarations allFieldDeclarations, StaticFieldDeclarations allStaticFieldDeclarations) {
-        Characteristics characteristics = characterizedTypes.stream()
-                .pickup(typeIdentifier)
-                .characteristics();
-        TypeIdentifiers userTypeIdentifiers = allTypeDependencies.stream()
-                .filterTo(typeIdentifier)
-                .removeSelf()
-                .fromTypeIdentifiers()
-                .normalize();
-        StaticFieldDeclarations constantsDeclarations = allStaticFieldDeclarations
-                .filterDeclareTypeIs(typeIdentifier);
-        FieldDeclarations fieldDeclarations = allFieldDeclarations
-                .filterDeclareTypeIs(typeIdentifier);
-        return new CategoryAngle(characteristics, typeIdentifier, userTypeIdentifiers, constantsDeclarations, fieldDeclarations);
+    public CategoryAngle(Category category, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+        this(characterizedTypes.stream()
+                        .pickup(category.typeIdentifier)
+                        .characteristics(),
+                category,
+                typeDependencies.stream()
+                        .filterTo(category.typeIdentifier)
+                        .removeSelf()
+                        .fromTypeIdentifiers()
+                        .normalize(),
+                staticFieldDeclarations
+                        .filterDeclareTypeIs(category.typeIdentifier),
+                fieldDeclarations
+                        .filterDeclareTypeIs(category.typeIdentifier)
+        );
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return category.typeIdentifier;
     }
 
     public String constantsDeclarationsName() {

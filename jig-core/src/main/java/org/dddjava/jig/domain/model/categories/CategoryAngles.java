@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 
@@ -17,10 +16,10 @@ public class CategoryAngles {
 
     List<CategoryAngle> list;
 
-    public CategoryAngles(TypeIdentifiers enumTypeIdentifies, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngles(Categories categories, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
-        for (TypeIdentifier typeIdentifier : enumTypeIdentifies.list()) {
-            list.add(CategoryAngle.of(typeIdentifier, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
+        for (Category category: categories.list()) {
+            list.add(new CategoryAngle(category, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
         }
         this.list = list;
     }

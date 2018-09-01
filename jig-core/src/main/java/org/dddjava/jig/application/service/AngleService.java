@@ -88,6 +88,7 @@ public class AngleService {
      * enumを分析する
      */
     public CategoryAngles enumAngles(ProjectData projectData) {
+        // TODO ProjectData#categories():Categories に置き換え
         TypeIdentifiers enumTypeIdentifies = projectData.characterizedTypes().stream()
                 .filter(Characteristic.ENUM)
                 .typeIdentifiers();

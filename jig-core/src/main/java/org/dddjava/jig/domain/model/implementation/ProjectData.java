@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
+import org.dddjava.jig.domain.model.categories.Categories;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
@@ -19,7 +20,8 @@ import org.dddjava.jig.domain.model.implementation.bytecode.*;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.networks.type.TypeDependency;
-import org.dddjava.jig.domain.model.values.ValueType;
+import org.dddjava.jig.domain.model.values.PotentiallyValueType;
+import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 
 import java.util.ArrayList;
@@ -124,12 +126,13 @@ public class ProjectData {
     }
 
     public ValueTypes valueTypes() {
-        ArrayList<ValueType> list = new ArrayList<>();
-
+        ArrayList<PotentiallyValueType> list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            list.add(new ValueType(typeByteCode));
+            list.add(new PotentiallyValueType(typeByteCode.typeIdentifier(), typeByteCode.fieldDeclarations()));
         }
-        return new ValueTypes(list);
+        PotentiallyValueTypes potentiallyValueTypes = new PotentiallyValueTypes(list);
+
+        return potentiallyValueTypes.toValueTypes(categories());
     }
 
     public MethodUsingFields methodUsingFields() {
@@ -171,6 +174,13 @@ public class ProjectData {
 
     public Methods controllerMethods() {
         return methods().controllerMethods(characterizedTypes);
+    }
+
+    public Categories categories() {
+        TypeIdentifiers enumTypeIdentifies = characterizedTypes().stream()
+                .filter(Characteristic.ENUM)
+                .typeIdentifiers();
+        return new Categories(enumTypeIdentifies);
     }
 
     public TypeIdentifiers repositories() {

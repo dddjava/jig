@@ -15,38 +15,38 @@ import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 public class CategoryAngle {
 
     Characteristics characteristics;
-    Category category;
+    CategoryType categoryType;
     TypeIdentifiers userTypeIdentifiers;
     StaticFieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    CategoryAngle(Characteristics characteristics, Category category, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
+    CategoryAngle(Characteristics characteristics, CategoryType categoryType, TypeIdentifiers userTypeIdentifiers, StaticFieldDeclarations constantsDeclarations, FieldDeclarations fieldDeclarations) {
         this.characteristics = characteristics;
-        this.category = category;
+        this.categoryType = categoryType;
         this.userTypeIdentifiers = userTypeIdentifiers;
         this.constantsDeclarations = constantsDeclarations;
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public CategoryAngle(Category category, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngle(CategoryType categoryType, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         this(characterizedTypes.stream()
-                        .pickup(category.typeIdentifier)
+                        .pickup(categoryType.typeIdentifier)
                         .characteristics(),
-                category,
+                categoryType,
                 typeDependencies.stream()
-                        .filterTo(category.typeIdentifier)
+                        .filterTo(categoryType.typeIdentifier)
                         .removeSelf()
                         .fromTypeIdentifiers()
                         .normalize(),
                 staticFieldDeclarations
-                        .filterDeclareTypeIs(category.typeIdentifier),
+                        .filterDeclareTypeIs(categoryType.typeIdentifier),
                 fieldDeclarations
-                        .filterDeclareTypeIs(category.typeIdentifier)
+                        .filterDeclareTypeIs(categoryType.typeIdentifier)
         );
     }
 
     public TypeIdentifier typeIdentifier() {
-        return category.typeIdentifier;
+        return categoryType.typeIdentifier;
     }
 
     public String constantsDeclarationsName() {

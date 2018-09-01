@@ -16,10 +16,10 @@ public class CategoryAngles {
 
     List<CategoryAngle> list;
 
-    public CategoryAngles(Categories categories, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngles(CategoryTypes categoryTypes, CharacterizedTypes characterizedTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
-        for (Category category: categories.list()) {
-            list.add(new CategoryAngle(category, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
+        for (CategoryType categoryType : categoryTypes.list()) {
+            list.add(new CategoryAngle(categoryType, characterizedTypes, typeDependencies, fieldDeclarations, staticFieldDeclarations));
         }
         this.list = list;
     }

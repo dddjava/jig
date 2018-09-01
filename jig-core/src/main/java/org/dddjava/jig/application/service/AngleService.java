@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.annotation.incubation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
-import org.dddjava.jig.domain.model.categories.Categories;
+import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
@@ -88,9 +88,9 @@ public class AngleService {
      * enumを分析する
      */
     public CategoryAngles enumAngles(ProjectData projectData) {
-        Categories categories = projectData.categories();
+        CategoryTypes categoryTypes = projectData.categories();
 
-        return new CategoryAngles(categories,
+        return new CategoryAngles(categoryTypes,
                 projectData.characterizedTypes(),
                 projectData.typeDependencies(),
                 projectData.fieldDeclarations(),

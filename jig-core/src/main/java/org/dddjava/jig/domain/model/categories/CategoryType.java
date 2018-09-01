@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 /**
  * 区分
  */
-public class Category {
+public class CategoryType {
     TypeIdentifier typeIdentifier;
 
-    public Category(TypeIdentifier typeIdentifier) {
+    public CategoryType(TypeIdentifier typeIdentifier) {
         this.typeIdentifier = typeIdentifier;
     }
 

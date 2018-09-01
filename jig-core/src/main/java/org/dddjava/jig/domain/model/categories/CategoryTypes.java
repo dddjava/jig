@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 /**
  * 区分一覧
  */
-public class Categories {
+public class CategoryTypes {
 
     private final TypeIdentifiers typeIdentifiers;
 
-    public Categories(TypeIdentifiers typeIdentifiers) {
+    public CategoryTypes(TypeIdentifiers typeIdentifiers) {
         this.typeIdentifiers = typeIdentifiers;
     }
 
@@ -21,7 +21,7 @@ public class Categories {
         return typeIdentifiers.contains(typeIdentifier);
     }
 
-    public List<Category> list() {
-        return typeIdentifiers.list().stream().map(Category::new).collect(Collectors.toList());
+    public List<CategoryType> list() {
+        return typeIdentifiers.list().stream().map(CategoryType::new).collect(Collectors.toList());
     }
 }

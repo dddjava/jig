@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation;
 
-import org.dddjava.jig.domain.model.categories.Categories;
+import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
@@ -176,11 +176,11 @@ public class ProjectData {
         return methods().controllerMethods(characterizedTypes);
     }
 
-    public Categories categories() {
+    public CategoryTypes categories() {
         TypeIdentifiers enumTypeIdentifies = characterizedTypes().stream()
                 .filter(Characteristic.ENUM)
                 .typeIdentifiers();
-        return new Categories(enumTypeIdentifies);
+        return new CategoryTypes(enumTypeIdentifies);
     }
 
     public TypeIdentifiers repositories() {

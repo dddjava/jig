@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.categories.Categories;
+import org.dddjava.jig.domain.model.categories.CategoryTypes;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +15,9 @@ public class PotentiallyValueTypes {
         this.list = list;
     }
 
-    public ValueTypes toValueTypes(Categories categories) {
+    public ValueTypes toValueTypes(CategoryTypes categoryTypes) {
         List<ValueType> valueTypeList = list.stream()
-                .filter(potentiallyValueType -> !categories.contains(potentiallyValueType.typeIdentifier))
+                .filter(potentiallyValueType -> !categoryTypes.contains(potentiallyValueType.typeIdentifier))
                 .map(PotentiallyValueType::toValueType)
                 .collect(Collectors.toList());
         return new ValueTypes(valueTypeList);

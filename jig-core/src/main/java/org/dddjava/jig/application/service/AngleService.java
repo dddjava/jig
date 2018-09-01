@@ -91,7 +91,6 @@ public class AngleService {
         CategoryTypes categoryTypes = projectData.categories();
 
         return new CategoryAngles(categoryTypes,
-                projectData.characterizedTypes(),
                 projectData.typeDependencies(),
                 projectData.fieldDeclarations(),
                 projectData.staticFieldDeclarations());

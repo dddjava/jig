@@ -1,27 +1,25 @@
 package org.dddjava.jig.domain.model.categories;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 区分一覧
  */
 public class CategoryTypes {
 
-    private final TypeIdentifiers typeIdentifiers;
+    private final List<CategoryType> list;
 
-    public CategoryTypes(TypeIdentifiers typeIdentifiers) {
-        this.typeIdentifiers = typeIdentifiers;
+    public CategoryTypes(List<CategoryType> list) {
+        this.list = list;
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {
-        return typeIdentifiers.contains(typeIdentifier);
+        return list.stream().anyMatch(categoryType -> categoryType.typeIdentifier.equals(typeIdentifier));
     }
 
     public List<CategoryType> list() {
-        return typeIdentifiers.list().stream().map(CategoryType::new).collect(Collectors.toList());
+        return list;
     }
 }

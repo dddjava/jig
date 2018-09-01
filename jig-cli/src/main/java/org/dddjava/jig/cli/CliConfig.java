@@ -38,6 +38,9 @@ class CliConfig {
     @Value("${depth}")
     int depth;
 
+    @Value("${jig.debug}")
+    boolean jigDebugMode;
+
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()
                 ? Arrays.asList(JigDocument.values())
@@ -56,7 +59,8 @@ class CliConfig {
                         new ModelPattern(modelPattern),
                         new RepositoryPattern(repositoryPattern),
                         new OutputOmitPrefix(outputOmitPrefix),
-                        new PackageDepth(depth)
+                        new PackageDepth(depth),
+                        jigDebugMode
                 ),
                 new CliConfigurationContext(this)
         );

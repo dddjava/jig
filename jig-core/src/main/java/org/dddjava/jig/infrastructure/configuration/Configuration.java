@@ -94,7 +94,8 @@ public class Configuration {
                 serviceDiagramController,
                 classListController,
                 packageDependencyController,
-                enumUsageController
+                enumUsageController,
+                properties.jigDebugMode()
         );
     }
 

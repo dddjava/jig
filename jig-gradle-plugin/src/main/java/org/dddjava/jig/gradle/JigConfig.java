@@ -26,6 +26,8 @@ public class JigConfig {
 
     int depth = -1;
 
+    boolean enableDebugDocument = false;
+
     List<JigDocument> documentTypes() {
         if (documentTypes.isEmpty()) return Arrays.asList(JigDocument.values());
         return documentTypes.stream()
@@ -38,7 +40,8 @@ public class JigConfig {
                 new ModelPattern(modelPattern),
                 new RepositoryPattern(repositoryPattern),
                 new OutputOmitPrefix(outputOmitPrefix),
-                new PackageDepth(depth)
+                new PackageDepth(depth),
+                enableDebugDocument
         );
     }
 
@@ -88,5 +91,13 @@ public class JigConfig {
 
     void setDepth(int depth) {
         this.depth = depth;
+    }
+
+    public boolean isEnableDebugDocument() {
+        return enableDebugDocument;
+    }
+
+    public void setEnableDebugDocument(boolean enableDebugDocument) {
+        this.enableDebugDocument = enableDebugDocument;
     }
 }

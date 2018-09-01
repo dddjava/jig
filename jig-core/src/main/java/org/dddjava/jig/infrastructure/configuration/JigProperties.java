@@ -11,11 +11,14 @@ public class JigProperties {
 
     PackageDepth depth;
 
-    public JigProperties(ModelPattern modelPattern, RepositoryPattern repositoryPattern, OutputOmitPrefix outputOmitPrefix, PackageDepth depth) {
+    boolean jigDebugMode;
+
+    public JigProperties(ModelPattern modelPattern, RepositoryPattern repositoryPattern, OutputOmitPrefix outputOmitPrefix, PackageDepth depth, boolean jigDebugMode) {
         this.modelPattern = modelPattern;
         this.repositoryPattern = repositoryPattern;
         this.outputOmitPrefix = outputOmitPrefix;
         this.depth = depth;
+        this.jigDebugMode = jigDebugMode;
     }
 
     public ModelPattern getModelPattern() {
@@ -32,5 +35,9 @@ public class JigProperties {
 
     public PackageDepth getDepth() {
         return depth;
+    }
+
+    public boolean jigDebugMode() {
+        return jigDebugMode;
     }
 }

@@ -85,7 +85,8 @@ public class DependencyServiceTest {
                         new ModelPattern("stub.domain.model.+"),
                         new RepositoryPattern(),
                         new OutputOmitPrefix(),
-                        new PackageDepth()
+                        new PackageDepth(),
+                        false
                 ),
                 new ConfigurationContext() {
                     @Override

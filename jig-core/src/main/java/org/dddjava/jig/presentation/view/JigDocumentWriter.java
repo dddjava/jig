@@ -18,15 +18,17 @@ public class JigDocumentWriter {
     JigDocument jigDocument;
     DocumentSuffix documentSuffix;
     Path directory;
+    boolean jigDebugMode;
 
-    public JigDocumentWriter(JigDocument jigDocument, Path directory) {
-        this(jigDocument, new DocumentSuffix(""), directory);
+    public JigDocumentWriter(JigDocument jigDocument, Path directory, boolean jigDebugMode) {
+        this(jigDocument, new DocumentSuffix(""), directory, jigDebugMode);
     }
 
-    public JigDocumentWriter(JigDocument jigDocument, DocumentSuffix documentSuffix, Path directory) {
+    private JigDocumentWriter(JigDocument jigDocument, DocumentSuffix documentSuffix, Path directory, boolean jigDebugMode) {
         this.jigDocument = jigDocument;
         this.documentSuffix = documentSuffix;
         this.directory = directory;
+        this.jigDebugMode = jigDebugMode;
     }
 
     public void writeDiagram(OutputStreamWriter writer, DiagramFormat diagramFormat) {
@@ -50,6 +52,7 @@ public class JigDocumentWriter {
     }
 
     public void writeDebugText(String s) {
+        if (!jigDebugMode) return;
         try {
             Path outputFilePath = directory.resolve(documentSuffix.withFileNameOf(jigDocument) + ".txt");
             Files.write(outputFilePath, s.getBytes());
@@ -60,7 +63,7 @@ public class JigDocumentWriter {
     }
 
     public JigDocumentWriter apply(DocumentSuffix documentSuffix) {
-        return new JigDocumentWriter(this.jigDocument, documentSuffix, this.directory);
+        return new JigDocumentWriter(this.jigDocument, documentSuffix, this.directory, this.jigDebugMode);
     }
 
     public interface OutputStreamWriter {

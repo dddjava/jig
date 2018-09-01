@@ -24,17 +24,20 @@ public class JigDocumentHandlers {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
     Object[] controllers;
+    boolean jigDebugMode;
 
     public JigDocumentHandlers(ServiceDiagramController serviceDiagramController,
                                ClassListController classListController,
                                PackageDependencyController packageDependencyController,
-                               EnumUsageController enumUsageController) {
+                               EnumUsageController enumUsageController,
+                               boolean jigDebugMode) {
         this.controllers = new Object[]{
                 serviceDiagramController,
                 classListController,
                 packageDependencyController,
                 enumUsageController
         };
+        this.jigDebugMode = jigDebugMode;
     }
 
     JigModelAndView<?> resolveHandlerMethod(JigDocument jigDocument, ProjectData projectData) {
@@ -63,7 +66,7 @@ public class JigDocumentHandlers {
                 LOGGER.info("{} を作成しました。", outputDirectory.toAbsolutePath());
             }
 
-            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory, jigDebugMode);
             jigModelAndView.render(jigDocumentWriter);
         } catch (IOException e) {
             throw new FileWriteFailureException(e);

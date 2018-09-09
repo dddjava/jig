@@ -16,6 +16,7 @@ public class ControllerReportAdapter {
     }
 
     @ReportItemFor(ReportItem.クラス名)
+    @ReportItemFor(ReportItem.クラス和名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     public Method method() {

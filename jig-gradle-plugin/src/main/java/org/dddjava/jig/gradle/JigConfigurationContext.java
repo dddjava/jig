@@ -20,9 +20,9 @@ public class JigConfigurationContext implements ConfigurationContext {
 
     private final static String MODEL_DETECTION_WARNING = new StringJoiner(System.lineSeparator())
             .add("Jig Gradle Pluginの設定にて以下のパラメータを調整してみてください。")
-            .add("jig {")
+            .add("jig '{'")
             .add("    {0}={1}")
-            .add("}")
+            .add("'}'")
             .toString();
 
     @Override

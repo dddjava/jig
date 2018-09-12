@@ -17,12 +17,13 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class IntegrationTest {
+    final Path outputDir = Paths.get("./build/jig/stub");
 
     @Before
     public void clean() {
-        File outputDir = new File("./build/jig/stub");
-        if (outputDir.exists()) {
-            for (File file : outputDir.listFiles()) {
+        File dir = outputDir.toFile();
+        if (dir.exists()) {
+            for (File file : dir.listFiles()) {
                 file.delete();
             }
         }
@@ -37,6 +38,26 @@ public class IntegrationTest {
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
         softly.assertThat(outputDirectory.resolve("package-dependency-depth4.svg")).exists();
         softly.assertThat(outputDirectory.resolve("application.xlsx")).exists();
+        softly.assertAll();
+    }
+
+    //TODO 並列で走ると競合して落ちる
+    @Test
+    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること() throws IOException {
+        Files.createDirectories(outputDir);
+        Path includedFile = outputDir.resolve("somme.txt");
+        Files.createFile(includedFile);
+
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(outputDir).exists();
+        softly.assertThat(includedFile).exists();
+        softly.assertAll();
+
+        BuildResult result = executeGradleTasks("clean");
+
+        softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
+        softly.assertThat(includedFile).doesNotExist();
+        softly.assertThat(outputDir).doesNotExist();
         softly.assertAll();
     }
 

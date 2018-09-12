@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("VALIDATION")
-public class ValidationReportAdapter {
+public class ValidationReport {
 
     ValidationAngle angle;
 
-    public ValidationReportAdapter(ValidationAngle angle) {
+    public ValidationReport(ValidationAngle angle) {
         this.angle = angle;
     }
 

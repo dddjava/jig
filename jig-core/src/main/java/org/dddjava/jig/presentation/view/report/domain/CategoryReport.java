@@ -8,11 +8,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("ENUM")
-public class CategoryReportAdapter {
+public class CategoryReport {
 
     CategoryAngle angle;
 
-    public CategoryReportAdapter(CategoryAngle angle) {
+    public CategoryReport(CategoryAngle angle) {
         this.angle = angle;
     }
 

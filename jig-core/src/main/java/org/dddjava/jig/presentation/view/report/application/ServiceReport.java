@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("SERVICE")
-public class ServiceReportAdapter {
+public class ServiceReport {
 
     ServiceAngle angle;
 
-    public ServiceReportAdapter(ServiceAngle angle) {
+    public ServiceReport(ServiceAngle angle) {
         this.angle = angle;
     }
 

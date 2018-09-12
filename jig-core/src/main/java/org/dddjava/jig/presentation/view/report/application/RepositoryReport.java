@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("REPOSITORY")
-public class RepositoryReportAdapter {
+public class RepositoryReport {
 
     DatasourceAngle angle;
 
-    public RepositoryReportAdapter(DatasourceAngle angle) {
+    public RepositoryReport(DatasourceAngle angle) {
         this.angle = angle;
     }
 

@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("文字列比較箇所")
-public class StringComparingAngleAdapter {
+public class StringComparingReport {
 
     StringComparingAngle angle;
 
-    public StringComparingAngleAdapter(StringComparingAngle angle) {
+    public StringComparingReport(StringComparingAngle angle) {
         this.angle = angle;
     }
 

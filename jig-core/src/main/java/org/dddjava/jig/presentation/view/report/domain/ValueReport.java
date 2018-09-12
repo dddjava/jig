@@ -1,19 +1,16 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
-import org.dddjava.jig.domain.model.collections.CollectionAngle;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
-import org.dddjava.jig.presentation.view.report.ReportTitle;
 
-@ReportTitle("COLLECTION")
-public class CollectionReportAdapter {
+public class ValueReport {
 
-    CollectionAngle angle;
+    ValueAngle angle;
 
-    public CollectionReportAdapter(CollectionAngle angle) {
+    public ValueReport(ValueAngle angle) {
         this.angle = angle;
     }
 
@@ -27,11 +24,5 @@ public class CollectionReportAdapter {
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
-    }
-
-    @ReportItemFor(ReportItem.メソッド数)
-    @ReportItemFor(ReportItem.メソッド一覧)
-    public MethodDeclarations methods() {
-        return angle.methods();
     }
 }

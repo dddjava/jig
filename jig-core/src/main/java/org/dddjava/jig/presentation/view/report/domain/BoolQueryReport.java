@@ -8,11 +8,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("真偽値を返すメソッド")
-public class BoolQueryReportAdapter {
+public class BoolQueryReport {
 
     BoolQueryAngle angle;
 
-    public BoolQueryReportAdapter(BoolQueryAngle angle) {
+    public BoolQueryReport(BoolQueryAngle angle) {
         this.angle = angle;
     }
 

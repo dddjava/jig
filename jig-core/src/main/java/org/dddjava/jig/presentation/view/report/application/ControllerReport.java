@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("CONTROLLER")
-public class ControllerReportAdapter {
+public class ControllerReport {
 
     ControllerAngle angle;
 
-    public ControllerReportAdapter(ControllerAngle angle) {
+    public ControllerReport(ControllerAngle angle) {
         this.angle = angle;
     }
 

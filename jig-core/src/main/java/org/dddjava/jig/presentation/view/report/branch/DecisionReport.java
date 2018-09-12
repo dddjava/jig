@@ -5,11 +5,11 @@ import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
-public class DecisionReportAdapter {
+public class DecisionReport {
 
     DecisionAngle angle;
 
-    public DecisionReportAdapter(DecisionAngle angle) {
+    public DecisionReport(DecisionAngle angle) {
         this.angle = angle;
     }
 

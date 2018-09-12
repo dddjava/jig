@@ -26,10 +26,10 @@ import org.dddjava.jig.presentation.view.poi.PoiView;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporter;
 import org.dddjava.jig.presentation.view.poi.report.AngleReporters;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
-import org.dddjava.jig.presentation.view.report.application.ControllerReportAdapter;
-import org.dddjava.jig.presentation.view.report.application.RepositoryReportAdapter;
-import org.dddjava.jig.presentation.view.report.application.ServiceReportAdapter;
-import org.dddjava.jig.presentation.view.report.branch.DecisionReportAdapter;
+import org.dddjava.jig.presentation.view.report.application.ControllerReport;
+import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
+import org.dddjava.jig.presentation.view.report.application.ServiceReport;
+import org.dddjava.jig.presentation.view.report.branch.DecisionReport;
 import org.dddjava.jig.presentation.view.report.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,37 +98,37 @@ public class ClassListController {
 
     AngleReporter controllerReport(ProjectData projectData) {
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
-        return new AngleReporter(ControllerReportAdapter.class, controllerAngles.list());
+        return new AngleReporter(ControllerReport.class, controllerAngles.list());
     }
 
     AngleReporter serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        return new AngleReporter(ServiceReportAdapter.class, serviceAngles.list());
+        return new AngleReporter(ServiceReport.class, serviceAngles.list());
     }
 
     AngleReporter datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
-        return new AngleReporter(RepositoryReportAdapter.class, datasourceAngles.list());
+        return new AngleReporter(RepositoryReport.class, datasourceAngles.list());
     }
 
     AngleReporter stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
-        return new AngleReporter(StringComparingAngleAdapter.class, stringComparingAngles.list());
+        return new AngleReporter(StringComparingReport.class, stringComparingAngles.list());
     }
 
     AngleReporter valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        return new AngleReporter(valueKind.name(), ValueReportAdapter.class, valueAngles.list());
+        return new AngleReporter(valueKind.name(), ValueReport.class, valueAngles.list());
     }
 
     AngleReporter collectionReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
-        return new AngleReporter(CollectionReportAdapter.class, collectionAngles.list());
+        return new AngleReporter(CollectionReport.class, collectionAngles.list());
     }
 
     AngleReporter categoryReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
-        return new AngleReporter(CategoryReportAdapter.class, categoryAngles.list());
+        return new AngleReporter(CategoryReport.class, categoryAngles.list());
     }
 
     AngleReporter validateAnnotationReport(ProjectData projectData) {
@@ -136,17 +136,17 @@ public class ClassListController {
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());
-        return new AngleReporter(ValidationReportAdapter.class, list);
+        return new AngleReporter(ValidationReport.class, list);
     }
 
     AngleReporter decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new AngleReporter(layer.asText(), DecisionReportAdapter.class, decisionAngles.filter(layer));
+        return new AngleReporter(layer.asText(), DecisionReport.class, decisionAngles.filter(layer));
     }
 
     AngleReporter booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-        return new AngleReporter(BoolQueryReportAdapter.class, angles.list());
+        return new AngleReporter(BoolQueryReport.class, angles.list());
     }
 
     AngleReporter smellReport(ProjectData projectData) {
@@ -155,6 +155,6 @@ public class ClassListController {
                 .map(method -> new MethodSmellAngle(method, projectData.methodUsingFields()))
                 .filter(MethodSmellAngle::hasSmell)
                 .collect(Collectors.toList());
-        return new AngleReporter(MethodSmellReportAdapter.class, list);
+        return new AngleReporter(MethodSmellReport.class, list);
     }
 }

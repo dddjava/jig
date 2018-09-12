@@ -7,11 +7,11 @@ import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("注意メソッド")
-public class MethodSmellReportAdapter {
+public class MethodSmellReport {
 
     MethodSmellAngle angle;
 
-    public MethodSmellReportAdapter(MethodSmellAngle angle) {
+    public MethodSmellReport(MethodSmellAngle angle) {
         this.angle = angle;
     }
 

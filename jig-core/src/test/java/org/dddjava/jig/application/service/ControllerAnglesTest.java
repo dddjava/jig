@@ -9,7 +9,7 @@ import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
-import org.dddjava.jig.presentation.view.report.application.ControllerReportAdapter;
+import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 
@@ -50,7 +50,7 @@ public class ControllerAnglesTest {
         assertThat(angles.list())
                 .extracting(
                         angle -> angle.method().declaration().asFullNameText(),
-                        angle -> new ControllerReportAdapter(angle).path()
+                        angle -> new ControllerReport(angle).path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "[simple-class/simple-method]"),

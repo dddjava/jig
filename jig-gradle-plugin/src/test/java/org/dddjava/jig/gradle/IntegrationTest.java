@@ -6,6 +6,8 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -13,8 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 public class IntegrationTest {
 
@@ -29,20 +29,8 @@ public class IntegrationTest {
     }
 
     @Test
-    public void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
-        URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
-        List<File> classpaths = Files.readAllLines(Paths.get(resource.getPath())).stream()
-                .map(path -> new File(path))
-                .collect(toList());
-
-
-        BuildResult result = GradleRunner.create()
-                .withGradleVersion("4.9")
-                .withProjectDir(new File("./stub"))
-                .withArguments("clean", "jigReports")
-                .withPluginClasspath(classpaths)
-                .build();
-
+    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
+        BuildResult result = executeGradleTasks("clean", "jigReports");
 
         Path outputDirectory = Paths.get("build", "jig", "stub");
         SoftAssertions softly = new SoftAssertions();
@@ -51,5 +39,20 @@ public class IntegrationTest {
         softly.assertThat(outputDirectory.resolve("application.xlsx")).exists();
         softly.assertAll();
     }
+
+    private BuildResult executeGradleTasks(String...tasks) throws IOException {
+        URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
+        List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.getPath())).stream()
+                .map(File::new)
+                .collect(toList());
+
+        return GradleRunner.create()
+                .withGradleVersion("4.9")
+                .withProjectDir(new File("./stub"))
+                .withArguments(tasks)
+                .withPluginClasspath(pluginClasspath)
+                .build();
+    }
+
 
 }

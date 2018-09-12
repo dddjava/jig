@@ -22,3 +22,5 @@ java -jar jig-cli.jar
 ```
 java -jar jig-cli.jar --jig.debug=true
 ```
+
+設定できるプロパティは [application.propertis](./src/main/resources/application.properties) を参照してください。

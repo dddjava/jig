@@ -99,7 +99,11 @@ public class ClassListController {
 
     AngleReporter controllerReport(ProjectData projectData) {
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
-        return new AngleReporter(ControllerReport.class, controllerAngles.list());
+        ProgressAngles progressAngles = angleService.progressAngles(projectData);
+
+        return new AngleReporter<>(controllerAngles.list(),
+                controllerAngle -> new ControllerReport(controllerAngle, progressAngles.progressOf(controllerAngle.method().declaration())),
+                ControllerReport.class);
     }
 
     AngleReporter serviceReport(ProjectData projectData) {

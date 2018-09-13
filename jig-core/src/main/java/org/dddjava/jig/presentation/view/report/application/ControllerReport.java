@@ -10,9 +10,11 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 public class ControllerReport {
 
     ControllerAngle angle;
+    String progressText;
 
-    public ControllerReport(ControllerAngle angle) {
+    public ControllerReport(ControllerAngle angle, String progressText) {
         this.angle = angle;
+        this.progressText = progressText;
     }
 
     @ReportItemFor(ReportItem.クラス名)
@@ -30,6 +32,6 @@ public class ControllerReport {
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 2)
     public String progress() {
-        return angle.progress();
+        return progressText;
     }
 }

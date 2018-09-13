@@ -21,54 +21,12 @@ public class AngleReporter<MODEL> {
 
     ReporterProvider<?, MODEL> reporterProvider;
 
-    public AngleReporter(String title, Class<?> adapterClass, List<MODEL> angles) {
-        this(title, angles, adapterClass,
-                Arrays.stream(adapterClass.getMethods())
-                        .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
-                        .flatMap(method -> {
-                            // 複数アノテーションがついていたら展開
-                            if (method.isAnnotationPresent(ReportItemsFor.class)) {
-                                return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
-                                        .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
-                            }
-
-                            // 1つだけのはそのまま
-                            ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
-                            return Stream.of(new ReportItemMethod(method, reportItemFor));
-                        })
-                        .sorted()
-                        .collect(toList()),
-                model -> {
-                    // TODO 後方互換
-                    try {
-                        return Arrays.stream(adapterClass.getDeclaredConstructors())
-                                .filter(constructor -> constructor.getParameterCount() == 1)
-                                .filter(constructor -> constructor.getParameterTypes()[0] == model.getClass())
-                                .findAny()
-                                .orElseThrow(() -> new RuntimeException("angleを引数にとるコンストラクタが必要です"))
-                                .newInstance(model);
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
-    }
-
-    public AngleReporter(String title, List<MODEL> angles, Class<?> adapterClass, List<ReportItemMethod> reportItemMethods, ReporterProvider<?, MODEL> reporterProvider) {
-        this.title = title;
-        this.angles = angles;
-        this.adapterClass = adapterClass;
-        this.reportItemMethods = reportItemMethods;
-        this.reporterProvider = reporterProvider;
-    }
-
-    public AngleReporter(Class<?> adapterClass, List<MODEL> angles) {
-        this(adapterClass.getAnnotation(ReportTitle.class).value(), adapterClass, angles);
-    }
-
     public <REPORT> AngleReporter(List<MODEL> angles, ReporterProvider<REPORT, MODEL> reporterProvider, Class<REPORT> reportClass) {
-        this(reportClass.getAnnotation(ReportTitle.class).value(), angles, reportClass,
-                // FIXME WET
+        this(reportClass.getAnnotation(ReportTitle.class).value(), angles, reporterProvider, reportClass);
+    }
+
+    public <REPORT> AngleReporter(String title, List<MODEL> angles, ReporterProvider<REPORT, MODEL> reporterProvider, Class<REPORT> reportClass) {
+        this(title, angles, reportClass, reporterProvider,
                 Arrays.stream(reportClass.getMethods())
                         .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
                         .flatMap(method -> {
@@ -83,8 +41,16 @@ public class AngleReporter<MODEL> {
                             return Stream.of(new ReportItemMethod(method, reportItemFor));
                         })
                         .sorted()
-                        .collect(toList()),
-                reporterProvider);
+                        .collect(toList())
+        );
+    }
+
+    private AngleReporter(String title, List<MODEL> angles, Class<?> adapterClass, ReporterProvider<?, MODEL> reporterProvider, List<ReportItemMethod> reportItemMethods) {
+        this.title = title;
+        this.angles = angles;
+        this.adapterClass = adapterClass;
+        this.reportItemMethods = reportItemMethods;
+        this.reporterProvider = reporterProvider;
     }
 
     public String title() {

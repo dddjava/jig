@@ -117,27 +117,27 @@ public class ClassListController {
 
     AngleReporter datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
-        return new AngleReporter(RepositoryReport.class, datasourceAngles.list());
+        return new AngleReporter<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
     AngleReporter stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
-        return new AngleReporter(StringComparingReport.class, stringComparingAngles.list());
+        return new AngleReporter<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
     AngleReporter valueObjectReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
-        return new AngleReporter(valueKind.name(), ValueReport.class, valueAngles.list());
+        return new AngleReporter<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
     AngleReporter collectionReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
-        return new AngleReporter(CollectionReport.class, collectionAngles.list());
+        return new AngleReporter<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
     AngleReporter categoryReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
-        return new AngleReporter(CategoryReport.class, categoryAngles.list());
+        return new AngleReporter<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }
 
     AngleReporter validateAnnotationReport(ProjectData projectData) {
@@ -145,17 +145,17 @@ public class ClassListController {
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());
-        return new AngleReporter(ValidationReport.class, list);
+        return new AngleReporter<>(list, ValidationReport::new, ValidationReport.class);
     }
 
     AngleReporter decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
-        return new AngleReporter(layer.asText(), DecisionReport.class, decisionAngles.filter(layer));
+        return new AngleReporter<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
     }
 
     AngleReporter booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-        return new AngleReporter(BoolQueryReport.class, angles.list());
+        return new AngleReporter<>(angles.list(), BoolQueryReport::new, BoolQueryReport.class);
     }
 
     AngleReporter smellReport(ProjectData projectData) {
@@ -164,6 +164,6 @@ public class ClassListController {
                 .map(method -> new MethodSmellAngle(method, projectData.methodUsingFields()))
                 .filter(MethodSmellAngle::hasSmell)
                 .collect(Collectors.toList());
-        return new AngleReporter(MethodSmellReport.class, list);
+        return new AngleReporter<>(list, MethodSmellReport::new, MethodSmellReport.class);
     }
 }

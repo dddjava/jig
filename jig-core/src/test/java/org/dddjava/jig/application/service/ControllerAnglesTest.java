@@ -50,7 +50,7 @@ public class ControllerAnglesTest {
         assertThat(angles.list())
                 .extracting(
                         angle -> angle.method().declaration().asFullNameText(),
-                        angle -> new ControllerReport(angle, progressAngles.progressOf(controllerAngle.method().declaration())).path()
+                        angle -> new ControllerReport(angle, "dummy").path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "[simple-class/simple-method]"),

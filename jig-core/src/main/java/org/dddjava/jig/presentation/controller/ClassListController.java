@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.progress.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
@@ -103,7 +104,11 @@ public class ClassListController {
 
     AngleReporter serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        return new AngleReporter(ServiceReport.class, serviceAngles.list());
+        ProgressAngles progressAngles = angleService.progressAngles(projectData);
+
+        return new AngleReporter<>(serviceAngles.list(),
+                serviceAngle -> new ServiceReport(serviceAngle, progressAngles.progressOf(serviceAngle.method())),
+                ServiceReport.class);
     }
 
     AngleReporter datasourceReport(ProjectData projectData) {

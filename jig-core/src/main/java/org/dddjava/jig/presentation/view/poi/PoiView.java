@@ -33,7 +33,7 @@ public class PoiView implements JigView<AngleReporters> {
         try (Workbook book = new XSSFWorkbook()) {
             StringJoiner debugText = new StringJoiner("\n");
             List<AngleReporter> list = angleReporters.list();
-            for (AngleReporter angleReporter : list) {
+            for (AngleReporter<?> angleReporter : list) {
                 Sheet sheet = book.createSheet(angleReporter.title());
                 writeRow(angleReporter.headerRow(), sheet.createRow(0));
                 debugText.add(sheet.getSheetName());

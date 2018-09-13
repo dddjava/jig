@@ -49,7 +49,6 @@ public class AngleService {
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
         MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods();
-        ProgressAngles progressAngles = progressAngles(projectData);
 
         if (serviceMethods.empty()) {
             LOGGER.warn(Warning.サービス検出異常.text());
@@ -60,8 +59,7 @@ public class AngleService {
                 projectData.methodRelations(),
                 projectData.characterizedTypes(),
                 projectData.methodUsingFields(),
-                projectData.characterizedMethods(),
-                progressAngles
+                projectData.characterizedMethods()
         );
     }
 

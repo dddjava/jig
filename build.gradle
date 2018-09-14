@@ -254,11 +254,11 @@ project(':jig-cli') {
     }
 
     task cliJar(type: OneJar) {
-        metaInf { from(rootDir) { include 'LICENSE' } }
         mainClass = 'org.dddjava.jig.cli.Cli'
         archiveName 'jig-cli.jar'
         useStable = false
     }
+
 
 }
 

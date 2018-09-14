@@ -3,6 +3,7 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2018.9.2' apply false
+    id "com.github.onslip.gradle-one-jar" version "1.0.5" apply false
 }
 
 repositories {
@@ -243,17 +244,22 @@ project(':jig-core') {
 }
 
 project(':jig-cli') {
-    apply plugin: 'org.springframework.boot'
+    apply plugin: 'gradle-one-jar'
+
     dependencies {
         compile project(':jig-core')
 
         compile 'info.picocli:picocli:3.6.0'
         compile 'org.springframework.boot:spring-boot-starter'
     }
-    bootJar {
+
+    task cliJar(type: OneJar) {
         metaInf { from(rootDir) { include 'LICENSE' } }
+        mainClass = 'org.dddjava.jig.cli.Cli'
         archiveName 'jig-cli.jar'
+        useStable = false
     }
+
 }
 
 project(':jig-gradle-plugin') {

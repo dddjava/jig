@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Cli {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Cli.class);
 
     public static void main(String[] args) {
         CliConfig cliConfig = CommandLine.populateSpec(CliConfig.class, args);

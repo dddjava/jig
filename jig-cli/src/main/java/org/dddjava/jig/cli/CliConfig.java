@@ -7,6 +7,8 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import static picocli.CommandLine.Option;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -15,31 +17,52 @@ import java.util.List;
 @Component
 class CliConfig {
     @Value("${documentType:}")
-    String documentTypeText;
+    @Option(names = {"--documentType"})
+    String documentTypeText = "";
+
     @Value("${outputDirectory}")
-    String outputDirectory;
+    @Option(names = {"--outputDirectory"})
+    String outputDirectory = "./build/jig";
 
     @Value("${output.omit.prefix}")
-    String outputOmitPrefix;
+    @Option(names = {"--output.omit.prefix"})
+    String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
+
     @Value("${jig.model.pattern}")
-    String modelPattern;
+    @Option(names = {"--jig.model.pattern"})
+    String modelPattern = ".+\\.domain\\.model\\..+";
+
     @Value("${jig.repository.pattern}")
-    String repositoryPattern;
+    @Option(names = {"--jig.repository.pattern"})
+    String repositoryPattern = ".+Repository";
 
     @Value("${project.path}")
-    String projectPath;
+    @Option(names = {"--project.path"})
+    String projectPath = "./";
+
     @Value("${directory.classes}")
-    String directoryClasses;
+    @Option(names = {"--directory.classes"})
+    String directoryClasses = "build/classes/java/main";
+
     @Value("${directory.resources}")
-    String directoryResources;
+    @Option(names = {"--directory.resources"})
+    String directoryResources = "build/resources/main";
+
     @Value("${directory.sources}")
-    String directorySources;
+    @Option(names = {"--directory.sources"})
+    String directorySources = "src/main/java";
 
     @Value("${depth}")
-    int depth;
+    @Option(names = {"--depth"})
+    int depth = -1;
 
     @Value("${jig.debug}")
-    boolean jigDebugMode;
+    @Option(names = {"--jig.debug"})
+    boolean jigDebugMode = false;
+
+    @Option(names = {"--jig.cli.extra"})
+    String jigCliExtra="";
+
 
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()

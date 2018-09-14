@@ -246,6 +246,8 @@ project(':jig-cli') {
     apply plugin: 'org.springframework.boot'
     dependencies {
         compile project(':jig-core')
+
+        compile 'info.picocli:picocli:3.6.0'
         compile 'org.springframework.boot:spring-boot-starter'
     }
     bootJar {

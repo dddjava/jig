@@ -250,7 +250,6 @@ project(':jig-cli') {
         compile project(':jig-core')
 
         compile 'info.picocli:picocli:3.6.0'
-        compile 'org.springframework.boot:spring-boot-starter'
     }
 
     task cliJar(type: OneJar) {

@@ -259,6 +259,10 @@ project(':jig-cli') {
         useStable = false
     }
 
+    jar.doLast {
+        tasks.cliJar.execute()
+    }
+
 
 }
 

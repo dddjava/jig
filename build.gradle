@@ -131,7 +131,7 @@ project(':jig-annotation') {
         }
     }
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
@@ -209,7 +209,7 @@ project(':jig-core') {
         }
     }
 
-    task sourcesJar(type: Jar, dependsOn:classes) {
+    task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
@@ -243,26 +243,37 @@ project(':jig-core') {
     build.dependsOn(publishToMavenLocal)
 }
 
-project(':jig-cli') {
+project(':jig-cli-onejar') {
     apply plugin: 'gradle-one-jar'
 
     dependencies {
         compile project(':jig-core')
-
         compile 'info.picocli:picocli:3.6.0'
     }
 
     task cliJar(type: OneJar) {
         mainClass = 'org.dddjava.jig.cli.Cli'
-        archiveName 'jig-cli.jar'
+        archiveName 'jig-cli-onejar.jar'
         useStable = false
     }
 
     jar.doLast {
         tasks.cliJar.execute()
     }
+}
 
+project(':jig-cli') {
+    apply plugin: 'org.springframework.boot'
 
+    dependencies {
+        compile project(':jig-core')
+        compile 'org.springframework.boot:spring-boot-starter'
+    }
+
+    bootJar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+        archiveName 'jig-cli.jar'
+    }
 }
 
 project(':jig-gradle-plugin') {
@@ -342,7 +353,7 @@ project(':jig-gradle-plugin') {
         String key = findSettingValue('GRADLE_PUBLISH_KEY', KEY_PROPERTY)
         String secret = findSettingValue('GRADLE_PUBLISH_SECRET', SECRET_PROPERTY)
 
-        if( key.isEmpty() || secret.isEmpty()) {
+        if (key.isEmpty() || secret.isEmpty()) {
             throw new RuntimeException("GRADLE_PUBLISH_KEY and/or GRADLE_PUBLISH_SECRET are not defined environment variables")
         }
 

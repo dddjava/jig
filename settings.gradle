@@ -2,5 +2,6 @@ rootProject.name = 'jig'
 
 include 'jig-core',
         'jig-cli',
+        'jig-cli-onejar',
         'jig-annotation',
         'jig-gradle-plugin'

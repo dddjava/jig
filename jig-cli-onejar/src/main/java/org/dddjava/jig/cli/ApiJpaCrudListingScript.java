@@ -18,9 +18,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -30,14 +27,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@Component
-@ConditionalOnProperty(prefix = "jig.cli", name = "extra", havingValue = "api-jpa-crud")
 public class ApiJpaCrudListingScript implements ExtraScript {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ApiJpaCrudListingScript.class);
 
-    @Autowired
     CliConfig cliConfig;
+
+    public ApiJpaCrudListingScript(CliConfig cliConfig) {
+        this.cliConfig = cliConfig;
+    }
 
     @Override
     public void invoke(ProjectData projectData) {

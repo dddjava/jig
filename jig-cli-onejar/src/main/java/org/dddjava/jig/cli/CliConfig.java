@@ -4,42 +4,51 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.configuration.*;
 import org.dddjava.jig.presentation.view.JigDocument;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
+import static picocli.CommandLine.Option;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
 class CliConfig {
-    @Value("${documentType:}")
-    String documentTypeText;
-    @Value("${outputDirectory}")
-    String outputDirectory;
+    @Option(names = {"--documentType"})
+    String documentTypeText = "";
 
-    @Value("${output.omit.prefix}")
-    String outputOmitPrefix;
-    @Value("${jig.model.pattern}")
-    String modelPattern;
-    @Value("${jig.repository.pattern}")
-    String repositoryPattern;
+    @Option(names = {"--outputDirectory"})
+    String outputDirectory = "./build/jig";
 
-    @Value("${project.path}")
-    String projectPath;
-    @Value("${directory.classes}")
-    String directoryClasses;
-    @Value("${directory.resources}")
-    String directoryResources;
-    @Value("${directory.sources}")
-    String directorySources;
+    @Option(names = {"--output.omit.prefix"})
+    String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
 
-    @Value("${depth}")
-    int depth;
+    @Option(names = {"--jig.model.pattern"})
+    String modelPattern = ".+\\.domain\\.model\\..+";
 
-    @Value("${jig.debug}")
-    boolean jigDebugMode;
+    @Option(names = {"--jig.repository.pattern"})
+    String repositoryPattern = ".+Repository";
+
+    @Option(names = {"--project.path"})
+    String projectPath = "./";
+
+    @Option(names = {"--directory.classes"})
+    String directoryClasses = "build/classes/java/main";
+
+    @Option(names = {"--directory.resources"})
+    String directoryResources = "build/resources/main";
+
+    @Option(names = {"--directory.sources"})
+    String directorySources = "src/main/java";
+
+    @Option(names = {"--depth"})
+    int depth = -1;
+
+    @Option(names = {"--jig.debug"})
+    boolean jigDebugMode = false;
+
+    @Option(names = {"--jig.cli.extra"})
+    String jigCliExtra="";
+
 
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()

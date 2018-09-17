@@ -20,12 +20,12 @@ anchors:
 jobs:
   java-8:
     docker:
-    - image: circleci/openjdk:8-jdk
-    <<: *usually-build
+      - image: circleci/openjdk:8-jdk
+      <<: *usually-build
   java-10:
     docker:
-    - image: circleci/openjdk:10-jdk
-    <<: *usually-build
+      - image: circleci/openjdk:10-jdk
+      <<: *usually-build
 
   release-build:
     docker:

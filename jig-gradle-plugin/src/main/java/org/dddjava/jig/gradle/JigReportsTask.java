@@ -10,11 +10,15 @@ import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -25,11 +29,13 @@ public class JigReportsTask extends DefaultTask {
 
     @TaskAction
     void outputReports() {
-        ExtensionContainer extensions = getProject().getExtensions();
+        Project project = getProject();
+
+        ExtensionContainer extensions = project.getExtensions();
         JigConfig config = extensions.findByType(JigConfig.class);
 
         JigProperties jigProperties = config.asProperties();
-        GradleProjects layout = new GradleProject(getProject()).allDependencyJavaProjects();
+        GradleProjects layout = new GradleProject(project).allDependencyJavaProjects();
         JigConfigurationContext configurationContext = new JigConfigurationContext(config);
         Configuration configuration = new Configuration(layout, jigProperties, configurationContext);
 
@@ -39,14 +45,13 @@ public class JigReportsTask extends DefaultTask {
 
         LocalProject localProject = configuration.localProject();
         ImplementationService implementationService = configuration.implementationService();
-        Path outputDirectory = Paths.get(config.getOutputDirectory() + "/" + getProject().getName());
+        Path outputDirectory = ensureExists(outputDirectory(config));
 
         long startTime = System.currentTimeMillis();
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         try {
             ProjectData projectData = implementationService.readProjectData(localProject);
-
             for (JigDocument jigDocument : jigDocuments) {
                 jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
             }
@@ -55,5 +60,22 @@ public class JigReportsTask extends DefaultTask {
         }
 
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+    }
+
+    Path outputDirectory(JigConfig config) {
+        Project project = getProject();
+        Path path = Paths.get(config.getOutputDirectory());
+        if (path.isAbsolute()) return path;
+        Path baseDir = project.getRootProject().getRootDir().toPath();
+        return baseDir.resolve(path).resolve(project.getName());
+    }
+
+    Path ensureExists(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return path;
     }
 }

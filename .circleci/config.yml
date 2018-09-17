@@ -1,30 +1,25 @@
 version: 2
-usually-build: &usually-build
-  working_directory: ~/repo
-  environment:
-    JVM_OPTS: -Xmx3200m
-    TERM: dumb
-  steps:
-  - checkout
-  - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
-  - restore_cache:
-      key: gradle-dependencies-{{ checksum "build.gradle" }}
-  - run: ./gradlew build
-  - save_cache:
-      paths:
-      - ~/.gradle
-      key: gradle-dependencies-{{ checksum "build.gradle" }}
-  - store_test_results:
-      path: jig-core/build/test-results
 jobs:
-  usually-build-java8:
+  usually-build:
     docker:
-    - image: circleci/openjdk:8-jdk
-    <<: *usually-build
-   usually-build-java10:
-    docker:
-      - image: circleci/openjdk:10-jdk
-    <<: *usually-build
+      - image: circleci/openjdk:8-jdk
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+    steps:
+      - checkout
+      - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
+      - restore_cache:
+          key: gradle-dependencies-{{ checksum "build.gradle" }}
+      - run: ./gradlew build
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-dependencies-{{ checksum "build.gradle" }}
+      - store_test_results:
+          path: jig-core/build/test-results
+
   release-build:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -55,11 +50,7 @@ workflows:
   version: 2
   usually:
     jobs:
-      - usually-build-java8:
-          filters:
-            branches:
-              only: 'master'
-      - usually-build-java10:
+      - usually-build:
           filters:
             branches:
               only: 'master'

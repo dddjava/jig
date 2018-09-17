@@ -3,7 +3,7 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2018.9.3' apply false
-    id "com.github.onslip.gradle-one-jar" version "1.0.5" apply false
+    id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
 }
 
 repositories {
@@ -244,22 +244,26 @@ project(':jig-core') {
 }
 
 project(':jig-cli-onejar') {
-    apply plugin: 'gradle-one-jar'
+    apply plugin: 'application'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
     dependencies {
         compile project(':jig-core')
         compile 'info.picocli:picocli:3.6.0'
     }
 
-    task cliJar(type: OneJar) {
-        mainClass = 'org.dddjava.jig.cli.Cli'
-        archiveName 'jig-cli-onejar.jar'
-        useStable = false
+    mainClassName = 'org.dddjava.jig.cli.Cli'
+
+    shadowJar {
+        baseName = 'jig-cli'
+        classifier = null
+        version = null
     }
 
     jar.doLast {
-        tasks.cliJar.execute()
+        tasks.shadowJar.execute()
     }
+
 }
 
 project(':jig-cli') {

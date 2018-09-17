@@ -57,8 +57,14 @@ workflows:
   version: 2
   usually:
     jobs:
-      - java-8
-      - java-10
+      - java-8:
+        filters:
+          branches:
+            only: 'master'
+      - java-10:
+        filters:
+          branches:
+            only: 'master'
   release:
     jobs:
       - release-build:

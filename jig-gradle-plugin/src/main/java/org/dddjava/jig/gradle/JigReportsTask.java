@@ -45,7 +45,7 @@ public class JigReportsTask extends DefaultTask {
 
         LocalProject localProject = configuration.localProject();
         ImplementationService implementationService = configuration.implementationService();
-        Path outputDirectory = ensureExists(outputDirectory(config));
+        Path outputDirectory = outputDirectory(config);
 
         long startTime = System.currentTimeMillis();
 
@@ -68,14 +68,5 @@ public class JigReportsTask extends DefaultTask {
         if (path.isAbsolute()) return path;
         Path baseDir = project.getRootProject().getRootDir().toPath();
         return baseDir.resolve(path).resolve(project.getName());
-    }
-
-    Path ensureExists(Path path) {
-        try {
-            Files.createDirectories(path);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-        return path;
     }
 }

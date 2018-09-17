@@ -8,12 +8,13 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.declaration.type.Type;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
+
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * モデルの実装一式
@@ -91,5 +92,14 @@ public class TypeByteCodes {
             list.add(typeByteCode.type());
         }
         return new Types(list);
+    }
+
+    public TypeByteCodes filter(TypeIdentifiers modelIdentifiers) {
+        List<TypeByteCode> typeByteCodes = new ArrayList<>();
+        return new TypeByteCodes(
+                list.stream()
+                .filter(typeByteCode -> modelIdentifiers.contains(typeByteCode.typeIdentifier()))
+                .collect(toList())
+        );
     }
 }

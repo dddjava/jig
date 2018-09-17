@@ -25,6 +25,7 @@ import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,6 +54,10 @@ public class ProjectData {
     private CharacterizedMethods characterizedMethods;
 
     public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
+        this(typeByteCodes, sqls, new CharacterizedTypes(typeByteCodes, characterizedTypeFactory));
+    }
+
+    ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypes characterizedTypes) {
         this.typeByteCodes = typeByteCodes;
         this.types = typeByteCodes.types();
         this.methods = typeByteCodes.instanceMethods();
@@ -64,11 +69,20 @@ public class ProjectData {
         this.fieldDeclarations = typeByteCodes.instanceFields();
         this.staticFieldDeclarations = typeByteCodes.staticFields();
 
-        CharacterizedTypes characterizedTypes = new CharacterizedTypes(typeByteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
         this.characterizedMethods = new CharacterizedMethods(typeByteCodes.instanceMethodByteCodes(), characterizedTypes);
 
         this.sqls = sqls;
+    }
+
+
+    public ProjectData onlyDomain() {
+        TypeIdentifiers modelIdentifiers = characterizedTypes.stream().filter(Characteristic.MODEL).typeIdentifiers();
+        return new ProjectData(
+            typeByteCodes.filter(modelIdentifiers),
+            new Sqls(Collections.emptyList()),
+            characterizedTypes.stream().filter(modelIdentifiers).collectTypes()
+        );
     }
 
     public ImplementationMethods implementationMethods() {

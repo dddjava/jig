@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -39,5 +40,9 @@ public class CharacterizedTypeStream {
         return stream.filter(typeCharacteristics -> typeCharacteristics.typeIdentifier().equals(typeIdentifier))
                 .findFirst()
                 .orElseGet(() -> new CharacterizedType(typeIdentifier, Collections.emptySet()));
+    }
+
+    public CharacterizedTypes collectTypes() {
+        return new CharacterizedTypes(stream.collect(Collectors.toList()));
     }
 }

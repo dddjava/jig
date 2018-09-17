@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class IntegrationTest {
-    final Path outputDir = Paths.get("./build/jig/stub");
+    final Path outputDir = Paths.get("stub/build/jig/sub-project");
 
     @Before
     public void clean() {
@@ -31,13 +31,13 @@ public class IntegrationTest {
 
     @Test
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
-        BuildResult result = executeGradleTasks("clean", "jigReports");
+        BuildResult result = executeGradleTasks("clean", ":sub-project:jigReports");
 
-        Path outputDirectory = Paths.get("build", "jig", "stub");
+        System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
-        softly.assertThat(outputDirectory.resolve("package-dependency-depth4.svg")).exists();
-        softly.assertThat(outputDirectory.resolve("application.xlsx")).exists();
+        softly.assertThat(outputDir.resolve("package-dependency-depth4.svg")).exists();
+        softly.assertThat(outputDir.resolve("application.xlsx")).exists();
         softly.assertAll();
     }
 

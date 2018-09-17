@@ -1,9 +1,4 @@
 plugins {
-    id 'java'
-    id 'org.dddjava.jig-gradle-plugin'
+    id 'base'
 }
 
-jig {
-    modelPattern = '.+\\.model\\..+'
-    repositoryPattern = '.+DataSource'
-}

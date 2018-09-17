@@ -53,7 +53,7 @@ workflows:
   version: 2
   usually:
     jobs:
-      - java-8:
+      - java-8
   release:
     jobs:
       - release-build:

@@ -1,8 +1,6 @@
 version: 2
-jobs:
-  usually-build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+anchors:
+  usually-build: &usually-build
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m
@@ -19,6 +17,15 @@ jobs:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
       - store_test_results:
           path: jig-core/build/test-results
+jobs:
+  java-8:
+    docker:
+    - image: circleci/openjdk:8-jdk
+    <<: *usually-build
+  java-10:
+    docker:
+    - image: circleci/openjdk:10-jdk
+    <<: *usually-build
 
   release-build:
     docker:
@@ -50,7 +57,11 @@ workflows:
   version: 2
   usually:
     jobs:
-      - usually-build:
+      - java-8:
+          filters:
+            branches:
+              only: 'master'
+      - java-10:
           filters:
             branches:
               only: 'master'

@@ -69,17 +69,18 @@ public class ClassListController {
     @DocumentMapping(JigDocument.DomainList)
     public JigModelAndView<ModelReports> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
+        ProjectData onlyDomain = projectData.onlyDomain();
         ModelReports modelReports = new ModelReports(
-                valueObjectReport(ValueKind.IDENTIFIER, projectData),
-                categoryReport(projectData),
-                valueObjectReport(ValueKind.NUMBER, projectData),
-                collectionReport(projectData),
-                valueObjectReport(ValueKind.DATE, projectData),
-                valueObjectReport(ValueKind.TERM, projectData),
-                validateAnnotationReport(projectData),
-                stringComparingReport(projectData),
-                booleanReport(projectData),
-                smellReport(projectData)
+                valueObjectReport(ValueKind.IDENTIFIER, onlyDomain),
+                categoryReport(onlyDomain),
+                valueObjectReport(ValueKind.NUMBER, onlyDomain),
+                collectionReport(onlyDomain),
+                valueObjectReport(ValueKind.DATE, onlyDomain),
+                valueObjectReport(ValueKind.TERM, onlyDomain),
+                validateAnnotationReport(onlyDomain),
+                stringComparingReport(onlyDomain),
+                booleanReport(onlyDomain),
+                smellReport(onlyDomain)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));

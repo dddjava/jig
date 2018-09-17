@@ -54,9 +54,6 @@ workflows:
   usually:
     jobs:
       - usually-build:
-          filters:
-            branches:
-              only: 'master'
   release:
     jobs:
       - release-build:

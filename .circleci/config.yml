@@ -1,24 +1,27 @@
 version: 2
-jobs:
-  usually-build:
-    docker:
-      - image: circleci/openjdk:8-jdk
+anchors:
+  usually-build: &usually-build
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
-      - checkout
-      - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
-      - restore_cache:
-          key: gradle-dependencies-{{ checksum "build.gradle" }}
-      - run: ./gradlew build
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: gradle-dependencies-{{ checksum "build.gradle" }}
-      - store_test_results:
-          path: jig-core/build/test-results
+    - checkout
+    - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
+    - restore_cache:
+        key: gradle-dependencies-{{ checksum "build.gradle" }}
+    - run: ./gradlew build
+    - save_cache:
+        paths:
+        - ~/.gradle
+        key: gradle-dependencies-{{ checksum "build.gradle" }}
+    - store_test_results:
+        path: jig-core/build/test-results
+jobs:
+  java-8:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    <<: *usually-build
 
   release-build:
     docker:

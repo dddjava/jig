@@ -235,7 +235,7 @@ project(':jig-core') {
         compile 'org.apache.poi:poi:4.0.0'
         compile 'org.apache.poi:poi-ooxml:4.0.0'
         // ダイアグラム出力: presentation/graphvizj
-        compile 'guru.nidi:graphviz-java:0.5.4'
+        compile 'guru.nidi:graphviz-java:0.6.0'
 
         testCompile 'org.springframework:spring-web'
     }

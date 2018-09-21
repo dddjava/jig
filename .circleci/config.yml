@@ -16,6 +16,10 @@ anchors:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
       - store_test_results:
           path: jig-core/build/test-results
+      - store_artifacts:
+          path: jig-core/build/reports/tests
+      - store_artifacts:
+          path: jig-gradle-plugin/build/reports/tests
 jobs:
   java-8:
     docker:

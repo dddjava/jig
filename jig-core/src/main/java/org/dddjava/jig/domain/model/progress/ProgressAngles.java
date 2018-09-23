@@ -8,6 +8,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 進捗一覧
+ */
 public class ProgressAngles {
     public List<ProgressAngle> list;
 

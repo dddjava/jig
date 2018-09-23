@@ -47,6 +47,4 @@ public class ProgressAngle {
         Annotations annotations = annotations2.filterAny(annotationType);
         return annotations.descriptionTextsOf("value").stream().findAny().orElse("");
     }
-
-
 }

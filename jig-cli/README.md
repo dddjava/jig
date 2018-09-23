@@ -48,4 +48,4 @@ $ java -jar jig-cli.jar --jig.debug=true
 
 ## 困ったら
 
-[FAQ](https://github.com/dddjava/Jig/wiki/FAQ) を参照してみてください。
+[HELP](https://github.com/dddjava/Jig/wiki/HELP) を参照してみてください。

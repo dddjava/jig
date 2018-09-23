@@ -4,7 +4,6 @@ import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -16,7 +15,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.progress.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
+import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -24,9 +23,9 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.PoiView;
+import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
@@ -160,11 +159,7 @@ public class ClassListController {
     }
 
     ModelReport smellReport(ProjectData projectData) {
-        List<MethodSmellAngle> list = projectData.methods().list().stream()
-                .filter(method -> projectData.characterizedTypes().stream().pickup(method.declaration().declaringType()).has(Characteristic.MODEL))
-                .map(method -> new MethodSmellAngle(method, projectData.methodUsingFields()))
-                .filter(MethodSmellAngle::hasSmell)
-                .collect(Collectors.toList());
-        return new ModelReport<>(list, MethodSmellReport::new, MethodSmellReport.class);
+        MethodSmellAngles angles = angleService.methodSmellAngles(projectData);
+        return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

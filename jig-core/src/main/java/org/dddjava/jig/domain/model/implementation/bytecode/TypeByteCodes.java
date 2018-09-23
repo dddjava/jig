@@ -11,10 +11,10 @@ import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * モデルの実装一式
@@ -98,8 +98,8 @@ public class TypeByteCodes {
         List<TypeByteCode> typeByteCodes = new ArrayList<>();
         return new TypeByteCodes(
                 list.stream()
-                .filter(typeByteCode -> modelIdentifiers.contains(typeByteCode.typeIdentifier()))
-                .collect(toList())
+                        .filter(typeByteCode -> modelIdentifiers.contains(typeByteCode.typeIdentifier()))
+                        .collect(toList())
         );
     }
 }

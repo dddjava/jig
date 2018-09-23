@@ -79,9 +79,9 @@ public class ProjectData {
     public ProjectData onlyDomain() {
         TypeIdentifiers modelIdentifiers = characterizedTypes.stream().filter(Characteristic.MODEL).typeIdentifiers();
         return new ProjectData(
-            typeByteCodes.filter(modelIdentifiers),
-            new Sqls(Collections.emptyList()),
-            characterizedTypes.stream().filter(modelIdentifiers).collectTypes()
+                typeByteCodes.filter(modelIdentifiers),
+                new Sqls(Collections.emptyList()),
+                characterizedTypes.stream().filter(modelIdentifiers).collectTypes()
         );
     }
 

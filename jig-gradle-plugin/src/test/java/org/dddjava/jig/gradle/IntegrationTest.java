@@ -6,8 +6,6 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -15,6 +13,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class IntegrationTest {
     final Path outputDir = Paths.get("stub/build/jig/sub-project");
@@ -61,7 +61,7 @@ public class IntegrationTest {
         softly.assertAll();
     }
 
-    private BuildResult executeGradleTasks(String...tasks) throws IOException {
+    private BuildResult executeGradleTasks(String... tasks) throws IOException {
         URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
         List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.getPath())).stream()
                 .map(File::new)

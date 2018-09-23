@@ -5,12 +5,12 @@ import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.configuration.*;
 import org.dddjava.jig.presentation.view.JigDocument;
 
-import static picocli.CommandLine.Option;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
+import static picocli.CommandLine.Option;
 
 class CliConfig {
     @Option(names = {"--documentType"})
@@ -47,7 +47,7 @@ class CliConfig {
     boolean jigDebugMode = false;
 
     @Option(names = {"--jig.cli.extra"})
-    String jigCliExtra="";
+    String jigCliExtra = "";
 
 
     List<JigDocument> jigDocuments() {

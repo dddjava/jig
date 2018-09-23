@@ -20,7 +20,8 @@ public class Cli {
 
     public static void main(String[] args) {
         CliConfig cliConfig = CommandLine.populateSpec(CliConfig.class, args);
-        ExtraScript extraScript = cliConfig.jigCliExtra.equals("api-jpa-crud") ? new ApiJpaCrudListingScript(cliConfig) : projectData -> {};
+        ExtraScript extraScript = cliConfig.jigCliExtra.equals("api-jpa-crud") ? new ApiJpaCrudListingScript(cliConfig) : projectData -> {
+        };
 
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();

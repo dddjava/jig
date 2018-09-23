@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.progress.ProgressAngles;
+import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
@@ -25,13 +25,15 @@ import stub.presentation.controller.SimpleController;
 import stub.presentation.controller.SimpleRestController;
 import testing.TestSupport;
 
-import static java.util.Collections.*;
-import static org.mockito.Mockito.*;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ProgressAngleTest {
 

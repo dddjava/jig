@@ -1,12 +1,45 @@
-下記のタスクをプロジェクトに組み込みます
+# JIG-Gradle-Plugin
 
-* jigReports: レポート一式を出力
+GradleプロジェクトでJIGドキュメントを出力するプラグインです。
 
-## プラグインリポジトリから取得
+## 導入方法
 
-https://plugins.gradle.org/plugin/org.dddjava.jig-gradle-plugin を参照してください。
+[プラグインリポジトリ](https://plugins.gradle.org/plugin/org.dddjava.jig-gradle-plugin) を参照してください。
 
-## SNAPSHOTの適用
+## タスク
+
+`gradle tasks` で出力される "JIG tasks" を参照してください。
+
+## Getting Started
+
+1. プラグインの追加（導入方法参照）
+1. プロジェクトのビルドおよびJIGの実行
+
+### プロジェクトのビルドおよびJIGの実行
+
+```
+$ gradle clean build jig
+```
+
+`build/jig` ディレクトリにJIGドキュメントが出力されます。
+
+## 設定
+
+以下の例ようにプロパティを指定してください。例の値はデフォルトです。
+```
+jig {
+    modelPattern = '.+\\.domain\\.model\\..+'
+    repositoryPattern = '.+Repository'
+    documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
+    outputDirectory = 'build/jig' //出力ディレクトリ
+    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
+    depth = -1 //出力する最大のパッケージ階層(-1は制限なし）
+}
+```
+
+## プラグイン開発者向け
+
+### SNAPSHOTの適用
 
 `mavenLocal()` へのインストールを行う
 
@@ -29,19 +62,3 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'org.dddjava.jig-gradle-plugin'
 ```
-
-
-## デフォルト設定を変更したいとき
-
-以下の例ようにプロパティを指定してください。例の値はデフォルトです。
-```
-jig {
-    modelPattern = '.+\\.domain\\.model\\..+'
-    repositoryPattern = '.+Repository'
-    documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
-    outputDirectory = 'build/jig' //出力ディレクトリ
-    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
-    depth = -1 //出力する最大のパッケージ階層(-1は制限なし）
-}
-```
-

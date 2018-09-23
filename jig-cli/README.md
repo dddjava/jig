@@ -45,3 +45,7 @@ $ java -jar jig-cli.jar --jig.debug=true
 ```
 
 設定できるプロパティは [application.properties](./src/main/resources/application.properties) を参照してください。
+
+## 困ったら
+
+https://github.com/dddjava/Jig/wiki/HELP　を参照してみてください。

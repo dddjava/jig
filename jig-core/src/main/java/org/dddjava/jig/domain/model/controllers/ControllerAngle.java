@@ -9,18 +9,18 @@ import org.dddjava.jig.domain.model.declaration.method.Method;
 public class ControllerAngle {
 
     private final Method method;
-    private final ControllerAnnotations controllerAnnotations;
+    private final RequestMappingAnnotations requestMappingAnnotations;
 
     public ControllerAngle(Method method, TypeAnnotations typeAnnotations) {
         this.method = method;
-        this.controllerAnnotations = new ControllerAnnotations(typeAnnotations, method.methodAnnotations());
+        this.requestMappingAnnotations = new RequestMappingAnnotations(method, typeAnnotations);
     }
 
     public Method method() {
         return method;
     }
 
-    public ControllerAnnotations controllerAnnotations() {
-        return controllerAnnotations;
+    public RequestMappingAnnotations controllerAnnotations() {
+        return requestMappingAnnotations;
     }
 }

@@ -53,8 +53,8 @@ public class ControllerAnglesTest {
                         angle -> new ControllerReport(angle, "dummy").path()
                 )
                 .containsExactlyInAnyOrder(
-                        tuple("stub.presentation.controller.SimpleController.getService()", "[simple-class/simple-method]"),
-                        tuple("stub.presentation.controller.SimpleRestController.getService()", "[test-get, test-post]")
+                        tuple("stub.presentation.controller.SimpleController.getService()", "simple-class/simple-method"),
+                        tuple("stub.presentation.controller.SimpleRestController.getService()", "test-get")
                 );
     }
 }

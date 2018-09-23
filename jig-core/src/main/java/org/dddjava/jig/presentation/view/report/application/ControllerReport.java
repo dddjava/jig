@@ -27,7 +27,7 @@ public class ControllerReport {
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "パス", order = 1)
     public String path() {
-        return angle.controllerAnnotations().pathTexts();
+        return angle.controllerAnnotations().pathText();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 2)

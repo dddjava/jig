@@ -128,7 +128,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
 
                 writer.append(controllerMethodDeclaration.asFullNameText())
                         .append('\t')
-                        .append(controllerAngle.controllerAnnotations().pathTexts())
+                        .append(controllerAngle.controllerAnnotations().pathText())
                         .append('\t')
                         .append(new MethodDeclarations(repositoryMethods).asSimpleText())
                         .append('\t')

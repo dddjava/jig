@@ -38,4 +38,8 @@ public class Annotations {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(typeIdentifier.fullQualifiedName()));
     }
+
+    public List<Annotation> list() {
+        return list;
+    }
 }

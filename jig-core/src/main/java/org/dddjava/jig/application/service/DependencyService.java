@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.incubation.Progress;
+import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;

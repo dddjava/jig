@@ -14,7 +14,7 @@ public class ProgressAngle {
     TypeAnnotations typeAnnotations;
     MethodAnnotations methodAnnotations;
     //TODO: アノテーション型に依存したくない
-    TypeIdentifier annotationType = new TypeIdentifier(org.dddjava.jig.annotation.incubation.Progress.class);
+    TypeIdentifier annotationType = new TypeIdentifier(org.dddjava.jig.annotation.Progress.class);
 
     public ProgressAngle(MethodDeclaration methodDeclaration, TypeAnnotations typeAnnotations, MethodAnnotations methodAnnotations) {
         this.methodDeclaration = methodDeclaration;

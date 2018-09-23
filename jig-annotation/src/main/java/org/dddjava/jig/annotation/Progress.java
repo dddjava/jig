@@ -1,4 +1,4 @@
-package org.dddjava.jig.annotation.incubation;
+package org.dddjava.jig.annotation;
 
 import java.lang.annotation.*;
 

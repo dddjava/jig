@@ -11,17 +11,17 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * コントローラーアノテーションの一覧
+ * リクエストハンドラ
  */
-public class RequestMappingAnnotations {
+public class RequestHandler {
 
-    static Logger LOGGER = LoggerFactory.getLogger(RequestMappingAnnotations.class);
+    static Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
 
     private final Method method;
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    public RequestMappingAnnotations(Method method, TypeAnnotations typeAnnotations) {
+    public RequestHandler(Method method, TypeAnnotations typeAnnotations) {
         this.method = method;
 
         this.requestMappingForClass = typeAnnotations.annotations().filterAny(

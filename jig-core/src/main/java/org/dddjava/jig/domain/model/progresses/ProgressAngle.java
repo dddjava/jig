@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.progress;
+package org.dddjava.jig.domain.model.progresses;
 
 import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;

@@ -12,6 +12,9 @@ import java.util.List;
 
 /**
  * リクエストハンドラ
+ *
+ * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、
+ * リクエストハンドラとして扱われません。
  */
 public class RequestHandler {
 

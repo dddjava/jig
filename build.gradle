@@ -27,6 +27,7 @@ subprojects {
         jcenter()
     }
 
+    ext['mockito.version'] = '2.22.0'
     dependencies {
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
         testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'

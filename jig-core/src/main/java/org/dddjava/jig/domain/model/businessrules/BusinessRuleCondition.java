@@ -16,8 +16,12 @@ public class BusinessRuleCondition {
     }
 
     BusinessRuleJudge judge(Type type) {
-        if (type.identifier().fullQualifiedName().matches(typeIdentifierPattern)) {
-            return BusinessRuleJudge.BUSINESS_RULE;
+        String fullQualifiedName = type.identifier().fullQualifiedName();
+        if (fullQualifiedName.matches(typeIdentifierPattern)) {
+            // コンパイラの生成するクラスを除外
+            if (!fullQualifiedName.matches(".+\\$\\d+")) {
+                return BusinessRuleJudge.BUSINESS_RULE;
+            }
         }
         return BusinessRuleJudge.NOT_BUSINESS_RULE;
     }

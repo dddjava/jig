@@ -17,7 +17,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class IntegrationTest {
-    final Path outputDir = Paths.get("stub/build/jig/sub-project");
+    final Path outputDir = Paths.get("stub/sub-project/build/jig");
 
     @Before
     public void clean() {
@@ -31,7 +31,7 @@ public class IntegrationTest {
 
     @Test
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
-        BuildResult result = executeGradleTasks("clean", ":sub-project:jigReports");
+        BuildResult result = executeGradleTasks("clean", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();

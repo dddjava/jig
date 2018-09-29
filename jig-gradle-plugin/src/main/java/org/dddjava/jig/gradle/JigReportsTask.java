@@ -63,7 +63,7 @@ public class JigReportsTask extends DefaultTask {
         Project project = getProject();
         Path path = Paths.get(config.getOutputDirectory());
         if (path.isAbsolute()) return path;
-        Path baseDir = project.getRootProject().getRootDir().toPath();
-        return baseDir.resolve(path).resolve(project.getName());
+
+        return project.getBuildDir().toPath().resolve("jig");
     }
 }

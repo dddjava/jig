@@ -31,7 +31,7 @@ jig {
     modelPattern = '.+\\.domain\\.model\\..+'
     repositoryPattern = '.+Repository'
     documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
-    outputDirectory = 'build/jig' //出力ディレクトリ
+    outputDirectory = '' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
     depth = -1 //出力する最大のパッケージ階層(-1は制限なし）
 }

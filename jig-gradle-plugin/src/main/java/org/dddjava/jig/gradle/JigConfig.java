@@ -7,6 +7,7 @@ import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.presentation.view.JigDocument;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ public class JigConfig {
 
     List<String> documentTypes = new ArrayList<>();
 
-    String outputDirectory = "build/jig";
+    String outputDirectory = "";
 
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
 
@@ -74,6 +75,9 @@ public class JigConfig {
     }
 
     void setOutputDirectory(String outputDirectory) {
+        if (!Paths.get(outputDirectory).isAbsolute()) {
+            throw new IllegalArgumentException("outputDirectoryは絶対パスを指定してください");
+        }
         this.outputDirectory = outputDirectory;
     }
 

@@ -20,10 +20,6 @@ public class MethodRelations {
         this.list = list;
     }
 
-    public MethodDeclarations userMethodsOf(MethodDeclaration method) {
-        return stream().filterTo(method).fromMethods();
-    }
-
     public MethodDeclarations usingMethodsOf(MethodDeclaration method) {
         return stream().filterFrom(method).toMethods();
     }

@@ -18,7 +18,6 @@ public class ServiceAngle {
     MethodDeclaration methodDeclaration;
     Characteristics userCharacteristics;
 
-    private final MethodDeclarations userMethods;
     private final MethodDeclarations userServiceMethods;
     private final MethodDeclarations userControllerMethods;
 
@@ -29,7 +28,6 @@ public class ServiceAngle {
 
     ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
         this.methodDeclaration = serviceMethod;
-        this.userMethods = methodRelations.userMethodsOf(serviceMethod);
         this.userCharacteristics = characterizedTypes.stream()
                 .filter(methodRelations.userMethodDeclaringTypesOf(serviceMethod))
                 .characteristics();
@@ -82,10 +80,6 @@ public class ServiceAngle {
 
     public MethodCharacteristics methodCharacteristics() {
         return methodCharacteristics;
-    }
-
-    public MethodDeclarations userMethods() {
-        return userMethods;
     }
 
     public MethodDeclarations userControllerMethods() {

@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 
 import java.util.ArrayList;
@@ -34,5 +35,16 @@ public class BusinessRules {
             }
         }
         return false;
+    }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
+
+    public TypeIdentifiers identifiers() {
+        return list.stream()
+                .map(BusinessRule::type)
+                .map(Type::identifier)
+                .collect(TypeIdentifiers.collector());
     }
 }

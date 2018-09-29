@@ -36,8 +36,8 @@ public class Configuration {
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
-        DependencyService dependencyService1 = new DependencyService(configurationContext);
-        this.dependencyService = dependencyService1;
+        BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(properties.modelPattern.pattern));
+        this.dependencyService = new DependencyService(configurationContext, businessRuleService);
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
         CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
                 properties.getModelPattern(),
@@ -60,7 +60,6 @@ public class Configuration {
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
-        BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(properties.modelPattern.pattern));
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,
@@ -73,7 +72,7 @@ public class Configuration {
                 viewResolver
         );
         PackageDependencyController packageDependencyController = new PackageDependencyController(
-                dependencyService1,
+                dependencyService,
                 glossaryService,
                 viewResolver,
                 properties.getDepth()

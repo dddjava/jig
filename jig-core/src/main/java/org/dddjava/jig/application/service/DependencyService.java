@@ -3,10 +3,9 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
@@ -26,9 +25,11 @@ public class DependencyService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
     ConfigurationContext configurationContext;
+    BusinessRuleService businessRuleService;
 
-    public DependencyService(ConfigurationContext configurationContext) {
+    public DependencyService(ConfigurationContext configurationContext, BusinessRuleService businessRuleService) {
         this.configurationContext = configurationContext;
+        this.businessRuleService = businessRuleService;
     }
 
     /**
@@ -36,18 +37,17 @@ public class DependencyService {
      */
     public PackageNetwork packageDependencies(ProjectData projectData) {
         LOGGER.info("パッケージ依存情報を取得します");
-        TypeIdentifiers availableTypes = projectData.characterizedTypes().stream()
-                .filter(Characteristic.MODEL)
-                .typeIdentifiers();
 
-        if (availableTypes.empty()) {
+        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+
+        if (businessRules.empty()) {
             LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 
         PackageDependencies packageDependencies = projectData.typeDependencies().packageDependencies();
 
-        PackageNetwork packageNetwork = new PackageNetwork(availableTypes.packageIdentifiers(), packageDependencies);
+        PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageDependencies);
         showDepth(packageNetwork);
 
         return packageNetwork;

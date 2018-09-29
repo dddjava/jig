@@ -69,12 +69,12 @@ public class ClassListController {
     public JigModelAndView<ModelReports> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
         ModelReports modelReports = new ModelReports(
-                valueObjectReport(ValueKind.IDENTIFIER, projectData),
-                categoryReport(projectData),
-                valueObjectReport(ValueKind.NUMBER, projectData),
-                collectionReport(projectData),
-                valueObjectReport(ValueKind.DATE, projectData),
-                valueObjectReport(ValueKind.TERM, projectData),
+                valuesReport(ValueKind.IDENTIFIER, projectData),
+                categoriesReport(projectData),
+                valuesReport(ValueKind.NUMBER, projectData),
+                collectionsReport(projectData),
+                valuesReport(ValueKind.DATE, projectData),
+                valuesReport(ValueKind.TERM, projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
                 booleanReport(projectData),
@@ -124,17 +124,17 @@ public class ClassListController {
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
-    ModelReport valueObjectReport(ValueKind valueKind, ProjectData projectData) {
+    ModelReport valuesReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
-    ModelReport collectionReport(ProjectData projectData) {
+    ModelReport collectionsReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
-    ModelReport categoryReport(ProjectData projectData) {
+    ModelReport categoriesReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
         return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }

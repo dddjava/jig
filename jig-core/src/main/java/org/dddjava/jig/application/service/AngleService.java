@@ -150,6 +150,11 @@ public class AngleService {
     }
 
     public MethodSmellAngles methodSmellAngles(ProjectData projectData) {
-        return new MethodSmellAngles(projectData.methods(), projectData.characterizedTypes(), projectData.methodUsingFields(), projectData.fieldDeclarations());
+        return new MethodSmellAngles(
+                projectData.methods(),
+                projectData.characterizedTypes(),
+                projectData.methodUsingFields(),
+                projectData.fieldDeclarations(),
+                projectData.methodRelations());
     }
 }

@@ -20,7 +20,6 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -149,12 +148,4 @@ public class AngleService {
         return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }
 
-    public MethodSmellAngles methodSmellAngles(ProjectData projectData) {
-        return new MethodSmellAngles(
-                projectData.methods(),
-                projectData.characterizedTypes(),
-                projectData.methodUsingFields(),
-                projectData.fieldDeclarations(),
-                projectData.methodRelations());
-    }
 }

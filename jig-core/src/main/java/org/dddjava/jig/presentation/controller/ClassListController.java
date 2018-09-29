@@ -169,7 +169,7 @@ public class ClassListController {
     }
 
     ModelReport<?> smellReport(ProjectData projectData) {
-        MethodSmellAngles angles = angleService.methodSmellAngles(projectData);
+        MethodSmellAngles angles = businessRuleService.methodSmellAngles(projectData);
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

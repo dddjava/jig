@@ -43,7 +43,11 @@ public class MethodSmellAngle {
                 || method.declaration().methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
     }
 
+    public boolean returnsBoolean() {
+        return method.declaration().methodReturn().parameterizedType().typeIdentifier().isBoolean();
+    }
+
     public boolean hasSmell() {
-        return notUseField() || primitiveInterface() || method.decisionNumber().notZero();
+        return notUseField() || primitiveInterface() || method.decisionNumber().notZero() || returnsBoolean();
     }
 }

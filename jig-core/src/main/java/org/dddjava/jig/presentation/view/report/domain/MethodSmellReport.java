@@ -37,4 +37,9 @@ public class MethodSmellReport {
     public boolean primitiveInterface() {
         return angle.primitiveInterface();
     }
+
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 3)
+    public boolean returnsBoolean() {
+        return angle.returnsBoolean();
+    }
 }

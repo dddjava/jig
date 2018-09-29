@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.ModelPattern;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -38,7 +38,7 @@ public class JigConfig {
 
     public JigProperties asProperties() {
         return new JigProperties(
-                new ModelPattern(modelPattern),
+                new BusinessRuleCondition(modelPattern),
                 new RepositoryPattern(repositoryPattern),
                 new OutputOmitPrefix(outputOmitPrefix),
                 new PackageDepth(depth),

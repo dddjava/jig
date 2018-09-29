@@ -1,5 +1,6 @@
 package org.dddjava.jig.cli;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.configuration.*;
@@ -65,7 +66,7 @@ class CliConfig {
         return new Configuration(
                 new DefaultLayout(projectPath, directoryClasses, directoryResources, directorySources),
                 new JigProperties(
-                        new ModelPattern(modelPattern),
+                        new BusinessRuleCondition(modelPattern),
                         new RepositoryPattern(repositoryPattern),
                         new OutputOmitPrefix(outputOmitPrefix),
                         new PackageDepth(depth),

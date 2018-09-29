@@ -4,8 +4,6 @@ import org.dddjava.jig.domain.model.declaration.type.Type;
 
 /**
  * ビジネスルールの条件
- *
- * @see org.dddjava.jig.infrastructure.configuration.ModelPattern
  */
 public class BusinessRuleCondition {
 

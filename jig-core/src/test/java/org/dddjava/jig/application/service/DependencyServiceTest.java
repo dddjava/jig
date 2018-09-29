@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -82,7 +83,7 @@ public class DependencyServiceTest {
                         "not/read/sources"
                 ),
                 new JigProperties(
-                        new ModelPattern("stub.domain.model.+"),
+                        new BusinessRuleCondition("stub.domain.model.+"),
                         new RepositoryPattern(),
                         new OutputOmitPrefix(),
                         new PackageDepth(),

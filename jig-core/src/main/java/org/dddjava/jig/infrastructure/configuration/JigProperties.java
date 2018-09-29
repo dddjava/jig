@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 
 public class JigProperties {
-    ModelPattern modelPattern;
+    BusinessRuleCondition businessRuleCondition;
 
     RepositoryPattern repositoryPattern;
 
@@ -14,8 +14,8 @@ public class JigProperties {
 
     boolean jigDebugMode;
 
-    public JigProperties(ModelPattern modelPattern, RepositoryPattern repositoryPattern, OutputOmitPrefix outputOmitPrefix, PackageDepth depth, boolean jigDebugMode) {
-        this.modelPattern = modelPattern;
+    public JigProperties(BusinessRuleCondition businessRuleCondition, RepositoryPattern repositoryPattern, OutputOmitPrefix outputOmitPrefix, PackageDepth depth, boolean jigDebugMode) {
+        this.businessRuleCondition = businessRuleCondition;
         this.repositoryPattern = repositoryPattern;
         this.outputOmitPrefix = outputOmitPrefix;
         this.depth = depth;
@@ -39,6 +39,6 @@ public class JigProperties {
     }
 
     public BusinessRuleCondition getBusinessRuleCondition() {
-        return new BusinessRuleCondition(modelPattern.pattern);
+        return businessRuleCondition;
     }
 }

@@ -4,7 +4,15 @@ GradleプロジェクトでJIGドキュメントを出力するプラグイン�
 
 ## 導入方法
 
+`build.gradle` を編集してください。
+
 [プラグインリポジトリ](https://plugins.gradle.org/plugin/org.dddjava.jig-gradle-plugin) を参照してください。
+
+Javaプロジェクトの場合、`compileJava`に依存させておくと便利です。
+
+```
+jigReports.dependsOn compileJava
+```
 
 ## タスク
 

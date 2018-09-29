@@ -31,7 +31,7 @@ public class IntegrationTest {
 
     @Test
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException {
-        BuildResult result = executeGradleTasks("clean", ":sub-project:jigReports", "--stacktrace");
+        BuildResult result = executeGradleTasks("clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();

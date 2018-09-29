@@ -21,10 +21,16 @@ public class BusinessRuleService {
         this.businessRuleCondition = businessRuleCondition;
     }
 
+    /**
+     * ビジネスルール一覧を取得する
+     */
     public BusinessRules businessRules(Types types) {
         return new BusinessRules(types, businessRuleCondition);
     }
 
+    /**
+     * メソッドの不吉なにおい一覧を取得する
+     */
     public MethodSmellAngles methodSmellAngles(ProjectData projectData) {
         return new MethodSmellAngles(
                 projectData.methods(),

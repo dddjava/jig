@@ -39,7 +39,7 @@ public class ServiceAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    ApplicationService applicationService = new ApplicationService();
 
     @Test
     void readProjectData() {
@@ -50,7 +50,7 @@ public class ServiceAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
 
         assertThat(serviceAngles.list())
                 .extracting(

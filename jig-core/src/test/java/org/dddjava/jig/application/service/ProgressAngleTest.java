@@ -48,7 +48,7 @@ public class ProgressAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    ApplicationService applicationService = new ApplicationService();
 
     @Test
     void readProjectData() {
@@ -59,7 +59,7 @@ public class ProgressAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        ProgressAngles sut = angleService.progressAngles(projectData);
+        ProgressAngles sut = applicationService.progressAngles(projectData);
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(

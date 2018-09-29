@@ -33,7 +33,7 @@ public class DecisionAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    ApplicationService applicationService = new ApplicationService();
 
     @Test
     void readProjectData() {
@@ -44,7 +44,7 @@ public class DecisionAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        DecisionAngles decisionAngles = angleService.decision(projectData);
+        DecisionAngles decisionAngles = applicationService.decision(projectData);
 
         assertThat(decisionAngles.filter(Layer.APPLICATION))
                 .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())

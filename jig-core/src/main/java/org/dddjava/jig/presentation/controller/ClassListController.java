@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.AngleService;
+import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
@@ -45,15 +45,15 @@ public class ClassListController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassListController.class);
 
     ConvertContext convertContext;
-    AngleService angleService;
+    ApplicationService applicationService;
     BusinessRuleService businessRuleService;
 
     public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
                                GlossaryService glossaryService,
-                               AngleService angleService,
+                               ApplicationService applicationService,
                                BusinessRuleService businessRuleService) {
         this.convertContext = new ConvertContext(glossaryService, typeIdentifierFormatter);
-        this.angleService = angleService;
+        this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
     }
 
@@ -101,8 +101,8 @@ public class ClassListController {
     }
 
     ModelReport<?> controllerReport(ProjectData projectData) {
-        ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
-        ProgressAngles progressAngles = angleService.progressAngles(projectData);
+        ControllerAngles controllerAngles = applicationService.controllerAngles(projectData);
+        ProgressAngles progressAngles = applicationService.progressAngles(projectData);
 
         return new ModelReport<>(controllerAngles.list(),
                 controllerAngle -> new ControllerReport(controllerAngle, progressAngles.progressOf(controllerAngle.method().declaration())),
@@ -110,8 +110,8 @@ public class ClassListController {
     }
 
     ModelReport<?> serviceReport(ProjectData projectData) {
-        ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
-        ProgressAngles progressAngles = angleService.progressAngles(projectData);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
+        ProgressAngles progressAngles = applicationService.progressAngles(projectData);
 
         return new ModelReport<>(serviceAngles.list(),
                 serviceAngle -> new ServiceReport(serviceAngle, progressAngles.progressOf(serviceAngle.method())),
@@ -119,12 +119,12 @@ public class ClassListController {
     }
 
     ModelReport<?> datasourceReport(ProjectData projectData) {
-        DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
     ModelReport<?> stringComparingReport(ProjectData projectData) {
-        StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
+        StringComparingAngles stringComparingAngles = applicationService.stringComparing(projectData);
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
@@ -157,7 +157,7 @@ public class ClassListController {
     }
 
     ModelReport<?> decisionReport(ProjectData projectData, Layer layer) {
-        DecisionAngles decisionAngles = angleService.decision(projectData);
+        DecisionAngles decisionAngles = applicationService.decision(projectData);
         return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
     }
 

@@ -15,9 +15,9 @@ import org.dddjava.jig.domain.model.values.ValueKind;
 import org.springframework.stereotype.Service;
 
 /**
- * ビジネスルールサービス
+ * ビジネスルールの分析サービス
  */
-@Progress("これから成長させる")
+@Progress("安定")
 @Service
 public class BusinessRuleService {
 

@@ -34,7 +34,7 @@ public class ControllerAnglesTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    ApplicationService applicationService = new ApplicationService();
 
     @Test
     void readProjectData() {
@@ -45,7 +45,7 @@ public class ControllerAnglesTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        ControllerAngles angles = angleService.controllerAngles(projectData);
+        ControllerAngles angles = applicationService.controllerAngles(projectData);
 
         assertThat(angles.list())
                 .extracting(

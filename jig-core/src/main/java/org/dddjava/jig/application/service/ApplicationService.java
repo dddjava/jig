@@ -4,7 +4,6 @@ import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -12,24 +11,22 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
-import org.dddjava.jig.domain.model.values.ValueKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * 分析の切り口サービス
+ * 機能の分析サービス
  */
-@Progress("解体したい")
+@Progress("安定")
 @Service
-public class AngleService {
+public class ApplicationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AngleService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationService.class);
 
     /**
      * コントローラーを分析する

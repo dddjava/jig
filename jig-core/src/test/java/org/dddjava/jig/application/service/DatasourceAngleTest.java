@@ -36,7 +36,7 @@ public class DatasourceAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    ApplicationService applicationService = new ApplicationService();
 
     @Test
     void readProjectData() {
@@ -47,7 +47,7 @@ public class DatasourceAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData);
 
         assertThat(datasourceAngles.list())
                 .extracting(

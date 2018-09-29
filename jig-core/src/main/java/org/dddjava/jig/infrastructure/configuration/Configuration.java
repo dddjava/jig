@@ -30,7 +30,7 @@ public class Configuration {
     final LocalProject localProject;
     final ImplementationService implementationService;
     final JigDocumentHandlers documentHandlers;
-    final AngleService angleService;
+    final ApplicationService applicationService;
     final DependencyService dependencyService;
     final ConfigurationContext configurationContext;
 
@@ -50,7 +50,7 @@ public class Configuration {
         );
         SqlReader sqlReader = new MyBatisSqlReader();
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
-        this.angleService = new AngleService();
+        this.applicationService = new ApplicationService();
         PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
@@ -64,7 +64,7 @@ public class Configuration {
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,
-                angleService,
+                applicationService,
                 businessRuleService
         );
         EnumUsageController enumUsageController = new EnumUsageController(
@@ -79,7 +79,7 @@ public class Configuration {
                 properties.getDepth()
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
-                angleService,
+                applicationService,
                 glossaryService,
                 viewResolver
         );
@@ -99,8 +99,8 @@ public class Configuration {
         );
     }
 
-    public AngleService angleService() {
-        return angleService;
+    public ApplicationService angleService() {
+        return applicationService;
     }
 
     public LocalProject localProject() {

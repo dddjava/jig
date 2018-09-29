@@ -1,6 +1,6 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.application.service.AngleService;
+import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
 import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.controllers.ControllerAngle;
@@ -42,7 +42,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
     @Override
     public void invoke(ProjectData projectData) {
         Configuration configuration = cliConfig.configuration();
-        AngleService angleService = configuration.angleService();
+        ApplicationService applicationService = configuration.angleService();
 
         MethodRelations methodRelations = projectData.methodRelations();
 
@@ -54,7 +54,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(types, repositories, entityTableMap);
 
 
-        ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
+        ControllerAngles controllerAngles = applicationService.controllerAngles(projectData);
 
         Function<MethodDeclaration, MethodDeclarations> callMethodsResolver = methodRelations::usingMethodsOf;
 

@@ -20,7 +20,8 @@ public class Handlers {
                 new StringHandler(convertContext),
                 new TypeHandler(convertContext),
                 new TypeIdentifierHandler(convertContext),
-                new TypeIdentifiersHandler(convertContext)
+                new TypeIdentifiersHandler(convertContext),
+                new UsingFieldsHandler(convertContext)
         );
     }
 

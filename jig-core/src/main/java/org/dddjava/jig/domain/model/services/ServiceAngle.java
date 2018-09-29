@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
 
 import java.util.stream.Stream;
 
@@ -21,7 +21,7 @@ public class ServiceAngle {
     private final MethodDeclarations userServiceMethods;
     private final MethodDeclarations userControllerMethods;
 
-    TypeIdentifiers usingFieldTypeIdentifiers;
+    UsingFields usingFields;
     MethodDeclarations usingRepositoryMethods;
     private final MethodCharacteristics methodCharacteristics;
     boolean useStream;
@@ -32,7 +32,7 @@ public class ServiceAngle {
                 .filter(methodRelations.userMethodDeclaringTypesOf(serviceMethod))
                 .characteristics();
 
-        this.usingFieldTypeIdentifiers = methodUsingFields.usingFieldTypeIdentifiers(serviceMethod);
+        this.usingFields = methodUsingFields.usingFieldsOf(serviceMethod);
         this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
@@ -62,8 +62,8 @@ public class ServiceAngle {
         return userCharacteristics.has(Characteristic.CONTROLLER);
     }
 
-    public String usingFields() {
-        return usingFieldTypeIdentifiers.asSimpleText();
+    public UsingFields usingFields() {
+        return usingFields;
     }
 
     public String usingRepositoryMethods() {

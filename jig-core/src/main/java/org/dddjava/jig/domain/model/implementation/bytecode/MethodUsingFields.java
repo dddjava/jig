@@ -1,9 +1,11 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * メソッドが使用しているフィールド一覧
@@ -25,5 +27,12 @@ public class MethodUsingFields {
                 .filter(method)
                 .fields()
                 .toTypeIdentifies();
+    }
+
+    public UsingFields usingFieldsOf(MethodDeclaration methodDeclaration) {
+        List<FieldDeclaration> fields = list.stream().filter(methodUsingField -> methodUsingField.userIs(methodDeclaration))
+                .map(MethodUsingField::field)
+                .collect(Collectors.toList());
+        return new UsingFields(fields);
     }
 }

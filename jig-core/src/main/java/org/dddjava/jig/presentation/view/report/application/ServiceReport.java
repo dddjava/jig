@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -33,8 +34,8 @@ public class ServiceReport {
         return angle.usingFromController();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "使用しているフィールドの型", order = 1)
-    public String usingFields() {
+    @ReportItemFor(ReportItem.使用しているフィールドの型)
+    public UsingFields usingFields() {
         return angle.usingFields();
     }
 

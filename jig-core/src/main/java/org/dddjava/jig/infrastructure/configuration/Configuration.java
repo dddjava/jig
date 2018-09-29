@@ -68,7 +68,7 @@ public class Configuration {
                 businessRuleService
         );
         EnumUsageController enumUsageController = new EnumUsageController(
-                angleService,
+                businessRuleService,
                 glossaryService,
                 viewResolver
         );

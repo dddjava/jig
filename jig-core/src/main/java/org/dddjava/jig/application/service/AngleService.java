@@ -2,8 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
@@ -19,7 +17,6 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
-import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,25 +77,6 @@ public class AngleService {
     }
 
     /**
-     * enumを分析する
-     */
-    public CategoryAngles enumAngles(ProjectData projectData) {
-        CategoryTypes categoryTypes = projectData.categories();
-
-        return new CategoryAngles(categoryTypes,
-                projectData.typeDependencies(),
-                projectData.fieldDeclarations(),
-                projectData.staticFieldDeclarations());
-    }
-
-    /**
-     * 値を分析する
-     */
-    public ValueAngles valueAngles(ValueKind valueKind, ProjectData projectData) {
-        return new ValueAngles(valueKind, projectData.valueTypes(), projectData.typeDependencies());
-    }
-
-    /**
      * 文字列比較を分析する
      */
     public StringComparingAngles stringComparing(ProjectData projectData) {
@@ -113,17 +91,6 @@ public class AngleService {
 
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
         return new DecisionAngles(methods, characterizedTypes);
-    }
-
-    /**
-     * コレクションを分析する
-     */
-    public CollectionAngles collectionAngles(ProjectData projectData) {
-        TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
-        return new CollectionAngles(collectionTypeIdentifiers,
-                projectData.fieldDeclarations(),
-                projectData.methods(),
-                projectData.typeDependencies());
     }
 
     /**

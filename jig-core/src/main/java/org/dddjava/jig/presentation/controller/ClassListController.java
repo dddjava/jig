@@ -134,17 +134,17 @@ public class ClassListController {
     }
 
     ModelReport<?> valuesReport(ValueKind valueKind, ProjectData projectData) {
-        ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
+        ValueAngles valueAngles = businessRuleService.values(valueKind, projectData);
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
     ModelReport<?> collectionsReport(ProjectData projectData) {
-        CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
+        CollectionAngles collectionAngles = businessRuleService.collections(projectData);
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
     ModelReport<?> categoriesReport(ProjectData projectData) {
-        CategoryAngles categoryAngles = angleService.enumAngles(projectData);
+        CategoryAngles categoryAngles = businessRuleService.categories(projectData);
         return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }
 
@@ -162,7 +162,7 @@ public class ClassListController {
     }
 
     ModelReport<?> smellReport(ProjectData projectData) {
-        MethodSmellAngles angles = businessRuleService.methodSmellAngles(projectData);
+        MethodSmellAngles angles = businessRuleService.methodSmells(projectData);
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

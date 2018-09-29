@@ -18,7 +18,5 @@ public interface CharacterizedTypeFactory {
                         .collect(Collectors.toSet()));
     }
 
-    boolean isModel(TypeByteCode typeByteCode);
-
     boolean isRepository(TypeByteCode typeByteCode);
 }

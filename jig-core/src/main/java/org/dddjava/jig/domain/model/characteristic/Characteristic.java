@@ -65,12 +65,6 @@ public enum Characteristic {
         boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
             return typeByteCode.isEnum() && typeByteCode.canExtend();
         }
-    },
-    MODEL {
-        @Override
-        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            return characterizedTypeFactory.isModel(typeByteCode);
-        }
     };
 
     boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {

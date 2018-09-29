@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
@@ -36,13 +35,10 @@ public class Configuration {
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
-        BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(properties.modelPattern.pattern));
+        BusinessRuleService businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(configurationContext, businessRuleService);
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
-        CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(
-                properties.getModelPattern(),
-                properties.getRepositoryPattern()
-        );
+        CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(properties.getRepositoryPattern());
         JapaneseReader japaneseReader = new JavaparserJapaneseReader();
         GlossaryService glossaryService = new GlossaryService(
                 japaneseReader,

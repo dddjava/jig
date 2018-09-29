@@ -5,6 +5,7 @@ import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
+import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -26,7 +27,7 @@ public class ImplementationServiceTest {
                     new OnMemoryJapaneseNameRepository()
             ),
             new MyBatisSqlReader(),
-            new PropertyCharacterizedTypeFactory()
+            new PropertyCharacterizedTypeFactory(new RepositoryPattern())
     );
 
     @Test

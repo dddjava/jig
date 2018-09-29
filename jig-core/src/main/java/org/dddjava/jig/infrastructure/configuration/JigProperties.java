@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 
 public class JigProperties {
@@ -21,10 +22,6 @@ public class JigProperties {
         this.jigDebugMode = jigDebugMode;
     }
 
-    public ModelPattern getModelPattern() {
-        return modelPattern;
-    }
-
     public RepositoryPattern getRepositoryPattern() {
         return repositoryPattern;
     }
@@ -39,5 +36,9 @@ public class JigProperties {
 
     public boolean jigDebugMode() {
         return jigDebugMode;
+    }
+
+    public BusinessRuleCondition getBusinessRuleCondition() {
+        return new BusinessRuleCondition(modelPattern.pattern);
     }
 }

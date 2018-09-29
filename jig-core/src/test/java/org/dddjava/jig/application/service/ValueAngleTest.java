@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.values.ValueAngle;
@@ -38,7 +39,7 @@ public class ValueAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    BusinessRuleService service = new BusinessRuleService(new BusinessRuleCondition(".+\\.domain\\.model\\..+"));
 
     @Test
     void readProjectData() {
@@ -49,29 +50,29 @@ public class ValueAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        ValueAngles identifiers = angleService.valueAngles(ValueKind.IDENTIFIER, projectData);
+        ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, projectData);
         assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleIdentifier.class),
                 new TypeIdentifier(FugaIdentifier.class),
                 new TypeIdentifier(FugaName.class)
         );
 
-        ValueAngles numbers = angleService.valueAngles(ValueKind.NUMBER, projectData);
+        ValueAngles numbers = service.values(ValueKind.NUMBER, projectData);
         assertThat(numbers.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleNumber.class)
         );
 
-        ValueAngles dates = angleService.valueAngles(ValueKind.DATE, projectData);
+        ValueAngles dates = service.values(ValueKind.DATE, projectData);
         assertThat(dates.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleDate.class)
         );
 
-        ValueAngles terms = angleService.valueAngles(ValueKind.TERM, projectData);
+        ValueAngles terms = service.values(ValueKind.TERM, projectData);
         assertThat(terms.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleTerm.class)
         );
 
-        ValueAngles collections = angleService.valueAngles(ValueKind.COLLECTION, projectData);
+        ValueAngles collections = service.values(ValueKind.COLLECTION, projectData);
         assertThat(collections.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleCollection.class),
                 new TypeIdentifier(SetCollection.class)

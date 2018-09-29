@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -39,7 +40,7 @@ public class EnumAngleTest {
             new PropertyCharacterizedTypeFactory()
     );
 
-    AngleService angleService = new AngleService();
+    BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(".+\\.domain\\.model\\..+"));
 
     @Test
     void readProjectData() {
@@ -55,7 +56,7 @@ public class EnumAngleTest {
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
 
-        CategoryAngles categoryAngles = angleService.enumAngles(projectData);
+        CategoryAngles categoryAngles = businessRuleService.categories(projectData);
         assertThat(categoryAngles.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,

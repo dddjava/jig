@@ -1,10 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.application.service.AngleService;
-import org.dddjava.jig.application.service.DependencyService;
-import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
@@ -62,10 +60,12 @@ public class Configuration {
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
+        BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(properties.modelPattern.pattern));
         ClassListController classListController = new ClassListController(
                 typeIdentifierFormatter,
                 glossaryService,
-                angleService
+                angleService,
+                businessRuleService
         );
         EnumUsageController enumUsageController = new EnumUsageController(
                 angleService,

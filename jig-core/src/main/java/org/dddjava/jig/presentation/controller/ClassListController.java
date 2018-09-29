@@ -1,8 +1,10 @@
 package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.AngleService;
+import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
@@ -45,12 +47,15 @@ public class ClassListController {
 
     ConvertContext convertContext;
     AngleService angleService;
+    BusinessRuleService businessRuleService;
 
     public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
                                GlossaryService glossaryService,
-                               AngleService angleService) {
+                               AngleService angleService,
+                               BusinessRuleService businessRuleService) {
         this.convertContext = new ConvertContext(glossaryService, typeIdentifierFormatter);
         this.angleService = angleService;
+        this.businessRuleService = businessRuleService;
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
@@ -75,6 +80,7 @@ public class ClassListController {
                 collectionsReport(projectData),
                 valuesReport(ValueKind.DATE, projectData),
                 valuesReport(ValueKind.TERM, projectData),
+                businessRulesReport(projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
                 booleanReport(projectData),
@@ -122,6 +128,11 @@ public class ClassListController {
     ModelReport<?> stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
+    }
+
+    ModelReport<?> businessRulesReport(ProjectData projectData) {
+        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+        return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
     ModelReport<?> valuesReport(ValueKind valueKind, ProjectData projectData) {

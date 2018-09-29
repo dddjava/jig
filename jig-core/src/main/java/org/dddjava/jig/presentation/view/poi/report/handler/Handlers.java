@@ -17,6 +17,7 @@ public class Handlers {
                 new MethodDeclarationsHandler(convertContext),
                 new MethodHandler(convertContext),
                 new StringHandler(convertContext),
+                new TypeHandler(convertContext),
                 new TypeIdentifierHandler(convertContext),
                 new TypeIdentifiersHandler(convertContext)
         );

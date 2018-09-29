@@ -19,4 +19,8 @@ public class Types {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(typeIdentifier.toString()));
     }
+
+    public List<Type> list() {
+        return list;
+    }
 }

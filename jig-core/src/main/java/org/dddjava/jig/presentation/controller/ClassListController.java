@@ -73,13 +73,13 @@ public class ClassListController {
     public JigModelAndView<ModelReports> domainList(ProjectData projectData) {
         LOGGER.info("ビジネスルールリストを出力します");
         ModelReports modelReports = new ModelReports(
+                businessRulesReport(projectData),
                 valuesReport(ValueKind.IDENTIFIER, projectData),
                 categoriesReport(projectData),
                 valuesReport(ValueKind.NUMBER, projectData),
                 collectionsReport(projectData),
                 valuesReport(ValueKind.DATE, projectData),
                 valuesReport(ValueKind.TERM, projectData),
-                businessRulesReport(projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
                 smellReport(projectData)

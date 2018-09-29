@@ -96,7 +96,7 @@ public class ClassListController {
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
-    ModelReport controllerReport(ProjectData projectData) {
+    ModelReport<?> controllerReport(ProjectData projectData) {
         ControllerAngles controllerAngles = angleService.controllerAngles(projectData);
         ProgressAngles progressAngles = angleService.progressAngles(projectData);
 
@@ -105,7 +105,7 @@ public class ClassListController {
                 ControllerReport.class);
     }
 
-    ModelReport serviceReport(ProjectData projectData) {
+    ModelReport<?> serviceReport(ProjectData projectData) {
         ServiceAngles serviceAngles = angleService.serviceAngles(projectData);
         ProgressAngles progressAngles = angleService.progressAngles(projectData);
 
@@ -114,32 +114,32 @@ public class ClassListController {
                 ServiceReport.class);
     }
 
-    ModelReport datasourceReport(ProjectData projectData) {
+    ModelReport<?> datasourceReport(ProjectData projectData) {
         DatasourceAngles datasourceAngles = angleService.datasourceAngles(projectData);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
-    ModelReport stringComparingReport(ProjectData projectData) {
+    ModelReport<?> stringComparingReport(ProjectData projectData) {
         StringComparingAngles stringComparingAngles = angleService.stringComparing(projectData);
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
-    ModelReport valuesReport(ValueKind valueKind, ProjectData projectData) {
+    ModelReport<?> valuesReport(ValueKind valueKind, ProjectData projectData) {
         ValueAngles valueAngles = angleService.valueAngles(valueKind, projectData);
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
-    ModelReport collectionsReport(ProjectData projectData) {
+    ModelReport<?> collectionsReport(ProjectData projectData) {
         CollectionAngles collectionAngles = angleService.collectionAngles(projectData);
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
-    ModelReport categoriesReport(ProjectData projectData) {
+    ModelReport<?> categoriesReport(ProjectData projectData) {
         CategoryAngles categoryAngles = angleService.enumAngles(projectData);
         return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }
 
-    ModelReport validateAnnotationReport(ProjectData projectData) {
+    ModelReport<?> validateAnnotationReport(ProjectData projectData) {
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.fieldAnnotations(), projectData.methodAnnotations());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
@@ -147,17 +147,17 @@ public class ClassListController {
         return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport decisionReport(ProjectData projectData, Layer layer) {
+    ModelReport<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
         return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
     }
 
-    ModelReport booleanReport(ProjectData projectData) {
+    ModelReport<?> booleanReport(ProjectData projectData) {
         BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
         return new ModelReport<>(angles.list(), BoolQueryReport::new, BoolQueryReport.class);
     }
 
-    ModelReport smellReport(ProjectData projectData) {
+    ModelReport<?> smellReport(ProjectData projectData) {
         MethodSmellAngles angles = angleService.methodSmellAngles(projectData);
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }

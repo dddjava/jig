@@ -32,7 +32,10 @@ public class ApplicationService {
      * コントローラーを分析する
      */
     public ControllerAngles controllerAngles(ProjectData projectData) {
-        return new ControllerAngles(projectData.controllerMethods(), projectData.typeAnnotations());
+        return new ControllerAngles(
+                projectData.controllerMethods(),
+                projectData.typeAnnotations(),
+                projectData.methodUsingFields());
     }
 
     /**

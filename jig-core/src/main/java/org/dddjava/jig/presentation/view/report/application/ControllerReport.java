@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.controllers.ControllerAngle;
-import org.dddjava.jig.domain.model.declaration.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

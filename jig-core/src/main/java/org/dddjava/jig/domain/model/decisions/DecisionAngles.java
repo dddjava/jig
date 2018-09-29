@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.decisions;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.method.Method;
-import org.dddjava.jig.domain.model.declaration.method.Methods;
+import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;

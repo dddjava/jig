@@ -1,6 +1,7 @@
-package org.dddjava.jig.domain.model.declaration.method;
+package org.dddjava.jig.domain.model.unit.method;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
 import java.util.Comparator;
 import java.util.List;

@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.smells;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.Method;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
  * メソッドの不吉なにおい

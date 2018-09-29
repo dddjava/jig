@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.smells;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.Methods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.decisions;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
-import org.dddjava.jig.domain.model.declaration.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
  * 判断の切り口

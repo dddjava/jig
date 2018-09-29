@@ -1,8 +1,10 @@
-package org.dddjava.jig.domain.model.declaration.method;
+package org.dddjava.jig.domain.model.unit.method;
 
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 /**
  * メソッド

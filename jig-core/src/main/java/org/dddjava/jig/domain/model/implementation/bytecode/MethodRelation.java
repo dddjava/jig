@@ -30,4 +30,8 @@ public class MethodRelation {
     public boolean fromIs(MethodDeclaration methodDeclaration) {
         return from.sameIdentifier(methodDeclaration);
     }
+
+    public boolean toIs(MethodDeclaration methodDeclaration) {
+        return to.sameIdentifier(methodDeclaration);
+    }
 }

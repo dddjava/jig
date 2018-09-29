@@ -13,6 +13,7 @@ public class Handlers {
     public Handlers(ConvertContext convertContext) {
         this.itemHandlers = Arrays.asList(
                 new BooleanHandler(convertContext),
+                new CallerMethodsHandler(convertContext),
                 new MethodDeclarationHandler(convertContext),
                 new MethodDeclarationsHandler(convertContext),
                 new MethodHandler(convertContext),

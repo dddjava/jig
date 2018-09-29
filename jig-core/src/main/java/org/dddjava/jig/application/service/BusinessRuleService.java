@@ -30,6 +30,7 @@ public class BusinessRuleService {
                 projectData.methods(),
                 projectData.methodUsingFields(),
                 projectData.fieldDeclarations(),
+                projectData.methodRelations(),
                 businessRules(projectData.types()));
     }
 }

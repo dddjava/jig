@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.bytecode.CallerMethods;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -23,6 +24,11 @@ public class MethodSmellReport {
         return angle.methodDeclaration();
     }
 
+    @ReportItemFor(ReportItem.使用箇所数)
+    public CallerMethods toMeRelation() {
+        return angle.callerMethods();
+    }
+
     @ReportItemFor(value = ReportItem.汎用文字列, label = "条件分岐数", order = 1)
     public String decisionNumber() {
         return angle.decisionNumber();
@@ -38,7 +44,7 @@ public class MethodSmellReport {
         return angle.primitiveInterface();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 3)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 4)
     public boolean returnsBoolean() {
         return angle.returnsBoolean();
     }

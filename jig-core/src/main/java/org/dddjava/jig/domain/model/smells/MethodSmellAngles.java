@@ -1,9 +1,7 @@
 package org.dddjava.jig.domain.model.smells;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -17,10 +15,10 @@ import java.util.List;
 public class MethodSmellAngles {
     List<MethodSmellAngle> list;
 
-    public MethodSmellAngles(Methods methods, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
+    public MethodSmellAngles(Methods methods, MethodUsingFields methodUsingFields, FieldDeclarations fieldDeclarations, BusinessRules businessRules) {
         this.list = new ArrayList<>();
         for (Method method : methods.list()) {
-            if (characterizedTypes.stream().pickup(method.declaration().declaringType()).has(Characteristic.MODEL)) {
+            if (businessRules.contains(method.declaration().declaringType())) {
                 MethodSmellAngle methodSmellAngle = new MethodSmellAngle(
                         method,
                         methodUsingFields,

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.Type;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 
 import java.util.ArrayList;
@@ -24,5 +25,14 @@ public class BusinessRules {
 
     public List<BusinessRule> list() {
         return list;
+    }
+
+    public boolean contains(TypeIdentifier typeIdentifier) {
+        for (BusinessRule businessRule : list) {
+            if (businessRule.type().identifier().equals(typeIdentifier)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

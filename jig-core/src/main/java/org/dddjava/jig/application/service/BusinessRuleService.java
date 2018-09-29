@@ -28,9 +28,8 @@ public class BusinessRuleService {
     public MethodSmellAngles methodSmellAngles(ProjectData projectData) {
         return new MethodSmellAngles(
                 projectData.methods(),
-                projectData.characterizedTypes(),
                 projectData.methodUsingFields(),
                 projectData.fieldDeclarations(),
-                projectData.methodRelations());
+                businessRules(projectData.types()));
     }
 }

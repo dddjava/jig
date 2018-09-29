@@ -3,7 +3,6 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.AngleService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
@@ -83,7 +82,6 @@ public class ClassListController {
                 businessRulesReport(projectData),
                 validateAnnotationReport(projectData),
                 stringComparingReport(projectData),
-                booleanReport(projectData),
                 smellReport(projectData)
         );
 
@@ -161,11 +159,6 @@ public class ClassListController {
     ModelReport<?> decisionReport(ProjectData projectData, Layer layer) {
         DecisionAngles decisionAngles = angleService.decision(projectData);
         return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
-    }
-
-    ModelReport<?> booleanReport(ProjectData projectData) {
-        BoolQueryAngles angles = angleService.boolQueryModelMethodAngle(projectData);
-        return new ModelReport<>(angles.list(), BoolQueryReport::new, BoolQueryReport.class);
     }
 
     ModelReport<?> smellReport(ProjectData projectData) {

@@ -33,10 +33,6 @@ public class CharacterizedMethod {
                 return characterizedType.has(Characteristic.REPOSITORY);
             case MAPPER_METHOD:
                 return characterizedType.has(Characteristic.MAPPER);
-            case MODEL_METHOD:
-                return characterizedType.has(Characteristic.MODEL);
-            case BOOL_QUERY:
-                return methodDeclaration().returnType().isBoolean();
             case PUBLIC:
                 return methodByteCode.accessor().isPublic();
             case NOT_PUBLIC:

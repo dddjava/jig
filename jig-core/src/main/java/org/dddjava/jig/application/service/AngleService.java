@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.booleans.model.BoolQueryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
@@ -17,7 +16,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -118,15 +116,6 @@ public class AngleService {
     }
 
     /**
-     * 真偽値を返すモデルのメソッドを分析する
-     */
-    public BoolQueryAngles boolQueryModelMethodAngle(ProjectData projectData) {
-        CharacterizedMethods methods = projectData.characterizedMethods();
-        MethodRelations relations = projectData.methodRelations();
-        return new BoolQueryAngles(methods, relations);
-    }
-
-    /**
      * コレクションを分析する
      */
     public CollectionAngles collectionAngles(ProjectData projectData) {
@@ -147,5 +136,4 @@ public class AngleService {
         MethodDeclarations declarations = projectData.methods().declarations();
         return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }
-
 }

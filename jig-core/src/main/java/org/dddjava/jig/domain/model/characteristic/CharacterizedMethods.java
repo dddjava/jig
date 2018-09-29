@@ -49,13 +49,4 @@ public class CharacterizedMethods {
                 .map(CharacterizedMethod::characteristics)
                 .orElseGet(() -> new MethodCharacteristics(Collections.emptyList()));
     }
-
-    public MethodDeclarations modelBoolQueryMethods() {
-        return list.stream()
-                .filter(characterizedMethod -> characterizedMethod.has(MethodCharacteristic.MODEL_METHOD))
-                .filter(characterizedMethod -> characterizedMethod.has(MethodCharacteristic.BOOL_QUERY))
-                .map(CharacterizedMethod::methodDeclaration)
-                .collect(MethodDeclarations.collector());
-    }
-
 }

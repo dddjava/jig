@@ -63,4 +63,8 @@ public class ServiceAngles {
         return list.stream()
                 .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
 }

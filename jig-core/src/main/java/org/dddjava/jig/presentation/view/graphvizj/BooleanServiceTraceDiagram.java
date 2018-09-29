@@ -23,6 +23,13 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     public DotTexts edit(ServiceAngles model) {
         ServiceAngles booleanServiceAngles = model.filterReturnsBoolean();
 
+        if (booleanServiceAngles.isEmpty()) {
+            String text = new StringJoiner("\n", "digraph JIG {", "}")
+                    .add("\"出力するメソッドはありません\"[shape=note]")
+                    .toString();
+            return new DotTexts(text);
+        }
+
         // メソッド間の関連
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : booleanServiceAngles.list()) {

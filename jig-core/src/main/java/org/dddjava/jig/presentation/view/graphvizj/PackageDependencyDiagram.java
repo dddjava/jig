@@ -59,8 +59,14 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 })
                 .collect(joining("\n"));
 
+        String summaryText = "summary[shape=note,label=\""
+                + "パッケージ数: " + packageNetwork.allPackages().number().asText() + "\\l"
+                + "関連数: " + packageDependencies.number().asText() + "\\l"
+                + "\"]";
+
         String text = new StringJoiner("\n", "digraph {", "}")
-                .add("node [shape=box,style=filled,color=lightgoldenrod];")
+                .add(summaryText)
+                .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
                 .add(labelsText)

@@ -77,11 +77,6 @@ public class TypeByteCode {
         return !fieldDeclarations.isEmpty();
     }
 
-    public boolean hasAnnotation(String annotation) {
-        TypeIdentifier annotationType = new TypeIdentifier(annotation);
-        return typeAnnotations.stream().anyMatch(typeAnnotation -> typeAnnotation.typeIs(annotationType));
-    }
-
     public FieldDeclarations fieldDeclarations() {
         return new FieldDeclarations(fieldDeclarations);
     }

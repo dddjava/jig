@@ -110,7 +110,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-        MethodByteCode methodByteCode = new MethodByteCode(typeByteCode, methodDeclaration, useTypes, access);
+        MethodByteCode methodByteCode = new MethodByteCode(methodDeclaration, useTypes, access);
         methodByteCode.bind(typeByteCode);
 
         return new MethodVisitor(this.api) {

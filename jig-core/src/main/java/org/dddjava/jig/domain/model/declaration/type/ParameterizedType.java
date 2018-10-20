@@ -30,10 +30,6 @@ public class ParameterizedType {
         return typeIdentifier;
     }
 
-    public TypeParameters typeParameters() {
-        return typeParameters;
-    }
-
     public String asSimpleText() {
         return typeIdentifier.asSimpleText() + typeParameters.asSimpleText();
     }

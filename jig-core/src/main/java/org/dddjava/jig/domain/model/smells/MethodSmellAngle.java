@@ -25,10 +25,6 @@ public class MethodSmellAngle {
         this.callerMethods = toMeRelation.callerMethodsOf(method.declaration());
     }
 
-    public TypeIdentifier typeIdentifier() {
-        return methodDeclaration().declaringType();
-    }
-
     public MethodDeclaration methodDeclaration() {
         return method.declaration();
     }

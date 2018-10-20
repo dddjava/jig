@@ -10,8 +10,4 @@ public enum Accessor {
     public boolean isPublic() {
         return this == PUBLIC;
     }
-
-    public boolean isNotPublic() {
-        return !isPublic();
-    }
 }

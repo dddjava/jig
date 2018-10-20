@@ -21,7 +21,6 @@ import java.util.Set;
  */
 public class MethodByteCode {
 
-    private final TypeByteCode typeByteCode;
     public final MethodDeclaration methodDeclaration;
     private final int access;
 
@@ -36,8 +35,7 @@ public class MethodByteCode {
     // switchがある
     private int lookupSwitchInstructionNumber = 0;
 
-    public MethodByteCode(TypeByteCode typeByteCode, MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, int access) {
-        this.typeByteCode = typeByteCode;
+    public MethodByteCode(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, int access) {
         this.methodDeclaration = methodDeclaration;
         this.access = access;
 

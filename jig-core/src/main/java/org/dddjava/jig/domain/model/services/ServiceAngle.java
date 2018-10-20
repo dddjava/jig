@@ -40,10 +40,6 @@ public class ServiceAngle {
         this.userServiceMethods = serviceMethods.filter(userMethods);
     }
 
-    public TypeIdentifier declaringType() {
-        return methodDeclaration.declaringType();
-    }
-
     public MethodDeclaration method() {
         return methodDeclaration;
     }

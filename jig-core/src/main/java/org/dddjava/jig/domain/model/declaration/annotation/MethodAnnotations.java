@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.declaration.annotation;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,12 +23,6 @@ public class MethodAnnotations {
 
     public Annotations annotations() {
         return new Annotations(list.stream().map(e -> e.annotation).collect(toList()));
-    }
-
-    public Optional<MethodAnnotation> findOne(MethodDeclaration methodDeclaration) {
-        return list.stream()
-                .filter(e -> e.methodDeclaration.sameIdentifier(methodDeclaration))
-                .findFirst();
     }
 
     public MethodAnnotations filter(MethodDeclaration methodDeclaration) {

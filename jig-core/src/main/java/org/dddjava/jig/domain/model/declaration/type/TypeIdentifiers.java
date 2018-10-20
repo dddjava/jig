@@ -25,10 +25,6 @@ public class TypeIdentifiers {
         return list;
     }
 
-    public Set<TypeIdentifier> set() {
-        return new HashSet<>(identifiers);
-    }
-
     public static Collector<TypeIdentifier, ?, TypeIdentifiers> collector() {
         return Collectors.collectingAndThen(Collectors.toList(), TypeIdentifiers::new);
     }

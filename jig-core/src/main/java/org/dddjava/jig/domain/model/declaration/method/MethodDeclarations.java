@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.basic.Text;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;
@@ -39,16 +37,6 @@ public class MethodDeclarations {
 
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.stream().anyMatch(methodDeclaration::sameIdentifier);
-    }
-
-    public TypeIdentifiers declaringTypes() {
-        return new TypeIdentifiers(
-                list.stream()
-                        .map(MethodDeclaration::declaringType)
-                        .sorted(Comparator.comparing(TypeIdentifier::fullQualifiedName))
-                        .distinct()
-                        .collect(toList())
-        );
     }
 
     public boolean empty() {

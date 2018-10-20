@@ -19,16 +19,8 @@ public class MethodRelation {
         return from;
     }
 
-    MethodDeclaration to() {
-        return to;
-    }
-
     public boolean toIs(MethodIdentifier methodIdentifier) {
         return to.identifier().equals(methodIdentifier);
-    }
-
-    public boolean fromIs(MethodDeclaration methodDeclaration) {
-        return from.sameIdentifier(methodDeclaration);
     }
 
     public boolean toIs(MethodDeclaration methodDeclaration) {

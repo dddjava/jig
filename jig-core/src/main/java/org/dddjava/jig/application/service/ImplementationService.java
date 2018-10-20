@@ -35,9 +35,8 @@ public class ImplementationService {
      */
     public ProjectData readProjectData(LocalProject target) {
         TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
-        Sqls sqls = readSql(target.getSqlSources());
 
-        ProjectData projectData = new ProjectData(typeByteCodes, sqls);
+        ProjectData projectData = new ProjectData(typeByteCodes);
 
         glossaryService.importJapanese(target.getTypeNameSources());
         glossaryService.importJapanese(target.getPackageNameSources());

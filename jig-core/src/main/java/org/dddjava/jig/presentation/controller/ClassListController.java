@@ -59,12 +59,12 @@ public class ClassListController {
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
-    public JigModelAndView<ModelReports> applicationList(ProjectData projectData) {
+    public JigModelAndView<ModelReports> applicationList(ProjectData projectData, Sqls sqls) {
         LOGGER.info("入出力リストを出力します");
         ModelReports modelReports = new ModelReports(
                 controllerReport(projectData),
                 serviceReport(projectData),
-                datasourceReport(projectData, projectData.sqls())
+                datasourceReport(projectData, sqls)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));

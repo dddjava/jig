@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -50,8 +51,10 @@ public class JigReportsTask extends DefaultTask {
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         try {
             ProjectData projectData = implementationService.readProjectData(localProject);
+            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
+
             for (JigDocument jigDocument : jigDocuments) {
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), projectData.sqls()), outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.info(Warning.クラス検出異常.with(configurationContext));

@@ -3,6 +3,7 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -44,10 +45,11 @@ public class CommandLineApplication implements CommandLineRunner {
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
 
             ProjectData projectData = implementationService.readProjectData(localProject);
+            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
             Path outputDirectory = cliConfig.outputDirectory();
             for (JigDocument jigDocument : jigDocuments) {
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), projectData.sqls()), outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().with(configuration.configurationContext()));

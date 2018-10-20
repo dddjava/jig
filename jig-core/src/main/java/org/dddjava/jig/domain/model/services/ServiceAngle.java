@@ -23,8 +23,8 @@ public class ServiceAngle {
 
     UsingFields usingFields;
     MethodDeclarations usingRepositoryMethods;
-    private final MethodCharacteristics methodCharacteristics;
     boolean useStream;
+    private boolean isPublic;
 
     ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
         this.methodDeclaration = serviceMethod;
@@ -36,7 +36,7 @@ public class ServiceAngle {
         this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
-        this.methodCharacteristics = characterizedMethods.characteristicsOf(serviceMethod);
+        this.isPublic = !characterizedMethods.characteristicsOf(serviceMethod).isNotPublicMethod();
 
         this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
                 .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
@@ -78,11 +78,11 @@ public class ServiceAngle {
         return userServiceMethods;
     }
 
-    public MethodCharacteristics methodCharacteristics() {
-        return methodCharacteristics;
-    }
-
     public MethodDeclarations userControllerMethods() {
         return userControllerMethods;
+    }
+
+    public boolean isNotPublicMethod() {
+        return !isPublic;
     }
 }

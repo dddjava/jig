@@ -46,7 +46,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                         node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.apply(method, japaneseNameFinder));
 
                         // 非publicは色なし
-                        if (angle.methodCharacteristics().isNotPublicMethod()) {
+                        if (angle.isNotPublicMethod()) {
                             node.notPublicMethod();
                         }
 

@@ -7,8 +7,6 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.unit.method.Method;
-import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +32,6 @@ public class TypeByteCodes {
                 .map(TypeByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
                 .collect(toList());
-    }
-
-    public Methods instanceMethods() {
-        List<Method> list = instanceMethodByteCodes().stream()
-                .map(MethodByteCode::method)
-                .collect(toList());
-        return new Methods(list);
     }
 
     public TypeAnnotations typeAnnotations() {

@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.PotentiallyValueType;
 import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
@@ -17,6 +18,8 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * プロジェクトから読み取った情報
@@ -59,7 +62,10 @@ public class ProjectData {
     }
 
     public Methods methods() {
-        return typeByteCodes.instanceMethods();
+        List<Method> list = typeByteCodes.instanceMethodByteCodes().stream()
+                .map(methodByteCode -> new Method(methodByteCode))
+                .collect(toList());
+        return new Methods(list);
     }
 
     public Methods controllerMethods() {

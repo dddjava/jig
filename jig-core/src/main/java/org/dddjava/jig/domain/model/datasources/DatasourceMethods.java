@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +38,10 @@ public class DatasourceMethods {
                         concreteByteCode.methodByteCodes().stream()
                                 .filter(datasourceMethodByteCode -> interfaceMethodByteCode.sameSignature(datasourceMethodByteCode))
                                 // 0 or 1
-                                .forEach(concreteMethodByteCode ->
-                                        list.add(new DatasourceMethod(
-                                                interfaceMethodByteCode.method(),
-                                                concreteMethodByteCode.method(),
-                                                concreteMethodByteCode.usingMethods()))
+                                .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
+                                        new Method(interfaceMethodByteCode),
+                                        new Method(concreteMethodByteCode),
+                                        concreteMethodByteCode.usingMethods()))
                                 );
                     }
                 }

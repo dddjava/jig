@@ -73,7 +73,7 @@ public class AsmByteCodeFactoryTest {
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
-                .filter(e -> e.method().declaration().asSignatureSimpleText().equals("method()"))
+                .filter(e -> new Method(e).declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
@@ -155,10 +155,9 @@ public class AsmByteCodeFactoryTest {
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodByteCode methodByteCode = instanceMethodByteCodes.stream()
-                .filter(e -> e.method().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
-                // 今はアノテーション1つなのでこれでOK
+                .filter(e -> new Method(e).declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        Method method = methodByteCode.method();
+        Method method = new Method(methodByteCode);
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 
@@ -195,7 +194,7 @@ public class AsmByteCodeFactoryTest {
         assertThat(methodByteCodes)
                 .extracting(
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
-                        methodByteCode -> methodByteCode.method().decisionNumber().asText())
+                        methodByteCode -> methodByteCode.decisionNumber().asText())
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", "0"),
                         tuple("ifがあるメソッド()", "1"),

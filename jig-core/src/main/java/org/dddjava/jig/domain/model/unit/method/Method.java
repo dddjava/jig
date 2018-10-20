@@ -3,8 +3,10 @@ package org.dddjava.jig.domain.model.unit.method;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
 /**
  * メソッド
@@ -16,11 +18,11 @@ public class Method {
     MethodAnnotations methodAnnotations;
     Accessor accessor;
 
-    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor) {
-        this.methodDeclaration = methodDeclaration;
-        this.decisionNumber = decisionNumber;
-        this.methodAnnotations = methodAnnotations;
-        this.accessor = accessor;
+    public Method(MethodByteCode methodByteCode) {
+        this.methodDeclaration = methodByteCode.methodDeclaration();
+        this.decisionNumber = methodByteCode.decisionNumber();
+        this.methodAnnotations = methodByteCode.annotatedMethods();
+        this.accessor = methodByteCode.accessor();
     }
 
     public MethodDeclaration declaration() {

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.unit.method.Method;
@@ -20,7 +19,7 @@ public class ServiceMethods {
         this.methods = serviceByteCodes.stream()
                 .map(TypeByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
-                .map(MethodByteCode::method)
+                .map(methodByteCode -> new Method(methodByteCode))
                 .collect(Collectors.toList());
     }
 

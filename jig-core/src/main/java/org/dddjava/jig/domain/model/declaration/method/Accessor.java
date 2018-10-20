@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.unit.method;
+package org.dddjava.jig.domain.model.declaration.method;
 
 /**
  * メソッドの可視性

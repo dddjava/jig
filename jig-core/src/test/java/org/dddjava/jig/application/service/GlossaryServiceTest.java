@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,16 +15,20 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
+import testing.JigServiceTest;
 import testing.TestSupport;
 
 import java.util.Collections;
 import java.util.stream.Stream;
 
+@JigServiceTest
 class GlossaryServiceTest {
 
-    GlossaryService sut = new GlossaryService(
-            new JavaparserJapaneseReader(),
-            new OnMemoryJapaneseNameRepository());
+    GlossaryService sut;
+
+    public GlossaryServiceTest(GlossaryService glossaryService) {
+        sut = glossaryService;
+    }
 
     @Test
     void パッケージ和名取得() {

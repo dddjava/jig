@@ -3,10 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
-import org.dddjava.jig.domain.model.implementation.sourcecode.JapaneseReader;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -31,19 +27,14 @@ public class Configuration {
     final ApplicationService applicationService;
     final DependencyService dependencyService;
     final ConfigurationContext configurationContext;
+    final BusinessRuleService businessRuleService;
+    final GlossaryService glossaryService;
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
-        BusinessRuleService businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
+        this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(configurationContext, businessRuleService);
-        JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
-        JapaneseReader japaneseReader = new JavaparserJapaneseReader();
-        GlossaryService glossaryService = new GlossaryService(
-                japaneseReader,
-                japaneseNameRepository
-        );
-        SqlReader sqlReader = new MyBatisSqlReader();
-        ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
+        this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
         this.applicationService = new ApplicationService(new Architecture(properties.getBusinessRuleCondition()));
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
@@ -78,9 +69,9 @@ public class Configuration {
         );
         this.localProject = new LocalProject(layout);
         this.implementationService = new ImplementationService(
-                byteCodeFactory,
+                new AsmByteCodeFactory(),
                 glossaryService,
-                sqlReader
+                new MyBatisSqlReader()
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,
@@ -91,8 +82,12 @@ public class Configuration {
         );
     }
 
-    public ApplicationService angleService() {
+    public ApplicationService applicationService() {
         return applicationService;
+    }
+
+    public BusinessRuleService businessRuleService() {
+        return businessRuleService;
     }
 
     public LocalProject localProject() {
@@ -113,5 +108,9 @@ public class Configuration {
 
     public ConfigurationContext configurationContext() {
         return configurationContext;
+    }
+
+    public GlossaryService glossaryService() {
+        return glossaryService;
     }
 }

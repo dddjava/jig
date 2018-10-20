@@ -1,19 +1,15 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
-import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import testing.JigServiceTest;
 import testing.TestSupport;
 
 import java.nio.file.Path;
@@ -26,22 +22,11 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@JigServiceTest
 public class EnumAngleTest {
 
-    // テストのためにSpringを起動したくないので自分でインスタンス生成する
-    ImplementationService implementationService = new ImplementationService(
-            new AsmByteCodeFactory(),
-            new GlossaryService(
-                    new JavaparserJapaneseReader(),
-                    new OnMemoryJapaneseNameRepository()
-            ),
-            new MyBatisSqlReader()
-    );
-
-    BusinessRuleService businessRuleService = new BusinessRuleService(new BusinessRuleCondition(".+\\.domain\\.model\\..+"));
-
     @Test
-    void readProjectData() {
+    void readProjectData(ImplementationService implementationService,  BusinessRuleService businessRuleService) {
         Logger logger = LoggerFactory.getLogger("");
         Map<String, Object> map = Collections.singletonMap("aaa", "bbb");
         logger.error("", map);

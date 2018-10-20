@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
@@ -7,11 +8,13 @@ import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.Types;
+import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -91,5 +94,19 @@ public class TypeByteCodes {
             list.add(typeByteCode.type());
         }
         return new Types(list);
+    }
+
+    public ServiceMethods serviceMethods(Architecture architecture) {
+        List<TypeByteCode> serviceByteCodes = list.stream()
+                .filter(typeByteCode -> architecture.isService(typeByteCode.typeAnnotations()))
+                .collect(Collectors.toList());
+
+        List<Method> methods = serviceByteCodes.stream()
+                .map(TypeByteCode::instanceMethodByteCodes)
+                .flatMap(List::stream)
+                .map(MethodByteCode::method)
+                .collect(Collectors.toList());
+
+        return new ServiceMethods(methods);
     }
 }

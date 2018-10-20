@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
@@ -15,8 +16,10 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,18 @@ import org.springframework.stereotype.Service;
 public class ApplicationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationService.class);
+
+    Architecture architecture;
+
+    @Deprecated
+    public ApplicationService() {
+        this(new Architecture() {
+        });
+    }
+
+    public ApplicationService(Architecture architecture) {
+        this.architecture = architecture;
+    }
 
     /**
      * コントローラーを分析する
@@ -45,7 +60,8 @@ public class ApplicationService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
-        MethodDeclarations serviceMethods = projectData.characterizedMethods().serviceMethods();
+        TypeByteCodes typeByteCodes = projectData.typeByteCodes();
+        ServiceMethods serviceMethods = typeByteCodes.serviceMethods(architecture);
 
         if (serviceMethods.empty()) {
             LOGGER.warn(Warning.サービス検出異常.text());
@@ -53,9 +69,9 @@ public class ApplicationService {
 
         return new ServiceAngles(
                 serviceMethods,
-                new MethodRelations(projectData.typeByteCodes()),
+                new MethodRelations(typeByteCodes),
                 projectData.characterizedTypes(),
-                new MethodUsingFields(projectData.typeByteCodes()),
+                new MethodUsingFields(typeByteCodes),
                 projectData.methods()
         );
     }

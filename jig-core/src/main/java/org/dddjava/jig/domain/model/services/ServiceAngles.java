@@ -26,13 +26,13 @@ public class ServiceAngles {
         return list;
     }
 
-    public ServiceAngles(MethodDeclarations serviceMethods,
+    public ServiceAngles(ServiceMethods serviceMethods,
                          MethodRelations methodRelations,
                          CharacterizedTypes characterizedTypes,
                          MethodUsingFields methodUsingFields,
                          Methods methods) {
         List<ServiceAngle> list = new ArrayList<>();
-        for (MethodDeclaration serviceMethod : serviceMethods.list()) {
+        for (ServiceMethod serviceMethod : serviceMethods.list()) {
             list.add(new ServiceAngle(serviceMethod, methodRelations, characterizedTypes, methodUsingFields, methods));
         }
         this.list = list;

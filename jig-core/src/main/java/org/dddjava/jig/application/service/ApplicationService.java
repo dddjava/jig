@@ -65,7 +65,7 @@ public class ApplicationService {
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
-            LOGGER.warn(Warning.サービス検出異常.text());
+            LOGGER.warn(Warning.サービスなし.text());
         }
 
         return new ServiceAngles(
@@ -87,9 +87,9 @@ public class ApplicationService {
         Sqls sqls = projectData.sqls();
 
         if (datasourceMethods.empty()) {
-            LOGGER.warn(Warning.Repositoryメソッド検出異常.text());
+            LOGGER.warn(Warning.リポジトリなし.text());
         } else if (sqls.empty()){
-            LOGGER.warn(Warning.Mapper検出異常.text());
+            LOGGER.warn(Warning.SQLなし.text());
         }
 
         return new DatasourceAngles(datasourceMethods, sqls);

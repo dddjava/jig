@@ -21,15 +21,18 @@ public enum Warning {
     },
     コントローラーなし(new Message()
             .add("リクエストハンドラメソッドが見つからないため、コントローラー一覧が出力されません。")
-            .add("リクエストハンドラメソッドの対照は次の通りです。")
+            .add("リクエストハンドラメソッドの対象は次の通りです。")
             .add("")
             .add("- クラスに @Controller 系のアノテーションが付与されている")
             .add("- メソッドに @RequestMapping 系のアノテーションが付与されている。")
     ),
-    サービス検出異常(new Message()
-            .add("サービスクラスが見つからないため、サービス関連図やサービス一覧が空になります。")
-            .add("検出には org.springframework.stereotype.Service アノテーションを使用しています。")
-            .add("対象のサービスクラスにアノテーションを付与してください。")),
+    サービスなし(new Message()
+            .add("サービスメソッドが見つからないため、サービス関連図やサービス一覧が出力されません。")
+            .add("必要な条件は次の通りです。")
+            .add("")
+            .add("- クラスに @Service アノテーションが付与されている")
+            .add("- メソッドが1つ以上実装されている")
+    ),
     モデル検出異常(new Message()
             .add("モデルが検出できないため、パッケージ関連図が空になります。")
             .add("パッケージ構成が想定と異なる可能性があります。")
@@ -40,19 +43,22 @@ public enum Warning {
             return text(context.modelDetectionWarningMessage());
         }
     },
-    Repositoryメソッド検出異常(new Message()
+    リポジトリなし(new Message()
             .add("Repositoryのメソッドが見つからないため、データソース一覧が出力されません。")
             .add("データソース一覧の出力には以下が必要です。")
             .add("")
             .add("- @Repository がつけられた実装クラス（データソースクラス）")
             .add("- データソースクラスが実装しているビジネスルールのインタフェース（リポジトリインタフェース）")
+            .add("- リポジトリインタフェースに1メソッド以上定義されている")
     ),
-    Mapper検出異常(new Message()
-            .add("Mapperが見つからないため、データソース一覧のCRUDは出力されません。")
-            .add("CRUDの検出は以下の条件を満たす必要があります。")
+    SQLなし(new Message()
+            .add("SQLが見つからないため、データソース一覧のCRUDは出力されません。")
+            .add("CRUDの出力には以下の条件を満たす必要があります。")
             .add("")
             .add("- MyBatisのMapperインタフェースを使用している")
-            .add("- Mapperインタフェース名が *Mapper である")),
+            .add("- Mapperインタフェース名が *Mapper である")
+            .add("- データソース一覧に出力されるメソッドでMapperインタフェースを使用している")
+    ),
     ;
 
     String messageFormatPattern;

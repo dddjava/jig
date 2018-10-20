@@ -95,12 +95,6 @@ public class ProjectData {
         return new CategoryTypes(list);
     }
 
-    public TypeIdentifiers repositories() {
-        return characterizedTypes().stream()
-                .filter(Characteristic.REPOSITORY)
-                .typeIdentifiers();
-    }
-
     public TypeByteCodes typeByteCodes() {
         return typeByteCodes;
     }

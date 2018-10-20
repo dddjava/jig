@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -30,9 +28,6 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Autowired
     CliConfig cliConfig;
-
-    @Autowired
-    ExtraScript extraScript;
 
     @Override
     public void run(String... args) {
@@ -53,19 +48,9 @@ public class CommandLineApplication implements CommandLineRunner {
             for (JigDocument jigDocument : jigDocuments) {
                 jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
             }
-
-            extraScript.invoke(projectData);
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().with(configuration.configurationContext()));
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    ExtraScript extraScript() {
-        return projectData -> {
-            // 何もしない
-        };
     }
 }

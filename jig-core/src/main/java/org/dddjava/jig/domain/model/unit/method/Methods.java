@@ -16,10 +16,6 @@ import static java.util.stream.Collectors.toList;
 public class Methods {
     List<Method> list;
 
-    private Methods(List<Method> list) {
-        this.list = list;
-    }
-
     public Methods(TypeByteCodes typeByteCodes) {
         List<Method> list = typeByteCodes.instanceMethodByteCodes().stream()
                 .map(methodByteCode -> new Method(methodByteCode))
@@ -34,11 +30,6 @@ public class Methods {
     public List<Method> list() {
         list.sort(Comparator.comparing(method -> method.declaration().asFullNameText()));
         return list;
-    }
-
-    public Methods filterHasDecision() {
-        List<Method> list = this.list.stream().filter(Method::hasDecision).collect(toList());
-        return new Methods(list);
     }
 
     public Method get(MethodDeclaration methodDeclaration) {

@@ -4,7 +4,6 @@ import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -114,10 +113,7 @@ public class ApplicationService {
      * 分岐箇所を分析する
      */
     public DecisionAngles decision(ProjectData projectData) {
-        Methods methods = new Methods(projectData.typeByteCodes()).filterHasDecision();
-
-        CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
-        return new DecisionAngles(methods, characterizedTypes);
+        return new DecisionAngles(projectData.typeByteCodes(), architecture);
     }
 
     /**

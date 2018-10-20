@@ -1,9 +1,11 @@
 package org.dddjava.jig.domain.model.decisions;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.architecture.Layer;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.unit.method.Method;
-import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +18,16 @@ public class DecisionAngles {
 
     List<DecisionAngle> list;
 
-    public DecisionAngles(Methods methods, CharacterizedTypes characterizedTypes) {
+    public DecisionAngles(TypeByteCodes typeByteCodes, Architecture architecture) {
         list = new ArrayList<>();
-        for (Method method : methods.list()) {
-            list.add(new DecisionAngle(characterizedTypes, method));
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            Layer layer = architecture.layer(typeByteCode);
+
+            for (MethodByteCode instanceMethodByteCode : typeByteCode.instanceMethodByteCodes()) {
+                if (instanceMethodByteCode.decisionNumber().notZero()) {
+                    list.add(new DecisionAngle(new Method(instanceMethodByteCode), layer));
+                }
+            }
         }
     }
 

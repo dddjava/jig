@@ -31,10 +31,6 @@ public class Method {
         return decisionNumber;
     }
 
-    public boolean hasDecision() {
-        return decisionNumber.notZero();
-    }
-
     public MethodAnnotations methodAnnotations() {
         return methodAnnotations;
     }

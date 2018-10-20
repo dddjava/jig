@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
 import org.dddjava.jig.domain.model.architecture.Layer;
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
@@ -12,11 +9,11 @@ import org.dddjava.jig.domain.model.unit.method.Method;
 public class DecisionAngle {
 
     Method method;
-    Characteristics typeCharacteristics;
+    Layer layer;
 
-    public DecisionAngle(CharacterizedTypes characterizedTypes, Method method) {
+    public DecisionAngle(Method method, Layer layer) {
         this.method = method;
-        this.typeCharacteristics = characterizedTypes.stream().pickup(method.declaration().declaringType()).characteristics();
+        this.layer = layer;
     }
 
     public Method method() {
@@ -24,13 +21,6 @@ public class DecisionAngle {
     }
 
     public Layer typeLayer() {
-        if (typeCharacteristics.has(Characteristic.CONTROLLER)) return Layer.PRESENTATION;
-
-        if (typeCharacteristics.has(Characteristic.SERVICE)) return Layer.APPLICATION;
-
-        if (typeCharacteristics.has(Characteristic.REPOSITORY)) return Layer.DATASOURCE;
-        if (typeCharacteristics.has(Characteristic.DATASOURCE)) return Layer.DATASOURCE;
-
-        return Layer.OTHER;
+        return layer;
     }
 }

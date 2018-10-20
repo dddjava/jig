@@ -51,7 +51,11 @@ public class ValueAngleTest {
 
         ValueAngles numbers = service.values(ValueKind.NUMBER, typeByteCodes);
         assertThat(numbers.list()).extracting(ValueAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleNumber.class)
+                new TypeIdentifier(SimpleNumber.class),
+                new TypeIdentifier(IntegerNumber.class),
+                new TypeIdentifier(LongNumber.class),
+                new TypeIdentifier(PrimitiveIntNumber.class),
+                new TypeIdentifier(PrimitiveLongNumber.class)
         );
 
         ValueAngles dates = service.values(ValueKind.DATE, typeByteCodes);

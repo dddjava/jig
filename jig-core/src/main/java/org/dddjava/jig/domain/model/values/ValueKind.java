@@ -19,7 +19,11 @@ public enum ValueKind {
     NUMBER {
         @Override
         public boolean matches(FieldDeclarations fieldDeclarations) {
-            return fieldDeclarations.matches(new TypeIdentifier(BigDecimal.class));
+            return fieldDeclarations.matches(new TypeIdentifier(BigDecimal.class))
+                    || fieldDeclarations.matches(new TypeIdentifier(Long.class))
+                    || fieldDeclarations.matches(new TypeIdentifier(Integer.class))
+                    || fieldDeclarations.matches(new TypeIdentifier(long.class))
+                    || fieldDeclarations.matches(new TypeIdentifier(int.class));
         }
     },
     DATE {

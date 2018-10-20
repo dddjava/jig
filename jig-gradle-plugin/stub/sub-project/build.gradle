@@ -5,5 +5,4 @@ plugins {
 
 jig {
     modelPattern = '.+\\.model\\..+'
-    repositoryPattern = '.+DataSource'
 }

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
-import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.presentation.view.JigDocument;
 
 import java.nio.file.Paths;
@@ -16,8 +15,6 @@ import java.util.stream.Collectors;
 public class JigConfig {
 
     String modelPattern = ".+\\.domain\\.model\\..+";
-
-    String repositoryPattern = ".+Repository";
 
     List<String> documentTypes = new ArrayList<>();
 
@@ -39,7 +36,6 @@ public class JigConfig {
     public JigProperties asProperties() {
         return new JigProperties(
                 new BusinessRuleCondition(modelPattern),
-                new RepositoryPattern(repositoryPattern),
                 new OutputOmitPrefix(outputOmitPrefix),
                 new PackageDepth(depth),
                 enableDebugDocument
@@ -52,14 +48,6 @@ public class JigConfig {
 
     public void setModelPattern(String modelPattern) {
         this.modelPattern = modelPattern;
-    }
-
-    public String getRepositoryPattern() {
-        return repositoryPattern;
-    }
-
-    public void setRepositoryPattern(String repositoryPattern) {
-        this.repositoryPattern = repositoryPattern;
     }
 
     List<String> getDocumentTypes() {

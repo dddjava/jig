@@ -26,9 +26,6 @@ class CliConfig {
     @Option(names = {"--jig.model.pattern"})
     String modelPattern = ".+\\.domain\\.model\\..+";
 
-    @Option(names = {"--jig.repository.pattern"})
-    String repositoryPattern = ".+Repository";
-
     @Option(names = {"--project.path"})
     String projectPath = "./";
 
@@ -67,7 +64,6 @@ class CliConfig {
                 new DefaultLayout(projectPath, directoryClasses, directoryResources, directorySources),
                 new JigProperties(
                         new BusinessRuleCondition(modelPattern),
-                        new RepositoryPattern(repositoryPattern),
                         new OutputOmitPrefix(outputOmitPrefix),
                         new PackageDepth(depth),
                         jigDebugMode

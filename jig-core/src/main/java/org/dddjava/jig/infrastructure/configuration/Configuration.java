@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.sourcecode.JapaneseReader;
@@ -11,7 +10,6 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -39,7 +37,6 @@ public class Configuration {
         BusinessRuleService businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(configurationContext, businessRuleService);
         JapaneseNameRepository japaneseNameRepository = new OnMemoryJapaneseNameRepository();
-        CharacterizedTypeFactory characterizedTypeFactory = new PropertyCharacterizedTypeFactory(properties.getRepositoryPattern());
         JapaneseReader japaneseReader = new JavaparserJapaneseReader();
         GlossaryService glossaryService = new GlossaryService(
                 japaneseReader,
@@ -83,8 +80,7 @@ public class Configuration {
         this.implementationService = new ImplementationService(
                 byteCodeFactory,
                 glossaryService,
-                sqlReader,
-                characterizedTypeFactory
+                sqlReader
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,

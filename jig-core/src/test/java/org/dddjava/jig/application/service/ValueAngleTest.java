@@ -10,9 +10,7 @@ import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.PropertyCharacterizedTypeFactory;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.infrastructure.configuration.RepositoryPattern;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
@@ -38,8 +36,7 @@ public class ValueAngleTest {
                     new JavaparserJapaneseReader(),
                     new OnMemoryJapaneseNameRepository()
             ),
-            new MyBatisSqlReader(),
-            new PropertyCharacterizedTypeFactory(new RepositoryPattern())
+            new MyBatisSqlReader()
     );
 
     BusinessRuleService service = new BusinessRuleService(new BusinessRuleCondition(".+\\.domain\\.model\\..+"));

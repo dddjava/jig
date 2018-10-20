@@ -84,7 +84,6 @@ public class DependencyServiceTest {
                 ),
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
-                        new RepositoryPattern(),
                         new OutputOmitPrefix(),
                         new PackageDepth(),
                         false

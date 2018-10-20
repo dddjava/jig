@@ -16,7 +16,6 @@ class CliConfigTest {
                 "--outputDirectory=out",
                 "--output.omit.prefix=omit.package",
                 "--jig.model.pattern=.+\\.model\\..+",
-                "--jig.repository.pattern=\\.DataSource",
                 "--project.path=./projectDir",
                 "--directory.classes=./classes",
                 "--directory.resources=./resources",
@@ -37,8 +36,6 @@ class CliConfigTest {
                 .isNotEqualTo(original.outputOmitPrefix);
         softly.assertThat(cli.modelPattern).isEqualTo(".+\\.model\\..+")
                 .isNotEqualTo(original.modelPattern);
-        softly.assertThat(cli.repositoryPattern).isEqualTo("\\.DataSource")
-                .isNotEqualTo(original.repositoryPattern);
         softly.assertThat(cli.projectPath).isEqualTo("./projectDir")
                 .isNotEqualTo(original.projectPath);
         softly.assertThat(cli.directoryClasses).isEqualTo("./classes")

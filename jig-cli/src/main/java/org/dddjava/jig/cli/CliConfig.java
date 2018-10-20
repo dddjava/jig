@@ -24,8 +24,6 @@ class CliConfig {
     String outputOmitPrefix;
     @Value("${jig.model.pattern}")
     String modelPattern;
-    @Value("${jig.repository.pattern}")
-    String repositoryPattern;
 
     @Value("${project.path}")
     String projectPath;
@@ -58,7 +56,6 @@ class CliConfig {
                 new DefaultLayout(projectPath, directoryClasses, directoryResources, directorySources),
                 new JigProperties(
                         new BusinessRuleCondition(modelPattern),
-                        new RepositoryPattern(repositoryPattern),
                         new OutputOmitPrefix(outputOmitPrefix),
                         new PackageDepth(depth),
                         jigDebugMode

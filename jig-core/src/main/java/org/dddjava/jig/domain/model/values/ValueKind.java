@@ -14,34 +14,34 @@ import java.util.Set;
 public enum ValueKind {
     IDENTIFIER {
         @Override
-        boolean matches(FieldDeclarations fieldDeclarations) {
+        public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(String.class));
         }
     },
     NUMBER {
         @Override
-        boolean matches(FieldDeclarations fieldDeclarations) {
+        public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(BigDecimal.class));
         }
     },
     DATE {
         @Override
-        boolean matches(FieldDeclarations fieldDeclarations) {
+        public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(LocalDate.class));
         }
     },
     TERM {
         @Override
-        boolean matches(FieldDeclarations fieldDeclarations) {
+        public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(LocalDate.class), new TypeIdentifier(LocalDate.class));
         }
     },
     COLLECTION {
         @Override
-        boolean matches(FieldDeclarations fieldDeclarations) {
+        public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(List.class)) || fieldDeclarations.matches(new TypeIdentifier(Set.class));
         }
     };
 
-    abstract boolean matches(FieldDeclarations fieldDeclarations);
+    public abstract boolean matches(FieldDeclarations fieldDeclarations);
 }

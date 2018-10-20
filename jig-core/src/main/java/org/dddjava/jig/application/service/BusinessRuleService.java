@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
@@ -74,10 +74,8 @@ public class BusinessRuleService {
      * コレクションを分析する
      */
     public CollectionAngles collections(ProjectData projectData) {
-        TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
-        return new CollectionAngles(collectionTypeIdentifiers,
-                projectData.typeByteCodes().instanceFields(),
-                new Methods(projectData.typeByteCodes()),
-                new TypeDependencies(projectData.typeByteCodes()));
+        CollectionTypes collectionTypes = new CollectionTypes(projectData.typeByteCodes());
+
+        return new CollectionAngles(collectionTypes, new TypeDependencies(projectData.typeByteCodes()));
     }
 }

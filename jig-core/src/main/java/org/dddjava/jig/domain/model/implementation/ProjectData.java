@@ -10,11 +10,12 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.*;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.PotentiallyValueType;
@@ -69,16 +70,8 @@ public class ProjectData {
     }
 
     public MethodRelations methodRelations() {
-        List<MethodRelation> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
-                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
-                    list.add(new MethodRelation(methodDeclaration, usingMethod));
-                }
-            }
-        }
-        return new MethodRelations(list);
+
+        return new MethodRelations(typeByteCodes());
     }
 
     public Sqls sqls() {

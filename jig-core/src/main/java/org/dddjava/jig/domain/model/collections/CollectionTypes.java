@@ -1,11 +1,13 @@
 package org.dddjava.jig.domain.model.collections;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.values.ValueKind;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class CollectionTypes {
 
@@ -14,12 +16,13 @@ public class CollectionTypes {
     public CollectionTypes(TypeByteCodes typeByteCodes) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (!ValueKind.COLLECTION.matches(typeByteCode.fieldDeclarations())) {
-                continue;
-            }
             // TODO businessRuleに限定する
 
-            list.add(new CollectionType(typeByteCode));
+            FieldDeclarations fieldDeclarations = typeByteCode.fieldDeclarations();
+            if (fieldDeclarations.matches(new TypeIdentifier(List.class))
+                    || fieldDeclarations.matches(new TypeIdentifier(Set.class))) {
+                list.add(new CollectionType(typeByteCode));
+            }
         }
     }
 

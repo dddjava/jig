@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
+import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.characteristic.Characteristic;
 import org.dddjava.jig.domain.model.characteristic.Characteristics;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;

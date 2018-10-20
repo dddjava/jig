@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.architecture;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 

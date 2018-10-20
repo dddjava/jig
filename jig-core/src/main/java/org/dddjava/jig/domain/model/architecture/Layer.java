@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.decisions;
+package org.dddjava.jig.domain.model.architecture;
 
 /**
  * 属するレイヤー

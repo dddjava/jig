@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.businessrules;
+package org.dddjava.jig.domain.model.architecture;
 
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -14,9 +14,9 @@ public class BusinessRuleCondition {
         this.typeIdentifierPattern = typeIdentifierPattern;
     }
 
-    BusinessRuleJudge judge(Type type) {
+    public boolean judge(Type type) {
         TypeIdentifier identifier = type.identifier();
-        return judge(identifier) ? BusinessRuleJudge.BUSINESS_RULE : BusinessRuleJudge.NOT_BUSINESS_RULE;
+        return judge(identifier);
     }
 
     public boolean judge(TypeIdentifier identifier) {

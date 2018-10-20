@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.architecture;
 
-import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
@@ -12,11 +11,6 @@ public class BusinessRuleCondition {
 
     public BusinessRuleCondition(String typeIdentifierPattern) {
         this.typeIdentifierPattern = typeIdentifierPattern;
-    }
-
-    public boolean judge(Type type) {
-        TypeIdentifier identifier = type.identifier();
-        return judge(identifier);
     }
 
     public boolean judge(TypeIdentifier identifier) {

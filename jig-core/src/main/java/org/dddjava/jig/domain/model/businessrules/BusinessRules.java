@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
@@ -16,10 +16,10 @@ public class BusinessRules {
 
     List<BusinessRule> list;
 
-    public BusinessRules(Types types, BusinessRuleCondition businessRuleCondition) {
+    public BusinessRules(Types types, Architecture architecture) {
         this.list = new ArrayList<>();
         for (Type type : types.list()) {
-            if (businessRuleCondition.judge(type)) {
+            if (architecture.isBusinessRule(type.identifier())) {
                 list.add(new BusinessRule(type));
             }
         }

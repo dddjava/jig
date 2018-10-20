@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.collections;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
@@ -16,10 +17,12 @@ public class CollectionTypes {
 
     List<CollectionType> list;
 
-    public CollectionTypes(TypeByteCodes typeByteCodes) {
+    public CollectionTypes(TypeByteCodes typeByteCodes, Architecture architecture) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            // TODO businessRuleに限定する
+            if (!architecture.isBusinessRule(typeByteCode.typeIdentifier())) {
+                continue;
+            }
 
             FieldDeclarations fieldDeclarations = typeByteCode.fieldDeclarations();
             if (fieldDeclarations.matches(new TypeIdentifier(List.class))

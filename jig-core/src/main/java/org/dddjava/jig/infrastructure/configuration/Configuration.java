@@ -32,10 +32,11 @@ public class Configuration {
 
     public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
-        this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
+        Architecture architecture = new Architecture(properties.getBusinessRuleCondition());
+        this.businessRuleService = new BusinessRuleService(architecture);
         this.dependencyService = new DependencyService(configurationContext, businessRuleService);
         this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
-        this.applicationService = new ApplicationService(new Architecture(properties.getBusinessRuleCondition()));
+        this.applicationService = new ApplicationService(architecture);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

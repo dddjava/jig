@@ -33,4 +33,8 @@ public class MethodReturn {
     public boolean isBoolean() {
         return typeIdentifier().isBoolean();
     }
+
+    public boolean isStream() {
+        return typeIdentifier().isStream();
+    }
 }

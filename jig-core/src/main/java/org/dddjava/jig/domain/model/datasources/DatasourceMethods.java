@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DatasourceMethods {
     List<DatasourceMethod> list;
@@ -55,5 +56,10 @@ public class DatasourceMethods {
 
     public boolean empty() {
         return list.isEmpty();
+    }
+
+    public RepositoryMethods repositoryMethods() {
+        return list.stream().map(DatasourceMethod::repositoryMethod)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), RepositoryMethods::new));
     }
 }

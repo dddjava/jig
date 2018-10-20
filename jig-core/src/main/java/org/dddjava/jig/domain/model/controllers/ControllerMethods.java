@@ -1,12 +1,15 @@
 package org.dddjava.jig.domain.model.controllers;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class ControllerMethods {
     List<Method> list;
@@ -14,7 +17,7 @@ public class ControllerMethods {
     public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         List<TypeByteCode> controllerTypeByteCode = typeByteCodes.list().stream()
                 .filter(typeByteCode -> architecture.isController(typeByteCode.typeAnnotations()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         this.list = controllerTypeByteCode.stream()
                 .map(TypeByteCode::instanceMethodByteCodes)
@@ -34,7 +37,11 @@ public class ControllerMethods {
                                                     || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
                                         }
                                 ))
-                .collect(Collectors.toList());
+                .collect(toList());
+    }
+
+    private ControllerMethods(List<Method> list) {
+        this.list = list;
     }
 
     public List<Method> list() {
@@ -43,5 +50,11 @@ public class ControllerMethods {
 
     public boolean empty() {
         return list.isEmpty();
+    }
+
+    public ControllerMethods filter(MethodDeclarations methodDeclarations) {
+        return list.stream()
+                .filter(method -> methodDeclarations.contains(method.declaration()))
+                .collect(collectingAndThen(toList(), ControllerMethods::new));
     }
 }

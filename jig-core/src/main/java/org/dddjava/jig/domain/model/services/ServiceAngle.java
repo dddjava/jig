@@ -1,18 +1,15 @@
 package org.dddjava.jig.domain.model.services;
 
-import org.dddjava.jig.domain.model.characteristic.Characteristic;
-import org.dddjava.jig.domain.model.characteristic.Characteristics;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
+import org.dddjava.jig.domain.model.datasources.RepositoryMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
 import org.dddjava.jig.domain.model.unit.method.Method;
-import org.dddjava.jig.domain.model.unit.method.Methods;
-
-import java.util.stream.Stream;
+import org.dddjava.jig.domain.model.unit.method.UsingMethods;
 
 /**
  * サービスの切り口
@@ -20,39 +17,27 @@ import java.util.stream.Stream;
 public class ServiceAngle {
 
     MethodDeclaration methodDeclaration;
-    Characteristics userCharacteristics;
 
-    private final MethodDeclarations userServiceMethods;
-    private final MethodDeclarations userControllerMethods;
+    ServiceMethods userServiceMethods;
+    ControllerMethods userControllerMethods;
 
     UsingFields usingFields;
-    MethodDeclarations usingRepositoryMethods;
+    RepositoryMethods usingRepositoryMethods;
     boolean useStream;
     private boolean isPublic;
 
-    ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, Methods methods) {
+    ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, ControllerMethods controllerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         this.methodDeclaration = serviceMethod.methodDeclaration();
-        this.userCharacteristics = characterizedTypes.stream()
-                .filter(methodRelations.userMethodDeclaringTypesOf(methodDeclaration))
-                .characteristics();
+        this.usingFields = serviceMethod.methodUsingFields();
+        this.isPublic = serviceMethod.isPublic();
 
-        this.usingFields = methodUsingFields.usingFieldsOf(methodDeclaration);
-        this.usingRepositoryMethods = methodRelations.stream().filterFrom(methodDeclaration)
-                .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
-                .toMethods();
+        UsingMethods usingMethods = serviceMethod.usingMethods();
+        this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
+        this.useStream = usingMethods.containsStream();
 
-        Method method = methods.get(methodDeclaration);
-        this.isPublic = method.isPublic();
-
-        this.userServiceMethods = methodRelations.stream().filterTo(methodDeclaration)
-                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())
-                .fromMethods();
-        this.userControllerMethods = methodRelations.stream().filterTo(methodDeclaration)
-                .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.CONTROLLER).typeIdentifiers())
-                .fromMethods();
-
-        MethodDeclarations usingMethods = methodRelations.usingMethodsOf(methodDeclaration);
-        this.useStream = usingMethods.list().stream().anyMatch(methodDeclaration -> methodDeclaration.methodReturn().typeIdentifier().equals(new TypeIdentifier(Stream.class)));
+        MethodDeclarations userMethods = methodRelations.userMethodsOf(serviceMethod.methodDeclaration().identifier());
+        this.userControllerMethods = controllerMethods.filter(userMethods);
+        this.userServiceMethods = serviceMethods.filter(userMethods);
     }
 
     public TypeIdentifier declaringType() {
@@ -64,8 +49,7 @@ public class ServiceAngle {
     }
 
     public boolean usingFromController() {
-        // TODO MethodCharacteristic.HANDLERで判別させたい
-        return userCharacteristics.has(Characteristic.CONTROLLER);
+        return !userControllerMethods.empty();
     }
 
     public UsingFields usingFields() {
@@ -81,11 +65,11 @@ public class ServiceAngle {
     }
 
     public MethodDeclarations userServiceMethods() {
-        return userServiceMethods;
+        return userServiceMethods.list().stream().map(ServiceMethod::methodDeclaration).collect(MethodDeclarations.collector());
     }
 
     public MethodDeclarations userControllerMethods() {
-        return userControllerMethods;
+        return userControllerMethods.list().stream().map(Method::declaration).collect(MethodDeclarations.collector());
     }
 
     public boolean isNotPublicMethod() {

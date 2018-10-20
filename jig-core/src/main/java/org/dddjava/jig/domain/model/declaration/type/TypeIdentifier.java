@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * 型の識別子
@@ -89,5 +90,10 @@ public class TypeIdentifier {
                 return true;
         }
         return false;
+    }
+
+    public boolean isStream() {
+        // java.util.streamパッケージかで見たほうがいいかも？
+        return equals(new TypeIdentifier(Stream.class));
     }
 }

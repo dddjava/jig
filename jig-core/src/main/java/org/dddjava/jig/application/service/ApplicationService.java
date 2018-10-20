@@ -68,13 +68,14 @@ public class ApplicationService {
             LOGGER.warn(Warning.サービスなし.text());
         }
 
+        ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
+        DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
+
         return new ServiceAngles(
                 serviceMethods,
                 new MethodRelations(typeByteCodes),
-                projectData.characterizedTypes(),
-                new MethodUsingFields(typeByteCodes),
-                new Methods(projectData.typeByteCodes())
-        );
+                controllerMethods,
+                datasourceMethods);
     }
 
     /**
@@ -88,7 +89,7 @@ public class ApplicationService {
 
         if (datasourceMethods.empty()) {
             LOGGER.warn(Warning.リポジトリなし.text());
-        } else if (sqls.empty()){
+        } else if (sqls.empty()) {
             LOGGER.warn(Warning.SQLなし.text());
         }
 

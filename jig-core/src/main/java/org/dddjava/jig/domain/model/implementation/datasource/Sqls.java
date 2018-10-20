@@ -34,4 +34,8 @@ public class Sqls {
                 .collect(Collectors.toList());
         return new Sqls(sqls);
     }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
 }

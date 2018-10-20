@@ -21,6 +21,11 @@ public class DatasourceAngle {
         this.sqls = sqls;
     }
 
+    public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls) {
+        this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
+        this.sqls = allSqls.filterRelationOn(datasourceMethod.usingMethods());
+    }
+
     public static DatasourceAngle of(MethodDeclaration methodDeclaration, MethodDeclarations mapperMethods, ImplementationMethods implementationMethods, MethodRelations methodRelations, Sqls allSqls) {
         MethodDeclarations datasourceMethods = implementationMethods.stream()
                 .filterInterfaceMethodIs(methodDeclaration)

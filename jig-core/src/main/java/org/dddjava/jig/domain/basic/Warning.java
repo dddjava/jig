@@ -33,8 +33,15 @@ public enum Warning {
             return text(context.modelDetectionWarningMessage());
         }
     },
-    Mapperメソッド検出異常(new Message()
-            .add("Mapperメソッドが見つからないため、データソース一覧のCRUDが空になります。")
+    Repositoryメソッド検出異常(new Message()
+            .add("Repositoryのメソッドが見つからないため、データソース一覧が出力されません。")
+            .add("データソース一覧の出力には以下が必要です。")
+            .add("")
+            .add("- @Repository がつけられた実装クラス（データソースクラス）")
+            .add("- データソースクラスが実装しているビジネスルールのインタフェース（リポジトリインタフェース）")
+    ),
+    Mapper検出異常(new Message()
+            .add("Mapperが見つからないため、データソース一覧のCRUDは出力されません。")
             .add("CRUDの検出は以下の条件を満たす必要があります。")
             .add("")
             .add("- MyBatisのMapperインタフェースを使用している")

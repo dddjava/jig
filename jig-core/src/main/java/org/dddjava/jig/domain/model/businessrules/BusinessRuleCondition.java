@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.Type;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
  * ビジネスルールの条件
@@ -14,13 +15,16 @@ public class BusinessRuleCondition {
     }
 
     BusinessRuleJudge judge(Type type) {
-        String fullQualifiedName = type.identifier().fullQualifiedName();
+        TypeIdentifier identifier = type.identifier();
+        return judge(identifier) ? BusinessRuleJudge.BUSINESS_RULE : BusinessRuleJudge.NOT_BUSINESS_RULE;
+    }
+
+    public boolean judge(TypeIdentifier identifier) {
+        String fullQualifiedName = identifier.fullQualifiedName();
         if (fullQualifiedName.matches(typeIdentifierPattern)) {
             // コンパイラの生成するクラスを除外
-            if (!fullQualifiedName.matches(".+\\$\\d+")) {
-                return BusinessRuleJudge.BUSINESS_RULE;
-            }
+            return !fullQualifiedName.matches(".+\\$\\d+");
         }
-        return BusinessRuleJudge.NOT_BUSINESS_RULE;
+        return false;
     }
 }

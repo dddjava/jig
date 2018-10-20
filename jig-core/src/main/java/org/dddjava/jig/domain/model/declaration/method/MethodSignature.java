@@ -42,4 +42,9 @@ public class MethodSignature {
         // 名前以外の判別方法があればそれにしたい
         return methodName.equals("<init>");
     }
+
+    public boolean isSame(MethodSignature other) {
+        return methodName.equals(other.methodName)
+                && arguments.isSame(other.arguments);
+    }
 }

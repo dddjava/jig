@@ -3,20 +3,21 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.characteristic.CharacterizedMethods;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
@@ -38,8 +39,7 @@ public class ApplicationService {
 
     @Deprecated
     public ApplicationService() {
-        this(new Architecture() {
-        });
+        this(new Architecture(new BusinessRuleCondition(".+")));
     }
 
     public ApplicationService(Architecture architecture) {
@@ -80,19 +80,18 @@ public class ApplicationService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(ProjectData projectData) {
-        CharacterizedMethods characterizedMethods = projectData.characterizedMethods();
+        TypeByteCodes typeByteCodes = projectData.typeByteCodes();
 
-        MethodDeclarations mapperMethodDeclarations = characterizedMethods.mapperMethods();
-        if (mapperMethodDeclarations.empty()) {
-            LOGGER.warn(Warning.Mapperメソッド検出異常.text());
+        DatasourceMethods datasourceMethods = typeByteCodes.datasourceMethods(architecture);
+        Sqls sqls = projectData.sqls();
+
+        if (datasourceMethods.empty()) {
+            LOGGER.warn(Warning.Repositoryメソッド検出異常.text());
+        } else if (sqls.empty()){
+            LOGGER.warn(Warning.Mapper検出異常.text());
         }
 
-        return new DatasourceAngles(
-                characterizedMethods.repositoryMethods(),
-                mapperMethodDeclarations,
-                new ImplementationMethods(projectData.typeByteCodes()),
-                new MethodRelations(projectData.typeByteCodes()),
-                projectData.sqls());
+        return new DatasourceAngles(datasourceMethods, sqls);
     }
 
     /**

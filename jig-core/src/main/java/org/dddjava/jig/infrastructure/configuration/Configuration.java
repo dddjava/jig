@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
@@ -46,7 +47,7 @@ public class Configuration {
         );
         SqlReader sqlReader = new MyBatisSqlReader();
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
-        this.applicationService = new ApplicationService();
+        this.applicationService = new ApplicationService(new Architecture(properties.getBusinessRuleCondition()));
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

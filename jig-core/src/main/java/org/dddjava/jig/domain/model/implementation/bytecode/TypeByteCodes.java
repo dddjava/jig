@@ -1,13 +1,14 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.datasources.DatasourceMethod;
+import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.declaration.type.Types;
+import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -108,5 +109,42 @@ public class TypeByteCodes {
                 .collect(Collectors.toList());
 
         return new ServiceMethods(methods);
+    }
+
+    public DatasourceMethods datasourceMethods(Architecture architecture) {
+        List<DatasourceMethod> datasourceMethods = new ArrayList<>();
+        for (TypeByteCode concreteByteCode : list) {
+            if (!architecture.isDataSource(concreteByteCode.typeAnnotations())) {
+                continue;
+            }
+
+            ParameterizedTypes parameterizedTypes = concreteByteCode.parameterizedInterfaceTypes();
+            for (ParameterizedType parameterizedType : parameterizedTypes.list()) {
+                TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
+                if (!architecture.isBusinessRule(interfaceTypeIdentifier)) {
+                    continue;
+                }
+
+                for (TypeByteCode interfaceByteCode : list) {
+                    if (!interfaceTypeIdentifier.equals(interfaceByteCode.typeIdentifier())) {
+                        continue;
+                    }
+
+                    for (MethodByteCode interfaceMethodByteCode : interfaceByteCode.methodByteCodes()) {
+                        concreteByteCode.methodByteCodes().stream()
+                                .filter(datasourceMethodByteCode -> interfaceMethodByteCode.sameSignature(datasourceMethodByteCode))
+                                // 0 or 1
+                                .forEach(concreteMethodByteCode ->
+                                        datasourceMethods.add(new DatasourceMethod(
+                                                interfaceMethodByteCode.method(),
+                                                concreteMethodByteCode.method(),
+                                                concreteMethodByteCode.usingMethods()))
+                                );
+                    }
+                }
+            }
+        }
+
+        return new DatasourceMethods(datasourceMethods);
     }
 }

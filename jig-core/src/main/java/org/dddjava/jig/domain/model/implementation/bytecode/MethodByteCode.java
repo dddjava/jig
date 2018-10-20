@@ -121,4 +121,8 @@ public class MethodByteCode {
                 new MethodAnnotations(methodAnnotations),
                 accessor());
     }
+
+    public boolean sameSignature(MethodByteCode other) {
+        return methodDeclaration.methodSignature().isSame(other.methodDeclaration.methodSignature());
+    }
 }

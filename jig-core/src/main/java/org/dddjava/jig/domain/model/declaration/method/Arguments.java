@@ -38,4 +38,8 @@ public class Arguments {
     public TypeIdentifiers typeIdentifiers() {
         return new TypeIdentifiers(argumentTypes);
     }
+
+    public boolean isSame(Arguments other) {
+        return argumentTypes.equals(other.argumentTypes);
+    }
 }

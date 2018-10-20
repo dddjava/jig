@@ -74,7 +74,7 @@ public class AsmByteCodeFactoryTest {
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
                 .filter(e -> e.method().declaration().asSignatureSimpleText().equals("method()"))
-                .flatMap(e -> e.annotatedMethods().stream())
+                .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
 

@@ -62,7 +62,7 @@ public class TypeByteCodes {
     public MethodAnnotations annotatedMethods() {
         List<MethodAnnotation> methodAnnotations = new ArrayList<>();
         for (MethodByteCode methodByteCode : instanceMethodByteCodes()) {
-            methodAnnotations.addAll(methodByteCode.annotatedMethods());
+            methodAnnotations.addAll(methodByteCode.annotatedMethods().list());
         }
         return new MethodAnnotations(methodAnnotations);
     }

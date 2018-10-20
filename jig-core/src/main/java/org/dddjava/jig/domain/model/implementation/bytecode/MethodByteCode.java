@@ -86,8 +86,8 @@ public class MethodByteCode {
         useTypes.add(type);
     }
 
-    public List<MethodAnnotation> annotatedMethods() {
-        return methodAnnotations;
+    public MethodAnnotations annotatedMethods() {
+        return new MethodAnnotations(methodAnnotations);
     }
 
     public Set<TypeIdentifier> useTypes() {
@@ -119,7 +119,7 @@ public class MethodByteCode {
         return new Method(
                 methodDeclaration,
                 new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber),
-                new MethodAnnotations(methodAnnotations),
+                annotatedMethods(),
                 accessor());
     }
 

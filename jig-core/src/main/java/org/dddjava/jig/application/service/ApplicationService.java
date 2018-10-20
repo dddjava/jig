@@ -3,7 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -36,11 +35,6 @@ public class ApplicationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationService.class);
 
     Architecture architecture;
-
-    @Deprecated
-    public ApplicationService() {
-        this(new Architecture(new BusinessRuleCondition(".+")));
-    }
 
     public ApplicationService(Architecture architecture) {
         this.architecture = architecture;

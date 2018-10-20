@@ -1,5 +1,7 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.Layout;
@@ -35,7 +37,7 @@ public class ControllerAnglesTest {
             new PropertyCharacterizedTypeFactory(new RepositoryPattern())
     );
 
-    ApplicationService applicationService = new ApplicationService();
+    ApplicationService applicationService = new ApplicationService(new Architecture(new BusinessRuleCondition(".+")));
 
     @Test
     void readProjectData() {

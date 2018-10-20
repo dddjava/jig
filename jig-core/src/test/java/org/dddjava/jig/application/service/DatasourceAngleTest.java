@@ -1,5 +1,7 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
@@ -37,7 +39,7 @@ public class DatasourceAngleTest {
             new PropertyCharacterizedTypeFactory(new RepositoryPattern())
     );
 
-    ApplicationService applicationService = new ApplicationService();
+    ApplicationService applicationService = new ApplicationService(new Architecture(new BusinessRuleCondition(".+")));
 
     @Test
     void readProjectData() {

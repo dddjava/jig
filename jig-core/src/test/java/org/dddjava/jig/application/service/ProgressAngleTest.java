@@ -1,6 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.SoftAssertions;
+import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
@@ -49,7 +51,7 @@ public class ProgressAngleTest {
             new PropertyCharacterizedTypeFactory(new RepositoryPattern())
     );
 
-    ApplicationService applicationService = new ApplicationService();
+    ApplicationService applicationService = new ApplicationService(new Architecture(new BusinessRuleCondition(".+")));
 
     @Test
     void readProjectData() {

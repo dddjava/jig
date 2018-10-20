@@ -1,10 +1,7 @@
 package org.dddjava.jig.domain.model.datasources;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 
@@ -16,28 +13,9 @@ public class DatasourceAngle {
     MethodDeclaration methodDeclaration;
     Sqls sqls;
 
-    public DatasourceAngle(MethodDeclaration methodDeclaration, Sqls sqls) {
-        this.methodDeclaration = methodDeclaration;
-        this.sqls = sqls;
-    }
-
     public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls) {
         this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
         this.sqls = allSqls.filterRelationOn(datasourceMethod.usingMethods());
-    }
-
-    public static DatasourceAngle of(MethodDeclaration methodDeclaration, MethodDeclarations mapperMethods, ImplementationMethods implementationMethods, MethodRelations methodRelations, Sqls allSqls) {
-        MethodDeclarations datasourceMethods = implementationMethods.stream()
-                .filterInterfaceMethodIs(methodDeclaration)
-                .concrete();
-
-        MethodDeclarations usingMapperMethods = methodRelations.stream()
-                .filterAnyFrom(datasourceMethods)
-                .filterAnyTo(mapperMethods)
-                .toMethods();
-
-        Sqls sqls = allSqls.filterRelationOn(usingMapperMethods);
-        return new DatasourceAngle(methodDeclaration, sqls);
     }
 
     public TypeIdentifier declaringType() {

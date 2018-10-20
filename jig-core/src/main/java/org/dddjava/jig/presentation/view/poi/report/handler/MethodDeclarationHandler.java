@@ -31,9 +31,9 @@ public class MethodDeclarationHandler implements ItemHandler {
             case メソッド和名:
                 return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).summarySentence();
             case メソッド戻り値の型:
-                return methodDeclaration.returnType().asSimpleText();
+                return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
             case メソッド戻り値の型の和名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.returnType()).summarySentence();
+                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).summarySentence();
             case メソッド引数の型の和名:
                 return methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.glossaryService::japaneseNameFrom)

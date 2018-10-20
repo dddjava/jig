@@ -26,7 +26,7 @@ public class MethodDeclaration {
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return asSignatureSimpleText() + ":" + returnType().asSimpleText();
+        return asSignatureSimpleText() + ":" + methodReturn().typeIdentifier().asSimpleText();
     }
 
     public TypeIdentifier declaringType() {
@@ -39,11 +39,6 @@ public class MethodDeclaration {
 
     public MethodDeclaration with(TypeIdentifier typeIdentifier) {
         return new MethodDeclaration(typeIdentifier, methodSignature(), methodReturn);
-    }
-
-    @Deprecated
-    public TypeIdentifier returnType() {
-        return methodReturn().parameterizedType().typeIdentifier();
     }
 
     public MethodReturn methodReturn() {

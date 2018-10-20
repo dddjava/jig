@@ -42,7 +42,7 @@ public class MethodByteCode {
         this.methodDeclaration = methodDeclaration;
         this.access = access;
 
-        this.useTypes.add(methodDeclaration.returnType());
+        this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
     }
@@ -62,7 +62,7 @@ public class MethodByteCode {
         useTypes.add(methodDeclaration.declaringType());
 
         // 呼び出したメソッドの戻り値の型
-        useTypes.add(methodDeclaration.returnType());
+        useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
     }
 
     public void registerJumpInstruction() {

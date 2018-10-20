@@ -52,7 +52,7 @@ public class ServiceAngle {
                 .fromMethods();
 
         MethodDeclarations usingMethods = methodRelations.usingMethodsOf(methodDeclaration);
-        this.useStream = usingMethods.list().stream().anyMatch(methodDeclaration -> methodDeclaration.returnType().equals(new TypeIdentifier(Stream.class)));
+        this.useStream = usingMethods.list().stream().anyMatch(methodDeclaration -> methodDeclaration.methodReturn().typeIdentifier().equals(new TypeIdentifier(Stream.class)));
     }
 
     public TypeIdentifier declaringType() {

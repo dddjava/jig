@@ -57,7 +57,7 @@ public class ServiceAngleTest {
                 .extracting(
                         serviceAngle -> serviceAngle.method().declaringType(),
                         serviceAngle -> serviceAngle.method().asSignatureSimpleText(),
-                        serviceAngle -> serviceAngle.method().returnType(),
+                        serviceAngle -> serviceAngle.method().methodReturn().typeIdentifier(),
                         ServiceAngle::usingFromController,
                         serviceAngle -> serviceAngle.usingRepositoryMethods()
                 ).contains(

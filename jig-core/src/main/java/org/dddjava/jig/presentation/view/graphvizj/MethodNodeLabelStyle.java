@@ -30,10 +30,10 @@ public enum MethodNodeLabelStyle {
                     + method.methodSignature().arguments().stream().map(func).collect(joining(", "))
                     + ")"
                     + " : "
-                    + func.apply(method.returnType());
+                    + func.apply(method.methodReturn().typeIdentifier());
         }
 
-        return method.asSignatureSimpleText() + " : " + method.returnType().asSimpleText();
+        return method.asSignatureSimpleText() + " : " + method.methodReturn().typeIdentifier().asSimpleText();
     }
 
     public String typeNameAndMethodName(MethodDeclaration methodDeclaration, JapaneseNameFinder japaneseNameFinder) {

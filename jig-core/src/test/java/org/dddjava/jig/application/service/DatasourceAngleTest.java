@@ -54,7 +54,7 @@ public class DatasourceAngleTest {
                 .extracting(
                         datasourceAngle -> datasourceAngle.method().declaringType(),
                         datasourceAngle -> datasourceAngle.method().asSignatureSimpleText(),
-                        datasourceAngle -> datasourceAngle.method().returnType(),
+                        datasourceAngle -> datasourceAngle.method().methodReturn().typeIdentifier(),
                         datasourceAngle -> datasourceAngle.insertTables(),
                         datasourceAngle -> datasourceAngle.selectTables(),
                         datasourceAngle -> datasourceAngle.updateTables(),

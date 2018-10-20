@@ -40,7 +40,7 @@ public class ServiceAngles {
 
     public ServiceAngles filterReturnsBoolean() {
         List<ServiceAngle> collect = list.stream()
-                .filter(serviceAngle -> serviceAngle.method().returnType().isBoolean())
+                .filter(serviceAngle -> serviceAngle.method().methodReturn().isBoolean())
                 .collect(Collectors.toList());
         return new ServiceAngles(collect);
     }

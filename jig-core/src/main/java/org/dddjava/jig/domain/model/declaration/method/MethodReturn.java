@@ -21,4 +21,16 @@ public class MethodReturn {
     public ParameterizedType parameterizedType() {
         return parameterizedType;
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return parameterizedType.typeIdentifier();
+    }
+
+    public boolean isPrimitive() {
+        return typeIdentifier().isPrimitive();
+    }
+
+    public boolean isBoolean() {
+        return typeIdentifier().isBoolean();
+    }
 }

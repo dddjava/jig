@@ -43,12 +43,12 @@ public class MethodSmellAngle {
     }
 
     public boolean primitiveInterface() {
-        return method.declaration().returnType().isPrimitive()
+        return method.declaration().methodReturn().isPrimitive()
                 || method.declaration().methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
     }
 
     public boolean returnsBoolean() {
-        return method.declaration().methodReturn().parameterizedType().typeIdentifier().isBoolean();
+        return method.declaration().methodReturn().typeIdentifier().isBoolean();
     }
 
     public boolean hasSmell() {

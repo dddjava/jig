@@ -23,7 +23,7 @@ public class ValidationAnnotatedMember {
     public ValidationAnnotatedMember(MethodAnnotation methodAnnotation) {
         annotationType = methodAnnotation.annotationType();
         simpleNameText = methodAnnotation.methodDeclaration().asSignatureSimpleText();
-        memberType = methodAnnotation.methodDeclaration().returnType();
+        memberType = methodAnnotation.methodDeclaration().methodReturn().typeIdentifier();
         declaringType = methodAnnotation.methodDeclaration().declaringType();
         description = methodAnnotation.description();
     }

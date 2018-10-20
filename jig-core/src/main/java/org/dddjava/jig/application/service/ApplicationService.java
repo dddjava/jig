@@ -61,7 +61,7 @@ public class ApplicationService {
      */
     public ServiceAngles serviceAngles(ProjectData projectData) {
         TypeByteCodes typeByteCodes = projectData.typeByteCodes();
-        ServiceMethods serviceMethods = typeByteCodes.serviceMethods(architecture);
+        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
             LOGGER.warn(Warning.サービス検出異常.text());
@@ -82,7 +82,7 @@ public class ApplicationService {
     public DatasourceAngles datasourceAngles(ProjectData projectData) {
         TypeByteCodes typeByteCodes = projectData.typeByteCodes();
 
-        DatasourceMethods datasourceMethods = typeByteCodes.datasourceMethods(architecture);
+        DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
         Sqls sqls = projectData.sqls();
 
         if (datasourceMethods.empty()) {

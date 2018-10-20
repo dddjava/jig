@@ -1,4 +1,4 @@
-package stub.domain.model.kind;
+package stub.domain.model.category;
 
 public enum ParameterizedEnum {
     A("a"),

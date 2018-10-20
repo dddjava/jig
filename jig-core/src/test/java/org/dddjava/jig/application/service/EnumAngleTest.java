@@ -51,37 +51,37 @@ public class EnumAngleTest {
                         categoryAngle -> categoryAngle.isPolymorphism()
                 ).contains(
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.BehaviourEnum"),
+                        new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
                         "[A, B]", "[]", "[AsmByteCodeFactoryTest, RelationEnum]",
                         false, true, false
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.ParameterizedEnum"),
+                        new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
                         "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
                         true, false, false
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.PolymorphismEnum"),
+                        new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
                         "[A, B]", "[]", "[AsmByteCodeFactoryTest, RelationEnum]",
                         false, false, true
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.RelationEnum"),
+                        new TypeIdentifier("stub.domain.model.category.RelationEnum"),
                         "[A, B, C]", "[RichEnum field]", "[]",
                         true, false, false
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.RichEnum"),
+                        new TypeIdentifier("stub.domain.model.category.RichEnum"),
                         "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum]",
                         true, true, true
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.SimpleEnum"),
+                        new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
                         "[A, B, C, D]", "[]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
                         false, false, false
                 ),
                 tuple(
-                        new TypeIdentifier("stub.domain.model.kind.HasStaticFieldEnum"),
+                        new TypeIdentifier("stub.domain.model.category.HasStaticFieldEnum"),
                         "[A, B]", "[]", "[]",
                         false, false, false
                 )

@@ -1,4 +1,4 @@
-package stub.domain.model.kind;
+package stub.domain.model.category;
 
 import java.util.function.Function;
 

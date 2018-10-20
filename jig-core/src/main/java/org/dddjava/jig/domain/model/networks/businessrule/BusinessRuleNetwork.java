@@ -24,7 +24,7 @@ public class BusinessRuleNetwork {
         this.typeDependencies = typeDependencies;
     }
 
-    public List<BusinessRuleGroup> aggregates() {
+    public List<BusinessRuleGroup> groups() {
         Map<PackageIdentifier, List<BusinessRule>> collect = businessRules.list().stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.type().identifier().packageIdentifier()

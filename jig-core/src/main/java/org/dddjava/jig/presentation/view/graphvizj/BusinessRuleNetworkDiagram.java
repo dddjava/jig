@@ -34,7 +34,7 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes
-        List<BusinessRuleGroup> list = network.aggregates();
+        List<BusinessRuleGroup> list = network.groups();
         for (BusinessRuleGroup businessRuleGroup : list) {
             PackageIdentifier packageIdentifier = businessRuleGroup.packageIdentifier();
             StringJoiner subgraph = new StringJoiner("\n", "subgraph \"cluster_" + packageIdentifier.asText() + "\" {", "}")

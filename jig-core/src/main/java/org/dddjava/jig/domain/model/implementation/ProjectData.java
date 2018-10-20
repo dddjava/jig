@@ -4,13 +4,15 @@ import org.dddjava.jig.domain.model.categories.CategoryCharacteristic;
 import org.dddjava.jig.domain.model.categories.CategoryCharacteristics;
 import org.dddjava.jig.domain.model.categories.CategoryType;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.characteristic.*;
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.characteristic.Characteristics;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.PotentiallyValueType;
 import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
@@ -18,8 +20,6 @@ import org.dddjava.jig.domain.model.values.ValueTypes;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * プロジェクトから読み取った情報
@@ -61,15 +61,8 @@ public class ProjectData {
         return potentiallyValueTypes.toValueTypes(categories());
     }
 
-    public Methods methods() {
-        List<Method> list = typeByteCodes.instanceMethodByteCodes().stream()
-                .map(methodByteCode -> new Method(methodByteCode))
-                .collect(toList());
-        return new Methods(list);
-    }
-
     public Methods controllerMethods() {
-        return methods().controllerMethods(characterizedTypes);
+        return new Methods(this.typeByteCodes()).controllerMethods(characterizedTypes);
     }
 
     public CategoryTypes categories() {

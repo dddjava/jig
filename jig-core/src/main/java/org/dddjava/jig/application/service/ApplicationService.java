@@ -72,7 +72,7 @@ public class ApplicationService {
                 new MethodRelations(typeByteCodes),
                 projectData.characterizedTypes(),
                 new MethodUsingFields(typeByteCodes),
-                projectData.methods()
+                new Methods(projectData.typeByteCodes())
         );
     }
 
@@ -106,7 +106,7 @@ public class ApplicationService {
      * 分岐箇所を分析する
      */
     public DecisionAngles decision(ProjectData projectData) {
-        Methods methods = projectData.methods().filterHasDecision();
+        Methods methods = new Methods(projectData.typeByteCodes()).filterHasDecision();
 
         CharacterizedTypes characterizedTypes = projectData.characterizedTypes();
         return new DecisionAngles(methods, characterizedTypes);
@@ -119,7 +119,7 @@ public class ApplicationService {
     public ProgressAngles progressAngles(ProjectData projectData) {
         MethodAnnotations methodAnnotations = projectData.typeByteCodes().annotatedMethods();
         TypeAnnotations typeAnnotations = projectData.typeByteCodes().typeAnnotations();
-        MethodDeclarations declarations = projectData.methods().declarations();
+        MethodDeclarations declarations = new Methods(projectData.typeByteCodes()).declarations();
         return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }
 }

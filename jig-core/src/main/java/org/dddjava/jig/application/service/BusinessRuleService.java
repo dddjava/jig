@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
+import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class BusinessRuleService {
     public MethodSmellAngles methodSmells(ProjectData projectData) {
 
         return new MethodSmellAngles(
-                projectData.methods(),
+                new Methods(projectData.typeByteCodes()),
                 new MethodUsingFields(projectData.typeByteCodes()),
                 projectData.typeByteCodes().instanceFields(),
                 new MethodRelations(projectData.typeByteCodes()),
@@ -76,7 +77,7 @@ public class BusinessRuleService {
         TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
         return new CollectionAngles(collectionTypeIdentifiers,
                 projectData.typeByteCodes().instanceFields(),
-                projectData.methods(),
+                new Methods(projectData.typeByteCodes()),
                 new TypeDependencies(projectData.typeByteCodes()));
     }
 }

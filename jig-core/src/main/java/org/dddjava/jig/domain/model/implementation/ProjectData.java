@@ -30,14 +30,12 @@ public class ProjectData {
 
     // 特徴とセットになったもの
     private CharacterizedTypes characterizedTypes;
-    private CharacterizedMethods characterizedMethods;
 
     public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
         this.typeByteCodes = typeByteCodes;
 
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(typeByteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
-        this.characterizedMethods = new CharacterizedMethods(typeByteCodes.instanceMethodByteCodes(), characterizedTypes);
 
         this.sqls = sqls;
     }
@@ -58,10 +56,6 @@ public class ProjectData {
         PotentiallyValueTypes potentiallyValueTypes = new PotentiallyValueTypes(list);
 
         return potentiallyValueTypes.toValueTypes(categories());
-    }
-
-    public CharacterizedMethods characterizedMethods() {
-        return characterizedMethods;
     }
 
     public Methods methods() {

@@ -32,13 +32,6 @@ public enum Characteristic {
             return typeByteCode.hasAnnotation("org.springframework.stereotype.Repository");
         }
     },
-    MAPPER {
-        @Override
-        boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {
-            // WET: org.dddjava.jig.infrastructure.LocalProject.isMapperClassFile
-            return typeByteCode.typeIdentifier().asSimpleText().endsWith("Mapper");
-        }
-    },
     ENUM {
         @Override
         boolean matches(TypeByteCode typeByteCode, CharacterizedTypeFactory characterizedTypeFactory) {

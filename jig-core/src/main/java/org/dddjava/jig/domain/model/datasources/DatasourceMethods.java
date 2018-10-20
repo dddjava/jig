@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * データソースメソッド一覧
+ */
 public class DatasourceMethods {
     List<DatasourceMethod> list;
 

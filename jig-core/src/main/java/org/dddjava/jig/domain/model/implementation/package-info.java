@@ -1,4 +1,4 @@
 /**
- * 分析対象
+ * 実装
  */
 package org.dddjava.jig.domain.model.implementation;

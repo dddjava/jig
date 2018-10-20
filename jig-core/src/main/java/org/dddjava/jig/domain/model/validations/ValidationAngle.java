@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.validations;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
+/**
+ * バリデーション分析の切り口
+ */
 public class ValidationAngle {
 
     ValidationAnnotatedMember validationAnnotatedMember;

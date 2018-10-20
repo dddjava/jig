@@ -11,6 +11,9 @@ import java.util.List;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * サービスメソッド一覧
+ */
 public class ServiceMethods {
     private final List<Method> methods;
 

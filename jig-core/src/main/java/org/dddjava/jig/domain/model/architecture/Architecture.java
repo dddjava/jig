@@ -6,6 +6,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 import java.util.List;
 
+/**
+ * アーキテクチャ
+ */
 public class Architecture {
 
     BusinessRuleCondition businessRuleCondition;

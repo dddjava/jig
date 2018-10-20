@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
+/**
+ * コレクション
+ */
 public class CollectionType {
 
     TypeIdentifier typeIdentifier;

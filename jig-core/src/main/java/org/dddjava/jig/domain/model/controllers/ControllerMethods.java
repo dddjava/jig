@@ -11,6 +11,9 @@ import java.util.List;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * コントローラーメソッド一覧
+ */
 public class ControllerMethods {
     List<Method> list;
 

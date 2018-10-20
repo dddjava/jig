@@ -8,6 +8,9 @@ import java.util.List;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * リポジトリインタフェースメソッド
+ */
 public class RepositoryMethods {
 
     List<Method> list;

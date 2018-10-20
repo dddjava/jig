@@ -5,6 +5,9 @@ import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.dddjava.jig.domain.model.unit.method.UsingMethods;
 
+/**
+ * サービスメソッド
+ */
 public class ServiceMethod {
     private final Method method;
 

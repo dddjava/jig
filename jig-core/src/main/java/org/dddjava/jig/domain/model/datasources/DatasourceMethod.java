@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.datasources;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
+/**
+ * データソースの構造
+ */
 public class DatasourceMethod {
     Method repositoryMethod;
     Method datasourceMethod;

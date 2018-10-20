@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.declaration.type;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * パラメータ化された型一覧
+ */
 public class ParameterizedTypes {
     List<ParameterizedType> list;
 

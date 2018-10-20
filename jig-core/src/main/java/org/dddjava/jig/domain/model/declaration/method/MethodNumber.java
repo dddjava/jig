@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
+/**
+ * メソッド数
+ */
 public class MethodNumber {
     int value;
 

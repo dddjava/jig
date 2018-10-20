@@ -1,11 +1,10 @@
-package org.dddjava.jig.domain.model.networks.businessrule;
+package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 
-import java.util.List;
-
+/**
+ * ビジネスルールのグループ（パッケージ）
+ */
 public class BusinessRuleGroup {
     PackageIdentifier packageIdentifier;
     BusinessRules businessRules;
@@ -19,7 +18,7 @@ public class BusinessRuleGroup {
         return packageIdentifier;
     }
 
-    public List<BusinessRule> listBusinessRule() {
-        return businessRules.list();
+    public BusinessRules businessRules() {
+        return businessRules;
     }
 }

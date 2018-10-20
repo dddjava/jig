@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 
+/**
+ * 使用しているメソッド一覧
+ */
 public class UsingMethods {
     MethodDeclarations list;
 

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.networks.businessrule;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleGroup;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;

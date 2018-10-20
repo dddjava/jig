@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.networks.businessrule;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.networks.type.TypeDependency;
 
+/**
+ * ビジネスルールの関連
+ */
 public class BusinessRuleRelation {
 
     TypeIdentifier from;

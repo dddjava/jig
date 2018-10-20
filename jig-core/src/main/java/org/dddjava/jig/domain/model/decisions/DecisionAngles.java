@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class DecisionAngles {
 
     List<DecisionAngle> list;
 
-    public DecisionAngles(ProjectData typeByteCodes, Architecture architecture) {
+    public DecisionAngles(TypeByteCodes typeByteCodes, Architecture architecture) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             Layer layer = architecture.layer(typeByteCode);

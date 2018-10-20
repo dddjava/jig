@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -27,37 +27,37 @@ import static org.mockito.Mockito.when;
 public class ValueAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService,  BusinessRuleService service) {
+    void readProjectData(ImplementationService implementationService, BusinessRuleService service) {
         Layout layoutMock = mock(Layout.class);
         when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
-        ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, projectData);
+        ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, typeByteCodes);
         assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleIdentifier.class),
                 new TypeIdentifier(FugaIdentifier.class),
                 new TypeIdentifier(FugaName.class)
         );
 
-        ValueAngles numbers = service.values(ValueKind.NUMBER, projectData);
+        ValueAngles numbers = service.values(ValueKind.NUMBER, typeByteCodes);
         assertThat(numbers.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleNumber.class)
         );
 
-        ValueAngles dates = service.values(ValueKind.DATE, projectData);
+        ValueAngles dates = service.values(ValueKind.DATE, typeByteCodes);
         assertThat(dates.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleDate.class)
         );
 
-        ValueAngles terms = service.values(ValueKind.TERM, projectData);
+        ValueAngles terms = service.values(ValueKind.TERM, typeByteCodes);
         assertThat(terms.list()).extracting(ValueAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleTerm.class)
         );
 
-        CollectionAngles collections = service.collections(projectData);
+        CollectionAngles collections = service.collections(typeByteCodes);
         assertThat(collections.list()).extracting(CollectionAngle::typeIdentifier).contains(
                 new TypeIdentifier(SimpleCollection.class),
                 new TypeIdentifier(SetCollection.class)

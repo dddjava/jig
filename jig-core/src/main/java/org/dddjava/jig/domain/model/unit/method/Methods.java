@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.unit.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 public class Methods {
     List<Method> list;
 
-    public Methods(ProjectData typeByteCodes) {
+    public Methods(TypeByteCodes typeByteCodes) {
         List<Method> list = typeByteCodes.instanceMethodByteCodes().stream()
                 .map(methodByteCode -> new Method(methodByteCode))
                 .collect(toList());

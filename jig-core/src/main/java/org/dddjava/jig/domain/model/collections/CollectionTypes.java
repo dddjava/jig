@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.collections;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class CollectionTypes {
 
     List<CollectionType> list;
 
-    public CollectionTypes(ProjectData typeByteCodes) {
+    public CollectionTypes(TypeByteCodes typeByteCodes) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             // TODO businessRuleに限定する

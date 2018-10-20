@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -26,9 +26,9 @@ public class DecisionAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
-        DecisionAngles decisionAngles = applicationService.decision(projectData);
+        DecisionAngles decisionAngles = applicationService.decision(typeByteCodes);
 
         assertThat(decisionAngles.filter(Layer.APPLICATION))
                 .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())

@@ -17,7 +17,7 @@ public class MethodRelations {
 
     private final List<MethodRelation> list;
 
-    public MethodRelations(ProjectData typeByteCodes) {
+    public MethodRelations(TypeByteCodes typeByteCodes) {
         this.list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {

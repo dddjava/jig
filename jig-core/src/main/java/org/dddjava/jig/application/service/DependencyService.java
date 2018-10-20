@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.basic.Warning;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
@@ -37,17 +37,17 @@ public class DependencyService {
     /**
      * パッケージ依存を取得する
      */
-    public PackageNetwork packageDependencies(ProjectData projectData) {
+    public PackageNetwork packageDependencies(TypeByteCodes typeByteCodes) {
         LOGGER.info("パッケージ依存情報を取得します");
 
-        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+        BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
 
         if (businessRules.empty()) {
             LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 
-        PackageDependencies packageDependencies = new TypeDependencies(projectData).packageDependencies();
+        PackageDependencies packageDependencies = new TypeDependencies(typeByteCodes).packageDependencies();
 
         PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageDependencies);
         showDepth(packageNetwork);
@@ -69,10 +69,10 @@ public class DependencyService {
         }
     }
 
-    public BusinessRuleNetwork businessRuleNetwork(ProjectData projectData) {
+    public BusinessRuleNetwork businessRuleNetwork(TypeByteCodes typeByteCodes) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
-                businessRuleService.businessRules(projectData.types()),
-                new TypeDependencies(projectData));
+                businessRuleService.businessRules(typeByteCodes.types()),
+                new TypeDependencies(typeByteCodes));
         return businessRuleNetwork;
     }
 }

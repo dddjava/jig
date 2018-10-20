@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -42,43 +42,43 @@ public class BusinessRuleService {
     /**
      * メソッドの不吉なにおい一覧を取得する
      */
-    public MethodSmellAngles methodSmells(ProjectData projectData) {
+    public MethodSmellAngles methodSmells(TypeByteCodes typeByteCodes) {
 
         return new MethodSmellAngles(
-                new Methods(projectData),
-                new MethodUsingFields(projectData),
-                projectData.instanceFields(),
-                new MethodRelations(projectData),
-                businessRules(projectData.types()));
+                new Methods(typeByteCodes),
+                new MethodUsingFields(typeByteCodes),
+                typeByteCodes.instanceFields(),
+                new MethodRelations(typeByteCodes),
+                businessRules(typeByteCodes.types()));
     }
 
     /**
      * 区分一覧を取得する
      */
-    public CategoryAngles categories(ProjectData projectData) {
-        CategoryTypes categoryTypes = new CategoryTypes(projectData);
+    public CategoryAngles categories(TypeByteCodes typeByteCodes) {
+        CategoryTypes categoryTypes = new CategoryTypes(typeByteCodes);
 
         return new CategoryAngles(categoryTypes,
-                new TypeDependencies(projectData),
-                projectData.instanceFields(),
-                projectData.staticFields());
+                new TypeDependencies(typeByteCodes),
+                typeByteCodes.instanceFields(),
+                typeByteCodes.staticFields());
     }
 
     /**
      * 値一覧を取得する
      */
-    public ValueAngles values(ValueKind valueKind, ProjectData projectData) {
-        ValueTypes valueTypes = new ValueTypes(projectData, valueKind);
+    public ValueAngles values(ValueKind valueKind, TypeByteCodes typeByteCodes) {
+        ValueTypes valueTypes = new ValueTypes(typeByteCodes, valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, new TypeDependencies(projectData));
+        return new ValueAngles(valueKind, valueTypes, new TypeDependencies(typeByteCodes));
     }
 
     /**
      * コレクションを分析する
      */
-    public CollectionAngles collections(ProjectData projectData) {
-        CollectionTypes collectionTypes = new CollectionTypes(projectData);
+    public CollectionAngles collections(TypeByteCodes typeByteCodes) {
+        CollectionTypes collectionTypes = new CollectionTypes(typeByteCodes);
 
-        return new CollectionAngles(collectionTypes, new TypeDependencies(projectData));
+        return new CollectionAngles(collectionTypes, new TypeDependencies(typeByteCodes));
     }
 }

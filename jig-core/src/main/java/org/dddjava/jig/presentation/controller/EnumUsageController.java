@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -25,8 +25,8 @@ public class EnumUsageController {
     }
 
     @DocumentMapping(JigDocument.EnumUsage)
-    public JigModelAndView<CategoryAngles> enumUsage(ProjectData projectData) {
-        CategoryAngles categoryAngles = businessRuleService.categories(projectData);
+    public JigModelAndView<CategoryAngles> enumUsage(TypeByteCodes typeByteCodes) {
+        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage(japaneseNameFinder));
     }

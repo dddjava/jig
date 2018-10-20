@@ -3,7 +3,7 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -50,11 +50,11 @@ public class JigReportsTask extends DefaultTask {
 
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         try {
-            ProjectData projectData = implementationService.readProjectData(localProject);
+            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
             Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
             for (JigDocument jigDocument : jigDocuments) {
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData, sqls), outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.info(Warning.クラス検出異常.with(configurationContext));

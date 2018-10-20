@@ -4,11 +4,13 @@ import org.dddjava.jig.domain.basic.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.configuration.*;
+import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 
@@ -30,8 +32,8 @@ public class DependencyServiceTest {
         DependencyService sut = configuration().dependencyService();
 
 
-        ProjectData projectData = implementationService.readProjectData(localProject);
-        PackageNetwork packageNetwork = sut.packageDependencies(projectData);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()

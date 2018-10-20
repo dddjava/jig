@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
@@ -30,10 +30,10 @@ public class DatasourceAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
         Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData, sqls);
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);
 
         assertThat(datasourceAngles.list())
                 .extracting(

@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
@@ -38,16 +38,16 @@ public class PackageDependencyController {
     }
 
     @DocumentMapping(JigDocument.PackageDependency)
-    public JigModelAndView<PackageNetworks> packageDependency(ProjectData projectData) {
+    public JigModelAndView<PackageNetworks> packageDependency(TypeByteCodes typeByteCodes) {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(projectData);
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelation)
-    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(ProjectData projectData) {
-        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(projectData);
+    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(TypeByteCodes typeByteCodes) {
+        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(japaneseNameFinder));
     }

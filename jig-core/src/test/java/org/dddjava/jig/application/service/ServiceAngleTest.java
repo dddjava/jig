@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.infrastructure.Layout;
@@ -32,9 +32,9 @@ public class ServiceAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
-        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
 
         assertThat(serviceAngles.list())
                 .extracting(

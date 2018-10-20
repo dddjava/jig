@@ -3,17 +3,17 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -59,111 +59,111 @@ public class ClassListController {
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
-    public JigModelAndView<ModelReports> applicationList(ProjectData projectData, Sqls sqls) {
+    public JigModelAndView<ModelReports> applicationList(TypeByteCodes typeByteCodes, Sqls sqls) {
         LOGGER.info("入出力リストを出力します");
         ModelReports modelReports = new ModelReports(
-                controllerReport(projectData),
-                serviceReport(projectData),
-                datasourceReport(projectData, sqls)
+                controllerReport(typeByteCodes),
+                serviceReport(typeByteCodes),
+                datasourceReport(typeByteCodes, sqls)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.DomainList)
-    public JigModelAndView<ModelReports> domainList(ProjectData projectData) {
+    public JigModelAndView<ModelReports> domainList(TypeByteCodes typeByteCodes) {
         LOGGER.info("ビジネスルールリストを出力します");
         ModelReports modelReports = new ModelReports(
-                businessRulesReport(projectData),
-                valuesReport(ValueKind.IDENTIFIER, projectData),
-                categoriesReport(projectData),
-                valuesReport(ValueKind.NUMBER, projectData),
-                collectionsReport(projectData),
-                valuesReport(ValueKind.DATE, projectData),
-                valuesReport(ValueKind.TERM, projectData),
-                validateAnnotationReport(projectData),
-                stringComparingReport(projectData),
-                smellReport(projectData)
+                businessRulesReport(typeByteCodes),
+                valuesReport(ValueKind.IDENTIFIER, typeByteCodes),
+                categoriesReport(typeByteCodes),
+                valuesReport(ValueKind.NUMBER, typeByteCodes),
+                collectionsReport(typeByteCodes),
+                valuesReport(ValueKind.DATE, typeByteCodes),
+                valuesReport(ValueKind.TERM, typeByteCodes),
+                validateAnnotationReport(typeByteCodes),
+                stringComparingReport(typeByteCodes),
+                smellReport(typeByteCodes)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.BranchList)
-    public JigModelAndView<ModelReports> branchList(ProjectData projectData) {
+    public JigModelAndView<ModelReports> branchList(TypeByteCodes typeByteCodes) {
         LOGGER.info("条件分岐リストを出力します");
         ModelReports modelReports = new ModelReports(
-                decisionReport(projectData, Layer.PRESENTATION),
-                decisionReport(projectData, Layer.APPLICATION),
-                decisionReport(projectData, Layer.DATASOURCE)
+                decisionReport(typeByteCodes, Layer.PRESENTATION),
+                decisionReport(typeByteCodes, Layer.APPLICATION),
+                decisionReport(typeByteCodes, Layer.DATASOURCE)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
-    ModelReport<?> controllerReport(ProjectData projectData) {
-        ControllerAngles controllerAngles = applicationService.controllerAngles(projectData);
-        ProgressAngles progressAngles = applicationService.progressAngles(projectData);
+    ModelReport<?> controllerReport(TypeByteCodes typeByteCodes) {
+        ControllerAngles controllerAngles = applicationService.controllerAngles(typeByteCodes);
+        ProgressAngles progressAngles = applicationService.progressAngles(typeByteCodes);
 
         return new ModelReport<>(controllerAngles.list(),
                 controllerAngle -> new ControllerReport(controllerAngle, progressAngles.progressOf(controllerAngle.method().declaration())),
                 ControllerReport.class);
     }
 
-    ModelReport<?> serviceReport(ProjectData projectData) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
-        ProgressAngles progressAngles = applicationService.progressAngles(projectData);
+    ModelReport<?> serviceReport(TypeByteCodes typeByteCodes) {
+        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
+        ProgressAngles progressAngles = applicationService.progressAngles(typeByteCodes);
 
         return new ModelReport<>(serviceAngles.list(),
                 serviceAngle -> new ServiceReport(serviceAngle, progressAngles.progressOf(serviceAngle.method())),
                 ServiceReport.class);
     }
 
-    ModelReport<?> datasourceReport(ProjectData projectData, Sqls sqls) {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData, sqls);
+    ModelReport<?> datasourceReport(TypeByteCodes typeByteCodes, Sqls sqls) {
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
-    ModelReport<?> stringComparingReport(ProjectData projectData) {
-        StringComparingAngles stringComparingAngles = applicationService.stringComparing(projectData);
+    ModelReport<?> stringComparingReport(TypeByteCodes typeByteCodes) {
+        StringComparingAngles stringComparingAngles = applicationService.stringComparing(typeByteCodes);
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
-    ModelReport<?> businessRulesReport(ProjectData projectData) {
-        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+    ModelReport<?> businessRulesReport(TypeByteCodes typeByteCodes) {
+        BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
-    ModelReport<?> valuesReport(ValueKind valueKind, ProjectData projectData) {
-        ValueAngles valueAngles = businessRuleService.values(valueKind, projectData);
+    ModelReport<?> valuesReport(ValueKind valueKind, TypeByteCodes typeByteCodes) {
+        ValueAngles valueAngles = businessRuleService.values(valueKind, typeByteCodes);
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
-    ModelReport<?> collectionsReport(ProjectData projectData) {
-        CollectionAngles collectionAngles = businessRuleService.collections(projectData);
+    ModelReport<?> collectionsReport(TypeByteCodes typeByteCodes) {
+        CollectionAngles collectionAngles = businessRuleService.collections(typeByteCodes);
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
-    ModelReport<?> categoriesReport(ProjectData projectData) {
-        CategoryAngles categoryAngles = businessRuleService.categories(projectData);
+    ModelReport<?> categoriesReport(TypeByteCodes typeByteCodes) {
+        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
         return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }
 
-    ModelReport<?> validateAnnotationReport(ProjectData projectData) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
+    ModelReport<?> validateAnnotationReport(TypeByteCodes typeByteCodes) {
+        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(typeByteCodes.annotatedFields(), typeByteCodes.annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());
         return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport<?> decisionReport(ProjectData projectData, Layer layer) {
-        DecisionAngles decisionAngles = applicationService.decision(projectData);
+    ModelReport<?> decisionReport(TypeByteCodes typeByteCodes, Layer layer) {
+        DecisionAngles decisionAngles = applicationService.decision(typeByteCodes);
         return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
     }
 
-    ModelReport<?> smellReport(ProjectData projectData) {
-        MethodSmellAngles angles = businessRuleService.methodSmells(projectData);
+    ModelReport<?> smellReport(TypeByteCodes typeByteCodes) {
+        MethodSmellAngles angles = businessRuleService.methodSmells(typeByteCodes);
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

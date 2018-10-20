@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class ValueTypes {
     private List<ValueType> list;
 
-    public ValueTypes(ProjectData typeByteCodes, ValueKind valueKind) {
+    public ValueTypes(TypeByteCodes typeByteCodes, ValueKind valueKind) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             if (valueKind.matches(typeByteCode.fieldDeclarations())) {

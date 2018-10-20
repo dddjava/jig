@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -29,17 +29,17 @@ public class ServiceDiagramController {
     }
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchy)
-    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(ProjectData projectData) {
+    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(TypeByteCodes typeByteCodes) {
         LOGGER.info("サービスメソッド呼び出しダイアグラムを出力します");
-        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.BooleanService)
-    public JigModelAndView<?> booleanServiceTrace(ProjectData projectData) {
+    public JigModelAndView<?> booleanServiceTrace(TypeByteCodes typeByteCodes) {
         LOGGER.info("真偽値を返すサービスメソッド追跡ダイアグラムを出力します");
-        ServiceAngles serviceAngles = applicationService.serviceAngles(projectData);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(japaneseNameFinder));
     }

@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class EnumAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService,  BusinessRuleService businessRuleService) {
+    void readProjectData(ImplementationService implementationService, BusinessRuleService businessRuleService) {
         Logger logger = LoggerFactory.getLogger("");
         Map<String, Object> map = Collections.singletonMap("aaa", "bbb");
         logger.error("", map);
@@ -37,9 +37,9 @@ public class EnumAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
-        CategoryAngles categoryAngles = businessRuleService.categories(projectData);
+        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
         assertThat(categoryAngles.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,

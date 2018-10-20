@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
@@ -27,9 +27,9 @@ public class ControllerAnglesTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        ProjectData projectData = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
-        ControllerAngles angles = applicationService.controllerAngles(projectData);
+        ControllerAngles angles = applicationService.controllerAngles(typeByteCodes);
 
         assertThat(angles.list())
                 .extracting(

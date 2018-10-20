@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class ServiceMethods {
     private final List<Method> methods;
 
-    public ServiceMethods(ProjectData typeByteCodes, Architecture architecture) {
+    public ServiceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         List<TypeByteCode> serviceByteCodes = typeByteCodes.list().stream()
                 .filter(typeByteCode -> architecture.isService(typeByteCode.typeAnnotations()))
                 .collect(toList());

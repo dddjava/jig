@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,8 +15,16 @@ public class MethodUsingFields {
 
     List<MethodUsingField> list;
 
-    public MethodUsingFields(List<MethodUsingField> list) {
-        this.list = list;
+    public MethodUsingFields(TypeByteCodes typeByteCodes) {
+        this.list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
+                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                for (FieldDeclaration usingField : methodByteCode.usingFields().list()) {
+                    list.add(new MethodUsingField(methodDeclaration, usingField));
+                }
+            }
+        }
     }
 
     private MethodUsingFieldStream stream() {

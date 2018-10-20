@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -41,7 +42,7 @@ public class BusinessRuleService {
     public MethodSmellAngles methodSmells(ProjectData projectData) {
         return new MethodSmellAngles(
                 projectData.methods(),
-                projectData.methodUsingFields(),
+                new MethodUsingFields(projectData.typeByteCodes()),
                 projectData.fieldDeclarations(),
                 projectData.methodRelations(),
                 businessRules(projectData.types()));

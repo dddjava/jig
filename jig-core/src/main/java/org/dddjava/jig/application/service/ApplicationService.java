@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -36,7 +37,7 @@ public class ApplicationService {
         return new ControllerAngles(
                 projectData.controllerMethods(),
                 projectData.typeAnnotations(),
-                projectData.methodUsingFields());
+                new MethodUsingFields(projectData.typeByteCodes()));
     }
 
     /**
@@ -53,7 +54,7 @@ public class ApplicationService {
                 serviceMethods,
                 projectData.methodRelations(),
                 projectData.characterizedTypes(),
-                projectData.methodUsingFields(),
+                new MethodUsingFields(projectData.typeByteCodes()),
                 projectData.characterizedMethods()
         );
     }

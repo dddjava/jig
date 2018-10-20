@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.characteristic.*;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -106,19 +105,6 @@ public class ProjectData {
         PotentiallyValueTypes potentiallyValueTypes = new PotentiallyValueTypes(list);
 
         return potentiallyValueTypes.toValueTypes(categories());
-    }
-
-    public MethodUsingFields methodUsingFields() {
-        ArrayList<MethodUsingField> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
-                for (FieldDeclaration usingField : methodByteCode.usingFields().list()) {
-                    list.add(new MethodUsingField(methodDeclaration, usingField));
-                }
-            }
-        }
-        return new MethodUsingFields(list);
     }
 
     public CharacterizedMethods characterizedMethods() {

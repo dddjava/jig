@@ -15,7 +15,7 @@ public class MethodUsingFields {
 
     List<MethodUsingField> list;
 
-    public MethodUsingFields(TypeByteCodes typeByteCodes) {
+    public MethodUsingFields(ProjectData typeByteCodes) {
         this.list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {

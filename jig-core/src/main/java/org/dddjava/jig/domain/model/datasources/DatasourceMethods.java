@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class DatasourceMethods {
     List<DatasourceMethod> list;
 
-    public DatasourceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public DatasourceMethods(ProjectData typeByteCodes, Architecture architecture) {
         this.list = new ArrayList<>();
         for (TypeByteCode concreteByteCode : typeByteCodes.list()) {
             if (!architecture.isDataSource(concreteByteCode.typeAnnotations())) {

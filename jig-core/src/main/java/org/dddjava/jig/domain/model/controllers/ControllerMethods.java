@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.controllers;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class ControllerMethods {
     List<Method> list;
 
-    public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public ControllerMethods(ProjectData typeByteCodes, Architecture architecture) {
         List<TypeByteCode> controllerTypeByteCode = typeByteCodes.list().stream()
                 .filter(typeByteCode -> architecture.isController(typeByteCode.typeAnnotations()))
                 .collect(toList());

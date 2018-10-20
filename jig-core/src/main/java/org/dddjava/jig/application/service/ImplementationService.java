@@ -2,10 +2,9 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.ClassFindFailException;
-import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -34,20 +33,18 @@ public class ImplementationService {
      * プロジェクト情報を読み取る
      */
     public ProjectData readProjectData(LocalProject target) {
-        TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
-
-        ProjectData projectData = new ProjectData(typeByteCodes);
+        ProjectData typeByteCodes = readByteCode(target.getByteCodeSources());
 
         glossaryService.importJapanese(target.getTypeNameSources());
         glossaryService.importJapanese(target.getPackageNameSources());
 
-        return projectData;
+        return typeByteCodes;
     }
 
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeByteCodes readByteCode(ByteCodeSources byteCodeSources) {
+    public ProjectData readByteCode(ByteCodeSources byteCodeSources) {
         if (byteCodeSources.notFound()) {
             throw new ClassFindFailException();
         }

@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -130,7 +130,7 @@ public class ClassListController {
     }
 
     ModelReport<?> businessRulesReport(ProjectData projectData) {
-        BusinessRules businessRules = businessRuleService.businessRules(projectData.typeByteCodes().types());
+        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
@@ -150,7 +150,7 @@ public class ClassListController {
     }
 
     ModelReport<?> validateAnnotationReport(ProjectData projectData) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.typeByteCodes().annotatedFields(), projectData.typeByteCodes().annotatedMethods());
+        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.annotatedFields(), projectData.annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());

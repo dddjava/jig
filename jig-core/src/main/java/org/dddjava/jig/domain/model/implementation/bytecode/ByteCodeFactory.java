@@ -5,5 +5,5 @@ package org.dddjava.jig.domain.model.implementation.bytecode;
  */
 public interface ByteCodeFactory {
 
-    TypeByteCodes readFrom(ByteCodeSources byteCodeSources);
+    ProjectData readFrom(ByteCodeSources byteCodeSources);
 }

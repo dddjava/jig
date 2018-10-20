@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.ProjectData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,13 +15,13 @@ import java.util.List;
 public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory {
 
     @Override
-    public TypeByteCodes readFrom(ByteCodeSources byteCodeSources) {
+    public ProjectData readFrom(ByteCodeSources byteCodeSources) {
         List<TypeByteCode> list = new ArrayList<>();
         for (ByteCodeSource source : byteCodeSources.list()) {
             TypeByteCode typeByteCode = analyze(source);
             list.add(typeByteCode);
         }
-        return new TypeByteCodes(list);
+        return new ProjectData(list);
     }
 
     TypeByteCode analyze(ByteCodeSource byteCodeSource) {

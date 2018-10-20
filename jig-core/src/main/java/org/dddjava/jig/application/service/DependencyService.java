@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class DependencyService {
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
         }
 
-        PackageDependencies packageDependencies = projectData.typeDependencies().packageDependencies();
+        PackageDependencies packageDependencies = new TypeDependencies(projectData.typeByteCodes()).packageDependencies();
 
         PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageDependencies);
         showDepth(packageNetwork);
@@ -71,7 +72,7 @@ public class DependencyService {
     public BusinessRuleNetwork businessRuleNetwork(ProjectData projectData) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
                 businessRuleService.businessRules(projectData.types()),
-                projectData.typeDependencies());
+                new TypeDependencies(projectData.typeByteCodes()));
         return businessRuleNetwork;
     }
 }

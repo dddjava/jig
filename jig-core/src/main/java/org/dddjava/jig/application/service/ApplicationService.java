@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
@@ -71,7 +72,7 @@ public class ApplicationService {
         return new DatasourceAngles(
                 characterizedMethods.repositoryMethods(),
                 mapperMethodDeclarations,
-                projectData.implementationMethods(),
+                new ImplementationMethods(projectData.typeByteCodes()),
                 projectData.methodRelations(),
                 projectData.sqls());
     }

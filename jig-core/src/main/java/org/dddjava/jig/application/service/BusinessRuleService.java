@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -53,7 +54,7 @@ public class BusinessRuleService {
         CategoryTypes categoryTypes = projectData.categories();
 
         return new CategoryAngles(categoryTypes,
-                projectData.typeDependencies(),
+                new TypeDependencies(projectData.typeByteCodes()),
                 projectData.fieldDeclarations(),
                 projectData.staticFieldDeclarations());
     }
@@ -62,7 +63,7 @@ public class BusinessRuleService {
      * 値一覧を取得する
      */
     public ValueAngles values(ValueKind valueKind, ProjectData projectData) {
-        return new ValueAngles(valueKind, projectData.valueTypes(), projectData.typeDependencies());
+        return new ValueAngles(valueKind, projectData.valueTypes(), new TypeDependencies(projectData.typeByteCodes()));
     }
 
     /**
@@ -73,6 +74,6 @@ public class BusinessRuleService {
         return new CollectionAngles(collectionTypeIdentifiers,
                 projectData.fieldDeclarations(),
                 projectData.methods(),
-                projectData.typeDependencies());
+                new TypeDependencies(projectData.typeByteCodes()));
     }
 }

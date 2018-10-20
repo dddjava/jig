@@ -17,8 +17,6 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.bytecode.*;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
-import org.dddjava.jig.domain.model.networks.type.TypeDependency;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.PotentiallyValueType;
 import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
@@ -71,20 +69,6 @@ public class ProjectData {
         this.sqls = sqls;
     }
 
-    public ImplementationMethods implementationMethods() {
-        List<ImplementationMethod> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
-                for (TypeIdentifier interfaceTypeIdentifier : typeByteCode.interfaceTypeIdentifiers.list()) {
-                    MethodDeclaration implMethod = methodDeclaration.with(interfaceTypeIdentifier);
-                    list.add(new ImplementationMethod(methodDeclaration, implMethod));
-                }
-            }
-        }
-        return new ImplementationMethods(list);
-    }
-
     public MethodRelations methodRelations() {
         List<MethodRelation> list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
@@ -104,17 +88,6 @@ public class ProjectData {
 
     public CharacterizedTypes characterizedTypes() {
         return characterizedTypes;
-    }
-
-    public TypeDependencies typeDependencies() {
-        ArrayList<TypeDependency> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            TypeIdentifier form = typeByteCode.typeIdentifier();
-            for (TypeIdentifier to : typeByteCode.useTypes().list()) {
-                list.add(new TypeDependency(form, to));
-            }
-        }
-        return new TypeDependencies(list);
     }
 
     public FieldDeclarations fieldDeclarations() {
@@ -209,5 +182,9 @@ public class ProjectData {
         return characterizedTypes().stream()
                 .filter(Characteristic.REPOSITORY)
                 .typeIdentifiers();
+    }
+
+    public TypeByteCodes typeByteCodes() {
+        return typeByteCodes;
     }
 }

@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.PotentiallyValueType;
 import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
 import org.dddjava.jig.domain.model.values.ValueTypes;
@@ -59,10 +58,6 @@ public class ProjectData {
         PotentiallyValueTypes potentiallyValueTypes = new PotentiallyValueTypes(list);
 
         return potentiallyValueTypes.toValueTypes(categories());
-    }
-
-    public Methods controllerMethods() {
-        return new Methods(this.typeByteCodes()).controllerMethods(characterizedTypes);
     }
 
     public CategoryTypes categories() {

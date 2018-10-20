@@ -29,4 +29,14 @@ public class Architecture {
     public boolean isBusinessRule(TypeIdentifier typeIdentifier) {
         return businessRuleCondition.judge(typeIdentifier);
     }
+
+    public boolean isController(List<TypeAnnotation> typeAnnotations) {
+        TypeIdentifier controller = new TypeIdentifier("org.springframework.stereotype.Controller");
+        TypeIdentifier restController = new TypeIdentifier("org.springframework.web.bind.annotation.RestController");
+        TypeIdentifier controllerAdvice = new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice");
+        return typeAnnotations.stream()
+                .anyMatch(typeAnnotation -> typeAnnotation.typeIs(controller)
+                        || typeAnnotation.typeIs(restController)
+                        || typeAnnotation.typeIs(controllerAdvice));
+    }
 }

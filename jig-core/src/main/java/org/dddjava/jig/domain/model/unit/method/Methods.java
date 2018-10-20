@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.unit.method;
 
-import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
@@ -8,7 +7,6 @@ import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -41,10 +39,6 @@ public class Methods {
     public Methods filterHasDecision() {
         List<Method> list = this.list.stream().filter(Method::hasDecision).collect(toList());
         return new Methods(list);
-    }
-
-    public Methods controllerMethods(CharacterizedTypes characterizedTypes) {
-        return new Methods(list.stream().filter(method -> method.isControllerMethod(characterizedTypes)).collect(Collectors.toList()));
     }
 
     public Method get(MethodDeclaration methodDeclaration) {

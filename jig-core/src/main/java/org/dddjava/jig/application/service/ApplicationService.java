@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
@@ -50,10 +51,17 @@ public class ApplicationService {
      * コントローラーを分析する
      */
     public ControllerAngles controllerAngles(ProjectData projectData) {
+        TypeByteCodes typeByteCodes = projectData.typeByteCodes();
+        ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
+
+        if (controllerMethods.empty()) {
+            LOGGER.warn(Warning.コントローラーなし.text());
+        }
+
         return new ControllerAngles(
-                projectData.controllerMethods(),
-                projectData.typeByteCodes().typeAnnotations(),
-                new MethodUsingFields(projectData.typeByteCodes()));
+                controllerMethods,
+                typeByteCodes.typeAnnotations(),
+                new MethodUsingFields(typeByteCodes));
     }
 
     /**

@@ -19,6 +19,13 @@ public enum Warning {
             return text(context.classFileDetectionWarningMessage());
         }
     },
+    コントローラーなし(new Message()
+            .add("リクエストハンドラメソッドが見つからないため、コントローラー一覧が出力されません。")
+            .add("リクエストハンドラメソッドの対照は次の通りです。")
+            .add("")
+            .add("- クラスに @Controller 系のアノテーションが付与されている")
+            .add("- メソッドに @RequestMapping 系のアノテーションが付与されている。")
+    ),
     サービス検出異常(new Message()
             .add("サービスクラスが見つからないため、サービス関連図やサービス一覧が空になります。")
             .add("検出には org.springframework.stereotype.Service アノテーションを使用しています。")

@@ -10,6 +10,8 @@ import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
+import stub.domain.model.kind.ParameterizedEnum;
+import stub.domain.model.kind.SimpleEnum;
 import stub.domain.model.type.*;
 import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaName;
@@ -36,11 +38,16 @@ public class ValueAngleTest {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
 
         ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, typeByteCodes);
-        assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleIdentifier.class),
-                new TypeIdentifier(FugaIdentifier.class),
-                new TypeIdentifier(FugaName.class)
-        );
+        assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier)
+                .contains(
+                        new TypeIdentifier(SimpleIdentifier.class),
+                        new TypeIdentifier(FugaIdentifier.class),
+                        new TypeIdentifier(FugaName.class)
+                )
+                .doesNotContain(
+                        new TypeIdentifier(SimpleEnum.class),
+                        new TypeIdentifier(ParameterizedEnum.class)
+                );
 
         ValueAngles numbers = service.values(ValueKind.NUMBER, typeByteCodes);
         assertThat(numbers.list()).extracting(ValueAngle::typeIdentifier).contains(

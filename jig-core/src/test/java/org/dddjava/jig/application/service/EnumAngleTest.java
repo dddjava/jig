@@ -57,7 +57,7 @@ public class EnumAngleTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.kind.ParameterizedEnum"),
-                        "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum]",
+                        "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
                         true, false, false
                 ),
                 tuple(
@@ -77,7 +77,7 @@ public class EnumAngleTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.kind.SimpleEnum"),
-                        "[A, B, C, D]", "[]", "[AsmByteCodeFactoryTest, RelationEnum]",
+                        "[A, B, C, D]", "[]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
                         false, false, false
                 ),
                 tuple(

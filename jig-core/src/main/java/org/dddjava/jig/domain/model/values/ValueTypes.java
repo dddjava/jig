@@ -15,6 +15,9 @@ public class ValueTypes {
     public ValueTypes(TypeByteCodes typeByteCodes, ValueKind valueKind) {
         list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            if (typeByteCode.isEnum()) {
+                continue;
+            }
             if (valueKind.matches(typeByteCode.fieldDeclarations())) {
                 list.add(new ValueType(typeByteCode.typeIdentifier()));
             }

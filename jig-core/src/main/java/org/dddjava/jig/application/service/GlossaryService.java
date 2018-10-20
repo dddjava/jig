@@ -5,10 +5,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.sourcecode.*;
-import org.dddjava.jig.domain.model.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameRepository;
-import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
-import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
+import org.dddjava.jig.domain.model.japanese.*;
 import org.springframework.stereotype.Service;
 
 /**

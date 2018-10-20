@@ -37,10 +37,6 @@ public class MethodDeclaration {
         return methodIdentifier.methodSignature();
     }
 
-    public MethodDeclaration with(TypeIdentifier typeIdentifier) {
-        return new MethodDeclaration(typeIdentifier, methodSignature(), methodReturn);
-    }
-
     public MethodReturn methodReturn() {
         return methodReturn;
     }

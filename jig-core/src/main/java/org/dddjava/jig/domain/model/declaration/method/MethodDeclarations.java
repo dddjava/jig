@@ -55,12 +55,6 @@ public class MethodDeclarations {
         return list.isEmpty();
     }
 
-    public MethodDeclarations filterDeclareTypeIs(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .filter(methodDeclaration -> methodDeclaration.declaringType().equals(typeIdentifier))
-                .collect(collector());
-    }
-
     public MethodNumber number() {
         return new MethodNumber(list.size());
     }

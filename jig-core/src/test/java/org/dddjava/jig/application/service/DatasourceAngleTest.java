@@ -3,6 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
@@ -30,8 +31,9 @@ public class DatasourceAngleTest {
 
         LocalProject localProject = new LocalProject(layoutMock);
         ProjectData projectData = implementationService.readProjectData(localProject);
+        Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData);
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData, sqls);
 
         assertThat(datasourceAngles.list())
                 .extracting(

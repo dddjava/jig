@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
@@ -63,7 +64,7 @@ public class ClassListController {
         ModelReports modelReports = new ModelReports(
                 controllerReport(projectData),
                 serviceReport(projectData),
-                datasourceReport(projectData)
+                datasourceReport(projectData, projectData.sqls())
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
@@ -118,8 +119,8 @@ public class ClassListController {
                 ServiceReport.class);
     }
 
-    ModelReport<?> datasourceReport(ProjectData projectData) {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData);
+    ModelReport<?> datasourceReport(ProjectData projectData, Sqls sqls) {
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(projectData, sqls);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 

@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.basic.FileWriteFailureException;
-import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
@@ -40,7 +39,7 @@ public class JigDocumentHandlers {
         this.jigDebugMode = jigDebugMode;
     }
 
-    JigModelAndView<?> resolveHandlerMethod(JigDocument jigDocument, ProjectData projectData) {
+    JigModelAndView<?> resolveHandlerMethod(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver) {
         try {
             for (Object controller : controllers) {
                 Optional<Method> mayBeHandlerMethod = Arrays.stream(controller.getClass().getMethods())
@@ -48,7 +47,11 @@ public class JigDocumentHandlers {
                         .filter(method -> method.getAnnotation(DocumentMapping.class).value() == jigDocument)
                         .findFirst();
                 if (mayBeHandlerMethod.isPresent()) {
-                    return (JigModelAndView<?>) mayBeHandlerMethod.get().invoke(controller, projectData);
+                    Method method = mayBeHandlerMethod.get();
+                    Object[] args = Arrays.stream(method.getParameterTypes())
+                            .map(clz -> argumentResolver.resolve(clz))
+                            .toArray();
+                    return (JigModelAndView<?>) method.invoke(controller, args);
                 }
             }
         } catch (ReflectiveOperationException e) {
@@ -57,9 +60,9 @@ public class JigDocumentHandlers {
         throw new IllegalStateException();
     }
 
-    public void handle(JigDocument jigDocument, ProjectData projectData, Path outputDirectory) {
+    public void handle(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver, Path outputDirectory) {
         try {
-            JigModelAndView<?> jigModelAndView = resolveHandlerMethod(jigDocument, projectData);
+            JigModelAndView<?> jigModelAndView = resolveHandlerMethod(jigDocument, argumentResolver);
 
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);

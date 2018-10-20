@@ -8,6 +8,7 @@ import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -50,7 +51,7 @@ public class JigReportsTask extends DefaultTask {
         try {
             ProjectData projectData = implementationService.readProjectData(localProject);
             for (JigDocument jigDocument : jigDocuments) {
-                jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), projectData.sqls()), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.info(Warning.クラス検出異常.with(configurationContext));

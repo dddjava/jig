@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class Cli {
 
             Path outputDirectory = cliConfig.outputDirectory();
             for (JigDocument jigDocument : jigDocuments) {
-                jigDocumentHandlers.handle(jigDocument, projectData, outputDirectory);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(projectData, projectData.typeByteCodes(), projectData.sqls()), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().with(configuration.configurationContext()));

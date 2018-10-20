@@ -81,11 +81,10 @@ public class ApplicationService {
     /**
      * データソースを分析する
      */
-    public DatasourceAngles datasourceAngles(ProjectData projectData) {
+    public DatasourceAngles datasourceAngles(ProjectData projectData, Sqls sqls) {
         TypeByteCodes typeByteCodes = projectData.typeByteCodes();
 
         DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
-        Sqls sqls = projectData.sqls();
 
         if (datasourceMethods.empty()) {
             LOGGER.warn(Warning.リポジトリなし.text());

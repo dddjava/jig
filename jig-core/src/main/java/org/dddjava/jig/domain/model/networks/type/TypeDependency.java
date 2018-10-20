@@ -31,4 +31,8 @@ public class TypeDependency {
     public boolean notSelfDependency() {
         return !from.normalize().equals(to.normalize());
     }
+
+    public TypeIdentifier to() {
+        return to;
+    }
 }

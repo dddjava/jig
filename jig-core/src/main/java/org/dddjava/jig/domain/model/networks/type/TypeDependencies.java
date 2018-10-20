@@ -30,4 +30,8 @@ public class TypeDependencies {
 
         return new PackageDependencies(packageDependencyList);
     }
+
+    public List<TypeDependency> list() {
+        return list;
+    }
 }

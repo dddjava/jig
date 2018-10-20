@@ -47,17 +47,17 @@ public class Configuration {
         SqlReader sqlReader = new MyBatisSqlReader();
         ByteCodeFactory byteCodeFactory = new AsmByteCodeFactory();
         this.applicationService = new ApplicationService();
-        PrefixRemoveIdentifierFormatter typeIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
+        PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
         ViewResolver viewResolver = new ViewResolver(
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
-                typeIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
+                prefixRemoveIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
         ClassListController classListController = new ClassListController(
-                typeIdentifierFormatter,
+                prefixRemoveIdentifierFormatter,
                 glossaryService,
                 applicationService,
                 businessRuleService

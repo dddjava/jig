@@ -26,6 +26,13 @@ public enum JigDocument {
     PackageDependency("package-dependency"),
 
     /**
+     * ビジネスルール関連ダイアグラム
+     *
+     * ビジネスルール間の関連を可視化する。
+     */
+    BusinessRuleRelation("business-rule-relation"),
+
+    /**
      * 機能一覧
      *
      * 機能を提供するメソッドの一覧。

@@ -5,6 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -42,5 +43,12 @@ public class PackageDependencyController {
         PackageNetwork packageNetwork = dependencyService.packageDependencies(projectData);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
+    }
+
+    @DocumentMapping(JigDocument.BusinessRuleRelation)
+    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(ProjectData projectData) {
+        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(projectData);
+        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
+        return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(japaneseNameFinder));
     }
 }

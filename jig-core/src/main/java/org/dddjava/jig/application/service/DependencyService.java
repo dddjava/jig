@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.slf4j.Logger;
@@ -65,5 +66,12 @@ public class DependencyService {
             PackageDependencies dependencies = packageDependencies.applyDepth(depth);
             LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
         }
+    }
+
+    public BusinessRuleNetwork businessRuleNetwork(ProjectData projectData) {
+        BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
+                businessRuleService.businessRules(projectData.types()),
+                projectData.typeDependencies());
+        return businessRuleNetwork;
     }
 }

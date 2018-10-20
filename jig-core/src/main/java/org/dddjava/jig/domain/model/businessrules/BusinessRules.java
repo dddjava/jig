@@ -24,6 +24,10 @@ public class BusinessRules {
         }
     }
 
+    public BusinessRules(List<BusinessRule> list) {
+        this.list = list;
+    }
+
     public List<BusinessRule> list() {
         return list;
     }

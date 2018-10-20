@@ -1,28 +1,33 @@
 package org.dddjava.jig.domain.model.categories;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 /**
  * 区分
  */
 public class CategoryType {
     TypeIdentifier typeIdentifier;
-    CategoryCharacteristics categoryCharacteristics;
+    boolean behaviour;
+    boolean polymorphism;
+    boolean parameterized;
 
-    public CategoryType(TypeIdentifier typeIdentifier, CategoryCharacteristics categoryCharacteristics) {
-        this.typeIdentifier = typeIdentifier;
-        this.categoryCharacteristics = categoryCharacteristics;
+    public CategoryType(TypeByteCode typeByteCode) {
+        this.typeIdentifier = typeByteCode.typeIdentifier();
+        this.parameterized = typeByteCode.hasField();
+        this.behaviour = typeByteCode.hasInstanceMethod();
+        this.polymorphism = typeByteCode.canExtend();
     }
 
     public boolean hasParameter() {
-        return categoryCharacteristics.contains(CategoryCharacteristic.PARAMETERIZED);
+        return parameterized;
     }
 
     public boolean hasBehaviour() {
-        return categoryCharacteristics.contains(CategoryCharacteristic.BEHAVIOUR);
+        return behaviour;
     }
 
     public boolean isPolymorphism() {
-        return categoryCharacteristics.contains(CategoryCharacteristic.POLYMORPHISM);
+        return polymorphism;
     }
 }

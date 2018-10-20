@@ -56,7 +56,7 @@ public class BusinessRuleService {
      * 区分一覧を取得する
      */
     public CategoryAngles categories(ProjectData projectData) {
-        CategoryTypes categoryTypes = projectData.categories();
+        CategoryTypes categoryTypes = new CategoryTypes(projectData.typeByteCodes());
 
         return new CategoryAngles(categoryTypes,
                 new TypeDependencies(projectData.typeByteCodes()),

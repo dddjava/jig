@@ -115,6 +115,10 @@ public class MethodByteCode {
     }
 
     public Method method() {
-        return new Method(methodDeclaration, new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber), new MethodAnnotations(methodAnnotations));
+        return new Method(
+                methodDeclaration,
+                new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber),
+                new MethodAnnotations(methodAnnotations),
+                accessor());
     }
 }

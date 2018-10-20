@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.bytecode.Accessor;
 
 /**
  * メソッド
@@ -14,11 +15,13 @@ public class Method {
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
+    Accessor accessor;
 
-    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations) {
+    public Method(MethodDeclaration methodDeclaration, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor) {
         this.methodDeclaration = methodDeclaration;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
+        this.accessor = accessor;
     }
 
     public MethodDeclaration declaration() {
@@ -52,5 +55,9 @@ public class Method {
 
     public MethodAnnotations methodAnnotations() {
         return methodAnnotations;
+    }
+
+    public boolean isPublic() {
+        return accessor.isPublic();
     }
 }

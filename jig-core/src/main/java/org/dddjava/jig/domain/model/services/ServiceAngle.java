@@ -1,12 +1,16 @@
 package org.dddjava.jig.domain.model.services;
 
-import org.dddjava.jig.domain.model.characteristic.*;
+import org.dddjava.jig.domain.model.characteristic.Characteristic;
+import org.dddjava.jig.domain.model.characteristic.Characteristics;
+import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
+import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.stream.Stream;
 
@@ -26,7 +30,7 @@ public class ServiceAngle {
     boolean useStream;
     private boolean isPublic;
 
-    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, CharacterizedMethods characterizedMethods) {
+    ServiceAngle(MethodDeclaration serviceMethod, MethodRelations methodRelations, CharacterizedTypes characterizedTypes, MethodUsingFields methodUsingFields, Methods methods) {
         this.methodDeclaration = serviceMethod;
         this.userCharacteristics = characterizedTypes.stream()
                 .filter(methodRelations.userMethodDeclaringTypesOf(serviceMethod))
@@ -36,7 +40,9 @@ public class ServiceAngle {
         this.usingRepositoryMethods = methodRelations.stream().filterFrom(serviceMethod)
                 .filterToTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.REPOSITORY).typeIdentifiers())
                 .toMethods();
-        this.isPublic = !characterizedMethods.characteristicsOf(serviceMethod).isNotPublicMethod();
+
+        Method method = methods.get(serviceMethod);
+        this.isPublic = method.isPublic();
 
         this.userServiceMethods = methodRelations.stream().filterTo(serviceMethod)
                 .filterFromTypeIsIncluded(characterizedTypes.stream().filter(Characteristic.SERVICE).typeIdentifiers())

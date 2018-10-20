@@ -56,7 +56,7 @@ public class ApplicationService {
                 new MethodRelations(projectData.typeByteCodes()),
                 projectData.characterizedTypes(),
                 new MethodUsingFields(projectData.typeByteCodes()),
-                projectData.characterizedMethods()
+                projectData.methods()
         );
     }
 

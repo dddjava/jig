@@ -1,10 +1,12 @@
 package org.dddjava.jig.domain.model.unit.method;
 
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -35,5 +37,14 @@ public class Methods {
 
     public Methods controllerMethods(CharacterizedTypes characterizedTypes) {
         return new Methods(list.stream().filter(method -> method.isControllerMethod(characterizedTypes)).collect(Collectors.toList()));
+    }
+
+    public Method get(MethodDeclaration methodDeclaration) {
+        for (Method method : list) {
+            if (method.declaration().sameIdentifier(methodDeclaration)) {
+                return method;
+            }
+        }
+        throw new NoSuchElementException(methodDeclaration.asFullNameText());
     }
 }

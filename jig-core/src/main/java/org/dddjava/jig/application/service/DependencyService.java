@@ -40,7 +40,7 @@ public class DependencyService {
     public PackageNetwork packageDependencies(ProjectData projectData) {
         LOGGER.info("パッケージ依存情報を取得します");
 
-        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+        BusinessRules businessRules = businessRuleService.businessRules(projectData.typeByteCodes().types());
 
         if (businessRules.empty()) {
             LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
@@ -71,7 +71,7 @@ public class DependencyService {
 
     public BusinessRuleNetwork businessRuleNetwork(ProjectData projectData) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
-                businessRuleService.businessRules(projectData.types()),
+                businessRuleService.businessRules(projectData.typeByteCodes().types()),
                 new TypeDependencies(projectData.typeByteCodes()));
         return businessRuleNetwork;
     }

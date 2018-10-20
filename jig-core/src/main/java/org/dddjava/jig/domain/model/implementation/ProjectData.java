@@ -5,15 +5,8 @@ import org.dddjava.jig.domain.model.categories.CategoryCharacteristics;
 import org.dddjava.jig.domain.model.categories.CategoryType;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.characteristic.*;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotations;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
@@ -32,17 +25,6 @@ public class ProjectData {
 
     private final TypeByteCodes typeByteCodes;
 
-    private Types types;
-    // メソッド
-    private Methods methods;
-    // フィールド
-    private StaticFieldDeclarations staticFieldDeclarations;
-    private FieldDeclarations fieldDeclarations;
-    // アノテーション
-    private TypeAnnotations typeAnnotations;
-    private FieldAnnotations fieldAnnotations;
-    private MethodAnnotations methodAnnotations;
-
     // データソースアクセス
     private Sqls sqls;
 
@@ -52,15 +34,6 @@ public class ProjectData {
 
     public ProjectData(TypeByteCodes typeByteCodes, Sqls sqls, CharacterizedTypeFactory characterizedTypeFactory) {
         this.typeByteCodes = typeByteCodes;
-        this.types = typeByteCodes.types();
-        this.methods = typeByteCodes.instanceMethods();
-
-        this.typeAnnotations = typeByteCodes.typeAnnotations();
-        this.fieldAnnotations = typeByteCodes.annotatedFields();
-        this.methodAnnotations = typeByteCodes.annotatedMethods();
-
-        this.fieldDeclarations = typeByteCodes.instanceFields();
-        this.staticFieldDeclarations = typeByteCodes.staticFields();
 
         CharacterizedTypes characterizedTypes = new CharacterizedTypes(typeByteCodes, characterizedTypeFactory);
         this.characterizedTypes = characterizedTypes;
@@ -69,25 +42,12 @@ public class ProjectData {
         this.sqls = sqls;
     }
 
-    public MethodRelations methodRelations() {
-
-        return new MethodRelations(typeByteCodes());
-    }
-
     public Sqls sqls() {
         return sqls;
     }
 
     public CharacterizedTypes characterizedTypes() {
         return characterizedTypes;
-    }
-
-    public FieldDeclarations fieldDeclarations() {
-        return fieldDeclarations;
-    }
-
-    public StaticFieldDeclarations staticFieldDeclarations() {
-        return staticFieldDeclarations;
     }
 
     public ValueTypes valueTypes() {
@@ -104,24 +64,8 @@ public class ProjectData {
         return characterizedMethods;
     }
 
-    public TypeAnnotations typeAnnotations() {
-        return typeAnnotations;
-    }
-
-    public FieldAnnotations fieldAnnotations() {
-        return fieldAnnotations;
-    }
-
-    public MethodAnnotations methodAnnotations() {
-        return methodAnnotations;
-    }
-
-    public Types types() {
-        return types;
-    }
-
     public Methods methods() {
-        return methods;
+        return typeByteCodes.instanceMethods();
     }
 
     public Methods controllerMethods() {

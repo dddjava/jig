@@ -129,7 +129,7 @@ public class ClassListController {
     }
 
     ModelReport<?> businessRulesReport(ProjectData projectData) {
-        BusinessRules businessRules = businessRuleService.businessRules(projectData.types());
+        BusinessRules businessRules = businessRuleService.businessRules(projectData.typeByteCodes().types());
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
@@ -149,7 +149,7 @@ public class ClassListController {
     }
 
     ModelReport<?> validateAnnotationReport(ProjectData projectData) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.fieldAnnotations(), projectData.methodAnnotations());
+        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(projectData.typeByteCodes().annotatedFields(), projectData.typeByteCodes().annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
                 .collect(Collectors.toList());

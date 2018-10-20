@@ -42,13 +42,13 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         Configuration configuration = cliConfig.configuration();
         ApplicationService applicationService = configuration.angleService();
 
-        MethodRelations methodRelations = projectData.methodRelations();
+        MethodRelations methodRelations = new MethodRelations(projectData.typeByteCodes());
 
         TypeIdentifiers repositories = projectData.repositories();
-        TypeAnnotations typeAnnotations = projectData.typeAnnotations();
+        TypeAnnotations typeAnnotations = projectData.typeByteCodes().typeAnnotations();
 
         Map<TypeIdentifier, String> entityTableMap = jpaEntityTableNameMap(typeAnnotations);
-        Types types = projectData.types();
+        Types types = projectData.typeByteCodes().types();
         Map<TypeIdentifier, String> repositoryTableMap = jpaRepositoryTableNameMap(types, repositories, entityTableMap);
 
 
@@ -61,7 +61,7 @@ public class ApiJpaCrudListingScript implements ExtraScript {
         Map<MethodIdentifier, List<MethodDeclaration>> apiUseRepositoryMethodsMap = methodIdentifierListMap(controllerAngles, isRepositoryMethod, callMethodsResolver);
 
         // @Entityの他entity参照メソッドを収集対象にする
-        MethodAnnotations methodAnnotations = projectData.methodAnnotations();
+        MethodAnnotations methodAnnotations = projectData.typeByteCodes().annotatedMethods();
         Predicate<MethodDeclaration> isJpaEntityFetchMethod = e -> {
             Optional<MethodAnnotation> mayBeMethodAnnotation = methodAnnotations.findOne(e);
             return mayBeMethodAnnotation.map(

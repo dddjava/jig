@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
 import org.dddjava.jig.domain.model.implementation.bytecode.ImplementationMethods;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -36,7 +37,7 @@ public class ApplicationService {
     public ControllerAngles controllerAngles(ProjectData projectData) {
         return new ControllerAngles(
                 projectData.controllerMethods(),
-                projectData.typeAnnotations(),
+                projectData.typeByteCodes().typeAnnotations(),
                 new MethodUsingFields(projectData.typeByteCodes()));
     }
 
@@ -52,7 +53,7 @@ public class ApplicationService {
 
         return new ServiceAngles(
                 serviceMethods,
-                projectData.methodRelations(),
+                new MethodRelations(projectData.typeByteCodes()),
                 projectData.characterizedTypes(),
                 new MethodUsingFields(projectData.typeByteCodes()),
                 projectData.characterizedMethods()
@@ -74,7 +75,7 @@ public class ApplicationService {
                 characterizedMethods.repositoryMethods(),
                 mapperMethodDeclarations,
                 new ImplementationMethods(projectData.typeByteCodes()),
-                projectData.methodRelations(),
+                new MethodRelations(projectData.typeByteCodes()),
                 projectData.sqls());
     }
 
@@ -82,7 +83,8 @@ public class ApplicationService {
      * 文字列比較を分析する
      */
     public StringComparingAngles stringComparing(ProjectData projectData) {
-        return new StringComparingAngles(projectData.methodRelations());
+
+        return new StringComparingAngles(new MethodRelations(projectData.typeByteCodes()));
     }
 
     /**
@@ -100,8 +102,8 @@ public class ApplicationService {
      */
     @Progress("実験的機能")
     public ProgressAngles progressAngles(ProjectData projectData) {
-        MethodAnnotations methodAnnotations = projectData.methodAnnotations();
-        TypeAnnotations typeAnnotations = projectData.typeAnnotations();
+        MethodAnnotations methodAnnotations = projectData.typeByteCodes().annotatedMethods();
+        TypeAnnotations typeAnnotations = projectData.typeByteCodes().typeAnnotations();
         MethodDeclarations declarations = projectData.methods().declarations();
         return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }

@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.ProjectData;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
@@ -40,12 +41,13 @@ public class BusinessRuleService {
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellAngles methodSmells(ProjectData projectData) {
+
         return new MethodSmellAngles(
                 projectData.methods(),
                 new MethodUsingFields(projectData.typeByteCodes()),
-                projectData.fieldDeclarations(),
-                projectData.methodRelations(),
-                businessRules(projectData.types()));
+                projectData.typeByteCodes().instanceFields(),
+                new MethodRelations(projectData.typeByteCodes()),
+                businessRules(projectData.typeByteCodes().types()));
     }
 
     /**
@@ -56,8 +58,8 @@ public class BusinessRuleService {
 
         return new CategoryAngles(categoryTypes,
                 new TypeDependencies(projectData.typeByteCodes()),
-                projectData.fieldDeclarations(),
-                projectData.staticFieldDeclarations());
+                projectData.typeByteCodes().instanceFields(),
+                projectData.typeByteCodes().staticFields());
     }
 
     /**
@@ -73,7 +75,7 @@ public class BusinessRuleService {
     public CollectionAngles collections(ProjectData projectData) {
         TypeIdentifiers collectionTypeIdentifiers = projectData.valueTypes().extract(ValueKind.COLLECTION);
         return new CollectionAngles(collectionTypeIdentifiers,
-                projectData.fieldDeclarations(),
+                projectData.typeByteCodes().instanceFields(),
                 projectData.methods(),
                 new TypeDependencies(projectData.typeByteCodes()));
     }

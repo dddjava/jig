@@ -1,7 +1,9 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,14 +12,16 @@ import java.util.List;
 public class ValueTypes {
     private List<ValueType> list;
 
-    public ValueTypes(List<ValueType> list) {
-        this.list = list;
+    public ValueTypes(TypeByteCodes typeByteCodes, ValueKind valueKind) {
+        list = new ArrayList<>();
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            if (valueKind.matches(typeByteCode.fieldDeclarations())) {
+                list.add(new ValueType(typeByteCode.typeIdentifier()));
+            }
+        }
     }
 
-    public TypeIdentifiers extract(ValueKind valueKind) {
-        return list.stream()
-                .filter(valueType -> valueType.is(valueKind))
-                .map(ValueType::typeIdentifier)
-                .collect(TypeIdentifiers.collector());
+    public List<ValueType> list() {
+        return list;
     }
 }

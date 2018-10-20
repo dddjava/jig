@@ -10,12 +10,8 @@ import org.dddjava.jig.domain.model.characteristic.CharacterizedTypeFactory;
 import org.dddjava.jig.domain.model.characteristic.CharacterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.values.PotentiallyValueType;
-import org.dddjava.jig.domain.model.values.PotentiallyValueTypes;
-import org.dddjava.jig.domain.model.values.ValueTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,16 +44,6 @@ public class ProjectData {
 
     public CharacterizedTypes characterizedTypes() {
         return characterizedTypes;
-    }
-
-    public ValueTypes valueTypes() {
-        ArrayList<PotentiallyValueType> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            list.add(new PotentiallyValueType(typeByteCode.typeIdentifier(), typeByteCode.fieldDeclarations()));
-        }
-        PotentiallyValueTypes potentiallyValueTypes = new PotentiallyValueTypes(list);
-
-        return potentiallyValueTypes.toValueTypes(categories());
     }
 
     public CategoryTypes categories() {

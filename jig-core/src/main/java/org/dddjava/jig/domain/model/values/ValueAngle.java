@@ -13,18 +13,13 @@ public class ValueAngle {
     TypeIdentifier typeIdentifier;
     TypeIdentifiers userTypeIdentifiers;
 
-    public ValueAngle(ValueKind valueKind, TypeIdentifier typeIdentifier, TypeIdentifiers userTypeIdentifiers) {
+    public ValueAngle(ValueKind valueKind, TypeDependencies allTypeDependencies, ValueType valueType) {
         this.valueKind = valueKind;
-        this.typeIdentifier = typeIdentifier;
-        this.userTypeIdentifiers = userTypeIdentifiers;
-    }
-
-    public static ValueAngle of(ValueKind valueKind, TypeDependencies allTypeDependencies, TypeIdentifier typeIdentifier) {
-        TypeIdentifiers userTypeIdentifiers = allTypeDependencies.stream()
+        this.typeIdentifier = valueType.typeIdentifier();
+        this.userTypeIdentifiers = allTypeDependencies.stream()
                 .filterTo(typeIdentifier)
                 .removeSelf()
                 .fromTypeIdentifiers();
-        return new ValueAngle(valueKind, typeIdentifier, userTypeIdentifiers);
     }
 
     public TypeIdentifier typeIdentifier() {

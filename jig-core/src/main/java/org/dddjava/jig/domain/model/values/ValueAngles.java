@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
 
 import java.util.ArrayList;
@@ -15,8 +14,8 @@ public class ValueAngles {
 
     public ValueAngles(ValueKind valueKind, ValueTypes valueTypes, TypeDependencies typeDependencies) {
         List<ValueAngle> list = new ArrayList<>();
-        for (TypeIdentifier typeIdentifier : valueTypes.extract(valueKind).list()) {
-            list.add(ValueAngle.of(valueKind, typeDependencies, typeIdentifier));
+        for (ValueType valueType : valueTypes.list()) {
+            list.add(new ValueAngle(valueKind, typeDependencies, valueType));
         }
         this.list = list;
     }

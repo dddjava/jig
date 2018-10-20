@@ -16,6 +16,7 @@ import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
 /**
@@ -67,7 +68,9 @@ public class BusinessRuleService {
      * 値一覧を取得する
      */
     public ValueAngles values(ValueKind valueKind, ProjectData projectData) {
-        return new ValueAngles(valueKind, projectData.valueTypes(), new TypeDependencies(projectData.typeByteCodes()));
+        ValueTypes valueTypes = new ValueTypes(projectData.typeByteCodes(), valueKind);
+
+        return new ValueAngles(valueKind, valueTypes, new TypeDependencies(projectData.typeByteCodes()));
     }
 
     /**

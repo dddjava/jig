@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.unit.method.Accessor;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.objectweb.asm.Opcodes;
 

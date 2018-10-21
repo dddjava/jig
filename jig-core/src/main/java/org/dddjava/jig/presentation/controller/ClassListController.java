@@ -70,7 +70,7 @@ public class ClassListController {
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
-    @DocumentMapping(JigDocument.DomainList)
+    @DocumentMapping(JigDocument.BusinessRuleList)
     public JigModelAndView<ModelReports> domainList(TypeByteCodes typeByteCodes) {
         LOGGER.info("ビジネスルールリストを出力します");
         ModelReports modelReports = new ModelReports(

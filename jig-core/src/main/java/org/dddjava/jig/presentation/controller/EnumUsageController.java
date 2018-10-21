@@ -24,14 +24,14 @@ public class EnumUsageController {
         this.viewResolver = viewResolver;
     }
 
-    @DocumentMapping(JigDocument.EnumUsage)
+    @DocumentMapping(JigDocument.CategoryUsageDiagram)
     public JigModelAndView<CategoryAngles> enumUsage(TypeByteCodes typeByteCodes) {
         CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage(japaneseNameFinder));
     }
 
-    @DocumentMapping(JigDocument.Categories)
+    @DocumentMapping(JigDocument.CategoryDiagram)
     public JigModelAndView<CategoryAngles> categories(TypeByteCodes typeByteCodes) {
         CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);

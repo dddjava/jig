@@ -28,7 +28,7 @@ public class ServiceDiagramController {
         this.viewResolver = viewResolver;
     }
 
-    @DocumentMapping(JigDocument.ServiceMethodCallHierarchy)
+    @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
     public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(TypeByteCodes typeByteCodes) {
         LOGGER.info("サービスメソッド呼び出しダイアグラムを出力します");
         ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
@@ -36,7 +36,7 @@ public class ServiceDiagramController {
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(japaneseNameFinder));
     }
 
-    @DocumentMapping(JigDocument.BooleanService)
+    @DocumentMapping(JigDocument.BooleanServiceDiagram)
     public JigModelAndView<?> booleanServiceTrace(TypeByteCodes typeByteCodes) {
         LOGGER.info("真偽値を返すサービスメソッド追跡ダイアグラムを出力します");
         ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);

@@ -12,7 +12,7 @@ class CliConfigTest {
         CliConfig cli = new CliConfig();
 
         String[] args = {
-                "--documentType=ServiceMethodCallHierarchy",
+                "--documentType=ServiceMethodCallHierarchyDiagram",
                 "--outputDirectory=out",
                 "--output.omit.prefix=omit.package",
                 "--jig.model.pattern=.+\\.model\\..+",
@@ -28,7 +28,7 @@ class CliConfigTest {
         CommandLine.populateCommand(cli, args);
 
         SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(cli.documentTypeText).isEqualTo("ServiceMethodCallHierarchy")
+        softly.assertThat(cli.documentTypeText).isEqualTo("ServiceMethodCallHierarchyDiagram")
                 .isNotEqualTo(original.documentTypeText);
         softly.assertThat(cli.outputDirectory).isEqualTo("out")
                 .isNotEqualTo(original.outputDirectory);

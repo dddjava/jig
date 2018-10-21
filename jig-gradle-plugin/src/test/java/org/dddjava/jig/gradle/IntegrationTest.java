@@ -36,7 +36,7 @@ public class IntegrationTest {
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
-        softly.assertThat(outputDir.resolve("package-dependency-depth4.svg")).exists();
+        softly.assertThat(outputDir.resolve("package-relation-depth4.svg")).exists();
         softly.assertThat(outputDir.resolve("application.xlsx")).exists();
         softly.assertAll();
     }

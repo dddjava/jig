@@ -14,7 +14,7 @@ public enum JigDocument {
      *
      * サービスクラスのメソッド呼び出しを可視化する。
      */
-    ServiceMethodCallHierarchy("service-method-call-hierarchy"),
+    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy"),
 
     /**
      * パッケージ依存ダイアグラム
@@ -23,14 +23,14 @@ public enum JigDocument {
      * トップレベルからの階層(depth)で丸めて複数出力する。
      * 出力対象パッケージはモデルと判断されるもの。
      */
-    PackageDependency("package-dependency"),
+    PackageRelationDiagram("package-relation"),
 
     /**
      * ビジネスルール関連ダイアグラム
      *
      * ビジネスルール間の関連を可視化する。
      */
-    BusinessRuleRelation("business-rule-relation"),
+    BusinessRuleRelationDiagram("business-rule-relation"),
 
     /**
      * 機能一覧
@@ -46,7 +46,7 @@ public enum JigDocument {
      *
      * ビジネスルールを表すクラスの一覧。
      */
-    DomainList("domain"),
+    BusinessRuleList("business-rule"),
 
     /**
      * 分岐数一覧
@@ -60,21 +60,21 @@ public enum JigDocument {
      *
      * enumの使用クラスを可視化する。
      */
-    EnumUsage("enum-usage"),
+    CategoryUsageDiagram("category-usage"),
 
     /**
      * 区分ダイアグラム
      *
      * enumと値の1枚絵
      */
-    Categories("categories"),
+    CategoryDiagram("category"),
 
     /**
      * 真偽値サービス関連ダイアグラム
      *
      * booleanを返すサービスと使用しているメソッドを可視化する。
      */
-    BooleanService("boolean-service");
+    BooleanServiceDiagram("boolean-service");
 
     private final String documentFileName;
 

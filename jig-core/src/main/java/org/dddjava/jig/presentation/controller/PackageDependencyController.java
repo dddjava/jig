@@ -37,7 +37,7 @@ public class PackageDependencyController {
         this.packageDepth = packageDepth;
     }
 
-    @DocumentMapping(JigDocument.PackageDependency)
+    @DocumentMapping(JigDocument.PackageRelationDiagram)
     public JigModelAndView<PackageNetworks> packageDependency(TypeByteCodes typeByteCodes) {
         LOGGER.info("パッケージ依存ダイアグラムを出力します");
         PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
@@ -45,7 +45,7 @@ public class PackageDependencyController {
         return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 
-    @DocumentMapping(JigDocument.BusinessRuleRelation)
+    @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
     public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(TypeByteCodes typeByteCodes) {
         BusinessRuleNetwork network = dependencyService.businessRuleNetwork(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);

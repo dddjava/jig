@@ -13,11 +13,11 @@ import static java.util.stream.Collectors.joining;
 /**
  * システムが持つEnumと列挙値の1枚絵
  */
-public class CategoriesDiagram implements DotTextEditor<CategoryAngles> {
+public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
 
     private final JapaneseNameFinder japaneseNameFinder;
 
-    public CategoriesDiagram(JapaneseNameFinder japaneseNameFinder) {
+    public CategoryDiagram(JapaneseNameFinder japaneseNameFinder) {
         this.japaneseNameFinder = japaneseNameFinder;
     }
 

@@ -45,6 +45,6 @@ public class ViewResolver {
     }
 
     public JigView<CategoryAngles> categories(JapaneseNameFinder japaneseNameFinder) {
-        return newGraphvizjView(new CategoriesDiagram(japaneseNameFinder));
+        return newGraphvizjView(new CategoryDiagram(japaneseNameFinder));
     }
 }

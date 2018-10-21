@@ -29,11 +29,10 @@ public class MethodRelations {
     }
 
     public MethodDeclarations userMethodsOf(MethodIdentifier method) {
-        return stream().filterTo(method).fromMethods();
-    }
-
-    public MethodRelationStream stream() {
-        return new MethodRelationStream(list.stream());
+        return list.stream()
+                .filter(methodRelation -> methodRelation.toIs(method))
+                .map(MethodRelation::from)
+                .collect(MethodDeclarations.collector());
     }
 
     public CallerMethods callerMethodsOf(MethodDeclaration declaration) {

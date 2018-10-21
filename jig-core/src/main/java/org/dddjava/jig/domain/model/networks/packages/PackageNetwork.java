@@ -9,16 +9,16 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 public class PackageNetwork {
 
     PackageIdentifiers packageIdentifiers;
-    PackageDependencies packageDependencies;
+    PackageRelations packageRelations;
     PackageDepth appliedDepth;
 
-    public PackageNetwork(PackageIdentifiers packageIdentifiers, PackageDependencies packageDependencies) {
-        this(packageIdentifiers, packageDependencies, new PackageDepth(-1));
+    public PackageNetwork(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations) {
+        this(packageIdentifiers, packageRelations, new PackageDepth(-1));
     }
 
-    private PackageNetwork(PackageIdentifiers packageIdentifiers, PackageDependencies packageDependencies, PackageDepth appliedDepth) {
+    private PackageNetwork(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, PackageDepth appliedDepth) {
         this.packageIdentifiers = packageIdentifiers;
-        this.packageDependencies = packageDependencies;
+        this.packageRelations = packageRelations;
         this.appliedDepth = appliedDepth;
     }
 
@@ -26,14 +26,14 @@ public class PackageNetwork {
         return packageIdentifiers;
     }
 
-    public PackageDependencies packageDependencies() {
-        return packageDependencies.filterBothMatch(packageIdentifiers);
+    public PackageRelations packageDependencies() {
+        return packageRelations.filterBothMatch(packageIdentifiers);
     }
 
     public PackageNetwork applyDepth(PackageDepth depth) {
         return new PackageNetwork(
                 packageIdentifiers.applyDepth(depth),
-                packageDependencies.applyDepth(depth),
+                packageRelations.applyDepth(depth),
                 depth
         );
     }

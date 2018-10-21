@@ -5,18 +5,18 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 /**
  * 相互依存
  */
-public class BidirectionalDependency {
+public class BidirectionalRelation {
     PackageIdentifier left;
     PackageIdentifier right;
 
-    public BidirectionalDependency(PackageIdentifier left, PackageIdentifier right) {
+    public BidirectionalRelation(PackageIdentifier left, PackageIdentifier right) {
         this.left = left;
         this.right = right;
     }
 
-    public boolean matches(PackageDependency packageDependency) {
-        return (left.equals(packageDependency.from()) && right.equals(packageDependency.to())) ||
-                (left.equals(packageDependency.to()) && right.equals(packageDependency.from()));
+    public boolean matches(PackageRelation packageRelation) {
+        return (left.equals(packageRelation.from()) && right.equals(packageRelation.to())) ||
+                (left.equals(packageRelation.to()) && right.equals(packageRelation.from()));
     }
 
     public PackageIdentifier left() {

@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
-import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
+import org.dddjava.jig.domain.model.networks.packages.PackageRelations;
+import org.dddjava.jig.domain.model.networks.packages.PackageRelation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,14 @@ public class TypeRelations {
                 .normalize();
     }
 
-    public PackageDependencies packageDependencies() {
-        List<PackageDependency> packageDependencyList = list.stream()
+    public PackageRelations packageDependencies() {
+        List<PackageRelation> packageRelationList = list.stream()
                 .map(TypeRelation::toPackageDependency)
-                .filter(PackageDependency::notSelfRelation)
+                .filter(PackageRelation::notSelfRelation)
                 .distinct()
                 .collect(Collectors.toList());
 
-        return new PackageDependencies(packageDependencyList);
+        return new PackageRelations(packageRelationList);
     }
 
     public List<TypeRelation> list() {

@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.networks.packages;
 /**
  * 依存関係の数
  */
-public class DependencyNumber {
+public class RelationNumber {
     int value;
 
-    public DependencyNumber(int value) {
+    public RelationNumber(int value) {
         this.value = value;
     }
 

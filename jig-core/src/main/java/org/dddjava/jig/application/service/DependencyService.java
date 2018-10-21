@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.businessrule.BusinessRuleNetwork;
-import org.dddjava.jig.domain.model.networks.packages.PackageDependencies;
+import org.dddjava.jig.domain.model.networks.packages.PackageRelations;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 import org.slf4j.Logger;
@@ -44,12 +44,12 @@ public class DependencyService {
 
         if (businessRules.empty()) {
             LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
-            return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageDependencies(Collections.emptyList()));
+            return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
         }
 
-        PackageDependencies packageDependencies = new TypeRelations(typeByteCodes).packageDependencies();
+        PackageRelations packageRelations = new TypeRelations(typeByteCodes).packageDependencies();
 
-        PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageDependencies);
+        PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
         showDepth(packageNetwork);
 
         return packageNetwork;
@@ -60,11 +60,11 @@ public class DependencyService {
      */
     private void showDepth(PackageNetwork packageNetwork) {
         PackageDepth maxDepth = packageNetwork.allPackages().maxDepth();
-        PackageDependencies packageDependencies = packageNetwork.packageDependencies();
+        PackageRelations packageRelations = packageNetwork.packageDependencies();
 
         LOGGER.info("最大深度: {}", maxDepth.value());
         for (PackageDepth depth : maxDepth.surfaceList()) {
-            PackageDependencies dependencies = packageDependencies.applyDepth(depth);
+            PackageRelations dependencies = packageRelations.applyDepth(depth);
             LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
         }
     }

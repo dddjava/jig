@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.networks.type;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
+import org.dddjava.jig.domain.model.networks.packages.PackageRelation;
 
 /**
  * 型の依存関係
@@ -16,8 +16,8 @@ public class TypeRelation {
         this.to = to;
     }
 
-    public PackageDependency toPackageDependency() {
-        return new PackageDependency(from.packageIdentifier(), to.packageIdentifier());
+    public PackageRelation toPackageDependency() {
+        return new PackageRelation(from.packageIdentifier(), to.packageIdentifier());
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {

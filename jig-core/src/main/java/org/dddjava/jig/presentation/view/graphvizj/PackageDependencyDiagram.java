@@ -32,18 +32,18 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
     }
 
     private DotText toDotText(PackageNetwork packageNetwork) {
-        PackageDependencies packageDependencies = packageNetwork.packageDependencies();
+        PackageRelations packageRelations = packageNetwork.packageDependencies();
 
-        BidirectionalDependencies bidirectionalDependencies = BidirectionalDependencies.from(packageDependencies);
+        BidirectionalRelations bidirectionalRelations = BidirectionalRelations.from(packageRelations);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
-        PackageDependencies unidirectionalDependencies = bidirectionalDependencies.filterBidirectionalFrom(packageDependencies);
-        for (PackageDependency packageDependency : unidirectionalDependencies.list()) {
-            unidirectionalRelation.add(packageDependency.from(), packageDependency.to());
+        PackageRelations unidirectionalDependencies = bidirectionalRelations.filterBidirectionalFrom(packageRelations);
+        for (PackageRelation packageRelation : unidirectionalDependencies.list()) {
+            unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
         }
 
         RelationText bidirectional = new RelationText("edge [color=red,dir=both,style=bold];");
-        for (BidirectionalDependency packageDependency : bidirectionalDependencies.list()) {
+        for (BidirectionalRelation packageDependency : bidirectionalRelations.list()) {
             bidirectional.add(packageDependency.left(), packageDependency.right());
         }
 
@@ -61,7 +61,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
 
         String summaryText = "summary[shape=note,label=\""
                 + "パッケージ数: " + packageNetwork.allPackages().number().asText() + "\\l"
-                + "関連数: " + packageDependencies.number().asText() + "\\l"
+                + "関連数: " + packageRelations.number().asText() + "\\l"
                 + "\"]";
 
         String text = new StringJoiner("\n", "digraph {", "}")

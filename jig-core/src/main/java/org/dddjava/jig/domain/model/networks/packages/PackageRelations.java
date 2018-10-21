@@ -11,36 +11,36 @@ import static java.util.stream.Collectors.toList;
 /**
  * パッケージの依存関係一覧
  */
-public class PackageDependencies {
+public class PackageRelations {
 
-    List<PackageDependency> dependencies;
+    List<PackageRelation> dependencies;
 
-    public PackageDependencies(List<PackageDependency> dependencies) {
+    public PackageRelations(List<PackageRelation> dependencies) {
         this.dependencies = dependencies;
     }
 
-    public List<PackageDependency> list() {
+    public List<PackageRelation> list() {
         return dependencies;
     }
 
-    public PackageDependencies applyDepth(PackageDepth packageDepth) {
-        List<PackageDependency> list = this.dependencies.stream()
+    public PackageRelations applyDepth(PackageDepth packageDepth) {
+        List<PackageRelation> list = this.dependencies.stream()
                 .map(relation -> relation.applyDepth(packageDepth))
                 .distinct()
-                .filter(PackageDependency::notSelfRelation)
+                .filter(PackageRelation::notSelfRelation)
                 .collect(toList());
-        return new PackageDependencies(list);
+        return new PackageRelations(list);
     }
 
-    public DependencyNumber number() {
-        return new DependencyNumber(list().size());
+    public RelationNumber number() {
+        return new RelationNumber(list().size());
     }
 
-    public PackageDependencies filterBothMatch(PackageIdentifiers packageIdentifiers) {
-        List<PackageDependency> list = dependencies.stream()
+    public PackageRelations filterBothMatch(PackageIdentifiers packageIdentifiers) {
+        List<PackageRelation> list = dependencies.stream()
                 .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
                 .collect(Collectors.toList());
-        return new PackageDependencies(list);
+        return new PackageRelations(list);
     }
 
     public boolean available() {

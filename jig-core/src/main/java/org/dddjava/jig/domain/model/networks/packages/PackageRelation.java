@@ -9,11 +9,11 @@ import java.util.Objects;
 /**
  * パッケージの依存関係
  */
-public class PackageDependency {
+public class PackageRelation {
     PackageIdentifier from;
     PackageIdentifier to;
 
-    public PackageDependency(PackageIdentifier from, PackageIdentifier to) {
+    public PackageRelation(PackageIdentifier from, PackageIdentifier to) {
         this.from = from;
         this.to = to;
     }
@@ -30,9 +30,9 @@ public class PackageDependency {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PackageDependency packageDependency = (PackageDependency) o;
-        return Objects.equals(from, packageDependency.from) &&
-                Objects.equals(to, packageDependency.to);
+        PackageRelation packageRelation = (PackageRelation) o;
+        return Objects.equals(from, packageRelation.from) &&
+                Objects.equals(to, packageRelation.to);
     }
 
     @Override
@@ -40,8 +40,8 @@ public class PackageDependency {
         return Objects.hash(from, to);
     }
 
-    public PackageDependency applyDepth(PackageDepth packageDepth) {
-        return new PackageDependency(from.applyDepth(packageDepth), to.applyDepth(packageDepth));
+    public PackageRelation applyDepth(PackageDepth packageDepth) {
+        return new PackageRelation(from.applyDepth(packageDepth), to.applyDepth(packageDepth));
     }
 
     public boolean notSelfRelation() {

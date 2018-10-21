@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.0.4.RELEASE' apply false
+    id 'org.springframework.boot' version '2.0.6.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2018.10.2' apply false
@@ -27,7 +27,7 @@ subprojects {
         jcenter()
     }
 
-    ext['mockito.version'] = '2.22.0'
+    ext['mockito.version'] = '2.23.0'
     dependencies {
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
         testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'

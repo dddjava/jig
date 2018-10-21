@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.declaration.type.Types;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.unit.method.Methods;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -59,7 +59,7 @@ public class BusinessRuleService {
         CategoryTypes categoryTypes = new CategoryTypes(typeByteCodes, architecture);
 
         return new CategoryAngles(categoryTypes,
-                new TypeDependencies(typeByteCodes),
+                new TypeRelations(typeByteCodes),
                 typeByteCodes.instanceFields(),
                 typeByteCodes.staticFields());
     }
@@ -70,7 +70,7 @@ public class BusinessRuleService {
     public ValueAngles values(ValueKind valueKind, TypeByteCodes typeByteCodes) {
         ValueTypes valueTypes = new ValueTypes(typeByteCodes, valueKind, architecture);
 
-        return new ValueAngles(valueKind, valueTypes, new TypeDependencies(typeByteCodes));
+        return new ValueAngles(valueKind, valueTypes, new TypeRelations(typeByteCodes));
     }
 
     /**
@@ -79,6 +79,6 @@ public class BusinessRuleService {
     public CollectionAngles collections(TypeByteCodes typeByteCodes) {
         CollectionTypes collectionTypes = new CollectionTypes(typeByteCodes, architecture);
 
-        return new CollectionAngles(collectionTypes, new TypeDependencies(typeByteCodes));
+        return new CollectionAngles(collectionTypes, new TypeRelations(typeByteCodes));
     }
 }

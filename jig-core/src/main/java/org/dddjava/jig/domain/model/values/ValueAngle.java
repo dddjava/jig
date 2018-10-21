@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 
 /**
  * 値の切り口
@@ -13,13 +13,10 @@ public class ValueAngle {
     TypeIdentifier typeIdentifier;
     TypeIdentifiers userTypeIdentifiers;
 
-    public ValueAngle(ValueKind valueKind, TypeDependencies allTypeDependencies, ValueType valueType) {
+    public ValueAngle(ValueKind valueKind, TypeRelations allTypeRelations, ValueType valueType) {
         this.valueKind = valueKind;
         this.typeIdentifier = valueType.typeIdentifier();
-        this.userTypeIdentifiers = allTypeDependencies.stream()
-                .filterTo(typeIdentifier)
-                .removeSelf()
-                .fromTypeIdentifiers();
+        this.userTypeIdentifiers = allTypeRelations.collectTypeIdentifierWhichRelationTo(typeIdentifier);
     }
 
     public TypeIdentifier typeIdentifier() {

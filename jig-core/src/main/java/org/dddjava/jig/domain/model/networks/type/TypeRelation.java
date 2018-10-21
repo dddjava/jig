@@ -6,12 +6,12 @@ import org.dddjava.jig.domain.model.networks.packages.PackageDependency;
 /**
  * 型の依存関係
  */
-public class TypeDependency {
+public class TypeRelation {
 
     final TypeIdentifier from;
     final TypeIdentifier to;
 
-    public TypeDependency(TypeIdentifier from, TypeIdentifier to) {
+    public TypeRelation(TypeIdentifier from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
     }

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.networks.type.TypeDependencies;
+import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,10 @@ public class CategoryAngles {
 
     List<CategoryAngle> list;
 
-    public CategoryAngles(CategoryTypes categoryTypes, TypeDependencies typeDependencies, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngles(CategoryTypes categoryTypes, TypeRelations typeRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType, typeDependencies, fieldDeclarations, staticFieldDeclarations));
+            list.add(new CategoryAngle(categoryType, typeRelations, fieldDeclarations, staticFieldDeclarations));
         }
         this.list = list;
     }

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.datasources.DatasourceAngle;
+import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;

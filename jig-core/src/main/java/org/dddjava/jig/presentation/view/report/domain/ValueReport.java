@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.values.ValueAngle;
+import org.dddjava.jig.domain.model.businessrules.values.ValueAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 

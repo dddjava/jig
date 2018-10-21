@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.controllers.ControllerAngle;
+import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngle;
 import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
-import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.angle.unit.method.Method;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
-import org.dddjava.jig.domain.model.collections.CollectionAngle;
+import org.dddjava.jig.domain.model.businessrules.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;

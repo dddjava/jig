@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
-import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.domain.model.threelayer.services.ServiceAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

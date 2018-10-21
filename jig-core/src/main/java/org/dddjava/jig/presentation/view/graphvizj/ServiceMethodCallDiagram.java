@@ -3,8 +3,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.services.ServiceAngle;
-import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.threelayer.services.ServiceAngle;
+import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 
 import java.util.List;
 import java.util.StringJoiner;

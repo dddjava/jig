@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.threelayer.datasources.RepositoryMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.UsingFields;
+import org.dddjava.jig.domain.model.angle.unit.method.UsingFields;
 import org.dddjava.jig.domain.model.angle.unit.method.Method;
 import org.dddjava.jig.domain.model.angle.unit.method.UsingMethods;
 

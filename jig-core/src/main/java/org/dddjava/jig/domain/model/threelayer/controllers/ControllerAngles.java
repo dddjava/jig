@@ -1,8 +1,7 @@
 package org.dddjava.jig.domain.model.threelayer.controllers;
 
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.angle.unit.method.Method;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +17,10 @@ public class ControllerAngles {
         return list;
     }
 
-    public ControllerAngles(ControllerMethods controllerMethods, TypeAnnotations typeAnnotations, MethodUsingFields methodUsingFields) {
+    public ControllerAngles(ControllerMethods controllerMethods, TypeAnnotations typeAnnotations) {
         List<ControllerAngle> list = new ArrayList<>();
         for (Method method : controllerMethods.list()) {
-            list.add(new ControllerAngle(method, typeAnnotations.filter(method.declaration().identifier().declaringType()), methodUsingFields));
+            list.add(new ControllerAngle(method, typeAnnotations.filter(method.declaration().identifier().declaringType())));
         }
         this.list = list;
     }

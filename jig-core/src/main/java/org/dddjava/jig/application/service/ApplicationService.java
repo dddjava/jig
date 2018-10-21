@@ -2,24 +2,23 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.basic.Warning;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.angle.unit.method.Methods;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceMethods;
-import org.dddjava.jig.domain.model.angle.unit.method.Methods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,10 +48,7 @@ public class ApplicationService {
             LOGGER.warn(Warning.コントローラーなし.text());
         }
 
-        return new ControllerAngles(
-                controllerMethods,
-                typeByteCodes.typeAnnotations(),
-                new MethodUsingFields(typeByteCodes));
+        return new ControllerAngles(controllerMethods, typeByteCodes.typeAnnotations());
     }
 
     /**

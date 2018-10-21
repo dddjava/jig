@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.bytecode;
+package org.dddjava.jig.domain.model.networks.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;

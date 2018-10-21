@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.businessrules.values.ValueAngles;
 import org.dddjava.jig.domain.model.businessrules.values.ValueKind;
 import org.dddjava.jig.domain.model.businessrules.values.ValueTypes;
 import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 import org.springframework.stereotype.Service;

@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngles;

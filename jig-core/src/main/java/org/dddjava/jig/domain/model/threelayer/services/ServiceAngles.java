@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.networks.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.List;

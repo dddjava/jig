@@ -53,6 +53,7 @@ subprojects {
     }
 
     javadoc {
+        destinationDir file("${project.rootDir}/docs/javadoc/${project.name}")
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 

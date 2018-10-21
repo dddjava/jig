@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.packages.PackageRelations;
 import org.dddjava.jig.domain.model.networks.packages.PackageRelation;
+import org.dddjava.jig.domain.model.networks.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.List;

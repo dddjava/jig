@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.angle.decisions;
 
 import org.dddjava.jig.domain.model.architecture.Layer;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
  * 判断の切り口

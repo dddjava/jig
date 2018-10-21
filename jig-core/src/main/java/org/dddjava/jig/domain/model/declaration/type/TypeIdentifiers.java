@@ -4,7 +4,9 @@ import org.dddjava.jig.domain.basic.Text;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 

@@ -1,13 +1,9 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleGroup;
+import org.dddjava.jig.domain.model.businessrules.*;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleRelation;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleRelations;
 
 import java.util.List;
 import java.util.StringJoiner;

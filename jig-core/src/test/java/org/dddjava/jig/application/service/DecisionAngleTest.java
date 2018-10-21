@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;

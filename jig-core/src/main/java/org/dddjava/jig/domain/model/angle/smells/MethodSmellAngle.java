@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.angle.smells;
 
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.CallerMethods;
 import org.dddjava.jig.domain.model.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
  * メソッドの不吉なにおい

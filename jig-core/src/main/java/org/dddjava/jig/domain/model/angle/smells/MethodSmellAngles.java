@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.angle.smells;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.networks.method.MethodRelations;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
-import org.dddjava.jig.domain.model.angle.unit.method.Methods;
+import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Methods;
 
 import java.util.ArrayList;
 import java.util.List;

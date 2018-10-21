@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

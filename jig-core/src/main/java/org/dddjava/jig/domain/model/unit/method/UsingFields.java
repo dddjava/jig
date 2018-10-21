@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.angle.unit.method;
+package org.dddjava.jig.domain.model.unit.method;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;

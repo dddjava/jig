@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 import java.util.ArrayList;
 import java.util.List;

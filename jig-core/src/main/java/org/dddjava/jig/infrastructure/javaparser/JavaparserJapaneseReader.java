@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.implementation.sourcecode.*;
+import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
+import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.dddjava.jig.domain.model.japanese.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

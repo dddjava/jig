@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.threelayer.controllers;
 
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
-import org.dddjava.jig.domain.model.angle.unit.method.UsingFields;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.UsingFields;
 
 /**
  * コントローラーの切り口

@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.threelayer.services;
 
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 
 import java.util.ArrayList;
 import java.util.List;

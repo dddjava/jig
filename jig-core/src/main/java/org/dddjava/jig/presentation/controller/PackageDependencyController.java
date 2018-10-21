@@ -2,10 +2,10 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
 import org.dddjava.jig.presentation.view.JigDocument;

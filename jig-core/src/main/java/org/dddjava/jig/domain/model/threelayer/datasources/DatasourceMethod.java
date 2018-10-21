@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.threelayer.datasources;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
+import org.dddjava.jig.domain.model.unit.method.Method;
 
 /**
  * データソースの構造

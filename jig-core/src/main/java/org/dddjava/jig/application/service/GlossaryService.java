@@ -4,7 +4,8 @@ import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.sourcecode.*;
+import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
+import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
 import org.dddjava.jig.domain.model.japanese.*;
 import org.springframework.stereotype.Service;
 

@@ -1,22 +1,21 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
+import org.dddjava.jig.domain.model.angle.smells.MethodSmellAngles;
+import org.dddjava.jig.domain.model.angle.unit.method.Methods;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.businessrules.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.businessrules.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.businessrules.collections.CollectionTypes;
-import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.type.TypeRelations;
-import org.dddjava.jig.domain.model.angle.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.angle.unit.method.Methods;
 import org.dddjava.jig.domain.model.businessrules.values.ValueAngles;
 import org.dddjava.jig.domain.model.businessrules.values.ValueKind;
 import org.dddjava.jig.domain.model.businessrules.values.ValueTypes;
+import org.dddjava.jig.domain.model.declaration.type.Types;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.networks.type.TypeRelations;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,7 +45,6 @@ public class BusinessRuleService {
 
         return new MethodSmellAngles(
                 new Methods(typeByteCodes),
-                new MethodUsingFields(typeByteCodes),
                 typeByteCodes.instanceFields(),
                 new MethodRelations(typeByteCodes),
                 businessRules(typeByteCodes.types()));

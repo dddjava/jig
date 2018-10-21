@@ -19,4 +19,8 @@ public class UsingFields {
     public TypeIdentifiers typeIdentifiers() {
         return list.stream().map(FieldDeclaration::typeIdentifier).collect(TypeIdentifiers.collector());
     }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
 }

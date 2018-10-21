@@ -1,12 +1,11 @@
 package org.dddjava.jig.domain.model.angle.smells;
 
+import org.dddjava.jig.domain.model.angle.unit.method.Method;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodUsingFields;
-import org.dddjava.jig.domain.model.angle.unit.method.Method;
 
 /**
  * メソッドの不吉なにおい
@@ -14,13 +13,11 @@ import org.dddjava.jig.domain.model.angle.unit.method.Method;
 public class MethodSmellAngle {
 
     Method method;
-    MethodUsingFields methodUsingFields;
     FieldDeclarations fieldDeclarations;
     CallerMethods callerMethods;
 
-    public MethodSmellAngle(Method method, MethodUsingFields methodUsingFields, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
+    public MethodSmellAngle(Method method, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
         this.method = method;
-        this.methodUsingFields = methodUsingFields;
         this.fieldDeclarations = fieldDeclarations;
         this.callerMethods = toMeRelation.callerMethodsOf(method.declaration());
     }
@@ -35,7 +32,7 @@ public class MethodSmellAngle {
 
     public boolean notUseField() {
         return !fieldDeclarations.list().isEmpty() &&
-                methodUsingFields.usingFieldTypeIdentifiers(method.declaration()).empty();
+                method.usingFields().empty();
     }
 
     public boolean primitiveInterface() {

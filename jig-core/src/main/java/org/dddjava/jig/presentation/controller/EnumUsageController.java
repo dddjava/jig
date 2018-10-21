@@ -30,4 +30,11 @@ public class EnumUsageController {
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage(japaneseNameFinder));
     }
+
+    @DocumentMapping(JigDocument.Categories)
+    public JigModelAndView<CategoryAngles> categories(TypeByteCodes typeByteCodes) {
+        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
+        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
+        return new JigModelAndView<>(categoryAngles, viewResolver.categories(japaneseNameFinder));
+    }
 }

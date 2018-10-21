@@ -63,6 +63,13 @@ public enum JigDocument {
     EnumUsage("enum-usage"),
 
     /**
+     * 区分ダイアグラム
+     *
+     * enumと値の1枚絵
+     */
+    Categories("categories"),
+
+    /**
      * 真偽値サービス関連ダイアグラム
      *
      * booleanを返すサービスと使用しているメソッドを可視化する。

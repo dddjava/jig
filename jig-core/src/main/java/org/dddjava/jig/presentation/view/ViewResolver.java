@@ -43,4 +43,8 @@ public class ViewResolver {
     public JigView<BusinessRuleNetwork> businessRuleNetworkWriter(JapaneseNameFinder japaneseNameFinder) {
         return newGraphvizjView(new BusinessRuleNetworkDiagram(packageIdentifierFormatter, japaneseNameFinder));
     }
+
+    public JigView<CategoryAngles> categories(JapaneseNameFinder japaneseNameFinder) {
+        return newGraphvizjView(new CategoriesDiagram(japaneseNameFinder));
+    }
 }

@@ -29,7 +29,7 @@ public class ViewResolver {
     }
 
     public JigView<CategoryAngles> enumUsage(JapaneseNameFinder japaneseNameFinder) {
-        return newGraphvizjView(new EnumUsageDiagram(japaneseNameFinder));
+        return newGraphvizjView(new CategoryUsageDiagram(japaneseNameFinder));
     }
 
     private <T> JigView<T> newGraphvizjView(DotTextEditor<T> diagram) {

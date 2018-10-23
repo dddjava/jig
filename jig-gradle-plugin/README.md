@@ -11,7 +11,7 @@ GradleプロジェクトでJIGドキュメントを出力するプラグイン�
 Javaプロジェクトの場合、`compileJava`に依存させておくと便利です。
 
 ```
-jigReports.dependsOn compileJava
+jigReports.dependsOn(compileJava, processResources)
 ```
 
 ## タスク

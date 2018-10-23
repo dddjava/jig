@@ -8,7 +8,7 @@ GradleプロジェクトでJIGドキュメントを出力するプラグイン�
 
 [プラグインリポジトリ](https://plugins.gradle.org/plugin/org.dddjava.jig-gradle-plugin) を参照してください。
 
-Javaプロジェクトの場合、`compileJava`に依存させておくと便利です。
+Javaプロジェクトの場合、`compileJava`および`processResources`に依存させておくと便利です。
 
 ```
 jigReports.dependsOn(compileJava, processResources)

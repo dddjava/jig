@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.basic.ClassFindFailException;
-import org.dddjava.jig.domain.basic.Warning;
+import org.dddjava.jig.application.service.ClassFindFailException;
+import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.infrastructure.LocalProject;

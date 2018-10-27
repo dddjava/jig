@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
-import org.dddjava.jig.domain.basic.Text;
+import org.dddjava.jig.domain.type.text.Text;
 
 import java.util.Comparator;
 import java.util.List;

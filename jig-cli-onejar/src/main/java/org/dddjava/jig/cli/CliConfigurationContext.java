@@ -1,6 +1,6 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 
 import java.text.MessageFormat;
 import java.util.StringJoiner;

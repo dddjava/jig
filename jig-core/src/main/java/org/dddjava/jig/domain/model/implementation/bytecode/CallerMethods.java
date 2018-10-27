@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.basic.UserNumber;
+import org.dddjava.jig.domain.type.usernumber.UserNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 
 import java.util.List;

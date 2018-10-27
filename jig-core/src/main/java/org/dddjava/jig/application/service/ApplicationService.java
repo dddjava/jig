@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
-import org.dddjava.jig.domain.basic.Warning;
+import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.basic;
+package org.dddjava.jig.domain.model.configuration;
 
 public interface ConfigurationContext {
 

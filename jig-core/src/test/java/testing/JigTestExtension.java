@@ -1,6 +1,6 @@
 package testing;
 
-import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.DefaultLayout;

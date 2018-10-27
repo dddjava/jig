@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.basic.ConfigurationContext;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;

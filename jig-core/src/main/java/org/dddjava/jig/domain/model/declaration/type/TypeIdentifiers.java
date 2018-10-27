@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.declaration.type;
 
-import org.dddjava.jig.domain.basic.Text;
+import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 

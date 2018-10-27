@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.basic;
+package org.dddjava.jig.domain.type.usernumber;
 
 public class UserNumber {
     int value;

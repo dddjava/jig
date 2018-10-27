@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.basic;
+package org.dddjava.jig.domain.type;
 
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.springframework.core.env.Environment;
 
 import java.text.MessageFormat;

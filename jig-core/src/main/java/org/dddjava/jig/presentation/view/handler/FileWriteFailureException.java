@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.basic;
+package org.dddjava.jig.presentation.view.handler;
 
 import java.io.IOException;
 

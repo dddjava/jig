@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
-import org.dddjava.jig.domain.basic.ConfigurationContext;
-import org.dddjava.jig.domain.basic.Warning;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
+import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.basic;
+package org.dddjava.jig.domain.type.text;
 
 import java.util.stream.Collector;
 import java.util.stream.Collectors;

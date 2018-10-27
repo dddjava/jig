@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 
-public class DotText {
+class DotText {
     DocumentSuffix documentSuffix;
     String text;
 
@@ -15,11 +15,21 @@ public class DotText {
         this(new DocumentSuffix(""), text);
     }
 
-    public String text() {
+    String text() {
+        if (isEmpty()) throw new NullPointerException();
         return text;
     }
 
-    public DocumentSuffix documentSuffix() {
+    DocumentSuffix documentSuffix() {
+        if (isEmpty()) throw new NullPointerException();
         return documentSuffix;
+    }
+
+    boolean isEmpty() {
+        return text == null;
+    }
+
+    static DotText empty() {
+        return new DotText(null);
     }
 }

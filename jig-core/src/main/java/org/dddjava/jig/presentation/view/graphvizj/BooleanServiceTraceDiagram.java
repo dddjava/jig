@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngle;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 
+import java.util.Collections;
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
@@ -24,10 +25,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
         ServiceAngles booleanServiceAngles = model.filterReturnsBoolean();
 
         if (booleanServiceAngles.isEmpty()) {
-            String text = new StringJoiner("\n", "digraph JIG {", "}")
-                    .add("\"出力するメソッドはありません\"[shape=note]")
-                    .toString();
-            return new DotTexts(text);
+            return new DotTexts(Collections.singletonList(DotText.empty()));
         }
 
         // メソッド間の関連

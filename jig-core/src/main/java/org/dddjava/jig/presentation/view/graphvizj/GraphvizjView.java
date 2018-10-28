@@ -5,7 +5,6 @@ import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 
 public class GraphvizjView<T> implements JigView<T> {
-
     DotTextEditor<T> editor;
     DiagramFormat diagramFormat;
 
@@ -18,6 +17,10 @@ public class GraphvizjView<T> implements JigView<T> {
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
         DotTexts dotTexts = editor.edit(model);
 
+        if (dotTexts.isEmpty()) {
+            jigDocumentWriter.skip();
+            return;
+        }
         for (DotText dot : dotTexts.list()) {
             JigDocumentWriter writer = jigDocumentWriter.apply(dot.documentSuffix());
             writer.writeDiagram(

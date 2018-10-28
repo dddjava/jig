@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
 
+import java.util.Collections;
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
@@ -21,6 +22,9 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
     @Override
     public DotTexts edit(CategoryAngles categoryAngles) {
+        if (categoryAngles.isEmpty()) {
+            return new DotTexts(Collections.singletonList(DotText.empty()));
+        }
 
         TypeIdentifiers enumTypes = categoryAngles.typeIdentifiers();
 

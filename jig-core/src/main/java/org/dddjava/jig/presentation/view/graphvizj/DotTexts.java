@@ -17,4 +17,11 @@ public class DotTexts {
     public List<DotText> list() {
         return values;
     }
+
+    public boolean isEmpty() {
+        if (values.isEmpty()) {
+            return true;
+        }
+        return values.stream().allMatch(DotText::isEmpty);
+    }
 }

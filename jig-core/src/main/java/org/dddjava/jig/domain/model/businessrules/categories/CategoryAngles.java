@@ -30,4 +30,8 @@ public class CategoryAngles {
     public TypeIdentifiers typeIdentifiers() {
         return list.stream().map(CategoryAngle::typeIdentifier).collect(TypeIdentifiers.collector());
     }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
 }

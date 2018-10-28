@@ -66,6 +66,10 @@ public class JigDocumentWriter {
         return new JigDocumentWriter(this.jigDocument, documentSuffix, this.directory, this.jigDebugMode);
     }
 
+    public void skip() {
+        LOGGER.info("出力対象がないため {} をスキップしました。", jigDocument);
+    }
+
     public interface OutputStreamWriter {
         void writeTo(OutputStream outputStream) throws IOException;
     }

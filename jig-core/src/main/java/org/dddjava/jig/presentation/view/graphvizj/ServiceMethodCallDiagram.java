@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngle;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -24,6 +25,10 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     @Override
     public DotTexts edit(ServiceAngles serviceAngles) {
+        if (serviceAngles.isEmpty()) {
+            return new DotTexts(Collections.singletonList(DotText.empty()));
+        }
+
         List<ServiceAngle> angles = serviceAngles.list();
 
         // メソッド間の関連

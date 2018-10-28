@@ -1,5 +1,4 @@
 org.dddjava.jig.application.service
-org.dddjava.jig.domain.basic
 org.dddjava.jig.domain.model.angle.decisions
 org.dddjava.jig.domain.model.angle.progresses
 org.dddjava.jig.domain.model.angle.smells
@@ -9,6 +8,7 @@ org.dddjava.jig.domain.model.businessrules.categories
 org.dddjava.jig.domain.model.businessrules.collections
 org.dddjava.jig.domain.model.businessrules.validations
 org.dddjava.jig.domain.model.businessrules.values
+org.dddjava.jig.domain.model.configuration
 org.dddjava.jig.domain.model.declaration.annotation
 org.dddjava.jig.domain.model.declaration.field
 org.dddjava.jig.domain.model.declaration.method
@@ -25,6 +25,9 @@ org.dddjava.jig.domain.model.threelayer.controllers
 org.dddjava.jig.domain.model.threelayer.datasources
 org.dddjava.jig.domain.model.threelayer.services
 org.dddjava.jig.domain.model.unit.method
+org.dddjava.jig.domain.type
+org.dddjava.jig.domain.type.text
+org.dddjava.jig.domain.type.usernumber
 org.dddjava.jig.infrastructure
 org.dddjava.jig.infrastructure.asm
 org.dddjava.jig.infrastructure.configuration

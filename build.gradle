@@ -227,7 +227,7 @@ project(':jig-core') {
         compile 'ch.qos.logback:logback-classic'
 
         // バイトコードの読み取り: infrastructure/asm
-        compile 'org.ow2.asm:asm:6.2.1'
+        compile 'org.ow2.asm:asm:7.0'
         // SQLの取得: infrastructure/mybatis
         compile 'org.mybatis:mybatis:3.4.6'
         // javadocコメントの取得: infrastructure/javaparser

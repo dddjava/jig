@@ -13,3 +13,7 @@ body > div {
     margin:0 auto;
     max-width: 800px;
 }
+
+main {
+    padding-left: 20px;
+}

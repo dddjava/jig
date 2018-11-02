@@ -46,13 +46,16 @@ subprojects {
         }
     }
 
+    jar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+    }
+}
+
+configure([project(":jig-annotation"), project(":jig-core")]) {
+
     javadoc {
         destinationDir file("${project.rootDir}/docs/javadoc/${project.name}")
         options.addStringOption('Xdoclint:none', '-quiet')
-    }
-
-    jar {
-        metaInf { from(rootDir) { include 'LICENSE' } }
     }
 }
 

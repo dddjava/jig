@@ -1,35 +1,29 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
-import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.junit.jupiter.api.Test;
-import testing.TestSupport;
+import org.junit.jupiter.api.extension.ExtendWith;
+import testing.JigTestExtension;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(JigTestExtension.class)
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存() {
+    void パッケージ依存(Configuration configuration) {
 
-        LocalProject localProject = configuration().localProject();
-        ImplementationService implementationService = configuration().implementationService();
+        LocalProject localProject = configuration.localProject();
+        ImplementationService implementationService = configuration.implementationService();
 
-        DependencyService sut = configuration().dependencyService();
+        DependencyService sut = configuration.dependencyService();
 
 
         TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
@@ -72,35 +66,4 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation -> stub.domain.model.relation.constant.to_primitive_wrapper_constant"
                 );
     }
-
-    Configuration configuration() {
-        Path path = Paths.get(TestSupport.defaultPackageClassURI());
-        return new Configuration(
-                new DefaultLayout(
-                        path.toString(),
-                        path.toString(),
-                        // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
-                        "not/read/resources",
-                        // TODO ソースディレクトリの安定した取得方法が欲しい
-                        "not/read/sources"
-                ),
-                new JigProperties(
-                        new BusinessRuleCondition("stub.domain.model.+"),
-                        new OutputOmitPrefix(),
-                        new PackageDepth(),
-                        false
-                ),
-                new ConfigurationContext() {
-                    @Override
-                    public String classFileDetectionWarningMessage() {
-                        return "";
-                    }
-
-                    @Override
-                    public String modelDetectionWarningMessage() {
-                        return "";
-                    }
-                });
-    }
-
 }

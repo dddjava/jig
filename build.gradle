@@ -239,29 +239,6 @@ project(':jig-core') {
     build.dependsOn(publishToMavenLocal)
 }
 
-project(':jig-cli-onejar') {
-    apply plugin: 'application'
-    apply plugin: 'com.github.johnrengelman.shadow'
-
-    dependencies {
-        compile project(':jig-core')
-        compile 'info.picocli:picocli:3.6.0'
-    }
-
-    mainClassName = 'org.dddjava.jig.cli.Cli'
-
-    shadowJar {
-        baseName = 'jig-cli'
-        classifier = null
-        version = null
-    }
-
-    jar.doLast {
-        tasks.shadowJar.execute()
-    }
-
-}
-
 project(':jig-cli') {
     apply plugin: 'org.springframework.boot'
 

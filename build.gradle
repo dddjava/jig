@@ -26,7 +26,6 @@ subprojects {
         jcenter()
     }
 
-    ext['mockito.version'] = '2.23.0'
     dependencies {
         implementation 'org.springframework.boot:spring-boot-dependencies:2.1.0.RELEASE'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'

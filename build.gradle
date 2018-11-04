@@ -13,7 +13,7 @@ repositories {
 subprojects {
     apply plugin: 'java'
 
-    version = '2018.11.1-SNAPSHOT'
+    version = '2018.11.1'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'

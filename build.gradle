@@ -12,6 +12,7 @@ repositories {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
 
     version = '2018.11.2-SNAPSHOT'
     group = 'org.dddjava.jig'
@@ -27,7 +28,6 @@ subprojects {
     }
 
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-dependencies:2.1.0.RELEASE'
         testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
         testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'
         testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
@@ -36,6 +36,12 @@ subprojects {
 
         testCompile('org.springframework:spring-test') {
             exclude group: 'junit'
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
         }
     }
 

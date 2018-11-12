@@ -4,5 +4,3 @@ include 'jig-core',
         'jig-cli',
         'jig-annotation',
         'jig-gradle-plugin'
-
-enableFeaturePreview('IMPROVED_POM_SUPPORT')

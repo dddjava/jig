@@ -1,66 +1,116 @@
 package org.dddjava.jig.gradle;
 
+import org.assertj.core.api.SoftAssertions;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
 import org.gradle.api.internal.project.DefaultProjectAccessListener;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class GradleProjectTest {
 
     @ParameterizedTest
     @MethodSource("fixtures")
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(Fixture fixture) {
-
-
         GradleProjects gradleProjects = new GradleProject(fixture.root).allDependencyJavaProjects();
 
-
-        //TODO: もうちょっとアサーションを
-        assertThat(gradleProjects.extractLayoutClassPath())
-                .hasSize(fixture.classPathCount);
-
-        assertThat(gradleProjects.extractLayoutSourcePath())
-                .hasSize(fixture.sourcePathCount);
+        SoftAssertions softly = new SoftAssertions();
+        softly.assertThat(fixture.classPathContains(gradleProjects.extractLayoutClassPath().collect(Collectors.toSet()))).isTrue();
+        softly.assertThat(fixture.sourcePathContains(gradleProjects.extractLayoutSourcePath().collect(Collectors.toSet()))).isTrue();
+        softly.assertAll();
     }
 
 
     static List<Fixture> fixtures() {
         return Arrays.asList(
-                new Fixture(singleJavaProject(), 2, 1),
-                new Fixture(projectHasThreeTiersAndThreeJavaProjectDependencies(), 2 * 3, 3)
+                new Fixture(singleJavaProject(),
+                        new String[]{
+                                "依存プロジェクトのないJavaプロジェクト/build/classes/java/main",
+                                "依存プロジェクトのないJavaプロジェクト/build/resources/main"
+                        },
+                        new String[]{
+                                "依存プロジェクトのないJavaプロジェクト/src/main/java"
+                        }
+                ),
+                new Fixture(projectHasThreeTiersAndThreeJavaProjectDependencies(),
+                        new String[]{
+                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
+                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
+                                "javaChild/build/classes/java/main",
+                                "javaChild/build/resources/main",
+                                "javaGrandson/build/classes/java/main",
+                                "javaGrandson/build/resources/main"
+                        },
+                        new String[]{
+                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
+                                "javaChild/src/main/java",
+                                "javaGrandson/src/main/java"
+                        }
+                ),
+                new Fixture(multiSourceSetJavaProject(),
+                        new String[]{
+                                "複数のソースセットを持つJavaプロジェクト/build/classes/java/main",
+                                "複数のソースセットを持つJavaプロジェクト/build/classes/java/sub",
+                                "複数のソースセットを持つJavaプロジェクト/build/resources/main",
+                                "複数のソースセットを持つJavaプロジェクト/build/resources/sub"
+                        },
+                        new String[]{
+                                "複数のソースセットを持つJavaプロジェクト/src/main/java",
+                                "複数のソースセットを持つJavaプロジェクト/src/sub/java"
+                        }
+                )
         );
     }
 
     static class Fixture {
         final Project root;
-        final int classPathCount;
-        final int sourcePathCount;
+        final String[] classPathSuffixes;
+        final String[] sourcePathSuffixes;
 
-        Fixture(Project root, int classPathCount, int sourcePathCount) {
+        Fixture(Project root, String[] classPathSuffixes, String[] sourcePathSuffixes) {
             this.root = root;
-            this.classPathCount = classPathCount;
-            this.sourcePathCount = sourcePathCount;
+            this.classPathSuffixes = classPathSuffixes;
+            this.sourcePathSuffixes = sourcePathSuffixes;
+        }
+
+
+        public boolean classPathContains(Set<Path> paths) {
+            return Arrays.stream(classPathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
+        }
+
+        public boolean sourcePathContains(Set<Path> paths) {
+            return Arrays.stream(sourcePathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
         }
 
         @Override
         public String toString() {
-            return String.format("プロジェクト:%s のクラスパスの数は %s ソースパスの数は %s であること", root.getName(), classPathCount, sourcePathCount);
+            return String.format("プロジェクト:%s のクラスパスは %s ソースパスの %s であること",
+                    root.getName(), Arrays.toString(classPathSuffixes), Arrays.toString(sourcePathSuffixes));
         }
     }
 
     private static Project singleJavaProject() {
         return javaProjectOf("依存プロジェクトのないJavaプロジェクト");
+    }
+
+    private static Project multiSourceSetJavaProject() {
+        ProjectInternal project = javaProjectOf("複数のソースセットを持つJavaプロジェクト");
+        JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
+        convention.getSourceSets().create("sub");
+        return project;
     }
 
     private static Project projectHasThreeTiersAndThreeJavaProjectDependencies() {
@@ -95,6 +145,7 @@ class GradleProjectTest {
     private static ProjectInternal projectOf(String name) {
         Project root = ProjectBuilder.builder()
                 .withName(name)
+                .withProjectDir(new File(name))
                 .build();
         return (ProjectInternal) root;
     }

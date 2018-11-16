@@ -6,13 +6,14 @@ import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 public class GradleProject {
     final Project project;
@@ -25,25 +26,26 @@ public class GradleProject {
     }
 
     public Set<Path> classPaths() {
-        SourceSet mainSourceSet = sourceSet();
-        File classesOutputDir = mainSourceSet.getOutput().getClassesDir();
-        File resourceOutputDir = mainSourceSet.getOutput().getResourcesDir();
-
-        HashSet<Path> paths = new HashSet<>();
-        paths.add(classesOutputDir.toPath());
-        paths.add(resourceOutputDir.toPath());
-        return paths;
-    }
-
-    public Set<Path> sourcePaths() {
-        return sourceSet().getJava().getSrcDirs().stream()
+        return sourceSets().stream()
+                .map(SourceSet::getOutput)
+                .flatMap(output -> Stream.concat(output.getClassesDirs().getFiles().stream(), Stream.of(output.getResourcesDir())))
                 .map(File::toPath)
                 .collect(toSet());
     }
 
-    private SourceSet sourceSet() {
+    public Set<Path> sourcePaths() {
+        return sourceSets().stream()
+                .flatMap(set -> set.getJava().getSrcDirs().stream())
+                .map(File::toPath)
+                .collect(toSet());
+    }
+
+    private List<SourceSet> sourceSets() {
         JavaPluginConvention convention = project.getConvention().findPlugin(JavaPluginConvention.class);
-        return convention.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+        List<SourceSet> sourceSets = convention.getSourceSets().stream()
+                .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
+                .collect(Collectors.toList());
+        return sourceSets;
     }
 
 

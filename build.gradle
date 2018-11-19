@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.0.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
-    id 'org.dddjava.jig-gradle-plugin' version '2018.10.4' apply false
+    id 'org.dddjava.jig-gradle-plugin' version '2018.11.2' apply false
     id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
 }
 
@@ -14,7 +14,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.11.2'
+    version = '2018.11.3'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'
@@ -33,6 +33,7 @@ subprojects {
         testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
         testCompile 'org.assertj:assertj-core:3.11.1'
         testCompile 'org.mockito:mockito-core'
+        testCompile 'org.junit-pioneer:junit-pioneer:0.1.2'
 
         testCompile('org.springframework:spring-test') {
             exclude group: 'junit'
@@ -233,13 +234,13 @@ project(':jig-core') {
         // SQLの取得: infrastructure/mybatis
         compile 'org.mybatis:mybatis:3.4.6'
         // javadocコメントの取得: infrastructure/javaparser
-        compile 'com.github.javaparser:javaparser-core:3.7.0'
+        compile 'com.github.javaparser:javaparser-core:3.7.1'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
         compile 'org.apache.poi:poi:4.0.0'
         compile 'org.apache.poi:poi-ooxml:4.0.0'
         // ダイアグラム出力: presentation/graphvizj
-        compile 'guru.nidi:graphviz-java:0.7.0'
+        compile 'guru.nidi:graphviz-java:0.7.1'
 
         testCompile 'org.springframework:spring-web'
     }

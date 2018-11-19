@@ -29,9 +29,6 @@ public class DatasourceMethods {
             ParameterizedTypes parameterizedTypes = concreteByteCode.parameterizedInterfaceTypes();
             for (ParameterizedType parameterizedType : parameterizedTypes.list()) {
                 TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
-                if (!architecture.isBusinessRule(interfaceTypeIdentifier)) {
-                    continue;
-                }
 
                 for (TypeByteCode interfaceByteCode : typeByteCodes.list()) {
                     if (!interfaceTypeIdentifier.equals(interfaceByteCode.typeIdentifier())) {

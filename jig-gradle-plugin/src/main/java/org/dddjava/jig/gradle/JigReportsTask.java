@@ -24,8 +24,6 @@ import java.util.List;
 
 public class JigReportsTask extends DefaultTask {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JigReportsTask.class);
-
     @TaskAction
     void outputReports() {
         Project project = getProject();
@@ -48,7 +46,7 @@ public class JigReportsTask extends DefaultTask {
 
         long startTime = System.currentTimeMillis();
 
-        LOGGER.info("プロジェクト情報の取り込みをはじめます");
+        getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {
             TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
             Sqls sqls = implementationService.readSql(localProject.getSqlSources());
@@ -57,10 +55,10 @@ public class JigReportsTask extends DefaultTask {
                 jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
-            LOGGER.info(Warning.クラス検出異常.with(configurationContext));
+            getLogger().quiet(Warning.クラス検出異常.with(configurationContext));
         }
 
-        LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+        getLogger().quiet("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 
     Path outputDirectory(JigConfig config) {

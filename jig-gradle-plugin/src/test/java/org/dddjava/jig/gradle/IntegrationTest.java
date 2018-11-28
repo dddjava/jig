@@ -6,6 +6,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,8 +33,12 @@ public class IntegrationTest {
         }
     }
 
+    static Stream<String> versions() {
+        return Stream.of("4.9", "5.0");
+    }
+
     @ParameterizedTest
-    @ValueSource(strings = {"4.9", "5.0"})
+    @MethodSource("versions")
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(String version) throws IOException {
         BuildResult result = executeGradleTasks(version,"clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
@@ -46,7 +52,7 @@ public class IntegrationTest {
 
     //TODO 並列で走ると競合して落ちる
     @ParameterizedTest
-    @ValueSource(strings = {"4.9", "5.0"})
+    @MethodSource("versions")
     void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(String version) throws IOException {
         Files.createDirectories(outputDir);
         Path includedFile = outputDir.resolve("somme.txt");

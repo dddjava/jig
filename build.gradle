@@ -333,7 +333,7 @@ project(':jig-gradle-plugin') {
         }
     }
 
-    task setupPluginUpload << {
+    task setupPluginUpload doLast {
         final def KEY_PROPERTY = "gradle.publish.key"
         final def SECRET_PROPERTY = "gradle.publish.secret"
 

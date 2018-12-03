@@ -2,7 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.0.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
-    id 'org.dddjava.jig-gradle-plugin' version '2018.11.3' apply false
+    id 'org.dddjava.jig-gradle-plugin' version '2018.11.4' apply false
     id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
 }
 
@@ -14,7 +14,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
 
-    version = '2018.11.4'
+    version = '2018.12.1'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'
@@ -28,9 +28,10 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.1'
-        testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.1'
-        testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+        testCompile 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+        testCompile 'org.junit.platform:junit-platform-commons:1.3.2'
+        testCompile 'org.junit.jupiter:junit-jupiter-params:5.3.2'
+        testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
         testCompile 'org.assertj:assertj-core:3.11.1'
         testCompile 'org.mockito:mockito-core'
         testCompile 'org.junit-pioneer:junit-pioneer:0.3.0'
@@ -234,7 +235,7 @@ project(':jig-core') {
         // SQLの取得: infrastructure/mybatis
         compile 'org.mybatis:mybatis:3.4.6'
         // javadocコメントの取得: infrastructure/javaparser
-        compile 'com.github.javaparser:javaparser-core:3.8.0'
+        compile 'com.github.javaparser:javaparser-core:3.8.1'
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
         compile 'org.apache.poi:poi:4.0.0'
@@ -332,7 +333,7 @@ project(':jig-gradle-plugin') {
         }
     }
 
-    task setupPluginUpload << {
+    task setupPluginUpload doLast {
         final def KEY_PROPERTY = "gradle.publish.key"
         final def SECRET_PROPERTY = "gradle.publish.secret"
 

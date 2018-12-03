@@ -72,11 +72,6 @@ public enum Warning {
         throw new UnsupportedOperationException();
     }
 
-    public String getProperty(Environment environment, String key) {
-        if (environment == null) return "（取得できません）";
-        return environment.getProperty(key);
-    }
-
     public String text(Object... args) {
         return MessageFormat.format(messageFormatPattern, args);
     }

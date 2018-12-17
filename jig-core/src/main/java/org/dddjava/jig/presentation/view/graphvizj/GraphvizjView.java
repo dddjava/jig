@@ -23,13 +23,13 @@ public class GraphvizjView<T> implements JigView<T> {
         }
         for (DotText dot : dotTexts.list()) {
             JigDocumentWriter writer = jigDocumentWriter.apply(dot.documentSuffix());
+            writer.writeDebugText(dot.text());
             writer.writeDiagram(
                     outputStream ->
                             Graphviz.fromString(dot.text())
                                     .render(diagramFormat.graphvizjFormat())
                                     .toOutputStream(outputStream),
                     diagramFormat);
-            writer.writeDebugText(dot.text());
         }
     }
 }

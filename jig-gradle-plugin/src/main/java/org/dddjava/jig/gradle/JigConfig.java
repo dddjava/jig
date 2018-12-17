@@ -8,7 +8,6 @@ import org.dddjava.jig.presentation.view.JigDocument;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,7 @@ public class JigConfig {
     boolean enableDebugDocument = false;
 
     List<JigDocument> documentTypes() {
-        if (documentTypes.isEmpty()) return Arrays.asList(JigDocument.values());
+        if (documentTypes.isEmpty()) return JigDocument.canonical();
         return documentTypes.stream()
                 .map(JigDocument::valueOf)
                 .collect(Collectors.toList());

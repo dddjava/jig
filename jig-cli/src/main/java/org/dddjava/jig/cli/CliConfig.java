@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -44,7 +43,7 @@ class CliConfig {
 
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()
-                ? Arrays.asList(JigDocument.values())
+                ? JigDocument.canonical()
                 : JigDocument.resolve(documentTypeText);
     }
 

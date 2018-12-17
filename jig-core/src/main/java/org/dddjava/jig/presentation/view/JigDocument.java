@@ -96,6 +96,12 @@ public enum JigDocument {
         this.documentFileName = documentFileName;
     }
 
+    public static List<JigDocument> canonical() {
+        return Arrays.stream(values())
+                .filter(value -> value != PackageTreeDiagram)
+                .collect(Collectors.toList());
+    }
+
     public String fileName() {
         return documentFileName;
     }

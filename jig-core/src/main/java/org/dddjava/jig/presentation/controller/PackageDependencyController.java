@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
+import org.dddjava.jig.domain.model.declaration.namespace.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
@@ -50,5 +51,13 @@ public class PackageDependencyController {
         BusinessRuleNetwork network = dependencyService.businessRuleNetwork(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(japaneseNameFinder));
+    }
+
+    @DocumentMapping(JigDocument.PackageTreeDiagram)
+    public JigModelAndView<AllPackageIdentifiers> packageTreeDiagram(TypeByteCodes typeByteCodes) {
+        LOGGER.info("パッケージツリーダイアグラムを出力します");
+        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
+        AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(typeByteCodes);
+        return new JigModelAndView<>(packages, viewResolver.packageTreeWriter(japaneseNameFinder));
     }
 }

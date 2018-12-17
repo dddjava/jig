@@ -29,6 +29,10 @@ public class PackageIdentifiers {
         return new PackageIdentifiers(list);
     }
 
+    public AllPackageIdentifiers allPackageIdentifiers() {
+        return new AllPackageIdentifiers(list);
+    }
+
     public PackageDepth maxDepth() {
         return list.stream()
                 .map(PackageIdentifier::depth)
@@ -42,5 +46,13 @@ public class PackageIdentifiers {
 
     public PackageNumber number() {
         return new PackageNumber(list.size());
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public List<PackageIdentifier> list() {
+        return list;
     }
 }

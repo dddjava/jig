@@ -81,7 +81,14 @@ public enum JigDocument {
      * 真偽値を返すサービスと使用しているメソッドを可視化する。
      * 真偽値にビジネスルールが埋もれていないかの検出に使用できる。
      */
-    BooleanServiceDiagram("boolean-service");
+    BooleanServiceDiagram("boolean-service"),
+
+    /**
+     * パッケージツリーダイアグラム
+     *
+     * パッケージ階層を可視化する。
+     */
+    PackageTreeDiagram("package-tree");
 
     private final String documentFileName;
 

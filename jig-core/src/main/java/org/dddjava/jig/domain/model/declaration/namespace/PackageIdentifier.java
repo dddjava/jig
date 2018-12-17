@@ -53,4 +53,27 @@ public class PackageIdentifier {
     public String asText() {
         return value;
     }
+
+    public PackageIdentifier parent() {
+        String[] split = value.split("\\.");
+
+        if (split.length == 1) {
+            return defaultPackage();
+        }
+
+        StringJoiner sj = new StringJoiner(".");
+        for (int i = 0; i < split.length - 1; i++) {
+            sj.add(split[i]);
+        }
+        return new PackageIdentifier(sj.toString());
+    }
+
+    public boolean hasName() {
+        return !value.equals("(default)");
+    }
+
+    public String simpleName() {
+        if (value.lastIndexOf(".") == -1) return value;
+        return value.substring(value.lastIndexOf(".") + 1);
+    }
 }

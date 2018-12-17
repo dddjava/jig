@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.declaration.namespace.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
@@ -46,5 +47,9 @@ public class ViewResolver {
 
     public JigView<CategoryAngles> categories(JapaneseNameFinder japaneseNameFinder) {
         return newGraphvizjView(new CategoryDiagram(japaneseNameFinder));
+    }
+
+    public JigView<AllPackageIdentifiers> packageTreeWriter(JapaneseNameFinder japaneseNameFinder) {
+        return newGraphvizjView(new PackageTreeDiagram(packageIdentifierFormatter, japaneseNameFinder));
     }
 }

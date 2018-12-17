@@ -1,16 +1,17 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.annotation.Progress;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
-import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
+import org.dddjava.jig.domain.model.declaration.namespace.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageRelations;
 import org.dddjava.jig.domain.model.networks.type.TypeRelations;
+import org.dddjava.jig.domain.type.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,11 @@ public class DependencyService {
     public DependencyService(ConfigurationContext configurationContext, BusinessRuleService businessRuleService) {
         this.configurationContext = configurationContext;
         this.businessRuleService = businessRuleService;
+    }
+
+    public AllPackageIdentifiers allPackageIdentifiers(TypeByteCodes typeByteCodes) {
+        PackageIdentifiers packageIdentifiers = typeByteCodes.types().packages();
+        return packageIdentifiers.allPackageIdentifiers();
     }
 
     /**

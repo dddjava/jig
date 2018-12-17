@@ -242,6 +242,21 @@ project(':jig-core') {
     }
 
     build.dependsOn(publishToMavenLocal)
+
+    jigReports.dependsOn(clean, compileJava, processResources)
+    jig {
+        documentTypes = [
+                'ServiceMethodCallHierarchyDiagram',
+                'PackageRelationDiagram',
+                //'BusinessRuleRelationDiagram',
+                'ApplicationList',
+                'BusinessRuleList',
+                'BranchList',
+                'CategoryUsageDiagram',
+                'CategoryDiagram',
+                'BooleanServiceDiagram',
+                'PackageTreeDiagram']
+    }
 }
 
 project(':jig-cli') {

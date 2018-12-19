@@ -13,14 +13,10 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class PackageDependencyController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PackageDependencyController.class);
 
     private final PackageDepth packageDepth;
 
@@ -40,7 +36,6 @@ public class PackageDependencyController {
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)
     public JigModelAndView<PackageNetworks> packageDependency(TypeByteCodes typeByteCodes) {
-        LOGGER.info("パッケージ依存ダイアグラムを出力します");
         PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
@@ -55,7 +50,6 @@ public class PackageDependencyController {
 
     @DocumentMapping(JigDocument.PackageTreeDiagram)
     public JigModelAndView<AllPackageIdentifiers> packageTreeDiagram(TypeByteCodes typeByteCodes) {
-        LOGGER.info("パッケージツリーダイアグラムを出力します");
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(typeByteCodes);
         return new JigModelAndView<>(packages, viewResolver.packageTreeWriter(japaneseNameFinder));

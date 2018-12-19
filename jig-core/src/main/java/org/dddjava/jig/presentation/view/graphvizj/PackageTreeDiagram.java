@@ -48,7 +48,7 @@ public class PackageTreeDiagram implements DotTextEditor<AllPackageIdentifiers> 
                     }
                     PackageIdentifier packageIdentifier = entry.getKey();
                     return new Node(packageIdentifier.asText())
-                            .label("<_>" + appendJapaneseName(packageIdentifier) + subPackages)
+                            .label(appendJapaneseName(packageIdentifier) + subPackages)
                             .asText();
                 })
                 .collect(joining("\n"));
@@ -56,7 +56,7 @@ public class PackageTreeDiagram implements DotTextEditor<AllPackageIdentifiers> 
         String relations = model.list().stream()
                 .map(packageIdentifier -> {
                     PackageIdentifier parent = packageIdentifier.parent();
-                    return String.format("\"%s\":\"%s\" -> \"%s\":_;", parent.asText(), packageIdentifier.asText(), packageIdentifier.asText());
+                    return String.format("\"%s\":\"%s\" -> \"%s\";", parent.asText(), packageIdentifier.asText(), packageIdentifier.asText());
                 })
                 .collect(Collectors.joining("\n"));
 

@@ -234,7 +234,7 @@ project(':jig-core') {
         compile 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
         compile 'org.apache.poi:poi:4.0.0'
-        compile 'org.apache.poi:poi-ooxml:4.0.0'
+        compile 'org.apache.poi:poi-ooxml:4.0.1'
         // ダイアグラム出力: presentation/graphvizj
         compile 'guru.nidi:graphviz-java:0.8.0'
 

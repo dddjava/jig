@@ -28,7 +28,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
     TypeByteCode typeByteCode;
 
     public ByteCodeAnalyzer() {
-        super(Opcodes.ASM6);
+        super(Opcodes.ASM7);
     }
 
     TypeByteCode analyze(InputStream inputStream) throws IOException {

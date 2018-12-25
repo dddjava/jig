@@ -29,6 +29,7 @@ import stub.domain.model.relation.enumeration.ConstructorArgument;
 import stub.domain.model.relation.enumeration.EnumField;
 import stub.domain.model.relation.field.*;
 import stub.misc.DecisionClass;
+import testing.TestSupport;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -40,6 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 public class AsmByteCodeFactoryTest {
+
+    @Test
+    void JDK11でコンパイルされたクラス() {
+        Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
+
+        AsmByteCodeFactory sut = new AsmByteCodeFactory();
+        sut.analyze(new ByteCodeSource(path));
+    }
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {

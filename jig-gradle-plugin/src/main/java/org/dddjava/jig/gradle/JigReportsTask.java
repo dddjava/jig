@@ -1,10 +1,10 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.application.service.ClassFindFailException;
-import org.dddjava.jig.domain.type.Warning;
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -15,8 +15,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,6 +50,7 @@ public class JigReportsTask extends DefaultTask {
             Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
             for (JigDocument jigDocument : jigDocuments) {
+                getLogger().quiet("{} を出力します。", jigDocument);
                 jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {

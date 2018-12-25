@@ -49,6 +49,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
             Path outputDirectory = cliConfig.outputDirectory();
             for (JigDocument jigDocument : jigDocuments) {
+                LOGGER.info("{} を出力します。", jigDocument);
                 jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {

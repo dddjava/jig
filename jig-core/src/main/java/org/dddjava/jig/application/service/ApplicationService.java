@@ -1,7 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.Progress;
-import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
@@ -19,6 +17,7 @@ import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceMethods;
 import org.dddjava.jig.domain.model.unit.method.Methods;
+import org.dddjava.jig.domain.type.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 /**
  * 機能の分析サービス
  */
-@Progress("安定")
 @Service
 public class ApplicationService {
 
@@ -104,7 +102,6 @@ public class ApplicationService {
     /**
      * 進捗を分析する
      */
-    @Progress("実験的機能")
     public ProgressAngles progressAngles(TypeByteCodes typeByteCodes) {
         MethodAnnotations methodAnnotations = typeByteCodes.annotatedMethods();
         TypeAnnotations typeAnnotations = typeByteCodes.typeAnnotations();

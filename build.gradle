@@ -146,6 +146,7 @@ project(':jig-annotation') {
 }
 
 project(':jig-core') {
+    apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
     apply plugin: 'org.dddjava.jig-gradle-plugin'
@@ -221,23 +222,23 @@ project(':jig-core') {
     }
 
     dependencies {
-        implementation project(':jig-annotation')
-        implementation 'org.springframework:spring-context'
-        implementation 'org.slf4j:slf4j-api'
-        implementation 'ch.qos.logback:logback-classic'
+        api project(':jig-annotation')
+        api 'org.springframework:spring-context'
+        api 'org.slf4j:slf4j-api'
+        api 'ch.qos.logback:logback-classic'
 
         // バイトコードの読み取り: infrastructure/asm
-        implementation 'org.ow2.asm:asm:7.0'
+        api 'org.ow2.asm:asm:7.0'
         // SQLの取得: infrastructure/mybatis
-        implementation 'org.mybatis:mybatis:3.4.6'
+        api 'org.mybatis:mybatis:3.4.6'
         // javadocコメントの取得: infrastructure/javaparser
-        implementation 'com.github.javaparser:javaparser-core:3.9.0'
-        implementation 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+        api 'com.github.javaparser:javaparser-core:3.9.0'
+        api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
-        implementation 'org.apache.poi:poi:4.0.1'
-        implementation 'org.apache.poi:poi-ooxml:4.0.1'
+        api 'org.apache.poi:poi:4.0.1'
+        api 'org.apache.poi:poi-ooxml:4.0.1'
         // ダイアグラム出力: presentation/graphvizj
-        implementation 'guru.nidi:graphviz-java:0.8.0'
+        api 'guru.nidi:graphviz-java:0.8.0'
 
         testImplementation 'org.springframework:spring-web'
     }

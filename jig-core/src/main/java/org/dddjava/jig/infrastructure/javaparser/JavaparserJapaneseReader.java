@@ -1,12 +1,13 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
+import org.dddjava.jig.domain.model.implementation.raw.JavaSource;
+import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
 import org.dddjava.jig.domain.model.japanese.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,23 +19,23 @@ public class JavaparserJapaneseReader implements JapaneseReader {
     ClassReader classReader = new ClassReader();
 
     @Override
-    public PackageNames readPackages(PackageNameSources nameSources) {
+    public PackageNames readPackages(PackageInfoSources nameSources) {
         List<PackageJapaneseName> names = new ArrayList<>();
-        for (Path path : nameSources.list()) {
-            packageInfoReader.read(path)
+        for (PackageInfoSource packageInfoSource : nameSources.list()) {
+            packageInfoReader.read(packageInfoSource)
                     .ifPresent(names::add);
         }
         return new PackageNames(names);
     }
 
     @Override
-    public TypeNames readTypes(TypeNameSources nameSources) {
+    public TypeNames readTypes(JavaSources nameSources) {
         List<TypeJapaneseName> names = new ArrayList<>();
         List<MethodJapaneseName> methodNames = new ArrayList<>();
 
-        for (Path path : nameSources.list()) {
+        for (JavaSource javaSource : nameSources.list()) {
             try {
-                TypeSourceResult typeSourceResult = classReader.read(path);
+                TypeSourceResult typeSourceResult = classReader.read(javaSource);
                 TypeJapaneseName typeJapaneseName = typeSourceResult.typeJapaneseName;
                 if (typeJapaneseName != null) {
                     names.add(typeJapaneseName);

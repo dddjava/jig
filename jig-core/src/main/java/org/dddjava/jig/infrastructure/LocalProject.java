@@ -1,10 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
+import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +16,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,8 +29,8 @@ public class LocalProject {
         this.layout = layout;
     }
 
-    public ByteCodeSources getByteCodeSources() {
-        ArrayList<ByteCodeSource> sources = new ArrayList<>();
+    public ClassSources getByteCodeSources() {
+        ArrayList<ClassSource> sources = new ArrayList<>();
         try {
             for (Path path : layout.extractClassPath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -43,8 +39,8 @@ public class LocalProject {
                         if (isClassFile(file)) {
                             try {
                                 byte[] bytes = Files.readAllBytes(file);
-                                ByteCodeSource byteCodeSource = new ByteCodeSource(bytes);
-                                sources.add(byteCodeSource);
+                                ClassSource classSource = new ClassSource(bytes);
+                                sources.add(classSource);
                             } catch (IOException e) {
                                 throw new UncheckedIOException(e);
                             }
@@ -57,7 +53,7 @@ public class LocalProject {
             throw new UncheckedIOException(e);
         }
         LOGGER.info("*.class: {}件", sources.size());
-        return new ByteCodeSources(sources);
+        return new ClassSources(sources);
     }
 
 
@@ -65,13 +61,6 @@ public class LocalProject {
         return path.toString().endsWith(".class");
     }
 
-    private boolean isJavaFile(Path path) {
-        return path.toString().endsWith(".java");
-    }
-
-    private boolean isPackageInfoFile(Path path) {
-        return path.toString().endsWith("package-info.java");
-    }
 
     public SqlSources getSqlSources() {
         try {
@@ -109,31 +98,36 @@ public class LocalProject {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    public PackageNameSources getPackageNameSources() {
-        List<Path> paths = pathsOf(this::isPackageInfoFile);
-        LOGGER.info("package-info.java: {}件", paths.size());
-        return new PackageNameSources(paths);
-    }
-
-    public TypeNameSources getTypeNameSources() {
-        List<Path> paths = pathsOf(this::isJavaFile);
-        LOGGER.info("*.java: {}件", paths.size());
-        return new TypeNameSources(paths);
-    }
-
-    private List<Path> pathsOf(Predicate<Path> condition) {
+    public NotCompiledSources notCompiledSources() {
         try {
-            List<Path> paths = new ArrayList<>();
+            List<JavaSource> javaSources = new ArrayList<>();
+            List<PackageInfoSource> packageInfoSources = new ArrayList<>();
             for (Path path : layout.extractSourcePath()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (condition.test(file)) paths.add(file);
-                        return FileVisitResult.CONTINUE;
+                        try {
+                            String name = file.toString();
+                            if (name.endsWith("package-info.java")) {
+                                packageInfoSources.add(new PackageInfoSource(Files.readAllBytes(file)));
+                            } else if (name.endsWith(".java")) {
+                                javaSources.add(new JavaSource(Files.readAllBytes(file)));
+                            }
+
+                            return FileVisitResult.CONTINUE;
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
                     }
                 });
             }
-            return paths;
+
+            LOGGER.info("*.java: {}件", javaSources.size());
+            LOGGER.info("package-info.java: {}件", packageInfoSources.size());
+            return new NotCompiledSources(
+                    new JavaSources(javaSources),
+                    new PackageInfoSources(packageInfoSources)
+            );
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

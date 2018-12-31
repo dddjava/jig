@@ -7,34 +7,28 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSource;
 import org.dddjava.jig.domain.model.japanese.JapaneseName;
 import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Path;
 import java.util.Optional;
 
 class PackageInfoReader {
 
-    Optional<PackageJapaneseName> read(Path path) {
-        try {
-            CompilationUnit cu = JavaParser.parse(path);
+    Optional<PackageJapaneseName> read(PackageInfoSource packageInfoSource) {
+        CompilationUnit cu = JavaParser.parse(packageInfoSource.toInputStream());
 
-            Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
-                    .map(NodeWithName::getNameAsString)
-                    .map(PackageIdentifier::new);
+        Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
+                .map(NodeWithName::getNameAsString)
+                .map(PackageIdentifier::new);
 
-            Optional<JapaneseName> optJapaneseName = getJavadoc(cu)
-                    .map(Javadoc::getDescription)
-                    .map(JavadocDescription::toText)
-                    .map(JapaneseName::new);
+        Optional<JapaneseName> optJapaneseName = getJavadoc(cu)
+                .map(Javadoc::getDescription)
+                .map(JavadocDescription::toText)
+                .map(JapaneseName::new);
 
-            return optPackageIdentifier.flatMap(packageIdentifier -> optJapaneseName.map(japaneseName ->
-                    new PackageJapaneseName(packageIdentifier, japaneseName)));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return optPackageIdentifier.flatMap(packageIdentifier -> optJapaneseName.map(japaneseName ->
+                new PackageJapaneseName(packageIdentifier, japaneseName)));
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

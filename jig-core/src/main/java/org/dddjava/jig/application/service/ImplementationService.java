@@ -1,11 +1,12 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.raw.ClassSources;
+import org.dddjava.jig.domain.model.implementation.raw.NotCompiledSources;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +33,9 @@ public class ImplementationService {
     public TypeByteCodes readProjectData(LocalProject target) {
         TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
 
-        glossaryService.importJapanese(target.getTypeNameSources());
-        glossaryService.importJapanese(target.getPackageNameSources());
+        NotCompiledSources notCompiledSources = target.notCompiledSources();
+        glossaryService.importJapanese(notCompiledSources.javaSources());
+        glossaryService.importJapanese(notCompiledSources.packageInfoSources());
 
         return typeByteCodes;
     }
@@ -41,12 +43,12 @@ public class ImplementationService {
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeByteCodes readByteCode(ByteCodeSources byteCodeSources) {
-        if (byteCodeSources.notFound()) {
+    public TypeByteCodes readByteCode(ClassSources classSources) {
+        if (classSources.notFound()) {
             throw new ClassFindFailException();
         }
 
-        return byteCodeFactory.readFrom(byteCodeSources);
+        return byteCodeFactory.readFrom(classSources);
     }
 
     /**

@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.japanese;
 
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
+import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
 
 /**
  * 和名読み取り機
  */
 public interface JapaneseReader {
 
-    PackageNames readPackages(PackageNameSources packageNameSources);
+    PackageNames readPackages(PackageInfoSources packageInfoSources);
 
-    TypeNames readTypes(TypeNameSources typeNameSources);
+    TypeNames readTypes(JavaSources javaSources);
 }

@@ -34,7 +34,7 @@ class GlossaryServiceTest {
     void パッケージ和名取得() {
         LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
-        sut.importJapanese(localProject.getPackageNameSources());
+        sut.importJapanese(localProject.notCompiledSources().packageInfoSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
                 .isEqualTo("テストで使用するスタブたち");
@@ -50,7 +50,7 @@ class GlossaryServiceTest {
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
         LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
-        sut.importJapanese(localProject.getTypeNameSources());
+        sut.importJapanese(localProject.notCompiledSources().javaSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);
@@ -69,7 +69,7 @@ class GlossaryServiceTest {
     void メソッド和名取得() {
         LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
 
-        sut.importJapanese(localProject.getTypeNameSources());
+        sut.importJapanese(localProject.notCompiledSources().javaSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

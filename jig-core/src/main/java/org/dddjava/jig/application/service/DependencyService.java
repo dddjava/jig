@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
@@ -21,7 +20,6 @@ import java.util.Collections;
 /**
  * 依存関係サービス
  */
-@Progress("安定")
 @Service
 public class DependencyService {
 
@@ -49,7 +47,7 @@ public class DependencyService {
         BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
 
         if (businessRules.empty()) {
-            LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
+            LOGGER.warn(Warning.ビジネスルールが見つからないので出力されない通知.text());
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
         }
 

@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 /**
  * 取り込みサービス
  */
-@Progress("安定")
 @Service
 public class ImplementationService {
 

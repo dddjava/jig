@@ -53,7 +53,7 @@ public class CommandLineApplication implements CommandLineRunner {
                 jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
-            LOGGER.warn(e.warning().with(configuration.configurationContext()));
+            LOGGER.warn(e.warning().text());
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

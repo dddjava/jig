@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.Progress;
 import org.dddjava.jig.domain.model.angle.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 /**
  * ビジネスルールの分析サービス
  */
-@Progress("安定")
 @Service
 public class BusinessRuleService {
 

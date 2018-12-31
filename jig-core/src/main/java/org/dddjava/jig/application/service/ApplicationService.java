@@ -1,7 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.annotation.Progress;
-import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
@@ -19,6 +17,7 @@ import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceMethods;
 import org.dddjava.jig.domain.model.unit.method.Methods;
+import org.dddjava.jig.domain.type.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 /**
  * 機能の分析サービス
  */
-@Progress("安定")
 @Service
 public class ApplicationService {
 
@@ -45,7 +43,7 @@ public class ApplicationService {
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
-            LOGGER.warn(Warning.コントローラーなし.text());
+            LOGGER.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.text());
         }
 
         return new ControllerAngles(controllerMethods, typeByteCodes.typeAnnotations());
@@ -58,7 +56,7 @@ public class ApplicationService {
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
-            LOGGER.warn(Warning.サービスなし.text());
+            LOGGER.warn(Warning.サービスメソッドが見つからないので出力されない通知.text());
         }
 
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
@@ -78,9 +76,9 @@ public class ApplicationService {
         DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
 
         if (datasourceMethods.empty()) {
-            LOGGER.warn(Warning.リポジトリなし.text());
+            LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
         } else if (sqls.empty()) {
-            LOGGER.warn(Warning.SQLなし.text());
+            LOGGER.warn(Warning.SQLが見つからないので出力されない通知.text());
         }
 
         return new DatasourceAngles(datasourceMethods, sqls);
@@ -104,7 +102,6 @@ public class ApplicationService {
     /**
      * 進捗を分析する
      */
-    @Progress("実験的機能")
     public ProgressAngles progressAngles(TypeByteCodes typeByteCodes) {
         MethodAnnotations methodAnnotations = typeByteCodes.annotatedMethods();
         TypeAnnotations typeAnnotations = typeByteCodes.typeAnnotations();

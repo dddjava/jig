@@ -41,8 +41,13 @@ public class LocalProject {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (isClassFile(file)) {
-                            ByteCodeSource byteCodeSource = new ByteCodeSource(file);
-                            sources.add(byteCodeSource);
+                            try {
+                                byte[] bytes = Files.readAllBytes(file);
+                                ByteCodeSource byteCodeSource = new ByteCodeSource(bytes);
+                                sources.add(byteCodeSource);
+                            } catch (IOException e) {
+                                throw new UncheckedIOException(e);
+                            }
                         }
                         return FileVisitResult.CONTINUE;
                     }

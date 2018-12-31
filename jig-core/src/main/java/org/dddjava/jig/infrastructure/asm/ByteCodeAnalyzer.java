@@ -8,15 +8,14 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.*;
+import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +30,8 @@ class ByteCodeAnalyzer extends ClassVisitor {
         super(Opcodes.ASM7);
     }
 
-    TypeByteCode analyze(InputStream inputStream) throws IOException {
-        ClassReader classReader = new ClassReader(inputStream);
+    TypeByteCode analyze(ByteCodeSource byteCodeSource) {
+        ClassReader classReader = new ClassReader(byteCodeSource.value());
         classReader.accept(this, ClassReader.SKIP_DEBUG);
         return typeByteCode;
     }

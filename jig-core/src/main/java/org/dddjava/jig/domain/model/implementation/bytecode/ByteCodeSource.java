@@ -1,18 +1,16 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import java.nio.file.Path;
-
 /**
  * バイトコードのソース（classファイル）
  */
 public class ByteCodeSource {
-    private final Path path;
+    private final byte[] value;
 
-    public ByteCodeSource(Path path) {
-        this.path = path;
+    public ByteCodeSource(byte[] value) {
+        this.value = value;
     }
 
-    public Path getPath() {
-        return path;
+    public byte[] value() {
+        return value;
     }
 }

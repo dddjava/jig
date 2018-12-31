@@ -31,7 +31,9 @@ import stub.domain.model.relation.field.*;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -43,11 +45,11 @@ import static org.assertj.core.api.Assertions.tuple;
 public class AsmByteCodeFactoryTest {
 
     @Test
-    void JDK11でコンパイルされたクラス() {
+    void JDK11でコンパイルされたクラス() throws IOException {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        sut.analyze(new ByteCodeSource(path));
+        sut.analyze(new ByteCodeSource(Files.readAllBytes(path)));
     }
 
     @Test
@@ -255,10 +257,10 @@ public class AsmByteCodeFactoryTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(new ByteCodeSource(path));
+        return sut.analyze(new ByteCodeSource(Files.readAllBytes(path)));
     }
 }

@@ -13,7 +13,9 @@ import stub.domain.model.relation.StaticMethodInstruction;
 import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -89,10 +91,10 @@ public class MethodInstructionTest {
                 );
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(new ByteCodeSource(path));
+        return sut.analyze(new ByteCodeSource(Files.readAllBytes(path)));
     }
 }

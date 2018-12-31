@@ -4,7 +4,6 @@ import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.type.Warning;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -54,7 +53,7 @@ public class JigReportsTask extends DefaultTask {
                 jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
             }
         } catch (ClassFindFailException e) {
-            getLogger().quiet(Warning.クラス検出異常.with(configurationContext));
+            getLogger().quiet(e.warning().text());
         }
 
         getLogger().quiet("合計時間: {} ms", System.currentTimeMillis() - startTime);

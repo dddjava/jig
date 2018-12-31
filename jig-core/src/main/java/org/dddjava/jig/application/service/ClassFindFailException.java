@@ -4,6 +4,6 @@ import org.dddjava.jig.domain.type.Warning;
 
 public class ClassFindFailException extends RuntimeException {
     public Warning warning() {
-        return Warning.クラス検出異常;
+        return Warning.クラスが見つからないので中断する通知;
     }
 }

@@ -47,7 +47,7 @@ public class DependencyService {
         BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
 
         if (businessRules.empty()) {
-            LOGGER.warn(Warning.モデル検出異常.with(configurationContext));
+            LOGGER.warn(Warning.ビジネスルールが見つからないので出力されない通知.text());
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
         }
 

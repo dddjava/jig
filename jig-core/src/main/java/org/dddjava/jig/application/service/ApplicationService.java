@@ -43,7 +43,7 @@ public class ApplicationService {
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
-            LOGGER.warn(Warning.コントローラーなし.text());
+            LOGGER.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.text());
         }
 
         return new ControllerAngles(controllerMethods, typeByteCodes.typeAnnotations());
@@ -56,7 +56,7 @@ public class ApplicationService {
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
-            LOGGER.warn(Warning.サービスなし.text());
+            LOGGER.warn(Warning.サービスメソッドが見つからないので出力されない通知.text());
         }
 
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
@@ -76,9 +76,9 @@ public class ApplicationService {
         DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
 
         if (datasourceMethods.empty()) {
-            LOGGER.warn(Warning.リポジトリなし.text());
+            LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
         } else if (sqls.empty()) {
-            LOGGER.warn(Warning.SQLなし.text());
+            LOGGER.warn(Warning.SQLが見つからないので出力されない通知.text());
         }
 
         return new DatasourceAngles(datasourceMethods, sqls);

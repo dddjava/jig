@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.raw.TextSource;
 import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
@@ -32,12 +33,17 @@ class GlossaryServiceTest {
 
     @Test
     void パッケージ和名取得() {
-        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        TextSource textSource = getTextSource();
 
-        sut.importJapanese(localProject.notCompiledSources().packageInfoSources());
+        sut.importJapanese(textSource.packageInfoSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
                 .isEqualTo("テストで使用するスタブたち");
+    }
+
+    private TextSource getTextSource() {
+        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        return localProject.createSource().textSource();
     }
 
     private LocalProject localProjectOf(String projectPath, String dummy, String dummy1, String sourcesDirectory) {
@@ -48,9 +54,9 @@ class GlossaryServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        TextSource textSource = getTextSource();
 
-        sut.importJapanese(localProject.notCompiledSources().javaSources());
+        sut.importJapanese(textSource.javaSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);
@@ -67,9 +73,9 @@ class GlossaryServiceTest {
 
     @Test
     void メソッド和名取得() {
-        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        TextSource textSource = getTextSource();
 
-        sut.importJapanese(localProject.notCompiledSources().javaSources());
+        sut.importJapanese(textSource.javaSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

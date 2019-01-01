@@ -35,7 +35,7 @@ public class ValueAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
 
         ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, typeByteCodes);
         assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier)

@@ -45,7 +45,7 @@ public class JigReportsTask extends DefaultTask {
 
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {
-            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
             Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
             for (JigDocument jigDocument : jigDocuments) {

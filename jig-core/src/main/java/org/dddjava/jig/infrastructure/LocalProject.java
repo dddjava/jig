@@ -36,7 +36,7 @@ public class LocalProject {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (isClassFile(file)) {
+                        if (file.toString().endsWith(".class")) {
                             try {
                                 byte[] bytes = Files.readAllBytes(file);
                                 ClassSource classSource = new ClassSource(bytes);
@@ -55,12 +55,6 @@ public class LocalProject {
         LOGGER.info("*.class: {}件", sources.size());
         return new ClassSources(sources);
     }
-
-
-    private boolean isClassFile(Path path) {
-        return path.toString().endsWith(".class");
-    }
-
 
     public SqlSources getSqlSources() {
         try {
@@ -98,7 +92,7 @@ public class LocalProject {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    public NotCompiledSources notCompiledSources() {
+    public TextSource readTextSource() {
         try {
             List<JavaSource> javaSources = new ArrayList<>();
             List<PackageInfoSource> packageInfoSources = new ArrayList<>();
@@ -124,7 +118,7 @@ public class LocalProject {
 
             LOGGER.info("*.java: {}件", javaSources.size());
             LOGGER.info("package-info.java: {}件", packageInfoSources.size());
-            return new NotCompiledSources(
+            return new TextSource(
                     new JavaSources(javaSources),
                     new PackageInfoSources(packageInfoSources)
             );
@@ -133,4 +127,10 @@ public class LocalProject {
         }
     }
 
+    public RawSource createSource() {
+        return new RawSource(
+                readTextSource(),
+                new BinarySource(getByteCodeSources())
+        );
+    }
 }

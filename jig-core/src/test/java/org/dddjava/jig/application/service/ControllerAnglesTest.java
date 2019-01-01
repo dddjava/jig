@@ -27,7 +27,7 @@ public class ControllerAnglesTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
 
         ControllerAngles angles = applicationService.controllerAngles(typeByteCodes);
 

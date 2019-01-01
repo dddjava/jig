@@ -26,7 +26,7 @@ public class DependencyServiceTest {
         DependencyService sut = configuration.dependencyService();
 
 
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
         PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ

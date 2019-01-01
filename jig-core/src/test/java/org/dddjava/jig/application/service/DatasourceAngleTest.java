@@ -30,7 +30,7 @@ public class DatasourceAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
         Sqls sqls = implementationService.readSql(localProject.getSqlSources());
 
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);

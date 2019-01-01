@@ -22,7 +22,7 @@ public class ImplementationServiceTest {
 
         LocalProject localProject = new LocalProject(layoutMock);
 
-        assertThatThrownBy(() -> implementationService.readProjectData(localProject))
+        assertThatThrownBy(() -> implementationService.readProjectData(localProject.createSource()))
                 .isInstanceOf(ClassFindFailException.class);
     }
 }

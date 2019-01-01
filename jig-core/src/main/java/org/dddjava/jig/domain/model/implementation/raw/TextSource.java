@@ -1,10 +1,14 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
-public class NotCompiledSources {
+/**
+ * テキストソース
+ */
+public class TextSource {
+
     JavaSources javaSources;
     PackageInfoSources packageInfoSources;
 
-    public NotCompiledSources(JavaSources javaSources, PackageInfoSources packageInfoSources) {
+    public TextSource(JavaSources javaSources, PackageInfoSources packageInfoSources) {
         this.javaSources = javaSources;
         this.packageInfoSources = packageInfoSources;
     }

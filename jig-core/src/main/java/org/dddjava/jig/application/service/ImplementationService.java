@@ -6,8 +6,7 @@ import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.NotCompiledSources;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,12 +29,11 @@ public class ImplementationService {
     /**
      * プロジェクト情報を読み取る
      */
-    public TypeByteCodes readProjectData(LocalProject target) {
-        TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
+    public TypeByteCodes readProjectData(RawSource rawSource) {
+        TypeByteCodes typeByteCodes = readByteCode(rawSource.binarySource().classSources());
 
-        NotCompiledSources notCompiledSources = target.notCompiledSources();
-        glossaryService.importJapanese(notCompiledSources.javaSources());
-        glossaryService.importJapanese(notCompiledSources.packageInfoSources());
+        glossaryService.importJapanese(rawSource.textSource().javaSources());
+        glossaryService.importJapanese(rawSource.textSource().packageInfoSources());
 
         return typeByteCodes;
     }

@@ -26,7 +26,7 @@ public class DecisionAngleTest {
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
         LocalProject localProject = new LocalProject(layoutMock);
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
 
         DecisionAngles decisionAngles = applicationService.decision(typeByteCodes);
 

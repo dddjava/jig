@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,6 +12,10 @@ public class PackageInfoSources {
 
     public PackageInfoSources(List<PackageInfoSource> list) {
         this.list = list;
+    }
+
+    public PackageInfoSources() {
+        this(Collections.emptyList());
     }
 
     public List<PackageInfoSource> list() {

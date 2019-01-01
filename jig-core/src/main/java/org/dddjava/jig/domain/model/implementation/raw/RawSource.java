@@ -5,19 +5,19 @@ package org.dddjava.jig.domain.model.implementation.raw;
  */
 public class RawSource {
 
-    TextSource textSource;
-    BinarySource binarySource;
+    TextSources textSources;
+    BinarySources binarySources;
 
-    public RawSource(TextSource textSource, BinarySource binarySource) {
-        this.textSource = textSource;
-        this.binarySource = binarySource;
+    public RawSource(TextSources textSources, BinarySources binarySources) {
+        this.textSources = textSources;
+        this.binarySources = binarySources;
     }
 
     public TextSource textSource() {
-        return textSource;
+        return textSources.toTextSource();
     }
 
     public BinarySource binarySource() {
-        return binarySource;
+        return binarySources.toBinarySource();
     }
 }

@@ -29,10 +29,11 @@ public class LocalProject {
         this.layout = layout;
     }
 
-    public ClassSources getByteCodeSources() {
-        ArrayList<ClassSource> sources = new ArrayList<>();
+    BinarySources readBinarySources() {
         try {
+            List<BinarySource> list = new ArrayList<>();
             for (Path path : layout.extractClassPath()) {
+                List<ClassSource> sources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -48,12 +49,12 @@ public class LocalProject {
                         return FileVisitResult.CONTINUE;
                     }
                 });
+                list.add(new BinarySource(new SourceLocation(path), new ClassSources(sources)));
             }
+            return new BinarySources(list);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        LOGGER.info("*.class: {}件", sources.size());
-        return new ClassSources(sources);
     }
 
     public SqlSources getSqlSources() {
@@ -92,11 +93,12 @@ public class LocalProject {
         return pathStr.substring(0, pathStr.length() - 6).replace(File.separatorChar, '.');
     }
 
-    public TextSource readTextSource() {
+    TextSources readTextSources() {
         try {
-            List<JavaSource> javaSources = new ArrayList<>();
-            List<PackageInfoSource> packageInfoSources = new ArrayList<>();
+            List<TextSource> list = new ArrayList<>();
             for (Path path : layout.extractSourcePath()) {
+                List<JavaSource> javaSources = new ArrayList<>();
+                List<PackageInfoSource> packageInfoSources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -114,23 +116,16 @@ public class LocalProject {
                         }
                     }
                 });
+                list.add(new TextSource(new SourceLocation(path), new JavaSources(javaSources), new PackageInfoSources(packageInfoSources)));
             }
 
-            LOGGER.info("*.java: {}件", javaSources.size());
-            LOGGER.info("package-info.java: {}件", packageInfoSources.size());
-            return new TextSource(
-                    new JavaSources(javaSources),
-                    new PackageInfoSources(packageInfoSources)
-            );
+            return new TextSources(list);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     public RawSource createSource() {
-        return new RawSource(
-                readTextSource(),
-                new BinarySource(getByteCodeSources())
-        );
+        return new RawSource(readTextSources(), readBinarySources());
     }
 }

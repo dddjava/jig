@@ -5,10 +5,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.TextSource;
-import org.dddjava.jig.infrastructure.DefaultLayout;
-import org.dddjava.jig.infrastructure.Layout;
-import org.dddjava.jig.infrastructure.LocalProject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,7 +15,6 @@ import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.JigServiceTest;
-import testing.TestSupport;
 
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -32,8 +29,8 @@ class GlossaryServiceTest {
     }
 
     @Test
-    void パッケージ和名取得() {
-        TextSource textSource = getTextSource();
+    void パッケージ和名取得(RawSource source) {
+        TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.packageInfoSources());
 
@@ -41,16 +38,10 @@ class GlossaryServiceTest {
                 .isEqualTo("テストで使用するスタブたち");
     }
 
-    private TextSource getTextSource() {
-        LocalProject localProject = new LocalProject();
-        Layout layout = new DefaultLayout(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
-        return localProject.createSource(layout).textSource();
-    }
-
     @ParameterizedTest
     @MethodSource
-    void クラス和名取得(TypeIdentifier typeIdentifier, String comment) {
-        TextSource textSource = getTextSource();
+    void クラス和名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
+        TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());
 
@@ -68,8 +59,8 @@ class GlossaryServiceTest {
     }
 
     @Test
-    void メソッド和名取得() {
-        TextSource textSource = getTextSource();
+    void メソッド和名取得(RawSource source) {
+        TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());
 

@@ -80,8 +80,7 @@ public class JigTestExtension implements ParameterResolver {
     public RawSource getTestRawSource() {
         Layout layoutMock = mock(Layout.class);
         when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
-        // FIXME 環境に依存しないテストソースフォルダの取得方法があれば対応したい
-        when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
+        when(layoutMock.extractSourcePath()).thenReturn(new Path[]{TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")});
 
         LocalProject localProject = new LocalProject();
         return localProject.createSource(layoutMock);

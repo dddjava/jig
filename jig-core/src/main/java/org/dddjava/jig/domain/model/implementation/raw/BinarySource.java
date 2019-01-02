@@ -31,4 +31,8 @@ public class BinarySource {
                 new SourceLocation(),
                 new ClassSources(list));
     }
+
+    public SourceLocation sourceLocation() {
+        return sourceLocation;
+    }
 }

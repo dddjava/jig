@@ -47,7 +47,8 @@ public class CommandLineApplication implements CommandLineRunner {
 
             RawSource rawSource = localProject.createSource();
             TypeByteCodes typeByteCodes = implementationService.readProjectData(rawSource);
-            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
+
+            Sqls sqls = implementationService.readSql(rawSource.sqlSources());
 
             Path outputDirectory = cliConfig.outputDirectory();
             for (JigDocument jigDocument : jigDocuments) {

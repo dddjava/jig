@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -45,8 +46,9 @@ public class JigReportsTask extends DefaultTask {
 
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {
-            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
-            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
+            RawSource source = localProject.createSource();
+            TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
+            Sqls sqls = implementationService.readSql(source.sqlSources());
 
             for (JigDocument jigDocument : jigDocuments) {
                 getLogger().quiet("{} を出力します。", jigDocument);

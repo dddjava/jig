@@ -13,4 +13,8 @@ public class BinarySources {
     public BinarySource toBinarySource() {
         return list.stream().reduce(new BinarySource(), BinarySource::merge);
     }
+
+    List<BinarySource> list() {
+        return list;
+    }
 }

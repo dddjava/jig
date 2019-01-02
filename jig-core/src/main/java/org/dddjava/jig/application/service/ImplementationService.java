@@ -34,7 +34,7 @@ public class ImplementationService {
         TypeByteCodes typeByteCodes = readProjectData(source);
         Sqls sqls = readSql(source.sqlSources());
 
-        return new Implementations(typeByteCodes, sqls);
+        return new Implementations(source, typeByteCodes, sqls);
     }
 
     /**
@@ -53,10 +53,6 @@ public class ImplementationService {
      * ソースからバイトコードを読み取る
      */
     public TypeByteCodes readByteCode(ClassSources classSources) {
-        if (classSources.notFound()) {
-            throw new ClassFindFailException();
-        }
-
         return byteCodeFactory.readFrom(classSources);
     }
 

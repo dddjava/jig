@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.implementation.datasource;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,9 +12,15 @@ import java.util.stream.Collectors;
 public class Sqls {
 
     List<Sql> list;
+    SqlReadStatus sqlReadStatus;
 
-    public Sqls(List<Sql> list) {
+    public Sqls(SqlReadStatus sqlReadStatus) {
+        this(Collections.emptyList(), sqlReadStatus);
+    }
+
+    public Sqls(List<Sql> list, SqlReadStatus sqlReadStatus) {
         this.list = list;
+        this.sqlReadStatus = sqlReadStatus;
     }
 
     public Tables tables(SqlType sqlType) {
@@ -32,10 +39,13 @@ public class Sqls {
         List<Sql> sqls = list.stream()
                 .filter(sql -> sql.identifier().matches(methodDeclarations))
                 .collect(Collectors.toList());
-        return new Sqls(sqls);
+        return new Sqls(sqls, sqlReadStatus);
     }
 
-    public boolean empty() {
-        return list.isEmpty();
+    public SqlReadStatus status() {
+        if (sqlReadStatus == SqlReadStatus.成功 && list.isEmpty()) {
+            return SqlReadStatus.SQLなし;
+        }
+        return sqlReadStatus;
     }
 }

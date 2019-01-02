@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.ImplementationStatuses;
 import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -30,20 +30,25 @@ public class JigReportsTask extends DefaultTask {
 
         long startTime = System.currentTimeMillis();
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
-        try {
-            ImplementationService implementationService = configuration.implementationService();
-            JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
+        ImplementationService implementationService = configuration.implementationService();
+        JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-            RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
-            Implementations implementations = implementationService.implementations(rawSourceLocations);
+        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
+        Implementations implementations = implementationService.implementations(rawSourceLocations);
 
-            Path outputDirectory = outputDirectory(config);
-            for (JigDocument jigDocument : jigDocuments) {
-                getLogger().quiet("{} を出力します", jigDocument);
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
-            }
-        } catch (ClassFindFailException e) {
-            getLogger().quiet(e.warning().text());
+        ImplementationStatuses status = implementations.status();
+        if (status.hasError()) {
+            getLogger().warn("エラーのため出力を中断します。\n{}", status.errorLogText());
+            return;
+        }
+        if (status.hasWarning()) {
+            getLogger().warn("読み取りで問題がありました。処理は続行しますが、必要に応じて設定を確認してください。\n{}", status.warningLogText());
+        }
+
+        Path outputDirectory = outputDirectory(config);
+        for (JigDocument jigDocument : jigDocuments) {
+            getLogger().quiet("{} を出力します", jigDocument);
+            jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
         }
         getLogger().quiet("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

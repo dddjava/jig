@@ -77,8 +77,6 @@ public class ApplicationService {
 
         if (datasourceMethods.empty()) {
             LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
-        } else if (sqls.empty()) {
-            LOGGER.warn(Warning.SQLが見つからないので出力されない通知.text());
         }
 
         return new DatasourceAngles(datasourceMethods, sqls);

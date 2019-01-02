@@ -1,7 +1,7 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.ImplementationStatuses;
 import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -39,20 +39,26 @@ public class CommandLineApplication implements CommandLineRunner {
 
         long startTime = System.currentTimeMillis();
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
-        try {
-            ImplementationService implementationService = configuration.implementationService();
-            JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
+        ImplementationService implementationService = configuration.implementationService();
+        JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-            RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
-            Implementations implementations = implementationService.implementations(rawSourceLocations);
+        RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
+        Implementations implementations = implementationService.implementations(rawSourceLocations);
 
-            Path outputDirectory = cliConfig.outputDirectory();
-            for (JigDocument jigDocument : jigDocuments) {
-                LOGGER.info("{} を出力します", jigDocument);
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
-            }
-        } catch (ClassFindFailException e) {
-            LOGGER.warn(e.warning().text());
+        ImplementationStatuses status = implementations.status();
+        if (status.hasError()) {
+            LOGGER.warn("エラーのため出力を中断します。\n{}", status.errorLogText());
+            return;
+        }
+        if (status.hasWarning()) {
+            LOGGER.warn("読み取りで問題がありました。処理は続行しますが、必要に応じて設定を確認してください。\n{}", status.warningLogText());
+        }
+
+        Path outputDirectory = cliConfig.outputDirectory();
+        for (JigDocument jigDocument : jigDocuments) {
+            LOGGER.info("{} を出力します", jigDocument);
+            jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

@@ -17,4 +17,8 @@ public class BinarySources {
     List<BinarySource> list() {
         return list;
     }
+
+    public boolean nothing() {
+        return list.isEmpty();
+    }
 }

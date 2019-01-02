@@ -14,4 +14,8 @@ public class TextSources {
         return list.stream()
                 .reduce(new TextSource(), TextSource::merge);
     }
+
+    public boolean nothing() {
+        return list.isEmpty();
+    }
 }

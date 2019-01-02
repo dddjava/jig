@@ -45,4 +45,12 @@ public class RawSource {
                 .collect(toList());
         return new SqlSources(urls, classNames);
     }
+
+    public boolean nothingBinarySource() {
+        return binarySources.nothing();
+    }
+
+    public boolean nothingTextSource() {
+        return textSources.nothing();
+    }
 }

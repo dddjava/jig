@@ -36,14 +36,16 @@ public class MyBatisSqlReader implements SqlReader {
         try (URLClassLoader classLoader = new URLClassLoader(sqlSources.urls(), Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
-            Configuration config = configuration(sqlSources, classLoader);
-            return extractSql(config);
+            return extractSql(sqlSources, classLoader);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOGGER.warn("SQL読み込みに失敗（処理続行）", e);
+            return new Sqls(SqlReadStatus.失敗);
         }
     }
 
-    private Configuration configuration(SqlSources sqlSources, URLClassLoader classLoader) {
+    private Sqls extractSql(SqlSources sqlSources, URLClassLoader classLoader) {
+        SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
+
         Configuration config = new Configuration();
         for (String className : sqlSources.classNames()) {
             try {
@@ -52,81 +54,79 @@ public class MyBatisSqlReader implements SqlReader {
             } catch (NoClassDefFoundError e) {
                 LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
                         className, e.getLocalizedMessage());
+                sqlReadStatus = SqlReadStatus.読み取り失敗あり;
             } catch (Exception e) {
                 LOGGER.warn("Mapperの取り込みに失敗", e);
+                sqlReadStatus = SqlReadStatus.読み取り失敗あり;
             }
         }
-        return config;
-    }
 
-    private Sqls extractSql(Configuration config) {
         List<Sql> list = new ArrayList<>();
-        // このジェネリクスが信用できない・・・
         Collection<?> mappedStatements = config.getMappedStatements();
-
         LOGGER.info("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
-            // Ambiguityが入っていることがあるので型を確認する
+            // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement) {
                 MappedStatement mappedStatement = (MappedStatement) obj;
 
                 SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
 
-                Query query = getQuery(mappedStatement);
-                SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
+                Query query;
+                try {
+                    query = getQuery(mappedStatement);
+                } catch (Exception e) {
+                    LOGGER.warn("クエリの取得に失敗しました", e);
+                    sqlReadStatus = SqlReadStatus.読み取り失敗あり;
+                    query = Query.unsupported();
+                }
 
+                SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
                 Sql sql = new Sql(sqlIdentifier, query, sqlType);
                 list.add(sql);
             }
         }
 
         LOGGER.info("取得したSQL: {}件", list.size());
-        return new Sqls(list);
+        return new Sqls(list, sqlReadStatus);
     }
 
-    private Query getQuery(MappedStatement mappedStatement) {
-        try {
-            SqlSource sqlSource = mappedStatement.getSqlSource();
+    private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {
+        SqlSource sqlSource = mappedStatement.getSqlSource();
 
-            if (sqlSource instanceof DynamicSqlSource) {
-                DynamicSqlSource dynamicSqlSource = DynamicSqlSource.class.cast(sqlSource);
+        if (!(sqlSource instanceof DynamicSqlSource)) {
+            return new Query(mappedStatement.getBoundSql(null).getSql());
+        }
 
-                Field rootSqlNode = DynamicSqlSource.class.getDeclaredField("rootSqlNode");
-                rootSqlNode.setAccessible(true);
-                SqlNode sqlNode = (SqlNode) rootSqlNode.get(dynamicSqlSource);
+        // 動的クエリ（XMLで組み立てるもの）をエミュレート
+        DynamicSqlSource dynamicSqlSource = (DynamicSqlSource) sqlSource;
+
+        Field rootSqlNode = DynamicSqlSource.class.getDeclaredField("rootSqlNode");
+        rootSqlNode.setAccessible(true);
+        SqlNode sqlNode = (SqlNode) rootSqlNode.get(dynamicSqlSource);
 
 
-                if (sqlNode instanceof MixedSqlNode) {
-                    StringBuilder sql = new StringBuilder();
-                    MixedSqlNode mixedSqlNode = MixedSqlNode.class.cast(sqlNode);
-                    Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
-                    contents.setAccessible(true);
-                    List list = (List) contents.get(mixedSqlNode);
+        if (sqlNode instanceof MixedSqlNode) {
+            StringBuilder sql = new StringBuilder();
+            MixedSqlNode mixedSqlNode = (MixedSqlNode) sqlNode;
+            Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
+            contents.setAccessible(true);
+            List list = (List) contents.get(mixedSqlNode);
 
-                    for (Object content : list) {
-                        if (content instanceof StaticTextSqlNode) {
-                            StaticTextSqlNode staticTextSqlNode = StaticTextSqlNode.class.cast(content);
-                            Field text = StaticTextSqlNode.class.getDeclaredField("text");
-                            text.setAccessible(true);
-                            String textSql = (String) text.get(staticTextSqlNode);
-                            sql.append(textSql);
-                        }
-                    }
-
-                    String sqlText = sql.toString().trim();
-                    LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
-                    LOGGER.debug("組み立てたSQL: [{}]", sqlText);
-                    return new Query(sqlText);
+            for (Object content : list) {
+                if (content instanceof StaticTextSqlNode) {
+                    StaticTextSqlNode staticTextSqlNode = (StaticTextSqlNode) content;
+                    Field text = StaticTextSqlNode.class.getDeclaredField("text");
+                    text.setAccessible(true);
+                    String textSql = (String) text.get(staticTextSqlNode);
+                    sql.append(textSql);
                 }
-            } else {
-                return new Query(mappedStatement.getBoundSql(null).getSql());
             }
 
-            LOGGER.warn("クエリの取得に失敗しました");
-            return Query.unsupported();
-        } catch (Exception e) {
-            LOGGER.warn("クエリの取得に失敗しました", e);
-            return Query.unsupported();
+            String sqlText = sql.toString().trim();
+            LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
+            LOGGER.debug("組み立てたSQL: [{}]", sqlText);
+            return new Query(sqlText);
         }
+        return new Query(mappedStatement.getBoundSql(null).getSql());
     }
 }

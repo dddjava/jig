@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class DefaultDirectoryVisitor extends SimpleFileVisitor<Path> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRawSourceLocationResolver.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDirectoryVisitor.class);
 
     Predicate<Path> filter;
     List<Path> paths = new ArrayList<>();

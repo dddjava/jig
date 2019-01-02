@@ -4,12 +4,9 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
-import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
-import testing.TestSupport;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,16 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存(Configuration configuration) {
-
-        LocalProject localProject = configuration.localProject();
-        ImplementationService implementationService = configuration.implementationService();
-
-        DependencyService sut = configuration.dependencyService();
-
-        RawSource source = localProject.createSource(TestSupport.testLayout());
+    void パッケージ依存(DependencyService dependencyService, ImplementationService implementationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-        PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
+
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()

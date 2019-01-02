@@ -2,8 +2,6 @@ package testing;
 
 import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
 import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
-import org.dddjava.jig.infrastructure.DefaultLayout;
-import org.dddjava.jig.infrastructure.Layout;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -39,7 +37,6 @@ public class TestSupport {
         return path;
     }
 
-
     public static URI defaultPackageClassURI() {
         try {
             return TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
@@ -63,15 +60,5 @@ public class TestSupport {
         } catch (IOException e) {
             throw new AssertionError(e);
         }
-    }
-
-    public static Layout testLayout() {
-        Path path = Paths.get(TestSupport.defaultPackageClassURI());
-        return new DefaultLayout(
-                path.toString(),
-                path.toString(),
-                // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
-                "not/read/resources",
-                "not/read/sources");
     }
 }

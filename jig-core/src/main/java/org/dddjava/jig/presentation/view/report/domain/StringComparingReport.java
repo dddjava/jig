@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
 import org.dddjava.jig.domain.model.decisions.StringComparingAngle;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

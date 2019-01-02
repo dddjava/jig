@@ -3,8 +3,8 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.implementation.Implementations;
-import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
@@ -25,14 +25,14 @@ public class EnumUsageController {
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)
-    public JigModelAndView<CategoryAngles> enumUsage(Implementations implementations) {
+    public JigModelAndView<CategoryAngles> enumUsage(AnalyzedImplementation implementations) {
         CategoryAngles categoryAngles = businessRuleService.categories(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)
-    public JigModelAndView<CategoryAngles> categories(Implementations implementations) {
+    public JigModelAndView<CategoryAngles> categories(AnalyzedImplementation implementations) {
         CategoryAngles categoryAngles = businessRuleService.categories(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.categories(japaneseNameFinder));

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.implementation.declaration.type.Type;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Type;
 
 /**
  * ビジネスルール

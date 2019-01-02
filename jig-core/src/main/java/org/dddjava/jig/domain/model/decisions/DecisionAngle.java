@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.architecture.Layer;
-import org.dddjava.jig.domain.model.implementation.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 /**
  * 判断の切り口

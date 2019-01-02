@@ -2,10 +2,10 @@ package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.implementation.declaration.namespace.AllPackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.networks.packages.PackageNetworks;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.AllPackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetworks;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 

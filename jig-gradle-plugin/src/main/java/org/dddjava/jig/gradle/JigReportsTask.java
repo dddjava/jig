@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.ImplementationStatuses;
-import org.dddjava.jig.domain.model.implementation.Implementations;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -34,9 +34,9 @@ public class JigReportsTask extends DefaultTask {
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
         RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
-        Implementations implementations = implementationService.implementations(rawSourceLocations);
+        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
 
-        ImplementationStatuses status = implementations.status();
+        AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
             getLogger().warn("エラーのため出力を中断します。\n{}", status.errorLogText());
             return;

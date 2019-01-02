@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.controllers;
 
-import org.dddjava.jig.domain.model.implementation.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.implementation.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.ArrayList;
 import java.util.List;

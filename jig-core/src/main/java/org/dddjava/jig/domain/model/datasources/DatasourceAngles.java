@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.datasources;
 
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.handler;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.CallerMethods;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.CallerMethods;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

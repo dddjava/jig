@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 

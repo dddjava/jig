@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.implementation.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
 
 import java.util.ArrayList;
 import java.util.List;

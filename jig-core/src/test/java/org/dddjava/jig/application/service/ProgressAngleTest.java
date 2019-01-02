@@ -1,12 +1,12 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.junit.jupiter.api.Test;

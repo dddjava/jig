@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.services;
 
-import org.dddjava.jig.domain.model.implementation.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.List;
 

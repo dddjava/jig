@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.List;

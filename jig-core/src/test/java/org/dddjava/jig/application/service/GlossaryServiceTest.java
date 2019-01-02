@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.TextSource;
 import org.junit.jupiter.api.Test;
@@ -66,13 +66,13 @@ class GlossaryServiceTest {
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
-                new org.dddjava.jig.domain.model.implementation.declaration.method.Arguments(Collections.emptyList())));
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
         Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
                 .isEqualTo("メソッドのJavadoc");
 
         MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.implementation.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).value())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");

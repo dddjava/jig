@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.architecture.Layer;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.ArrayList;
 import java.util.List;

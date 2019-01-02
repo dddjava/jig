@@ -1,8 +1,8 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.ImplementationStatuses;
-import org.dddjava.jig.domain.model.implementation.Implementations;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -43,9 +43,9 @@ public class CommandLineApplication implements CommandLineRunner {
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
         RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
-        Implementations implementations = implementationService.implementations(rawSourceLocations);
+        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
 
-        ImplementationStatuses status = implementations.status();
+        AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
             LOGGER.warn("エラーのため出力を中断します。\n{}", status.errorLogText());
             return;

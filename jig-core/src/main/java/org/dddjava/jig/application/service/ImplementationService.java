@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.implementation.Implementations;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.ByteCodeFactory;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.springframework.stereotype.Service;
 
@@ -28,13 +28,13 @@ public class ImplementationService {
         this.rawSourceFactory = rawSourceFactory;
     }
 
-    public Implementations implementations(RawSourceLocations rawSourceLocations) {
+    public AnalyzedImplementation implementations(RawSourceLocations rawSourceLocations) {
         RawSource source = rawSourceFactory.createSource(rawSourceLocations);
 
         TypeByteCodes typeByteCodes = readProjectData(source);
         Sqls sqls = readSql(source.sqlSources());
 
-        return new Implementations(source, typeByteCodes, sqls);
+        return new AnalyzedImplementation(source, typeByteCodes, sqls);
     }
 
     /**

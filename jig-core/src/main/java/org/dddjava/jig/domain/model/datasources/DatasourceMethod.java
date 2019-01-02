@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.datasources;
 
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 /**
  * データソースの構造

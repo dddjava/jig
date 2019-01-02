@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.categories;
 
-import org.dddjava.jig.domain.model.implementation.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
 
 /**
  * 区分の切り口

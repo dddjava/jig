@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.progresses;
 
-import org.dddjava.jig.domain.model.implementation.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.implementation.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 
 import java.util.List;
 import java.util.stream.Collectors;

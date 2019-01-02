@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
+import org.dddjava.jig.domain.model.implementation.raw.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.ClassSources;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;

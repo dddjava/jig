@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.datasource;
+package org.dddjava.jig.domain.model.implementation.raw;
 
 import java.net.URL;
 import java.util.List;

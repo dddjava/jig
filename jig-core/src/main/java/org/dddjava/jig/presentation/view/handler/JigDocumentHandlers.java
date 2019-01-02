@@ -29,6 +29,7 @@ public class JigDocumentHandlers {
                                PackageDependencyController packageDependencyController,
                                EnumUsageController enumUsageController,
                                boolean jigDebugMode) {
+        // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
         this.controllers = new Object[]{
                 serviceDiagramController,
                 classListController,

@@ -2,6 +2,9 @@ package org.dddjava.jig.domain.model.implementation.raw;
 
 import java.util.List;
 
+/**
+ * バイナリソース一覧
+ */
 public class BinarySources {
 
     List<BinarySource> list;

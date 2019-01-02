@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * テキストソースの場所
+ */
 public class TextSourceLocations {
 
     List<Path> list;

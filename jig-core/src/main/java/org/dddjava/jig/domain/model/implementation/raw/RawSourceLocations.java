@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.implementation.raw;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * 生ソースの場所
+ */
 public class RawSourceLocations {
 
     BinarySourceLocations binarySourceLocations;

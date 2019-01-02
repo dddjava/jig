@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.StringJoiner;
 
 @Component
 class CliConfig {
@@ -45,6 +46,20 @@ class CliConfig {
 
     @Value("${jig.debug}")
     boolean jigDebugMode;
+
+    public String propertiesText() {
+        return new StringJoiner("\n")
+                .add("documentType=" + documentTypeText)
+                .add("outputDirectory=" + outputDirectory)
+                .add("output.omit.prefix=" + outputOmitPrefix)
+                .add("jig.model.pattern=" + modelPattern)
+                .add("project.path=" + projectPath)
+                .add("directory.classes=" + directoryClasses)
+                .add("directory.resources=" + directoryResources)
+                .add("directory.sources=" + directorySources)
+                .add("depth=" + depth)
+                .toString();
+    }
 
     List<JigDocument> jigDocuments() {
         return documentTypeText.isEmpty()

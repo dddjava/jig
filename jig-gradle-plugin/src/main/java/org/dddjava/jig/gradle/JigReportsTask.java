@@ -26,6 +26,8 @@ public class JigReportsTask extends DefaultTask {
         List<JigDocument> jigDocuments = config.documentTypes();
         Configuration configuration = new Configuration(config.asProperties(), new JigConfigurationContext(config));
 
+        getLogger().info("現在の設定を表示します。\n{}", config.propertiesText());
+
         long startTime = System.currentTimeMillis();
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {

@@ -35,6 +35,8 @@ public class CommandLineApplication implements CommandLineRunner {
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
+        LOGGER.info("現在の設定を表示します。\n{}", cliConfig.propertiesText());
+
         long startTime = System.currentTimeMillis();
         LOGGER.info("プロジェクト情報の取り込みをはじめます");
         try {

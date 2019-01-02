@@ -9,6 +9,7 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class JigConfig {
@@ -90,5 +91,16 @@ public class JigConfig {
 
     public void setEnableDebugDocument(boolean enableDebugDocument) {
         this.enableDebugDocument = enableDebugDocument;
+    }
+
+    public String propertiesText() {
+        return new StringJoiner("\n\t", "jig {\n\t", "\n}")
+                .add("modelPattern = '" + modelPattern + '\'')
+                .add("documentTypes = '" + documentTypes + '\'')
+                .add("outputDirectory = '" + outputDirectory + '\'')
+                .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
+                .add("depth = " + depth)
+                .add("enableDebugDocument = " + enableDebugDocument)
+                .toString();
     }
 }

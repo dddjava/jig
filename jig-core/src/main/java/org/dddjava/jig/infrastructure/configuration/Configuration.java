@@ -20,13 +20,13 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
-    final ImplementationService implementationService;
-    final JigDocumentHandlers documentHandlers;
-    final ApplicationService applicationService;
-    final DependencyService dependencyService;
-    final ConfigurationContext configurationContext;
-    final BusinessRuleService businessRuleService;
-    final GlossaryService glossaryService;
+    ImplementationService implementationService;
+    JigDocumentHandlers documentHandlers;
+    ApplicationService applicationService;
+    DependencyService dependencyService;
+    ConfigurationContext configurationContext;
+    BusinessRuleService businessRuleService;
+    GlossaryService glossaryService;
 
     public Configuration(JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
@@ -81,31 +81,11 @@ public class Configuration {
         );
     }
 
-    public ApplicationService applicationService() {
-        return applicationService;
-    }
-
-    public BusinessRuleService businessRuleService() {
-        return businessRuleService;
-    }
-
     public ImplementationService implementationService() {
         return implementationService;
     }
 
     public JigDocumentHandlers documentHandlers() {
         return documentHandlers;
-    }
-
-    public DependencyService dependencyService() {
-        return dependencyService;
-    }
-
-    public ConfigurationContext configurationContext() {
-        return configurationContext;
-    }
-
-    public GlossaryService glossaryService() {
-        return glossaryService;
     }
 }

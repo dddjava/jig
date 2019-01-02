@@ -8,17 +8,18 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
-public class DefaultLayout implements Layout {
+public class DefaultRawSourceLocationResolver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLayout.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRawSourceLocationResolver.class);
 
     private final Path projectPath;
     Path classesDirectory;
     Path resourcesDirectory;
     Path sourcesDirectory;
 
-    public DefaultLayout(String projectPath, String classesDirectory, String resourcesDirectory, String sourcesDirectory) {
+    public DefaultRawSourceLocationResolver(String projectPath, String classesDirectory, String resourcesDirectory, String sourcesDirectory) {
         LOGGER.info("Project Path: {}", projectPath);
         LOGGER.info("classes suffix  : {}", classesDirectory);
         LOGGER.info("resources suffix: {}", resourcesDirectory);
@@ -30,8 +31,7 @@ public class DefaultLayout implements Layout {
         this.sourcesDirectory = Paths.get(sourcesDirectory);
     }
 
-    @Override
-    public Path[] extractClassPath() {
+    public List<Path> binarySourcePaths() {
         DefaultDirectoryVisitor visitor = new DefaultDirectoryVisitor(
                 path -> path.endsWith(classesDirectory) || path.endsWith(resourcesDirectory)
         );
@@ -41,11 +41,10 @@ public class DefaultLayout implements Layout {
             throw new UncheckedIOException(e);
         }
 
-        return visitor.asArray();
+        return visitor.listPath();
     }
 
-    @Override
-    public Path[] extractSourcePath() {
+    public List<Path> textSourcePaths() {
         DefaultDirectoryVisitor visitor = new DefaultDirectoryVisitor(
                 path -> path.endsWith(sourcesDirectory)
         );
@@ -56,6 +55,6 @@ public class DefaultLayout implements Layout {
             throw new UncheckedIOException(e);
         }
 
-        return visitor.asArray();
+        return visitor.listPath();
     }
 }

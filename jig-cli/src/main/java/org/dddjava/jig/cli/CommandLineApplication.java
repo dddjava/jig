@@ -1,10 +1,11 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.application.service.ClassFindFailException;
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -45,7 +46,8 @@ public class CommandLineApplication implements CommandLineRunner {
 
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
 
-            RawSource rawSource = localProject.createSource(cliConfig.layout());
+            RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
+            RawSource rawSource = localProject.createSource(rawSourceLocations);
             TypeByteCodes typeByteCodes = implementationService.readProjectData(rawSource);
 
             Sqls sqls = implementationService.readSql(rawSource.sqlSources());

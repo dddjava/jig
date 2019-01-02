@@ -3,8 +3,10 @@ package testing;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
-import org.dddjava.jig.infrastructure.Layout;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -15,11 +17,8 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.reflect.Field;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Collections;
 
 public class JigTestExtension implements ParameterResolver {
 
@@ -78,11 +77,12 @@ public class JigTestExtension implements ParameterResolver {
     }
 
     public RawSource getTestRawSource() {
-        Layout layoutMock = mock(Layout.class);
-        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
-        when(layoutMock.extractSourcePath()).thenReturn(new Path[]{TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")});
+        RawSourceLocations rawSourceLocations = new RawSourceLocations(
+                new BinarySourceLocations(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()))),
+                new TextSourceLocations(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")))
+        );
 
         LocalProject localProject = new LocalProject();
-        return localProject.createSource(layoutMock);
+        return localProject.createSource(rawSourceLocations);
     }
 }

@@ -2,6 +2,8 @@ package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.objectweb.asm.ClassReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -15,10 +17,12 @@ import java.util.List;
 
 public class LocalProject implements RawSourceFactory {
 
-    BinarySources readBinarySources(Layout layout) {
-        try {
-            List<BinarySource> list = new ArrayList<>();
-            for (Path path : layout.extractClassPath()) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
+
+    BinarySources readBinarySources(RawSourceLocations rawSourceLocations) {
+        List<BinarySource> list = new ArrayList<>();
+        for (Path path : rawSourceLocations.binarySourcePaths()) {
+            try {
                 List<ClassSource> sources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
@@ -38,17 +42,17 @@ public class LocalProject implements RawSourceFactory {
                     }
                 });
                 list.add(new BinarySource(new SourceLocation(path), new ClassSources(sources)));
+            } catch (IOException e) {
+                LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
-            return new BinarySources(list);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
+        return new BinarySources(list);
     }
 
-    TextSources readTextSources(Layout layout) {
-        try {
-            List<TextSource> list = new ArrayList<>();
-            for (Path path : layout.extractSourcePath()) {
+    TextSources readTextSources(RawSourceLocations rawSourceLocations) {
+        List<TextSource> list = new ArrayList<>();
+        for (Path path : rawSourceLocations.textSourcePaths()) {
+            try {
                 List<JavaSource> javaSources = new ArrayList<>();
                 List<PackageInfoSource> packageInfoSources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -69,15 +73,16 @@ public class LocalProject implements RawSourceFactory {
                     }
                 });
                 list.add(new TextSource(new SourceLocation(path), new JavaSources(javaSources), new PackageInfoSources(packageInfoSources)));
+            } catch (IOException e) {
+                LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
-
-            return new TextSources(list);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
+
+        return new TextSources(list);
     }
 
-    public RawSource createSource(Layout layout) {
-        return new RawSource(readTextSources(layout), readBinarySources(layout));
+    @Override
+    public RawSource createSource(RawSourceLocations rawSourceLocations) {
+        return new RawSource(readTextSources(rawSourceLocations), readBinarySources(rawSourceLocations));
     }
 }

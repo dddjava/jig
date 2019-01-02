@@ -1,6 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.assertj.core.api.SoftAssertions;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
@@ -18,9 +19,9 @@ import org.junitpioneer.jupiter.TempDirectory;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -40,17 +41,20 @@ class GradleProjectTest {
             String name,
             String[] classPathSuffixes,
             String[] sourcePathSuffixes) throws Exception {
-        Fixture fixture = new Fixture(classPathSuffixes, sourcePathSuffixes);
 
         Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + name, Path.class);
         projectMethod.setAccessible(true);
         Project project = (Project) projectMethod.invoke(null, tempDir);
 
-        GradleProjects gradleProjects = new GradleProject(project).allDependencyJavaProjects();
+        RawSourceLocations rawSourceLocations = new GradleProject(project).allDependencyJavaProjects();
 
+        List<Path> binarySourcePaths = rawSourceLocations.binarySourcePaths();
+        List<Path> textSourcePaths = rawSourceLocations.textSourcePaths();
+
+        Fixture fixture = new Fixture(classPathSuffixes, sourcePathSuffixes);
         SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(fixture.classPathContains(gradleProjects.extractLayoutClassPath().collect(Collectors.toSet()))).isTrue();
-        softly.assertThat(fixture.sourcePathContains(gradleProjects.extractLayoutSourcePath().collect(Collectors.toSet()))).isTrue();
+        softly.assertThat(fixture.classPathContains(new HashSet<>(binarySourcePaths))).isTrue();
+        softly.assertThat(fixture.sourcePathContains(new HashSet<>(textSourcePaths))).isTrue();
         softly.assertAll();
     }
 

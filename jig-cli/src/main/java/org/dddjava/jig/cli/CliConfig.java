@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
-import org.dddjava.jig.infrastructure.DefaultRawSourceLocationResolver;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -13,6 +12,9 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -68,9 +70,23 @@ class CliConfig {
     }
 
     RawSourceLocations rawSourceLocations() {
-        DefaultRawSourceLocationResolver defaultRawSourceLocationResolver = new DefaultRawSourceLocationResolver(projectPath, directoryClasses, directoryResources, directorySources);
-        return new RawSourceLocations(
-                new BinarySourceLocations(defaultRawSourceLocationResolver.binarySourcePaths()),
-                new TextSourceLocations(defaultRawSourceLocationResolver.textSourcePaths()));
+        try {
+            Path projectRoot = Paths.get(projectPath);
+
+            DirectoryCollector binaryCollector = new DirectoryCollector(path -> path.endsWith(directoryClasses) || path.endsWith(directoryResources));
+            Files.walkFileTree(projectRoot, binaryCollector);
+            List<Path> binarySourcePaths = binaryCollector.listPath();
+
+            DirectoryCollector sourcesCollector = new DirectoryCollector(path -> path.endsWith(directorySources));
+            Files.walkFileTree(projectRoot, sourcesCollector);
+            List<Path> textSourcesPaths = sourcesCollector.listPath();
+
+            return new RawSourceLocations(
+                    new BinarySourceLocations(binarySourcePaths),
+                    new TextSourceLocations(textSourcesPaths));
+        } catch (IOException e) {
+            // TODO エラーメッセージ。たとえばルートパスの指定が変な時とかはここにくる。
+            throw new UncheckedIOException(e);
+        }
     }
 }

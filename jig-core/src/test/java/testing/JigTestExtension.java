@@ -1,9 +1,8 @@
 package testing;
 
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.infrastructure.DefaultLayout;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -21,16 +20,7 @@ public class JigTestExtension implements ParameterResolver {
     public final Configuration configuration;
 
     public JigTestExtension() {
-        Path path = Paths.get(TestSupport.defaultPackageClassURI());
         configuration = new Configuration(
-                new DefaultLayout(
-                        path.toString(),
-                        path.toString(),
-                        // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
-                        "not/read/resources",
-                        // TODO ソースディレクトリの安定した取得方法が欲しい
-                        "not/read/sources"
-                ),
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
                         new OutputOmitPrefix(),
@@ -52,6 +42,7 @@ public class JigTestExtension implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
+        if (parameterContext.getParameter().getType() == Configuration.class) return true;
         if (parameterContext.getParameter().getType() == Configuration.class) return true;
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {

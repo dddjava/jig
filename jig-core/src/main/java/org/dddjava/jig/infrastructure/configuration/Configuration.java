@@ -1,9 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.infrastructure.Layout;
+import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
@@ -30,7 +29,7 @@ public class Configuration {
     final BusinessRuleService businessRuleService;
     final GlossaryService glossaryService;
 
-    public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
+    public Configuration(JigProperties properties, ConfigurationContext configurationContext) {
         this.configurationContext = configurationContext;
         Architecture architecture = new Architecture(properties.getBusinessRuleCondition());
         this.businessRuleService = new BusinessRuleService(architecture);
@@ -68,7 +67,7 @@ public class Configuration {
                 glossaryService,
                 viewResolver
         );
-        this.localProject = new LocalProject(layout);
+        this.localProject = new LocalProject();
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService,

@@ -13,15 +13,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalProject {
+public class LocalProject implements RawSourceFactory {
 
-    Layout layout;
-
-    public LocalProject(Layout layout) {
-        this.layout = layout;
-    }
-
-    BinarySources readBinarySources() {
+    BinarySources readBinarySources(Layout layout) {
         try {
             List<BinarySource> list = new ArrayList<>();
             for (Path path : layout.extractClassPath()) {
@@ -51,7 +45,7 @@ public class LocalProject {
         }
     }
 
-    TextSources readTextSources() {
+    TextSources readTextSources(Layout layout) {
         try {
             List<TextSource> list = new ArrayList<>();
             for (Path path : layout.extractSourcePath()) {
@@ -83,7 +77,7 @@ public class LocalProject {
         }
     }
 
-    public RawSource createSource() {
-        return new RawSource(readTextSources(), readBinarySources());
+    public RawSource createSource(Layout layout) {
+        return new RawSource(readTextSources(layout), readBinarySources(layout));
     }
 }

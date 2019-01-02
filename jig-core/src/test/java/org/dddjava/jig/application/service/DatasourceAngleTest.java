@@ -30,8 +30,8 @@ public class DatasourceAngleTest {
         when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
-        LocalProject localProject = new LocalProject(layoutMock);
-        RawSource source = localProject.createSource();
+        LocalProject localProject = new LocalProject();
+        RawSource source = localProject.createSource(layoutMock);
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
         Sqls sqls = implementationService.readSql(source.sqlSources());
 

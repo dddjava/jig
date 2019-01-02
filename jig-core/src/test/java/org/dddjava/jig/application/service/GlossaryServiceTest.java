@@ -42,13 +42,9 @@ class GlossaryServiceTest {
     }
 
     private TextSource getTextSource() {
-        LocalProject localProject = localProjectOf(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
-        return localProject.createSource().textSource();
-    }
-
-    private LocalProject localProjectOf(String projectPath, String dummy, String dummy1, String sourcesDirectory) {
-        Layout layout = new DefaultLayout(projectPath, dummy, dummy1, sourcesDirectory);
-        return new LocalProject(layout);
+        LocalProject localProject = new LocalProject();
+        Layout layout = new DefaultLayout(TestSupport.getModuleRootPath().toString(), "dummy", "dummy", "src/test/java");
+        return localProject.createSource(layout).textSource();
     }
 
     @ParameterizedTest

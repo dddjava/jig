@@ -5,6 +5,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.infrastructure.Layout;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -30,9 +31,9 @@ public class JigReportsTask extends DefaultTask {
         JigConfig config = extensions.findByType(JigConfig.class);
 
         JigProperties jigProperties = config.asProperties();
-        GradleProjects layout = new GradleProject(project).allDependencyJavaProjects();
+        Layout layout = new GradleProject(project).allDependencyJavaProjects();
         JigConfigurationContext configurationContext = new JigConfigurationContext(config);
-        Configuration configuration = new Configuration(layout, jigProperties, configurationContext);
+        Configuration configuration = new Configuration(jigProperties, configurationContext);
 
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
@@ -46,7 +47,7 @@ public class JigReportsTask extends DefaultTask {
 
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {
-            RawSource source = localProject.createSource();
+            RawSource source = localProject.createSource(layout);
             TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
             Sqls sqls = implementationService.readSql(source.sqlSources());
 

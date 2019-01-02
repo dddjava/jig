@@ -8,6 +8,7 @@ import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
+import testing.TestSupport;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,7 @@ public class DependencyServiceTest {
 
         DependencyService sut = configuration.dependencyService();
 
-
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource());
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource(TestSupport.testLayout()));
         PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ

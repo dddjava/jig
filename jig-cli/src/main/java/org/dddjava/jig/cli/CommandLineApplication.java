@@ -45,7 +45,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
 
-            RawSource rawSource = localProject.createSource();
+            RawSource rawSource = localProject.createSource(cliConfig.layout());
             TypeByteCodes typeByteCodes = implementationService.readProjectData(rawSource);
 
             Sqls sqls = implementationService.readSql(rawSource.sqlSources());

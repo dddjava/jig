@@ -8,10 +8,8 @@ import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
 import org.dddjava.jig.domain.model.unit.method.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +32,6 @@ import testing.TestSupport;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -50,7 +47,7 @@ public class AsmByteCodeFactoryTest {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        sut.analyze(new ClassSource(new SourceLocation(), Files.readAllBytes(path)));
+        sut.analyze(TestSupport.newClassSource(path));
     }
 
     @Test
@@ -262,6 +259,6 @@ public class AsmByteCodeFactoryTest {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(new ClassSource(new SourceLocation(), Files.readAllBytes(path)));
+        return sut.analyze(TestSupport.newClassSource(path));
     }
 }

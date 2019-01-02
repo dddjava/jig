@@ -20,9 +20,9 @@ public class ImplementationServiceTest {
         when(layoutMock.extractClassPath()).thenReturn(new Path[0]);
         when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
 
-        LocalProject localProject = new LocalProject(layoutMock);
+        LocalProject localProject = new LocalProject();
 
-        assertThatThrownBy(() -> implementationService.readProjectData(localProject.createSource()))
+        assertThatThrownBy(() -> implementationService.readProjectData(localProject.createSource(layoutMock)))
                 .isInstanceOf(ClassFindFailException.class);
     }
 }

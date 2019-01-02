@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifiers;
@@ -25,11 +24,9 @@ public class DependencyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
-    ConfigurationContext configurationContext;
     BusinessRuleService businessRuleService;
 
-    public DependencyService(ConfigurationContext configurationContext, BusinessRuleService businessRuleService) {
-        this.configurationContext = configurationContext;
+    public DependencyService(BusinessRuleService businessRuleService) {
         this.businessRuleService = businessRuleService;
     }
 

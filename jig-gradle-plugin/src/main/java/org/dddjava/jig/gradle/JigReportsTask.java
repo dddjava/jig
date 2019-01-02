@@ -24,7 +24,7 @@ public class JigReportsTask extends DefaultTask {
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
         List<JigDocument> jigDocuments = config.documentTypes();
-        Configuration configuration = new Configuration(config.asProperties(), new JigConfigurationContext(config));
+        Configuration configuration = new Configuration(config.asProperties());
 
         getLogger().info("現在の設定を表示します。\n{}", config.propertiesText());
 

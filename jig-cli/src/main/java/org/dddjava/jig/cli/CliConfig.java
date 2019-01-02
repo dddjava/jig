@@ -79,8 +79,7 @@ class CliConfig {
                         new OutputOmitPrefix(outputOmitPrefix),
                         new PackageDepth(depth),
                         jigDebugMode
-                ),
-                new CliConfigurationContext(this)
+                )
         );
     }
 

@@ -1,7 +1,6 @@
 package testing;
 
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
@@ -31,18 +30,8 @@ public class JigTestExtension implements ParameterResolver {
                         new OutputOmitPrefix(),
                         new PackageDepth(),
                         false
-                ),
-                new ConfigurationContext() {
-                    @Override
-                    public String classFileDetectionWarningMessage() {
-                        return "";
-                    }
-
-                    @Override
-                    public String modelDetectionWarningMessage() {
-                        return "";
-                    }
-                });
+                )
+        );
     }
 
     @Override

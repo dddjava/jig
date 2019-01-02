@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
@@ -24,15 +23,13 @@ public class Configuration {
     JigDocumentHandlers documentHandlers;
     ApplicationService applicationService;
     DependencyService dependencyService;
-    ConfigurationContext configurationContext;
     BusinessRuleService businessRuleService;
     GlossaryService glossaryService;
 
-    public Configuration(JigProperties properties, ConfigurationContext configurationContext) {
-        this.configurationContext = configurationContext;
+    public Configuration(JigProperties properties) {
         Architecture architecture = new Architecture(properties.getBusinessRuleCondition());
         this.businessRuleService = new BusinessRuleService(architecture);
-        this.dependencyService = new DependencyService(configurationContext, businessRuleService);
+        this.dependencyService = new DependencyService(businessRuleService);
         this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
         this.applicationService = new ApplicationService(architecture);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(

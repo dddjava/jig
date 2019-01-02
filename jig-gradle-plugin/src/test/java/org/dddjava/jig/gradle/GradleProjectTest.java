@@ -46,7 +46,7 @@ class GradleProjectTest {
         projectMethod.setAccessible(true);
         Project project = (Project) projectMethod.invoke(null, tempDir);
 
-        RawSourceLocations rawSourceLocations = new GradleProject(project).allDependencyJavaProjects();
+        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
 
         List<Path> binarySourcePaths = rawSourceLocations.binarySourcePaths();
         List<Path> textSourcePaths = rawSourceLocations.textSourcePaths();

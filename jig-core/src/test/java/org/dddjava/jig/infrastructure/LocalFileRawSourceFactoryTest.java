@@ -11,7 +11,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LocalProjectTest {
+class LocalFileRawSourceFactoryTest {
 
     @Test
     void 読み取れないパスが指定されていてもエラーにならない() {
@@ -20,7 +20,7 @@ class LocalProjectTest {
                 new TextSourceLocations(Collections.singletonList(Paths.get("invalid-text-path")))
         );
 
-        LocalProject sut = new LocalProject();
+        LocalFileRawSourceFactory sut = new LocalFileRawSourceFactory();
         RawSource source = sut.createSource(rawSourceLocations);
 
         assertTrue(source.binarySource().classSources().list().isEmpty());

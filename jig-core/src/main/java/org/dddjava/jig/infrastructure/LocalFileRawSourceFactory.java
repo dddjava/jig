@@ -15,9 +15,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalProject implements RawSourceFactory {
+public class LocalFileRawSourceFactory implements RawSourceFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalProject.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileRawSourceFactory.class);
 
     BinarySources readBinarySources(RawSourceLocations rawSourceLocations) {
         List<BinarySource> list = new ArrayList<>();

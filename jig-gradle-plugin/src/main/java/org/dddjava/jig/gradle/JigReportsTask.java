@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -31,7 +31,7 @@ public class JigReportsTask extends DefaultTask {
         JigConfig config = extensions.findByType(JigConfig.class);
 
         JigProperties jigProperties = config.asProperties();
-        RawSourceLocations rawSourceLocations = new GradleProject(project).allDependencyJavaProjects();
+        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
         JigConfigurationContext configurationContext = new JigConfigurationContext(config);
         Configuration configuration = new Configuration(jigProperties, configurationContext);
 
@@ -39,7 +39,7 @@ public class JigReportsTask extends DefaultTask {
 
         List<JigDocument> jigDocuments = config.documentTypes();
 
-        LocalProject localProject = configuration.localProject();
+        LocalFileRawSourceFactory localFileRawSourceFactory = configuration.localProject();
         ImplementationService implementationService = configuration.implementationService();
         Path outputDirectory = outputDirectory(config);
 
@@ -47,7 +47,7 @@ public class JigReportsTask extends DefaultTask {
 
         getLogger().quiet("プロジェクト情報の取り込みをはじめます");
         try {
-            RawSource source = localProject.createSource(rawSourceLocations);
+            RawSource source = localFileRawSourceFactory.createSource(rawSourceLocations);
             TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
             Sqls sqls = implementationService.readSql(source.sqlSources());
 

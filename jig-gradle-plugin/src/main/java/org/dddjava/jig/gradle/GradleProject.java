@@ -52,7 +52,7 @@ public class GradleProject {
     }
 
 
-    public RawSourceLocations allDependencyJavaProjects() {
+    public RawSourceLocations rawSourceLocations() {
         RawSourceLocations rawSourceLocations = allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
                 .map(gradleProject ->

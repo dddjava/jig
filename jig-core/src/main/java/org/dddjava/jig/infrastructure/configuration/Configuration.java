@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
@@ -20,7 +20,7 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
-    final LocalProject localProject;
+    final LocalFileRawSourceFactory localFileRawSourceFactory;
     final ImplementationService implementationService;
     final JigDocumentHandlers documentHandlers;
     final ApplicationService applicationService;
@@ -67,7 +67,7 @@ public class Configuration {
                 glossaryService,
                 viewResolver
         );
-        this.localProject = new LocalProject();
+        this.localFileRawSourceFactory = new LocalFileRawSourceFactory();
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService,
@@ -90,8 +90,8 @@ public class Configuration {
         return businessRuleService;
     }
 
-    public LocalProject localProject() {
-        return localProject;
+    public LocalFileRawSourceFactory localProject() {
+        return localFileRawSourceFactory;
     }
 
     public ImplementationService implementationService() {

@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -82,7 +82,7 @@ public class JigTestExtension implements ParameterResolver {
                 new TextSourceLocations(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")))
         );
 
-        LocalProject localProject = new LocalProject();
-        return localProject.createSource(rawSourceLocations);
+        LocalFileRawSourceFactory localFileRawSourceFactory = new LocalFileRawSourceFactory();
+        return localFileRawSourceFactory.createSource(rawSourceLocations);
     }
 }

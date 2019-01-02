@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
@@ -41,13 +41,13 @@ public class CommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
         try {
             ImplementationService implementationService = configuration.implementationService();
-            LocalProject localProject = configuration.localProject();
+            LocalFileRawSourceFactory localFileRawSourceFactory = configuration.localProject();
             JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
             LOGGER.info("プロジェクト情報の取り込みをはじめます");
 
             RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
-            RawSource rawSource = localProject.createSource(rawSourceLocations);
+            RawSource rawSource = localFileRawSourceFactory.createSource(rawSourceLocations);
             TypeByteCodes typeByteCodes = implementationService.readProjectData(rawSource);
 
             Sqls sqls = implementationService.readSql(rawSource.sqlSources());

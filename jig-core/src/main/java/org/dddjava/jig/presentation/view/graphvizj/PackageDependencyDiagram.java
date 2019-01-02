@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
-import org.dddjava.jig.domain.model.networks.packages.*;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.japanese.PackageJapaneseName;
+import org.dddjava.jig.domain.model.implementation.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 
 import java.util.List;

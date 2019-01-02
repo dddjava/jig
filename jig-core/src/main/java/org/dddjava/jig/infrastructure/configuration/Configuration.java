@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.implementation.architecture.Architecture;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;

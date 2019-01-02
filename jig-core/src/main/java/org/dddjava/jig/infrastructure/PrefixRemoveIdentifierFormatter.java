@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 
 public class PrefixRemoveIdentifierFormatter implements TypeIdentifierFormatter, PackageIdentifierFormatter {

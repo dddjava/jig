@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
-import org.dddjava.jig.domain.model.threelayer.services.ServiceAngle;
-import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
+import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;

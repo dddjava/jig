@@ -1,11 +1,11 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
+import org.dddjava.jig.domain.model.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.japanese.TypeJapaneseName;
 
 import java.util.Collections;
 import java.util.StringJoiner;

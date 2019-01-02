@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifier;
 
 /**
  * ビジネスルールのグループ（パッケージ）

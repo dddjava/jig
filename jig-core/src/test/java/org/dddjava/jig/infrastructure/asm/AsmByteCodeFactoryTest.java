@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.implementation.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.implementation.declaration.type.ParameterizedTypes;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.unit.method.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

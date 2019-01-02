@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.branch;
 
-import org.dddjava.jig.domain.model.angle.decisions.DecisionAngle;
-import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.decisions.DecisionAngle;
+import org.dddjava.jig.domain.model.implementation.unit.method.Method;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 

@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.*;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.type.*;
-import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.*;
+import org.dddjava.jig.domain.model.implementation.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.implementation.declaration.type.*;
+import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;

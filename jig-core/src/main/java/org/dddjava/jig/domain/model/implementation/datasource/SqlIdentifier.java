@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
 
 import java.util.Objects;
 

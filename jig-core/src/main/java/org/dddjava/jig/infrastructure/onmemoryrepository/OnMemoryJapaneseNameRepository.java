@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.japanese.*;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.japanese.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

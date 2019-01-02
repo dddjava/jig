@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.japanese.MethodJapaneseName;
-import org.dddjava.jig.domain.model.japanese.TypeJapaneseName;
+import org.dddjava.jig.domain.model.implementation.japanese.MethodJapaneseName;
+import org.dddjava.jig.domain.model.implementation.japanese.TypeJapaneseName;
 
 import java.util.List;
 

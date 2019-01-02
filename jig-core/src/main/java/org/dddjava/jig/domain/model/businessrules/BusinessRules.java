@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.declaration.type.Types;
+import org.dddjava.jig.domain.model.implementation.architecture.Architecture;
+import org.dddjava.jig.domain.model.implementation.declaration.type.Type;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.declaration.type.Types;
 
 import java.util.ArrayList;
 import java.util.List;

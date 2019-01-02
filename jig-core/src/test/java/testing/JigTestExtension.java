@@ -1,7 +1,7 @@
 package testing;
 
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;

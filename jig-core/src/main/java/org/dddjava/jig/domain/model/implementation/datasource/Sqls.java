@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclarations;
 
 import java.util.Collections;
 import java.util.List;

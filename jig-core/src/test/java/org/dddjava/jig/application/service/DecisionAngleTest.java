@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.architecture.Layer;
+import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.implementation.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.junit.jupiter.api.Test;

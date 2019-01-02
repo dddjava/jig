@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.implementation.bytecode;
 
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.*;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.implementation.declaration.annotation.TypeAnnotation;
+import org.dddjava.jig.domain.model.implementation.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.declaration.type.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

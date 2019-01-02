@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.implementation.Implementations;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.japanese.JapaneseNameFinder;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;

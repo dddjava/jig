@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngles;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;

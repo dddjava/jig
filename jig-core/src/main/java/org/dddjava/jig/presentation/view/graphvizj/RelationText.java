@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.declaration.type.TypeIdentifier;
 
 import java.util.StringJoiner;
 

@@ -3,6 +3,9 @@ package testing;
 import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.infrastructure.Layout;
+import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -14,6 +17,9 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JigTestExtension implements ParameterResolver {
 
@@ -43,7 +49,7 @@ public class JigTestExtension implements ParameterResolver {
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return true;
-        if (parameterContext.getParameter().getType() == Configuration.class) return true;
+        if (parameterContext.getParameter().getType() == RawSource.class) return true;
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 return true;
@@ -55,6 +61,7 @@ public class JigTestExtension implements ParameterResolver {
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
+        if (parameterContext.getParameter().getType() == RawSource.class) return getTestRawSource();
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 try {
@@ -65,6 +72,18 @@ public class JigTestExtension implements ParameterResolver {
                 }
             }
         }
+
+        // 実装ミスでもなければここには来ない
         throw new AssertionError();
+    }
+
+    public RawSource getTestRawSource() {
+        Layout layoutMock = mock(Layout.class);
+        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
+        // FIXME 環境に依存しないテストソースフォルダの取得方法があれば対応したい
+        when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
+
+        LocalProject localProject = new LocalProject();
+        return localProject.createSource(layoutMock);
     }
 }

@@ -4,42 +4,22 @@ import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.infrastructure.Layout;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import testing.JigServiceTest;
-import testing.TestSupport;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @JigServiceTest
 public class EnumAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, BusinessRuleService businessRuleService) {
-        Logger logger = LoggerFactory.getLogger("");
-        Map<String, Object> map = Collections.singletonMap("aaa", "bbb");
-        logger.error("", map);
-
-
-        Layout layoutMock = mock(Layout.class);
-        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
-        when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
-
-        LocalProject localProject = new LocalProject();
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource(layoutMock));
+    void readProjectData(ImplementationService implementationService, BusinessRuleService businessRuleService, RawSource source) {
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
         CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
+
         assertThat(categoryAngles.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,

@@ -8,8 +8,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.infrastructure.Layout;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;
@@ -19,30 +18,19 @@ import stub.presentation.controller.DecisionController;
 import stub.presentation.controller.SimpleController;
 import stub.presentation.controller.SimpleRestController;
 import testing.JigServiceTest;
-import testing.TestSupport;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @JigServiceTest
 public class ProgressAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, ApplicationService applicationService) {
-        Layout layoutMock = mock(Layout.class);
-        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
-        when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
-
-        LocalProject localProject = new LocalProject();
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource(layoutMock));
-
+    void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
         ProgressAngles sut = applicationService.progressAngles(typeByteCodes);
 
         SoftAssertions softly = new SoftAssertions();

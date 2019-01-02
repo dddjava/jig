@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.infrastructure.LocalProject;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -26,7 +27,8 @@ public class DependencyServiceTest {
 
         DependencyService sut = configuration.dependencyService();
 
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject.createSource(TestSupport.testLayout()));
+        RawSource source = localProject.createSource(TestSupport.testLayout());
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
         PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ

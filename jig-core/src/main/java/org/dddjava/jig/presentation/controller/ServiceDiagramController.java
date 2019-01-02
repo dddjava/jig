@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -25,15 +25,15 @@ public class ServiceDiagramController {
     }
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
-    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(TypeByteCodes typeByteCodes) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
+    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(Implementations implementations) {
+        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
-    public JigModelAndView<?> booleanServiceTrace(TypeByteCodes typeByteCodes) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
+    public JigModelAndView<?> booleanServiceTrace(Implementations implementations) {
+        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(japaneseNameFinder));
     }

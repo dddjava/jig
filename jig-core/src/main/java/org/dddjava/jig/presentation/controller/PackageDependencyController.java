@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.declaration.namespace.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.networks.packages.PackageNetworks;
@@ -35,23 +35,23 @@ public class PackageDependencyController {
     }
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)
-    public JigModelAndView<PackageNetworks> packageDependency(TypeByteCodes typeByteCodes) {
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
+    public JigModelAndView<PackageNetworks> packageDependency(Implementations implementations) {
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
-    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(TypeByteCodes typeByteCodes) {
-        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(typeByteCodes);
+    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(Implementations implementations) {
+        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.PackageTreeDiagram)
-    public JigModelAndView<AllPackageIdentifiers> packageTreeDiagram(TypeByteCodes typeByteCodes) {
+    public JigModelAndView<AllPackageIdentifiers> packageTreeDiagram(Implementations implementations) {
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(typeByteCodes);
+        AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(implementations.typeByteCodes());
         return new JigModelAndView<>(packages, viewResolver.packageTreeWriter(japaneseNameFinder));
     }
 }

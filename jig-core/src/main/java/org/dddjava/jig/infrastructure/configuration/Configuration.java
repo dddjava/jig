@@ -20,7 +20,6 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
-    final LocalFileRawSourceFactory localFileRawSourceFactory;
     final ImplementationService implementationService;
     final JigDocumentHandlers documentHandlers;
     final ApplicationService applicationService;
@@ -67,11 +66,11 @@ public class Configuration {
                 glossaryService,
                 viewResolver
         );
-        this.localFileRawSourceFactory = new LocalFileRawSourceFactory();
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService,
-                new MyBatisSqlReader()
+                new MyBatisSqlReader(),
+                new LocalFileRawSourceFactory()
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,
@@ -88,10 +87,6 @@ public class Configuration {
 
     public BusinessRuleService businessRuleService() {
         return businessRuleService;
-    }
-
-    public LocalFileRawSourceFactory localProject() {
-        return localFileRawSourceFactory;
     }
 
     public ImplementationService implementationService() {

@@ -2,11 +2,8 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
-import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
@@ -39,23 +36,18 @@ public class CommandLineApplication implements CommandLineRunner {
         Configuration configuration = cliConfig.configuration();
 
         long startTime = System.currentTimeMillis();
+        LOGGER.info("プロジェクト情報の取り込みをはじめます");
         try {
             ImplementationService implementationService = configuration.implementationService();
-            LocalFileRawSourceFactory localFileRawSourceFactory = configuration.localProject();
             JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-            LOGGER.info("プロジェクト情報の取り込みをはじめます");
-
             RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
-            RawSource rawSource = localFileRawSourceFactory.createSource(rawSourceLocations);
-            TypeByteCodes typeByteCodes = implementationService.readProjectData(rawSource);
-
-            Sqls sqls = implementationService.readSql(rawSource.sqlSources());
+            Implementations implementations = implementationService.implementations(rawSourceLocations);
 
             Path outputDirectory = cliConfig.outputDirectory();
             for (JigDocument jigDocument : jigDocuments) {
-                LOGGER.info("{} を出力します。", jigDocument);
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
+                LOGGER.info("{} を出力します", jigDocument);
+                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
             }
         } catch (ClassFindFailException e) {
             LOGGER.warn(e.warning().text());

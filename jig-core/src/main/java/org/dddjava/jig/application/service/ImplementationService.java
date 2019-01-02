@@ -1,12 +1,11 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.implementation.Implementations;
 import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
-import org.dddjava.jig.domain.model.implementation.raw.SqlSources;
 import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,15 +14,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImplementationService {
 
-    final GlossaryService glossaryService;
+    GlossaryService glossaryService;
 
-    final ByteCodeFactory byteCodeFactory;
-    final SqlReader sqlReader;
+    ByteCodeFactory byteCodeFactory;
+    SqlReader sqlReader;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader) {
+    RawSourceFactory rawSourceFactory;
+
+    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader, RawSourceFactory rawSourceFactory) {
         this.byteCodeFactory = byteCodeFactory;
         this.glossaryService = glossaryService;
         this.sqlReader = sqlReader;
+        this.rawSourceFactory = rawSourceFactory;
+    }
+
+    public Implementations implementations(RawSourceLocations rawSourceLocations) {
+        RawSource source = rawSourceFactory.createSource(rawSourceLocations);
+
+        TypeByteCodes typeByteCodes = readProjectData(source);
+        Sqls sqls = readSql(source.sqlSources());
+
+        return new Implementations(typeByteCodes, sqls);
     }
 
     /**

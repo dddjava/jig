@@ -63,7 +63,7 @@ public class MyBatisSqlReader implements SqlReader {
 
         List<Sql> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
-        LOGGER.info("MappedStatements: {}件", mappedStatements.size());
+        LOGGER.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement) {
@@ -86,7 +86,7 @@ public class MyBatisSqlReader implements SqlReader {
             }
         }
 
-        LOGGER.info("取得したSQL: {}件", list.size());
+        LOGGER.debug("取得したSQL: {}件", list.size());
         return new Sqls(list, sqlReadStatus);
     }
 

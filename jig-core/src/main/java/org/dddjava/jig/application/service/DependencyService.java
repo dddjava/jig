@@ -38,8 +38,6 @@ public class DependencyService {
      * パッケージ依存を取得する
      */
     public PackageNetwork packageDependencies(TypeByteCodes typeByteCodes) {
-        LOGGER.info("パッケージ依存情報を取得します");
-
         BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
 
         if (businessRules.empty()) {

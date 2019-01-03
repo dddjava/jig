@@ -27,7 +27,7 @@ public class DirectoryCollector extends SimpleFileVisitor<Path> {
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         if (filter.test(dir)) {
             paths.add(dir);
-            LOGGER.info("classes: {}", dir);
+            LOGGER.debug("classes: {}", dir);
             return FileVisitResult.SKIP_SUBTREE;
         }
         return FileVisitResult.CONTINUE;

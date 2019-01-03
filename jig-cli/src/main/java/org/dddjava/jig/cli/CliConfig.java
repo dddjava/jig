@@ -53,6 +53,7 @@ class CliConfig {
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
                 .add("directory.sources=" + directorySources)
+                .add("jig.debug=" + jigDebugMode)
                 .toString();
     }
 

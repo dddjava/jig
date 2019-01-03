@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.AllPackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelations;
@@ -50,24 +49,7 @@ public class DependencyService {
 
         PackageRelations packageRelations = new TypeRelations(typeByteCodes).packageDependencies();
 
-        PackageNetwork packageNetwork = new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
-        showDepth(packageNetwork);
-
-        return packageNetwork;
-    }
-
-    /**
-     * 深度ごとの関連数をログ出力する
-     */
-    private void showDepth(PackageNetwork packageNetwork) {
-        PackageDepth maxDepth = packageNetwork.allPackages().maxDepth();
-        PackageRelations packageRelations = packageNetwork.packageDependencies();
-
-        LOGGER.info("最大深度: {}", maxDepth.value());
-        for (PackageDepth depth : maxDepth.surfaceList()) {
-            PackageRelations dependencies = packageRelations.applyDepth(depth);
-            LOGGER.info("深度 {} の関連数: {} ", depth.value(), dependencies.number().asText());
-        }
+        return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
     }
 
     public BusinessRuleNetwork businessRuleNetwork(TypeByteCodes typeByteCodes) {

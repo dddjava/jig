@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementati
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
@@ -14,6 +15,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JigReportsTask extends DefaultTask {
@@ -45,11 +47,18 @@ public class JigReportsTask extends DefaultTask {
             getLogger().warn("読み取りで問題がありました。処理は続行しますが、必要に応じて設定を確認してください。\n{}", status.warningLogText());
         }
 
+        List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = outputDirectory(config);
         for (JigDocument jigDocument : jigDocuments) {
-            getLogger().quiet("{} を出力します", jigDocument);
-            jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            handleResultList.add(result);
         }
+        for (HandleResult handleResult : handleResultList) {
+            if (handleResult.success()) {
+                getLogger().info("{} を {} に出力しました。", handleResult.jigDocument(), handleResult.outputFilePaths());
+            }
+        }
+
         getLogger().quiet("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }
 

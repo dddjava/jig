@@ -10,7 +10,6 @@ import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +59,7 @@ public class JigDocumentHandlers {
         throw new IllegalStateException();
     }
 
-    public void handle(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver, Path outputDirectory) {
+    public HandleResult handle(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver, Path outputDirectory) {
         try {
             JigModelAndView<?> jigModelAndView = resolveHandlerMethod(jigDocument, argumentResolver);
 
@@ -71,8 +70,11 @@ public class JigDocumentHandlers {
 
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory, jigDebugMode);
             jigModelAndView.render(jigDocumentWriter);
-        } catch (IOException e) {
-            throw new FileWriteFailureException(e);
+
+            return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());
+        } catch (Exception e) {
+            LOGGER.warn("{} の出力に失敗しました。", jigDocument, e);
+            return new HandleResult(jigDocument, e.getMessage());
         }
     }
 }

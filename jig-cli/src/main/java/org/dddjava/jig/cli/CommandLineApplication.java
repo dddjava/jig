@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementati
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
@@ -54,11 +56,16 @@ public class CommandLineApplication implements CommandLineRunner {
             LOGGER.warn("読み取りで問題がありました。処理は続行しますが、必要に応じて設定を確認してください。\n{}", status.warningLogText());
         }
 
+        List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = cliConfig.outputDirectory();
         for (JigDocument jigDocument : jigDocuments) {
-            LOGGER.info("{} を出力します", jigDocument);
-            jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
-
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            handleResultList.add(result);
+        }
+        for (HandleResult handleResult : handleResultList) {
+            if (handleResult.success()) {
+                LOGGER.info("{} を {} に出力しました。", handleResult.jigDocument(), handleResult.outputFilePaths());
+            }
         }
         LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
     }

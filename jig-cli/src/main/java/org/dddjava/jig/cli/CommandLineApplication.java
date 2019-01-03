@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 @SpringBootApplication
 public class CommandLineApplication implements CommandLineRunner {
@@ -37,10 +38,9 @@ public class CommandLineApplication implements CommandLineRunner {
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
-        LOGGER.info("現在の設定を表示します。\n{}", cliConfig.propertiesText());
+        LOGGER.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
 
         long startTime = System.currentTimeMillis();
-        LOGGER.info("プロジェクト情報の取り込みをはじめます");
         ImplementationService implementationService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
@@ -62,11 +62,14 @@ public class CommandLineApplication implements CommandLineRunner {
             HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
             handleResultList.add(result);
         }
+
+        StringJoiner resultLog = new StringJoiner("\n");
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
-                LOGGER.info("{} を {} に出力しました。", handleResult.jigDocument(), handleResult.outputFilePaths());
+                resultLog.add(handleResult.jigDocument() + " : " + handleResult.outputFilePaths());
             }
         }
-        LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+        LOGGER.info("-- 出力ドキュメント一覧 ---------------------------------------\n{}\n------------------------------------------------------------", resultLog);
+        LOGGER.info("出力が完了しました。: {} ms", System.currentTimeMillis() - startTime);
     }
 }

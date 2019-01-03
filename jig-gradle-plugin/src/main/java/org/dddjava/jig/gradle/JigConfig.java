@@ -1,7 +1,6 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -22,8 +21,6 @@ public class JigConfig {
 
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
 
-    int depth = -1;
-
     boolean enableDebugDocument = false;
 
     List<JigDocument> documentTypes() {
@@ -37,7 +34,6 @@ public class JigConfig {
         return new JigProperties(
                 new BusinessRuleCondition(modelPattern),
                 new OutputOmitPrefix(outputOmitPrefix),
-                new PackageDepth(depth),
                 enableDebugDocument
         );
     }
@@ -77,14 +73,6 @@ public class JigConfig {
         this.outputOmitPrefix = outputOmitPrefix;
     }
 
-    int getDepth() {
-        return depth;
-    }
-
-    void setDepth(int depth) {
-        this.depth = depth;
-    }
-
     public boolean isEnableDebugDocument() {
         return enableDebugDocument;
     }
@@ -99,7 +87,6 @@ public class JigConfig {
                 .add("documentTypes = '" + documentTypes + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
-                .add("depth = " + depth)
                 .add("enableDebugDocument = " + enableDebugDocument)
                 .toString();
     }

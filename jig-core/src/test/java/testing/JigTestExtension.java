@@ -1,7 +1,6 @@
 package testing;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
@@ -28,7 +27,6 @@ public class JigTestExtension implements ParameterResolver {
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
                         new OutputOmitPrefix(),
-                        new PackageDepth(),
                         false
                 )
         );

@@ -8,15 +8,13 @@ import static java.util.stream.Collectors.toList;
 
 public class PackageNetworks {
     PackageNetwork origin;
-    PackageDepth depth;
 
-    public PackageNetworks(PackageNetwork origin, PackageDepth depth) {
+    public PackageNetworks(PackageNetwork origin) {
         this.origin = origin;
-        this.depth = depth;
     }
 
     public List<PackageNetwork> list() {
-        PackageDepth maxDepth = origin.maxDepthWith(depth);
+        PackageDepth maxDepth = origin.maxDepth();
 
         return maxDepth.surfaceList().stream()
                 .map(depth -> origin.applyDepth(depth))

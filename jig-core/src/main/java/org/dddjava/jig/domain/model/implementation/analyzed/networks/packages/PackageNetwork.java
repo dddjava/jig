@@ -46,7 +46,7 @@ public class PackageNetwork {
         return packageDependencies().available();
     }
 
-    public PackageDepth maxDepthWith(PackageDepth depth) {
-        return depth.unlimited() ? packageIdentifiers.maxDepth() : depth;
+    public PackageDepth maxDepth() {
+        return packageIdentifiers.maxDepth();
     }
 }

@@ -5,7 +5,6 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.AllPackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetworks;
@@ -18,27 +17,23 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class PackageDependencyController {
 
-    private final PackageDepth packageDepth;
-
     DependencyService dependencyService;
     GlossaryService glossaryService;
     ViewResolver viewResolver;
 
     public PackageDependencyController(DependencyService dependencyService,
                                        GlossaryService glossaryService,
-                                       ViewResolver viewResolver,
-                                       PackageDepth packageDepth) {
+                                       ViewResolver viewResolver) {
         this.dependencyService = dependencyService;
         this.glossaryService = glossaryService;
         this.viewResolver = viewResolver;
-        this.packageDepth = packageDepth;
     }
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)
     public JigModelAndView<PackageNetworks> packageDependency(AnalyzedImplementation implementations) {
         PackageNetwork packageNetwork = dependencyService.packageDependencies(implementations.typeByteCodes());
         JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        return new JigModelAndView<>(new PackageNetworks(packageNetwork, packageDepth), viewResolver.dependencyWriter(japaneseNameFinder));
+        return new JigModelAndView<>(new PackageNetworks(packageNetwork), viewResolver.dependencyWriter(japaneseNameFinder));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)

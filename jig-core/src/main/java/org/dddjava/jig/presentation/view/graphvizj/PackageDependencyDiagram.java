@@ -72,7 +72,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 .add(labelsText)
                 .toString();
         PackageDepth packageDepth = packageNetwork.appliedDepth();
-        DocumentSuffix documentSuffix = new DocumentSuffix(packageDepth.unlimited() ? "" : "-depth" + packageDepth.value());
+        DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
         return new DotText(documentSuffix, text);
     }
 }

@@ -55,8 +55,7 @@ public class Configuration {
         PackageDependencyController packageDependencyController = new PackageDependencyController(
                 dependencyService,
                 glossaryService,
-                viewResolver,
-                properties.getDepth()
+                viewResolver
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 applicationService,

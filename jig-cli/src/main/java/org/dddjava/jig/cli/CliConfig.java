@@ -1,7 +1,6 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
@@ -41,9 +40,6 @@ class CliConfig {
     @Value("${directory.sources}")
     String directorySources;
 
-    @Value("${depth}")
-    int depth;
-
     @Value("${jig.debug}")
     boolean jigDebugMode;
 
@@ -57,7 +53,6 @@ class CliConfig {
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
                 .add("directory.sources=" + directorySources)
-                .add("depth=" + depth)
                 .toString();
     }
 
@@ -77,7 +72,6 @@ class CliConfig {
                 new JigProperties(
                         new BusinessRuleCondition(modelPattern),
                         new OutputOmitPrefix(outputOmitPrefix),
-                        new PackageDepth(depth),
                         jigDebugMode
                 )
         );

@@ -14,25 +14,23 @@ import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRe
  */
 public class CollectionAngle {
 
-    TypeIdentifier typeIdentifier;
-    MethodDeclarations methods;
-    TypeIdentifiers userTypeIdentifiers;
+    CollectionType collectionType;
+    TypeRelations typeRelations;
 
-    public CollectionAngle(CollectionType collectionType, TypeRelations allTypeRelations) {
-        this.typeIdentifier = collectionType.typeIdentifier();
-        this.methods = collectionType.methods();
-        this.userTypeIdentifiers = allTypeRelations.collectTypeIdentifierWhichRelationTo(typeIdentifier);
+    public CollectionAngle(CollectionType collectionType, TypeRelations typeRelations) {
+        this.collectionType = collectionType;
+        this.typeRelations = typeRelations;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return collectionType.typeIdentifier();
     }
 
     public TypeIdentifiers userTypeIdentifiers() {
-        return userTypeIdentifiers;
+        return typeRelations.collectTypeIdentifierWhichRelationTo(typeIdentifier());
     }
 
     public MethodDeclarations methods() {
-        return methods;
+        return collectionType.methods();
     }
 }

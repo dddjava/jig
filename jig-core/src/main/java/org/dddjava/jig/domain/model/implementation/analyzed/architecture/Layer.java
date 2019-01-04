@@ -7,7 +7,6 @@ public enum Layer {
     PRESENTATION,
     APPLICATION,
     DATASOURCE,
-    BUSINESS_RULE,
     OTHER;
 
     public String asText() {

@@ -49,7 +49,6 @@ public class Architecture {
         if (isService(typeByteCode.typeAnnotations())) return Layer.APPLICATION;
         if (isDataSource(typeByteCode.typeAnnotations())) return Layer.DATASOURCE;
         if (isController(typeByteCode.typeAnnotations())) return Layer.PRESENTATION;
-        if (isBusinessRule(typeByteCode.typeIdentifier())) return Layer.BUSINESS_RULE;
 
         return Layer.OTHER;
     }

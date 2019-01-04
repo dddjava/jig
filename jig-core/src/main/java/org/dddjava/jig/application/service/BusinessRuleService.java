@@ -73,7 +73,8 @@ public class BusinessRuleService {
      * コレクションを分析する
      */
     public CollectionAngles collections(TypeByteCodes typeByteCodes) {
-        CollectionTypes collectionTypes = new CollectionTypes(typeByteCodes, architecture);
+        BusinessRules businessRules = businessRules(typeByteCodes.types());
+        CollectionTypes collectionTypes = new CollectionTypes(businessRules, typeByteCodes);
 
         return new CollectionAngles(collectionTypes, new TypeRelations(typeByteCodes));
     }

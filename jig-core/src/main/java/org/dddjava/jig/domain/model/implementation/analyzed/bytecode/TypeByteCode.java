@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.Fi
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.*;
 
 import java.util.ArrayList;
@@ -158,5 +159,11 @@ public class TypeByteCode {
 
     public ParameterizedTypes parameterizedInterfaceTypes() {
         return parameterizedInterfaceTypes;
+    }
+
+    public MethodDeclarations methodDeclarations() {
+        return methodByteCodes().stream()
+                .map(MethodByteCode::methodDeclaration)
+                .collect(MethodDeclarations.collector());
     }
 }

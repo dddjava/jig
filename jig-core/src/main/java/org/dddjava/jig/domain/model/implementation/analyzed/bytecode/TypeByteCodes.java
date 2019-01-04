@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.Fi
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Type;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Types;
 
 import java.util.ArrayList;
@@ -82,5 +83,13 @@ public class TypeByteCodes {
             list.add(typeByteCode.type());
         }
         return new Types(list);
+    }
+
+    public TypeByteCode typeByteCodeOf(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(typeByteCode -> typeByteCode.typeIdentifier().equals(typeIdentifier))
+                .findFirst()
+                // TypeByteCodesにないtypeIdentifierの指定は即不正で良い
+                .orElseThrow(() -> new IllegalStateException(typeIdentifier.toString()));
     }
 }

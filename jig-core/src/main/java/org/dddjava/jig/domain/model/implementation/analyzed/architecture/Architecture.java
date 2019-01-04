@@ -11,12 +11,6 @@ import java.util.List;
  */
 public class Architecture {
 
-    BusinessRuleCondition businessRuleCondition;
-
-    public Architecture(BusinessRuleCondition businessRuleCondition) {
-        this.businessRuleCondition = businessRuleCondition;
-    }
-
     public boolean isService(List<TypeAnnotation> typeAnnotations) {
         TypeIdentifier serviceAnnotation = new TypeIdentifier("org.springframework.stereotype.Service");
         return typeAnnotations.stream()
@@ -28,10 +22,6 @@ public class Architecture {
         TypeIdentifier repositoryAnnotation = new TypeIdentifier("org.springframework.stereotype.Repository");
         return typeAnnotations.stream()
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(repositoryAnnotation));
-    }
-
-    public boolean isBusinessRule(TypeIdentifier typeIdentifier) {
-        return businessRuleCondition.judge(typeIdentifier);
     }
 
     public boolean isController(List<TypeAnnotation> typeAnnotations) {

@@ -123,7 +123,7 @@ public class ClassListController {
     }
 
     ModelReport<?> businessRulesReport(AnalyzedImplementation implementations) {
-        BusinessRules businessRules = businessRuleService.businessRules(implementations.typeByteCodes().types());
+        BusinessRules businessRules = businessRuleService.businessRules(implementations.typeByteCodes());
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 

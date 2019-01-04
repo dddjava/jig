@@ -1,6 +1,6 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;

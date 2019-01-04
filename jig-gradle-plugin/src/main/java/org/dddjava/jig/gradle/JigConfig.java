@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.presentation.view.JigDocument;

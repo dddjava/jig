@@ -1,12 +1,9 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Type;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Types;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,15 +12,6 @@ import java.util.List;
 public class BusinessRules {
 
     List<BusinessRule> list;
-
-    public BusinessRules(Types types, Architecture architecture) {
-        this.list = new ArrayList<>();
-        for (Type type : types.list()) {
-            if (architecture.isBusinessRule(type.identifier())) {
-                list.add(new BusinessRule(type));
-            }
-        }
-    }
 
     public BusinessRules(List<BusinessRule> list) {
         this.list = list;

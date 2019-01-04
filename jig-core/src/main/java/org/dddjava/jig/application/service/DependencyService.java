@@ -38,7 +38,7 @@ public class DependencyService {
      * パッケージ依存を取得する
      */
     public PackageNetwork packageDependencies(TypeByteCodes typeByteCodes) {
-        BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
+        BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes);
 
         if (businessRules.empty()) {
             LOGGER.warn(Warning.ビジネスルールが見つからないので出力されない通知.text());
@@ -52,7 +52,7 @@ public class DependencyService {
 
     public BusinessRuleNetwork businessRuleNetwork(TypeByteCodes typeByteCodes) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
-                businessRuleService.businessRules(typeByteCodes.types()),
+                businessRuleService.businessRules(typeByteCodes),
                 new TypeRelations(typeByteCodes));
         return businessRuleNetwork;
     }

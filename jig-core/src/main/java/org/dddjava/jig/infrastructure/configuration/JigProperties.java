@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 
 public class JigProperties {
     BusinessRuleCondition businessRuleCondition;

@@ -27,11 +27,10 @@ public class Configuration {
     GlossaryService glossaryService;
 
     public Configuration(JigProperties properties) {
-        Architecture architecture = new Architecture(properties.getBusinessRuleCondition());
-        this.businessRuleService = new BusinessRuleService(architecture);
+        this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(businessRuleService);
         this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
-        this.applicationService = new ApplicationService(architecture);
+        this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

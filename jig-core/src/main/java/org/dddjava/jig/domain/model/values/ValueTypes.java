@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 
@@ -13,12 +14,10 @@ import java.util.List;
 public class ValueTypes {
     private List<ValueType> list;
 
-    public ValueTypes(TypeByteCodes typeByteCodes, ValueKind valueKind, Architecture architecture) {
+    public ValueTypes(BusinessRules businessRules, TypeByteCodes typeByteCodes, ValueKind valueKind) {
         list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (!architecture.isBusinessRule(typeByteCode.typeIdentifier())) {
-                continue;
-            }
+        for (BusinessRule businessRule: businessRules.list()) {
+            TypeByteCode typeByteCode = typeByteCodes.typeByteCodeOf(businessRule.type().identifier());
             if (typeByteCode.isEnum()) {
                 continue;
             }

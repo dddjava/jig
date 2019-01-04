@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.categories;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
@@ -15,12 +16,10 @@ public class CategoryTypes {
 
     private final List<CategoryType> list;
 
-    public CategoryTypes(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public CategoryTypes(BusinessRules businessRules, TypeByteCodes typeByteCodes) {
         list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (!architecture.isBusinessRule(typeByteCode.typeIdentifier())) {
-                continue;
-            }
+        for (BusinessRule businessRule: businessRules.list()) {
+            TypeByteCode typeByteCode = typeByteCodes.typeByteCodeOf(businessRule.type().identifier());
             if (typeByteCode.isEnum()) {
                 list.add(new CategoryType(typeByteCode));
             }

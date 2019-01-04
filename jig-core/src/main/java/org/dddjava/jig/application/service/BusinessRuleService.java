@@ -52,7 +52,7 @@ public class BusinessRuleService {
      * 区分一覧を取得する
      */
     public CategoryAngles categories(TypeByteCodes typeByteCodes) {
-        CategoryTypes categoryTypes = new CategoryTypes(typeByteCodes, architecture);
+        CategoryTypes categoryTypes = new CategoryTypes(businessRules(typeByteCodes.types()), typeByteCodes);
 
         return new CategoryAngles(categoryTypes,
                 new TypeRelations(typeByteCodes),
@@ -64,7 +64,7 @@ public class BusinessRuleService {
      * 値一覧を取得する
      */
     public ValueAngles values(ValueKind valueKind, TypeByteCodes typeByteCodes) {
-        ValueTypes valueTypes = new ValueTypes(typeByteCodes, valueKind, architecture);
+        ValueTypes valueTypes = new ValueTypes(businessRules(typeByteCodes.types()), typeByteCodes, valueKind);
 
         return new ValueAngles(valueKind, valueTypes, new TypeRelations(typeByteCodes));
     }

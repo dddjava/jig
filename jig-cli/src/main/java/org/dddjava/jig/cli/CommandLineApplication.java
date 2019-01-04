@@ -19,7 +19,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class CommandLineApplication implements CommandLineRunner {
@@ -35,6 +36,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
@@ -49,11 +51,11 @@ public class CommandLineApplication implements CommandLineRunner {
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
-            LOGGER.warn("エラーのため出力を中断します。\n{}", status.errorLogText());
+            LOGGER.warn(jigMessages.getString("failure"), status.errorLogText());
             return;
         }
         if (status.hasWarning()) {
-            LOGGER.warn("読み取りで問題がありました。処理は続行しますが、必要に応じて設定を確認してください。\n{}", status.warningLogText());
+            LOGGER.warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
         }
 
         List<HandleResult> handleResultList = new ArrayList<>();
@@ -63,13 +65,11 @@ public class CommandLineApplication implements CommandLineRunner {
             handleResultList.add(result);
         }
 
-        StringJoiner resultLog = new StringJoiner("\n");
-        for (HandleResult handleResult : handleResultList) {
-            if (handleResult.success()) {
-                resultLog.add(handleResult.jigDocument() + " : " + handleResult.outputFilePaths());
-            }
-        }
-        LOGGER.info("-- 出力ドキュメント一覧 ---------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        LOGGER.info("出力が完了しました。: {} ms", System.currentTimeMillis() - startTime);
+        String resultLog = handleResultList.stream()
+                .filter(HandleResult::success)
+                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePaths())
+                .collect(Collectors.joining("\n"));
+        LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
+        LOGGER.info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);
     }
 }

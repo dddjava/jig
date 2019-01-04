@@ -10,11 +10,9 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Typ
 public class CollectionType {
 
     BusinessRule businessRule;
-    MethodDeclarations methodDeclarations;
 
-    public CollectionType(BusinessRule businessRule, MethodDeclarations methodDeclarations) {
+    public CollectionType(BusinessRule businessRule) {
         this.businessRule = businessRule;
-        this.methodDeclarations = methodDeclarations;
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -22,6 +20,6 @@ public class CollectionType {
     }
 
     public MethodDeclarations methods() {
-        return methodDeclarations;
+        return businessRule.typeByteCode().methodDeclarations();
     }
 }

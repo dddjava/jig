@@ -17,4 +17,8 @@ public class BusinessRule {
     public Type type() {
         return typeByteCode.type();
     }
+
+    public TypeByteCode typeByteCode() {
+        return typeByteCode;
+    }
 }

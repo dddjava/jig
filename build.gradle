@@ -1,3 +1,7 @@
+//buildscript {
+//    repositories { mavenLocal() }
+//    dependencies { classpath 'org.dddjava.jig:jig-gradle-plugin:+' }
+//}
 plugins {
     id 'org.springframework.boot' version '2.1.0.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false

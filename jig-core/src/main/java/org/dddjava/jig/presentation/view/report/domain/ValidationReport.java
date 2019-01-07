@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.domain;
 
-import org.dddjava.jig.domain.model.businessrules.validations.ValidationAngle;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.validations.ValidationAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

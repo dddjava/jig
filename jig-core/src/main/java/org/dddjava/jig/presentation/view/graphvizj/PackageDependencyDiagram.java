@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.japanese.PackageJapaneseName;
-import org.dddjava.jig.domain.model.networks.packages.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.PackageJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 
 import java.util.List;
@@ -72,7 +72,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 .add(labelsText)
                 .toString();
         PackageDepth packageDepth = packageNetwork.appliedDepth();
-        DocumentSuffix documentSuffix = new DocumentSuffix(packageDepth.unlimited() ? "" : "-depth" + packageDepth.value());
+        DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
         return new DotText(documentSuffix, text);
     }
 }

@@ -1,10 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.infrastructure.Layout;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
@@ -21,22 +19,18 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
-    final LocalProject localProject;
-    final ImplementationService implementationService;
-    final JigDocumentHandlers documentHandlers;
-    final ApplicationService applicationService;
-    final DependencyService dependencyService;
-    final ConfigurationContext configurationContext;
-    final BusinessRuleService businessRuleService;
-    final GlossaryService glossaryService;
+    ImplementationService implementationService;
+    JigDocumentHandlers documentHandlers;
+    ApplicationService applicationService;
+    DependencyService dependencyService;
+    BusinessRuleService businessRuleService;
+    GlossaryService glossaryService;
 
-    public Configuration(Layout layout, JigProperties properties, ConfigurationContext configurationContext) {
-        this.configurationContext = configurationContext;
-        Architecture architecture = new Architecture(properties.getBusinessRuleCondition());
-        this.businessRuleService = new BusinessRuleService(architecture);
-        this.dependencyService = new DependencyService(configurationContext, businessRuleService);
+    public Configuration(JigProperties properties) {
+        this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
+        this.dependencyService = new DependencyService(businessRuleService);
         this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
-        this.applicationService = new ApplicationService(architecture);
+        this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
@@ -60,19 +54,18 @@ public class Configuration {
         PackageDependencyController packageDependencyController = new PackageDependencyController(
                 dependencyService,
                 glossaryService,
-                viewResolver,
-                properties.getDepth()
+                viewResolver
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 applicationService,
                 glossaryService,
                 viewResolver
         );
-        this.localProject = new LocalProject(layout);
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),
                 glossaryService,
-                new MyBatisSqlReader()
+                new MyBatisSqlReader(),
+                new LocalFileRawSourceFactory()
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,
@@ -83,35 +76,11 @@ public class Configuration {
         );
     }
 
-    public ApplicationService applicationService() {
-        return applicationService;
-    }
-
-    public BusinessRuleService businessRuleService() {
-        return businessRuleService;
-    }
-
-    public LocalProject localProject() {
-        return localProject;
-    }
-
     public ImplementationService implementationService() {
         return implementationService;
     }
 
     public JigDocumentHandlers documentHandlers() {
         return documentHandlers;
-    }
-
-    public DependencyService dependencyService() {
-        return dependencyService;
-    }
-
-    public ConfigurationContext configurationContext() {
-        return configurationContext;
-    }
-
-    public GlossaryService glossaryService() {
-        return glossaryService;
     }
 }

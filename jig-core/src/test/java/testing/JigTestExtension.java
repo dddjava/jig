@@ -1,9 +1,11 @@
 package testing;
 
-import org.dddjava.jig.domain.model.configuration.ConfigurationContext;
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
-import org.dddjava.jig.infrastructure.DefaultLayout;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
+import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -13,46 +15,27 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.reflect.Field;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 
 public class JigTestExtension implements ParameterResolver {
 
     public final Configuration configuration;
 
     public JigTestExtension() {
-        Path path = Paths.get(TestSupport.defaultPackageClassURI());
         configuration = new Configuration(
-                new DefaultLayout(
-                        path.toString(),
-                        path.toString(),
-                        // Mapper.xmlのためだが、ここではHitしなくてもテストのクラスパスから読めてしまう
-                        "not/read/resources",
-                        // TODO ソースディレクトリの安定した取得方法が欲しい
-                        "not/read/sources"
-                ),
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
                         new OutputOmitPrefix(),
-                        new PackageDepth(),
                         false
-                ),
-                new ConfigurationContext() {
-                    @Override
-                    public String classFileDetectionWarningMessage() {
-                        return "";
-                    }
-
-                    @Override
-                    public String modelDetectionWarningMessage() {
-                        return "";
-                    }
-                });
+                )
+        );
     }
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return true;
+        if (parameterContext.getParameter().getType() == RawSource.class) return true;
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 return true;
@@ -64,6 +47,7 @@ public class JigTestExtension implements ParameterResolver {
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
+        if (parameterContext.getParameter().getType() == RawSource.class) return getTestRawSource();
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 try {
@@ -74,6 +58,18 @@ public class JigTestExtension implements ParameterResolver {
                 }
             }
         }
+
+        // 実装ミスでもなければここには来ない
         throw new AssertionError();
+    }
+
+    public RawSource getTestRawSource() {
+        RawSourceLocations rawSourceLocations = new RawSourceLocations(
+                new BinarySourceLocations(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()))),
+                new TextSourceLocations(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")))
+        );
+
+        LocalFileRawSourceFactory localFileRawSourceFactory = new LocalFileRawSourceFactory();
+        return localFileRawSourceFactory.createSource(rawSourceLocations);
     }
 }

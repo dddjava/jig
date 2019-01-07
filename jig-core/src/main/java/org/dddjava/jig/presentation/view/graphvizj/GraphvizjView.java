@@ -22,14 +22,14 @@ public class GraphvizjView<T> implements JigView<T> {
             return;
         }
         for (DotText dot : dotTexts.list()) {
-            JigDocumentWriter writer = jigDocumentWriter.apply(dot.documentSuffix());
-            writer.writeDebugText(dot.text());
-            writer.writeDiagram(
+            jigDocumentWriter.writeDebugText(dot.text(), dot.documentSuffix());
+            jigDocumentWriter.writeDiagram(
                     outputStream ->
                             Graphviz.fromString(dot.text())
                                     .render(diagramFormat.graphvizjFormat())
                                     .toOutputStream(outputStream),
-                    diagramFormat);
+                    diagramFormat,
+                    dot.documentSuffix());
         }
     }
 }

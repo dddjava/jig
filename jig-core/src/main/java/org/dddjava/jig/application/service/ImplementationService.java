@@ -1,12 +1,11 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlReader;
-import org.dddjava.jig.domain.model.implementation.datasource.SqlSources;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.ByteCodeFactory;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,25 +14,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImplementationService {
 
-    final GlossaryService glossaryService;
+    GlossaryService glossaryService;
 
-    final ByteCodeFactory byteCodeFactory;
-    final SqlReader sqlReader;
+    ByteCodeFactory byteCodeFactory;
+    SqlReader sqlReader;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader) {
+    RawSourceFactory rawSourceFactory;
+
+    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader, RawSourceFactory rawSourceFactory) {
         this.byteCodeFactory = byteCodeFactory;
         this.glossaryService = glossaryService;
         this.sqlReader = sqlReader;
+        this.rawSourceFactory = rawSourceFactory;
+    }
+
+    public AnalyzedImplementation implementations(RawSourceLocations rawSourceLocations) {
+        RawSource source = rawSourceFactory.createSource(rawSourceLocations);
+
+        TypeByteCodes typeByteCodes = readProjectData(source);
+        Sqls sqls = readSql(source.sqlSources());
+
+        return new AnalyzedImplementation(source, typeByteCodes, sqls);
     }
 
     /**
      * プロジェクト情報を読み取る
      */
-    public TypeByteCodes readProjectData(LocalProject target) {
-        TypeByteCodes typeByteCodes = readByteCode(target.getByteCodeSources());
+    public TypeByteCodes readProjectData(RawSource rawSource) {
+        TypeByteCodes typeByteCodes = readByteCode(rawSource.binarySource().classSources());
 
-        glossaryService.importJapanese(target.getTypeNameSources());
-        glossaryService.importJapanese(target.getPackageNameSources());
+        glossaryService.importJapanese(rawSource.textSource().javaSources());
+        glossaryService.importJapanese(rawSource.textSource().packageInfoSources());
 
         return typeByteCodes;
     }
@@ -41,12 +52,8 @@ public class ImplementationService {
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeByteCodes readByteCode(ByteCodeSources byteCodeSources) {
-        if (byteCodeSources.notFound()) {
-            throw new ClassFindFailException();
-        }
-
-        return byteCodeFactory.readFrom(byteCodeSources);
+    public TypeByteCodes readByteCode(ClassSources classSources) {
+        return byteCodeFactory.readFrom(classSources);
     }
 
     /**

@@ -1,17 +1,16 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.ParameterizedTypes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,6 +30,7 @@ import stub.domain.model.relation.field.*;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,11 +43,11 @@ import static org.assertj.core.api.Assertions.tuple;
 public class AsmByteCodeFactoryTest {
 
     @Test
-    void JDK11でコンパイルされたクラス() {
+    void JDK11でコンパイルされたクラス() throws IOException {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        sut.analyze(new ByteCodeSource(path));
+        sut.analyze(TestSupport.newClassSource(path));
     }
 
     @Test
@@ -255,10 +255,10 @@ public class AsmByteCodeFactoryTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(new ByteCodeSource(path));
+        return sut.analyze(TestSupport.newClassSource(path));
     }
 }

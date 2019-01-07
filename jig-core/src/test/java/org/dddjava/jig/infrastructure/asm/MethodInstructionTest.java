@@ -1,9 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,7 +11,9 @@ import stub.domain.model.relation.MethodInstruction;
 import stub.domain.model.relation.StaticMethodInstruction;
 import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
+import testing.TestSupport;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -89,10 +90,10 @@ public class MethodInstructionTest {
                 );
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException {
+    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(new ByteCodeSource(path));
+        return sut.analyze(TestSupport.newClassSource(path));
     }
 }

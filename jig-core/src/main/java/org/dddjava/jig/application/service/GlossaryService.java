@@ -1,11 +1,11 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.sourcecode.PackageNameSources;
-import org.dddjava.jig.domain.model.implementation.sourcecode.TypeNameSources;
-import org.dddjava.jig.domain.model.japanese.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.*;
+import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,16 +46,16 @@ public class GlossaryService {
     /**
      * Javadocから和名を取り込む
      */
-    public void importJapanese(PackageNameSources packageNameSources) {
-        PackageNames packageNames = reader.readPackages(packageNameSources);
+    public void importJapanese(PackageInfoSources packageInfoSources) {
+        PackageNames packageNames = reader.readPackages(packageInfoSources);
         packageNames.register(repository);
     }
 
     /**
      * Javadocから和名を取り込む
      */
-    public void importJapanese(TypeNameSources typeNameSources) {
-        TypeNames typeNames = reader.readTypes(typeNameSources);
+    public void importJapanese(JavaSources javaSources) {
+        TypeNames typeNames = reader.readTypes(javaSources);
 
         for (TypeJapaneseName typeJapaneseName : typeNames.list()) {
             repository.register(typeJapaneseName);

@@ -1,62 +1,67 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.service.ClassFindFailException;
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.tasks.TaskAction;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class JigReportsTask extends DefaultTask {
 
     @TaskAction
     void outputReports() {
+        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
         Project project = getProject();
-
-        ExtensionContainer extensions = project.getExtensions();
-        JigConfig config = extensions.findByType(JigConfig.class);
-
-        JigProperties jigProperties = config.asProperties();
-        GradleProjects layout = new GradleProject(project).allDependencyJavaProjects();
-        JigConfigurationContext configurationContext = new JigConfigurationContext(config);
-        Configuration configuration = new Configuration(layout, jigProperties, configurationContext);
-
-        JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
+        JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
         List<JigDocument> jigDocuments = config.documentTypes();
+        Configuration configuration = new Configuration(config.asProperties());
 
-        LocalProject localProject = configuration.localProject();
-        ImplementationService implementationService = configuration.implementationService();
-        Path outputDirectory = outputDirectory(config);
+        getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 
         long startTime = System.currentTimeMillis();
+        ImplementationService implementationService = configuration.implementationService();
+        JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-        getLogger().quiet("プロジェクト情報の取り込みをはじめます");
-        try {
-            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
-            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
+        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
+        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
 
-            for (JigDocument jigDocument : jigDocuments) {
-                getLogger().quiet("{} を出力します。", jigDocument);
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
-            }
-        } catch (ClassFindFailException e) {
-            getLogger().quiet(e.warning().text());
+        AnalyzeStatuses status = implementations.status();
+        if (status.hasError()) {
+            getLogger().warn(jigMessages.getString("failure"), status.errorLogText());
+            return;
+        }
+        if (status.hasWarning()) {
+            getLogger().warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
         }
 
-        getLogger().quiet("合計時間: {} ms", System.currentTimeMillis() - startTime);
+        List<HandleResult> handleResultList = new ArrayList<>();
+        Path outputDirectory = outputDirectory(config);
+        for (JigDocument jigDocument : jigDocuments) {
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            handleResultList.add(result);
+        }
+
+        String resultLog = handleResultList.stream()
+                .filter(HandleResult::success)
+                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePaths())
+                .collect(Collectors.joining("\n"));
+        getLogger().info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
+        getLogger().info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);
     }
 
     Path outputDirectory(JigConfig config) {

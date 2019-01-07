@@ -1,15 +1,14 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.SoftAssertions;
-import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
-import org.dddjava.jig.domain.model.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.infrastructure.Layout;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;
@@ -19,30 +18,19 @@ import stub.presentation.controller.DecisionController;
 import stub.presentation.controller.SimpleController;
 import stub.presentation.controller.SimpleRestController;
 import testing.JigServiceTest;
-import testing.TestSupport;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @JigServiceTest
 public class ProgressAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, ApplicationService applicationService) {
-        Layout layoutMock = mock(Layout.class);
-        when(layoutMock.extractClassPath()).thenReturn(new Path[]{Paths.get(TestSupport.defaultPackageClassURI())});
-        when(layoutMock.extractSourcePath()).thenReturn(new Path[0]);
-
-        LocalProject localProject = new LocalProject(layoutMock);
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
-
+    void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
         ProgressAngles sut = applicationService.progressAngles(typeByteCodes);
 
         SoftAssertions softly = new SoftAssertions();

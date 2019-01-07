@@ -1,10 +1,9 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.packages.PackageNetwork;
-import org.dddjava.jig.infrastructure.LocalProject;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -18,16 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存(Configuration configuration) {
+    void パッケージ依存(DependencyService dependencyService, ImplementationService implementationService, RawSource source) {
+        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        LocalProject localProject = configuration.localProject();
-        ImplementationService implementationService = configuration.implementationService();
-
-        DependencyService sut = configuration.dependencyService();
-
-
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
-        PackageNetwork packageNetwork = sut.packageDependencies(typeByteCodes);
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
 
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()

@@ -4,6 +4,9 @@
  * https://github.com/dddjava/Jig/issues/223
  */
 public class CompiledJdk11NestingClass {
-  class InnerClass {}
-  class NestedClass {}
+    class InnerClass {
+    }
+
+    class NestedClass {
+    }
 }

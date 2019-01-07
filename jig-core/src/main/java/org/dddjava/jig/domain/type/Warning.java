@@ -6,12 +6,10 @@ import java.util.ResourceBundle;
  * ユーザーへの警告
  */
 public enum Warning {
-    クラスが見つからないので中断する通知("warning.ClassNotFound"),
     ハンドラメソッドが見つからないので出力されない通知("warning.RequestHandlerNotFound"),
     サービスメソッドが見つからないので出力されない通知("warning.ServiceMethodNotFound"),
     ビジネスルールが見つからないので出力されない通知("warning.BusinessRuleNotFound"),
     リポジトリが見つからないので出力されない通知("warning.RepositoryNotFound"),
-    SQLが見つからないので出力されない通知("warning.SqlNotFound"),
     ;
 
     String key;

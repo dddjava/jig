@@ -3,24 +3,24 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
-import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
-import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
-import org.dddjava.jig.domain.model.angle.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.businessrules.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.businessrules.validations.ValidationAngle;
-import org.dddjava.jig.domain.model.businessrules.values.ValueAngles;
-import org.dddjava.jig.domain.model.businessrules.values.ValueKind;
-import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
+import org.dddjava.jig.domain.model.validations.ValidationAngle;
+import org.dddjava.jig.domain.model.values.ValueAngles;
+import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
@@ -55,94 +55,95 @@ public class ClassListController {
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
-    public JigModelAndView<ModelReports> applicationList(TypeByteCodes typeByteCodes, Sqls sqls) {
+    public JigModelAndView<ModelReports> applicationList(AnalyzedImplementation implementations) {
         ModelReports modelReports = new ModelReports(
-                controllerReport(typeByteCodes),
-                serviceReport(typeByteCodes),
-                datasourceReport(typeByteCodes, sqls)
+                controllerReport(implementations),
+                serviceReport(implementations),
+                datasourceReport(implementations)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)
-    public JigModelAndView<ModelReports> domainList(TypeByteCodes typeByteCodes) {
+    public JigModelAndView<ModelReports> domainList(AnalyzedImplementation implementations) {
         ModelReports modelReports = new ModelReports(
-                businessRulesReport(typeByteCodes),
-                valuesReport(ValueKind.IDENTIFIER, typeByteCodes),
-                categoriesReport(typeByteCodes),
-                valuesReport(ValueKind.NUMBER, typeByteCodes),
-                collectionsReport(typeByteCodes),
-                valuesReport(ValueKind.DATE, typeByteCodes),
-                valuesReport(ValueKind.TERM, typeByteCodes),
-                validateAnnotationReport(typeByteCodes),
-                stringComparingReport(typeByteCodes),
-                smellReport(typeByteCodes)
+                businessRulesReport(implementations),
+                valuesReport(ValueKind.IDENTIFIER, implementations),
+                categoriesReport(implementations),
+                valuesReport(ValueKind.NUMBER, implementations),
+                collectionsReport(implementations),
+                valuesReport(ValueKind.DATE, implementations),
+                valuesReport(ValueKind.TERM, implementations),
+                validateAnnotationReport(implementations),
+                stringComparingReport(implementations),
+                smellReport(implementations)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.BranchList)
-    public JigModelAndView<ModelReports> branchList(TypeByteCodes typeByteCodes) {
+    public JigModelAndView<ModelReports> branchList(AnalyzedImplementation implementations) {
         ModelReports modelReports = new ModelReports(
-                decisionReport(typeByteCodes, Layer.PRESENTATION),
-                decisionReport(typeByteCodes, Layer.APPLICATION),
-                decisionReport(typeByteCodes, Layer.DATASOURCE)
+                decisionReport(implementations, Layer.PRESENTATION),
+                decisionReport(implementations, Layer.APPLICATION),
+                decisionReport(implementations, Layer.DATASOURCE)
         );
 
         return new JigModelAndView<>(modelReports, new PoiView(convertContext));
     }
 
-    ModelReport<?> controllerReport(TypeByteCodes typeByteCodes) {
-        ControllerAngles controllerAngles = applicationService.controllerAngles(typeByteCodes);
-        ProgressAngles progressAngles = applicationService.progressAngles(typeByteCodes);
+    ModelReport<?> controllerReport(AnalyzedImplementation implementations) {
+        ControllerAngles controllerAngles = applicationService.controllerAngles(implementations.typeByteCodes());
+        ProgressAngles progressAngles = applicationService.progressAngles(implementations.typeByteCodes());
 
         return new ModelReport<>(controllerAngles.list(),
                 controllerAngle -> new ControllerReport(controllerAngle, progressAngles.progressOf(controllerAngle.method().declaration())),
                 ControllerReport.class);
     }
 
-    ModelReport<?> serviceReport(TypeByteCodes typeByteCodes) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
-        ProgressAngles progressAngles = applicationService.progressAngles(typeByteCodes);
+    ModelReport<?> serviceReport(AnalyzedImplementation implementations) {
+        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
+        ProgressAngles progressAngles = applicationService.progressAngles(implementations.typeByteCodes());
 
         return new ModelReport<>(serviceAngles.list(),
                 serviceAngle -> new ServiceReport(serviceAngle, progressAngles.progressOf(serviceAngle.method())),
                 ServiceReport.class);
     }
 
-    ModelReport<?> datasourceReport(TypeByteCodes typeByteCodes, Sqls sqls) {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);
+    ModelReport<?> datasourceReport(AnalyzedImplementation implementations) {
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(implementations.typeByteCodes(), implementations.sqls());
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
-    ModelReport<?> stringComparingReport(TypeByteCodes typeByteCodes) {
-        StringComparingAngles stringComparingAngles = applicationService.stringComparing(typeByteCodes);
+    ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
+        StringComparingAngles stringComparingAngles = applicationService.stringComparing(implementations.typeByteCodes());
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
-    ModelReport<?> businessRulesReport(TypeByteCodes typeByteCodes) {
-        BusinessRules businessRules = businessRuleService.businessRules(typeByteCodes.types());
+    ModelReport<?> businessRulesReport(AnalyzedImplementation implementations) {
+        BusinessRules businessRules = businessRuleService.businessRules(implementations.typeByteCodes());
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
-    ModelReport<?> valuesReport(ValueKind valueKind, TypeByteCodes typeByteCodes) {
-        ValueAngles valueAngles = businessRuleService.values(valueKind, typeByteCodes);
+    ModelReport<?> valuesReport(ValueKind valueKind, AnalyzedImplementation implementations) {
+        ValueAngles valueAngles = businessRuleService.values(valueKind, implementations.typeByteCodes());
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
-    ModelReport<?> collectionsReport(TypeByteCodes typeByteCodes) {
-        CollectionAngles collectionAngles = businessRuleService.collections(typeByteCodes);
+    ModelReport<?> collectionsReport(AnalyzedImplementation implementations) {
+        CollectionAngles collectionAngles = businessRuleService.collections(implementations.typeByteCodes());
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
-    ModelReport<?> categoriesReport(TypeByteCodes typeByteCodes) {
-        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
+    ModelReport<?> categoriesReport(AnalyzedImplementation implementations) {
+        CategoryAngles categoryAngles = businessRuleService.categories(implementations.typeByteCodes());
         return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
     }
 
-    ModelReport<?> validateAnnotationReport(TypeByteCodes typeByteCodes) {
+    ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
+        TypeByteCodes typeByteCodes = implementations.typeByteCodes();
         ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(typeByteCodes.annotatedFields(), typeByteCodes.annotatedMethods());
         List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
                 .map(ValidationAngle::new)
@@ -150,13 +151,13 @@ public class ClassListController {
         return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport<?> decisionReport(TypeByteCodes typeByteCodes, Layer layer) {
-        DecisionAngles decisionAngles = applicationService.decision(typeByteCodes);
+    ModelReport<?> decisionReport(AnalyzedImplementation implementations, Layer layer) {
+        DecisionAngles decisionAngles = applicationService.decision(implementations.typeByteCodes());
         return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
     }
 
-    ModelReport<?> smellReport(TypeByteCodes typeByteCodes) {
-        MethodSmellAngles angles = businessRuleService.methodSmells(typeByteCodes);
+    ModelReport<?> smellReport(AnalyzedImplementation implementations) {
+        MethodSmellAngles angles = businessRuleService.methodSmells(implementations.typeByteCodes());
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

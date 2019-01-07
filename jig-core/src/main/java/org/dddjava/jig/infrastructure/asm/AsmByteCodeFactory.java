@@ -1,35 +1,28 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSource;
-import org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeSources;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.ByteCodeFactory;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
+import org.dddjava.jig.domain.model.implementation.raw.ClassSources;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsmByteCodeFactory implements org.dddjava.jig.domain.model.implementation.bytecode.ByteCodeFactory {
+public class AsmByteCodeFactory implements ByteCodeFactory {
 
     @Override
-    public TypeByteCodes readFrom(ByteCodeSources byteCodeSources) {
+    public TypeByteCodes readFrom(ClassSources classSources) {
         List<TypeByteCode> list = new ArrayList<>();
-        for (ByteCodeSource source : byteCodeSources.list()) {
+        for (ClassSource source : classSources.list()) {
             TypeByteCode typeByteCode = analyze(source);
             list.add(typeByteCode);
         }
         return new TypeByteCodes(list);
     }
 
-    TypeByteCode analyze(ByteCodeSource byteCodeSource) {
-        try (InputStream inputStream = Files.newInputStream(byteCodeSource.getPath())) {
-            ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer();
-            return analyzer.analyze(inputStream);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    TypeByteCode analyze(ClassSource classSource) {
+        ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer();
+        return analyzer.analyze(classSource);
     }
 }

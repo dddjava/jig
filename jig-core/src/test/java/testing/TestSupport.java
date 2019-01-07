@@ -1,9 +1,14 @@
 package testing;
 
+import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
+import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
+
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,7 +37,6 @@ public class TestSupport {
         return path;
     }
 
-
     public static URI defaultPackageClassURI() {
         try {
             return TestSupport.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
@@ -45,6 +49,15 @@ public class TestSupport {
         try {
             return TestSupport.class.getResource("/marker.properties").toURI().resolve("./");
         } catch (URISyntaxException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    public static ClassSource newClassSource(Path path) {
+        try {
+            byte[] bytes = Files.readAllBytes(path);
+            return new ClassSource(new SourceLocation(), bytes, "DUMMY");
+        } catch (IOException e) {
             throw new AssertionError(e);
         }
     }

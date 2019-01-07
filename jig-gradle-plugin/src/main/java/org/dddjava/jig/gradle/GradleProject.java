@@ -1,12 +1,13 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
-
-import static java.util.stream.Collectors.toSet;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 public class GradleProject {
     final Project project;
@@ -49,10 +52,17 @@ public class GradleProject {
     }
 
 
-    public GradleProjects allDependencyJavaProjects() {
-        return allDependencyProjectsFrom(project)
+    public RawSourceLocations rawSourceLocations() {
+        RawSourceLocations rawSourceLocations = allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
-                .collect(GradleProjects.collector());
+                .map(gradleProject ->
+                        new RawSourceLocations(
+                                new BinarySourceLocations(gradleProject.classPaths()),
+                                new TextSourceLocations(gradleProject.sourcePaths())
+                        ))
+                .reduce(RawSourceLocations::merge)
+                .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
+        return rawSourceLocations;
     }
 
     private Stream<Project> allDependencyProjectsFrom(Project root) {

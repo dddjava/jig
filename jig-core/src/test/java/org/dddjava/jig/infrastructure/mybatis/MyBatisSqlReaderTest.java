@@ -1,6 +1,10 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.domain.model.implementation.datasource.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sql;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlType;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.raw.SqlSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

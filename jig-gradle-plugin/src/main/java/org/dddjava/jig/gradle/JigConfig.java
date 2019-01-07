@@ -1,7 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.architecture.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -9,19 +8,18 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class JigConfig {
 
-    String modelPattern = ".+\\.domain\\.model\\..+";
+    String modelPattern = ".+\\.domain\\.(model|type)\\..+";
 
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "";
 
-    String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
-
-    int depth = -1;
+    String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
     boolean enableDebugDocument = false;
 
@@ -36,7 +34,6 @@ public class JigConfig {
         return new JigProperties(
                 new BusinessRuleCondition(modelPattern),
                 new OutputOmitPrefix(outputOmitPrefix),
-                new PackageDepth(depth),
                 enableDebugDocument
         );
     }
@@ -76,19 +73,21 @@ public class JigConfig {
         this.outputOmitPrefix = outputOmitPrefix;
     }
 
-    int getDepth() {
-        return depth;
-    }
-
-    void setDepth(int depth) {
-        this.depth = depth;
-    }
-
     public boolean isEnableDebugDocument() {
         return enableDebugDocument;
     }
 
     public void setEnableDebugDocument(boolean enableDebugDocument) {
         this.enableDebugDocument = enableDebugDocument;
+    }
+
+    public String propertiesText() {
+        return new StringJoiner("\n\t", "jig {\n\t", "\n}")
+                .add("modelPattern = '" + modelPattern + '\'')
+                .add("documentTypes = '" + documentTypes + '\'')
+                .add("outputDirectory = '" + outputDirectory + '\'')
+                .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
+                .add("enableDebugDocument = " + enableDebugDocument)
+                .toString();
     }
 }

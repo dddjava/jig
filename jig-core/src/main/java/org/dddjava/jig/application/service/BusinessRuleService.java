@@ -1,20 +1,19 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.angle.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.businessrules.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.businessrules.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.businessrules.collections.CollectionTypes;
-import org.dddjava.jig.domain.model.businessrules.values.ValueAngles;
-import org.dddjava.jig.domain.model.businessrules.values.ValueKind;
-import org.dddjava.jig.domain.model.businessrules.values.ValueTypes;
-import org.dddjava.jig.domain.model.declaration.type.Types;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.networks.method.MethodRelations;
-import org.dddjava.jig.domain.model.networks.type.TypeRelations;
-import org.dddjava.jig.domain.model.unit.method.Methods;
+import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.collections.CollectionTypes;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Methods;
+import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
+import org.dddjava.jig.domain.model.values.ValueAngles;
+import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,17 +22,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class BusinessRuleService {
 
-    Architecture architecture;
+    BusinessRuleCondition businessRuleCondition;
 
-    public BusinessRuleService(Architecture architecture) {
-        this.architecture = architecture;
+    public BusinessRuleService(BusinessRuleCondition businessRuleCondition) {
+        this.businessRuleCondition = businessRuleCondition;
     }
 
     /**
      * ビジネスルール一覧を取得する
      */
-    public BusinessRules businessRules(Types types) {
-        return new BusinessRules(types, architecture);
+    public BusinessRules businessRules(TypeByteCodes typeByteCodes) {
+        return businessRuleCondition.sorting(typeByteCodes);
     }
 
     /**
@@ -45,14 +44,14 @@ public class BusinessRuleService {
                 new Methods(typeByteCodes),
                 typeByteCodes.instanceFields(),
                 new MethodRelations(typeByteCodes),
-                businessRules(typeByteCodes.types()));
+                businessRules(typeByteCodes));
     }
 
     /**
      * 区分一覧を取得する
      */
     public CategoryAngles categories(TypeByteCodes typeByteCodes) {
-        CategoryTypes categoryTypes = new CategoryTypes(typeByteCodes, architecture);
+        CategoryTypes categoryTypes = new CategoryTypes(businessRules(typeByteCodes));
 
         return new CategoryAngles(categoryTypes,
                 new TypeRelations(typeByteCodes),
@@ -64,7 +63,7 @@ public class BusinessRuleService {
      * 値一覧を取得する
      */
     public ValueAngles values(ValueKind valueKind, TypeByteCodes typeByteCodes) {
-        ValueTypes valueTypes = new ValueTypes(typeByteCodes, valueKind, architecture);
+        ValueTypes valueTypes = new ValueTypes(businessRules(typeByteCodes), valueKind);
 
         return new ValueAngles(valueKind, valueTypes, new TypeRelations(typeByteCodes));
     }
@@ -73,7 +72,8 @@ public class BusinessRuleService {
      * コレクションを分析する
      */
     public CollectionAngles collections(TypeByteCodes typeByteCodes) {
-        CollectionTypes collectionTypes = new CollectionTypes(typeByteCodes, architecture);
+        BusinessRules businessRules = businessRules(typeByteCodes);
+        CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
         return new CollectionAngles(collectionTypes, new TypeRelations(typeByteCodes));
     }

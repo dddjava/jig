@@ -1,12 +1,12 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.application.service.ClassFindFailException;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.infrastructure.LocalProject;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
@@ -17,7 +17,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class CommandLineApplication implements CommandLineRunner {
@@ -33,28 +36,40 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
+        LOGGER.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
+
         long startTime = System.currentTimeMillis();
-        try {
-            ImplementationService implementationService = configuration.implementationService();
-            LocalProject localProject = configuration.localProject();
-            JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
+        ImplementationService implementationService = configuration.implementationService();
+        JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-            LOGGER.info("プロジェクト情報の取り込みをはじめます");
+        RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
+        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
 
-            TypeByteCodes typeByteCodes = implementationService.readProjectData(localProject);
-            Sqls sqls = implementationService.readSql(localProject.getSqlSources());
-
-            Path outputDirectory = cliConfig.outputDirectory();
-            for (JigDocument jigDocument : jigDocuments) {
-                LOGGER.info("{} を出力します。", jigDocument);
-                jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(typeByteCodes, sqls), outputDirectory);
-            }
-        } catch (ClassFindFailException e) {
-            LOGGER.warn(e.warning().text());
+        AnalyzeStatuses status = implementations.status();
+        if (status.hasError()) {
+            LOGGER.warn(jigMessages.getString("failure"), status.errorLogText());
+            return;
         }
-        LOGGER.info("合計時間: {} ms", System.currentTimeMillis() - startTime);
+        if (status.hasWarning()) {
+            LOGGER.warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
+        }
+
+        List<HandleResult> handleResultList = new ArrayList<>();
+        Path outputDirectory = cliConfig.outputDirectory();
+        for (JigDocument jigDocument : jigDocuments) {
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            handleResultList.add(result);
+        }
+
+        String resultLog = handleResultList.stream()
+                .filter(HandleResult::success)
+                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePaths())
+                .collect(Collectors.joining("\n"));
+        LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
+        LOGGER.info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);
     }
 }

@@ -1,22 +1,22 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.angle.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.angle.decisions.StringComparingAngles;
-import org.dddjava.jig.domain.model.angle.progresses.ProgressAngles;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
-import org.dddjava.jig.domain.model.networks.method.MethodRelations;
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.threelayer.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.threelayer.datasources.DatasourceMethods;
-import org.dddjava.jig.domain.model.threelayer.services.ServiceAngles;
-import org.dddjava.jig.domain.model.threelayer.services.ServiceMethods;
-import org.dddjava.jig.domain.model.unit.method.Methods;
+import org.dddjava.jig.domain.model.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
+import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Methods;
+import org.dddjava.jig.domain.model.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.domain.type.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +77,6 @@ public class ApplicationService {
 
         if (datasourceMethods.empty()) {
             LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
-        } else if (sqls.empty()) {
-            LOGGER.warn(Warning.SQLが見つからないので出力されない通知.text());
         }
 
         return new DatasourceAngles(datasourceMethods, sqls);

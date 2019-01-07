@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 public class JigConfig {
 
-    String modelPattern = ".+\\.domain\\.model\\..+";
+    String modelPattern = ".+\\.domain\\.(model|type)\\..+";
 
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "";
 
-    String outputOmitPrefix = ".+\\.(service|domain\\.(model|basic))\\.";
+    String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
     boolean enableDebugDocument = false;
 

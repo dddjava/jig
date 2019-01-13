@@ -28,6 +28,11 @@ JIGは二種類の実行方法を提供しています。使い方や設定は�
 - [コマンドライン](./jig-cli)
 - [Gradleプラグイン](./jig-gradle-plugin)
 
+### 実行環境
+
+- Java8以降。
+- ダイアグラム出力には [Graphviz](https://www.graphviz.org/) が必要です。
+
 ## LICENSE
 
 [Apache License 2.0](LICENSE)

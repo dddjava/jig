@@ -6,7 +6,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.0.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.1' apply false
-    id 'org.dddjava.jig-gradle-plugin' version '2018.12.5' apply false
+    id 'org.dddjava.jig-gradle-plugin' version '2019.1.1' apply false
     id 'com.github.johnrengelman.shadow' version '2.0.4' apply false
 }
 
@@ -17,7 +17,7 @@ repositories {
 subprojects {
     apply plugin: 'java'
 
-    version = '2019.1.1'
+    version = '2019.1.2'
     group = 'org.dddjava.jig'
 
     sourceCompatibility = '1.8'
@@ -235,13 +235,18 @@ project(':jig-core') {
         // SQLの取得: infrastructure/mybatis
         api 'org.mybatis:mybatis:3.4.6'
         // javadocコメントの取得: infrastructure/javaparser
-        api 'com.github.javaparser:javaparser-core:3.9.0'
+        api 'com.github.javaparser:javaparser-core:3.9.1'
         api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:4.0.1'
         api 'org.apache.poi:poi-ooxml:4.0.1'
         // ダイアグラム出力: presentation/graphvizj
-        api 'guru.nidi:graphviz-java:0.8.0'
+        api('guru.nidi:graphviz-java:0.8.0') {
+            exclude group: 'com.eclipsesource.j2v8'
+            exclude group: 'net.arnx', module: 'nashorn-promise'
+            exclude group: 'com.google.code.findbugs'
+            exclude group: 'org.apache.xmlgraphics'
+        }
 
         testImplementation 'org.springframework:spring-web'
     }

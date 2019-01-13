@@ -26,10 +26,6 @@ public class MethodSmellAngle {
         return method.declaration();
     }
 
-    public String decisionNumber() {
-        return method.decisionNumber().asText();
-    }
-
     public boolean notUseField() {
         return !fieldDeclarations.list().isEmpty() &&
                 method.usingFields().empty();
@@ -45,7 +41,7 @@ public class MethodSmellAngle {
     }
 
     public boolean hasSmell() {
-        return notUseField() || primitiveInterface() || method.decisionNumber().notZero() || returnsBoolean();
+        return notUseField() || primitiveInterface() || returnsBoolean();
     }
 
     public CallerMethods callerMethods() {

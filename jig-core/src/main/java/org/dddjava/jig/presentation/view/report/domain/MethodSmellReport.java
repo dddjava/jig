@@ -29,22 +29,17 @@ public class MethodSmellReport {
         return angle.callerMethods();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "条件分岐数", order = 1)
-    public String decisionNumber() {
-        return angle.decisionNumber();
-    }
-
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用", order = 2)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用", order = 1)
     public boolean notUseField() {
         return angle.notUseField();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受", order = 3)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受", order = 2)
     public boolean primitiveInterface() {
         return angle.primitiveInterface();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 4)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 3)
     public boolean returnsBoolean() {
         return angle.returnsBoolean();
     }

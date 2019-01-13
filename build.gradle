@@ -241,7 +241,12 @@ project(':jig-core') {
         api 'org.apache.poi:poi:4.0.1'
         api 'org.apache.poi:poi-ooxml:4.0.1'
         // ダイアグラム出力: presentation/graphvizj
-        api 'guru.nidi:graphviz-java:0.8.0'
+        api('guru.nidi:graphviz-java:0.8.0') {
+            exclude group: 'com.eclipsesource.j2v8'
+            exclude group: 'net.arnx', module: 'nashorn-promise'
+            exclude group: 'com.google.code.findbugs'
+            exclude group: 'org.apache.xmlgraphics'
+        }
 
         testImplementation 'org.springframework:spring-web'
     }

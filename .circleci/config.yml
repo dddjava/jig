@@ -43,7 +43,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
       - restore_cache:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
-      - run: ./gradlew build -Pversion=$CIRCLE_TAG
+      - run: ./gradlew build -Pversion=${CIRCLE_TAG}
       - store_test_results:
           path: jig-core/build/test-results
 
@@ -56,7 +56,7 @@ jobs:
       - store_artifacts:
           path: example
           destination: example
-      - run: ./gradlew :jig-annotation:bintrayUpload :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins
+      - run: ./gradlew :jig-annotation:bintrayUpload :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
 workflows:
   version: 2
   usually:

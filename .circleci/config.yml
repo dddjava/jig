@@ -43,7 +43,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y graphviz fonts-ipafont
       - restore_cache:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
-      - run: ./gradlew build
+      - run: ./gradlew build -Pversion=$CIRCLE_TAG
       - store_test_results:
           path: jig-core/build/test-results
 

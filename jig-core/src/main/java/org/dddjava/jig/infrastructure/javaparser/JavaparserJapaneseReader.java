@@ -42,7 +42,8 @@ public class JavaparserJapaneseReader implements JapaneseReader {
                 }
                 methodNames.addAll(typeSourceResult.methodJapaneseNames);
             } catch (Exception e) {
-                LOGGER.warn("Javadoc読み取りに失敗（処理続行）", e);
+                LOGGER.warn("{} のJavadoc読み取りに失敗しました（処理は続行します）", javaSource);
+                LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);
             }
         }
         return new TypeNames(names, methodNames);

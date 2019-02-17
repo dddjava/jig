@@ -23,4 +23,9 @@ public class JavaSource {
     public InputStream toInputStream() {
         return new ByteArrayInputStream(value);
     }
+
+    @Override
+    public String toString() {
+        return "JavaSource[" + sourceFilePath + "]";
+    }
 }

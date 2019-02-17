@@ -22,4 +22,9 @@ public class SourceFilePath {
     public boolean isPackageInfo() {
         return fileName.endsWith("package-info.java");
     }
+
+    @Override
+    public String toString() {
+        return path.toString();
+    }
 }

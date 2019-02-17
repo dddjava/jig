@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
@@ -8,13 +7,13 @@ import java.io.InputStream;
  */
 public class PackageInfoSource {
 
-    byte[] value;
+    JavaSource javaSource;
 
-    public PackageInfoSource(byte[] value) {
-        this.value = value;
+    public PackageInfoSource(JavaSource javaSource) {
+        this.javaSource = javaSource;
     }
 
     public InputStream toInputStream() {
-        return new ByteArrayInputStream(value);
+        return javaSource.toInputStream();
     }
 }

@@ -59,11 +59,14 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try {
-                            String name = file.toString();
-                            if (name.endsWith("package-info.java")) {
-                                packageInfoSources.add(new PackageInfoSource(Files.readAllBytes(file)));
-                            } else if (name.endsWith(".java")) {
-                                javaSources.add(new JavaSource(Files.readAllBytes(file)));
+                            String name = file.getFileName().toString();
+                            if (name.endsWith(".java")) {
+                                JavaSource javaSource = new JavaSource(Files.readAllBytes(file));
+                                if (name.endsWith("package-info.java")) {
+                                    packageInfoSources.add(new PackageInfoSource(javaSource));
+                                } else {
+                                    javaSources.add(javaSource);
+                                }
                             }
 
                             return FileVisitResult.CONTINUE;

@@ -8,10 +8,16 @@ import java.io.InputStream;
  */
 public class JavaSource {
 
+    SourceFilePath sourceFilePath;
     byte[] value;
 
-    public JavaSource(byte[] value) {
+    public JavaSource(SourceFilePath sourceFilePath, byte[] value) {
+        this.sourceFilePath = sourceFilePath;
         this.value = value;
+    }
+
+    public SourceFilePath sourceFilePath() {
+        return sourceFilePath;
     }
 
     public InputStream toInputStream() {

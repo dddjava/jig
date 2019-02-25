@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import com.github.javaparser.JavaParser;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
@@ -16,7 +16,7 @@ import java.util.Optional;
 class PackageInfoReader {
 
     Optional<PackageJapaneseName> read(PackageInfoSource packageInfoSource) {
-        CompilationUnit cu = JavaParser.parse(packageInfoSource.toInputStream());
+        CompilationUnit cu = StaticJavaParser.parse(packageInfoSource.toInputStream());
 
         Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)

@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import com.github.javaparser.JavaParser;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import org.dddjava.jig.domain.model.implementation.raw.JavaSource;
@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.implementation.raw.JavaSource;
 class ClassReader {
 
     TypeSourceResult read(JavaSource javaSource) {
-        CompilationUnit cu = JavaParser.parse(javaSource.toInputStream());
+        CompilationUnit cu = StaticJavaParser.parse(javaSource.toInputStream());
 
         String packageName = cu.getPackageDeclaration()
                 .map(PackageDeclaration::getNameAsString)

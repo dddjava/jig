@@ -10,11 +10,10 @@ import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junitpioneer.jupiter.TempDirectory;
 
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -26,14 +25,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@ExtendWith(TempDirectory.class)
 class GradleProjectTest {
 
-    private final Path tempDir;
-
-    GradleProjectTest(@TempDirectory.TempDir Path tempDir) {
-        this.tempDir = tempDir;
-    }
+    @TempDir
+    Path tempDir;
 
     @ParameterizedTest
     @MethodSource("fixtures")

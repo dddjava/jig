@@ -5,11 +5,11 @@ import org.dddjava.jig.domain.type.usernumber.UserNumber;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-public class TypeIdentifiersHandler implements ItemHandler {
+class TypeIdentifiersHandler implements ItemHandler {
 
     ConvertContext convertContext;
 
-    public TypeIdentifiersHandler(ConvertContext convertContext) {
+    TypeIdentifiersHandler(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

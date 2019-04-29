@@ -4,11 +4,11 @@ import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-public class MethodHandler implements ItemHandler {
+class MethodHandler implements ItemHandler {
 
     ConvertContext convertContext;
 
-    public MethodHandler(ConvertContext convertContext) {
+    MethodHandler(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

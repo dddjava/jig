@@ -3,11 +3,11 @@ package org.dddjava.jig.presentation.view.poi.report.handler;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-public class StringHandler implements ItemHandler {
+class StringHandler implements ItemHandler {
 
     ConvertContext convertContext;
 
-    public StringHandler(ConvertContext convertContext) {
+    StringHandler(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

@@ -6,11 +6,11 @@ import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-public class MethodDeclarationHandler implements ItemHandler {
+class MethodDeclarationHandler implements ItemHandler {
 
     ConvertContext convertContext;
 
-    public MethodDeclarationHandler(ConvertContext convertContext) {
+    MethodDeclarationHandler(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

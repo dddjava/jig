@@ -4,11 +4,11 @@ import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingFie
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-public class UsingFieldsHandler implements ItemHandler {
+class UsingFieldsHandler implements ItemHandler {
 
     ConvertContext convertContext;
 
-    public UsingFieldsHandler(ConvertContext convertContext) {
+    UsingFieldsHandler(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

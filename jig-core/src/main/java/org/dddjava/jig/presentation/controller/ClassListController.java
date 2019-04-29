@@ -24,7 +24,7 @@ import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.poi.PoiView;
+import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
@@ -62,7 +62,7 @@ public class ClassListController {
                 datasourceReport(implementations)
         );
 
-        return new JigModelAndView<>(modelReports, new PoiView(convertContext));
+        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)
@@ -80,7 +80,7 @@ public class ClassListController {
                 smellReport(implementations)
         );
 
-        return new JigModelAndView<>(modelReports, new PoiView(convertContext));
+        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
     @DocumentMapping(JigDocument.BranchList)
@@ -91,7 +91,7 @@ public class ClassListController {
                 decisionReport(implementations, Layer.DATASOURCE)
         );
 
-        return new JigModelAndView<>(modelReports, new PoiView(convertContext));
+        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
     ModelReport<?> controllerReport(AnalyzedImplementation implementations) {

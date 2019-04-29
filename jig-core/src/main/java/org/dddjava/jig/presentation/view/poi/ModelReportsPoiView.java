@@ -19,12 +19,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringJoiner;
 
-public class PoiView implements JigView<ModelReports> {
+/**
+ * ModelReportをPOIで一覧出力するView
+ */
+public class ModelReportsPoiView implements JigView<ModelReports> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PoiView.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelReportsPoiView.class);
     private final ConvertContext convertContext;
 
-    public PoiView(ConvertContext convertContext) {
+    public ModelReportsPoiView(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

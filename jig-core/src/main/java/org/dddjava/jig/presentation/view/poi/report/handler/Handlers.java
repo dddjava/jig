@@ -25,10 +25,10 @@ public class Handlers {
         );
     }
 
-    public String handle(ReportItem reportItem, Object obj) {
+    public String handle(ReportItem reportItem, Object item) {
         for (ItemHandler itemHandler : itemHandlers) {
-            if (itemHandler.canHandle(obj)) {
-                return itemHandler.handle(reportItem, obj);
+            if (itemHandler.canHandle(item)) {
+                return itemHandler.handle(reportItem, item);
             }
         }
 

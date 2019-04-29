@@ -32,7 +32,7 @@ import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
 import org.dddjava.jig.presentation.view.report.branch.DecisionReport;
-import org.dddjava.jig.presentation.view.report.domain.*;
+import org.dddjava.jig.presentation.view.report.business_rule.*;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;

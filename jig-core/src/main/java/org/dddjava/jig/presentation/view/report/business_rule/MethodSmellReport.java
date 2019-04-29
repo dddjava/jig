@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.report.domain;
+package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;

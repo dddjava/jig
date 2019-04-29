@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.presentation.view.poi.report.handler.Handlers;
+import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportItemsFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -59,23 +59,23 @@ public class ModelReport<MODEL> {
     }
 
     public List<ReportRow> rows(ConvertContext convertContext) {
-        Handlers handlers = new Handlers(convertContext);
+        ReportItemFormatters reportItemFormatters = new ReportItemFormatters(convertContext);
         return pivotModels.stream()
                 .map(row -> {
                     List<String> convertedRow = reportItemMethods.stream()
-                            .map(reportItemMethod -> convert(reportItemMethod, row, handlers))
+                            .map(reportItemMethod -> convert(reportItemMethod, row, reportItemFormatters))
                             .collect(toList());
                     return new ReportRow(convertedRow);
                 })
                 .collect(toList());
     }
 
-    private String convert(ReportItemMethod reportItemMethod, MODEL angle, Handlers handlers) {
+    private String convert(ReportItemMethod reportItemMethod, MODEL angle, ReportItemFormatters reportItemFormatters) {
         try {
             Object report = modelReporter.report(angle);
 
             Object item = reportItemMethod.method.invoke(report);
-            return handlers.handle(reportItemMethod.reportItemFor.value(), item);
+            return reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
 
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("実装ミス", e);

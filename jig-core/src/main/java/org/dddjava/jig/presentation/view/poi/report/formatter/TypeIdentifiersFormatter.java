@@ -1,27 +1,27 @@
-package org.dddjava.jig.presentation.view.poi.report.handler;
+package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.type.usernumber.UserNumber;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-class TypeIdentifiersHandler implements ItemHandler {
+class TypeIdentifiersFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
 
-    TypeIdentifiersHandler(ConvertContext convertContext) {
+    TypeIdentifiersFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 
     @Override
-    public boolean canHandle(Object obj) {
-        return obj instanceof TypeIdentifiers;
+    public boolean canFormat(Object item) {
+        return item instanceof TypeIdentifiers;
     }
 
     @Override
-    public String handle(ReportItem item, Object obj) {
-        TypeIdentifiers typeIdentifiers = (TypeIdentifiers) obj;
-        switch (item) {
+    public String format(ReportItem itemCategory, Object item) {
+        TypeIdentifiers typeIdentifiers = (TypeIdentifiers) item;
+        switch (itemCategory) {
             case 使用箇所数:
                 // TODO 使用箇所をTypeIdentifiersで扱ってるのが微妙な感じ
                 return new UserNumber(typeIdentifiers.list().size()).asText();
@@ -30,6 +30,6 @@ class TypeIdentifiersHandler implements ItemHandler {
                 return typeIdentifiers.asSimpleText();
         }
 
-        throw new IllegalArgumentException(item.name());
+        throw new IllegalArgumentException(itemCategory.name());
     }
 }

@@ -1,32 +1,32 @@
-package org.dddjava.jig.presentation.view.poi.report.handler;
+package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-class MethodDeclarationsHandler implements ItemHandler {
+class MethodDeclarationsFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
 
-    MethodDeclarationsHandler(ConvertContext convertContext) {
+    MethodDeclarationsFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 
     @Override
-    public boolean canHandle(Object obj) {
-        return obj instanceof MethodDeclarations;
+    public boolean canFormat(Object item) {
+        return item instanceof MethodDeclarations;
     }
 
     @Override
-    public String handle(ReportItem item, Object obj) {
-        MethodDeclarations methodDeclarations = (MethodDeclarations) obj;
-        switch (item) {
+    public String format(ReportItem itemCategory, Object item) {
+        MethodDeclarations methodDeclarations = (MethodDeclarations) item;
+        switch (itemCategory) {
             case メソッド数:
                 return methodDeclarations.number().asText();
             case メソッド一覧:
                 return methodDeclarations.asSignatureAndReturnTypeSimpleText();
         }
 
-        throw new IllegalArgumentException(item.name());
+        throw new IllegalArgumentException(itemCategory.name());
     }
 }

@@ -1,26 +1,26 @@
-package org.dddjava.jig.presentation.view.poi.report.handler;
+package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-class MethodHandler implements ItemHandler {
+class MethodFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
 
-    MethodHandler(ConvertContext convertContext) {
+    MethodFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 
     @Override
-    public boolean canHandle(Object obj) {
-        return obj instanceof Method;
+    public boolean canFormat(Object item) {
+        return item instanceof Method;
     }
 
     @Override
-    public String handle(ReportItem item, Object obj) {
-        Method method = (Method) obj;
-        switch (item) {
+    public String format(ReportItem itemCategory, Object item) {
+        Method method = (Method) item;
+        switch (itemCategory) {
             case クラス名:
             case クラス和名:
             case メソッドシグネチャ:
@@ -28,11 +28,11 @@ class MethodHandler implements ItemHandler {
             case メソッド戻り値の型:
             case メソッド戻り値の型の和名:
             case メソッド引数の型の和名:
-                return new MethodDeclarationHandler(convertContext).handle(item, method.declaration());
+                return new MethodDeclarationFormatter(convertContext).format(itemCategory, method.declaration());
             case 分岐数:
                 return method.decisionNumber().asText();
         }
 
-        throw new IllegalArgumentException(item.name());
+        throw new IllegalArgumentException(itemCategory.name());
     }
 }

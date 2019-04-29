@@ -1,26 +1,26 @@
-package org.dddjava.jig.presentation.view.poi.report.handler;
+package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-class TypeIdentifierHandler implements ItemHandler {
+class TypeIdentifierFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
 
-    TypeIdentifierHandler(ConvertContext convertContext) {
+    TypeIdentifierFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 
     @Override
-    public boolean canHandle(Object obj) {
-        return obj instanceof TypeIdentifier;
+    public boolean canFormat(Object item) {
+        return item instanceof TypeIdentifier;
     }
 
     @Override
-    public String handle(ReportItem item, Object obj) {
-        TypeIdentifier typeIdentifier = (TypeIdentifier) obj;
-        switch (item) {
+    public String format(ReportItem itemCategory, Object item) {
+        TypeIdentifier typeIdentifier = (TypeIdentifier) item;
+        switch (itemCategory) {
             case クラス名:
                 return convertContext.typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
             case クラス和名:
@@ -29,6 +29,6 @@ class TypeIdentifierHandler implements ItemHandler {
                 return typeIdentifier.asSimpleText();
         }
 
-        throw new IllegalArgumentException(item.name());
+        throw new IllegalArgumentException(itemCategory.name());
     }
 }

@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.poi.report.handler;
+package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseName;
@@ -6,26 +6,26 @@ import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
-class MethodDeclarationHandler implements ItemHandler {
+class MethodDeclarationFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
 
-    MethodDeclarationHandler(ConvertContext convertContext) {
+    MethodDeclarationFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 
     @Override
-    public boolean canHandle(Object obj) {
-        return obj instanceof MethodDeclaration;
+    public boolean canFormat(Object item) {
+        return item instanceof MethodDeclaration;
     }
 
     @Override
-    public String handle(ReportItem item, Object obj) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) obj;
-        switch (item) {
+    public String format(ReportItem itemCategory, Object item) {
+        MethodDeclaration methodDeclaration = (MethodDeclaration) item;
+        switch (itemCategory) {
             case クラス名:
             case クラス和名:
-                return new TypeIdentifierHandler(convertContext).handle(item, methodDeclaration.declaringType());
+                return new TypeIdentifierFormatter(convertContext).format(itemCategory, methodDeclaration.declaringType());
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド和名:
@@ -41,6 +41,6 @@ class MethodDeclarationHandler implements ItemHandler {
                         .collect(Text.collectionCollector());
         }
 
-        throw new IllegalArgumentException(item.name());
+        throw new IllegalArgumentException(itemCategory.name());
     }
 }

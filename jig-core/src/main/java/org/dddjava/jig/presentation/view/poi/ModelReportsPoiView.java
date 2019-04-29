@@ -1,23 +1,17 @@
 package org.dddjava.jig.presentation.view.poi;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
-import org.dddjava.jig.presentation.view.poi.report.ModelReport;
-import org.dddjava.jig.presentation.view.poi.report.ModelReports;
-import org.dddjava.jig.presentation.view.poi.report.ReportRow;
+import org.dddjava.jig.presentation.view.poi.report.Header;
+import org.dddjava.jig.presentation.view.poi.report.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * ModelReportをPOIで一覧出力するView
@@ -34,30 +28,34 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
     @Override
     public void render(ModelReports modelReports, JigDocumentWriter jigDocumentWriter) throws IOException {
         try (Workbook book = new XSSFWorkbook()) {
-            StringJoiner debugText = new StringJoiner("\n");
             List<ModelReport<?>> list = modelReports.list();
             for (ModelReport<?> modelReport : list) {
                 Sheet sheet = book.createSheet(modelReport.title());
-                writeRow(modelReport.headerRow(), sheet.createRow(0));
-                debugText.add(sheet.getSheetName());
-                debugText.add(modelReport.headerRow().list().toString());
+                writeHeader(modelReport.header(), sheet.createRow(0));
 
                 for (ReportRow row : modelReport.rows(convertContext)) {
                     writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
-                    debugText.add(row.list().toString());
                 }
 
-                for (int i = 0; i < modelReport.headerRow().list().size(); i++) {
+                int columns = modelReport.header().size();
+                for (int i = 0; i < columns; i++) {
                     sheet.autoSizeColumn(i);
                 }
                 sheet.setAutoFilter(new CellRangeAddress(
                         0, sheet.getLastRowNum(),
-                        0, sheet.getRow(0).getLastCellNum() - 1
+                        0, columns - 1
                 ));
             }
 
             jigDocumentWriter.writeXlsx(book::write);
-            jigDocumentWriter.writeDebugText(debugText.toString());
+        }
+    }
+
+    private void writeHeader(Header header, Row row) {
+        for (int i = 0; i < header.size(); i++) {
+            // headerは全てSTRINGで作る
+            Cell cell = row.createCell(i, CellType.STRING);
+            cell.setCellValue(header.textOf(i));
         }
     }
 

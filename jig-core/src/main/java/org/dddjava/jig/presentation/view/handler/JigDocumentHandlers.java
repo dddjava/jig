@@ -68,7 +68,7 @@ public class JigDocumentHandlers {
                 LOGGER.info("{} を作成しました。", outputDirectory.toAbsolutePath());
             }
 
-            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory, jigDebugMode);
+            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             jigModelAndView.render(jigDocumentWriter);
 
             return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());

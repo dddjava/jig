@@ -47,7 +47,6 @@ public class GraphvizjView<T> implements JigView<T> {
         Graphviz.useEngine(graphvizCmdLineEngine);
 
         for (DotText dot : dotTexts.list()) {
-            jigDocumentWriter.writeDebugText(dot.text(), dot.documentSuffix());
             jigDocumentWriter.writeDiagram(
                     outputStream ->
                             Graphviz.fromString(dot.text())

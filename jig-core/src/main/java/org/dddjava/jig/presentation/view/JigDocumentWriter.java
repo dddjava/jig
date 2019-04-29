@@ -19,13 +19,11 @@ public class JigDocumentWriter {
 
     JigDocument jigDocument;
     Path directory;
-    boolean jigDebugMode;
     List<Path> outputFilePaths = new ArrayList<>();
 
-    public JigDocumentWriter(JigDocument jigDocument, Path directory, boolean jigDebugMode) {
+    public JigDocumentWriter(JigDocument jigDocument, Path directory) {
         this.jigDocument = jigDocument;
         this.directory = directory;
-        this.jigDebugMode = jigDebugMode;
     }
 
     public void writeDiagram(OutputStreamWriter writer, DiagramFormat diagramFormat, DocumentSuffix documentSuffix) {
@@ -43,20 +41,6 @@ public class JigDocumentWriter {
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
             writer.writeTo(outputStream);
             outputFilePaths.add(outputFilePath);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-    }
-
-    public void writeDebugText(String s) {
-        writeDebugText(s, new DocumentSuffix(""));
-    }
-
-    public void writeDebugText(String s, DocumentSuffix documentSuffix) {
-        if (!jigDebugMode) return;
-        try {
-            Path outputFilePath = directory.resolve(documentSuffix.withFileNameOf(jigDocument) + ".txt");
-            Files.write(outputFilePath, s.getBytes());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

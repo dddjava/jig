@@ -7,17 +7,17 @@ import java.util.List;
  */
 public class Header {
 
-    List<String> list;
+    List<ReportItemMethod> reportItemMethods;
 
-    Header(List<String> list) {
-        this.list = list;
+    public Header(List<ReportItemMethod> reportItemMethods) {
+        this.reportItemMethods = reportItemMethods;
     }
 
     public String textOf(int i) {
-        return list.get(i);
+        return reportItemMethods.get(i).label();
     }
 
     public int size() {
-        return list.size();
+        return reportItemMethods.size();
     }
 }

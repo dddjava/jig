@@ -55,7 +55,7 @@ public class ModelReport<MODEL> {
     }
 
     public Header header() {
-        return new Header(reportItemMethods.stream().map(ReportItemMethod::label).collect(toList()));
+        return new Header(reportItemMethods);
     }
 
     public List<ReportRow> rows(ConvertContext convertContext) {

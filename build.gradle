@@ -232,7 +232,7 @@ project(':jig-core') {
         // SQLの取得: infrastructure/mybatis
         api 'org.mybatis:mybatis:3.5.1'
         // javadocコメントの取得: infrastructure/javaparser
-        api 'com.github.javaparser:javaparser-core:3.13.9'
+        api 'com.github.javaparser:javaparser-core:3.14.0'
         api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:4.1.0'

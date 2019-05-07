@@ -1,12 +1,16 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.presentation.view.report.ReportItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class JigDocumentContext {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentContext.class);
 
     Properties jigProperties;
     ResourceBundle jigDocumentResource;
@@ -44,7 +48,12 @@ public class JigDocumentContext {
     }
 
     public String label(String key) {
-        return jigDocumentResource.getString(key);
+        if (jigDocumentResource.containsKey(key)) {
+            return jigDocumentResource.getString(key);
+        }
+        // 取得できない場合はkeyをそのまま返す
+        LOGGER.warn("Can't find resource for '{}'", key);
+        return key;
     }
 
     public String reportLabel(ReportItem reportItem) {

@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Typ
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,10 +19,12 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     final JapaneseNameFinder japaneseNameFinder;
     final MethodNodeLabelStyle methodNodeLabelStyle;
+    JigDocumentContext jigDocumentContext;
 
     public ServiceMethodCallDiagram(JapaneseNameFinder japaneseNameFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         this.japaneseNameFinder = japaneseNameFinder;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
+        this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
     @Override
@@ -89,6 +93,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .toString();
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ServiceMethodCallHierarchyDiagram) + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(relationText.asText())

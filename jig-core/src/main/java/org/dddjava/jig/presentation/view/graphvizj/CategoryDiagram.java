@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.St
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.TypeJapaneseName;
+import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.Collections;
 import java.util.StringJoiner;
@@ -17,9 +19,11 @@ import static java.util.stream.Collectors.joining;
 public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
 
     private final JapaneseNameFinder japaneseNameFinder;
+    JigDocumentContext jigDocumentContext;
 
     public CategoryDiagram(JapaneseNameFinder japaneseNameFinder) {
         this.japaneseNameFinder = japaneseNameFinder;
+        this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
     @Override
@@ -42,6 +46,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
                 .collect(joining("\n"));
 
         return new DotTexts(new StringJoiner("\n", "digraph {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
                 .add("layout=circo;")
                 .add("rankdir=LR;")
                 .add("node [shape=Mrecord;style=filled;fillcolor=lightyellow];")

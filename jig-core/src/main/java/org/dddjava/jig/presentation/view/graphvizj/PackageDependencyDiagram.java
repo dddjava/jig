@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNam
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
+import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -17,10 +19,12 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
 
     final PackageIdentifierFormatter formatter;
     final JapaneseNameFinder japaneseNameFinder;
+    JigDocumentContext jigDocumentContext;
 
     public PackageDependencyDiagram(PackageIdentifierFormatter formatter, JapaneseNameFinder japaneseNameFinder) {
         this.formatter = formatter;
         this.japaneseNameFinder = japaneseNameFinder;
+        this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
     @Override
@@ -65,6 +69,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 + "\"]";
 
         String text = new StringJoiner("\n", "digraph {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.PackageRelationDiagram) + "\";")
                 .add(summaryText)
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
                 .add(unidirectionalRelation.asText())

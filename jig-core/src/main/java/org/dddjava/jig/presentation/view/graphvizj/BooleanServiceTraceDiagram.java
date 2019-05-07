@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.Collections;
 import java.util.StringJoiner;
@@ -14,10 +16,12 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
 
     private final JapaneseNameFinder japaneseNameFinder;
     private final MethodNodeLabelStyle methodNodeLabelStyle;
+    JigDocumentContext jigDocumentContext;
 
     public BooleanServiceTraceDiagram(JapaneseNameFinder japaneseNameFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         this.japaneseNameFinder = japaneseNameFinder;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
+        this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
     @Override
@@ -66,6 +70,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
 
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.BooleanServiceDiagram) + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(relationText.asText())

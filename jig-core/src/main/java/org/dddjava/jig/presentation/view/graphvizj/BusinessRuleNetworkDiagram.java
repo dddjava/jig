@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.businessrules.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
+import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -12,11 +14,13 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
 
     PackageIdentifierFormatter packageIdentifierFormatter;
     JapaneseNameFinder japaneseNameFinder;
+    JigDocumentContext jigDocumentContext;
 
     public BusinessRuleNetworkDiagram(PackageIdentifierFormatter packageIdentifierFormatter,
                                       JapaneseNameFinder japaneseNameFinder) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.japaneseNameFinder = japaneseNameFinder;
+        this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
     @Override
@@ -27,6 +31,7 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
 
     private String toDotText(BusinessRuleNetwork network) {
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.BusinessRuleRelationDiagram) + "\";")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes

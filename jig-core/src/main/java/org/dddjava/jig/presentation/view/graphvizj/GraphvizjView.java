@@ -30,19 +30,7 @@ public class GraphvizjView<T> implements JigView<T> {
         // コマンドラインのみにする
         GraphvizCmdLineEngine graphvizCmdLineEngine = new GraphvizCmdLineEngine();
 
-        try {
-            Method doInit = GraphvizCmdLineEngine.class.getDeclaredMethod("doInit");
-            doInit.setAccessible(true);
-            doInit.invoke(graphvizCmdLineEngine);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            // バージョンアップなどで内部メソッドが変更された場合に起こる
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof GraphvizException) {
-                throw new IllegalStateException(e.getTargetException().getMessage());
-            }
-            throw new IllegalStateException(e);
-        }
+        confirmInstalledGraphviz(graphvizCmdLineEngine);
 
         Graphviz.useEngine(graphvizCmdLineEngine);
 
@@ -54,6 +42,26 @@ public class GraphvizjView<T> implements JigView<T> {
                                     .toOutputStream(outputStream),
                     diagramFormat,
                     dot.documentSuffix());
+        }
+    }
+
+    public void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {
+        // graphvizがインストールされていることを GraphvizCmdLineEngine#doInit で確認する
+        try {
+            Method doInit = GraphvizCmdLineEngine.class.getDeclaredMethod("doInit");
+            doInit.setAccessible(true);
+            doInit.invoke(graphvizCmdLineEngine);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            // バージョンアップなどで doInit メソッドのシグネチャが変更された場合に起こる
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            if (e.getTargetException() instanceof GraphvizException) {
+                // 実行可能な dot が見つからなかった
+                // TODO メッセージ
+                throw (GraphvizException) e.getTargetException();
+            }
+            // 想定しない例外
+            throw new IllegalStateException(e);
         }
     }
 }

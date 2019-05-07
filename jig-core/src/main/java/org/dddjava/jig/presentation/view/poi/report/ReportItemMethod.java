@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
 class ReportItemMethod implements Comparable<ReportItemMethod> {
@@ -13,7 +14,12 @@ class ReportItemMethod implements Comparable<ReportItemMethod> {
 
     String label() {
         String label = reportItemFor.label();
-        return label.isEmpty() ? reportItemFor.value().name() : label;
+        return label.isEmpty() ? name() : label;
+    }
+
+    private String name() {
+        JigDocumentContext context = JigDocumentContext.getInstance();
+        return context.reportLabel(reportItemFor.value());
     }
 
     @Override

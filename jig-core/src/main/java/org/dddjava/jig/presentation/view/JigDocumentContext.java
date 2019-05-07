@@ -1,5 +1,7 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.presentation.view.report.ReportItem;
+
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -43,5 +45,9 @@ public class JigDocumentContext {
 
     public String label(String key) {
         return jigDocumentResource.getString(key);
+    }
+
+    public String reportLabel(ReportItem reportItem) {
+        return label(reportItem.name());
     }
 }

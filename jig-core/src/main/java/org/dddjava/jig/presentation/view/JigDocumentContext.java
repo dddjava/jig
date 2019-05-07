@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 public class JigDocumentContext {
 
     Properties jigProperties;
+    ResourceBundle jigDocumentResource;
 
     JigDocumentContext() {
         init();
@@ -18,6 +19,7 @@ public class JigDocumentContext {
             try (InputStream is = JigDocumentContext.class.getClassLoader().getResourceAsStream("jig.properties")) {
                 jigProperties.load(is);
             }
+            jigDocumentResource = ResourceBundle.getBundle("jig-document");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -28,7 +30,6 @@ public class JigDocumentContext {
     }
 
     public String jigDocumentLabel(JigDocument jigDocument) {
-        ResourceBundle jigDocumentResource = ResourceBundle.getBundle("jig-document");
         return jigDocumentResource.getString(jigDocument.name());
     }
 
@@ -38,5 +39,9 @@ public class JigDocumentContext {
 
     public static JigDocumentContext getInstance() {
         return new JigDocumentContext();
+    }
+
+    public String label(String key) {
+        return jigDocumentResource.getString(key);
     }
 }

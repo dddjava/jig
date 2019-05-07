@@ -64,8 +64,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 .collect(joining("\n"));
 
         String summaryText = "summary[shape=note,label=\""
-                + "パッケージ数: " + packageNetwork.allPackages().number().asText() + "\\l"
-                + "関連数: " + packageRelations.number().asText() + "\\l"
+                + jigDocumentContext.label("number_of_packages") + ": " + packageNetwork.allPackages().number().asText() + "\\l"
+                + jigDocumentContext.label("number_of_relations") + ": " + packageRelations.number().asText() + "\\l"
                 + "\"]";
 
         String text = new StringJoiner("\n", "digraph {", "}")

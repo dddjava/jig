@@ -86,9 +86,9 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
         // 凡例
         String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                 .add("label=" + jigDocumentContext.label("legend") + ";")
-                .add(new Node("ハンドラメソッド").handlerMethod().asText())
-                .add("通常のメソッド;")
-                .add(new Node("非publicメソッド").notPublicMethod().asText())
+                .add(new Node(jigDocumentContext.label("handler_method")).handlerMethod().asText())
+                .add(jigDocumentContext.label("other_method") + ";")
+                .add(new Node(jigDocumentContext.label("not_public_method")).notPublicMethod().asText())
                 .add(new Node("lambda").lambda().asText())
                 .toString();
 

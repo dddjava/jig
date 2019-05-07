@@ -32,7 +32,7 @@ public class JigDocumentContext {
     }
 
     public String jigDocumentLabel(JigDocument jigDocument) {
-        return jigDocumentResource.getString(jigDocument.name());
+        return label(jigDocument.name());
     }
 
     public String diagramLabel(JigDocument jigDocument) {

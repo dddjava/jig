@@ -40,9 +40,6 @@ class CliConfig {
     @Value("${directory.sources}")
     String directorySources;
 
-    @Value("${jig.debug}")
-    boolean jigDebugMode;
-
     public String propertiesText() {
         return new StringJoiner("\n")
                 .add("documentType=" + documentTypeText)
@@ -53,7 +50,6 @@ class CliConfig {
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
                 .add("directory.sources=" + directorySources)
-                .add("jig.debug=" + jigDebugMode)
                 .toString();
     }
 
@@ -72,8 +68,7 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         new BusinessRuleCondition(modelPattern),
-                        new OutputOmitPrefix(outputOmitPrefix),
-                        jigDebugMode
+                        new OutputOmitPrefix(outputOmitPrefix)
                 )
         );
     }

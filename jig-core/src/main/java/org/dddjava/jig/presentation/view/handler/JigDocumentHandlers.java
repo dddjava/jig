@@ -21,13 +21,11 @@ public class JigDocumentHandlers {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
     Object[] controllers;
-    boolean jigDebugMode;
 
     public JigDocumentHandlers(ServiceDiagramController serviceDiagramController,
                                ClassListController classListController,
                                PackageDependencyController packageDependencyController,
-                               EnumUsageController enumUsageController,
-                               boolean jigDebugMode) {
+                               EnumUsageController enumUsageController) {
         // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
         this.controllers = new Object[]{
                 serviceDiagramController,
@@ -35,7 +33,6 @@ public class JigDocumentHandlers {
                 packageDependencyController,
                 enumUsageController
         };
-        this.jigDebugMode = jigDebugMode;
     }
 
     JigModelAndView<?> resolveHandlerMethod(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver) {

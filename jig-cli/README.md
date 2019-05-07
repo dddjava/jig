@@ -41,7 +41,7 @@ $ java -jar {JIGをダウンロードしたディレクトリ}/jig-cli.jar
 次のように `--`に続けて指定します。
 
 ```
-$ java -jar jig-cli.jar --jig.debug=true
+$ java -jar jig-cli.jar --documentType=ServiceMethodCallHierarchyDiagram
 ```
 
 設定できるプロパティは [application.properties](./src/main/resources/application.properties) を参照してください。

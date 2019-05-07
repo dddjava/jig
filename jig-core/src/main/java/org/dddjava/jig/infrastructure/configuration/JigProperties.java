@@ -7,20 +7,13 @@ public class JigProperties {
 
     OutputOmitPrefix outputOmitPrefix;
 
-    boolean jigDebugMode;
-
-    public JigProperties(BusinessRuleCondition businessRuleCondition, OutputOmitPrefix outputOmitPrefix, boolean jigDebugMode) {
+    public JigProperties(BusinessRuleCondition businessRuleCondition, OutputOmitPrefix outputOmitPrefix) {
         this.businessRuleCondition = businessRuleCondition;
         this.outputOmitPrefix = outputOmitPrefix;
-        this.jigDebugMode = jigDebugMode;
     }
 
     public OutputOmitPrefix getOutputOmitPrefix() {
         return outputOmitPrefix;
-    }
-
-    public boolean jigDebugMode() {
-        return jigDebugMode;
     }
 
     public BusinessRuleCondition getBusinessRuleCondition() {

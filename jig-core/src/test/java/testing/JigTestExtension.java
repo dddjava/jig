@@ -26,8 +26,7 @@ public class JigTestExtension implements ParameterResolver {
         configuration = new Configuration(
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
-                        new OutputOmitPrefix(),
-                        false
+                        new OutputOmitPrefix()
                 )
         );
     }

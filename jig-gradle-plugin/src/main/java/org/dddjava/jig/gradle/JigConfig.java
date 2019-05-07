@@ -33,8 +33,7 @@ public class JigConfig {
     public JigProperties asProperties() {
         return new JigProperties(
                 new BusinessRuleCondition(modelPattern),
-                new OutputOmitPrefix(outputOmitPrefix),
-                enableDebugDocument
+                new OutputOmitPrefix(outputOmitPrefix)
         );
     }
 

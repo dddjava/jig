@@ -57,8 +57,8 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
                                 .asText())
                 .collect(joining("\n"));
 
-        String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
-                .add("label=" + jigDocumentContext.label("legend") + ";")
+        String legendText = new Subgraph("legend")
+                .label(jigDocumentContext.label("legend"))
                 .add(new Node(jigDocumentContext.label("enum")).asText())
                 .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
                 .toString();

@@ -68,7 +68,9 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
                 .add(legendText)
+                .add("{ rank=same;")
                 .add(enumsText)
+                .add("}")
                 .add(relationText.asText())
                 .add(userLabel)
                 .toString());

@@ -49,7 +49,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
                 .add("layout=circo;")
                 .add("rankdir=LR;")
-                .add("node [shape=Mrecord;style=filled;fillcolor=lightyellow];")
+                .add(Node.DEFAULT_MRECORD)
                 .add(records)
                 .toString());
     }

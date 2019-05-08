@@ -71,7 +71,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         String text = new StringJoiner("\n", "digraph {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.PackageRelationDiagram) + "\";")
                 .add(summaryText)
-                .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
+                .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
                 .add(labelsText)

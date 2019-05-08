@@ -34,7 +34,6 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
         String enumsText = enumTypes.list().stream()
                 .map(enumType -> Node.of(enumType)
-                        .color("gold")
                         .label(appendJapaneseName(enumType))
                         .asText())
                 .collect(joining("\n"));
@@ -54,19 +53,20 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .map(typeIdentifier ->
                         Node.of(typeIdentifier)
                                 .label(appendJapaneseName(typeIdentifier))
+                                .notEnum()
                                 .asText())
                 .collect(joining("\n"));
 
         String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
                 .add("label=" + jigDocumentContext.label("legend") + ";")
-                .add(jigDocumentContext.label("enum") + "[color=gold];")
-                .add(jigDocumentContext.label("not_enum") + "[color=lightgoldenrodyellow];")
+                .add(new Node(jigDocumentContext.label("enum")).asText())
+                .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
                 .toString();
 
         return new DotTexts(new StringJoiner("\n", "digraph JIG {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryUsageDiagram) + "\";")
                 .add("rankdir=LR;")
-                .add("node [shape=box,style=filled,color=lightgoldenrodyellow];")
+                .add(Node.DEFAULT)
                 .add(legendText)
                 .add(enumsText)
                 .add(relationText.asText())

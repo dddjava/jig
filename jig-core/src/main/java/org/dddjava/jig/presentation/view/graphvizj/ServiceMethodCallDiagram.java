@@ -95,7 +95,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ServiceMethodCallHierarchyDiagram) + "\";")
                 .add("rankdir=LR;")
-                .add("node [shape=box,style=filled,color=lightgoldenrod];")
+                .add(Node.DEFAULT)
                 .add(relationText.asText())
                 .add(labelText)
                 .add(subgraphText)

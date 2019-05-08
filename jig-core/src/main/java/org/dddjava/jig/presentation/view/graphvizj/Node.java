@@ -10,6 +10,10 @@ import java.util.StringJoiner;
  * ノードの表現
  */
 public class Node {
+
+    static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";
+    static final String DEFAULT_MRECORD = "node [shape=Mrecord;style=filled;fillcolor=lightgoldenrod];";
+
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");
 
@@ -34,8 +38,8 @@ public class Node {
         return this;
     }
 
-    public Node color(String value) {
-        attribute.add("color=\"" + value + "\"");
+    private Node color(String value) {
+        attribute.add("fillcolor=\"" + value + "\"");
         return this;
     }
 
@@ -64,5 +68,9 @@ public class Node {
 
     Node handlerMethod() {
         return color("greenyellow");
+    }
+
+    Node notEnum() {
+        return color("lightyellow");
     }
 }

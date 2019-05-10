@@ -33,6 +33,14 @@ public class Node {
         return new Node(identifier.asFullNameText());
     }
 
+    /**
+     * 主要でない
+     */
+    public Node other() {
+        return color("whitesmoke")
+                .style("dashed");
+    }
+
     public Node label(String value) {
         attribute.add("label=\"" + value.replace("\"", "\\\"") + "\"");
         return this;
@@ -45,7 +53,7 @@ public class Node {
 
     public String asText() {
         // "hoge"[label="fuga",color="piyo"];
-        return '"' + identifier + '"' + attribute + ';';
+        return '"' + identifier + '"' + attribute + ';' ;
     }
 
     public Node style(String value) {

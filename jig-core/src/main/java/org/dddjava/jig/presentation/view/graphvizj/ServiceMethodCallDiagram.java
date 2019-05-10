@@ -8,9 +8,7 @@ import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -42,6 +40,20 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 relationText.add(methodDeclaration, serviceAngle.method());
             }
         }
+
+        Set<MethodDeclaration> handlers = new HashSet<>();
+        RelationText handlingRelation = new RelationText();
+        for (ServiceAngle serviceAngle : angles) {
+            for (MethodDeclaration handlerMethod : serviceAngle.userControllerMethods().list()) {
+                handlingRelation.add(handlerMethod, serviceAngle.method());
+                handlers.add(handlerMethod);
+            }
+        }
+
+        String handlersText = handlers.stream()
+                .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
+                .map(Node::asText)
+                .collect(joining("\n"));
 
         // メソッドの表示方法
         String labelText = angles.stream()
@@ -90,6 +102,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(jigDocumentContext.label("other_method") + ";")
                 .add(new Node(jigDocumentContext.label("not_public_method")).notPublicMethod().asText())
                 .add(new Node("lambda").lambda().asText())
+                .add(new Node(jigDocumentContext.label("controller_method")).other().asText())
                 .toString();
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
@@ -97,6 +110,10 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
                 .add(relationText.asText())
+                .add("{rank=same;")
+                .add(handlersText)
+                .add("}")
+                .add(handlingRelation.asText())
                 .add(labelText)
                 .add(subgraphText)
                 .add(legendText)

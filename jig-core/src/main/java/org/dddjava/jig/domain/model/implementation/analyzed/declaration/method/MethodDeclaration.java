@@ -65,4 +65,7 @@ public class MethodDeclaration {
         return methodIdentifier;
     }
 
+    public String asSimpleText() {
+        return methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.methodSignature().methodName();
+    }
 }

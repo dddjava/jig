@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.businessrules.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.japanese.TypeJapaneseName;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
@@ -43,8 +44,13 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
 
             List<BusinessRule> businessRules = businessRuleGroup.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
+                TypeJapaneseName typeJapaneseName = japaneseNameFinder.find(businessRule.type().identifier());
+                String japaneseText = "";
+                if (typeJapaneseName.exists()) {
+                    japaneseText = typeJapaneseName.japaneseName().value() + "\n";
+                }
                 Node node = Node.of(businessRule.type().identifier())
-                        .label(businessRule.type().identifier().asSimpleText());
+                        .label(japaneseText + businessRule.type().identifier().asSimpleText());
                 subgraph.add(node.asText());
             }
 

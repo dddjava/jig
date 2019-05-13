@@ -1,7 +1,9 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageTree;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.japanese.PackageJapaneseName;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.*;
@@ -10,6 +12,7 @@ import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import static java.util.stream.Collectors.joining;
@@ -51,17 +54,26 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
             bidirectional.add(packageDependency.left(), packageDependency.right());
         }
 
-        String labelsText = packageNetwork.allPackages().stream()
-                .map(packageIdentifier -> {
-                    String labelText = packageIdentifier.format(formatter);
-                    PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
-                    if (packageJapaneseName.exists()) {
-                        labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
-                    }
-                    return Node.of(packageIdentifier)
-                            .label(labelText).asText();
-                })
-                .collect(joining("\n"));
+        PackageTree tree = packageNetwork.allPackages().tree();
+        Map<PackageIdentifier, List<PackageIdentifier>> map = tree.map();
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        for(PackageIdentifier parent : map.keySet()) {
+            List<PackageIdentifier> children = map.get(parent);
+            String labelsText = children.stream()
+                    .map(packageIdentifier -> {
+                        String labelText = packageIdentifier.format(formatter);
+                        PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
+                        if (packageJapaneseName.exists()) {
+                            labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
+                        }
+                        return Node.of(packageIdentifier)
+                                .label(labelText).asText();
+                    })
+                    .collect(joining("\n"));
+            String parentPackage = parent.format(formatter);
+            Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(parentPackage);
+            stringJoiner.add(subgraph.toString());
+        }
 
         String summaryText = "summary[shape=note,label=\""
                 + jigDocumentContext.label("number_of_packages") + ": " + packageNetwork.allPackages().number().asText() + "\\l"
@@ -74,7 +86,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
                 .add(bidirectional.asText())
-                .add(labelsText)
+                .add(stringJoiner.toString())
                 .toString();
         PackageDepth packageDepth = packageNetwork.appliedDepth();
         DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());

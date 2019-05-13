@@ -21,6 +21,10 @@ public class PackageIdentifiers {
         return list.stream();
     }
 
+    public PackageTree tree() {
+        return PackageTree.of(list);
+    }
+
     public PackageIdentifiers applyDepth(PackageDepth packageDepth) {
         List<PackageIdentifier> list = this.list.stream()
                 .map(identifier -> identifier.applyDepth(packageDepth))

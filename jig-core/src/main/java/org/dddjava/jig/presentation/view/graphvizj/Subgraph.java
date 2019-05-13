@@ -6,11 +6,11 @@ public class Subgraph {
     StringJoiner stringJoiner;
 
     public Subgraph(String name) {
-        stringJoiner = new StringJoiner("\n", "subgraph cluster_" + name + "{", "}");
+        stringJoiner = new StringJoiner("\n", "subgraph \"cluster_" + name + "\"{", "}");
     }
 
     public Subgraph label(String label) {
-        return add("label=" + label + ";");
+        return add("label=\"" + label + "\";");
     }
 
     Subgraph add(CharSequence charSequence) {

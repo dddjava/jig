@@ -61,17 +61,12 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
             List<PackageIdentifier> children = map.get(parent);
             String labelsText = children.stream()
                     .map(packageIdentifier -> {
-                        String labelText = packageIdentifier.format(formatter);
-                        PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
-                        if (packageJapaneseName.exists()) {
-                            labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
-                        }
+                        String labelText = label(packageIdentifier);
                         return Node.of(packageIdentifier)
                                 .label(labelText).asText();
                     })
                     .collect(joining("\n"));
-            String parentPackage = parent.format(formatter);
-            Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(parentPackage);
+            Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(label(parent)).fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
             stringJoiner.add(subgraph.toString());
         }
 
@@ -91,5 +86,14 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         PackageDepth packageDepth = packageNetwork.appliedDepth();
         DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
         return new DotText(documentSuffix, text);
+    }
+
+    private String label(PackageIdentifier packageIdentifier) {
+        String labelText = packageIdentifier.format(formatter);
+        PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
+        if (packageJapaneseName.exists()) {
+            labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
+        }
+        return labelText;
     }
 }

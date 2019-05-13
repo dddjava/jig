@@ -55,6 +55,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         }
 
         PackageTree tree = packageNetwork.allPackages().tree();
+        PackageIdentifier root = tree.rootPackage();
         Map<PackageIdentifier, List<PackageIdentifier>> map = tree.map();
         StringJoiner stringJoiner = new StringJoiner("\n");
         for(PackageIdentifier parent : map.keySet()) {
@@ -66,8 +67,13 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                                 .label(labelText).asText();
                     })
                     .collect(joining("\n"));
-            Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(label(parent)).fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
-            stringJoiner.add(subgraph.toString());
+            if (root.equals(parent)) {
+                System.out.println(parent.asText());
+                stringJoiner.add(labelsText);
+            } else {
+                Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(label(parent)).fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
+                stringJoiner.add(subgraph.toString());
+            }
         }
 
         String summaryText = "summary[shape=note,label=\""

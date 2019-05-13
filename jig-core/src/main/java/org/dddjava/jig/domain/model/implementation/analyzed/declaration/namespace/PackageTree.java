@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +21,12 @@ public class PackageTree {
     public Map<PackageIdentifier, List<PackageIdentifier>> map() {
         return values.stream()
                 .collect(groupingBy(PackageIdentifier::parent));
+    }
+
+    public PackageIdentifier rootPackage() {
+        //TODO: このとり方で良い？複数あるときはやっちゃだめじゃない？
+        return map().keySet().stream()
+                .min(Comparator.comparingInt(o -> o.depth().value))
+                .orElseGet(PackageIdentifier::defaultPackage);
     }
 }

@@ -29,9 +29,7 @@ public class FieldDeclarations {
     }
 
     public String toSignatureText() {
-        return list.stream()
-                .map(FieldDeclaration::signatureText)
-                .collect(Text.collectionCollector());
+        return Text.of(list, FieldDeclaration::signatureText);
     }
 
     public TypeIdentifiers toTypeIdentifies() {

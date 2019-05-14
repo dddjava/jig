@@ -31,9 +31,6 @@ public class Tables {
     }
 
     public String asText() {
-        return tables.stream()
-                .map(Table::name)
-                .distinct()
-                .collect(Text.collectionCollector());
+        return Text.uniqueOf(tables, Table::name);
     }
 }

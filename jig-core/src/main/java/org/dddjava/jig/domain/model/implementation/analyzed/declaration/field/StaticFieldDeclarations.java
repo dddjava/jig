@@ -27,9 +27,7 @@ public class StaticFieldDeclarations {
     }
 
     public String toNameText() {
-        return list.stream()
-                .map(StaticFieldDeclaration::nameText)
-                .collect(Text.collectionCollector());
+        return Text.of(list, StaticFieldDeclaration::nameText);
     }
 
     public StaticFieldDeclarations filterDeclareTypeIs(TypeIdentifier typeIdentifier) {

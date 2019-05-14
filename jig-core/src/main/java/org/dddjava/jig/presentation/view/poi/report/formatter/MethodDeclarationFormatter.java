@@ -6,6 +6,10 @@ import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+
 class MethodDeclarationFormatter implements ReportItemFormatter {
 
     ConvertContext convertContext;
@@ -35,10 +39,10 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
             case メソッド戻り値の型の和名:
                 return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).summarySentence();
             case メソッド引数の型の和名:
-                return methodDeclaration.methodSignature().arguments().stream()
+                List<JapaneseName> list = methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.glossaryService::japaneseNameFrom)
-                        .map(JapaneseName::summarySentence)
-                        .collect(Text.collectionCollector());
+                        .collect(toList());
+                return Text.of(list, JapaneseName::summarySentence);
         }
 
         throw new IllegalArgumentException(itemCategory.name());

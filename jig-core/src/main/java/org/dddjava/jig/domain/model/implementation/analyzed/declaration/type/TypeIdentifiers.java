@@ -32,11 +32,7 @@ public class TypeIdentifiers {
     }
 
     public String asSimpleText() {
-        return identifiers.stream()
-                .distinct()
-                .map(TypeIdentifier::asSimpleText)
-                .sorted()
-                .collect(Text.collectionCollector());
+        return Text.sortedOf(identifiers.stream().distinct().collect(Collectors.toList()), TypeIdentifier::asSimpleText);
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

@@ -29,10 +29,7 @@ public class MethodDeclarations {
     }
 
     public String asSimpleText() {
-        return list.stream()
-                .map(MethodDeclaration::asSimpleTextWithDeclaringType)
-                .sorted()
-                .collect(Text.collectionCollector());
+        return Text.sortedOf(list, MethodDeclaration::asSimpleTextWithDeclaringType);
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
@@ -48,9 +45,6 @@ public class MethodDeclarations {
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return list.stream()
-                .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)
-                .sorted()
-                .collect(Text.collectionCollector());
+        return Text.sortedOf(list, MethodDeclaration::asSignatureAndReturnTypeSimpleText);
     }
 }

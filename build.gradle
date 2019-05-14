@@ -6,7 +6,7 @@ plugins {
     id 'org.springframework.boot' version '2.1.4.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.4' apply false
-    id 'org.dddjava.jig-gradle-plugin' version '2019.5.1' apply false
+    id 'org.dddjava.jig-gradle-plugin' version '2019.5.2.2' apply false
 }
 
 repositories {

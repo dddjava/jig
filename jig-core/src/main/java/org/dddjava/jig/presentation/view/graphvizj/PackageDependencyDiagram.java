@@ -68,7 +68,6 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                     })
                     .collect(joining("\n"));
             if (root.equals(parent)) {
-                System.out.println(parent.asText());
                 stringJoiner.add(labelsText);
             } else {
                 Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(label(parent)).fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);

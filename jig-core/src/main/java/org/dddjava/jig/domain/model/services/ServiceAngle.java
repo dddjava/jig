@@ -36,8 +36,8 @@ public class ServiceAngle {
         this.useStream = usingMethods.containsStream();
 
         CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration().identifier());
-        this.userControllerMethods = controllerMethods.filter(callerMethods.methodDeclarations());
-        this.userServiceMethods = serviceMethods.filter(callerMethods.methodDeclarations());
+        this.userControllerMethods = controllerMethods.filter(callerMethods);
+        this.userServiceMethods = serviceMethods.filter(callerMethods);
     }
 
     public MethodDeclaration method() {

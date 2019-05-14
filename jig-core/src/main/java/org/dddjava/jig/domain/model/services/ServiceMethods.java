@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.List;
@@ -43,9 +43,9 @@ public class ServiceMethods {
                 .collect(toList());
     }
 
-    public ServiceMethods filter(MethodDeclarations methodDeclarations) {
+    public ServiceMethods filter(CallerMethods callerMethods) {
         return methods.stream()
-                .filter(method -> methodDeclarations.contains(method.declaration()))
+                .filter(method -> callerMethods.contains(method.declaration()))
                 .collect(collectingAndThen(toList(), ServiceMethods::new));
     }
 }

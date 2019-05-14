@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;
 
 import java.util.List;
@@ -20,7 +19,11 @@ public class CallerMethods {
         return new UserNumber(list.size());
     }
 
-    public MethodDeclarations methodDeclarations() {
-        return new MethodDeclarations(list);
+    public boolean contains(MethodDeclaration methodDeclaration) {
+        return list.stream().anyMatch(methodDeclaration::sameIdentifier);
+    }
+
+    public List<MethodDeclaration> list() {
+        return list;
     }
 }

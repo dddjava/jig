@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.controllers;
 import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.List;
@@ -55,9 +55,9 @@ public class ControllerMethods {
         return list.isEmpty();
     }
 
-    public ControllerMethods filter(MethodDeclarations methodDeclarations) {
+    public ControllerMethods filter(CallerMethods callerMethods) {
         return list.stream()
-                .filter(method -> methodDeclarations.contains(method.declaration()))
+                .filter(method -> callerMethods.contains(method.declaration()))
                 .collect(collectingAndThen(toList(), ControllerMethods::new));
     }
 }

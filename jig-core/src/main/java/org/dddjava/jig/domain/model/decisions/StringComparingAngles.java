@@ -31,7 +31,7 @@ public class StringComparingAngles {
 
         CallerMethods equalsCallerMethods = methodRelations.callerMethodsOf(equalsMethod);
 
-        this.list = equalsCallerMethods.methodDeclarations().list().stream()
+        this.list = equalsCallerMethods.list().stream()
                 .map(StringComparingAngle::new)
                 .collect(Collectors.toList());
     }

@@ -6,10 +6,10 @@ import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.MethodJapaneseName;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.TypeJapaneseName;
 
 import java.util.ArrayList;
 import java.util.List;

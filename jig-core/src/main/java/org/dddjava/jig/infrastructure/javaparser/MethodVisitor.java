@@ -2,12 +2,12 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodJapaneseName;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseName;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.MethodJapaneseName;
 
 import java.util.Collections;
 import java.util.List;

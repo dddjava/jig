@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.japanese;
+package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;

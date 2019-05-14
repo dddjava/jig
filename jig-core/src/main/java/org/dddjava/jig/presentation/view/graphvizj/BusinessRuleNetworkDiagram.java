@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.businessrules.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.japanese.TypeJapaneseName;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 

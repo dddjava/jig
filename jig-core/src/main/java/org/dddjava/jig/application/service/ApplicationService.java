@@ -14,10 +14,10 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotati
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Methods;
+import org.dddjava.jig.domain.model.notice.Warning;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
-import org.dddjava.jig.domain.model.notice.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

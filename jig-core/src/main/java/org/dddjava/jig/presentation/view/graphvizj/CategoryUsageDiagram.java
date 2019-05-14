@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -16,11 +16,11 @@ import static java.util.stream.Collectors.joining;
 
 public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
-    private final JapaneseNameFinder japaneseNameFinder;
+    private final AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
-    public CategoryUsageDiagram(JapaneseNameFinder japaneseNameFinder) {
-        this.japaneseNameFinder = japaneseNameFinder;
+    public CategoryUsageDiagram(AliasFinder aliasFinder) {
+        this.aliasFinder = aliasFinder;
         this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
@@ -77,9 +77,9 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
     }
 
     private String appendJapaneseName(TypeIdentifier typeIdentifier) {
-        TypeJapaneseName typeJapaneseName = japaneseNameFinder.find(typeIdentifier);
-        if (typeJapaneseName.exists()) {
-            return typeJapaneseName.japaneseName().summarySentence() + "\\n" + typeIdentifier.asSimpleText();
+        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+        if (typeAlias.exists()) {
+            return typeAlias.japaneseName().summarySentence() + "\\n" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
     }

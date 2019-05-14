@@ -17,7 +17,7 @@ public class CategoryReport {
     }
 
     @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.クラス和名)
+    @ReportItemFor(ReportItem.クラス別名)
     public TypeIdentifier typeIdentifier() {
         return angle.typeIdentifier();
     }

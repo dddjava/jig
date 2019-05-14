@@ -23,7 +23,7 @@ class TypeIdentifierFormatter implements ReportItemFormatter {
         switch (itemCategory) {
             case クラス名:
                 return convertContext.typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
-            case クラス和名:
+            case クラス別名:
                 return convertContext.glossaryService.japaneseNameFrom(typeIdentifier).summarySentence();
             case 単純クラス名:
                 return typeIdentifier.asSimpleText();

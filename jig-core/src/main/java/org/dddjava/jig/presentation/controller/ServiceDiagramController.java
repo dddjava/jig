@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -27,14 +27,14 @@ public class ServiceDiagramController {
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
     public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
-        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(japaneseNameFinder));
+        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
+        return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
     public JigModelAndView<?> booleanServiceTrace(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
-        JapaneseNameFinder japaneseNameFinder = new JapaneseNameFinder.GlossaryServiceAdapter(glossaryService);
-        return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(japaneseNameFinder));
+        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
+        return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(aliasFinder));
     }
 }

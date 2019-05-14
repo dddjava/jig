@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Archite
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserJapaneseReader;
+import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJapaneseNameRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.EnumUsageController;
 import org.dddjava.jig.presentation.controller.PackageDependencyController;
@@ -29,7 +29,7 @@ public class Configuration {
     public Configuration(JigProperties properties) {
         this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(businessRuleService);
-        this.glossaryService = new GlossaryService(new JavaparserJapaneseReader(), new OnMemoryJapaneseNameRepository());
+        this.glossaryService = new GlossaryService(new JavaparserAliasReader(), new OnMemoryAliasRepository());
         this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()

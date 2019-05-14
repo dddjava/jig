@@ -5,21 +5,21 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespac
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
 /**
- * 和名リポジトリ
+ * 別名リポジトリ
  */
-public interface JapaneseNameRepository {
+public interface AliasRepository {
 
-    JapaneseName get(TypeIdentifier typeIdentifier);
+    Alias get(TypeIdentifier typeIdentifier);
 
     boolean exists(PackageIdentifier packageIdentifier);
 
-    JapaneseName get(PackageIdentifier packageIdentifier);
+    Alias get(PackageIdentifier packageIdentifier);
 
-    void register(TypeJapaneseName typeJapaneseName);
+    void register(TypeAlias typeAlias);
 
-    void register(PackageJapaneseName packageJapaneseName);
+    void register(PackageAlias packageAlias);
 
-    JapaneseName get(MethodIdentifier methodIdentifier);
+    Alias get(MethodIdentifier methodIdentifier);
 
-    void register(MethodJapaneseName methodJapaneseName);
+    void register(MethodAlias methodAlias);
 }

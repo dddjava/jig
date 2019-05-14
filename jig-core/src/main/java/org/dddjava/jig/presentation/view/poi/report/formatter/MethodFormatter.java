@@ -22,12 +22,12 @@ class MethodFormatter implements ReportItemFormatter {
         Method method = (Method) item;
         switch (itemCategory) {
             case クラス名:
-            case クラス和名:
+            case クラス別名:
             case メソッドシグネチャ:
-            case メソッド和名:
+            case メソッド別名:
             case メソッド戻り値の型:
-            case メソッド戻り値の型の和名:
-            case メソッド引数の型の和名:
+            case メソッド戻り値の型の別名:
+            case メソッド引数の型の別名:
                 return new MethodDeclarationFormatter(convertContext).format(itemCategory, method.declaration());
             case 分岐数:
                 return method.decisionNumber().asText();

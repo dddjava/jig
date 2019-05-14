@@ -2,8 +2,8 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseName;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Typ
 import java.util.Collections;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter<List<MethodJapaneseName>> {
+class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
     private final TypeIdentifier typeIdentifier;
 
     public MethodVisitor(TypeIdentifier typeIdentifier) {
@@ -20,11 +20,11 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodJapaneseName>> {
     }
 
     @Override
-    public void visit(MethodDeclaration n, List<MethodJapaneseName> methodJapaneseNames) {
+    public void visit(MethodDeclaration n, List<MethodAlias> methodAliases) {
         n.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
 
-            MethodJapaneseName methodJapaneseName = new MethodJapaneseName(
+            MethodAlias methodAlias = new MethodAlias(
                     new MethodIdentifier(
                             typeIdentifier,
                             new MethodSignature(
@@ -32,9 +32,9 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodJapaneseName>> {
                                     // TODO 引数を取得したい
                                     new Arguments(Collections.emptyList())
                             )),
-                    new JapaneseName(javadocText)
+                    new Alias(javadocText)
             );
-            methodJapaneseNames.add(methodJapaneseName);
+            methodAliases.add(methodAlias);
         });
     }
 }

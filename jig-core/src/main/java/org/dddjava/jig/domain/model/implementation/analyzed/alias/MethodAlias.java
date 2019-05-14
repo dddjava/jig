@@ -3,22 +3,22 @@ package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 
 /**
- * メソッド和名
+ * メソッド別名
  */
-public class MethodJapaneseName {
+public class MethodAlias {
     MethodIdentifier methodIdentifier;
-    JapaneseName japaneseName;
+    Alias alias;
 
-    public MethodJapaneseName(MethodIdentifier methodIdentifier, JapaneseName japaneseName) {
+    public MethodAlias(MethodIdentifier methodIdentifier, Alias alias) {
         this.methodIdentifier = methodIdentifier;
-        this.japaneseName = japaneseName;
+        this.alias = alias;
     }
 
     public MethodIdentifier methodIdentifier() {
         return methodIdentifier;
     }
 
-    public JapaneseName japaneseName() {
-        return japaneseName;
+    public Alias japaneseName() {
+        return alias;
     }
 }

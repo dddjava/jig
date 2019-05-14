@@ -7,19 +7,19 @@ import java.util.List;
  */
 public class TypeNames {
 
-    List<TypeJapaneseName> list;
-    List<MethodJapaneseName> methodList;
+    List<TypeAlias> list;
+    List<MethodAlias> methodList;
 
-    public TypeNames(List<TypeJapaneseName> list, List<MethodJapaneseName> methodList) {
+    public TypeNames(List<TypeAlias> list, List<MethodAlias> methodList) {
         this.list = list;
         this.methodList = methodList;
     }
 
-    public List<TypeJapaneseName> list() {
+    public List<TypeAlias> list() {
         return list;
     }
 
-    public List<MethodJapaneseName> methodList() {
+    public List<MethodAlias> methodList() {
         return methodList;
     }
 }

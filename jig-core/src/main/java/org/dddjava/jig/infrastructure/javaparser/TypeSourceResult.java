@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodJapaneseName;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodAlias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 
 import java.util.List;
 
 public class TypeSourceResult {
-    TypeJapaneseName typeJapaneseName;
-    List<MethodJapaneseName> methodJapaneseNames;
+    TypeAlias typeAlias;
+    List<MethodAlias> methodAliases;
 
-    public TypeSourceResult(TypeJapaneseName typeJapaneseName, List<MethodJapaneseName> methodJapaneseNames) {
-        this.typeJapaneseName = typeJapaneseName;
-        this.methodJapaneseNames = methodJapaneseNames;
+    public TypeSourceResult(TypeAlias typeAlias, List<MethodAlias> methodAliases) {
+        this.typeAlias = typeAlias;
+        this.methodAliases = methodAliases;
     }
 }

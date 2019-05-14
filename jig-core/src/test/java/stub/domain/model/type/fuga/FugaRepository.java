@@ -1,7 +1,7 @@
 package stub.domain.model.type.fuga;
 
 /**
- * リポジトリ和名。句点以降はサマリから除外する。
+ * リポジトリ別名。句点以降はサマリから除外する。
  */
 public interface FugaRepository {
 

@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.businessrules.*;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -14,13 +14,13 @@ import java.util.StringJoiner;
 public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNetwork> {
 
     PackageIdentifierFormatter packageIdentifierFormatter;
-    JapaneseNameFinder japaneseNameFinder;
+    AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
     public BusinessRuleNetworkDiagram(PackageIdentifierFormatter packageIdentifierFormatter,
-                                      JapaneseNameFinder japaneseNameFinder) {
+                                      AliasFinder aliasFinder) {
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-        this.japaneseNameFinder = japaneseNameFinder;
+        this.aliasFinder = aliasFinder;
         this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
@@ -44,10 +44,10 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
 
             List<BusinessRule> businessRules = businessRuleGroup.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
-                TypeJapaneseName typeJapaneseName = japaneseNameFinder.find(businessRule.type().identifier());
+                TypeAlias typeAlias = aliasFinder.find(businessRule.type().identifier());
                 String japaneseText = "";
-                if (typeJapaneseName.exists()) {
-                    japaneseText = typeJapaneseName.japaneseName().value() + "\n";
+                if (typeAlias.exists()) {
+                    japaneseText = typeAlias.japaneseName().value() + "\n";
                 }
                 Node node = Node.of(businessRule.type().identifier())
                         .label(japaneseText + businessRule.type().identifier().asSimpleText());

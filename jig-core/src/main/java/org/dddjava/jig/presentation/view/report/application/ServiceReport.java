@@ -19,12 +19,12 @@ public class ServiceReport {
     }
 
     @ReportItemFor(ReportItem.クラス名)
-    @ReportItemFor(ReportItem.クラス和名)
+    @ReportItemFor(ReportItem.クラス別名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
-    @ReportItemFor(ReportItem.メソッド和名)
+    @ReportItemFor(ReportItem.メソッド別名)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
-    @ReportItemFor(ReportItem.メソッド戻り値の型の和名)
-    @ReportItemFor(ReportItem.メソッド引数の型の和名)
+    @ReportItemFor(ReportItem.メソッド戻り値の型の別名)
+    @ReportItemFor(ReportItem.メソッド引数の型の別名)
     public MethodDeclaration method() {
         return angle.method();
     }

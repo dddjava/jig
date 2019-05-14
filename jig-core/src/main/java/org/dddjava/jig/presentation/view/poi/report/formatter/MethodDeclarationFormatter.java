@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
@@ -28,21 +28,21 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
         MethodDeclaration methodDeclaration = (MethodDeclaration) item;
         switch (itemCategory) {
             case クラス名:
-            case クラス和名:
+            case クラス別名:
                 return new TypeIdentifierFormatter(convertContext).format(itemCategory, methodDeclaration.declaringType());
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
-            case メソッド和名:
+            case メソッド別名:
                 return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).summarySentence();
             case メソッド戻り値の型:
                 return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
-            case メソッド戻り値の型の和名:
+            case メソッド戻り値の型の別名:
                 return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).summarySentence();
-            case メソッド引数の型の和名:
-                List<JapaneseName> list = methodDeclaration.methodSignature().arguments().stream()
+            case メソッド引数の型の別名:
+                List<Alias> list = methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.glossaryService::japaneseNameFrom)
                         .collect(toList());
-                return Text.of(list, JapaneseName::summarySentence);
+                return Text.of(list, Alias::summarySentence);
         }
 
         throw new IllegalArgumentException(itemCategory.name());

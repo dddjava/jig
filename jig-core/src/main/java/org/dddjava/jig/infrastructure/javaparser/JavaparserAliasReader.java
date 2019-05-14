@@ -11,16 +11,19 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaparserJapaneseReader implements JapaneseReader {
+/**
+ * JavaparserでJavadocから別名を取得する実装
+ */
+public class JavaparserAliasReader implements AliasReader {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserJapaneseReader.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserAliasReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
 
     @Override
     public PackageNames readPackages(PackageInfoSources nameSources) {
-        List<PackageJapaneseName> names = new ArrayList<>();
+        List<PackageAlias> names = new ArrayList<>();
         for (PackageInfoSource packageInfoSource : nameSources.list()) {
             packageInfoReader.read(packageInfoSource)
                     .ifPresent(names::add);
@@ -30,17 +33,17 @@ public class JavaparserJapaneseReader implements JapaneseReader {
 
     @Override
     public TypeNames readTypes(JavaSources nameSources) {
-        List<TypeJapaneseName> names = new ArrayList<>();
-        List<MethodJapaneseName> methodNames = new ArrayList<>();
+        List<TypeAlias> names = new ArrayList<>();
+        List<MethodAlias> methodNames = new ArrayList<>();
 
         for (JavaSource javaSource : nameSources.list()) {
             try {
                 TypeSourceResult typeSourceResult = classReader.read(javaSource);
-                TypeJapaneseName typeJapaneseName = typeSourceResult.typeJapaneseName;
-                if (typeJapaneseName != null) {
-                    names.add(typeJapaneseName);
+                TypeAlias typeAlias = typeSourceResult.typeAlias;
+                if (typeAlias != null) {
+                    names.add(typeAlias);
                 }
-                methodNames.addAll(typeSourceResult.methodJapaneseNames);
+                methodNames.addAll(typeSourceResult.methodAliases);
             } catch (Exception e) {
                 LOGGER.warn("{} のJavadoc読み取りに失敗しました（処理は続行します）", javaSource);
                 LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);

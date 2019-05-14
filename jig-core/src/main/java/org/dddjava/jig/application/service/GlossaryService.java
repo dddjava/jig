@@ -14,37 +14,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class GlossaryService {
 
-    final JapaneseReader reader;
-    final JapaneseNameRepository repository;
+    final AliasReader reader;
+    final AliasRepository repository;
 
-    public GlossaryService(JapaneseReader reader, JapaneseNameRepository repository) {
+    public GlossaryService(AliasReader reader, AliasRepository repository) {
         this.reader = reader;
         this.repository = repository;
     }
 
     /**
-     * パッケージ和名を取得する
+     * パッケージ別名を取得する
      */
-    public JapaneseName japaneseNameFrom(PackageIdentifier packageIdentifier) {
+    public Alias japaneseNameFrom(PackageIdentifier packageIdentifier) {
         return repository.get(packageIdentifier);
     }
 
     /**
-     * 型和名を取得する
+     * 型別名を取得する
      */
-    public JapaneseName japaneseNameFrom(TypeIdentifier typeIdentifier) {
+    public Alias japaneseNameFrom(TypeIdentifier typeIdentifier) {
         return repository.get(typeIdentifier);
     }
 
     /**
-     * メソッド和名を取得する
+     * メソッド別名を取得する
      */
-    public JapaneseName japaneseNameFrom(MethodIdentifier methodIdentifier) {
+    public Alias japaneseNameFrom(MethodIdentifier methodIdentifier) {
         return repository.get(methodIdentifier);
     }
 
     /**
-     * Javadocから和名を取り込む
+     * Javadocから別名を取り込む
      */
     public void importJapanese(PackageInfoSources packageInfoSources) {
         PackageNames packageNames = reader.readPackages(packageInfoSources);
@@ -52,17 +52,17 @@ public class GlossaryService {
     }
 
     /**
-     * Javadocから和名を取り込む
+     * Javadocから別名を取り込む
      */
     public void importJapanese(JavaSources javaSources) {
         TypeNames typeNames = reader.readTypes(javaSources);
 
-        for (TypeJapaneseName typeJapaneseName : typeNames.list()) {
-            repository.register(typeJapaneseName);
+        for (TypeAlias typeAlias : typeNames.list()) {
+            repository.register(typeAlias);
         }
 
-        for (MethodJapaneseName methodJapaneseName : typeNames.methodList()) {
-            repository.register(methodJapaneseName);
+        for (MethodAlias methodAlias : typeNames.methodList()) {
+            repository.register(methodAlias);
         }
     }
 }

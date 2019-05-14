@@ -3,26 +3,26 @@ package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 
 /**
- * パッケージ和名
+ * パッケージ別名
  */
-public class PackageJapaneseName {
+public class PackageAlias {
     PackageIdentifier packageIdentifier;
-    JapaneseName japaneseName;
+    Alias alias;
 
-    public PackageJapaneseName(PackageIdentifier packageIdentifier, JapaneseName japaneseName) {
+    public PackageAlias(PackageIdentifier packageIdentifier, Alias alias) {
         this.packageIdentifier = packageIdentifier;
-        this.japaneseName = japaneseName;
+        this.alias = alias;
     }
 
     public PackageIdentifier packageIdentifier() {
         return packageIdentifier;
     }
 
-    public JapaneseName japaneseName() {
-        return japaneseName;
+    public Alias japaneseName() {
+        return alias;
     }
 
     public boolean exists() {
-        return japaneseName.exists();
+        return alias.exists();
     }
 }

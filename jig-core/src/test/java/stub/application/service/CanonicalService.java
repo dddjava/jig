@@ -8,7 +8,7 @@ import stub.domain.model.type.fuga.FugaIdentifier;
 import stub.domain.model.type.fuga.FugaRepository;
 
 /**
- * サービス和名
+ * サービス別名
  * 2行目や
  * 3行目は出力しない
  */

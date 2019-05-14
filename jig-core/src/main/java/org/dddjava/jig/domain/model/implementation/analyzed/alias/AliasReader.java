@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
 import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
 
 /**
- * 和名読み取り機
+ * 別名読み取り機
  */
-public interface JapaneseReader {
+public interface AliasReader {
 
     PackageNames readPackages(PackageInfoSources packageInfoSources);
 

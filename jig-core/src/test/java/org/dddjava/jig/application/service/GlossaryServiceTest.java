@@ -29,7 +29,7 @@ class GlossaryServiceTest {
     }
 
     @Test
-    void パッケージ和名取得(RawSource source) {
+    void パッケージ別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.packageInfoSources());
@@ -40,7 +40,7 @@ class GlossaryServiceTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラス和名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
+    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
         TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());
@@ -49,7 +49,7 @@ class GlossaryServiceTest {
                 .isEqualTo(comment);
     }
 
-    static Stream<Arguments> クラス和名取得() {
+    static Stream<Arguments> クラス別名取得() {
         return Stream.of(
                 Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
@@ -59,7 +59,7 @@ class GlossaryServiceTest {
     }
 
     @Test
-    void メソッド和名取得(RawSource source) {
+    void メソッド別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());

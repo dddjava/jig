@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 import java.util.stream.Stream;
 
 /**
- * 和名
+ * 別名
  */
-public class JapaneseName {
+public class Alias {
 
     final String value;
 
-    public JapaneseName(String value) {
+    public Alias(String value) {
         this.value = value;
     }
 

@@ -6,13 +6,13 @@ import java.util.List;
  * パッケージ名一覧
  */
 public class PackageNames {
-    List<PackageJapaneseName> list;
+    List<PackageAlias> list;
 
-    public PackageNames(List<PackageJapaneseName> list) {
+    public PackageNames(List<PackageAlias> list) {
         this.list = list;
     }
 
-    public void register(JapaneseNameRepository japaneseNameRepository) {
-        list.forEach(japaneseNameRepository::register);
+    public void register(AliasRepository aliasRepository) {
+        list.forEach(aliasRepository::register);
     }
 }

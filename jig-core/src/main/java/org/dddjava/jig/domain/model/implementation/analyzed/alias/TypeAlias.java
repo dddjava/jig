@@ -3,26 +3,26 @@ package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
 /**
- * 型和名
+ * 型別名
  */
-public class TypeJapaneseName {
+public class TypeAlias {
     TypeIdentifier typeIdentifier;
-    JapaneseName japaneseName;
+    Alias alias;
 
-    public TypeJapaneseName(TypeIdentifier typeIdentifier, JapaneseName japaneseName) {
+    public TypeAlias(TypeIdentifier typeIdentifier, Alias alias) {
         this.typeIdentifier = typeIdentifier;
-        this.japaneseName = japaneseName;
+        this.alias = alias;
     }
 
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
-    public JapaneseName japaneseName() {
-        return japaneseName;
+    public Alias japaneseName() {
+        return alias;
     }
 
     public boolean exists() {
-        return japaneseName.exists();
+        return alias.exists();
     }
 }

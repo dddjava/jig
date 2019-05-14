@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -14,12 +14,12 @@ import static java.util.stream.Collectors.joining;
 
 public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> {
 
-    private final JapaneseNameFinder japaneseNameFinder;
+    private final AliasFinder aliasFinder;
     private final MethodNodeLabelStyle methodNodeLabelStyle;
     JigDocumentContext jigDocumentContext;
 
-    public BooleanServiceTraceDiagram(JapaneseNameFinder japaneseNameFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
-        this.japaneseNameFinder = japaneseNameFinder;
+    public BooleanServiceTraceDiagram(AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
+        this.aliasFinder = aliasFinder;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
         this.jigDocumentContext = JigDocumentContext.getInstance();
     }
@@ -51,8 +51,8 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
                     if (method.isLambda()) {
                         node.label("(lambda)").lambda();
                     } else {
-                        // ラベルに和名をつける
-                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.typeNameAndMethodName(method, japaneseNameFinder));
+                        // ラベルに別名をつける
+                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.typeNameAndMethodName(method, aliasFinder));
                     }
                     return node.asText();
                 }).collect(joining("\n"));
@@ -62,10 +62,10 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
         String userApplicationMethodsText = booleanServiceAngles.userServiceMethods().list().stream()
                 // booleanメソッドを除く
                 .filter(userMethod -> booleanServiceAngles.notContains(userMethod))
-                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
+                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, aliasFinder)).asText())
                 .collect(joining("\n"));
         String userControllerMethodsText = booleanServiceAngles.userControllerMethods().list().stream()
-                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, japaneseNameFinder)).asText())
+                .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, aliasFinder)).asText())
                 .collect(joining("\n"));
 
 
@@ -88,7 +88,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = japaneseNameFinder.find(method.identifier()).japaneseName().summarySentence();
+        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().summarySentence();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 }

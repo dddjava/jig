@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
@@ -15,12 +15,12 @@ public enum MethodNodeLabelStyle {
     /** method(引数型) : 戻り値型 */
     JAPANESE;
 
-    public String apply(MethodDeclaration method, JapaneseNameFinder japaneseNameFinder) {
+    public String apply(MethodDeclaration method, AliasFinder aliasFinder) {
         if (this == JAPANESE) {
             Function<TypeIdentifier, String> func = typeIdentifier -> {
-                TypeJapaneseName typeJapaneseName = japaneseNameFinder.find(typeIdentifier);
-                if (typeJapaneseName.exists()) {
-                    return typeJapaneseName.japaneseName().summarySentence();
+                TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+                if (typeAlias.exists()) {
+                    return typeAlias.japaneseName().summarySentence();
                 }
                 return typeIdentifier.asSimpleText();
             };
@@ -36,7 +36,7 @@ public enum MethodNodeLabelStyle {
         return method.asSignatureSimpleText() + " : " + method.methodReturn().typeIdentifier().asSimpleText();
     }
 
-    public String typeNameAndMethodName(MethodDeclaration methodDeclaration, JapaneseNameFinder japaneseNameFinder) {
-        return methodDeclaration.declaringType().asSimpleText() + "." + apply(methodDeclaration, japaneseNameFinder);
+    public String typeNameAndMethodName(MethodDeclaration methodDeclaration, AliasFinder aliasFinder) {
+        return methodDeclaration.declaringType().asSimpleText() + "." + apply(methodDeclaration, aliasFinder);
     }
 }

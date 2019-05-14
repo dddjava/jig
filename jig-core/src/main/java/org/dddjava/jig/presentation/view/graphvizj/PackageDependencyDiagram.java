@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JapaneseNameFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageJapaneseName;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
@@ -21,12 +21,12 @@ import static java.util.stream.Collectors.toList;
 public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> {
 
     final PackageIdentifierFormatter formatter;
-    final JapaneseNameFinder japaneseNameFinder;
+    final AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
-    public PackageDependencyDiagram(PackageIdentifierFormatter formatter, JapaneseNameFinder japaneseNameFinder) {
+    public PackageDependencyDiagram(PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         this.formatter = formatter;
-        this.japaneseNameFinder = japaneseNameFinder;
+        this.aliasFinder = aliasFinder;
         this.jigDocumentContext = JigDocumentContext.getInstance();
     }
 
@@ -95,9 +95,9 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
 
     private String label(PackageIdentifier packageIdentifier) {
         String labelText = packageIdentifier.format(formatter);
-        PackageJapaneseName packageJapaneseName = japaneseNameFinder.find(packageIdentifier);
-        if (packageJapaneseName.exists()) {
-            labelText = packageJapaneseName.japaneseName().summarySentence() + "\\n" + labelText;
+        PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
+        if (packageAlias.exists()) {
+            labelText = packageAlias.japaneseName().summarySentence() + "\\n" + labelText;
         }
         return labelText;
     }

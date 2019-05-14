@@ -1,5 +1,8 @@
-package org.dddjava.jig.domain.type.usernumber;
+package org.dddjava.jig.domain.model.implementation.analyzed.usernumber;
 
+/**
+ * 使用箇所数
+ */
 public class UserNumber {
     int value;
 

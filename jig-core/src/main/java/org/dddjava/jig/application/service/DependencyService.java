@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespac
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
-import org.dddjava.jig.domain.type.Warning;
+import org.dddjava.jig.domain.model.notice.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.bytecode;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.type.usernumber.UserNumber;
+import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;
 
 import java.util.List;
 

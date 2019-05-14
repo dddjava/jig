@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.type.usernumber.UserNumber;
+import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

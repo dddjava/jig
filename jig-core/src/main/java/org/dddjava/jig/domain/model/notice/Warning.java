@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.type;
+package org.dddjava.jig.domain.model.notice;
 
 import java.util.ResourceBundle;
 

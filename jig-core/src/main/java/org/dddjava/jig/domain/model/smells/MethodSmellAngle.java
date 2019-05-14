@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.smells;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.CallerMethods;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;

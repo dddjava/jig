@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.bytecode;
+package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;

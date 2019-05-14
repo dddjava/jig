@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;

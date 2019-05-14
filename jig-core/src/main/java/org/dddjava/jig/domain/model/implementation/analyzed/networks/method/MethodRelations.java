@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteC
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 
 import java.util.ArrayList;
@@ -31,18 +30,15 @@ public class MethodRelations {
         }
     }
 
-    public MethodDeclarations userMethodsOf(MethodIdentifier method) {
-        return list.stream()
-                .filter(methodRelation -> methodRelation.toIs(method))
-                .map(MethodRelation::from)
-                .collect(MethodDeclarations.collector());
-    }
-
-    public CallerMethods callerMethodsOf(MethodDeclaration declaration) {
+    public CallerMethods callerMethodsOf(MethodIdentifier method) {
         List<MethodDeclaration> callers = list.stream()
-                .filter(methodRelation -> methodRelation.toIs(declaration))
+                .filter(methodRelation -> methodRelation.toIs(method))
                 .map(MethodRelation::from)
                 .collect(toList());
         return new CallerMethods(callers);
+    }
+
+    public CallerMethods callerMethodsOf(MethodDeclaration declaration) {
+        return callerMethodsOf(declaration.identifier());
     }
 }

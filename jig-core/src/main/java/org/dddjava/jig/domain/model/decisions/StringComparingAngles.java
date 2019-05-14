@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.A
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 
 import java.util.Collections;
@@ -28,12 +29,11 @@ public class StringComparingAngles {
                         "equals",
                         new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))));
 
-        List<StringComparingAngle> list = methodRelations.userMethodsOf(equalsMethod)
-                .list()
-                .stream()
+        CallerMethods equalsCallerMethods = methodRelations.callerMethodsOf(equalsMethod);
+
+        this.list = equalsCallerMethods.methodDeclarations().list().stream()
                 .map(StringComparingAngle::new)
                 .collect(Collectors.toList());
-        this.list = list;
     }
 
     public List<StringComparingAngle> list() {

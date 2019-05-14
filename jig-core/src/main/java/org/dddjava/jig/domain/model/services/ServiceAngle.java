@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.datasources.RepositoryMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingFields;
@@ -34,9 +35,9 @@ public class ServiceAngle {
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
         this.useStream = usingMethods.containsStream();
 
-        MethodDeclarations userMethods = methodRelations.userMethodsOf(serviceMethod.methodDeclaration().identifier());
-        this.userControllerMethods = controllerMethods.filter(userMethods);
-        this.userServiceMethods = serviceMethods.filter(userMethods);
+        CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration().identifier());
+        this.userControllerMethods = controllerMethods.filter(callerMethods.methodDeclarations());
+        this.userServiceMethods = serviceMethods.filter(callerMethods.methodDeclarations());
     }
 
     public MethodDeclaration method() {

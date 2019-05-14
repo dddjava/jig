@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;
 
 import java.util.List;
@@ -17,5 +18,9 @@ public class CallerMethods {
 
     public UserNumber toUserNumber() {
         return new UserNumber(list.size());
+    }
+
+    public MethodDeclarations methodDeclarations() {
+        return new MethodDeclarations(list);
     }
 }

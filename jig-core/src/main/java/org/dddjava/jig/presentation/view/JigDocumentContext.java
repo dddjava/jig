@@ -57,6 +57,6 @@ public class JigDocumentContext {
     }
 
     public String reportLabel(ReportItem reportItem) {
-        return label(reportItem.name());
+        return label(reportItem.key);
     }
 }

@@ -6,30 +6,36 @@ package org.dddjava.jig.presentation.view.report;
  * 出力項目の名前と並び順の定義。
  */
 public enum ReportItem {
-    クラス名,
-    メソッドシグネチャ,
-    メソッド戻り値の型,
+    クラス名("typeName"),
+    メソッドシグネチャ("methodSignature"),
+    メソッド戻り値の型("returnType"),
 
-    イベントハンドラ,
+    イベントハンドラ("eventHandler"),
 
-    クラス別名,
-    メソッド別名,
-    メソッド戻り値の型の別名,
-    メソッド引数の型の別名,
+    クラス別名("typeAlias"),
+    メソッド別名("methodAlias"),
+    メソッド戻り値の型の別名("returnTypeAlias"),
+    メソッド引数の型の別名("argumentAlias"),
 
-    使用しているフィールドの型,
+    使用しているフィールドの型("usingFieldType"),
 
-    使用箇所数,
-    使用箇所,
+    使用箇所数("userNumber"),
+    使用箇所("userType"),
 
-    メソッド数,
-    メソッド一覧,
+    メソッド数("methodNumber"),
+    メソッド一覧("methods"),
 
-    分岐数,
+    分岐数("decisionNumber"),
 
-    単純クラス名,
+    単純クラス名("simpleTypeName"),
 
     // なるべく使わない
-    汎用文字列,
-    汎用真偽値
+    汎用文字列("string"),
+    汎用真偽値("boolean");
+
+    public final String key;
+
+    ReportItem(String key) {
+        this.key = key;
+    }
 }

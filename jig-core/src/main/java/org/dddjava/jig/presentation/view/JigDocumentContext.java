@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -25,7 +26,9 @@ public class JigDocumentContext {
             try (InputStream is = JigDocumentContext.class.getClassLoader().getResourceAsStream("jig.properties")) {
                 jigProperties.load(is);
             }
-            jigDocumentResource = ResourceBundle.getBundle("jig-document");
+            // TODO user.language を使ってるけどpropertyにしたい
+            Locale locale = Locale.getDefault();
+            jigDocumentResource = ResourceBundle.getBundle("jig-document", locale, new Utf8Control());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -36,11 +36,11 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
                 .map(categoryAngle -> {
                     String values = categoryAngle.constantsDeclarations().list().stream()
                             .map(StaticFieldDeclaration::nameText)
-                            .collect(joining("|", "{", "}"));
+                            .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
 
                     TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
                     return new Node(typeIdentifier.fullQualifiedName())
-                            .label(appendJapaneseName(typeIdentifier) + "|{ |" + values + "}")
+                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + appendJapaneseName(typeIdentifier) + "</td></tr>" + values + "</table>")
                             .asText();
                 })
                 .collect(joining("\n"));
@@ -57,7 +57,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
     private String appendJapaneseName(TypeIdentifier typeIdentifier) {
         TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
         if (typeAlias.exists()) {
-            return typeAlias.japaneseName().summarySentence() + "\\n" + typeIdentifier.asSimpleText();
+            return typeAlias.japaneseName().summarySentence() + "<br/>" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
     }

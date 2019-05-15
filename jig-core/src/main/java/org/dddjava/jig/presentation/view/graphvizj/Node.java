@@ -81,4 +81,9 @@ public class Node {
     Node notEnum() {
         return color("lightyellow");
     }
+
+    public Node html(String html) {
+        attribute.add("label=<" + html + ">;");
+        return this;
+    }
 }

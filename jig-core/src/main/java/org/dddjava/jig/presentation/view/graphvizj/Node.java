@@ -12,7 +12,6 @@ import java.util.StringJoiner;
 public class Node {
 
     static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";
-    static final String DEFAULT_MRECORD = "node [shape=Mrecord;style=filled;fillcolor=lightgoldenrod];";
 
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");

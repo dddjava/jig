@@ -234,6 +234,9 @@ project(':jig-core') {
         // javadocコメントの取得: infrastructure/javaparser
         api 'com.github.javaparser:javaparser-core:3.14.2'
         api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+        // kotlinのコメント取得: infrastructure/kotlinparser
+        api 'com.github.cretz.kastree:kastree-ast-jvm:0.4.0'
+        api 'com.github.cretz.kastree:kastree-ast-psi:0.4.0'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:4.1.0'
         api 'org.apache.poi:poi-ooxml:4.1.0'

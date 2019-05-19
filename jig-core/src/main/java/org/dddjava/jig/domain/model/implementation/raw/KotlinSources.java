@@ -4,22 +4,22 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * *.javaソース一覧
+ * .ktソース一覧
  */
-public class JavaSources implements SourceCodes<JavaSource> {
+public class KotlinSources implements SourceCodes<KotlinSource> {
 
-    List<JavaSource> list;
+    List<KotlinSource> list;
 
-    public JavaSources(List<JavaSource> list) {
+    public KotlinSources(List<KotlinSource> list) {
         this.list = list;
     }
 
-    public JavaSources() {
+    public KotlinSources() {
         this(Collections.emptyList());
     }
 
     @Override
-    public List<JavaSource> list() {
+    public List<KotlinSource> list() {
         return list;
     }
 }

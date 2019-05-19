@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.ClassJavadocStub;
+import stub.domain.model.KotlinStub;
 import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.JigServiceTest;
@@ -44,6 +45,7 @@ class GlossaryServiceTest {
         TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());
+        sut.importJapanese(textSource.kotlinSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);
@@ -54,7 +56,8 @@ class GlossaryServiceTest {
                 Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
                 Arguments.of(new TypeIdentifier(NotJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
+                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
+                Arguments.of(new TypeIdentifier(KotlinStub.class), "KotlinのクラスのDoc")
         );
     }
 

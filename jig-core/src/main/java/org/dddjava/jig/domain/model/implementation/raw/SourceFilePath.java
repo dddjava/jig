@@ -27,6 +27,10 @@ public class SourceFilePath {
         return fileName.endsWith(".kt");
     }
 
+    public String fineName() {
+        return fileName;
+    }
+
     @Override
     public String toString() {
         return path.toString();

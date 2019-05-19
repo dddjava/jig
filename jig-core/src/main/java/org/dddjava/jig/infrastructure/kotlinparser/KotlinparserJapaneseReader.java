@@ -1,13 +1,26 @@
 package org.dddjava.jig.infrastructure.kotlinparser;
 
-import kastree.ast.psi.Parser;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
-import org.jetbrains.kotlin.com.intellij.psi.PsiClass;
-import org.jetbrains.kotlin.com.intellij.psi.javadoc.PsiDocComment;
-import org.jetbrains.kotlin.psi.KtFile;
+import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
+import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles;
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment;
+import org.jetbrains.kotlin.com.intellij.openapi.project.Project;
+import org.jetbrains.kotlin.com.intellij.psi.PsiElement;
+import org.jetbrains.kotlin.com.intellij.psi.PsiManager;
+import org.jetbrains.kotlin.com.intellij.testFramework.LightVirtualFile;
+import org.jetbrains.kotlin.config.CompilerConfiguration;
+import org.jetbrains.kotlin.idea.KotlinFileType;
+import org.jetbrains.kotlin.kdoc.psi.api.KDoc;
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocSection;
+import org.jetbrains.kotlin.name.FqName;
+import org.jetbrains.kotlin.psi.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,22 +48,74 @@ public class KotlinparserJapaneseReader implements SourceCodeParser {
                 continue;
             }
 
-            KtFile file = Parser.Companion.parsePsiFile(sourceCode);
-            for (PsiClass psiClass : file.getClasses()) {
-                PsiDocComment docComment = psiClass.getDocComment();
-                String className = psiClass.getQualifiedName();
-                if (docComment != null && className != null) {
-                    String text = docComment.getText();
-                    TypeIdentifier typeIdentifier = new TypeIdentifier(className);
-                    typeJapaneseNames.add(new TypeAlias(typeIdentifier, new Alias(text)));
-                }
+            CompilerConfiguration configuration = new CompilerConfiguration();
+            configuration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.Companion.getNONE());
+            KotlinCoreEnvironment environment = KotlinCoreEnvironment.createForProduction(() -> { }, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES);
+            Project project = environment.getProject();
+            LightVirtualFile virtualFile = new LightVirtualFile(kotlinSource.sourceFilePath().fineName(), KotlinFileType.INSTANCE, sourceCode);
+            KtFile file = (KtFile) PsiManager.getInstance(project).findFile(virtualFile);
+            if (file == null) {
+                continue;
             }
+
+            KtTreeVisitorVoid sourceVisitor = new KtTreeVisitorVoid() {
+                @Override
+                public void visitClass(KtClass klass) {
+                    super.visitClass(klass);
+                    KDoc docComment = klass.getDocComment();
+                    if (docComment == null) {
+                        return;
+                    }
+                    KDocSection comment = docComment.getDefaultSection();
+                    String text = comment.getContent();
+                    FqName fullClassName = klass.getFqName();
+                    if (fullClassName == null) {
+                        return;
+                    }
+                    TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
+                    typeJapaneseNames.add(new TypeAlias(identifier, new Alias(text)));
+                }
+
+                @Override
+                public void visitNamedFunction(KtNamedFunction function) {
+                    super.visitNamedFunction(function);
+                    KDoc docComment = function.getDocComment();
+                    if (docComment == null) {
+                        return;
+                    }
+                    KDocSection comment = docComment.getDefaultSection();
+                    String text = comment.getContent();
+                    String methodName = function.getName();
+                    KtClass ktClass = findKtClass(function);
+                    if (ktClass == null) {
+                        return;
+                    }
+                    Arguments arguments = new Arguments(new ArrayList<>());
+                    TypeIdentifier identifier = new TypeIdentifier(ktClass.getFqName().asString());
+
+                    MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, arguments));
+                    methodList.add(new MethodAlias(methodIdentifier, new Alias(text)));
+                }
+            };
+
+            file.accept(sourceVisitor);
         }
 
         return new TypeNames(typeJapaneseNames, methodList);
     }
 
-    String parseKotlinFile(KotlinSource source) {
+    private KtClass findKtClass(KtNamedFunction function) {
+        PsiElement parent = function.getParent();
+        if (!(parent instanceof KtClassBody)) {
+            return null;
+        }
+
+        parent = parent.getParent();
+
+        return parent instanceof KtClass ? (KtClass) parent : null;
+    }
+
+    private String parseKotlinFile(KotlinSource source) {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source.toInputStream()))) {
             return bufferedReader.lines().collect(Collectors.joining("\n"));
         } catch (IOException e) {

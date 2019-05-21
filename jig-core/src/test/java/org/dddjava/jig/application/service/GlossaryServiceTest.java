@@ -14,6 +14,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.*;
 import testing.JigServiceTest;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -94,12 +96,14 @@ class GlossaryServiceTest {
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier1).value())
-                .isEqualTo("引数なしのメソッド");
+                // オーバーロードは一意にならないのでどちらか
+                .matches("引数(なし|あり)のメソッド");
 
         MethodIdentifier overloadMethodIdentifier2 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier2).value())
-                .isEqualTo("引数ありのメソッド");
+                // オーバーロードは一意にならないのでどちらか
+                .matches("引数(なし|あり)のメソッド");
     }
 }

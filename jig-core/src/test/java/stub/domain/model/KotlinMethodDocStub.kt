@@ -1,5 +1,7 @@
 package stub.domain.model
 
+import java.time.LocalDateTime
+
 class KotlinMethodJavadocStub {
 
     /**
@@ -19,7 +21,7 @@ class KotlinMethodJavadocStub {
     /**
      * 引数ありのメソッド
      */
-    fun overloadMethod(str: String): String? {
+    fun overloadMethod(str: String, dateTime: LocalDateTime): String? {
         return null
     }
 }

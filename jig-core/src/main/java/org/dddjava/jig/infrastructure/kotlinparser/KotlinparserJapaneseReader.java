@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class KotlinparserJapaneseReader implements SourceCodeParser {
@@ -90,10 +92,16 @@ public class KotlinparserJapaneseReader implements SourceCodeParser {
                     if (ktClass == null) {
                         return;
                     }
-                    Arguments arguments = new Arguments(new ArrayList<>());
+                    ArrayList<TypeIdentifier> args = new ArrayList<>();
                     TypeIdentifier identifier = new TypeIdentifier(ktClass.getFqName().asString());
 
-                    MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, arguments));
+                    for (KtParameter parameter : function.getValueParameters()) {
+                        KtTypeReference typeReference = parameter.getTypeReference();
+                        String string = asString(typeReference);
+                        args.add(new TypeIdentifier(string));
+                    }
+
+                    MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, new Arguments(args)));
                     methodList.add(new MethodAlias(methodIdentifier, new Alias(text)));
                 }
             };
@@ -102,6 +110,23 @@ public class KotlinparserJapaneseReader implements SourceCodeParser {
         }
 
         return new TypeNames(typeJapaneseNames, methodList);
+    }
+
+    private String asString(KtTypeReference typeReference) {
+        String referenceText = typeReference.getText();
+        KtImportDirective importDirective = typeReference.getContainingKtFile().getImportDirectives().stream()
+                .filter(it -> Objects.equals(it.getAliasName(), referenceText) || Objects.equals(it.getImportedFqName().shortName().getIdentifier(), referenceText))
+                .findFirst().orElse(null);
+        if (importDirective != null) {
+            return importDirective.getImportedFqName().asString();
+        }
+
+        Optional<KtDeclaration> first = typeReference.getContainingKtFile().getDeclarations().stream()
+                .filter(it -> it instanceof KtClassOrObject)
+                .filter(it -> Objects.equals(it.getName(), referenceText))
+                .findFirst();
+
+        return first.map(KtDeclaration::getName).orElse(referenceText);
     }
 
     private KtClass findKtClass(KtNamedFunction function) {

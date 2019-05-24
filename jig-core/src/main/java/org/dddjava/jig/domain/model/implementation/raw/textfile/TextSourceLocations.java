@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.textfile;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

@@ -1,4 +1,12 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.textfile;
+
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSource;
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
+import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSource;
+import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;

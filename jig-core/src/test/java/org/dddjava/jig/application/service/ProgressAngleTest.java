@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;

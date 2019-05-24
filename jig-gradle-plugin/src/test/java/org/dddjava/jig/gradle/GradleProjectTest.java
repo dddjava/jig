@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.assertj.core.api.SoftAssertions;
-import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;

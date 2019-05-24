@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
+import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 

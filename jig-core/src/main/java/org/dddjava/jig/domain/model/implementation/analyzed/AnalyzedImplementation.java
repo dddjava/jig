@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.implementation.analyzed;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 
 import java.util.ArrayList;
 import java.util.List;

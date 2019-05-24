@@ -9,7 +9,7 @@ import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
 
 import java.util.Optional;
 

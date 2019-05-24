@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.binary;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class BinarySources {
         return list.stream().reduce(new BinarySource(), BinarySource::merge);
     }
 
-    List<BinarySource> list() {
+    public List<BinarySource> list() {
         return list;
     }
 

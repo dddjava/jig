@@ -1,7 +1,7 @@
 branches:
   only:
     - master
-build:
+build_script:
     - gradlew build -x test
 test_script:
     - cmd: gradlew test || exit /B 0

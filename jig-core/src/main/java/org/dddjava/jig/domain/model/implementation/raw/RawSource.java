@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
+import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
+import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
+
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;

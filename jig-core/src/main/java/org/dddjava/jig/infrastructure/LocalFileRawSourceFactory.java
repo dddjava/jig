@@ -1,6 +1,8 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.implementation.raw.*;
+import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
+import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

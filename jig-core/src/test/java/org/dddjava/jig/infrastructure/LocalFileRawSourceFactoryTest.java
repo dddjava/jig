@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;

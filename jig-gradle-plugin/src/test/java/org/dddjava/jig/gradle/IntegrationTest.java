@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +38,7 @@ public class IntegrationTest {
 
     @ParameterizedTest
     @MethodSource("versions")
-    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(String version) throws IOException {
+    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(String version) throws IOException, URISyntaxException {
         BuildResult result = executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
@@ -51,7 +52,7 @@ public class IntegrationTest {
     //TODO 並列で走ると競合して落ちる
     @ParameterizedTest
     @MethodSource("versions")
-    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(String version) throws IOException {
+    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(String version) throws IOException, URISyntaxException {
         Files.createDirectories(outputDir);
         Path includedFile = outputDir.resolve("somme.txt");
         Files.createFile(includedFile);
@@ -69,9 +70,9 @@ public class IntegrationTest {
         softly.assertAll();
     }
 
-    private BuildResult executeGradleTasks(String version, String... tasks) throws IOException {
+    private BuildResult executeGradleTasks(String version, String... tasks) throws IOException, URISyntaxException {
         URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
-        List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.getPath())).stream()
+        List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.toURI())).stream()
                 .map(File::new)
                 .collect(toList());
 

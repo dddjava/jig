@@ -5,10 +5,10 @@ import java.util.List;
 /**
  * パッケージ名一覧
  */
-public class PackageNames {
+public class PackageAliases {
     List<PackageAlias> list;
 
-    public PackageNames(List<PackageAlias> list) {
+    public PackageAliases(List<PackageAlias> list) {
         this.list = list;
     }
 

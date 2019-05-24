@@ -5,12 +5,12 @@ import java.util.List;
 /**
  * 型名一覧
  */
-public class TypeNames {
+public class TypeAliases {
 
     List<TypeAlias> list;
     List<MethodAlias> methodList;
 
-    public TypeNames(List<TypeAlias> list, List<MethodAlias> methodList) {
+    public TypeAliases(List<TypeAlias> list, List<MethodAlias> methodList) {
         this.list = list;
         this.methodList = methodList;
     }

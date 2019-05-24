@@ -47,21 +47,21 @@ public class GlossaryService {
      * Javadocから別名を取り込む
      */
     public void importJapanese(PackageInfoSources packageInfoSources) {
-        PackageNames packageNames = reader.readPackages(packageInfoSources);
-        packageNames.register(repository);
+        PackageAliases packageAliases = reader.readPackages(packageInfoSources);
+        packageAliases.register(repository);
     }
 
     /**
      * Javadocから別名を取り込む
      */
     public void importJapanese(JavaSources javaSources) {
-        TypeNames typeNames = reader.readTypes(javaSources);
+        TypeAliases typeAliases = reader.readTypes(javaSources);
 
-        for (TypeAlias typeAlias : typeNames.list()) {
+        for (TypeAlias typeAlias : typeAliases.list()) {
             repository.register(typeAlias);
         }
 
-        for (MethodAlias methodAlias : typeNames.methodList()) {
+        for (MethodAlias methodAlias : typeAliases.methodList()) {
             repository.register(methodAlias);
         }
     }

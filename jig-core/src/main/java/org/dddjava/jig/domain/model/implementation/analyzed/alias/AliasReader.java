@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSo
  */
 public interface AliasReader {
 
-    PackageNames readPackages(PackageInfoSources packageInfoSources);
+    PackageAliases readPackages(PackageInfoSources packageInfoSources);
 
-    TypeNames readTypes(JavaSources javaSources);
+    TypeAliases readTypes(JavaSources javaSources);
 }

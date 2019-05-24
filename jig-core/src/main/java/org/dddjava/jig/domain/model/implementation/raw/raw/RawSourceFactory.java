@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.raw;
 
 /**
  * 生ソース読み取り機

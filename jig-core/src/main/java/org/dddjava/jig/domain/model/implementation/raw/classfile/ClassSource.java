@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.raw.classfile;
 
-import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
+import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 
 /**
  * classソース

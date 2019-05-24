@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure;
 
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.TextSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSourceLocations;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;

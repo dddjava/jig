@@ -1,7 +1,10 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.raw;
 
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
+import org.dddjava.jig.domain.model.implementation.raw.sqlfile.SqlSources;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSources;
 
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;

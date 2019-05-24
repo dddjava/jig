@@ -3,7 +3,7 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;

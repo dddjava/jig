@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.implementation.raw.binary;
 
 import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
 import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
+import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;

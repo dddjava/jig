@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
-import org.dddjava.jig.domain.model.implementation.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;

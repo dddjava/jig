@@ -1,6 +1,7 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.raw;
 
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSourceLocations;
 
 import java.nio.file.Path;
 import java.util.List;

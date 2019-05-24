@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.sourcelocation;
 
 import java.net.URI;
 import java.nio.file.Path;

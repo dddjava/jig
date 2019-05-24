@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.raw.sqlfile;
 
 import java.net.URL;
 import java.util.List;

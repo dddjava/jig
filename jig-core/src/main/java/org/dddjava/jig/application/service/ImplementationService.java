@@ -5,8 +5,11 @@ import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.ByteCodeFac
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.*;
 import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceFactory;
+import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.sqlfile.SqlSources;
 import org.springframework.stereotype.Service;
 
 /**

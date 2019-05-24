@@ -1,7 +1,7 @@
 package testing;
 
 import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
-import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
+import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

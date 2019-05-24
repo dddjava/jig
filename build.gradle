@@ -300,6 +300,7 @@ project(':jig-cli') {
         manifest {
             attributes "Implementation-Version": version
         }
+        requiresUnpack '**/kotlin-compiler-*.jar'
     }
 }
 

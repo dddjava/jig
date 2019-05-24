@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.raw;
 
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
+
 import java.util.ArrayList;
 import java.util.List;
 

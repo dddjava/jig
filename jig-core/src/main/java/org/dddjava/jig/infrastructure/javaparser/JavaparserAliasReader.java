@@ -3,8 +3,8 @@ package org.dddjava.jig.infrastructure.javaparser;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
 import org.dddjava.jig.domain.model.implementation.raw.JavaSource;
 import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
-import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSource;
-import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

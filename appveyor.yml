@@ -1,6 +1,6 @@
 build: off
 test_script:
-    - gradlew build --no-daemon
+    - cmd: gradlew build --no-daemon || exit /B 0
 after_test:
     - ps: >-
         $wc = New-Object "System.Net.WebClient"

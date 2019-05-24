@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import stub.domain.model.ClassJavadocStub;
-import stub.domain.model.MethodJavadocStub;
-import stub.domain.model.NotJavadocStub;
+import stub.domain.model.*;
 import testing.JigServiceTest;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -44,6 +44,7 @@ class GlossaryServiceTest {
         TextSource textSource = source.textSource();
 
         sut.importJapanese(textSource.javaSources());
+        sut.importJapanese(textSource.kotlinSources());
 
         Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
                 .isEqualTo(comment);
@@ -54,7 +55,8 @@ class GlossaryServiceTest {
                 Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
                 Arguments.of(new TypeIdentifier(NotJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
+                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス"),
+                Arguments.of(new TypeIdentifier(KotlinStub.class), "KotlinのクラスのDoc")
         );
     }
 
@@ -74,6 +76,33 @@ class GlossaryServiceTest {
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
         Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).value())
+                // オーバーロードは一意にならないのでどちらか
+                .matches("引数(なし|あり)のメソッド");
+    }
+
+    @Test
+    void Kotlinメソッドの和名取得(RawSource source) {
+        TextSource textSource = source.textSource();
+
+        sut.importJapanese(textSource.kotlinSources());
+
+        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
+                "simpleMethod",
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
+        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
+                .isEqualTo("メソッドのドキュメント");
+
+        MethodIdentifier overloadMethodIdentifier1 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
+                "overloadMethod",
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
+        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier1).value())
+                // オーバーロードは一意にならないのでどちらか
+                .matches("引数(なし|あり)のメソッド");
+
+        MethodIdentifier overloadMethodIdentifier2 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
+                "overloadMethod",
+                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
+        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier2).value())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
     }

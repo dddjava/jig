@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
 import org.dddjava.jig.domain.model.implementation.raw.PackageInfoSources;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +57,18 @@ public class GlossaryService {
      */
     public void importJapanese(JavaSources javaSources) {
         TypeNames typeNames = reader.readTypes(javaSources);
+        importJapanese(typeNames);
+    }
 
+    /**
+     * KtDocから別名を取り込む
+     */
+    public void importJapanese(KotlinSources kotlinSources) {
+        TypeNames typeNames = reader.readTypes(kotlinSources);
+        importJapanese(typeNames);
+    }
+
+    private void importJapanese(TypeNames typeNames) {
         for (TypeAlias typeAlias : typeNames.list()) {
             repository.register(typeAlias);
         }

@@ -23,6 +23,14 @@ public class SourceFilePath {
         return fileName.endsWith("package-info.java");
     }
 
+    public boolean isKotlin() {
+        return fileName.endsWith(".kt");
+    }
+
+    public String fineName() {
+        return fileName;
+    }
+
     @Override
     public String toString() {
         return path.toString();

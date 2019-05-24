@@ -7,6 +7,7 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.4' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2019.5.3' apply false
+    id "org.jetbrains.kotlin.jvm" version "1.3.31" apply false
 }
 
 repositories {
@@ -153,9 +154,22 @@ project(':jig-core') {
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
     apply plugin: 'org.dddjava.jig-gradle-plugin'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
 
     ext {
         artifactId = 'jig-core'
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = '1.8'
+        }
+    }
+
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = '1.8'
+        }
     }
 
     publishing {
@@ -237,6 +251,9 @@ project(':jig-core') {
         // javadocコメントの取得: infrastructure/javaparser
         api 'com.github.javaparser:javaparser-core:3.14.2'
         api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
+        // kotlinのコメント取得: infrastructure/kotlinparser
+        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.30'
+        api 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:4.1.0'
         api 'org.apache.poi:poi-ooxml:4.1.0'
@@ -286,6 +303,7 @@ project(':jig-cli') {
         manifest {
             attributes "Implementation-Version": version
         }
+        requiresUnpack '**/kotlin-compiler-*.jar'
     }
 }
 

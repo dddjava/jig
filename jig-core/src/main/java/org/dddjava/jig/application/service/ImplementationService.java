@@ -44,6 +44,7 @@ public class ImplementationService {
         TypeByteCodes typeByteCodes = readByteCode(rawSource.binarySource().classSources());
 
         glossaryService.importJapanese(rawSource.textSource().javaSources());
+        glossaryService.importJapanese(rawSource.textSource().kotlinSources());
         glossaryService.importJapanese(rawSource.textSource().packageInfoSources());
 
         return typeByteCodes;

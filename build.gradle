@@ -22,7 +22,10 @@ subprojects {
     targetCompatibility = '1.8'
 
     def defaultEncoding = 'UTF-8'
-    tasks.withType(AbstractCompile).each { it.options.encoding = defaultEncoding }
+
+    [AbstractCompile, Javadoc].each {
+      tasks.withType(it).each { it.options.encoding = defaultEncoding }
+    }
 
     repositories {
         jcenter()

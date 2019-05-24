@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
 import org.springframework.stereotype.Service;
 

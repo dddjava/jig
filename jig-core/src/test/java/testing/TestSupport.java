@@ -1,6 +1,6 @@
 package testing;
 
-import org.dddjava.jig.domain.model.implementation.raw.ClassSource;
+import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
 import org.dddjava.jig.domain.model.implementation.raw.SourceLocation;
 
 import java.io.IOException;

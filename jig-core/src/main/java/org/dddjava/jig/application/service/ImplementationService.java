@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCod
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.raw.*;
+import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
 import org.springframework.stereotype.Service;
 
 /**

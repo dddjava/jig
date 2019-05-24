@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
-import org.dddjava.jig.domain.model.implementation.raw.JavaSources;
+import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
 
 /**

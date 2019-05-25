@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class KotlinSourceVisitor extends KtTreeVisitorVoid {
 
-    List<TypeAlias> typeJapaneseNames = new ArrayList<>();
+    List<TypeAlias> typeJapaneseAliases = new ArrayList<>();
     List<MethodAlias> methodList = new ArrayList<>();
 
     @Override
@@ -37,7 +37,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
             return;
         }
         TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
-        typeJapaneseNames.add(new TypeAlias(identifier, new Alias(text)));
+        typeJapaneseAliases.add(new TypeAlias(identifier, new Alias(text)));
     }
 
     @Override

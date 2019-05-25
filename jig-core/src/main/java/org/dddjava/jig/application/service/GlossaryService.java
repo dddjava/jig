@@ -48,32 +48,32 @@ public class GlossaryService {
      * Javadocから別名を取り込む
      */
     public void importJapanese(PackageInfoSources packageInfoSources) {
-        PackageNames packageNames = reader.readPackages(packageInfoSources);
-        packageNames.register(repository);
+        PackageAliases packageAliases = reader.readPackages(packageInfoSources);
+        packageAliases.register(repository);
     }
 
     /**
      * Javadocから別名を取り込む
      */
     public void importJapanese(JavaSources javaSources) {
-        TypeNames typeNames = reader.readTypes(javaSources);
-        importJapanese(typeNames);
+        TypeAliases typeAliases = reader.readTypes(javaSources);
+        importJapanese(typeAliases);
     }
 
     /**
      * KtDocから別名を取り込む
      */
     public void importJapanese(KotlinSources kotlinSources) {
-        TypeNames typeNames = reader.readTypes(kotlinSources);
-        importJapanese(typeNames);
+        TypeAliases typeAliases = reader.readTypes(kotlinSources);
+        importJapanese(typeAliases);
     }
 
-    private void importJapanese(TypeNames typeNames) {
-        for (TypeAlias typeAlias : typeNames.list()) {
+    private void importJapanese(TypeAliases typeAliases) {
+        for (TypeAlias typeAlias : typeAliases.list()) {
             repository.register(typeAlias);
         }
 
-        for (MethodAlias methodAlias : typeNames.methodList()) {
+        for (MethodAlias methodAlias : typeAliases.methodList()) {
             repository.register(methodAlias);
         }
     }

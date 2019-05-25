@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSo
  */
 public interface AliasReader {
 
-    PackageNames readPackages(PackageInfoSources packageInfoSources);
+    PackageAliases readPackages(PackageInfoSources packageInfoSources);
 
-    TypeNames readTypes(SourceCodes<? extends SourceCode> sourceCodes);
+    TypeAliases readTypes(SourceCodes<? extends SourceCode> sourceCodes);
 }

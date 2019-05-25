@@ -35,17 +35,17 @@ public class JavaparserAliasReader implements SourceCodeParser {
     }
 
     @Override
-    public PackageNames readPackages(PackageInfoSources nameSources) {
+    public PackageAliases readPackages(PackageInfoSources nameSources) {
         List<PackageAlias> names = new ArrayList<>();
         for (PackageInfoSource packageInfoSource : nameSources.list()) {
             packageInfoReader.read(packageInfoSource)
                     .ifPresent(names::add);
         }
-        return new PackageNames(names);
+        return new PackageAliases(names);
     }
 
     @Override
-    public TypeNames readTypes(SourceCodes<? extends SourceCode> sourceCodes) {
+    public TypeAliases readTypes(SourceCodes<? extends SourceCode> sourceCodes) {
         List<TypeAlias> names = new ArrayList<>();
         List<MethodAlias> methodNames = new ArrayList<>();
 
@@ -63,6 +63,6 @@ public class JavaparserAliasReader implements SourceCodeParser {
                 LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);
             }
         }
-        return new TypeNames(names, methodNames);
+        return new TypeAliases(names, methodNames);
     }
 }

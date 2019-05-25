@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.kotlinparser;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageNames;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeNames;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAliases;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAliases;
 import org.dddjava.jig.domain.model.implementation.raw.KotlinSource;
 import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
 import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 
 public class KotlinparserJapaneseReader implements SourceCodeParser {
     @Override
-    public PackageNames readPackages(PackageInfoSources packageInfoSources) {
-        return new PackageNames(new ArrayList<>());
+    public PackageAliases readPackages(PackageInfoSources packageInfoSources) {
+        return new PackageAliases(new ArrayList<>());
     }
 
     @Override
-    public TypeNames readTypes(SourceCodes<? extends SourceCode> sources) {
+    public TypeAliases readTypes(SourceCodes<? extends SourceCode> sources) {
         KotlinSources kotlinSources = (KotlinSources) sources;
         KotlinSourceVisitor visitor = new KotlinSourceVisitor();
 
@@ -46,7 +46,7 @@ public class KotlinparserJapaneseReader implements SourceCodeParser {
             ktFile.accept(visitor);
         }
 
-        return new TypeNames(visitor.typeJapaneseNames, visitor.methodList);
+        return new TypeAliases(visitor.typeJapaneseAliases, visitor.methodList);
     }
 
     private KtFile sourceToKtFile(KotlinSource kotlinSource, String source) {

@@ -45,7 +45,7 @@ public class ImplementationService {
      * プロジェクト情報を読み取る
      */
     public TypeByteCodes readProjectData(RawSource rawSource) {
-        TypeByteCodes typeByteCodes = readByteCode(rawSource.binarySource().classSources());
+        TypeByteCodes typeByteCodes = readByteCode(rawSource.classSources());
 
         glossaryService.importJapanese(rawSource.textSource().javaSources());
         glossaryService.importJapanese(rawSource.textSource().packageInfoSources());

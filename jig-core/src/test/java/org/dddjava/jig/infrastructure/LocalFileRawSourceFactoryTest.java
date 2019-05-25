@@ -23,7 +23,7 @@ class LocalFileRawSourceFactoryTest {
         LocalFileRawSourceFactory sut = new LocalFileRawSourceFactory();
         RawSource source = sut.createSource(rawSourceLocations);
 
-        assertTrue(source.binarySource().classSources().list().isEmpty());
+        assertTrue(source.classSources().list().isEmpty());
         assertTrue(source.textSource().javaSources().list().isEmpty());
         assertTrue(source.textSource().packageInfoSources().list().isEmpty());
     }

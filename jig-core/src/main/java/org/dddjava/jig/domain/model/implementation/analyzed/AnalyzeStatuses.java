@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed;
 
+import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
+
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -32,7 +34,7 @@ public class AnalyzeStatuses {
     public String errorLogText() {
         return listErrorOnly().stream()
                 .map(status -> {
-                    ResourceBundle resource = ResourceBundle.getBundle("jig-messages");
+                    ResourceBundle resource = Utf8ResourceBundle.messageBundle();
                     return resource.getString(status.messageKey);
                 })
                 .collect(Collectors.joining("\n- ", "- ", ""));
@@ -41,7 +43,7 @@ public class AnalyzeStatuses {
     public String warningLogText() {
         return list.stream()
                 .map(status -> {
-                    ResourceBundle resource = ResourceBundle.getBundle("jig-messages");
+                    ResourceBundle resource = Utf8ResourceBundle.messageBundle();
                     return resource.getString(status.messageKey);
                 })
                 .collect(Collectors.joining("\n- ", "- ", ""));

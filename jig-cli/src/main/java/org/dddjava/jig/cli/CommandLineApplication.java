@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
@@ -36,7 +37,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
+        ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 

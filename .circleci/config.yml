@@ -21,6 +21,9 @@ anchors:
           path: jig-core/build/reports/tests
       - store_artifacts:
           path: jig-gradle-plugin/build/reports/tests
+      - run: ./gradlew downloadLicenses
+      - store_artifacts:
+          path: build/reports/license
 jobs:
   java-8:
     docker:

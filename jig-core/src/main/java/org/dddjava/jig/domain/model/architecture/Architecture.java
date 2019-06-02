@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.architecture;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
@@ -32,14 +31,5 @@ public class Architecture {
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(controller)
                         || typeAnnotation.typeIs(restController)
                         || typeAnnotation.typeIs(controllerAdvice));
-    }
-
-    public ArchitectureBlock layer(TypeByteCode typeByteCode) {
-        // TODO enumにもってきたい
-        if (isService(typeByteCode.typeAnnotations())) return ArchitectureBlock.APPLICATION;
-        if (isDataSource(typeByteCode.typeAnnotations())) return ArchitectureBlock.DATASOURCE;
-        if (isController(typeByteCode.typeAnnotations())) return ArchitectureBlock.PRESENTATION;
-
-        return ArchitectureBlock.OTHER;
     }
 }

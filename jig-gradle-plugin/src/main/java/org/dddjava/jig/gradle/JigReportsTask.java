@@ -44,7 +44,10 @@ public class JigReportsTask extends DefaultTask {
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
-            getLogger().warn(jigMessages.getString("failure"), status.errorLogText());
+            getLogger().warn(jigMessages.getString("failure"));
+            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
+                getLogger().warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
             return;
         }
         if (status.hasWarning()) {

@@ -53,7 +53,10 @@ public class CommandLineApplication implements CommandLineRunner {
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
-            LOGGER.warn(jigMessages.getString("failure"), status.errorLogText());
+            LOGGER.warn(jigMessages.getString("failure"));
+            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
+                LOGGER.warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
             return;
         }
         if (status.hasWarning()) {

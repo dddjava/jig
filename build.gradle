@@ -7,10 +7,15 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.4' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2019.5.4' apply false
+    id "com.github.hierynomus.license" version "0.15.0"
 }
 
 repositories {
     jcenter()
+}
+
+downloadLicenses {
+    dependencyConfiguration = 'compileClasspath'
 }
 
 subprojects {

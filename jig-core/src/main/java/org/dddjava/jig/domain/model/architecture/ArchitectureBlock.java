@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.architecture;
 
 /**
- * 属するレイヤー
+ * アーキテクチャの構成要素
  */
 public enum ArchitectureBlock {
     PRESENTATION,

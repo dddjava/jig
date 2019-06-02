@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.architecture;
+package org.dddjava.jig.domain.model.architecture;
 
 /**
  * 属するレイヤー

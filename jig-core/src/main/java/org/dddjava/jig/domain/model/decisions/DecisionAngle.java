@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
+import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 /**

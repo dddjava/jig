@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.datasources;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;

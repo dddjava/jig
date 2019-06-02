@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;

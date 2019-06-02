@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
+import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;

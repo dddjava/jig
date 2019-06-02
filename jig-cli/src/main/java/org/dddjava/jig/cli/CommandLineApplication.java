@@ -1,6 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
@@ -56,7 +57,10 @@ public class CommandLineApplication implements CommandLineRunner {
             return;
         }
         if (status.hasWarning()) {
-            LOGGER.warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
+            LOGGER.warn(jigMessages.getString("implementation.warning"));
+            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
+                LOGGER.warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
         }
 
         List<HandleResult> handleResultList = new ArrayList<>();

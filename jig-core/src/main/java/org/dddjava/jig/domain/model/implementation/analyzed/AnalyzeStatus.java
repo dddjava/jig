@@ -12,7 +12,7 @@ public enum AnalyzeStatus {
     SQL読み込み一部失敗("implementation.SqlReadWarning"),
     SQL読み込み失敗("implementation.SqlReadError");
 
-    String messageKey;
+    public String messageKey;
 
     AnalyzeStatus(String messageKey) {
         this.messageKey = messageKey;

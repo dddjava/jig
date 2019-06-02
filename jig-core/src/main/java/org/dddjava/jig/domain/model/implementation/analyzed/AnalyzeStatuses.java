@@ -40,12 +40,7 @@ public class AnalyzeStatuses {
                 .collect(Collectors.joining("\n- ", "- ", ""));
     }
 
-    public String warningLogText() {
-        return list.stream()
-                .map(status -> {
-                    ResourceBundle resource = Utf8ResourceBundle.messageBundle();
-                    return resource.getString(status.messageKey);
-                })
-                .collect(Collectors.joining("\n- ", "- ", ""));
+    public List<AnalyzeStatus> listWarning() {
+        return list;
     }
 }

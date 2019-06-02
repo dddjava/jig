@@ -1,12 +1,12 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
@@ -53,7 +53,7 @@ public class ApplicationService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(TypeByteCodes typeByteCodes) {
-        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
+        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes);
 
         if (serviceMethods.empty()) {
             LOGGER.warn(Warning.サービスメソッドが見つからないので出力されない通知.text());

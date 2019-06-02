@@ -1,10 +1,10 @@
 package testing;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;

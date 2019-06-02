@@ -1,10 +1,12 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
@@ -36,7 +38,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
+        ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
@@ -51,11 +53,17 @@ public class CommandLineApplication implements CommandLineRunner {
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
-            LOGGER.warn(jigMessages.getString("failure"), status.errorLogText());
+            LOGGER.warn(jigMessages.getString("failure"));
+            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
+                LOGGER.warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
             return;
         }
         if (status.hasWarning()) {
-            LOGGER.warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
+            LOGGER.warn(jigMessages.getString("implementation.warning"));
+            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
+                LOGGER.warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
         }
 
         List<HandleResult> handleResultList = new ArrayList<>();

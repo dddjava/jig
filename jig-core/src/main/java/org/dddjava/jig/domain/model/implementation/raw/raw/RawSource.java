@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.raw.raw;
 
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
+import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
 import org.dddjava.jig.domain.model.implementation.raw.sqlfile.SqlSources;
 import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
 import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSources;
@@ -30,10 +30,6 @@ public class RawSource {
         return textSources.toTextSource();
     }
 
-    public BinarySource binarySource() {
-        return binarySources.toBinarySource();
-    }
-
     public SqlSources sqlSources() {
         URL[] urls = binarySources.list().stream()
                 .map(binarySource -> {
@@ -58,5 +54,9 @@ public class RawSource {
 
     public boolean nothingTextSource() {
         return textSources.nothing();
+    }
+
+    public ClassSources classSources() {
+        return binarySources.toBinarySource().classSources();
     }
 }

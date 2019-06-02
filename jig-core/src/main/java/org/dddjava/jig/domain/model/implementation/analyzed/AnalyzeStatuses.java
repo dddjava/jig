@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed;
 
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -29,21 +28,11 @@ public class AnalyzeStatuses {
                 .collect(Collectors.toList());
     }
 
-    public String errorLogText() {
-        return listErrorOnly().stream()
-                .map(status -> {
-                    ResourceBundle resource = ResourceBundle.getBundle("jig-messages");
-                    return resource.getString(status.messageKey);
-                })
-                .collect(Collectors.joining("\n- ", "- ", ""));
+    public List<AnalyzeStatus> listWarning() {
+        return list;
     }
 
-    public String warningLogText() {
-        return list.stream()
-                .map(status -> {
-                    ResourceBundle resource = ResourceBundle.getBundle("jig-messages");
-                    return resource.getString(status.messageKey);
-                })
-                .collect(Collectors.joining("\n- ", "- ", ""));
+    public List<AnalyzeStatus> listErrors() {
+        return listErrorOnly();
     }
 }

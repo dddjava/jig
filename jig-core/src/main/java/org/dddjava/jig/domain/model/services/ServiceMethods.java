@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.services;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
@@ -17,12 +17,10 @@ import static java.util.stream.Collectors.toList;
 public class ServiceMethods {
     private final List<Method> methods;
 
-    public ServiceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
-        List<TypeByteCode> serviceByteCodes = typeByteCodes.list().stream()
-                .filter(typeByteCode -> architecture.isService(typeByteCode.typeAnnotations()))
-                .collect(toList());
+    public ServiceMethods(TypeByteCodes typeByteCodes) {
+        TypeByteCodes applications = ApplicationLayer.APPLICATION.filter(typeByteCodes);
 
-        this.methods = serviceByteCodes.stream()
+        this.methods = applications.list().stream()
                 .map(TypeByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
                 .map(methodByteCode -> new Method(methodByteCode))

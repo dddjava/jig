@@ -1,10 +1,12 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
+import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
@@ -24,7 +26,7 @@ public class JigReportsTask extends DefaultTask {
 
     @TaskAction
     void outputReports() {
-        ResourceBundle jigMessages = ResourceBundle.getBundle("jig-messages");
+        ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
         Project project = getProject();
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
@@ -42,11 +44,17 @@ public class JigReportsTask extends DefaultTask {
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {
-            getLogger().warn(jigMessages.getString("failure"), status.errorLogText());
+            getLogger().warn(jigMessages.getString("failure"));
+            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
+                getLogger().warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
             return;
         }
         if (status.hasWarning()) {
-            getLogger().warn(jigMessages.getString("implementation.warnings"), status.warningLogText());
+            getLogger().warn(jigMessages.getString("implementation.warning"));
+            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
+                getLogger().warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
+            }
         }
 
         List<HandleResult> handleResultList = new ArrayList<>();

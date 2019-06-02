@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.infrastructure.resourcebundle;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

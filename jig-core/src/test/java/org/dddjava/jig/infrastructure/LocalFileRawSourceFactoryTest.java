@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSourceLocations;
+import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -23,7 +23,7 @@ class LocalFileRawSourceFactoryTest {
         LocalFileRawSourceFactory sut = new LocalFileRawSourceFactory();
         RawSource source = sut.createSource(rawSourceLocations);
 
-        assertTrue(source.binarySource().classSources().list().isEmpty());
+        assertTrue(source.classSources().list().isEmpty());
         assertTrue(source.textSource().javaSources().list().isEmpty());
         assertTrue(source.textSource().packageInfoSources().list().isEmpty());
     }

@@ -3,15 +3,16 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
@@ -85,10 +86,11 @@ public class ClassListController {
 
     @DocumentMapping(JigDocument.BranchList)
     public JigModelAndView<ModelReports> branchList(AnalyzedImplementation implementations) {
+        DecisionAngles decisionAngles = applicationService.decision(implementations.typeByteCodes());
         ModelReports modelReports = new ModelReports(
-                decisionReport(implementations, Layer.PRESENTATION),
-                decisionReport(implementations, Layer.APPLICATION),
-                decisionReport(implementations, Layer.DATASOURCE)
+                decisionReport(decisionAngles.listPresentations(), ApplicationLayer.PRESENTATION),
+                decisionReport(decisionAngles.listApplications(), ApplicationLayer.APPLICATION),
+                decisionReport(decisionAngles.listInfrastructures(), ApplicationLayer.INFRASTRUCTURE)
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
@@ -151,9 +153,8 @@ public class ClassListController {
         return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport<?> decisionReport(AnalyzedImplementation implementations, Layer layer) {
-        DecisionAngles decisionAngles = applicationService.decision(implementations.typeByteCodes());
-        return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
+    ModelReport<?> decisionReport(List<DecisionAngle> decisionAngles, ApplicationLayer applicationLayer) {
+        return new ModelReport<>(applicationLayer.name(), decisionAngles, DecisionReport::new, DecisionReport.class);
     }
 
     ModelReport<?> smellReport(AnalyzedImplementation implementations) {

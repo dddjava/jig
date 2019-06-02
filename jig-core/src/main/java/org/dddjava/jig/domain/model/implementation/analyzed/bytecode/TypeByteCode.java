@@ -27,9 +27,6 @@ public class TypeByteCode {
     final ParameterizedType parameterizedSuperType;
     final ParameterizedTypes parameterizedInterfaceTypes;
 
-    @Deprecated
-    public TypeIdentifiers interfaceTypeIdentifiers;
-
     final List<TypeAnnotation> typeAnnotations = new ArrayList<>();
     final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
@@ -50,12 +47,11 @@ public class TypeByteCode {
         this.typeIdentifier = typeIdentifier;
         this.parameterizedSuperType = parameterizedSuperType;
         this.parameterizedInterfaceTypes = parameterizedInterfaceTypes;
-        this.interfaceTypeIdentifiers = parameterizedInterfaceTypes.identifiers();
         this.canExtend = canExtend;
 
         this.useTypes.addAll(useTypes);
         this.useTypes.add(parameterizedSuperType.typeIdentifier());
-        this.useTypes.addAll(interfaceTypeIdentifiers.list());
+        this.useTypes.addAll(parameterizedInterfaceTypes.identifiers().list());
     }
 
     public TypeIdentifier typeIdentifier() {

@@ -1,13 +1,10 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Architecture;
-import org.dddjava.jig.domain.model.implementation.analyzed.architecture.Layer;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,24 +13,30 @@ import java.util.stream.Collectors;
  */
 public class DecisionAngles {
 
-    List<DecisionAngle> list;
+    TypeByteCodes typeByteCodes;
 
     public DecisionAngles(TypeByteCodes typeByteCodes, Architecture architecture) {
-        list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            Layer layer = architecture.layer(typeByteCode);
-
-            for (MethodByteCode instanceMethodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                if (instanceMethodByteCode.decisionNumber().notZero()) {
-                    list.add(new DecisionAngle(new Method(instanceMethodByteCode), layer));
-                }
-            }
-        }
+        this.typeByteCodes = typeByteCodes;
     }
 
-    public List<DecisionAngle> filter(Layer layer) {
-        return list.stream()
-                .filter(decisionAngle -> decisionAngle.typeLayer() == layer)
+    List<DecisionAngle> toDecisionAngleList(TypeByteCodes list) {
+        return list.list().stream()
+                .flatMap(typeByteCode -> typeByteCode.instanceMethodByteCodes().stream())
+                .filter(methodByteCode -> methodByteCode.decisionNumber().notZero())
+                .map(Method::new)
+                .map(DecisionAngle::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<DecisionAngle> listApplications() {
+        return toDecisionAngleList(ApplicationLayer.APPLICATION.filter(typeByteCodes));
+    }
+
+    public List<DecisionAngle> listPresentations() {
+        return toDecisionAngleList(ApplicationLayer.PRESENTATION.filter(typeByteCodes));
+    }
+
+    public List<DecisionAngle> listInfrastructures() {
+        return toDecisionAngleList(ApplicationLayer.INFRASTRUCTURE.filter(typeByteCodes));
     }
 }

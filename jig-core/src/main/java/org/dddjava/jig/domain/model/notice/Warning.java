@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.notice;
 
+import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
+
 import java.util.ResourceBundle;
 
 /**
@@ -19,7 +21,7 @@ public enum Warning {
     }
 
     public String text() {
-        ResourceBundle resource = ResourceBundle.getBundle("jig-messages");
+        ResourceBundle resource = Utf8ResourceBundle.messageBundle();
         return resource.getString(key);
     }
 }

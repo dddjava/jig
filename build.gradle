@@ -252,6 +252,9 @@ project(':jig-core') {
     }
 
     build.dependsOn(publishToMavenLocal)
+    processResources {
+        expand(version: version)
+    }
 
     jigReports.dependsOn(clean, compileJava, processResources)
     jig {

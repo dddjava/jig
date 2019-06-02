@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.architecture.Layer;
+import org.dddjava.jig.domain.model.architecture.ArchitectureBlock;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 /**
@@ -9,18 +9,18 @@ import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 public class DecisionAngle {
 
     Method method;
-    Layer layer;
+    ArchitectureBlock architectureBlock;
 
-    public DecisionAngle(Method method, Layer layer) {
+    public DecisionAngle(Method method, ArchitectureBlock architectureBlock) {
         this.method = method;
-        this.layer = layer;
+        this.architectureBlock = architectureBlock;
     }
 
     public Method method() {
         return method;
     }
 
-    public Layer typeLayer() {
-        return layer;
+    public ArchitectureBlock typeLayer() {
+        return architectureBlock;
     }
 }

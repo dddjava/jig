@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.architecture.Layer;
+import org.dddjava.jig.domain.model.architecture.ArchitectureBlock;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
@@ -86,9 +86,9 @@ public class ClassListController {
     @DocumentMapping(JigDocument.BranchList)
     public JigModelAndView<ModelReports> branchList(AnalyzedImplementation implementations) {
         ModelReports modelReports = new ModelReports(
-                decisionReport(implementations, Layer.PRESENTATION),
-                decisionReport(implementations, Layer.APPLICATION),
-                decisionReport(implementations, Layer.DATASOURCE)
+                decisionReport(implementations, ArchitectureBlock.PRESENTATION),
+                decisionReport(implementations, ArchitectureBlock.APPLICATION),
+                decisionReport(implementations, ArchitectureBlock.DATASOURCE)
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
@@ -151,9 +151,9 @@ public class ClassListController {
         return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport<?> decisionReport(AnalyzedImplementation implementations, Layer layer) {
+    ModelReport<?> decisionReport(AnalyzedImplementation implementations, ArchitectureBlock architectureBlock) {
         DecisionAngles decisionAngles = applicationService.decision(implementations.typeByteCodes());
-        return new ModelReport<>(layer.asText(), decisionAngles.filter(layer), DecisionReport::new, DecisionReport.class);
+        return new ModelReport<>(architectureBlock.asText(), decisionAngles.filter(architectureBlock), DecisionReport::new, DecisionReport.class);
     }
 
     ModelReport<?> smellReport(AnalyzedImplementation implementations) {

@@ -34,12 +34,12 @@ public class Architecture {
                         || typeAnnotation.typeIs(controllerAdvice));
     }
 
-    public Layer layer(TypeByteCode typeByteCode) {
+    public ArchitectureBlock layer(TypeByteCode typeByteCode) {
         // TODO enumにもってきたい
-        if (isService(typeByteCode.typeAnnotations())) return Layer.APPLICATION;
-        if (isDataSource(typeByteCode.typeAnnotations())) return Layer.DATASOURCE;
-        if (isController(typeByteCode.typeAnnotations())) return Layer.PRESENTATION;
+        if (isService(typeByteCode.typeAnnotations())) return ArchitectureBlock.APPLICATION;
+        if (isDataSource(typeByteCode.typeAnnotations())) return ArchitectureBlock.DATASOURCE;
+        if (isController(typeByteCode.typeAnnotations())) return ArchitectureBlock.PRESENTATION;
 
-        return Layer.OTHER;
+        return ArchitectureBlock.OTHER;
     }
 }

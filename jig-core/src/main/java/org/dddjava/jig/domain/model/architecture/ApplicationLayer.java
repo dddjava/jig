@@ -14,31 +14,22 @@ import static java.util.stream.Collectors.toList;
 public enum ApplicationLayer {
     PRESENTATION(ArchitectureBlock.PRESENTATION) {
         @Override
-        public TypeByteCodes filter(TypeByteCodes typeByteCodes) {
-            List<TypeByteCode> list = typeByteCodes.list().stream()
-                    .filter(typeByteCode -> architecture.isController(typeByteCode.typeAnnotations()))
-                    .collect(toList());
-            return new TypeByteCodes(list);
+        boolean match(TypeByteCode typeByteCode) {
+            return architecture.isController(typeByteCode.typeAnnotations());
         }
     },
 
     APPLICATION(ArchitectureBlock.APPLICATION) {
         @Override
-        public TypeByteCodes filter(TypeByteCodes typeByteCodes) {
-            List<TypeByteCode> list = typeByteCodes.list().stream()
-                    .filter(typeByteCode -> architecture.isService(typeByteCode.typeAnnotations()))
-                    .collect(toList());
-            return new TypeByteCodes(list);
+        boolean match(TypeByteCode typeByteCode) {
+            return architecture.isService(typeByteCode.typeAnnotations());
         }
     },
 
     INFRASTRUCTURE(ArchitectureBlock.DATASOURCE) {
         @Override
-        public TypeByteCodes filter(TypeByteCodes typeByteCodes) {
-            List<TypeByteCode> list = typeByteCodes.list().stream()
-                    .filter(typeByteCode -> architecture.isDataSource(typeByteCode.typeAnnotations()))
-                    .collect(toList());
-            return new TypeByteCodes(list);
+        boolean match(TypeByteCode typeByteCode) {
+            return architecture.isDataSource(typeByteCode.typeAnnotations());
         }
     };
 
@@ -50,5 +41,12 @@ public enum ApplicationLayer {
         this.architectureBlock = architectureBlock;
     }
 
-    public abstract TypeByteCodes filter(TypeByteCodes typeByteCodes);
+    public TypeByteCodes filter(TypeByteCodes typeByteCodes) {
+        List<TypeByteCode> list = typeByteCodes.list().stream()
+                .filter(this::match)
+                .collect(toList());
+        return new TypeByteCodes(list);
+    }
+
+    abstract boolean match(TypeByteCode typeByteCode);
 }

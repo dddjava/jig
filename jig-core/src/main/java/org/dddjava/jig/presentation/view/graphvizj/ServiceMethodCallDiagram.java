@@ -88,7 +88,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(relationText.asText())
                 .add(subgraphText)
                 .add(serviceMethodText)
-                .add(requestHandlerText(angles).toString())
+                .add(requestHandlerText(angles))
                 .add(legendText())
                 .toString();
         return new DotTexts(graphText);
@@ -113,7 +113,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
      *
      * [RequestHandlerMethod] --> [ServiceMethod]
      */
-    public StringJoiner requestHandlerText(List<ServiceAngle> angles) {
+    public String requestHandlerText(List<ServiceAngle> angles) {
         Set<MethodDeclaration> handlers = new HashSet<>();
         RelationText handlingRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
@@ -130,7 +130,8 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add("{rank=same;")
                 .add(handlersText)
                 .add("}")
-                .add(handlingRelation.asText());
+                .add(handlingRelation.asText())
+                .toString();
     }
 
     private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {

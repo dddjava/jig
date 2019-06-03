@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -89,6 +90,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(subgraphText)
                 .add(serviceMethodText)
                 .add(requestHandlerText(angles))
+                .add(repositoryText(angles))
                 .add(legendText())
                 .toString();
         return new DotTexts(graphText);
@@ -105,11 +107,12 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(new Node(jigDocumentContext.label("not_public_method")).notPublicMethod().asText())
                 .add(new Node("lambda").lambda().asText())
                 .add(new Node(jigDocumentContext.label("controller_method")).other().asText())
+                .add(new Node(jigDocumentContext.label("repository_type")).other().asText())
                 .toString();
     }
 
     /**
-     * リクエストハンドラ（Controllerのメソッド）の表示とServiceMethodへの関連
+     * リクエストハンドラ（Controllerのメソッド）の表示とServiceMethodへの関連。リクエストハンドラは同じRankにする。
      *
      * [RequestHandlerMethod] --> [ServiceMethod]
      */
@@ -122,15 +125,38 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 handlers.add(handlerMethod);
             }
         }
-        String handlersText = handlers.stream()
+        String requestHandlerMethods = handlers.stream()
                 .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
                 .map(Node::asText)
                 .collect(joining("\n"));
         return new StringJoiner("\n")
-                .add("{rank=same;")
-                .add(handlersText)
-                .add("}")
-                .add(handlingRelation.asText())
+                .add("{rank=same;").add(requestHandlerMethods).add("}")
+                .add("{edge [style=dashed];").add(handlingRelation.asText()).add("}")
+                .toString();
+    }
+
+    /**
+     * リポジトリの表示とServiceMethodからの関連。リポジトリは同じRankにする。
+     *
+     * [ServiceMethod] --> [Repository]
+     */
+    private String repositoryText(List<ServiceAngle> angles) {
+        Set<TypeIdentifier> repositories = new HashSet<>();
+        RelationText repositoryRelation = new RelationText();
+        for (ServiceAngle serviceAngle : angles) {
+            for (Method repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
+                repositoryRelation.add(serviceAngle.method(), repositoryMethod.declaration().declaringType());
+                repositories.add(repositoryMethod.declaration().declaringType());
+            }
+        }
+        String repositoryTypes = repositories.stream()
+                .map(repository -> Node.of(repository).other().label(repository.asSimpleText()))
+                .map(Node::asText)
+                .collect(joining("\n"));
+
+        return new StringJoiner("\n")
+                .add("{rank=same;").add(repositoryTypes).add("}")
+                .add("{edge [style=dashed];").add(repositoryRelation.asText()).add("}")
                 .toString();
     }
 

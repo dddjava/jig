@@ -47,4 +47,8 @@ public class RelationText {
     public void add(TypeIdentifier from, String to) {
         add(from.fullQualifiedName(), to);
     }
+
+    public void add(MethodDeclaration from, TypeIdentifier to) {
+        add(from.asFullNameText(), to.fullQualifiedName());
+    }
 }

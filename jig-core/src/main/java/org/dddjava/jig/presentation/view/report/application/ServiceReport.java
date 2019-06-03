@@ -41,7 +41,7 @@ public class ServiceReport {
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "使用しているリポジトリのメソッド", order = 2)
     public String usingRepositoryMethods() {
-        return angle.usingRepositoryMethods();
+        return angle.usingRepositoryMethods().asSimpleText();
     }
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 3)

@@ -29,7 +29,7 @@ public enum ApplicationLayer {
     INFRASTRUCTURE(ArchitectureBlock.DATASOURCE) {
         @Override
         boolean match(TypeByteCode typeByteCode) {
-            return architecture.isDataSource(typeByteCode.typeAnnotations());
+            return architecture.isDataSource(typeByteCode);
         }
     };
 

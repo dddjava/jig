@@ -22,7 +22,7 @@ public class DatasourceMethods {
     public DatasourceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         this.list = new ArrayList<>();
         for (TypeByteCode concreteByteCode : typeByteCodes.list()) {
-            if (!architecture.isDataSource(concreteByteCode.typeAnnotations())) {
+            if (!architecture.isDataSource(concreteByteCode)) {
                 continue;
             }
 

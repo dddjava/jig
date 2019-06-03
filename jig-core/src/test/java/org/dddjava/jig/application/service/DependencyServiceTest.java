@@ -1,10 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -18,10 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存(DependencyService dependencyService, ImplementationService implementationService, RawSource source) {
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(new AnalyzedImplementation(null, typeByteCodes, null));
+    void パッケージ依存(DependencyService dependencyService, AnalyzedImplementation analyzedImplementation) {
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(analyzedImplementation);
 
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()

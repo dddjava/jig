@@ -3,9 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -23,11 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ValueAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, BusinessRuleService service, RawSource source) {
-
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-        AnalyzedImplementation analyzedImplementation = new AnalyzedImplementation(null, typeByteCodes, null);
-
+    void readProjectData(BusinessRuleService service, AnalyzedImplementation analyzedImplementation) {
         ValueAngles identifiers = service.values(ValueKind.IDENTIFIER, analyzedImplementation);
         assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier)
                 .contains(

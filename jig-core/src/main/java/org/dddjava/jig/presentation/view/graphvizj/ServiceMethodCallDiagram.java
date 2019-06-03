@@ -41,6 +41,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
             }
         }
 
+        // リクエストハンドラからServiceMethodへの関連
         Set<MethodDeclaration> handlers = new HashSet<>();
         RelationText handlingRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
@@ -50,6 +51,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
             }
         }
 
+        // リクエストハンドラ
         String handlersText = handlers.stream()
                 .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
                 .map(Node::asText)

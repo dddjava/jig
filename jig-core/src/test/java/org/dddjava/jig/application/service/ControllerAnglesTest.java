@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
@@ -17,7 +18,7 @@ public class ControllerAnglesTest {
     void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        ControllerAngles angles = applicationService.controllerAngles(typeByteCodes);
+        ControllerAngles angles = applicationService.controllerAngles(new AnalyzedImplementation(null, typeByteCodes, null));
 
         assertThat(angles.list())
                 .extracting(

@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation;
 
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,9 +15,10 @@ public class ValidationAnnotatedMembers {
     private final FieldAnnotations fieldAnnotations;
     private final MethodAnnotations methodAnnotations;
 
-    public ValidationAnnotatedMembers(FieldAnnotations fieldAnnotations, MethodAnnotations methodAnnotations) {
-        this.fieldAnnotations = fieldAnnotations;
-        this.methodAnnotations = methodAnnotations;
+    public ValidationAnnotatedMembers(AnalyzedImplementation analyzedImplementation) {
+        TypeByteCodes typeByteCodes= analyzedImplementation.typeByteCodes();
+        this.fieldAnnotations = typeByteCodes.annotatedFields();
+        this.methodAnnotations = typeByteCodes.annotatedMethods();
     }
 
     public List<ValidationAnnotatedMember> list() {

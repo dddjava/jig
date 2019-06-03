@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
@@ -22,7 +23,7 @@ public class ServiceAngleTest {
     void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        ServiceAngles serviceAngles = applicationService.serviceAngles(typeByteCodes);
+        ServiceAngles serviceAngles = applicationService.serviceAngles(new AnalyzedImplementation(null, typeByteCodes, null));
 
         assertThat(serviceAngles.list())
                 .extracting(

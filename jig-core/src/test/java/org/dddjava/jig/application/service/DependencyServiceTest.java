@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
@@ -20,7 +21,7 @@ public class DependencyServiceTest {
     void パッケージ依存(DependencyService dependencyService, ImplementationService implementationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(typeByteCodes);
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(new AnalyzedImplementation(null, typeByteCodes, null));
 
         // パッケージのリストアップ
         List<String> packageNames = packageNetwork.allPackages().stream()

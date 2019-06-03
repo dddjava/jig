@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
@@ -21,7 +22,7 @@ public class DatasourceAngleTest {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
         Sqls sqls = implementationService.readSql(source.sqlSources());
 
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(new AnalyzedImplementation(null, typeByteCodes, sqls));
 
         assertThat(datasourceAngles.list())
                 .extracting(

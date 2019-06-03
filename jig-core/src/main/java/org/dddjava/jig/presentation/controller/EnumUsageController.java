@@ -26,14 +26,14 @@ public class EnumUsageController {
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)
     public JigModelAndView<CategoryAngles> enumUsage(AnalyzedImplementation implementations) {
-        CategoryAngles categoryAngles = businessRuleService.categories(implementations.typeByteCodes());
+        CategoryAngles categoryAngles = businessRuleService.categories(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)
     public JigModelAndView<CategoryAngles> categories(AnalyzedImplementation implementations) {
-        CategoryAngles categoryAngles = businessRuleService.categories(implementations.typeByteCodes());
+        CategoryAngles categoryAngles = businessRuleService.categories(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(categoryAngles, viewResolver.categories(aliasFinder));
     }

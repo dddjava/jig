@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.SoftAssertions;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
@@ -31,7 +32,7 @@ public class ProgressAngleTest {
     @Test
     void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-        ProgressAngles sut = applicationService.progressAngles(typeByteCodes);
+        ProgressAngles sut = applicationService.progressAngles(new AnalyzedImplementation(null, typeByteCodes, null));
 
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(

@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ public class DecisionAngleTest {
     void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        DecisionAngles decisionAngles = applicationService.decision(typeByteCodes);
+        DecisionAngles decisionAngles = applicationService.decision(new AnalyzedImplementation(null, typeByteCodes, null));
 
         assertThat(decisionAngles.listApplications())
                 .extracting(decisionAngle -> decisionAngle.method().declaration().asFullNameText())

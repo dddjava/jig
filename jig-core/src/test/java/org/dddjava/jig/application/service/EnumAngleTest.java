@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
@@ -18,7 +19,7 @@ public class EnumAngleTest {
     void readProjectData(ImplementationService implementationService, BusinessRuleService businessRuleService, RawSource source) {
         TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
 
-        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
+        CategoryAngles categoryAngles = businessRuleService.categories(new AnalyzedImplementation(null, typeByteCodes, null));
 
         assertThat(categoryAngles.list())
                 .extracting(

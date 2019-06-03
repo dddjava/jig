@@ -26,14 +26,14 @@ public class ServiceDiagramController {
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
     public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
+        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
     public JigModelAndView<?> booleanServiceTrace(AnalyzedImplementation implementations) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations.typeByteCodes());
+        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(aliasFinder));
     }

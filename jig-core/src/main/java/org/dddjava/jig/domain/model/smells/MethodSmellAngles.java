@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.smells;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
@@ -15,7 +17,7 @@ import java.util.List;
 public class MethodSmellAngles {
     List<MethodSmellAngle> list;
 
-    public MethodSmellAngles(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
+    MethodSmellAngles(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
         this.list = new ArrayList<>();
         for (Method method : methods.list()) {
             if (businessRules.contains(method.declaration().declaringType())) {
@@ -29,6 +31,17 @@ public class MethodSmellAngles {
                 }
             }
         }
+    }
+
+    MethodSmellAngles(TypeByteCodes typeByteCodes, BusinessRules businessRules) {
+        this(new Methods(typeByteCodes),
+                typeByteCodes.instanceFields(),
+                new MethodRelations(typeByteCodes),
+                businessRules);
+    }
+
+    public MethodSmellAngles(AnalyzedImplementation analyzedImplementation, BusinessRules businessRules) {
+        this(analyzedImplementation.typeByteCodes(), businessRules);
     }
 
     public List<MethodSmellAngle> list() {

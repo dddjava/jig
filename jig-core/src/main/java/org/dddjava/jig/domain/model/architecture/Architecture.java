@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.architecture;
 
+import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
@@ -16,8 +17,10 @@ public class Architecture {
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(serviceAnnotation));
     }
 
-    public boolean isDataSource(List<TypeAnnotation> typeAnnotations) {
+    public boolean isDataSource(TypeByteCode typeByteCode) {
+        // TODO インタフェース実装を見てない
         // DataSourceは Repositoryインタフェースが実装され @Repository のついた infrastructure/datasource のクラス
+        List<TypeAnnotation> typeAnnotations = typeByteCode.typeAnnotations();
         TypeIdentifier repositoryAnnotation = new TypeIdentifier("org.springframework.stereotype.Repository");
         return typeAnnotations.stream()
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(repositoryAnnotation));

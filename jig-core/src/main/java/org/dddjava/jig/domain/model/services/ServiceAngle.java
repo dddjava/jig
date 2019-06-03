@@ -52,8 +52,8 @@ public class ServiceAngle {
         return usingFields;
     }
 
-    public String usingRepositoryMethods() {
-        return usingRepositoryMethods.asSimpleText();
+    public RepositoryMethods usingRepositoryMethods() {
+        return usingRepositoryMethods;
     }
 
     public boolean useStream() {

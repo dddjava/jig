@@ -30,4 +30,8 @@ public class RepositoryMethods {
                 .filter(method -> methodDeclarations.contains(method.declaration()))
                 .collect(collectingAndThen(toList(), RepositoryMethods::new));
     }
+
+    public List<Method> list() {
+        return list;
+    }
 }

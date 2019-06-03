@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.architecture;
 /**
  * アーキテクチャの構成要素
  */
-public enum ArchitectureBlock {
+public enum BuildingBlock {
     PRESENTATION,
     APPLICATION,
     DATASOURCE,

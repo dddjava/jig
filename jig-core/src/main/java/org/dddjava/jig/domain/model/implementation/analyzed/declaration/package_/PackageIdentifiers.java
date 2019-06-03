@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace;
+package org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_;
 
 import java.util.Comparator;
 import java.util.List;

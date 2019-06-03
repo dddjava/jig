@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.packages;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 
 /**
  * 相互依存

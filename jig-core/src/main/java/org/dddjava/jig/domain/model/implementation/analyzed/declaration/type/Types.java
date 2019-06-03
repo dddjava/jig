@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.declaration.type;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
 
 import java.util.List;
 import java.util.NoSuchElementException;

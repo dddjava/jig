@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.declaration.type;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.type.text.Text;
 
 import java.util.ArrayList;

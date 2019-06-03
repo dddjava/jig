@@ -41,24 +41,8 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
             }
         }
 
-        // リクエストハンドラからServiceMethodへの関連
-        Set<MethodDeclaration> handlers = new HashSet<>();
-        RelationText handlingRelation = new RelationText();
-        for (ServiceAngle serviceAngle : angles) {
-            for (MethodDeclaration handlerMethod : serviceAngle.userControllerMethods().list()) {
-                handlingRelation.add(handlerMethod, serviceAngle.method());
-                handlers.add(handlerMethod);
-            }
-        }
-
-        // リクエストハンドラ
-        String handlersText = handlers.stream()
-                .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
-                .map(Node::asText)
-                .collect(joining("\n"));
-
         // メソッドの表示方法
-        String labelText = angles.stream()
+        String serviceMethodText = angles.stream()
                 .map(angle -> {
                     MethodDeclaration method = angle.method();
                     Node node = Node.of(method);
@@ -97,8 +81,24 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .collect(joining("\n"));
 
 
-        // 凡例
-        String legendText = new StringJoiner("\n", "subgraph cluster_legend {", "}")
+        String graphText = new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ServiceMethodCallHierarchyDiagram) + "\";")
+                .add("rankdir=LR;")
+                .add(Node.DEFAULT)
+                .add(relationText.asText())
+                .add(subgraphText)
+                .add(serviceMethodText)
+                .add(requestHandlerText(angles).toString())
+                .add(legendText())
+                .toString();
+        return new DotTexts(graphText);
+    }
+
+    /**
+     * 凡例
+     */
+    public String legendText() {
+        return new StringJoiner("\n", "subgraph cluster_legend {", "}")
                 .add("label=" + jigDocumentContext.label("legend") + ";")
                 .add(new Node(jigDocumentContext.label("handler_method")).handlerMethod().asText())
                 .add(jigDocumentContext.label("other_method") + ";")
@@ -106,22 +106,31 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .add(new Node("lambda").lambda().asText())
                 .add(new Node(jigDocumentContext.label("controller_method")).other().asText())
                 .toString();
+    }
 
-        String graphText = new StringJoiner("\n", "digraph JIG {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ServiceMethodCallHierarchyDiagram) + "\";")
-                .add("rankdir=LR;")
-                .add(Node.DEFAULT)
-                .add(relationText.asText())
+    /**
+     * リクエストハンドラ（Controllerのメソッド）の表示とServiceMethodへの関連
+     *
+     * [RequestHandlerMethod] --> [ServiceMethod]
+     */
+    public StringJoiner requestHandlerText(List<ServiceAngle> angles) {
+        Set<MethodDeclaration> handlers = new HashSet<>();
+        RelationText handlingRelation = new RelationText();
+        for (ServiceAngle serviceAngle : angles) {
+            for (MethodDeclaration handlerMethod : serviceAngle.userControllerMethods().list()) {
+                handlingRelation.add(handlerMethod, serviceAngle.method());
+                handlers.add(handlerMethod);
+            }
+        }
+        String handlersText = handlers.stream()
+                .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
+                .map(Node::asText)
+                .collect(joining("\n"));
+        return new StringJoiner("\n")
                 .add("{rank=same;")
                 .add(handlersText)
                 .add("}")
-                .add(handlingRelation.asText())
-                .add(labelText)
-                .add(subgraphText)
-                .add(legendText)
-                .toString();
-
-        return new DotTexts(graphText);
+                .add(handlingRelation.asText());
     }
 
     private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {

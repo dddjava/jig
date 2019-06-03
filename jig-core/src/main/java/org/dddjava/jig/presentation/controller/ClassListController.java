@@ -13,13 +13,11 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.validations.ValidationAngle;
+import org.dddjava.jig.domain.model.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -37,7 +35,6 @@ import org.dddjava.jig.presentation.view.report.business_rule.*;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class ClassListController {
@@ -145,11 +142,8 @@ public class ClassListController {
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = new ValidationAnnotatedMembers(implementations);
-        List<ValidationAngle> list = validationAnnotatedMembers.list().stream()
-                .map(ValidationAngle::new)
-                .collect(Collectors.toList());
-        return new ModelReport<>(list, ValidationReport::new, ValidationReport.class);
+        ValidationAngles validationAngles = new ValidationAngles(implementations);
+        return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);
     }
 
     ModelReport<?> decisionReport(List<DecisionAngle> decisionAngles, ApplicationLayer applicationLayer) {

@@ -83,4 +83,8 @@ public class TypeByteCodes {
         }
         return new Types(list);
     }
+
+    public ValidationAnnotatedMembers validationAnnotatedMembers() {
+        return new ValidationAnnotatedMembers(annotatedFields(), annotatedMethods());
+    }
 }

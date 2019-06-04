@@ -1,6 +1,8 @@
 branches:
   only:
     - master
+install:
+  - choco install graphviz.portable
 build_script:
     - gradlew build -x test
 test_script:

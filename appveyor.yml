@@ -1,6 +1,9 @@
 branches:
   only:
     - master
+cache:
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 install:
   - choco install graphviz.portable
 build_script:

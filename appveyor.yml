@@ -4,15 +4,17 @@ branches:
 install:
   - choco install graphviz.portable
 build_script:
-    - gradlew build -x test
+  - gradlew build -x test
+after_build:
+  - java -jar ./jig-cli/build/libs/jig-cli.jar
 test_script:
-    - cmd: gradlew test || exit /B 0
+  - cmd: gradlew test || exit /B 0
 after_test:
-    - ps: >-
-        $wc = New-Object "System.Net.WebClient"
+  - ps: >-
+      $wc = New-Object "System.Net.WebClient"
 
-        Get-ChildItem -Recurse | where { $_.Name -match "TEST-*.xml" } |
-        Foreach-Object {
-            $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_.FullName))
-        }
+      Get-ChildItem -Recurse | where { $_.Name -match "TEST-*.xml" } |
+      Foreach-Object {
+          $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_.FullName))
+      }
 

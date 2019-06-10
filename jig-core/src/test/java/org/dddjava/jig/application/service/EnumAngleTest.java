@@ -2,9 +2,8 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 
@@ -15,10 +14,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class EnumAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, BusinessRuleService businessRuleService, RawSource source) {
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-
-        CategoryAngles categoryAngles = businessRuleService.categories(typeByteCodes);
+    void readProjectData(BusinessRuleService businessRuleService, AnalyzedImplementation analyzedImplementation) {
+        CategoryAngles categoryAngles = businessRuleService.categories(analyzedImplementation);
 
         assertThat(categoryAngles.list())
                 .extracting(

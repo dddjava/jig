@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.packages;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageDepth;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
 
 import java.util.List;
 import java.util.stream.Collectors;

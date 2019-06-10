@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.GlossaryService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.AllPackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetworks;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -31,14 +31,14 @@ public class PackageDependencyController {
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)
     public JigModelAndView<PackageNetworks> packageDependency(AnalyzedImplementation implementations) {
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(implementations.typeByteCodes());
+        PackageNetwork packageNetwork = dependencyService.packageDependencies(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(new PackageNetworks(packageNetwork), viewResolver.dependencyWriter(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
     public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(AnalyzedImplementation implementations) {
-        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(implementations.typeByteCodes());
+        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
         return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(aliasFinder));
     }
@@ -46,7 +46,7 @@ public class PackageDependencyController {
     @DocumentMapping(JigDocument.PackageTreeDiagram)
     public JigModelAndView<AllPackageIdentifiers> packageTreeDiagram(AnalyzedImplementation implementations) {
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
-        AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(implementations.typeByteCodes());
+        AllPackageIdentifiers packages = dependencyService.allPackageIdentifiers(implementations);
         return new JigModelAndView<>(packages, viewResolver.packageTreeWriter(aliasFinder));
     }
 }

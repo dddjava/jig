@@ -1,6 +1,8 @@
 package testing;
 
+import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
@@ -35,6 +37,7 @@ public class JigTestExtension implements ParameterResolver {
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return true;
         if (parameterContext.getParameter().getType() == RawSource.class) return true;
+        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class) return true;
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 return true;
@@ -47,6 +50,7 @@ public class JigTestExtension implements ParameterResolver {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
         if (parameterContext.getParameter().getType() == RawSource.class) return getTestRawSource();
+        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class) return getAnalyzedImplementation();
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 try {
@@ -62,13 +66,21 @@ public class JigTestExtension implements ParameterResolver {
         throw new AssertionError();
     }
 
+    private AnalyzedImplementation getAnalyzedImplementation() {
+        ImplementationService implementationService = configuration.implementationService();
+        return implementationService.implementations(getRawSourceLocations());
+    }
+
     public RawSource getTestRawSource() {
-        RawSourceLocations rawSourceLocations = new RawSourceLocations(
+        RawSourceLocations rawSourceLocations = getRawSourceLocations();
+        LocalFileRawSourceFactory localFileRawSourceFactory = new LocalFileRawSourceFactory();
+        return localFileRawSourceFactory.createSource(rawSourceLocations);
+    }
+
+    public RawSourceLocations getRawSourceLocations() {
+        return new RawSourceLocations(
                 new BinarySourceLocations(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()))),
                 new TextSourceLocations(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")))
         );
-
-        LocalFileRawSourceFactory localFileRawSourceFactory = new LocalFileRawSourceFactory();
-        return localFileRawSourceFactory.createSource(rawSourceLocations);
     }
 }

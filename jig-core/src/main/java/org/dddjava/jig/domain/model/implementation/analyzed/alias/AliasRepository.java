@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 
 /**

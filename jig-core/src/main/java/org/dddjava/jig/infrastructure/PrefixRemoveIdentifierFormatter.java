@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 

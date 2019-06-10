@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
@@ -39,7 +39,8 @@ public class ApplicationService {
     /**
      * コントローラーを分析する
      */
-    public ControllerAngles controllerAngles(TypeByteCodes typeByteCodes) {
+    public ControllerAngles controllerAngles(AnalyzedImplementation analyzedImplementation) {
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
@@ -52,7 +53,8 @@ public class ApplicationService {
     /**
      * サービスを分析する
      */
-    public ServiceAngles serviceAngles(TypeByteCodes typeByteCodes) {
+    public ServiceAngles serviceAngles(AnalyzedImplementation analyzedImplementation) {
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes);
 
         if (serviceMethods.empty()) {
@@ -72,35 +74,35 @@ public class ApplicationService {
     /**
      * データソースを分析する
      */
-    public DatasourceAngles datasourceAngles(TypeByteCodes typeByteCodes, Sqls sqls) {
-        DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
+    public DatasourceAngles datasourceAngles(AnalyzedImplementation analyzedImplementation) {
+        DatasourceMethods datasourceMethods = new DatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
 
         if (datasourceMethods.empty()) {
             LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
         }
 
-        return new DatasourceAngles(datasourceMethods, sqls);
+        return new DatasourceAngles(datasourceMethods, analyzedImplementation.sqls());
     }
 
     /**
      * 文字列比較を分析する
      */
-    public StringComparingAngles stringComparing(TypeByteCodes typeByteCodes) {
-
-        return new StringComparingAngles(new MethodRelations(typeByteCodes));
+    public StringComparingAngles stringComparing(AnalyzedImplementation analyzedImplementation) {
+        return new StringComparingAngles(new MethodRelations(analyzedImplementation.typeByteCodes()));
     }
 
     /**
      * 分岐箇所を分析する
      */
-    public DecisionAngles decision(TypeByteCodes typeByteCodes) {
-        return new DecisionAngles(typeByteCodes, architecture);
+    public DecisionAngles decision(AnalyzedImplementation analyzedImplementation) {
+        return new DecisionAngles(analyzedImplementation.typeByteCodes(), architecture);
     }
 
     /**
      * 進捗を分析する
      */
-    public ProgressAngles progressAngles(TypeByteCodes typeByteCodes) {
+    public ProgressAngles progressAngles(AnalyzedImplementation analyzedImplementation) {
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         MethodAnnotations methodAnnotations = typeByteCodes.annotatedMethods();
         TypeAnnotations typeAnnotations = typeByteCodes.typeAnnotations();
         MethodDeclarations declarations = new Methods(typeByteCodes).declarations();

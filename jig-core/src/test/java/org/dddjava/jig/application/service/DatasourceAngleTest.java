@@ -1,10 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;
@@ -17,11 +15,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class DatasourceAngleTest {
 
     @Test
-    void readProjectData(ImplementationService implementationService, ApplicationService applicationService, RawSource source) {
-        TypeByteCodes typeByteCodes = implementationService.readProjectData(source);
-        Sqls sqls = implementationService.readSql(source.sqlSources());
-
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(typeByteCodes, sqls);
+    void readProjectData(ApplicationService applicationService, AnalyzedImplementation analyzedImplementation) {
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(analyzedImplementation);
 
         assertThat(datasourceAngles.list())
                 .extracting(

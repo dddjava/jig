@@ -9,8 +9,8 @@ import java.util.stream.Stream;
  */
 public class ValidationAnnotatedMembers {
 
-    private final FieldAnnotations fieldAnnotations;
-    private final MethodAnnotations methodAnnotations;
+    FieldAnnotations fieldAnnotations;
+    MethodAnnotations methodAnnotations;
 
     public ValidationAnnotatedMembers(FieldAnnotations fieldAnnotations, MethodAnnotations methodAnnotations) {
         this.fieldAnnotations = fieldAnnotations;

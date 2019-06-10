@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.AllPackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.AllPackageIdentifiers;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifierFormatter;
 
 import java.util.*;
 import java.util.stream.Collectors;

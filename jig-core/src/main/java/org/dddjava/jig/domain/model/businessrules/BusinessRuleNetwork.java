@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.namespace.PackageIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelation;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
 

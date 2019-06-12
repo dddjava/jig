@@ -47,7 +47,7 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
                 TypeAlias typeAlias = aliasFinder.find(businessRule.type().identifier());
                 String japaneseText = "";
                 if (typeAlias.exists()) {
-                    japaneseText = typeAlias.japaneseName().summarySentence() + "\n";
+                    japaneseText = typeAlias.japaneseName().toString() + "\n";
                 }
                 Node node = Node.of(businessRule.type().identifier())
                         .label(japaneseText + businessRule.type().identifier().asSimpleText());

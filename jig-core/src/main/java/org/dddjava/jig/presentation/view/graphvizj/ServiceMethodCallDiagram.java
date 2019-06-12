@@ -161,12 +161,12 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
     }
 
     private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {
-        String japaneseName = aliasFinder.find(typeIdentifier).japaneseName().summarySentence();
+        String japaneseName = aliasFinder.find(typeIdentifier).japaneseName().toString();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().summarySentence();
+        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().toString();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 }

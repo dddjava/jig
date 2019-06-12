@@ -34,7 +34,7 @@ class GlossaryServiceTest {
 
         sut.importJapanese(textSource.packageInfoSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
+        Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).toString())
                 .isEqualTo("テストで使用するスタブたち");
     }
 
@@ -45,7 +45,7 @@ class GlossaryServiceTest {
 
         sut.importJapanese(textSource.javaSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
+        Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).toString())
                 .isEqualTo(comment);
     }
 
@@ -67,13 +67,13 @@ class GlossaryServiceTest {
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
+        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).toString())
                 .isEqualTo("メソッドのJavadoc");
 
         MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).value())
+        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).toString())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
     }

@@ -33,16 +33,16 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド別名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).summarySentence();
+                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).toString();
             case メソッド戻り値の型:
                 return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
             case メソッド戻り値の型の別名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).summarySentence();
+                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).toString();
             case メソッド引数の型の別名:
                 List<Alias> list = methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.glossaryService::japaneseNameFrom)
                         .collect(toList());
-                return Text.of(list, Alias::summarySentence);
+                return Text.of(list, alias -> alias.toString());
         }
 
         throw new IllegalArgumentException(itemCategory.name());

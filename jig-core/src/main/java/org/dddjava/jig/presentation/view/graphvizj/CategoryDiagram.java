@@ -57,7 +57,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
     private String appendJapaneseName(TypeIdentifier typeIdentifier) {
         TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
         if (typeAlias.exists()) {
-            return typeAlias.japaneseName().summarySentence() + "<br/>" + typeIdentifier.asSimpleText();
+            return typeAlias.japaneseName().toString() + "<br/>" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
     }

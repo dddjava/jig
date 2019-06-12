@@ -30,7 +30,7 @@ public interface AliasFinder {
         @Override
         public PackageAlias find(PackageIdentifier packageIdentifier) {
             Optional<Alias> japaneseName = Optional.ofNullable(glossaryService.japaneseNameFrom(packageIdentifier));
-            return new PackageAlias(packageIdentifier, japaneseName.orElseGet(() -> new Alias("")));
+            return new PackageAlias(packageIdentifier, japaneseName.orElseGet(() -> Alias.empty()));
         }
 
         @Override

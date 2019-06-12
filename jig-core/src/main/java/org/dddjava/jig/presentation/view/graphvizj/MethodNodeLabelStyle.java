@@ -20,7 +20,7 @@ public enum MethodNodeLabelStyle {
             Function<TypeIdentifier, String> func = typeIdentifier -> {
                 TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
                 if (typeAlias.exists()) {
-                    return typeAlias.japaneseName().summarySentence();
+                    return typeAlias.japaneseName().toString();
                 }
                 return typeIdentifier.asSimpleText();
             };

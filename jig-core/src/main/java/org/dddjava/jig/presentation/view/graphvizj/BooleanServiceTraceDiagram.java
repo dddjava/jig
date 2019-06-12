@@ -88,7 +88,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     }
 
     private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().summarySentence();
+        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().toString();
         return japaneseName.isEmpty() ? "" : japaneseName + "\n";
     }
 }

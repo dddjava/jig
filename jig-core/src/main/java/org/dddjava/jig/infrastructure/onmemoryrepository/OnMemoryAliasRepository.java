@@ -20,7 +20,7 @@ public class OnMemoryAliasRepository implements AliasRepository {
 
     @Override
     public Alias get(TypeIdentifier typeIdentifier) {
-        return map.getOrDefault(typeIdentifier, new Alias(""));
+        return map.getOrDefault(typeIdentifier, Alias.empty());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class OnMemoryAliasRepository implements AliasRepository {
                 return methodAlias.japaneseName();
             }
         }
-        return new Alias("");
+        return Alias.empty();
     }
 
     @Override

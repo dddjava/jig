@@ -74,7 +74,7 @@ public class PackageTreeDiagram implements DotTextEditor<AllPackageIdentifiers> 
     private String appendJapaneseName(PackageIdentifier packageIdentifier) {
         PackageAlias japaneseName = aliasFinder.find(packageIdentifier);
         if (japaneseName.exists()) {
-            return japaneseName.japaneseName().summarySentence() + "\\n" + packageIdentifier.simpleName();
+            return japaneseName.japaneseName().toString() + "\\n" + packageIdentifier.simpleName();
         }
         return packageIdentifier.simpleName();
     }

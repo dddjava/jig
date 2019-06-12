@@ -19,7 +19,7 @@ public interface AliasRepository {
 
     void register(PackageAlias packageAlias);
 
-    Alias get(MethodIdentifier methodIdentifier);
+    MethodAlias get(MethodIdentifier methodIdentifier);
 
     void register(MethodAlias methodAlias);
 }

@@ -44,13 +44,13 @@ public class OnMemoryAliasRepository implements AliasRepository {
     }
 
     @Override
-    public Alias get(MethodIdentifier methodIdentifier) {
+    public MethodAlias get(MethodIdentifier methodIdentifier) {
         for (MethodAlias methodAlias : methodList) {
             if (methodAlias.methodIdentifier().matchesIgnoreOverload(methodIdentifier)) {
-                return methodAlias.japaneseName();
+                return methodAlias;
             }
         }
-        return Alias.empty();
+        return MethodAlias.empty(methodIdentifier);
     }
 
     @Override

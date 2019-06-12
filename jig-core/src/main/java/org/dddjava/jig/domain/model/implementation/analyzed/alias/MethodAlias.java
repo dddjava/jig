@@ -14,11 +14,19 @@ public class MethodAlias {
         this.alias = alias;
     }
 
+    public static MethodAlias empty(MethodIdentifier methodIdentifier) {
+        return new MethodAlias(methodIdentifier, Alias.empty());
+    }
+
     public MethodIdentifier methodIdentifier() {
         return methodIdentifier;
     }
 
-    public Alias japaneseName() {
+    public Alias alias() {
         return alias;
+    }
+
+    public String asText() {
+        return alias.toString();
     }
 }

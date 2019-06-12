@@ -22,10 +22,6 @@ public class MethodAlias {
         return methodIdentifier;
     }
 
-    public Alias alias() {
-        return alias;
-    }
-
     public String asText() {
         return alias.toString();
     }

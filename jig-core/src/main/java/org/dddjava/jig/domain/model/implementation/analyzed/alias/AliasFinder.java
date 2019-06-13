@@ -40,7 +40,7 @@ public interface AliasFinder {
 
         @Override
         public MethodAlias find(MethodIdentifier methodIdentifier) {
-            return new MethodAlias(methodIdentifier, glossaryService.japaneseNameFrom(methodIdentifier));
+            return glossaryService.methodAliasOf(methodIdentifier);
         }
     }
 }

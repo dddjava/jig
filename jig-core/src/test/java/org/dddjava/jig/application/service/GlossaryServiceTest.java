@@ -67,13 +67,13 @@ class GlossaryServiceTest {
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).toString())
+        Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
                 .isEqualTo("メソッドのJavadoc");
 
         MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).toString())
+        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
     }

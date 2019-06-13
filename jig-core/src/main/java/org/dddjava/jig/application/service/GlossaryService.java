@@ -39,7 +39,7 @@ public class GlossaryService {
     /**
      * メソッド別名を取得する
      */
-    public MethodAlias japaneseNameFrom(MethodIdentifier methodIdentifier) {
+    public MethodAlias methodAliasOf(MethodIdentifier methodIdentifier) {
         return repository.get(methodIdentifier);
     }
 

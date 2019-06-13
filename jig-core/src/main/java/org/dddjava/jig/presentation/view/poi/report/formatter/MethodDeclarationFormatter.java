@@ -33,7 +33,7 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド別名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).toString();
+                return convertContext.glossaryService.methodAliasOf(methodDeclaration.identifier()).asText();
             case メソッド戻り値の型:
                 return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
             case メソッド戻り値の型の別名:

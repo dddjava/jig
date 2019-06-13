@@ -48,7 +48,7 @@ public class PackageTreeDiagram implements DotTextEditor<AllPackageIdentifiers> 
                     }
                     PackageIdentifier packageIdentifier = entry.getKey();
                     return new Node(packageIdentifier.asText())
-                            .label(appendJapaneseName(packageIdentifier) + subPackages)
+                            .label(packageLabelOf(packageIdentifier) + subPackages)
                             .asText();
                 })
                 .collect(joining("\n"));
@@ -71,10 +71,10 @@ public class PackageTreeDiagram implements DotTextEditor<AllPackageIdentifiers> 
                 .toString());
     }
 
-    private String appendJapaneseName(PackageIdentifier packageIdentifier) {
-        PackageAlias japaneseName = aliasFinder.find(packageIdentifier);
-        if (japaneseName.exists()) {
-            return japaneseName.japaneseName().toString() + "\\n" + packageIdentifier.simpleName();
+    private String packageLabelOf(PackageIdentifier packageIdentifier) {
+        PackageAlias alias = aliasFinder.find(packageIdentifier);
+        if (alias.exists()) {
+            return alias.asText() + "\\n" + packageIdentifier.simpleName();
         }
         return packageIdentifier.simpleName();
     }

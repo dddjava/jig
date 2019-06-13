@@ -14,15 +14,19 @@ public class TypeAlias {
         this.alias = alias;
     }
 
+    public static TypeAlias empty(TypeIdentifier typeIdentifier) {
+        return new TypeAlias(typeIdentifier, Alias.empty());
+    }
+
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
-    public Alias japaneseName() {
-        return alias;
-    }
-
     public boolean exists() {
         return alias.exists();
+    }
+
+    public String asText() {
+        return alias.toString();
     }
 }

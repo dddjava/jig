@@ -52,7 +52,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
                         node.label("(lambda)").lambda();
                     } else {
                         // ラベルに別名をつける
-                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.typeNameAndMethodName(method, aliasFinder));
+                        node.label(aliasLine(method) + methodNodeLabelStyle.typeNameAndMethodName(method, aliasFinder));
                     }
                     return node.asText();
                 }).collect(joining("\n"));
@@ -87,8 +87,8 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
         return new DotTexts(graphText);
     }
 
-    private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = aliasFinder.find(method.identifier()).asText();
-        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
+    private String aliasLine(MethodDeclaration method) {
+        String aliasLine = aliasFinder.find(method.identifier()).asText();
+        return aliasLine.isEmpty() ? "" : aliasLine + "\n";
     }
 }

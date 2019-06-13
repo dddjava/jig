@@ -23,14 +23,14 @@ class PackageInfoReader {
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::new);
 
-        Optional<Alias> optJapaneseName = getJavadoc(cu)
+        Optional<Alias> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
                 .map(JavadocAliasSource::new)
                 .map(JavadocAliasSource::toAlias);
 
-        return optPackageIdentifier.flatMap(packageIdentifier -> optJapaneseName.map(japaneseName ->
-                new PackageAlias(packageIdentifier, japaneseName)));
+        return optPackageIdentifier.flatMap(packageIdentifier -> optAlias.map(alias ->
+                new PackageAlias(packageIdentifier, alias)));
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

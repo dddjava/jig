@@ -25,14 +25,14 @@ public class GlossaryService {
     /**
      * パッケージ別名を取得する
      */
-    public Alias japaneseNameFrom(PackageIdentifier packageIdentifier) {
+    public PackageAlias packageAliasOf(PackageIdentifier packageIdentifier) {
         return repository.get(packageIdentifier);
     }
 
     /**
      * 型別名を取得する
      */
-    public Alias japaneseNameFrom(TypeIdentifier typeIdentifier) {
+    public TypeAlias typeAliasOf(TypeIdentifier typeIdentifier) {
         return repository.get(typeIdentifier);
     }
 
@@ -46,7 +46,7 @@ public class GlossaryService {
     /**
      * Javadocから別名を取り込む
      */
-    public void importJapanese(PackageInfoSources packageInfoSources) {
+    public void loadPackageAliases(PackageInfoSources packageInfoSources) {
         PackageAliases packageAliases = reader.readPackages(packageInfoSources);
         packageAliases.register(repository);
     }
@@ -54,7 +54,7 @@ public class GlossaryService {
     /**
      * Javadocから別名を取り込む
      */
-    public void importJapanese(JavaSources javaSources) {
+    public void loadAliases(JavaSources javaSources) {
         TypeAliases typeAliases = reader.readTypes(javaSources);
 
         for (TypeAlias typeAlias : typeAliases.list()) {

@@ -14,15 +14,19 @@ public class PackageAlias {
         this.alias = alias;
     }
 
+    public static PackageAlias empty(PackageIdentifier packageIdentifier) {
+        return new PackageAlias(packageIdentifier, Alias.empty());
+    }
+
     public PackageIdentifier packageIdentifier() {
         return packageIdentifier;
     }
 
-    public Alias japaneseName() {
-        return alias;
-    }
-
     public boolean exists() {
         return alias.exists();
+    }
+
+    public String asText() {
+        return alias.toString();
     }
 }

@@ -32,9 +32,9 @@ class GlossaryServiceTest {
     void パッケージ別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.packageInfoSources());
+        sut.loadPackageAliases(textSource.packageInfoSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).toString())
+        Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
     }
 
@@ -43,9 +43,9 @@ class GlossaryServiceTest {
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.javaSources());
+        sut.loadAliases(textSource.javaSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).toString())
+        Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
     }
 
@@ -62,7 +62,7 @@ class GlossaryServiceTest {
     void メソッド別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.javaSources());
+        sut.loadAliases(textSource.javaSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

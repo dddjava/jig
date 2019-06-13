@@ -97,7 +97,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         String labelText = packageIdentifier.format(formatter);
         PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
         if (packageAlias.exists()) {
-            labelText = packageAlias.japaneseName().toString() + "\\n" + labelText;
+            labelText = packageAlias.asText() + "\\n" + labelText;
         }
         return labelText;
     }

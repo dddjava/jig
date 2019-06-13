@@ -14,13 +14,13 @@ import java.util.Map;
 @Repository
 public class OnMemoryAliasRepository implements AliasRepository {
 
-    final Map<TypeIdentifier, Alias> map = new HashMap<>();
-    final Map<PackageIdentifier, Alias> packageMap = new HashMap<>();
+    final Map<TypeIdentifier, TypeAlias> map = new HashMap<>();
+    final Map<PackageIdentifier, PackageAlias> packageMap = new HashMap<>();
     final List<MethodAlias> methodList = new ArrayList<>();
 
     @Override
-    public Alias get(TypeIdentifier typeIdentifier) {
-        return map.getOrDefault(typeIdentifier, Alias.empty());
+    public TypeAlias get(TypeIdentifier typeIdentifier) {
+        return map.getOrDefault(typeIdentifier, TypeAlias.empty(typeIdentifier));
     }
 
     @Override
@@ -29,18 +29,18 @@ public class OnMemoryAliasRepository implements AliasRepository {
     }
 
     @Override
-    public Alias get(PackageIdentifier packageIdentifier) {
-        return packageMap.get(packageIdentifier);
+    public PackageAlias get(PackageIdentifier packageIdentifier) {
+        return packageMap.getOrDefault(packageIdentifier, PackageAlias.empty(packageIdentifier));
     }
 
     @Override
     public void register(TypeAlias typeAlias) {
-        map.put(typeAlias.typeIdentifier(), typeAlias.japaneseName());
+        map.put(typeAlias.typeIdentifier(), typeAlias);
     }
 
     @Override
     public void register(PackageAlias packageAlias) {
-        packageMap.put(packageAlias.packageIdentifier(), packageAlias.japaneseName());
+        packageMap.put(packageAlias.packageIdentifier(), packageAlias);
     }
 
     @Override

@@ -9,11 +9,11 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Typ
  */
 public interface AliasRepository {
 
-    Alias get(TypeIdentifier typeIdentifier);
+    TypeAlias get(TypeIdentifier typeIdentifier);
 
     boolean exists(PackageIdentifier packageIdentifier);
 
-    Alias get(PackageIdentifier packageIdentifier);
+    PackageAlias get(PackageIdentifier packageIdentifier);
 
     void register(TypeAlias typeAlias);
 

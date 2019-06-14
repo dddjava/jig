@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -66,6 +67,7 @@ public class ClassListController {
     @DocumentMapping(JigDocument.BusinessRuleList)
     public JigModelAndView<ModelReports> domainList(AnalyzedImplementation implementations) {
         ModelReports modelReports = new ModelReports(
+                packageReport(implementations),
                 businessRulesReport(implementations),
                 valuesReport(ValueKind.IDENTIFIER, implementations),
                 categoriesReport(implementations),
@@ -119,6 +121,11 @@ public class ClassListController {
     ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
         StringComparingAngles stringComparingAngles = applicationService.stringComparing(implementations);
         return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
+    }
+
+    ModelReport<?> packageReport(AnalyzedImplementation implementations) {
+        PackageIdentifiers packageIdentifiers = businessRuleService.businessRules(implementations).identifiers().packageIdentifiers();
+        return new ModelReport<>(packageIdentifiers.list(), PackageReport::new, PackageReport.class);
     }
 
     ModelReport<?> businessRulesReport(AnalyzedImplementation implementations) {

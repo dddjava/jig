@@ -8,10 +8,7 @@ import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
-import org.dddjava.jig.presentation.controller.ClassListController;
-import org.dddjava.jig.presentation.controller.EnumUsageController;
-import org.dddjava.jig.presentation.controller.PackageDependencyController;
-import org.dddjava.jig.presentation.controller.ServiceDiagramController;
+import org.dddjava.jig.presentation.controller.*;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
@@ -39,6 +36,12 @@ public class Configuration {
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 prefixRemoveIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
+        );
+        BusinessRuleListController businessRuleListController= new BusinessRuleListController(
+                prefixRemoveIdentifierFormatter,
+                glossaryService,
+                applicationService,
+                businessRuleService
         );
         ClassListController classListController = new ClassListController(
                 prefixRemoveIdentifierFormatter,
@@ -69,6 +72,7 @@ public class Configuration {
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,
+                businessRuleListController,
                 classListController,
                 packageDependencyController,
                 enumUsageController

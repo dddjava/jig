@@ -115,6 +115,14 @@ class ByteCodeAnalyzer extends ClassVisitor {
         return new MethodVisitor(this.api) {
 
             @Override
+            public void visitInsn(int opcode) {
+                if (opcode == Opcodes.ACONST_NULL) {
+                    methodByteCode.markReferenceNull();
+                }
+                super.visitInsn(opcode);
+            }
+
+            @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
                         methodByteCode.registerAnnotation(new MethodAnnotation(annotation, methodDeclaration)));
@@ -184,6 +192,10 @@ class ByteCodeAnalyzer extends ClassVisitor {
             public void visitJumpInsn(int opcode, Label label) {
                 // 何かしらの分岐がある
                 methodByteCode.registerJumpInstruction();
+
+                if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
+                    methodByteCode.markJudgeNull();
+                }
                 super.visitJumpInsn(opcode, label);
             }
         };

@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.kotlinparser;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JavadocAliasSource;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
@@ -37,7 +38,8 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
             return;
         }
         TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
-        typeJapaneseAliases.add(new TypeAlias(identifier, new Alias(text)));
+        Alias alias = new JavadocAliasSource(text).toAlias();
+        typeJapaneseAliases.add(new TypeAlias(identifier, alias));
     }
 
     @Override
@@ -67,7 +69,8 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
         }
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, new Arguments(args)));
-        methodList.add(new MethodAlias(methodIdentifier, new Alias(text)));
+        Alias alias = new JavadocAliasSource(text).toAlias();
+        methodList.add(new MethodAlias(methodIdentifier, alias));
     }
 
     private KtClass findKtClass(KtNamedFunction function) {

@@ -40,7 +40,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
 
                     TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
                     return new Node(typeIdentifier.fullQualifiedName())
-                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + appendJapaneseName(typeIdentifier) + "</td></tr>" + values + "</table>")
+                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(typeIdentifier) + "</td></tr>" + values + "</table>")
                             .asText();
                 })
                 .collect(joining("\n"));
@@ -54,10 +54,10 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
                 .toString());
     }
 
-    private String appendJapaneseName(TypeIdentifier typeIdentifier) {
+    private String typeNameOf(TypeIdentifier typeIdentifier) {
         TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
         if (typeAlias.exists()) {
-            return typeAlias.japaneseName().summarySentence() + "<br/>" + typeIdentifier.asSimpleText();
+            return typeAlias.asText() + "<br/>" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
     }

@@ -7,6 +7,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JavadocAliasSource;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
@@ -22,13 +23,14 @@ class PackageInfoReader {
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::new);
 
-        Optional<Alias> optJapaneseName = getJavadoc(cu)
+        Optional<Alias> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
-                .map(Alias::new);
+                .map(JavadocAliasSource::new)
+                .map(JavadocAliasSource::toAlias);
 
-        return optPackageIdentifier.flatMap(packageIdentifier -> optJapaneseName.map(japaneseName ->
-                new PackageAlias(packageIdentifier, japaneseName)));
+        return optPackageIdentifier.flatMap(packageIdentifier -> optAlias.map(alias ->
+                new PackageAlias(packageIdentifier, alias)));
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

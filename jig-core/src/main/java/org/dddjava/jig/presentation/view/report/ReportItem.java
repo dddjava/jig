@@ -6,6 +6,9 @@ package org.dddjava.jig.presentation.view.report;
  * 出力項目の名前と並び順の定義。
  */
 public enum ReportItem {
+    パッケージ名("packageName"),
+    パッケージ別名("packageAlias"),
+
     クラス名("typeName"),
     メソッドシグネチャ("methodSignature"),
     メソッド戻り値の型("returnType"),

@@ -51,7 +51,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                         node.label("(lambda)").lambda();
                     } else {
                         // ラベルに別名をつける
-                        node.label(japaneseNameLineOf(method) + methodNodeLabelStyle.apply(method, aliasFinder));
+                        node.label(aliasLineOf(method) + methodNodeLabelStyle.apply(method, aliasFinder));
 
                         // 非publicは色なし
                         if (angle.isNotPublicMethod()) {
@@ -73,7 +73,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .map(entry ->
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
-                                + "label=\"" + japaneseNameLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
+                                + "label=\"" + aliasLineOf(entry.getKey()) + entry.getKey().asSimpleText() + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
@@ -160,13 +160,13 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
                 .toString();
     }
 
-    private String japaneseNameLineOf(TypeIdentifier typeIdentifier) {
-        String japaneseName = aliasFinder.find(typeIdentifier).japaneseName().summarySentence();
-        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
+    private String aliasLineOf(TypeIdentifier typeIdentifier) {
+        String aliasText = aliasFinder.find(typeIdentifier).asText();
+        return aliasText.isEmpty() ? "" : aliasText + "\n";
     }
 
-    private String japaneseNameLineOf(MethodDeclaration method) {
-        String japaneseName = aliasFinder.find(method.identifier()).japaneseName().summarySentence();
-        return japaneseName.isEmpty() ? "" : japaneseName + "\n";
+    private String aliasLineOf(MethodDeclaration method) {
+        String aliasText = aliasFinder.find(method.identifier()).asText();
+        return aliasText.isEmpty() ? "" : aliasText + "\n";
     }
 }

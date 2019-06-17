@@ -24,7 +24,7 @@ class TypeIdentifierFormatter implements ReportItemFormatter {
             case クラス名:
                 return convertContext.typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
             case クラス別名:
-                return convertContext.glossaryService.japaneseNameFrom(typeIdentifier).summarySentence();
+                return convertContext.glossaryService.typeAliasOf(typeIdentifier).asText();
             case 単純クラス名:
                 return typeIdentifier.asSimpleText();
         }

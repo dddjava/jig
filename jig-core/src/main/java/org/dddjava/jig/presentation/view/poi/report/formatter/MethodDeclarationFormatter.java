@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.type.text.Text;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
@@ -33,16 +33,16 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド別名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.identifier()).summarySentence();
+                return convertContext.glossaryService.methodAliasOf(methodDeclaration.identifier()).asText();
             case メソッド戻り値の型:
                 return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
             case メソッド戻り値の型の別名:
-                return convertContext.glossaryService.japaneseNameFrom(methodDeclaration.methodReturn().typeIdentifier()).summarySentence();
+                return convertContext.glossaryService.typeAliasOf(methodDeclaration.methodReturn().typeIdentifier()).asText();
             case メソッド引数の型の別名:
-                List<Alias> list = methodDeclaration.methodSignature().arguments().stream()
-                        .map(convertContext.glossaryService::japaneseNameFrom)
+                List<TypeAlias> list = methodDeclaration.methodSignature().arguments().stream()
+                        .map(convertContext.glossaryService::typeAliasOf)
                         .collect(toList());
-                return Text.of(list, Alias::summarySentence);
+                return Text.of(list, alias -> alias.asText());
         }
 
         throw new IllegalArgumentException(itemCategory.name());

@@ -1,26 +1,22 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
-import java.util.stream.Stream;
-
 /**
  * 別名
  */
 public class Alias {
 
-    final String value;
+    String value;
 
-    public Alias(String value) {
+    Alias(String value) {
         this.value = value;
     }
 
-    public String summarySentence() {
-        int end = Stream.of(value.indexOf("\n"), value.indexOf("。"), value.length())
-                .filter(length -> length >= 0)
-                .min(Integer::compareTo).orElseThrow(IllegalStateException::new);
-        return value.substring(0, end);
+    public static Alias empty() {
+        return new Alias("");
     }
 
-    public String value() {
+    @Override
+    public String toString() {
         return value;
     }
 

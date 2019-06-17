@@ -32,9 +32,9 @@ class GlossaryServiceTest {
     void パッケージ別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.packageInfoSources());
+        sut.loadPackageAliases(textSource.packageInfoSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(new PackageIdentifier("stub")).value())
+        Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
     }
 
@@ -43,10 +43,10 @@ class GlossaryServiceTest {
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.javaSources());
-        sut.importJapanese(textSource.kotlinSources());
+        sut.loadAliases(textSource.javaSources());
+        sut.loadAliases(textSource.kotlinSources());
 
-        Assertions.assertThat(sut.japaneseNameFrom(typeIdentifier).value())
+        Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
     }
 
@@ -64,18 +64,18 @@ class GlossaryServiceTest {
     void メソッド別名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.javaSources());
+        sut.loadAliases(textSource.javaSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
+        Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
                 .isEqualTo("メソッドのJavadoc");
 
         MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier).value())
+        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
     }
@@ -84,25 +84,25 @@ class GlossaryServiceTest {
     void Kotlinメソッドの和名取得(RawSource source) {
         TextSource textSource = source.textSource();
 
-        sut.importJapanese(textSource.kotlinSources());
+        sut.loadAliases(textSource.kotlinSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.japaneseNameFrom(methodIdentifier).value())
+        Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
                 .isEqualTo("メソッドのドキュメント");
 
         MethodIdentifier overloadMethodIdentifier1 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier1).value())
+        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier1).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
 
         MethodIdentifier overloadMethodIdentifier2 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
                 new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
-        Assertions.assertThat(sut.japaneseNameFrom(overloadMethodIdentifier2).value())
+        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier2).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
     }

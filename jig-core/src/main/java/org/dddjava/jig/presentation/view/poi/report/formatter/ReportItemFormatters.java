@@ -24,6 +24,7 @@ public class ReportItemFormatters {
                 new TypeFormatter(convertContext),
                 new TypeIdentifierFormatter(convertContext),
                 new TypeIdentifiersFormatter(convertContext),
+                new PackageIdentifierFormatter(convertContext),
                 new UsingFieldsFormatter(convertContext)
         );
     }

@@ -34,7 +34,7 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
         String enumsText = enumTypes.list().stream()
                 .map(enumType -> Node.of(enumType)
-                        .label(appendJapaneseName(enumType))
+                        .label(typeNameOf(enumType))
                         .asText())
                 .collect(joining("\n"));
 
@@ -52,7 +52,7 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .filter(typeIdentifier -> !enumTypes.contains(typeIdentifier))
                 .map(typeIdentifier ->
                         Node.of(typeIdentifier)
-                                .label(appendJapaneseName(typeIdentifier))
+                                .label(typeNameOf(typeIdentifier))
                                 .notEnum()
                                 .asText())
                 .collect(joining("\n"));
@@ -76,10 +76,10 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
                 .toString());
     }
 
-    private String appendJapaneseName(TypeIdentifier typeIdentifier) {
+    private String typeNameOf(TypeIdentifier typeIdentifier) {
         TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
         if (typeAlias.exists()) {
-            return typeAlias.japaneseName().summarySentence() + "\\n" + typeIdentifier.asSimpleText();
+            return typeAlias.asText() + "\\n" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
     }

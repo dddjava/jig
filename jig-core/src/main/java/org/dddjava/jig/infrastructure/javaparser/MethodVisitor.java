@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.JavadocAliasSource;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
@@ -32,7 +32,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
                                     // TODO 引数を取得したい
                                     new Arguments(Collections.emptyList())
                             )),
-                    new Alias(javadocText)
+                    new JavadocAliasSource(javadocText).toAlias()
             );
             methodAliases.add(methodAlias);
         });

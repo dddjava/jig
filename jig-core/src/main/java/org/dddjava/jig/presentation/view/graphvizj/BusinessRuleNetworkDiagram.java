@@ -45,12 +45,12 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
             List<BusinessRule> businessRules = businessRuleGroup.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
                 TypeAlias typeAlias = aliasFinder.find(businessRule.type().identifier());
-                String japaneseText = "";
+                String aliasLine = "";
                 if (typeAlias.exists()) {
-                    japaneseText = typeAlias.japaneseName().value() + "\n";
+                    aliasLine = typeAlias.asText() + "\n";
                 }
                 Node node = Node.of(businessRule.type().identifier())
-                        .label(japaneseText + businessRule.type().identifier().asSimpleText());
+                        .label(aliasLine + businessRule.type().identifier().asSimpleText());
                 subgraph.add(node.asText());
             }
 

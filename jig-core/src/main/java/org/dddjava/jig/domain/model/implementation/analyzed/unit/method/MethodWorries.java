@@ -23,7 +23,10 @@ public class MethodWorries {
         return new MethodWorries(list);
     }
 
-    public boolean contains(MethodWorry methodWorry) {
-        return list.contains(methodWorry);
+    public boolean contains(MethodWorry... methodWorries) {
+        for (MethodWorry methodWorry : methodWorries) {
+           if (list.contains(methodWorry)) return true;
+        }
+        return false;
     }
 }

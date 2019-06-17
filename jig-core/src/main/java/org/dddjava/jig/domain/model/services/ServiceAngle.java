@@ -7,9 +7,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingFields;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingMethods;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.*;
 
 /**
  * サービスの切り口
@@ -23,17 +21,18 @@ public class ServiceAngle {
 
     UsingFields usingFields;
     RepositoryMethods usingRepositoryMethods;
-    boolean useStream;
     private boolean isPublic;
+    MethodWorries methodWorries;
 
     ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, ControllerMethods controllerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         this.methodDeclaration = serviceMethod.methodDeclaration();
         this.usingFields = serviceMethod.methodUsingFields();
         this.isPublic = serviceMethod.isPublic();
 
+        methodWorries = serviceMethod.methodWorries();
+
         UsingMethods usingMethods = serviceMethod.usingMethods();
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
-        this.useStream = usingMethods.containsStream();
 
         CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration().identifier());
         this.userControllerMethods = controllerMethods.filter(callerMethods);
@@ -57,8 +56,13 @@ public class ServiceAngle {
     }
 
     public boolean useStream() {
-        return useStream;
+        return methodWorries.contains(MethodWorry.StreamAPIを使用している);
     }
+
+    public boolean useNull() {
+        return methodWorries.contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
+    }
+
 
     public MethodDeclarations userServiceMethods() {
         return userServiceMethods.list().stream().map(ServiceMethod::methodDeclaration).collect(MethodDeclarations.collector());

@@ -44,12 +44,17 @@ public class ServiceReport {
         return angle.usingRepositoryMethods().asSimpleText();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 3)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "null使用", order = 3)
+    public boolean useNull() {
+        return angle.useNull();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 4)
     public boolean useStream() {
         return angle.useStream();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 4)
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 5)
     public String progress() {
         return progressText;
     }

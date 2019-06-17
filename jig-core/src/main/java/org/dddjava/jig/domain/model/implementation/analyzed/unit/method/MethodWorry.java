@@ -39,6 +39,13 @@ public enum MethodWorry {
         boolean judge(MethodByteCode methodByteCode) {
             return methodByteCode.methodDeclaration().methodReturn().typeIdentifier().isBoolean();
         }
+    },
+    StreamAPIを使用している {
+        @Override
+        boolean judge(MethodByteCode methodByteCode) {
+            UsingMethods usingMethods = new UsingMethods(methodByteCode.usingMethods());
+            return usingMethods.containsStream();
+        }
     };
 
     abstract boolean judge(MethodByteCode methodByteCode);

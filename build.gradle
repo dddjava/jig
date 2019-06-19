@@ -3,7 +3,7 @@
 //    dependencies { classpath 'org.dddjava.jig:jig-gradle-plugin:+' }
 //}
 plugins {
-    id 'org.springframework.boot' version '2.1.5.RELEASE' apply false
+    id 'org.springframework.boot' version '2.1.6.RELEASE' apply false
     id 'com.gradle.plugin-publish' version '0.9.10' apply false
     id 'com.jfrog.bintray' version '1.8.4' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2019.6.2' apply false

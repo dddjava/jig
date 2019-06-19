@@ -37,7 +37,7 @@ subprojects {
     }
 
     dependencies {
-        implementation platform('org.springframework.boot:spring-boot-dependencies:2.1.5.RELEASE')
+        implementation platform('org.springframework.boot:spring-boot-dependencies:2.1.6.RELEASE')
         testImplementation platform('org.junit:junit-bom:5.4.2')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api'

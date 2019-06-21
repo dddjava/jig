@@ -17,6 +17,8 @@ public class ServiceAngle {
     MethodDeclaration methodDeclaration;
 
     ServiceMethods userServiceMethods;
+    ServiceMethods usingServiceMethods;
+
     ControllerMethods userControllerMethods;
 
     UsingFields usingFields;
@@ -33,6 +35,7 @@ public class ServiceAngle {
 
         UsingMethods usingMethods = serviceMethod.usingMethods();
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
+        this.usingServiceMethods = serviceMethods.intersect(usingMethods.methodDeclarations());
 
         CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration().identifier());
         this.userControllerMethods = controllerMethods.filter(callerMethods);
@@ -74,5 +77,9 @@ public class ServiceAngle {
 
     public boolean isNotPublicMethod() {
         return !isPublic;
+    }
+
+    public ServiceMethods usingServiceMethods() {
+        return usingServiceMethods;
     }
 }

@@ -31,7 +31,7 @@ jobs:
     <<: *usually-build
   java-11:
     docker:
-    - image: circleci/openjdk:11-jdk
+    - image: circleci/openjdk:11.0.3-jdk-stretch
     <<: *usually-build
 
   release-build:

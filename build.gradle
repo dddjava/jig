@@ -8,6 +8,7 @@ plugins {
     id 'com.jfrog.bintray' version '1.8.4' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2019.6.4' apply false
     id "com.github.hierynomus.license" version "0.15.0"
+    id "org.jetbrains.kotlin.jvm" version "1.3.31" apply false
 }
 
 repositories {
@@ -290,6 +291,40 @@ project(':jig-cli') {
         archiveName 'jig-cli.jar'
         manifest {
             attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + ".LOCAL-SNAPSHOT" ))
+        }
+    }
+}
+
+project(':jig-cli-kt') {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'org.jetbrains.kotlin.jvm'
+
+    dependencies {
+        implementation project(':jig-core')
+        implementation 'org.springframework.boot:spring-boot-starter'
+        // kotlinのコメント取得: infrastructure/kotlinparser
+        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.30'
+        api 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
+    }
+
+    bootJar {
+        metaInf { from(rootDir) { include 'LICENSE' } }
+        archiveName 'jig-cli-kt.jar'
+        manifest {
+            attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + ".LOCAL-SNAPSHOT" ))
+        }
+        requiresUnpack '**/kotlin-compiler-*.jar'
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = '1.8'
+        }
+    }
+
+    compileTestKotlin {
+        kotlinOptions {
+            jvmTarget = '1.8'
         }
     }
 }

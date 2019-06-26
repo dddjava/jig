@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
 import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,18 @@ public class GlossaryService {
      */
     public void loadAliases(JavaSources javaSources) {
         TypeAliases typeAliases = reader.readTypes(javaSources);
+        loadAliases(typeAliases);
+    }
 
+    /**
+     * KtDocから別名を取り込む
+     */
+    public void loadAliases(KotlinSources kotlinSources) {
+        TypeAliases typeAliases = reader.readTypes(kotlinSources);
+        loadAliases(typeAliases);
+    }
+
+    private void loadAliases(TypeAliases typeAliases) {
         for (TypeAlias typeAlias : typeAliases.list()) {
             repository.register(typeAlias);
         }

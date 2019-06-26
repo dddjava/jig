@@ -1,5 +1,7 @@
 package org.dddjava.jig.infrastructure;
 
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSource;
+import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
 import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
 import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
@@ -11,8 +13,8 @@ import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSo
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceFactory;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
 import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
+import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
 import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
 import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSources;
 import org.objectweb.asm.ClassReader;
@@ -68,6 +70,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
         for (Path path : rawSourceLocations.textSourcePaths()) {
             try {
                 List<JavaSource> javaSources = new ArrayList<>();
+                List<KotlinSource> kotlinSources = new ArrayList<>();
                 List<PackageInfoSource> packageInfoSources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
@@ -81,6 +84,9 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                                 } else {
                                     javaSources.add(javaSource);
                                 }
+                            } else if (sourceFilePath.isKotlin()) {
+                                KotlinSource kotlinSource = new KotlinSource(sourceFilePath, Files.readAllBytes(file));
+                                kotlinSources.add(kotlinSource);
                             }
 
                             return FileVisitResult.CONTINUE;
@@ -89,7 +95,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                         }
                     }
                 });
-                list.add(new TextSource(new SourceLocation(path), new JavaSources(javaSources), new PackageInfoSources(packageInfoSources)));
+                list.add(new TextSource(new SourceLocation(path), new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }

@@ -8,9 +8,11 @@ import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
+import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
+import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -29,7 +31,8 @@ public class JigTestExtension implements ParameterResolver {
                 new JigProperties(
                         new BusinessRuleCondition("stub.domain.model.+"),
                         new OutputOmitPrefix()
-                )
+                ),
+                new SourceCodeJapaneseReader(Collections.singletonList(new JavaparserAliasReader()))
         );
     }
 

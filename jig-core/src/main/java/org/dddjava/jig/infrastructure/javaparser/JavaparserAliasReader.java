@@ -1,10 +1,13 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
+import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
+import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
 import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSource;
 import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
 import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
+import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +17,22 @@ import java.util.List;
 /**
  * JavaparserでJavadocから別名を取得する実装
  */
-public class JavaparserAliasReader implements AliasReader {
+public class JavaparserAliasReader implements SourceCodeParser {
 
     private static Logger LOGGER = LoggerFactory.getLogger(JavaparserAliasReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
+
+    @Override
+    public boolean isSupport(PackageInfoSources packageInfoSources) {
+        return true;
+    }
+
+    @Override
+    public boolean isSupport(SourceCodes<? extends SourceCode> sourceCodes) {
+        return sourceCodes instanceof JavaSources;
+    }
 
     @Override
     public PackageAliases readPackages(PackageInfoSources nameSources) {
@@ -32,11 +45,12 @@ public class JavaparserAliasReader implements AliasReader {
     }
 
     @Override
-    public TypeAliases readTypes(JavaSources nameSources) {
+    public TypeAliases readTypes(SourceCodes<? extends SourceCode> sourceCodes) {
         List<TypeAlias> names = new ArrayList<>();
         List<MethodAlias> methodNames = new ArrayList<>();
 
-        for (JavaSource javaSource : nameSources.list()) {
+        JavaSources sources = (JavaSources) sourceCodes;
+        for (JavaSource javaSource : sources.list()) {
             try {
                 TypeSourceResult typeSourceResult = classReader.read(javaSource);
                 TypeAlias typeAlias = typeSourceResult.typeAlias;

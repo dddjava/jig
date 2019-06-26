@@ -44,6 +44,7 @@ class GlossaryServiceTest {
         TextSource textSource = source.textSource();
 
         sut.loadAliases(textSource.javaSources());
+        sut.loadAliases(textSource.kotlinSources());
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);

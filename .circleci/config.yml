@@ -21,9 +21,6 @@ anchors:
           path: jig-core/build/reports/tests
       - store_artifacts:
           path: jig-gradle-plugin/build/reports/tests
-      - run: ./gradlew downloadLicenses
-      - store_artifacts:
-          path: build/reports/license
 jobs:
   java-8:
     docker:
@@ -63,6 +60,11 @@ jobs:
           path: example
           destination: example
       - run: ./gradlew :jig-annotation:bintrayUpload :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
+
+      # licenses
+      - run: ./gradlew downloadLicenses
+      - store_artifacts:
+          path: build/reports/license
 workflows:
   version: 2
   usually:

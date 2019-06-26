@@ -1,0 +1,5 @@
+/**
+ * デフォルトパッケージにあるクラス
+ */
+public class DefaultPackageClass {
+}

@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.kotlinparser;
+package org.dddjava.jig.infrastructure.kotlin;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.JavadocAliasSource;

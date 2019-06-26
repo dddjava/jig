@@ -5,10 +5,12 @@ import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
+import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
+import org.dddjava.jig.infrastructure.kotlin.KotlinparserJapaneseReader;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,12 +20,12 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
 @Component
-class CliConfig {
+class KotlinCliConfig {
     @Value("${documentType:}")
     String documentTypeText;
     @Value("${outputDirectory}")
@@ -68,12 +70,13 @@ class CliConfig {
     }
 
     Configuration configuration() {
+        List<SourceCodeParser> sourceCodeParsers = Arrays.asList(new JavaparserAliasReader(), new KotlinparserJapaneseReader());
         return new Configuration(
                 new JigProperties(
                         new BusinessRuleCondition(modelPattern),
                         new OutputOmitPrefix(outputOmitPrefix)
                 ),
-                new SourceCodeJapaneseReader(Collections.singletonList(new JavaparserAliasReader()))
+                new SourceCodeJapaneseReader(sourceCodeParsers)
         );
     }
 

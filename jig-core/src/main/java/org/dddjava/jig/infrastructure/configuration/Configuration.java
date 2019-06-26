@@ -5,10 +5,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
-import org.dddjava.jig.infrastructure.kotlinparser.KotlinparserJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.*;
@@ -16,9 +13,6 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class Configuration {
 
@@ -29,11 +23,10 @@ public class Configuration {
     BusinessRuleService businessRuleService;
     GlossaryService glossaryService;
 
-    public Configuration(JigProperties properties) {
+    public Configuration(JigProperties properties, SourceCodeJapaneseReader sourceCodeJapaneseReader) {
         this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(businessRuleService);
-        List<SourceCodeParser> sourceCodeParsers = Arrays.asList(new JavaparserAliasReader(), new KotlinparserJapaneseReader());
-        this.glossaryService = new GlossaryService(new SourceCodeJapaneseReader(sourceCodeParsers), new OnMemoryAliasRepository());
+        this.glossaryService = new GlossaryService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
         this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()

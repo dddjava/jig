@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.networks.type;
+package org.dddjava.jig.domain.model.implementation.analyzed.networks.class_;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelation;
@@ -6,12 +6,12 @@ import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.Pa
 /**
  * 型の依存関係
  */
-public class TypeRelation {
+public class ClassRelation {
 
     final TypeIdentifier from;
     final TypeIdentifier to;
 
-    public TypeRelation(TypeIdentifier from, TypeIdentifier to) {
+    public ClassRelation(TypeIdentifier from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
     }

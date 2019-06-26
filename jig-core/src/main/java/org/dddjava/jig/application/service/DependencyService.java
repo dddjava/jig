@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelations;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 import org.dddjava.jig.domain.model.notice.Warning;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class DependencyService {
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
         }
 
-        PackageRelations packageRelations = new TypeRelations(analyzedImplementation.typeByteCodes()).packageDependencies();
+        PackageRelations packageRelations = new ClassRelations(analyzedImplementation.typeByteCodes()).packageDependencies();
 
         return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
     }
@@ -53,7 +53,7 @@ public class DependencyService {
     public BusinessRuleNetwork businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
                 businessRuleService.businessRules(analyzedImplementation),
-                new TypeRelations(analyzedImplementation.typeByteCodes()));
+                new ClassRelations(analyzedImplementation.typeByteCodes()));
         return businessRuleNetwork;
     }
 }

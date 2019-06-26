@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.collections;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ public class CollectionAngles {
 
     List<CollectionAngle> list;
 
-    public CollectionAngles(CollectionTypes collectionTypes, TypeRelations typeRelations) {
+    public CollectionAngles(CollectionTypes collectionTypes, ClassRelations classRelations) {
         this.list = new ArrayList<>();
         for (CollectionType collectionType : collectionTypes.list()) {
-            list.add(new CollectionAngle(collectionType, typeRelations));
+            list.add(new CollectionAngle(collectionType, classRelations));
         }
     }
 

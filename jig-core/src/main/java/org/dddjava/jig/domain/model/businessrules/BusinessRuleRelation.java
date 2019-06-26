@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelation;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelation;
 
 /**
  * ビジネスルールの関連
@@ -11,9 +11,9 @@ public class BusinessRuleRelation {
     TypeIdentifier from;
     TypeIdentifier to;
 
-    public BusinessRuleRelation(TypeRelation typeRelation) {
-        from = typeRelation.from();
-        to = typeRelation.to();
+    public BusinessRuleRelation(ClassRelation classRelation) {
+        from = classRelation.from();
+        to = classRelation.to();
     }
 
     public TypeIdentifier from() {

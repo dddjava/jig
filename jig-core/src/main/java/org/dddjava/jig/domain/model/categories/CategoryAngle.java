@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.Fi
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 
 /**
  * 区分の切り口
@@ -23,9 +23,9 @@ public class CategoryAngle {
         this.fieldDeclarations = fieldDeclarations;
     }
 
-    public CategoryAngle(CategoryType categoryType, TypeRelations typeRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngle(CategoryType categoryType, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         this(categoryType,
-                typeRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier),
+                classRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier),
                 staticFieldDeclarations
                         .filterDeclareTypeIs(categoryType.typeIdentifier),
                 fieldDeclarations

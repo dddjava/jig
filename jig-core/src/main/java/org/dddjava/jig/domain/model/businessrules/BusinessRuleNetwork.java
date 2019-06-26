@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelation;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelation;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public class BusinessRuleNetwork {
 
     BusinessRules businessRules;
-    TypeRelations typeRelations;
+    ClassRelations classRelations;
 
-    public BusinessRuleNetwork(BusinessRules businessRules, TypeRelations typeRelations) {
+    public BusinessRuleNetwork(BusinessRules businessRules, ClassRelations classRelations) {
         this.businessRules = businessRules;
-        this.typeRelations = typeRelations;
+        this.classRelations = classRelations;
     }
 
     public List<BusinessRuleGroup> groups() {
@@ -36,11 +36,11 @@ public class BusinessRuleNetwork {
 
     public BusinessRuleRelations relations() {
         List<BusinessRuleRelation> list = new ArrayList<>();
-        for (TypeRelation typeRelation : typeRelations.list()) {
-            if (typeRelation.notSelfDependency()
-                    && businessRules.contains(typeRelation.from())
-                    && businessRules.contains(typeRelation.to())) {
-                list.add(new BusinessRuleRelation(typeRelation));
+        for (ClassRelation classRelation : classRelations.list()) {
+            if (classRelation.notSelfDependency()
+                    && businessRules.contains(classRelation.from())
+                    && businessRules.contains(classRelation.to())) {
+                list.add(new BusinessRuleRelation(classRelation));
             }
         }
         return new BusinessRuleRelations(list);

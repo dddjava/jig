@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;
@@ -54,7 +54,7 @@ public class BusinessRuleService {
     public ValueAngles values(ValueKind valueKind, AnalyzedImplementation analyzedImplementation) {
         ValueTypes valueTypes = new ValueTypes(businessRules(analyzedImplementation), valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, new TypeRelations(analyzedImplementation.typeByteCodes()));
+        return new ValueAngles(valueKind, valueTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
     /**
@@ -64,6 +64,6 @@ public class BusinessRuleService {
         BusinessRules businessRules = businessRules(analyzedImplementation);
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, new TypeRelations(analyzedImplementation.typeByteCodes()));
+        return new CollectionAngles(collectionTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
     }
 }

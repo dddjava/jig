@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.collections;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRelations;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 
 /**
  * コレクションの切り口
@@ -15,11 +15,11 @@ import org.dddjava.jig.domain.model.implementation.analyzed.networks.type.TypeRe
 public class CollectionAngle {
 
     CollectionType collectionType;
-    TypeRelations typeRelations;
+    ClassRelations classRelations;
 
-    public CollectionAngle(CollectionType collectionType, TypeRelations typeRelations) {
+    public CollectionAngle(CollectionType collectionType, ClassRelations classRelations) {
         this.collectionType = collectionType;
-        this.typeRelations = typeRelations;
+        this.classRelations = classRelations;
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -27,7 +27,7 @@ public class CollectionAngle {
     }
 
     public TypeIdentifiers userTypeIdentifiers() {
-        return typeRelations.collectTypeIdentifierWhichRelationTo(typeIdentifier());
+        return classRelations.collectTypeIdentifierWhichRelationTo(typeIdentifier());
     }
 
     public MethodDeclarations methods() {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.networks.type;
+package org.dddjava.jig.domain.model.implementation.analyzed.networks.class_;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
@@ -14,32 +14,32 @@ import java.util.stream.Collectors;
 /**
  * 型依存関係一覧
  */
-public class TypeRelations {
+public class ClassRelations {
 
-    List<TypeRelation> list;
+    List<ClassRelation> list;
 
-    public TypeRelations(TypeByteCodes typeByteCodes) {
+    public ClassRelations(TypeByteCodes typeByteCodes) {
         this.list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             TypeIdentifier form = typeByteCode.typeIdentifier();
             for (TypeIdentifier to : typeByteCode.useTypes().list()) {
-                list.add(new TypeRelation(form, to));
+                list.add(new ClassRelation(form, to));
             }
         }
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {
         return list.stream()
-                .filter(typeRelation -> typeRelation.toIs(typeIdentifier))
-                .filter(TypeRelation::notSelfDependency)
-                .map(TypeRelation::from)
+                .filter(classRelation -> classRelation.toIs(typeIdentifier))
+                .filter(ClassRelation::notSelfDependency)
+                .map(ClassRelation::from)
                 .collect(TypeIdentifiers.collector())
                 .normalize();
     }
 
     public PackageRelations packageDependencies() {
         List<PackageRelation> packageRelationList = list.stream()
-                .map(TypeRelation::toPackageDependency)
+                .map(ClassRelation::toPackageDependency)
                 .filter(PackageRelation::notSelfRelation)
                 .distinct()
                 .collect(Collectors.toList());
@@ -47,7 +47,7 @@ public class TypeRelations {
         return new PackageRelations(packageRelationList);
     }
 
-    public List<TypeRelation> list() {
+    public List<ClassRelation> list() {
         return list;
     }
 }

@@ -1,4 +1,6 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.source.code.kotlincode;
+
+import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
 
 import java.util.Collections;
 import java.util.List;

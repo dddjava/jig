@@ -1,22 +1,22 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.implementation.raw.KotlinSource;
-import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySource;
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSource;
-import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSources;
-import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSource;
-import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSource;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySource;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySources;
+import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
+import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSource;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceFactory;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSources;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.CodeSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +65,8 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
         return new BinarySources(list);
     }
 
-    TextSources readTextSources(RawSourceLocations rawSourceLocations) {
-        List<TextSource> list = new ArrayList<>();
+    CodeSources readTextSources(RawSourceLocations rawSourceLocations) {
+        List<AliasSource> list = new ArrayList<>();
         for (Path path : rawSourceLocations.textSourcePaths()) {
             try {
                 List<JavaSource> javaSources = new ArrayList<>();
@@ -95,13 +95,13 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                         }
                     }
                 });
-                list.add(new TextSource(new SourceLocation(path), new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
+                list.add(new AliasSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
         }
 
-        return new TextSources(list);
+        return new CodeSources(list);
     }
 
     @Override

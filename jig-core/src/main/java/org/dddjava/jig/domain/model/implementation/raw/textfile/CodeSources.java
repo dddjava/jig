@@ -5,17 +5,17 @@ import java.util.List;
 /**
  * テキストソース一覧
  */
-public class TextSources {
+public class CodeSources {
 
-    List<TextSource> list;
+    List<AliasSource> list;
 
-    public TextSources(List<TextSource> list) {
+    public CodeSources(List<AliasSource> list) {
         this.list = list;
     }
 
-    public TextSource toTextSource() {
+    public AliasSource aliasSource() {
         return list.stream()
-                .reduce(new TextSource(), TextSource::merge);
+                .reduce(new AliasSource(), AliasSource::merge);
     }
 
     public boolean nothing() {

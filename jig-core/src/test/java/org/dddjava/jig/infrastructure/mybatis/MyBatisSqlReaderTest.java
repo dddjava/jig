@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sql;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlType;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.sqlfile.SqlSources;
+import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

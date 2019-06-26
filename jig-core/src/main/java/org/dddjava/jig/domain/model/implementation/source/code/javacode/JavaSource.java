@@ -1,19 +1,20 @@
-package org.dddjava.jig.domain.model.implementation.raw;
+package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
+import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
 import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
- * .ktソース
+ * *.javaソース
  */
-public class KotlinSource implements SourceCode {
+public class JavaSource implements SourceCode {
 
     SourceFilePath sourceFilePath;
     byte[] value;
 
-    public KotlinSource(SourceFilePath sourceFilePath, byte[] value) {
+    public JavaSource(SourceFilePath sourceFilePath, byte[] value) {
         this.sourceFilePath = sourceFilePath;
         this.value = value;
     }
@@ -30,6 +31,6 @@ public class KotlinSource implements SourceCode {
 
     @Override
     public String toString() {
-        return "KotlinSource[" + sourceFilePath + "]";
+        return "JavaSource[" + sourceFilePath + "]";
     }
 }

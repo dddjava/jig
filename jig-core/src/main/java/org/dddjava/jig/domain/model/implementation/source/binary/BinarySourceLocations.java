@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw.raw;
+package org.dddjava.jig.domain.model.implementation.source.binary;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

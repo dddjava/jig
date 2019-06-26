@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,9 +30,9 @@ class GlossaryServiceTest {
 
     @Test
     void パッケージ別名取得(RawSource source) {
-        TextSource textSource = source.textSource();
+        AliasSource aliasSource = source.textSource();
 
-        sut.loadPackageAliases(textSource.packageInfoSources());
+        sut.loadPackageAliases(aliasSource.packageInfoSources());
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -41,10 +41,10 @@ class GlossaryServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
-        TextSource textSource = source.textSource();
+        AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(textSource.javaSources());
-        sut.loadAliases(textSource.kotlinSources());
+        sut.loadAliases(aliasSource.javaSources());
+        sut.loadAliases(aliasSource.kotlinSources());
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
@@ -61,9 +61,9 @@ class GlossaryServiceTest {
 
     @Test
     void メソッド別名取得(RawSource source) {
-        TextSource textSource = source.textSource();
+        AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(textSource.javaSources());
+        sut.loadAliases(aliasSource.javaSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

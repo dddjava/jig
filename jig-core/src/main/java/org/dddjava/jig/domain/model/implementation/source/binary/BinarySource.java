@@ -1,7 +1,5 @@
-package org.dddjava.jig.domain.model.implementation.raw.binary;
+package org.dddjava.jig.domain.model.implementation.source.binary;
 
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
 import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
 
 import java.util.ArrayList;

@@ -1,6 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw.packageinfo;
-
-import org.dddjava.jig.domain.model.implementation.raw.javafile.JavaSource;
+package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
 import java.io.InputStream;
 

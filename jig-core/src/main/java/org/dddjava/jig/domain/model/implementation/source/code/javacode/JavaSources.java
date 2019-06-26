@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw.javafile;
+package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
 import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
 

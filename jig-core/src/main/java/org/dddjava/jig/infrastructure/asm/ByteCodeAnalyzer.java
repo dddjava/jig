@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.*;
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSource;
+import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.gradle.api.Project;

@@ -5,11 +5,11 @@ import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -50,10 +50,10 @@ public class GlossaryServiceTest {
     @Test
     void クラス別名取得() {
         RawSource source = getTestRawSource();
-        TextSource textSource = source.textSource();
+        AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(textSource.javaSources());
-        sut.loadAliases(textSource.kotlinSources());
+        sut.loadAliases(aliasSource.javaSources());
+        sut.loadAliases(aliasSource.kotlinSources());
 
         Assertions.assertThat(sut.typeAliasOf(new TypeIdentifier(KotlinStub.class)).asText())
                 .isEqualTo("KotlinのクラスのDoc");
@@ -63,9 +63,9 @@ public class GlossaryServiceTest {
     @Test
     void Kotlinメソッドの和名取得() {
         RawSource source = getTestRawSource();
-        TextSource textSource = source.textSource();
+        AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(textSource.kotlinSources());
+        sut.loadAliases(aliasSource.kotlinSources());
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",

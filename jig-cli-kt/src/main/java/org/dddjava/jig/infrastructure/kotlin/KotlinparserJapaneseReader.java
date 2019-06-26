@@ -2,11 +2,11 @@ package org.dddjava.jig.infrastructure.kotlin;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAliases;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAliases;
-import org.dddjava.jig.domain.model.implementation.raw.KotlinSource;
-import org.dddjava.jig.domain.model.implementation.raw.KotlinSources;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSource;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
 import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
-import org.dddjava.jig.domain.model.implementation.raw.packageinfo.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;

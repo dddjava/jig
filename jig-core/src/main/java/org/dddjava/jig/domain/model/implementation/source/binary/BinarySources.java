@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw.binary;
+package org.dddjava.jig.domain.model.implementation.source.binary;
 
 import java.util.List;
 

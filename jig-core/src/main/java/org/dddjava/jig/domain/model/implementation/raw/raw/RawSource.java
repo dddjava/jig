@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.implementation.raw.raw;
 
-import org.dddjava.jig.domain.model.implementation.raw.binary.BinarySources;
-import org.dddjava.jig.domain.model.implementation.raw.classfile.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.sqlfile.SqlSources;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.TextSources;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySources;
+import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
+import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.CodeSources;
 
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
@@ -18,16 +18,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class RawSource {
 
-    TextSources textSources;
+    CodeSources codeSources;
     BinarySources binarySources;
 
-    public RawSource(TextSources textSources, BinarySources binarySources) {
-        this.textSources = textSources;
+    public RawSource(CodeSources codeSources, BinarySources binarySources) {
+        this.codeSources = codeSources;
         this.binarySources = binarySources;
     }
 
-    public TextSource textSource() {
-        return textSources.toTextSource();
+    public AliasSource textSource() {
+        return codeSources.aliasSource();
     }
 
     public SqlSources sqlSources() {
@@ -53,7 +53,7 @@ public class RawSource {
     }
 
     public boolean nothingTextSource() {
-        return textSources.nothing();
+        return codeSources.nothing();
     }
 
     public ClassSources classSources() {

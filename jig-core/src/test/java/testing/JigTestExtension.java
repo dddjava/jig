@@ -3,7 +3,7 @@ package testing;
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.raw.raw.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;

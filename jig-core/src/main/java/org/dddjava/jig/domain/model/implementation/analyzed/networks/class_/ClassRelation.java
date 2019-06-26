@@ -28,8 +28,8 @@ public class ClassRelation {
         return from;
     }
 
-    public boolean notSelfDependency() {
-        return !from.normalize().equals(to.normalize());
+    public boolean selfRelation() {
+        return from.normalize().equals(to.normalize());
     }
 
     public TypeIdentifier to() {

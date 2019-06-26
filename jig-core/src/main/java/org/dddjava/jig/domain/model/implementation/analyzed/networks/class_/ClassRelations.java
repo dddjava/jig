@@ -23,7 +23,9 @@ public class ClassRelations {
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             TypeIdentifier form = typeByteCode.typeIdentifier();
             for (TypeIdentifier to : typeByteCode.useTypes().list()) {
-                list.add(new ClassRelation(form, to));
+                ClassRelation classRelation = new ClassRelation(form, to);
+                if (classRelation.selfRelation()) continue;
+                list.add(classRelation);
             }
         }
     }
@@ -31,7 +33,6 @@ public class ClassRelations {
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {
         return list.stream()
                 .filter(classRelation -> classRelation.toIs(typeIdentifier))
-                .filter(ClassRelation::notSelfDependency)
                 .map(ClassRelation::from)
                 .collect(TypeIdentifiers.collector())
                 .normalize();

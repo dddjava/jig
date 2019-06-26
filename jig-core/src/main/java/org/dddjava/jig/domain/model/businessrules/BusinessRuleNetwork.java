@@ -37,9 +37,7 @@ public class BusinessRuleNetwork {
     public BusinessRuleRelations relations() {
         List<BusinessRuleRelation> list = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.list()) {
-            if (classRelation.notSelfDependency()
-                    && businessRules.contains(classRelation.from())
-                    && businessRules.contains(classRelation.to())) {
+            if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
                 list.add(new BusinessRuleRelation(classRelation));
             }
         }

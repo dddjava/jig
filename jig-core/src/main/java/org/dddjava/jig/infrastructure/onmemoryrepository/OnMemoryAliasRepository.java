@@ -1,6 +1,9 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasRepository;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.MethodAlias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;

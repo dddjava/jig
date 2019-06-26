@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
-import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -15,26 +15,26 @@ import org.springframework.stereotype.Controller;
 public class ServiceDiagramController {
 
     ApplicationService applicationService;
-    GlossaryService glossaryService;
+    AliasService aliasService;
     ViewResolver viewResolver;
 
-    public ServiceDiagramController(ApplicationService applicationService, GlossaryService glossaryService, ViewResolver viewResolver) {
+    public ServiceDiagramController(ApplicationService applicationService, AliasService aliasService, ViewResolver viewResolver) {
         this.applicationService = applicationService;
-        this.glossaryService = glossaryService;
+        this.aliasService = aliasService;
         this.viewResolver = viewResolver;
     }
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
     public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
-        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
+        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(aliasService);
         return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
     public JigModelAndView<?> booleanServiceTrace(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
-        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(glossaryService);
+        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(aliasService);
         return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace(aliasFinder));
     }
 }

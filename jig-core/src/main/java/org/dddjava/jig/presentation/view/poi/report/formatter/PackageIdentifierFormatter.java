@@ -24,7 +24,7 @@ class PackageIdentifierFormatter implements ReportItemFormatter {
             case パッケージ名:
                 return packageIdentifier.asText();
             case パッケージ別名:
-                return convertContext.glossaryService.packageAliasOf(packageIdentifier).asText();
+                return convertContext.aliasService.packageAliasOf(packageIdentifier).asText();
         }
 
         throw new IllegalArgumentException(itemCategory.name());

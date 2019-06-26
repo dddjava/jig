@@ -33,14 +33,14 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
             case メソッドシグネチャ:
                 return methodDeclaration.asSignatureSimpleText();
             case メソッド別名:
-                return convertContext.glossaryService.methodAliasOf(methodDeclaration.identifier()).asText();
+                return convertContext.aliasService.methodAliasOf(methodDeclaration.identifier()).asText();
             case メソッド戻り値の型:
                 return methodDeclaration.methodReturn().typeIdentifier().asSimpleText();
             case メソッド戻り値の型の別名:
-                return convertContext.glossaryService.typeAliasOf(methodDeclaration.methodReturn().typeIdentifier()).asText();
+                return convertContext.aliasService.typeAliasOf(methodDeclaration.methodReturn().typeIdentifier()).asText();
             case メソッド引数の型の別名:
                 List<TypeAlias> list = methodDeclaration.methodSignature().arguments().stream()
-                        .map(convertContext.glossaryService::typeAliasOf)
+                        .map(convertContext.aliasService::typeAliasOf)
                         .collect(toList());
                 return Text.of(list, alias -> alias.asText());
         }

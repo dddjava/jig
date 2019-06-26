@@ -30,11 +30,11 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class GlossaryServiceTest {
+public class AliasServiceTest {
 
-    GlossaryService sut;
+    AliasService sut;
 
-    GlossaryServiceTest() {
+    AliasServiceTest() {
         SourceCodeJapaneseReader sourceCodeJapaneseReader = new SourceCodeJapaneseReader(Arrays.asList(new JavaparserAliasReader(), new KotlinparserJapaneseReader()));
         Configuration configuration = new Configuration(
                 new JigProperties(
@@ -44,7 +44,7 @@ public class GlossaryServiceTest {
                 sourceCodeJapaneseReader
         );
 
-        sut = new GlossaryService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
+        sut = new AliasService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class GlossaryServiceTest {
 
     static URI defaultPackageClassURI() {
         try {
-            return GlossaryServiceTest.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
+            return AliasServiceTest.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

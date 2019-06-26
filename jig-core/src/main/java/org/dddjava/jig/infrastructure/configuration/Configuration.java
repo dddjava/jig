@@ -21,12 +21,12 @@ public class Configuration {
     ApplicationService applicationService;
     DependencyService dependencyService;
     BusinessRuleService businessRuleService;
-    GlossaryService glossaryService;
+    AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeJapaneseReader sourceCodeJapaneseReader) {
         this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(businessRuleService);
-        this.glossaryService = new GlossaryService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
+        this.aliasService = new AliasService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
         this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
@@ -39,34 +39,34 @@ public class Configuration {
         );
         BusinessRuleListController businessRuleListController= new BusinessRuleListController(
                 prefixRemoveIdentifierFormatter,
-                glossaryService,
+                aliasService,
                 applicationService,
                 businessRuleService
         );
         ClassListController classListController = new ClassListController(
                 prefixRemoveIdentifierFormatter,
-                glossaryService,
+                aliasService,
                 applicationService,
                 businessRuleService
         );
         EnumUsageController enumUsageController = new EnumUsageController(
                 businessRuleService,
-                glossaryService,
+                aliasService,
                 viewResolver
         );
         PackageDependencyController packageDependencyController = new PackageDependencyController(
                 dependencyService,
-                glossaryService,
+                aliasService,
                 viewResolver
         );
         ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
                 applicationService,
-                glossaryService,
+                aliasService,
                 viewResolver
         );
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),
-                glossaryService,
+                aliasService,
                 new MyBatisSqlReader(),
                 new LocalFileRawSourceFactory()
         );

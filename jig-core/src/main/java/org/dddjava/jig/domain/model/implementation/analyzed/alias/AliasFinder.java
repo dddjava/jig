@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
-import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
@@ -18,25 +18,25 @@ public interface AliasFinder {
 
     class GlossaryServiceAdapter implements AliasFinder {
 
-        private final GlossaryService glossaryService;
+        private final AliasService aliasService;
 
-        public GlossaryServiceAdapter(GlossaryService glossaryService) {
-            this.glossaryService = glossaryService;
+        public GlossaryServiceAdapter(AliasService aliasService) {
+            this.aliasService = aliasService;
         }
 
         @Override
         public PackageAlias find(PackageIdentifier packageIdentifier) {
-            return glossaryService.packageAliasOf(packageIdentifier);
+            return aliasService.packageAliasOf(packageIdentifier);
         }
 
         @Override
         public TypeAlias find(TypeIdentifier typeIdentifier) {
-            return glossaryService.typeAliasOf(typeIdentifier);
+            return aliasService.typeAliasOf(typeIdentifier);
         }
 
         @Override
         public MethodAlias find(MethodIdentifier methodIdentifier) {
-            return glossaryService.methodAliasOf(methodIdentifier);
+            return aliasService.methodAliasOf(methodIdentifier);
         }
     }
 }

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
  * 用語サービス
  */
 @Service
-public class GlossaryService {
+public class AliasService {
 
     final AliasReader reader;
     final AliasRepository repository;
 
-    public GlossaryService(AliasReader reader, AliasRepository repository) {
+    public AliasService(AliasReader reader, AliasRepository repository) {
         this.reader = reader;
         this.repository = repository;
     }

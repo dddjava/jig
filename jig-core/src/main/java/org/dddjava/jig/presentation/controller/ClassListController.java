@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.application.service.GlossaryService;
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
@@ -35,10 +35,10 @@ public class ClassListController {
     BusinessRuleService businessRuleService;
 
     public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
-                               GlossaryService glossaryService,
+                               AliasService aliasService,
                                ApplicationService applicationService,
                                BusinessRuleService businessRuleService) {
-        this.convertContext = new ConvertContext(glossaryService, typeIdentifierFormatter);
+        this.convertContext = new ConvertContext(aliasService, typeIdentifierFormatter);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
     }

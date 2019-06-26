@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 @JigServiceTest
-class GlossaryServiceTest {
+class AliasServiceTest {
 
-    GlossaryService sut;
+    AliasService sut;
 
-    public GlossaryServiceTest(GlossaryService glossaryService) {
-        sut = glossaryService;
+    public AliasServiceTest(AliasService aliasService) {
+        sut = aliasService;
     }
 
     @Test

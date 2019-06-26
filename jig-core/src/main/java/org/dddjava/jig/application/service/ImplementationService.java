@@ -18,16 +18,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class ImplementationService {
 
-    GlossaryService glossaryService;
+    AliasService aliasService;
 
     ByteCodeFactory byteCodeFactory;
     SqlReader sqlReader;
 
     RawSourceFactory rawSourceFactory;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, GlossaryService glossaryService, SqlReader sqlReader, RawSourceFactory rawSourceFactory) {
+    public ImplementationService(ByteCodeFactory byteCodeFactory, AliasService aliasService, SqlReader sqlReader, RawSourceFactory rawSourceFactory) {
         this.byteCodeFactory = byteCodeFactory;
-        this.glossaryService = glossaryService;
+        this.aliasService = aliasService;
         this.sqlReader = sqlReader;
         this.rawSourceFactory = rawSourceFactory;
     }
@@ -47,7 +47,7 @@ public class ImplementationService {
     public TypeByteCodes readProjectData(RawSource rawSource) {
         TypeByteCodes typeByteCodes = readByteCode(rawSource.classSources());
 
-        glossaryService.loadAliases(rawSource.textSource());
+        aliasService.loadAliases(rawSource.textSource());
 
         return typeByteCodes;
     }

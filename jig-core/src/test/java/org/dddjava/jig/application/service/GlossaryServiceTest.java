@@ -32,7 +32,7 @@ class GlossaryServiceTest {
     void パッケージ別名取得(RawSource source) {
         AliasSource aliasSource = source.textSource();
 
-        sut.loadPackageAliases(aliasSource.packageInfoSources());
+        sut.loadAliases(aliasSource);
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -43,8 +43,7 @@ class GlossaryServiceTest {
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
         AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(aliasSource.javaSources());
-        sut.loadAliases(aliasSource.kotlinSources());
+        sut.loadAliases(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
@@ -63,7 +62,7 @@ class GlossaryServiceTest {
     void メソッド別名取得(RawSource source) {
         AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(aliasSource.javaSources());
+        sut.loadAliases(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

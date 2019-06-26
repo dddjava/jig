@@ -52,8 +52,7 @@ public class GlossaryServiceTest {
         RawSource source = getTestRawSource();
         AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(aliasSource.javaSources());
-        sut.loadAliases(aliasSource.kotlinSources());
+        sut.loadAliases(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(new TypeIdentifier(KotlinStub.class)).asText())
                 .isEqualTo("KotlinのクラスのDoc");
@@ -65,7 +64,7 @@ public class GlossaryServiceTest {
         RawSource source = getTestRawSource();
         AliasSource aliasSource = source.textSource();
 
-        sut.loadAliases(aliasSource.kotlinSources());
+        sut.loadAliases(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",

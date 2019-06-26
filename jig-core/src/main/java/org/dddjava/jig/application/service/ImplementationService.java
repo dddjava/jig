@@ -47,9 +47,7 @@ public class ImplementationService {
     public TypeByteCodes readProjectData(RawSource rawSource) {
         TypeByteCodes typeByteCodes = readByteCode(rawSource.classSources());
 
-        glossaryService.loadAliases(rawSource.textSource().javaSources());
-        glossaryService.loadAliases(rawSource.textSource().kotlinSources());
-        glossaryService.loadPackageAliases(rawSource.textSource().packageInfoSources());
+        glossaryService.loadAliases(rawSource.textSource());
 
         return typeByteCodes;
     }

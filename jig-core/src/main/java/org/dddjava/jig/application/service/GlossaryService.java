@@ -4,9 +4,10 @@ import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
 import org.springframework.stereotype.Service;
 
 /**
@@ -47,7 +48,7 @@ public class GlossaryService {
     /**
      * Javadocから別名を取り込む
      */
-    public void loadPackageAliases(PackageInfoSources packageInfoSources) {
+    void loadPackageAliases(PackageInfoSources packageInfoSources) {
         PackageAliases packageAliases = reader.readPackages(packageInfoSources);
         packageAliases.register(repository);
     }
@@ -55,7 +56,7 @@ public class GlossaryService {
     /**
      * Javadocから別名を取り込む
      */
-    public void loadAliases(JavaSources javaSources) {
+    void loadAliases(JavaSources javaSources) {
         TypeAliases typeAliases = reader.readTypes(javaSources);
         loadAliases(typeAliases);
     }
@@ -63,7 +64,7 @@ public class GlossaryService {
     /**
      * KtDocから別名を取り込む
      */
-    public void loadAliases(KotlinSources kotlinSources) {
+    void loadAliases(KotlinSources kotlinSources) {
         TypeAliases typeAliases = reader.readTypes(kotlinSources);
         loadAliases(typeAliases);
     }
@@ -76,5 +77,11 @@ public class GlossaryService {
         for (MethodAlias methodAlias : typeAliases.methodList()) {
             repository.register(methodAlias);
         }
+    }
+
+    public void loadAliases(AliasSource aliasSource) {
+        loadAliases(aliasSource.javaSources());
+        loadAliases(aliasSource.kotlinSources());
+        loadPackageAliases(aliasSource.packageInfoSources());
     }
 }

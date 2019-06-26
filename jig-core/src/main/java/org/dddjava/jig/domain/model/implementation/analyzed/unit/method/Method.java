@@ -17,6 +17,7 @@ public class Method {
     Accessor accessor;
     UsingFields usingFields;
     UsingMethods usingMethods;
+    MethodWorries methodWorries;
 
     public Method(MethodByteCode methodByteCode) {
         this.methodDeclaration = methodByteCode.methodDeclaration();
@@ -25,6 +26,7 @@ public class Method {
         this.accessor = methodByteCode.accessor();
         this.usingFields = new UsingFields(methodByteCode.usingFields().list());
         this.usingMethods = new UsingMethods(methodByteCode.usingMethods());
+        this.methodWorries = MethodWorries.from(methodByteCode);
     }
 
     public MethodDeclaration declaration() {
@@ -49,5 +51,9 @@ public class Method {
 
     public UsingMethods usingMethods() {
         return usingMethods;
+    }
+
+    public MethodWorries methodWorries() {
+        return methodWorries;
     }
 }

@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.smells;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
+import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.MethodWorry;
 
 /**
  * メソッドの不吉なにおい
@@ -32,16 +32,23 @@ public class MethodSmellAngle {
     }
 
     public boolean primitiveInterface() {
-        return method.declaration().methodReturn().isPrimitive()
-                || method.declaration().methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
+        return method.methodWorries().contains(MethodWorry.基本型の授受を行なっている);
     }
 
     public boolean returnsBoolean() {
-        return method.declaration().methodReturn().typeIdentifier().isBoolean();
+        return method.methodWorries().contains(MethodWorry.真偽値を返している);
     }
 
     public boolean hasSmell() {
-        return notUseField() || primitiveInterface() || returnsBoolean();
+        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull();
+    }
+
+    public boolean referenceNull() {
+        return method.methodWorries().contains(MethodWorry.NULLリテラルを使用している);
+    }
+
+    public boolean nullDecision() {
+        return method.methodWorries().contains(MethodWorry.NULL判定をしている);
     }
 
     public CallerMethods callerMethods() {

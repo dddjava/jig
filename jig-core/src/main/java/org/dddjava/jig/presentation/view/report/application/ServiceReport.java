@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.report.application;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingFields;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
+import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -39,17 +40,27 @@ public class ServiceReport {
         return angle.usingFields();
     }
 
+    @ReportItemFor(value = ReportItem.メソッド一覧, label = "使用しているサービスのメソッド", order = 1)
+    public ServiceMethods usingServiceMethod() {
+        return angle.usingServiceMethods();
+    }
+
     @ReportItemFor(value = ReportItem.汎用文字列, label = "使用しているリポジトリのメソッド", order = 2)
     public String usingRepositoryMethods() {
         return angle.usingRepositoryMethods().asSimpleText();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 3)
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "null使用", order = 3)
+    public boolean useNull() {
+        return angle.useNull();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 4)
     public boolean useStream() {
         return angle.useStream();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 4)
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 5)
     public String progress() {
         return progressText;
     }

@@ -35,6 +35,9 @@ public class MethodByteCode {
     // switchがある
     private int lookupSwitchInstructionNumber = 0;
 
+    /** nullを参照している */
+    private boolean hasNullReference = false;
+
     public MethodByteCode(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, int access) {
         this.methodDeclaration = methodDeclaration;
         this.access = access;
@@ -122,5 +125,23 @@ public class MethodByteCode {
 
     public boolean sameSignature(MethodByteCode other) {
         return methodDeclaration().methodSignature().isSame(other.methodDeclaration().methodSignature());
+    }
+
+    public void markReferenceNull() {
+        hasNullReference = true;
+    }
+
+    public boolean referenceNull() {
+        return hasNullReference;
+    }
+
+    boolean hasJudgeNull;
+
+    public void markJudgeNull() {
+        hasJudgeNull = true;
+    }
+
+    public boolean judgeNull() {
+        return hasJudgeNull;
     }
 }

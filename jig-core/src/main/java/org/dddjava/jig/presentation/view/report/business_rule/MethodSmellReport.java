@@ -43,4 +43,13 @@ public class MethodSmellReport {
     public boolean returnsBoolean() {
         return angle.returnsBoolean();
     }
+
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "nullリテラルの使用", order = 4)
+    public boolean referenceNull() {
+        return angle.referenceNull();
+    }
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "nullによる判定", order = 5)
+    public boolean nullDecision() {
+        return angle.nullDecision();
+    }
 }

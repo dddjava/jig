@@ -31,6 +31,7 @@ JIGの生成する分析・設計情報をJIGドキュメントと呼びます�
 JIGは二種類の実行方法を提供しています。使い方や設定はそれぞれのREADMEを参照してください。
 
 - [コマンドライン](./jig-cli)
+  - [Kotlin用](./jig-cli-kt)
 - [Gradleプラグイン](./jig-gradle-plugin)
 
 ### 実行環境

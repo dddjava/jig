@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
@@ -31,8 +31,8 @@ public class AliasServiceTest {
     AliasService sut;
 
     AliasServiceTest() {
-        SourceCodeJapaneseReader sourceCodeJapaneseReader = new SourceCodeJapaneseReader(new JavaparserAliasReader(), new KotlinparserJapaneseReaderSource());
-        sut = new AliasService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
+        SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinparserJapaneseReaderSource());
+        sut = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
     }
 
     @Test

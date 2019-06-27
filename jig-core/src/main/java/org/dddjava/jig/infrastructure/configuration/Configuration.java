@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.*;
@@ -23,10 +23,10 @@ public class Configuration {
     BusinessRuleService businessRuleService;
     AliasService aliasService;
 
-    public Configuration(JigProperties properties, SourceCodeJapaneseReader sourceCodeJapaneseReader) {
+    public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
         this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
         this.dependencyService = new DependencyService(businessRuleService);
-        this.aliasService = new AliasService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
+        this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
         this.applicationService = new ApplicationService(new Architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()

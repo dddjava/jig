@@ -1,7 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
@@ -72,7 +72,7 @@ class CliConfig {
                         new BusinessRuleCondition(modelPattern),
                         new OutputOmitPrefix(outputOmitPrefix)
                 ),
-                new SourceCodeJapaneseReader(new JavaparserAliasReader())
+                new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }
 

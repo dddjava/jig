@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AliasService {
 
-    final SourceCodeJapaneseReader reader;
+    final SourceCodeAliasReader reader;
     final AliasRepository repository;
 
-    public AliasService(SourceCodeJapaneseReader reader, AliasRepository repository) {
+    public AliasService(SourceCodeAliasReader reader, AliasRepository repository) {
         this.reader = reader;
         this.repository = repository;
     }

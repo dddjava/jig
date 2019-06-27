@@ -4,16 +4,19 @@ import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSour
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
 
-public class SourceCodeJapaneseReader {
+/**
+ * コードを使用する別名別名読み取り機
+ */
+public class SourceCodeAliasReader {
 
     JavaSourceAliasReader javaSourceAliasReader;
     KotlinSourceAliasReader kotlinSourceAliasReader;
 
-    public SourceCodeJapaneseReader(JavaSourceAliasReader javaSourceAliasReader) {
+    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader) {
         this(javaSourceAliasReader, sources -> TypeAliases.empty());
     }
 
-    public SourceCodeJapaneseReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
+    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
         this.javaSourceAliasReader = javaSourceAliasReader;
         this.kotlinSourceAliasReader = kotlinSourceAliasReader;
     }

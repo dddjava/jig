@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
@@ -33,7 +33,7 @@ public class JigReportsTask extends DefaultTask {
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
         List<JigDocument> jigDocuments = config.documentTypes();
-        Configuration configuration = new Configuration(config.asProperties(), new SourceCodeJapaneseReader(new JavaparserAliasReader()));
+        Configuration configuration = new Configuration(config.asProperties(), new SourceCodeAliasReader(new JavaparserAliasReader()));
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 

@@ -4,8 +4,8 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
@@ -20,7 +20,6 @@ import org.gradle.api.tasks.TaskAction;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ public class JigReportsTask extends DefaultTask {
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
         List<JigDocument> jigDocuments = config.documentTypes();
-        Configuration configuration = new Configuration(config.asProperties(), new SourceCodeJapaneseReader(Collections.singletonList(new JavaparserAliasReader())));
+        Configuration configuration = new Configuration(config.asProperties(), new SourceCodeJapaneseReader(new JavaparserAliasReader()));
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 

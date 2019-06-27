@@ -1,13 +1,9 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAliases;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.KotlinSourceAliasReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAliases;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSource;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
-import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeParser;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles;
@@ -23,21 +19,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class KotlinparserJapaneseReader implements SourceCodeParser {
-    @Override
-    public PackageAliases readPackages(PackageInfoSources packageInfoSources) {
-        return new PackageAliases(new ArrayList<>());
-    }
+public class KotlinparserJapaneseReaderSource implements KotlinSourceAliasReader {
 
     @Override
-    public TypeAliases readTypes(SourceCodes<? extends SourceCode> sources) {
-        KotlinSources kotlinSources = (KotlinSources) sources;
+    public TypeAliases readAlias(KotlinSources sources) {
         KotlinSourceVisitor visitor = new KotlinSourceVisitor();
 
-        for (KotlinSource kotlinSource : kotlinSources.list()) {
+        for (KotlinSource kotlinSource : sources.list()) {
             KtFile ktFile = readKotlinSource(kotlinSource);
             if (ktFile == null) {
                 continue;
@@ -67,15 +57,5 @@ public class KotlinparserJapaneseReader implements SourceCodeParser {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public boolean isSupport(PackageInfoSources packageInfoSources) {
-        return false;
-    }
-
-    @Override
-    public boolean isSupport(SourceCodes<? extends SourceCode> sourceCodes) {
-        return sourceCodes instanceof KotlinSources;
     }
 }

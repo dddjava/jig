@@ -1,22 +1,18 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
-import org.dddjava.jig.infrastructure.kotlin.KotlinparserJapaneseReader;
+import org.dddjava.jig.infrastructure.kotlin.KotlinparserJapaneseReaderSource;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.KotlinMethodJavadocStub;
@@ -35,15 +31,7 @@ public class AliasServiceTest {
     AliasService sut;
 
     AliasServiceTest() {
-        SourceCodeJapaneseReader sourceCodeJapaneseReader = new SourceCodeJapaneseReader(Arrays.asList(new JavaparserAliasReader(), new KotlinparserJapaneseReader()));
-        Configuration configuration = new Configuration(
-                new JigProperties(
-                        new BusinessRuleCondition("stub.domain.model.+"),
-                        new OutputOmitPrefix()
-                ),
-                sourceCodeJapaneseReader
-        );
-
+        SourceCodeJapaneseReader sourceCodeJapaneseReader = new SourceCodeJapaneseReader(new JavaparserAliasReader(), new KotlinparserJapaneseReaderSource());
         sut = new AliasService(sourceCodeJapaneseReader, new OnMemoryAliasRepository());
     }
 

@@ -1,10 +1,10 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
 import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
 import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -18,7 +18,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -73,7 +72,7 @@ class CliConfig {
                         new BusinessRuleCondition(modelPattern),
                         new OutputOmitPrefix(outputOmitPrefix)
                 ),
-                new SourceCodeJapaneseReader(Collections.singletonList(new JavaparserAliasReader()))
+                new SourceCodeJapaneseReader(new JavaparserAliasReader())
         );
     }
 

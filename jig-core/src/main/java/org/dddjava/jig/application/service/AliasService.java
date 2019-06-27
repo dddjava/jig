@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class AliasService {
 
-    final AliasReader reader;
+    final SourceCodeJapaneseReader reader;
     final AliasRepository repository;
 
-    public AliasService(AliasReader reader, AliasRepository repository) {
+    public AliasService(SourceCodeJapaneseReader reader, AliasRepository repository) {
         this.reader = reader;
         this.repository = repository;
     }
@@ -57,7 +57,7 @@ public class AliasService {
      * Javadocから別名を取り込む
      */
     void loadAliases(JavaSources javaSources) {
-        TypeAliases typeAliases = reader.readTypes(javaSources);
+        TypeAliases typeAliases = reader.readJavaSources(javaSources);
         loadAliases(typeAliases);
     }
 
@@ -65,7 +65,7 @@ public class AliasService {
      * KtDocから別名を取り込む
      */
     void loadAliases(KotlinSources kotlinSources) {
-        TypeAliases typeAliases = reader.readTypes(kotlinSources);
+        TypeAliases typeAliases = reader.readKotlinSources(kotlinSources);
         loadAliases(typeAliases);
     }
 

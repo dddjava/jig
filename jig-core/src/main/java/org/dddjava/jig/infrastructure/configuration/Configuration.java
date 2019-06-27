@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.infrastructure.codeparser.SourceCodeJapaneseReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeJapaneseReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.*;

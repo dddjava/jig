@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.source.binary;
 
-import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +8,16 @@ import java.util.List;
  */
 public class BinarySource {
 
-    SourceLocation sourceLocation;
+    BinarySourceLocation binarySourceLocation;
     ClassSources classSources;
 
-    public BinarySource(SourceLocation sourceLocation, ClassSources classSources) {
-        this.sourceLocation = sourceLocation;
+    public BinarySource(BinarySourceLocation binarySourceLocation, ClassSources classSources) {
+        this.binarySourceLocation = binarySourceLocation;
         this.classSources = classSources;
     }
 
     public BinarySource() {
-        this(new SourceLocation(), new ClassSources());
+        this(new BinarySourceLocation(), new ClassSources());
     }
 
     public ClassSources classSources() {
@@ -30,11 +28,11 @@ public class BinarySource {
         List<ClassSource> list = new ArrayList<>(classSources.list());
         list.addAll(other.classSources.list());
         return new BinarySource(
-                new SourceLocation(),
+                new BinarySourceLocation(),
                 new ClassSources(list));
     }
 
-    public SourceLocation sourceLocation() {
-        return sourceLocation;
+    public BinarySourceLocation sourceLocation() {
+        return binarySourceLocation;
     }
 }

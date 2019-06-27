@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.assertj.core.api.SoftAssertions;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
@@ -41,10 +41,10 @@ class GradleProjectTest {
         projectMethod.setAccessible(true);
         Project project = (Project) projectMethod.invoke(null, tempDir);
 
-        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
+        SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
-        List<Path> binarySourcePaths = rawSourceLocations.binarySourcePaths();
-        List<Path> textSourcePaths = rawSourceLocations.textSourcePaths();
+        List<Path> binarySourcePaths = sourcePaths.binarySourcePaths();
+        List<Path> textSourcePaths = sourcePaths.textSourcePaths();
 
         Fixture fixture = new Fixture(classPathSuffixes, sourcePathSuffixes);
         SoftAssertions softly = new SoftAssertions();

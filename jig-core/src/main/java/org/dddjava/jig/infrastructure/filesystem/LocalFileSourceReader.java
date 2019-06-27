@@ -1,22 +1,16 @@
-package org.dddjava.jig.infrastructure;
+package org.dddjava.jig.infrastructure.filesystem;
 
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
+import org.dddjava.jig.domain.model.implementation.source.SourceReader;
+import org.dddjava.jig.domain.model.implementation.source.Sources;
+import org.dddjava.jig.domain.model.implementation.source.binary.*;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSource;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSourceFile;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSources;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.*;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSource;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSourceFile;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySource;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySources;
-import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
-import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceFactory;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
-import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.CodeSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +25,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalFileRawSourceFactory implements RawSourceFactory {
+public class LocalFileSourceReader implements SourceReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileRawSourceFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileSourceReader.class);
 
-    BinarySources readBinarySources(RawSourceLocations rawSourceLocations) {
+    BinarySources readBinarySources(SourcePaths sourcePaths) {
         List<BinarySource> list = new ArrayList<>();
-        for (Path path : rawSourceLocations.binarySourcePaths()) {
+        for (Path path : sourcePaths.binarySourcePaths()) {
             try {
                 List<ClassSource> sources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -48,7 +42,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                                 byte[] bytes = Files.readAllBytes(file);
                                 ClassReader classReader = new ClassReader(bytes);
                                 String className = classReader.getClassName().replace('/', '.');
-                                ClassSource classSource = new ClassSource(new SourceLocation(file), bytes, className);
+                                ClassSource classSource = new ClassSource(new BinarySourceLocation(file), bytes, className);
                                 sources.add(classSource);
                             } catch (IOException e) {
                                 throw new UncheckedIOException(e);
@@ -57,7 +51,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                         return FileVisitResult.CONTINUE;
                     }
                 });
-                list.add(new BinarySource(new SourceLocation(path), new ClassSources(sources)));
+                list.add(new BinarySource(new BinarySourceLocation(path), new ClassSources(sources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
@@ -65,9 +59,9 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
         return new BinarySources(list);
     }
 
-    CodeSources readTextSources(RawSourceLocations rawSourceLocations) {
-        List<AliasSource> list = new ArrayList<>();
-        for (Path path : rawSourceLocations.textSourcePaths()) {
+    CodeSources readTextSources(SourcePaths sourcePaths) {
+        List<CodeSource> list = new ArrayList<>();
+        for (Path path : sourcePaths.textSourcePaths()) {
             try {
                 List<JavaSource> javaSources = new ArrayList<>();
                 List<KotlinSource> kotlinSources = new ArrayList<>();
@@ -76,16 +70,18 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try {
-                            SourceFilePath sourceFilePath = new SourceFilePath(file);
-                            if (sourceFilePath.isJava()) {
-                                JavaSource javaSource = new JavaSource(sourceFilePath, Files.readAllBytes(file));
-                                if (sourceFilePath.isPackageInfo()) {
+                            CodeSourceFile codeSourceFile = new CodeSourceFile(file);
+                            JavaSourceFile javaSourceFile = codeSourceFile.asJava();
+                            KotlinSourceFile kotlinSourceFile = codeSourceFile.asKotlin();
+                            if (javaSourceFile.isJava()) {
+                                JavaSource javaSource = new JavaSource(javaSourceFile, Files.readAllBytes(file));
+                                if (javaSourceFile.isPackageInfo()) {
                                     packageInfoSources.add(new PackageInfoSource(javaSource));
                                 } else {
                                     javaSources.add(javaSource);
                                 }
-                            } else if (sourceFilePath.isKotlin()) {
-                                KotlinSource kotlinSource = new KotlinSource(sourceFilePath, Files.readAllBytes(file));
+                            } else if (kotlinSourceFile.isKotlin()) {
+                                KotlinSource kotlinSource = new KotlinSource(kotlinSourceFile, Files.readAllBytes(file));
                                 kotlinSources.add(kotlinSource);
                             }
 
@@ -95,7 +91,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
                         }
                     }
                 });
-                list.add(new AliasSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
+                list.add(new CodeSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
@@ -105,7 +101,7 @@ public class LocalFileRawSourceFactory implements RawSourceFactory {
     }
 
     @Override
-    public RawSource createSource(RawSourceLocations rawSourceLocations) {
-        return new RawSource(readTextSources(rawSourceLocations), readBinarySources(rawSourceLocations));
+    public Sources readSources(SourcePaths sourcePaths) {
+        return new Sources(readTextSources(sourcePaths), readBinarySources(sourcePaths));
     }
 }

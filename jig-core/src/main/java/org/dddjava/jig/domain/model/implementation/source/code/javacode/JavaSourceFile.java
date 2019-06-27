@@ -1,16 +1,13 @@
-package org.dddjava.jig.domain.model.implementation.raw.sourcepath;
+package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
 import java.nio.file.Path;
 
-/**
- * ファイル名
- */
-public class SourceFilePath {
+public class JavaSourceFile {
 
-    Path path;
     String fileName;
+    Path path;
 
-    public SourceFilePath(Path path) {
+    public JavaSourceFile(Path path) {
         this.path = path;
         this.fileName = path.getFileName().toString();
     }
@@ -21,14 +18,6 @@ public class SourceFilePath {
 
     public boolean isPackageInfo() {
         return fileName.endsWith("package-info.java");
-    }
-
-    public boolean isKotlin() {
-        return fileName.endsWith(".kt");
-    }
-
-    public String fineName() {
-        return fileName;
     }
 
     @Override

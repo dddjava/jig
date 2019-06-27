@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.Sources;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -29,8 +29,8 @@ class AliasServiceTest {
     }
 
     @Test
-    void パッケージ別名取得(RawSource source) {
-        AliasSource aliasSource = source.textSource();
+    void パッケージ別名取得(Sources source) {
+        AliasSource aliasSource = source.aliasSource();
 
         sut.loadAliases(aliasSource);
 
@@ -40,8 +40,8 @@ class AliasServiceTest {
 
     @ParameterizedTest
     @MethodSource
-    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, RawSource source) {
-        AliasSource aliasSource = source.textSource();
+    void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
+        AliasSource aliasSource = source.aliasSource();
 
         sut.loadAliases(aliasSource);
 
@@ -59,8 +59,8 @@ class AliasServiceTest {
     }
 
     @Test
-    void メソッド別名取得(RawSource source) {
-        AliasSource aliasSource = source.textSource();
+    void メソッド別名取得(Sources source) {
+        AliasSource aliasSource = source.aliasSource();
 
         sut.loadAliases(aliasSource);
 

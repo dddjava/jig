@@ -1,33 +1,29 @@
-package org.dddjava.jig.domain.model.implementation.raw.sourcelocation;
+package org.dddjava.jig.domain.model.implementation.source.binary;
 
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * ソースの場所
+ * 読み込んだバイナリの場所
  */
-public class SourceLocation {
+public class BinarySourceLocation {
 
     String value;
 
-    public SourceLocation(String value) {
+    BinarySourceLocation(String value) {
         this.value = value;
     }
 
-    public SourceLocation() {
+    public BinarySourceLocation() {
         this("");
     }
 
-    public SourceLocation(Path path) {
+    public BinarySourceLocation(Path path) {
         this(path.toAbsolutePath().toString());
     }
 
     public URI uri() {
         return Paths.get(value).toUri();
-    }
-
-    public String value() {
-        return value;
     }
 }

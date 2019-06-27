@@ -2,9 +2,9 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -76,7 +76,7 @@ class CliConfig {
         );
     }
 
-    RawSourceLocations rawSourceLocations() {
+    SourcePaths rawSourceLocations() {
         try {
             Path projectRoot = Paths.get(projectPath);
 
@@ -88,9 +88,9 @@ class CliConfig {
             Files.walkFileTree(projectRoot, sourcesCollector);
             List<Path> textSourcesPaths = sourcesCollector.listPath();
 
-            return new RawSourceLocations(
-                    new BinarySourceLocations(binarySourcePaths),
-                    new TextSourceLocations(textSourcesPaths));
+            return new SourcePaths(
+                    new BinarySourcePaths(binarySourcePaths),
+                    new CodeSourcePaths(textSourcesPaths));
         } catch (IOException e) {
             // TODO エラーメッセージ。たとえばルートパスの指定が変な時とかはここにくる。
             throw new UncheckedIOException(e);

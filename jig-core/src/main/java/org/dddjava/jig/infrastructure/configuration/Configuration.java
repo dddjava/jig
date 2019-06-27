@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
+import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
@@ -68,7 +68,7 @@ public class Configuration {
                 new AsmByteCodeFactory(),
                 aliasService,
                 new MyBatisSqlReader(),
-                new LocalFileRawSourceFactory()
+                new LocalFileSourceReader()
         );
         this.documentHandlers = new JigDocumentHandlers(
                 serviceDiagramController,

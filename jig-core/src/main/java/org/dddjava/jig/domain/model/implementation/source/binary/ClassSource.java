@@ -1,18 +1,16 @@
 package org.dddjava.jig.domain.model.implementation.source.binary;
 
-import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
-
 /**
  * classソース
  */
 public class ClassSource {
 
-    SourceLocation sourceLocation;
+    BinarySourceLocation binarySourceLocation;
     byte[] value;
     String className;
 
-    public ClassSource(SourceLocation sourceLocation, byte[] value, String className) {
-        this.sourceLocation = sourceLocation;
+    public ClassSource(BinarySourceLocation binarySourceLocation, byte[] value, String className) {
+        this.binarySourceLocation = binarySourceLocation;
         this.value = value;
         this.className = className;
     }

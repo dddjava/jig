@@ -5,12 +5,12 @@ import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAlia
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.raw.TextSourceLocations;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
-import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
+import org.dddjava.jig.domain.model.implementation.source.Sources;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
+import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
@@ -37,8 +37,8 @@ public class AliasServiceTest {
 
     @Test
     void クラス別名取得() {
-        RawSource source = getTestRawSource();
-        AliasSource aliasSource = source.textSource();
+        Sources source = getTestRawSource();
+        AliasSource aliasSource = source.aliasSource();
 
         sut.loadAliases(aliasSource);
 
@@ -49,8 +49,8 @@ public class AliasServiceTest {
 
     @Test
     void Kotlinメソッドの和名取得() {
-        RawSource source = getTestRawSource();
-        AliasSource aliasSource = source.textSource();
+        Sources source = getTestRawSource();
+        AliasSource aliasSource = source.aliasSource();
 
         sut.loadAliases(aliasSource);
 
@@ -75,16 +75,16 @@ public class AliasServiceTest {
                 .matches("引数(なし|あり)のメソッド");
     }
 
-    public RawSource getTestRawSource() {
-        RawSourceLocations rawSourceLocations = getRawSourceLocations();
-        LocalFileRawSourceFactory localFileRawSourceFactory = new LocalFileRawSourceFactory();
-        return localFileRawSourceFactory.createSource(rawSourceLocations);
+    public Sources getTestRawSource() {
+        SourcePaths sourcePaths = getRawSourceLocations();
+        LocalFileSourceReader localFileRawSourceFactory = new LocalFileSourceReader();
+        return localFileRawSourceFactory.readSources(sourcePaths);
     }
 
-    public RawSourceLocations getRawSourceLocations() {
-        return new RawSourceLocations(
-                new BinarySourceLocations(Collections.singletonList(Paths.get(defaultPackageClassURI()))),
-                new TextSourceLocations(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java")))
+    public SourcePaths getRawSourceLocations() {
+        return new SourcePaths(
+                new BinarySourcePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()))),
+                new CodeSourcePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java")))
         );
     }
 

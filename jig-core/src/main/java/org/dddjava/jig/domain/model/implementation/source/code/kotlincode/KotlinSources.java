@@ -1,14 +1,12 @@
 package org.dddjava.jig.domain.model.implementation.source.code.kotlincode;
 
-import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
-
 import java.util.Collections;
 import java.util.List;
 
 /**
  * .ktソース一覧
  */
-public class KotlinSources implements SourceCodes<KotlinSource> {
+public class KotlinSources {
 
     List<KotlinSource> list;
 
@@ -20,7 +18,6 @@ public class KotlinSources implements SourceCodes<KotlinSource> {
         this(Collections.emptyList());
     }
 
-    @Override
     public List<KotlinSource> list() {
         return list;
     }

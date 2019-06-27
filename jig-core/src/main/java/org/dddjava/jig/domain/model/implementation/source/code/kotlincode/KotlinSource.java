@@ -1,36 +1,31 @@
 package org.dddjava.jig.domain.model.implementation.source.code.kotlincode;
 
-import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
-import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
  * .ktソース
  */
-public class KotlinSource implements SourceCode {
+public class KotlinSource {
 
-    SourceFilePath sourceFilePath;
+    KotlinSourceFile kotlinSourceFile;
     byte[] value;
 
-    public KotlinSource(SourceFilePath sourceFilePath, byte[] value) {
-        this.sourceFilePath = sourceFilePath;
+    public KotlinSource(KotlinSourceFile kotlinSourceFile, byte[] value) {
+        this.kotlinSourceFile = kotlinSourceFile;
         this.value = value;
     }
 
-    @Override
-    public SourceFilePath sourceFilePath() {
-        return sourceFilePath;
+    public KotlinSourceFile sourceFilePath() {
+        return kotlinSourceFile;
     }
 
-    @Override
     public InputStream toInputStream() {
         return new ByteArrayInputStream(value);
     }
 
     @Override
     public String toString() {
-        return "KotlinSource[" + sourceFilePath + "]";
+        return "KotlinSource[" + kotlinSourceFile + "]";
     }
 }

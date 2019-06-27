@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
@@ -41,8 +41,8 @@ public class JigReportsTask extends DefaultTask {
         ImplementationService implementationService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-        RawSourceLocations rawSourceLocations = new GradleProject(project).rawSourceLocations();
-        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
+        SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
+        AnalyzedImplementation implementations = implementationService.implementations(sourcePaths);
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;

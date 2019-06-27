@@ -1,14 +1,12 @@
 package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
-import org.dddjava.jig.domain.model.implementation.raw.SourceCodes;
-
 import java.util.Collections;
 import java.util.List;
 
 /**
  * *.javaソース一覧
  */
-public class JavaSources implements SourceCodes<JavaSource> {
+public class JavaSources {
 
     List<JavaSource> list;
 
@@ -20,7 +18,6 @@ public class JavaSources implements SourceCodes<JavaSource> {
         this(Collections.emptyList());
     }
 
-    @Override
     public List<JavaSource> list() {
         return list;
     }

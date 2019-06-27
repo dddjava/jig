@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.implementation.analyzed;
 
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
+import org.dddjava.jig.domain.model.implementation.source.Sources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +12,12 @@ import java.util.List;
  */
 public class AnalyzedImplementation {
 
-    RawSource rawSource;
+    Sources sources;
     TypeByteCodes typeByteCodes;
     Sqls sqls;
 
-    public AnalyzedImplementation(RawSource rawSource, TypeByteCodes typeByteCodes, Sqls sqls) {
-        this.rawSource = rawSource;
+    public AnalyzedImplementation(Sources sources, TypeByteCodes typeByteCodes, Sqls sqls) {
+        this.sources = sources;
         this.typeByteCodes = typeByteCodes;
         this.sqls = sqls;
     }
@@ -33,11 +33,11 @@ public class AnalyzedImplementation {
     public AnalyzeStatuses status() {
         List<AnalyzeStatus> list = new ArrayList<>();
 
-        if (rawSource.nothingBinarySource()) {
+        if (sources.nothingBinarySource()) {
             list.add(AnalyzeStatus.バイナリソースなし);
         }
 
-        if (rawSource.nothingTextSource()) {
+        if (sources.nothingTextSource()) {
             list.add(AnalyzeStatus.テキストソースなし);
         }
 

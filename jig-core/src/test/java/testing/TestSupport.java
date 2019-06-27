@@ -1,7 +1,7 @@
 package testing;
 
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
-import org.dddjava.jig.domain.model.implementation.raw.sourcelocation.SourceLocation;
+import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocation;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -56,7 +56,7 @@ public class TestSupport {
     public static ClassSource newClassSource(Path path) {
         try {
             byte[] bytes = Files.readAllBytes(path);
-            return new ClassSource(new SourceLocation(), bytes, "DUMMY");
+            return new ClassSource(new BinarySourceLocation(), bytes, "DUMMY");
         } catch (IOException e) {
             throw new AssertionError(e);
         }

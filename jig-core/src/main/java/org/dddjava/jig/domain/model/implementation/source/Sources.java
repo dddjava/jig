@@ -1,10 +1,10 @@
-package org.dddjava.jig.domain.model.implementation.raw.raw;
+package org.dddjava.jig.domain.model.implementation.source;
 
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySources;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
 import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
-import org.dddjava.jig.domain.model.implementation.raw.textfile.CodeSources;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.code.CodeSources;
 
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
@@ -16,17 +16,17 @@ import static java.util.stream.Collectors.toList;
 /**
  * 生ソース
  */
-public class RawSource {
+public class Sources {
 
     CodeSources codeSources;
     BinarySources binarySources;
 
-    public RawSource(CodeSources codeSources, BinarySources binarySources) {
+    public Sources(CodeSources codeSources, BinarySources binarySources) {
         this.codeSources = codeSources;
         this.binarySources = binarySources;
     }
 
-    public AliasSource textSource() {
+    public AliasSource aliasSource() {
         return codeSources.aliasSource();
     }
 

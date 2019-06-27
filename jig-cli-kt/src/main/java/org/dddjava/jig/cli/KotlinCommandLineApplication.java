@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -48,8 +48,8 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
         ImplementationService implementationService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
-        RawSourceLocations rawSourceLocations = cliConfig.rawSourceLocations();
-        AnalyzedImplementation implementations = implementationService.implementations(rawSourceLocations);
+        SourcePaths sourcePaths = cliConfig.rawSourceLocations();
+        AnalyzedImplementation implementations = implementationService.implementations(sourcePaths);
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {

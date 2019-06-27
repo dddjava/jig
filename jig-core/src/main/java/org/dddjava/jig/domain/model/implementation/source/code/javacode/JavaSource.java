@@ -1,36 +1,27 @@
 package org.dddjava.jig.domain.model.implementation.source.code.javacode;
 
-import org.dddjava.jig.domain.model.implementation.raw.SourceCode;
-import org.dddjava.jig.domain.model.implementation.raw.sourcepath.SourceFilePath;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
  * *.javaソース
  */
-public class JavaSource implements SourceCode {
+public class JavaSource {
 
-    SourceFilePath sourceFilePath;
+    JavaSourceFile javaSourceFile;
     byte[] value;
 
-    public JavaSource(SourceFilePath sourceFilePath, byte[] value) {
-        this.sourceFilePath = sourceFilePath;
+    public JavaSource(JavaSourceFile javaSourceFile, byte[] value) {
+        this.javaSourceFile = javaSourceFile;
         this.value = value;
     }
 
-    @Override
-    public SourceFilePath sourceFilePath() {
-        return sourceFilePath;
-    }
-
-    @Override
     public InputStream toInputStream() {
         return new ByteArrayInputStream(value);
     }
 
     @Override
     public String toString() {
-        return "JavaSource[" + sourceFilePath + "]";
+        return "JavaSource[" + javaSourceFile + "]";
     }
 }

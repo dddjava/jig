@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.raw.textfile;
+package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;

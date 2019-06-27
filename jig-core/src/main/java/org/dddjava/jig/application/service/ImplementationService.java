@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCod
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.SqlReader;
 import org.dddjava.jig.domain.model.implementation.analyzed.datasource.Sqls;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSource;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceFactory;
-import org.dddjava.jig.domain.model.implementation.raw.raw.RawSourceLocations;
+import org.dddjava.jig.domain.model.implementation.source.Sources;
+import org.dddjava.jig.domain.model.implementation.source.SourceReader;
+import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
 import org.springframework.stereotype.Service;
 
@@ -23,17 +23,17 @@ public class ImplementationService {
     ByteCodeFactory byteCodeFactory;
     SqlReader sqlReader;
 
-    RawSourceFactory rawSourceFactory;
+    SourceReader sourceReader;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, AliasService aliasService, SqlReader sqlReader, RawSourceFactory rawSourceFactory) {
+    public ImplementationService(ByteCodeFactory byteCodeFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
         this.byteCodeFactory = byteCodeFactory;
         this.aliasService = aliasService;
         this.sqlReader = sqlReader;
-        this.rawSourceFactory = rawSourceFactory;
+        this.sourceReader = sourceReader;
     }
 
-    public AnalyzedImplementation implementations(RawSourceLocations rawSourceLocations) {
-        RawSource source = rawSourceFactory.createSource(rawSourceLocations);
+    public AnalyzedImplementation implementations(SourcePaths sourcePaths) {
+        Sources source = sourceReader.readSources(sourcePaths);
 
         TypeByteCodes typeByteCodes = readProjectData(source);
         Sqls sqls = readSql(source.sqlSources());
@@ -44,10 +44,10 @@ public class ImplementationService {
     /**
      * プロジェクト情報を読み取る
      */
-    public TypeByteCodes readProjectData(RawSource rawSource) {
-        TypeByteCodes typeByteCodes = readByteCode(rawSource.classSources());
+    public TypeByteCodes readProjectData(Sources sources) {
+        TypeByteCodes typeByteCodes = readByteCode(sources.classSources());
 
-        aliasService.loadAliases(rawSource.textSource());
+        aliasService.loadAliases(sources.aliasSource());
 
         return typeByteCodes;
     }

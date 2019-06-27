@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.Typ
 import org.dddjava.jig.domain.model.implementation.source.Sources;
 import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.code.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;

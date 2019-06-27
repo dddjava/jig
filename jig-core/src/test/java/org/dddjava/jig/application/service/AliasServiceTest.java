@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.M
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.source.Sources;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.code.AliasSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

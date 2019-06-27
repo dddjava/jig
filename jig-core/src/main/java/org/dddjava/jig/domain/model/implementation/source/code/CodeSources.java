@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.implementation.source.code;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasSource;
-
 import java.util.List;
 
 /**
@@ -17,11 +15,7 @@ public class CodeSources {
 
     public AliasSource aliasSource() {
         return list.stream()
-                .map(codeSource -> new AliasSource(
-                        codeSource.javaSources,
-                        codeSource.kotlinSources,
-                        codeSource.packageInfoSources
-                ))
+                .map(codeSource -> new AliasSource(codeSource))
                 .reduce(new AliasSource(), AliasSource::merge);
     }
 

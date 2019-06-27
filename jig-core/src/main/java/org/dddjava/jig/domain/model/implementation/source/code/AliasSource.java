@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.alias;
+package org.dddjava.jig.domain.model.implementation.source.code;
 
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
@@ -11,13 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * テキストソース
+ * 別名の情報源
  */
 public class AliasSource {
 
     JavaSources javaSources;
     KotlinSources kotlinSources;
     PackageInfoSources packageInfoSources;
+
+    public AliasSource(CodeSource codeSource) {
+        this(codeSource.javaSources, codeSource.kotlinSources, codeSource.packageInfoSources);
+    }
 
     public AliasSource(JavaSources javaSources, KotlinSources kotlinSources, PackageInfoSources packageInfoSources) {
         this.javaSources = javaSources;

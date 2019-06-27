@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 
 /**
  * メソッドの使用しているメソッド

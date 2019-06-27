@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.bytecode;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Accessor;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.Accessor;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;

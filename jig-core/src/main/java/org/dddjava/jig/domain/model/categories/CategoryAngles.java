@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.categories;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
 
 import java.util.ArrayList;

@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.collections;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

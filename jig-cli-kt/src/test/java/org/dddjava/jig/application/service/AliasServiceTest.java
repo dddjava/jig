@@ -1,10 +1,11 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.source.Sources;
 import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
 import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
@@ -56,20 +57,20 @@ public class AliasServiceTest {
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",
-                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
+                new Arguments(Collections.emptyList())));
         Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
                 .isEqualTo("メソッドのドキュメント");
 
         MethodIdentifier overloadMethodIdentifier1 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Collections.emptyList())));
+                new Arguments(Collections.emptyList())));
         Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier1).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");
 
         MethodIdentifier overloadMethodIdentifier2 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
+                new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
         Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier2).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");

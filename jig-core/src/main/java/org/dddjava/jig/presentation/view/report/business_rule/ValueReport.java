@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;

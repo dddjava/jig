@@ -1,11 +1,11 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.application.service.AliasService;
+import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
+import org.dddjava.jig.domain.model.declaration.package_.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetworks;
 import org.dddjava.jig.presentation.view.JigDocument;

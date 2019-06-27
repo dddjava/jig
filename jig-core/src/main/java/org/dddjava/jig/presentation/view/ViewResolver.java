@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.declaration.package_.AllPackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.AllPackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageNetworks;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;

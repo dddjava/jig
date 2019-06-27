@@ -1,15 +1,15 @@
 package org.dddjava.jig.presentation.controller;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;

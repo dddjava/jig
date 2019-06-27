@@ -2,10 +2,10 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.TypeAlias;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 

@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

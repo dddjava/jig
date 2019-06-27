@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.progresses;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.Annotations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
  * 進捗

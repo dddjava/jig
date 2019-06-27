@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
 import org.dddjava.jig.application.service.AliasService;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 /**
  * 別名発見機

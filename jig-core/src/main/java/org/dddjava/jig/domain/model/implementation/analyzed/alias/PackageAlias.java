@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.alias;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 
 /**
  * パッケージ別名

@@ -1,15 +1,15 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.declaration.annotation.*;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.*;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;

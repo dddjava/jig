@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;

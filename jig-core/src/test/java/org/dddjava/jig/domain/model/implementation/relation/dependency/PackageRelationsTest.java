@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.relation.dependency;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelation;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.PackageRelations;
 import org.junit.jupiter.api.Test;

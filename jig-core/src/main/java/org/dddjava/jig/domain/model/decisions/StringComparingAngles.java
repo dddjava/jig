@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 

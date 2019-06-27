@@ -1,15 +1,15 @@
 package org.dddjava.jig.presentation.controller;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.datasources.DatasourceAngles;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;

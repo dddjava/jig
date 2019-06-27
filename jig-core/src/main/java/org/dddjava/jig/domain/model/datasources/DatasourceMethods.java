@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.datasources;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.ParameterizedTypes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 
 import java.util.ArrayList;

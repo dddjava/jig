@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.packages;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 

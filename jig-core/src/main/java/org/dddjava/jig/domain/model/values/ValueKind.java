@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.values;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

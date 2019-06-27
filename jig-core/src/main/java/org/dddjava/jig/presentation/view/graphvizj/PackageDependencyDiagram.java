@@ -1,11 +1,11 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
+import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.package_.PackageTree;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageDepth;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.package_.PackageTree;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocument;

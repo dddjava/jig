@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.unit.method;
 
+import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.declaration.method.Accessor;
+import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.Accessor;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
 
 /**
  * メソッド

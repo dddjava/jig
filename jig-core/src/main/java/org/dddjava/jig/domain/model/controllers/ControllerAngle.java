@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.controllers;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.UsingFields;
 

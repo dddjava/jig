@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.AliasService;
+import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;

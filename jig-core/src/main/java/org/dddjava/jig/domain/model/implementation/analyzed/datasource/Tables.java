@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.datasource;
 
-import org.dddjava.jig.domain.type.text.Text;
+import org.dddjava.jig.domain.model.declaration.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;

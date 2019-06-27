@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.unit.method;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 
 /**
  * 使用しているメソッド一覧

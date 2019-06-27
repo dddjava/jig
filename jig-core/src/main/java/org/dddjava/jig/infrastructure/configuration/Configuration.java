@@ -2,10 +2,10 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
+import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
+import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.*;

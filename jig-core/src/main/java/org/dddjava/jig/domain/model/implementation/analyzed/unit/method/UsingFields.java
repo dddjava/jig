@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.unit.method;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.List;
 

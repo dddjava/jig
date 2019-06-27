@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.implementation.source;
 
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySources;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
-import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.implementation.source.code.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.code.CodeSources;
+import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
 
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;

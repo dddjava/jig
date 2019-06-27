@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.smells;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
 import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Methods;

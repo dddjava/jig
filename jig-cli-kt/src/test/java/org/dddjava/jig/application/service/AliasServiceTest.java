@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.implementation.raw.textfile.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourceLocations;
 import org.dddjava.jig.infrastructure.LocalFileRawSourceFactory;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
-import org.dddjava.jig.infrastructure.kotlin.KotlinparserJapaneseReaderSource;
+import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.KotlinMethodJavadocStub;
@@ -31,7 +31,7 @@ public class AliasServiceTest {
     AliasService sut;
 
     AliasServiceTest() {
-        SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinparserJapaneseReaderSource());
+        SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
         sut = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
     }
 

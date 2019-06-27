@@ -21,7 +21,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.stream.Collectors;
 
-public class KotlinparserJapaneseReaderSource implements KotlinSourceAliasReader {
+/**
+ * KotlinのSDKを使用して別名を読み取る
+ */
+public class KotlinSdkAliasReader implements KotlinSourceAliasReader {
 
     @Override
     public TypeAliases readAlias(KotlinSources sources) {

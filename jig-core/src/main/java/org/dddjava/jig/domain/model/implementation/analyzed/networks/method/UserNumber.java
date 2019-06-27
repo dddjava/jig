@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.implementation.analyzed.usernumber;
+package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
 /**
  * 使用箇所数

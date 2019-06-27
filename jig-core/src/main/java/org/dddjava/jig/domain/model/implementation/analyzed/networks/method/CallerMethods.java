@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.implementation.analyzed.networks.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.analyzed.usernumber.UserNumber;
 
 import java.util.List;
 

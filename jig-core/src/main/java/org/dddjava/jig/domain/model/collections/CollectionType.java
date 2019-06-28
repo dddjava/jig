@@ -22,4 +22,9 @@ public class CollectionType {
     public MethodDeclarations methods() {
         return businessRule.typeByteCode().methodDeclarations();
     }
+
+    public TypeIdentifier includeType() {
+        // TODO コレクションで扱っている型 https://github.com/dddjava/Jig/issues/54
+        throw new UnsupportedOperationException();
+    }
 }

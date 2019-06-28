@@ -50,8 +50,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         }
 
         RelationText bidirectional = new RelationText("edge [color=red,dir=both,style=bold];");
-        for (BidirectionalRelation packageDependency : bidirectionalRelations.list()) {
-            bidirectional.add(packageDependency.left(), packageDependency.right());
+        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations.list()) {
+            bidirectional.add(bidirectionalRelation.left(), bidirectionalRelation.right());
         }
 
         PackageTree tree = packageNetwork.allPackages().tree();

@@ -22,7 +22,7 @@ public class AsmByteCodeFactory implements ByteCodeFactory {
     }
 
     TypeByteCode analyze(ClassSource classSource) {
-        ByteCodeAnalyzer analyzer = new ByteCodeAnalyzer();
+        TypeByteCodeClassVisitor analyzer = new TypeByteCodeClassVisitor();
         return analyzer.analyze(classSource);
     }
 }

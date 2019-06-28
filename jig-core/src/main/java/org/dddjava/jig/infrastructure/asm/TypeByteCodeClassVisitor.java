@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class ByteCodeAnalyzer extends ClassVisitor {
+class TypeByteCodeClassVisitor extends ClassVisitor {
 
     TypeByteCode typeByteCode;
 
-    public ByteCodeAnalyzer() {
+    public TypeByteCodeClassVisitor() {
         super(Opcodes.ASM7);
     }
 

@@ -1,10 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.controllers.ControllerAngles;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
-import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
@@ -12,10 +9,12 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.richmethod.Methods;
 import org.dddjava.jig.domain.model.fact.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.notice.Warning;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
+import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.richmethod.Methods;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ public class ApplicationService {
     /**
      * コントローラーを分析する
      */
-    public ControllerAngles controllerAngles(AnalyzedImplementation analyzedImplementation) {
+    public ControllerMethods controllerAngles(AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
@@ -47,7 +46,7 @@ public class ApplicationService {
             LOGGER.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.text());
         }
 
-        return new ControllerAngles(controllerMethods);
+        return controllerMethods;
     }
 
     /**

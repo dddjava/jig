@@ -4,13 +4,13 @@ import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
+import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
@@ -67,11 +67,11 @@ public class ClassListController {
     }
 
     ModelReport<?> controllerReport(AnalyzedImplementation implementations) {
-        ControllerAngles controllerAngles = applicationService.controllerAngles(implementations);
+        ControllerMethods controllerMethods = applicationService.controllerAngles(implementations);
         ProgressAngles progressAngles = applicationService.progressAngles(implementations);
 
-        return new ModelReport<>(controllerAngles.list(),
-                controllerAngle -> new ControllerReport(controllerAngle, progressAngles.progressOf(controllerAngle.method().declaration())),
+        return new ModelReport<>(controllerMethods.list(),
+                requestHandlerMethod -> new ControllerReport(requestHandlerMethod, progressAngles.progressOf(requestHandlerMethod.method().declaration())),
                 ControllerReport.class);
     }
 

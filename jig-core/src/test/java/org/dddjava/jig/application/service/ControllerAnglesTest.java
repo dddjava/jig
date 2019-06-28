@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.controllers.ControllerAngles;
+import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
@@ -14,12 +14,12 @@ public class ControllerAnglesTest {
 
     @Test
     void readProjectData(ApplicationService applicationService, AnalyzedImplementation analyzedImplementation) {
-        ControllerAngles angles = applicationService.controllerAngles(analyzedImplementation);
+        ControllerMethods controllerMethods = applicationService.controllerAngles(analyzedImplementation);
 
-        assertThat(angles.list())
+        assertThat(controllerMethods.list())
                 .extracting(
-                        angle -> angle.method().declaration().asFullNameText(),
-                        angle -> new ControllerReport(angle, "dummy").path()
+                        controllerMethod -> controllerMethod.method().declaration().asFullNameText(),
+                        controllerMethod -> new ControllerReport(controllerMethod, "dummy").path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "simple-class/simple-method"),

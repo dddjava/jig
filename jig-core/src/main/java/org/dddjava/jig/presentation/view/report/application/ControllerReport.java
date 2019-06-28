@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.controllers.ControllerAngle;
 import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.richmethod.UsingFields;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -10,11 +10,11 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("CONTROLLER")
 public class ControllerReport {
 
-    ControllerAngle angle;
+    RequestHandlerMethod requestHandlerMethod;
     String progressText;
 
-    public ControllerReport(ControllerAngle angle, String progressText) {
-        this.angle = angle;
+    public ControllerReport(RequestHandlerMethod requestHandlerMethod, String progressText) {
+        this.requestHandlerMethod = requestHandlerMethod;
         this.progressText = progressText;
     }
 
@@ -23,17 +23,17 @@ public class ControllerReport {
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     public Method method() {
-        return angle.method();
+        return requestHandlerMethod.method();
     }
 
     @ReportItemFor(ReportItem.使用しているフィールドの型)
     public UsingFields usingFields() {
-        return angle.usingFields();
+        return requestHandlerMethod.method().usingFields();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "パス", order = 1)
     public String path() {
-        return angle.requestHandler().pathText();
+        return requestHandlerMethod.pathText();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 2)

@@ -69,7 +69,8 @@ class AsmClassVisitor extends ClassVisitor {
 
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToFieldType(descriptor));
+            FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, fieldType);
             // インスタンスフィールドだけ相手にする
             typeByteCode.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
@@ -124,8 +125,9 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                methodByteCode.registerFieldInstruction(
-                        new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToFieldType(descriptor)));
+                FieldType fieldType = typeDescriptorToFieldType(descriptor);
+                FieldDeclaration fieldDeclaration = new FieldDeclaration(new TypeIdentifier(owner), name, fieldType);
+                methodByteCode.registerFieldInstruction(fieldDeclaration);
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
@@ -206,8 +208,35 @@ class AsmClassVisitor extends ClassVisitor {
         return toTypeIdentifier(Type.getReturnType(descriptor));
     }
 
+    private FieldType typeDescriptorToFieldType(String descriptor, String signature) {
+        if (signature == null) {
+            return typeDescriptorToFieldType(descriptor);
+        }
+
+        ArrayList<TypeIdentifier> typeParameters = new ArrayList<>();
+        new SignatureReader(signature).accept(
+                new SignatureVisitor(this.api) {
+                    @Override
+                    public SignatureVisitor visitTypeArgument(char wildcard) {
+                        if (wildcard == '=') {
+                            return new SignatureVisitor(this.api) {
+                                @Override
+                                public void visitClassType(String name) {
+                                    typeParameters.add(new TypeIdentifier(name));
+                                }
+                            };
+                        }
+                        return super.visitTypeArgument(wildcard);
+                    }
+                }
+        );
+        TypeIdentifiers typeIdentifiers = new TypeIdentifiers(typeParameters);
+        return new FieldType(typeDescriptorToIdentifier(descriptor), typeIdentifiers);
+    }
+
     private FieldType typeDescriptorToFieldType(String descriptor) {
-        return new FieldType(typeDescriptorToIdentifier(descriptor));
+        TypeIdentifier typeIdentifier = typeDescriptorToIdentifier(descriptor);
+        return new FieldType(typeIdentifier);
     }
 
     private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {

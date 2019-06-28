@@ -192,6 +192,13 @@ public class AsmByteCodeFactoryTest {
                         "obj"
                 );
 
+        FieldDeclaration genericField = fieldDeclarations.list().stream()
+                .filter(fieldDeclaration -> fieldDeclaration.nameText().equals("genericFields"))
+                .findAny()
+                .orElseThrow(AssertionError::new);
+        assertThat(genericField.fieldType().typeParameterTypeIdentifiers().list())
+                .containsExactly(new TypeIdentifier(GenericField.class));
+
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(

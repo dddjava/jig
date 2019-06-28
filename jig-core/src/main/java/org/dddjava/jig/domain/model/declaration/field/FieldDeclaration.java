@@ -32,4 +32,8 @@ public class FieldDeclaration {
     public TypeIdentifier declaringType() {
         return declaringType;
     }
+
+    public FieldType fieldType() {
+        return fieldType;
+    }
 }

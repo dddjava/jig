@@ -10,6 +10,8 @@ import org.dddjava.jig.domain.model.implementation.analyzed.networks.packages.*;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> {
+
+    static final Logger logger = LoggerFactory.getLogger(PackageDependencyDiagram.class);
 
     final PackageIdentifierFormatter formatter;
     final AliasFinder aliasFinder;
@@ -58,19 +62,21 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         PackageIdentifier root = tree.rootPackage();
         Map<PackageIdentifier, List<PackageIdentifier>> map = tree.map();
         StringJoiner stringJoiner = new StringJoiner("\n");
-        for(PackageIdentifier parent : map.keySet()) {
+        for (PackageIdentifier parent : map.keySet()) {
             List<PackageIdentifier> children = map.get(parent);
-            String labelsText = children.stream()
-                    .map(packageIdentifier -> {
-                        String labelText = label(packageIdentifier);
-                        return Node.of(packageIdentifier)
-                                .label(labelText).asText();
-                    })
-                    .collect(joining("\n"));
             if (root.equals(parent)) {
+                String labelsText = children.stream()
+                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier)).asText())
+                        .collect(joining("\n"));
                 stringJoiner.add(labelsText);
             } else {
-                Subgraph subgraph = new Subgraph(parent.asText()).add(labelsText).label(label(parent)).fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
+                String labelsText = children.stream()
+                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, parent)).asText())
+                        .collect(joining("\n"));
+                Subgraph subgraph = new Subgraph(parent.asText())
+                        .add(labelsText)
+                        .label(label(parent))
+                        .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
                 stringJoiner.add(subgraph.toString());
             }
         }
@@ -93,11 +99,24 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         return new DotText(documentSuffix, text);
     }
 
+    private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
+        if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
+            // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
+            return label(packageIdentifier);
+        }
+        String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
+        return addAliasIfExists(packageIdentifier, labelText);
+    }
+
     private String label(PackageIdentifier packageIdentifier) {
         String labelText = packageIdentifier.format(formatter);
+        return addAliasIfExists(packageIdentifier, labelText);
+    }
+
+    private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText) {
         PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
         if (packageAlias.exists()) {
-            labelText = packageAlias.asText() + "\\n" + labelText;
+            return packageAlias.asText() + "\\n" + labelText;
         }
         return labelText;
     }

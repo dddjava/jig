@@ -1,10 +1,12 @@
-package org.dddjava.jig.domain.model.controllers;
+package org.dddjava.jig.domain.model.richmethod;
 
 import org.dddjava.jig.domain.model.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.fact.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +18,15 @@ import java.util.List;
  * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、
  * リクエストハンドラとして扱われません。
  */
-public class RequestHandler {
+public class RequestHandlerMethod {
 
-    static Logger LOGGER = LoggerFactory.getLogger(RequestHandler.class);
+    static Logger LOGGER = LoggerFactory.getLogger(RequestHandlerMethod.class);
 
     private final Method method;
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    public RequestHandler(Method method, TypeAnnotations typeAnnotations) {
+    RequestHandlerMethod(Method method, TypeAnnotations typeAnnotations) {
         this.method = method;
 
         this.requestMappingForClass = typeAnnotations.annotations().filterAny(
@@ -37,6 +39,14 @@ public class RequestHandler {
                 new TypeIdentifier("org.springframework.web.bind.annotation.PutMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.DeleteMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.PatchMapping"));
+    }
+
+    public RequestHandlerMethod(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
+        this(new Method(methodByteCode), new TypeAnnotations(typeByteCode.typeAnnotations()));
+    }
+
+    public Method method() {
+        return method;
     }
 
     public String pathText() {
@@ -82,5 +92,25 @@ public class RequestHandler {
             pathText = typePath + "/" + methodPath;
         }
         return pathText;
+    }
+
+    public boolean valid() {
+        return method.methodAnnotations().list().stream()
+                .anyMatch(annotatedMethod -> {
+                            String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                            // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
+                            // そのため独自アノテーションに対応できない
+                            return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
+                        }
+                );
+    }
+
+    public boolean anyMatch(CallerMethods callerMethods) {
+        return callerMethods.contains(method.declaration());
     }
 }

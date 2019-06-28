@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.controllers;
 
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.richmethod.RequestHandlerMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +16,10 @@ public class ControllerAngles {
         return list;
     }
 
-    public ControllerAngles(ControllerMethods controllerMethods, TypeAnnotations typeAnnotations) {
+    public ControllerAngles(ControllerMethods controllerMethods) {
         List<ControllerAngle> list = new ArrayList<>();
-        for (Method method : controllerMethods.list()) {
-            list.add(new ControllerAngle(method, typeAnnotations.filter(method.declaration().identifier().declaringType())));
+        for (RequestHandlerMethod method : controllerMethods.list()) {
+            list.add(new ControllerAngle(method));
         }
         this.list = list;
     }

@@ -1,11 +1,13 @@
 package org.dddjava.jig.domain.model.controllers;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.fact.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.richmethod.Method;
 import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.richmethod.RequestHandlerMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -15,39 +17,31 @@ import static java.util.stream.Collectors.toList;
  * コントローラーメソッド一覧
  */
 public class ControllerMethods {
-    List<Method> list;
+    List<RequestHandlerMethod> list;
 
     public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         List<TypeByteCode> controllerTypeByteCode = typeByteCodes.list().stream()
                 .filter(typeByteCode -> architecture.isController(typeByteCode.typeAnnotations()))
                 .collect(toList());
 
-        this.list = controllerTypeByteCode.stream()
-                .map(TypeByteCode::instanceMethodByteCodes)
-                .flatMap(List::stream)
-                .map(methodByteCode -> new Method(methodByteCode))
-                .filter(method ->
-                        method.methodAnnotations().list().stream()
-                                .anyMatch(annotatedMethod -> {
-                                            String annotationName = annotatedMethod.annotationType().fullQualifiedName();
-                                            // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
-                                            // そのため独自アノテーションに対応できない
-                                            return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
-                                                    || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
-                                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
-                                                    || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
-                                                    || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
-                                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
-                                        }
-                                ))
-                .collect(toList());
+        List<RequestHandlerMethod> result = new ArrayList<>();
+        for (TypeByteCode typeByteCode : controllerTypeByteCode) {
+            List<MethodByteCode> methodByteCodes = typeByteCode.instanceMethodByteCodes();
+            for (MethodByteCode methodByteCode : methodByteCodes) {
+                RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(methodByteCode, typeByteCode);
+                if (requestHandlerMethod.valid()) {
+                    result.add(requestHandlerMethod);
+                }
+            }
+        }
+        this.list = result;
     }
 
-    private ControllerMethods(List<Method> list) {
+    private ControllerMethods(List<RequestHandlerMethod> list) {
         this.list = list;
     }
 
-    public List<Method> list() {
+    public List<RequestHandlerMethod> list() {
         return list;
     }
 
@@ -57,7 +51,7 @@ public class ControllerMethods {
 
     public ControllerMethods filter(CallerMethods callerMethods) {
         return list.stream()
-                .filter(method -> callerMethods.contains(method.declaration()))
+                .filter(requestHandlerMethod -> requestHandlerMethod.anyMatch(callerMethods))
                 .collect(collectingAndThen(toList(), ControllerMethods::new));
     }
 }

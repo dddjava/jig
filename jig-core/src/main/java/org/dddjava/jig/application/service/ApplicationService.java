@@ -47,7 +47,7 @@ public class ApplicationService {
             LOGGER.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.text());
         }
 
-        return new ControllerAngles(controllerMethods, typeByteCodes.typeAnnotations());
+        return new ControllerAngles(controllerMethods);
     }
 
     /**

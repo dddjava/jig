@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.declaration.field;
 
+import org.dddjava.jig.domain.model.declaration.text.Text;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.declaration.text.Text;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,5 +49,10 @@ public class FieldDeclarations {
         return list.stream()
                 .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(typeIdentifier))
                 .collect(FieldDeclarations.collector());
+    }
+
+    public FieldDeclaration onlyOneField() {
+        // TODO 0個 or
+        return list.get(0);
     }
 }

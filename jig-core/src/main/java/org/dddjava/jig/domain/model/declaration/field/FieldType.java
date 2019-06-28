@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class FieldType {
 
@@ -24,5 +25,17 @@ public class FieldType {
             return new TypeIdentifiers(Collections.emptyList());
         }
         return typeParameters;
+    }
+
+    public String asSimpleText() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(typeIdentifier.asSimpleText());
+        if (typeParameters == null) {
+            return sb.toString();
+        }
+        String typeParametersText = typeParameters.list().stream()
+                .map(TypeIdentifier::asSimpleText)
+                .collect(Collectors.joining(", ", "<", ">"));
+        return sb.append(typeParametersText).toString();
     }
 }

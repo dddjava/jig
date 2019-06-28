@@ -22,6 +22,8 @@ public enum ReportItem {
 
     使用しているフィールドの型("usingFieldType"),
 
+    フィールドの型("fieldType"),
+
     使用箇所数("userNumber"),
     使用箇所("userType"),
 

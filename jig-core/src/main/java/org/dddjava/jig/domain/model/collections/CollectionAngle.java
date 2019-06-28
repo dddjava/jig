@@ -33,4 +33,8 @@ public class CollectionAngle {
     public MethodDeclarations methods() {
         return collectionType.methods();
     }
+
+    public CollectionField field() {
+        return collectionType.field();
+    }
 }

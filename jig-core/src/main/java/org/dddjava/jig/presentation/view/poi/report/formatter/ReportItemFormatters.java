@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
+import org.dddjava.jig.domain.model.collections.CollectionField;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 
@@ -34,6 +35,12 @@ public class ReportItemFormatters {
         for (ReportItemFormatter reportItemFormatter : reportItemFormatters) {
             if (reportItemFormatter.canFormat(item)) {
                 return reportItemFormatter.format(reportItem, item);
+            }
+        }
+
+        if (item instanceof CollectionField) {
+            if (reportItem == ReportItem.フィールドの型) {
+                return ((CollectionField)item).fieldType().asSimpleText();
             }
         }
 

@@ -10,9 +10,11 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 public class CollectionType {
 
     BusinessRule businessRule;
+    CollectionField collectionField;
 
-    public CollectionType(BusinessRule businessRule) {
+    public CollectionType(BusinessRule businessRule, CollectionField collectionField) {
         this.businessRule = businessRule;
+        this.collectionField = collectionField;
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -23,8 +25,7 @@ public class CollectionType {
         return businessRule.typeByteCode().methodDeclarations();
     }
 
-    public TypeIdentifier includeType() {
-        // TODO コレクションで扱っている型 https://github.com/dddjava/Jig/issues/54
-        throw new UnsupportedOperationException();
+    public CollectionField field() {
+        return collectionField;
     }
 }

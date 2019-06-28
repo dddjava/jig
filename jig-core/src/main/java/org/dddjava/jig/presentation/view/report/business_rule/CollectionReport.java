@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.collections.CollectionAngle;
+import org.dddjava.jig.domain.model.collections.CollectionField;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
@@ -27,6 +28,11 @@ public class CollectionReport {
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
+    }
+
+    @ReportItemFor(ReportItem.フィールドの型)
+    public CollectionField field() {
+        return angle.field();
     }
 
     @ReportItemFor(ReportItem.メソッド数)

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
+import org.dddjava.jig.domain.model.richmethod.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

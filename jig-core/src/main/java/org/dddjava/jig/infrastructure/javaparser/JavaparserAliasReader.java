@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.*;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.fact.alias.*;
+import org.dddjava.jig.domain.model.fact.source.code.javacode.JavaSource;
+import org.dddjava.jig.domain.model.fact.source.code.javacode.JavaSources;
+import org.dddjava.jig.domain.model.fact.source.code.javacode.PackageInfoSource;
+import org.dddjava.jig.domain.model.fact.source.code.javacode.PackageInfoSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

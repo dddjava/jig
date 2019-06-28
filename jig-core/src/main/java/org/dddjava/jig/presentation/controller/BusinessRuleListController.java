@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;

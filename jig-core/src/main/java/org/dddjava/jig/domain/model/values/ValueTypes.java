@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
+import org.dddjava.jig.domain.model.fact.source.SourcePaths;
+import org.dddjava.jig.domain.model.fact.source.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.fact.source.code.CodeSourcePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;

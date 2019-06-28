@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
+import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.fact.relation.method.MethodRelations;
 
 import java.util.Collections;
 import java.util.List;

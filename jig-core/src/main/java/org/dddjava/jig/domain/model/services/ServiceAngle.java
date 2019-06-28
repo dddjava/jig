@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.datasources.DatasourceMethods;
-import org.dddjava.jig.domain.model.datasources.RepositoryMethods;
+import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.repositories.RepositoryMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.MethodRelations;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.*;
+import org.dddjava.jig.domain.model.richmethod.*;
+import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.fact.relation.method.MethodRelations;
 
 /**
  * サービスの切り口

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelation;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
+import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;

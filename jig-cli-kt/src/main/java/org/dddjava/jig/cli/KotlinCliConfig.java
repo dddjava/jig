@@ -1,10 +1,10 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.fact.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.fact.source.SourcePaths;
+import org.dddjava.jig.domain.model.fact.source.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.fact.source.code.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;

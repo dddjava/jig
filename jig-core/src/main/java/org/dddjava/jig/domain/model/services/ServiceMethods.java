@@ -2,10 +2,10 @@ package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.method.CallerMethods;
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
 
 import java.util.List;
 

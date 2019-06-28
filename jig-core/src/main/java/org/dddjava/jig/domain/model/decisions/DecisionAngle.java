@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.implementation.analyzed.unit.method.Method;
+import org.dddjava.jig.domain.model.richmethod.Method;
 
 /**
  * 判断の切り口

@@ -7,10 +7,10 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.Alias;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.implementation.analyzed.alias.PackageAlias;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSource;
+import org.dddjava.jig.domain.model.fact.alias.Alias;
+import org.dddjava.jig.domain.model.fact.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.fact.alias.PackageAlias;
+import org.dddjava.jig.domain.model.fact.source.code.javacode.PackageInfoSource;
 
 import java.util.Optional;
 

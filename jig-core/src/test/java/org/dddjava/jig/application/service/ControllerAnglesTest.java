@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.controllers.ControllerAngles;
-import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

@@ -3,9 +3,9 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.implementation.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.implementation.analyzed.networks.class_.ClassRelations;
+import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;

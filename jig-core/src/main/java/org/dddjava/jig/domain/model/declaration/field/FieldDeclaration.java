@@ -9,16 +9,16 @@ public class FieldDeclaration {
 
     TypeIdentifier declaringType;
     String name;
-    TypeIdentifier typeIdentifier;
+    FieldType fieldType;
 
-    public FieldDeclaration(TypeIdentifier declaringType, String name, TypeIdentifier typeIdentifier) {
+    public FieldDeclaration(TypeIdentifier declaringType, String name, FieldType fieldType) {
         this.declaringType = declaringType;
         this.name = name;
-        this.typeIdentifier = typeIdentifier;
+        this.fieldType = fieldType;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return fieldType.typeIdentifier;
     }
 
     public String nameText() {
@@ -26,7 +26,7 @@ public class FieldDeclaration {
     }
 
     public String signatureText() {
-        return String.format("%s %s", typeIdentifier.asSimpleText(), name);
+        return String.format("%s %s", typeIdentifier().asSimpleText(), name);
     }
 
     public TypeIdentifier declaringType() {

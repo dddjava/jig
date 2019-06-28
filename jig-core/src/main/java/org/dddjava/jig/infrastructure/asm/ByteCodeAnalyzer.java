@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
@@ -75,7 +76,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToFieldType(descriptor));
             // インスタンスフィールドだけ相手にする
             typeByteCode.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
@@ -131,7 +132,7 @@ class ByteCodeAnalyzer extends ClassVisitor {
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
                 methodByteCode.registerFieldInstruction(
-                        new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToIdentifier(descriptor)));
+                        new FieldDeclaration(new TypeIdentifier(owner), name, typeDescriptorToFieldType(descriptor)));
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
@@ -210,6 +211,10 @@ class ByteCodeAnalyzer extends ClassVisitor {
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {
         return toTypeIdentifier(Type.getReturnType(descriptor));
+    }
+
+    private FieldType typeDescriptorToFieldType(String descriptor) {
+        return new FieldType(typeDescriptorToIdentifier(descriptor));
     }
 
     private TypeIdentifier typeDescriptorToIdentifier(String descriptor) {

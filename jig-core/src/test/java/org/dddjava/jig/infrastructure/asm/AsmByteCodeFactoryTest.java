@@ -3,6 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
@@ -179,6 +181,16 @@ public class AsmByteCodeFactoryTest {
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
         TypeByteCode actual = exercise(FieldDefinition.class);
+
+        FieldDeclarations fieldDeclarations = actual.fieldDeclarations();
+        assertThat(fieldDeclarations.list())
+                .extracting(FieldDeclaration::nameText)
+                .containsExactlyInAnyOrder(
+                        "instanceField",
+                        "genericFields",
+                        "arrayFields",
+                        "obj"
+                );
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())

@@ -183,6 +183,7 @@ public class AsmByteCodeFactoryTest {
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
                 .contains(
+                        new TypeIdentifier(List.class),
                         new TypeIdentifier(stub.domain.model.relation.field.FieldAnnotation.class),
                         new TypeIdentifier(StaticField.class),
                         new TypeIdentifier(InstanceField.class),

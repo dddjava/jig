@@ -20,17 +20,14 @@ public class ControllerMethods {
     List<RequestHandlerMethod> list;
 
     public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
-        List<TypeByteCode> controllerTypeByteCode = typeByteCodes.list().stream()
-                .filter(typeByteCode -> architecture.isController(typeByteCode.typeAnnotations()))
-                .collect(toList());
-
         List<RequestHandlerMethod> result = new ArrayList<>();
-        for (TypeByteCode typeByteCode : controllerTypeByteCode) {
-            List<MethodByteCode> methodByteCodes = typeByteCode.instanceMethodByteCodes();
-            for (MethodByteCode methodByteCode : methodByteCodes) {
-                RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(methodByteCode, typeByteCode);
-                if (requestHandlerMethod.valid()) {
-                    result.add(requestHandlerMethod);
+        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
+            if (architecture.isController(typeByteCode.typeAnnotations())) {
+                for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
+                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(methodByteCode, typeByteCode);
+                    if (requestHandlerMethod.valid()) {
+                        result.add(requestHandlerMethod);
+                    }
                 }
             }
         }

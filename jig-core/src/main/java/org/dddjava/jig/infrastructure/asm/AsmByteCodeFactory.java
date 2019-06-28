@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCod
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
+import org.objectweb.asm.ClassReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +16,16 @@ public class AsmByteCodeFactory implements ByteCodeFactory {
     public TypeByteCodes readFrom(ClassSources classSources) {
         List<TypeByteCode> list = new ArrayList<>();
         for (ClassSource source : classSources.list()) {
-            TypeByteCode typeByteCode = analyze(source);
+            TypeByteCode typeByteCode = typeByteCode(source);
             list.add(typeByteCode);
         }
         return new TypeByteCodes(list);
     }
 
-    TypeByteCode analyze(ClassSource classSource) {
-        TypeByteCodeClassVisitor analyzer = new TypeByteCodeClassVisitor();
-        return analyzer.analyze(classSource);
+    TypeByteCode typeByteCode(ClassSource classSource) {
+        AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
+        ClassReader classReader = new ClassReader(classSource.value());
+        classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
+        return asmClassVisitor.typeByteCode;
     }
 }

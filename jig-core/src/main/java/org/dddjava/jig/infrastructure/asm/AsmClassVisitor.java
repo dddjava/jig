@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.*;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.analyzed.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.source.binary.ClassSource;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -23,18 +22,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-class TypeByteCodeClassVisitor extends ClassVisitor {
+class AsmClassVisitor extends ClassVisitor {
 
     TypeByteCode typeByteCode;
 
-    public TypeByteCodeClassVisitor() {
+    AsmClassVisitor() {
         super(Opcodes.ASM7);
-    }
-
-    TypeByteCode analyze(ClassSource classSource) {
-        ClassReader classReader = new ClassReader(classSource.value());
-        classReader.accept(this, ClassReader.SKIP_DEBUG);
-        return typeByteCode;
     }
 
     @Override
@@ -394,7 +387,6 @@ class TypeByteCodeClassVisitor extends ClassVisitor {
 
         return new ParameterizedTypes(parameterizedTypes);
     }
-
 
     private static class MyAnnotationVisitor extends AnnotationVisitor {
         final AnnotationDescription annotationDescription = new AnnotationDescription();

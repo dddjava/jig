@@ -47,7 +47,7 @@ public class AsmByteCodeFactoryTest {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        sut.analyze(TestSupport.newClassSource(path));
+        sut.typeByteCode(TestSupport.newClassSource(path));
     }
 
     @Test
@@ -260,6 +260,6 @@ public class AsmByteCodeFactoryTest {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmByteCodeFactory sut = new AsmByteCodeFactory();
-        return sut.analyze(TestSupport.newClassSource(path));
+        return sut.typeByteCode(TestSupport.newClassSource(path));
     }
 }

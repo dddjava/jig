@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
  */
 public class FieldDeclaration {
 
-    private final TypeIdentifier declaringType;
+    TypeIdentifier declaringType;
     String name;
     TypeIdentifier typeIdentifier;
 

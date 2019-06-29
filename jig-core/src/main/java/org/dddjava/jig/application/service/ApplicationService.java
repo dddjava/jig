@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -86,8 +86,8 @@ public class ApplicationService {
     /**
      * 文字列比較を分析する
      */
-    public StringComparingAngles stringComparing(AnalyzedImplementation analyzedImplementation) {
-        return new StringComparingAngles(new MethodRelations(analyzedImplementation.typeByteCodes()));
+    public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
+        return new StringComparingCallerMethods(new MethodRelations(analyzedImplementation.typeByteCodes()));
     }
 
     /**

@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.smells;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.fact.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.richmethod.Method;
 import org.dddjava.jig.domain.model.richmethod.MethodWorry;
 import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
@@ -19,7 +20,7 @@ public class MethodSmellAngle {
     public MethodSmellAngle(Method method, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
-        this.callerMethods = toMeRelation.callerMethodsOf(method.declaration());
+        this.callerMethods = toMeRelation.callerMethodsOf(new CalleeMethod(method.declaration()));
     }
 
     public MethodDeclaration methodDeclaration() {

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.fact.relation.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.fact.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
@@ -22,23 +21,19 @@ public class MethodRelations {
         this.list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
-                MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration;
+                CallerMethod callerMethod = new CallerMethod(methodByteCode.methodDeclaration);
                 for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
-                    list.add(new MethodRelation(methodDeclaration, usingMethod));
+                    list.add(new MethodRelation(callerMethod, new CalleeMethod(usingMethod)));
                 }
             }
         }
     }
 
-    public CallerMethods callerMethodsOf(MethodIdentifier method) {
-        List<MethodDeclaration> callers = list.stream()
-                .filter(methodRelation -> methodRelation.toIs(method))
+    public CallerMethods callerMethodsOf(CalleeMethod calleeMethod) {
+        List<CallerMethod> callers = list.stream()
+                .filter(methodRelation -> methodRelation.calleeMethodIs(calleeMethod))
                 .map(MethodRelation::from)
                 .collect(toList());
         return new CallerMethods(callers);
-    }
-
-    public CallerMethods callerMethodsOf(MethodDeclaration declaration) {
-        return callerMethodsOf(declaration.identifier());
     }
 }

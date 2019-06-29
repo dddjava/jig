@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.fact.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.fact.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
@@ -37,7 +38,7 @@ public class ServiceAngle {
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
         this.usingServiceMethods = serviceMethods.intersect(usingMethods.methodDeclarations());
 
-        CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration().identifier());
+        CallerMethods callerMethods = methodRelations.callerMethodsOf(new CalleeMethod(serviceMethod.methodDeclaration()));
         this.userControllerMethods = controllerMethods.filter(callerMethods);
         this.userServiceMethods = serviceMethods.filter(callerMethods);
     }

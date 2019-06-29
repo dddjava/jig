@@ -6,7 +6,7 @@ import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.decisions.StringComparingAngles;
+import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
@@ -60,8 +60,8 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
-        StringComparingAngles stringComparingAngles = applicationService.stringComparing(implementations);
-        return new ModelReport<>(stringComparingAngles.list(), StringComparingReport::new, StringComparingReport.class);
+        StringComparingCallerMethods stringComparingCallerMethods = applicationService.stringComparing(implementations);
+        return new ModelReport<>(stringComparingCallerMethods.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
     ModelReport<?> packageReport(AnalyzedImplementation implementations) {

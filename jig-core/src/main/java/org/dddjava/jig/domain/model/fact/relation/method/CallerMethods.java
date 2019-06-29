@@ -8,9 +8,9 @@ import java.util.List;
  * 呼び出しメソッド一覧
  */
 public class CallerMethods {
-    List<MethodDeclaration> list;
+    List<CallerMethod> list;
 
-    public CallerMethods(List<MethodDeclaration> list) {
+    public CallerMethods(List<CallerMethod> list) {
         this.list = list;
     }
 
@@ -19,10 +19,11 @@ public class CallerMethods {
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
-        return list.stream().anyMatch(methodDeclaration::sameIdentifier);
+        return list.stream()
+                .anyMatch(callerMethod -> methodDeclaration.sameIdentifier(callerMethod.methodDeclaration));
     }
 
-    public List<MethodDeclaration> list() {
+    public List<CallerMethod> list() {
         return list;
     }
 }

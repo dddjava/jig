@@ -1,29 +1,22 @@
 package org.dddjava.jig.domain.model.fact.relation.method;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-
 /**
  * メソッドの使用しているメソッド
  */
 public class MethodRelation {
-    MethodDeclaration from;
-    MethodDeclaration to;
+    CallerMethod from;
+    CalleeMethod to;
 
-    public MethodRelation(MethodDeclaration from, MethodDeclaration to) {
+    public MethodRelation(CallerMethod from, CalleeMethod to) {
         this.from = from;
         this.to = to;
     }
 
-    MethodDeclaration from() {
+    CallerMethod from() {
         return from;
     }
 
-    public boolean toIs(MethodIdentifier methodIdentifier) {
-        return to.identifier().equals(methodIdentifier);
-    }
-
-    public boolean toIs(MethodDeclaration methodDeclaration) {
-        return to.sameIdentifier(methodDeclaration);
+    public boolean calleeMethodIs(CalleeMethod calleeMethod) {
+        return to.methodDeclaration.sameIdentifier(calleeMethod.methodDeclaration);
     }
 }

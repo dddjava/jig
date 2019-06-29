@@ -38,7 +38,7 @@ public class ClassRelations {
                 .normalize();
     }
 
-    public PackageRelations packageDependencies() {
+    public PackageRelations packageRelations() {
         List<PackageRelation> packageRelationList = list.stream()
                 .map(ClassRelation::toPackageDependency)
                 .filter(PackageRelation::notSelfRelation)

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.package_.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.fact.alias.AliasFinder;
-import org.dddjava.jig.domain.model.fact.relation.packages.PackageNetworks;
+import org.dddjava.jig.domain.model.fact.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 
@@ -21,7 +21,7 @@ public class ViewResolver {
         this.diagramFormat = diagramFormat;
     }
 
-    public JigView<PackageNetworks> dependencyWriter(AliasFinder aliasFinder) {
+    public JigView<PackageNetwork> dependencyWriter(AliasFinder aliasFinder) {
         return newGraphvizjView(new PackageDependencyDiagram(packageIdentifierFormatter, aliasFinder));
     }
 

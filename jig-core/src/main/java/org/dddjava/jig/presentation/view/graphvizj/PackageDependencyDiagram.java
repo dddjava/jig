@@ -6,7 +6,10 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.declaration.package_.PackageTree;
 import org.dddjava.jig.domain.model.fact.alias.AliasFinder;
 import org.dddjava.jig.domain.model.fact.alias.PackageAlias;
-import org.dddjava.jig.domain.model.fact.relation.packages.*;
+import org.dddjava.jig.domain.model.fact.relation.packages.BidirectionalRelations;
+import org.dddjava.jig.domain.model.fact.relation.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.fact.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.fact.relation.packages.PackageRelations;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
@@ -20,7 +23,7 @@ import java.util.StringJoiner;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
-public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> {
+public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
     static final Logger logger = LoggerFactory.getLogger(PackageDependencyDiagram.class);
 
@@ -35,11 +38,15 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
     }
 
     @Override
-    public DotTexts edit(PackageNetworks packageNetworks) {
-        List<DotText> values = packageNetworks.list().stream()
+    public DotTexts edit(PackageNetwork packageNetwork) {
+        List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
+
+        List<DotText> dotTexts = depths.stream()
+                .map(packageNetwork::applyDepth)
+                .filter(PackageNetwork::available)
                 .map(this::toDotText)
                 .collect(toList());
-        return new DotTexts(values);
+        return new DotTexts(dotTexts);
     }
 
     private DotText toDotText(PackageNetwork packageNetwork) {

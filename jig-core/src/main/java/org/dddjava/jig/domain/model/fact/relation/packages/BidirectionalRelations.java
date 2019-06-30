@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.fact.relation.packages;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 相互依存一覧
@@ -19,15 +18,7 @@ public class BidirectionalRelations {
         return list;
     }
 
-    public PackageRelations filterBidirectionalFrom(PackageRelations packageRelations) {
-        List<PackageRelation> simplexDependencies = packageRelations.list()
-                .stream()
-                .filter(this::notContains)
-                .collect(Collectors.toList());
-        return new PackageRelations(simplexDependencies);
-    }
-
-    private boolean notContains(PackageRelation packageRelation) {
+    public boolean notContains(PackageRelation packageRelation) {
         for (BidirectionalRelation bidirectionalRelation : list) {
             if (bidirectionalRelation.matches(packageRelation)) {
                 return false;

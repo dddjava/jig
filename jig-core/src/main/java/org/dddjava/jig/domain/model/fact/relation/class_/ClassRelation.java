@@ -30,4 +30,9 @@ public class ClassRelation {
     public TypeIdentifier to() {
         return to;
     }
+
+    @Override
+    public String toString() {
+        return from.fullQualifiedName() + " -> " + to.fullQualifiedName();
+    }
 }

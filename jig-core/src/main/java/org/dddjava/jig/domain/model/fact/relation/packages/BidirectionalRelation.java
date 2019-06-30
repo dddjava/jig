@@ -18,4 +18,9 @@ public class BidirectionalRelation {
         return (left.equals(packageRelation.from()) && right.equals(packageRelation.to())) ||
                 (left.equals(packageRelation.to()) && right.equals(packageRelation.from()));
     }
+
+    @Override
+    public String toString() {
+        return packageRelation.from.asText() + " <-> " + packageRelation.to.asText();
+    }
 }

@@ -50,6 +50,10 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     private DotText toDotText(PackageNetwork packageNetwork) {
+        if (packageNetwork.hasBidirectionalRelation()) {
+            logger.info("BidirectionalRelations reason ClassRelation: {}", packageNetwork.bidirectionalRelationReasonText());
+        }
+
         PackageRelations packageRelations = packageNetwork.packageDependencies();
         BidirectionalRelations bidirectionalRelations = packageNetwork.bidirectionalRelations();
 

@@ -48,12 +48,9 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
         BidirectionalRelations bidirectionalRelations = BidirectionalRelations.from(packageRelations);
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
-        RelationText bidirectional = new RelationText("edge [color=red,dir=both,style=bold];");
         for (PackageRelation packageRelation : packageRelations.list()) {
             if (bidirectionalRelations.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
-            } else {
-                bidirectional.add(packageRelation.from(), packageRelation.to());
             }
         }
 
@@ -90,7 +87,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetworks> 
                 .add(summaryText)
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
-                .add(bidirectional.asText())
+                .add(bidirectionalRelations.dotRelationText())
                 .add(stringJoiner.toString())
                 .toString();
         PackageDepth packageDepth = packageNetwork.appliedDepth();

@@ -1,7 +1,10 @@
 package org.dddjava.jig.domain.model.fact.relation.packages;
 
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * 相互依存一覧
@@ -41,5 +44,17 @@ public class BidirectionalRelations {
             }
         }
         return bidirectionalRelations;
+    }
+
+    public String dotRelationText() {
+        StringJoiner stringJoiner = new StringJoiner("\n")
+                .add("edge [color=red,dir=both,style=bold];");
+        for (BidirectionalRelation bidirectionalRelation : list) {
+            PackageIdentifier from = bidirectionalRelation.packageRelation.from;
+            PackageIdentifier to = bidirectionalRelation.packageRelation.to;
+            String line = '"' + from.asText() + '"' + " -> " + '"' + to.asText() + '"' + ';';
+            stringJoiner.add(line);
+        }
+        return stringJoiner.toString();
     }
 }

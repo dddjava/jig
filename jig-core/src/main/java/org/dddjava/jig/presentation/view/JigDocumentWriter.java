@@ -27,16 +27,17 @@ public class JigDocumentWriter {
     }
 
     public void writeDiagram(OutputStreamWriter writer, DiagramFormat diagramFormat, DocumentSuffix documentSuffix) {
-        Path outputFilePath = directory.resolve(documentSuffix.withFileNameOf(jigDocument) + "." + diagramFormat.name().toLowerCase(Locale.ENGLISH));
-        write(writer, outputFilePath);
+        String fileName = documentSuffix.withFileNameOf(jigDocument) + "." + diagramFormat.name().toLowerCase(Locale.ENGLISH);
+        write(writer, fileName);
     }
 
     public void writeXlsx(OutputStreamWriter writer) {
-        Path outputFilePath = directory.resolve(jigDocument.fileName() + ".xlsx");
-        write(writer, outputFilePath);
+        String fileName = jigDocument.fileName() + ".xlsx";
+        write(writer, fileName);
     }
 
-    public void write(OutputStreamWriter writer, Path outputFilePath) {
+    public void write(OutputStreamWriter writer, String fileName) {
+        Path outputFilePath = directory.resolve(fileName);
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
             writer.writeTo(outputStream);
             outputFilePaths.add(outputFilePath);

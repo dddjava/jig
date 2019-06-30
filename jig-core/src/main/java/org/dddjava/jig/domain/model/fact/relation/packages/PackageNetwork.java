@@ -25,10 +25,10 @@ public class PackageNetwork {
 
     private PackageNetwork(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {
         this.packageIdentifiers = packageIdentifiers;
-        this.packageRelations = packageRelations;
+        this.packageRelations = packageRelations.filterBothMatch(packageIdentifiers);
         this.classRelations = classRelations;
         this.appliedDepth = appliedDepth;
-        this.bidirectionalRelations = BidirectionalRelations.from(packageRelations);
+        this.bidirectionalRelations = BidirectionalRelations.from(this.packageRelations);
     }
 
     public static PackageNetwork empty() {
@@ -45,7 +45,7 @@ public class PackageNetwork {
     }
 
     public PackageRelations packageDependencies() {
-        return packageRelations.filterBothMatch(packageIdentifiers);
+        return packageRelations;
     }
 
     public PackageNetwork applyDepth(PackageDepth depth) {

@@ -6,24 +6,16 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
  * 相互依存
  */
 public class BidirectionalRelation {
-    PackageIdentifier left;
-    PackageIdentifier right;
+    PackageRelation packageRelation;
 
-    public BidirectionalRelation(PackageIdentifier left, PackageIdentifier right) {
-        this.left = left;
-        this.right = right;
+    public BidirectionalRelation(PackageRelation packageRelation) {
+        this.packageRelation = packageRelation;
     }
 
     public boolean matches(PackageRelation packageRelation) {
+        PackageIdentifier left = packageRelation.from;
+        PackageIdentifier right = packageRelation.to;
         return (left.equals(packageRelation.from()) && right.equals(packageRelation.to())) ||
                 (left.equals(packageRelation.to()) && right.equals(packageRelation.from()));
-    }
-
-    public PackageIdentifier left() {
-        return left;
-    }
-
-    public PackageIdentifier right() {
-        return right;
     }
 }

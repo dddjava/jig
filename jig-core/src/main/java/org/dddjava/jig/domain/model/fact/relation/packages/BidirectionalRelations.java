@@ -31,11 +31,11 @@ public class BidirectionalRelations {
         List<BidirectionalRelation> list = new ArrayList<>();
         BidirectionalRelations bidirectionalRelations = new BidirectionalRelations(list);
 
-        for (PackageRelation left : packageRelations.list()) {
+        for (PackageRelation packageRelation : packageRelations.list()) {
             for (PackageRelation right : packageRelations.list()) {
-                if (left.from().equals(right.to()) && left.to().equals(right.from())) {
-                    if (bidirectionalRelations.notContains(left)) {
-                        list.add(new BidirectionalRelation(left.from(), left.to()));
+                if (packageRelation.from().equals(right.to()) && packageRelation.to().equals(right.from())) {
+                    if (bidirectionalRelations.notContains(packageRelation)) {
+                        list.add(new BidirectionalRelation(packageRelation));
                     }
                 }
             }

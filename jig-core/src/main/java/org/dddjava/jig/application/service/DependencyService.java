@@ -45,7 +45,7 @@ public class DependencyService {
             return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
         }
 
-        PackageRelations packageRelations = new ClassRelations(analyzedImplementation.typeByteCodes()).packageRelations();
+        PackageRelations packageRelations = PackageRelations.fromClassRelations(new ClassRelations(analyzedImplementation.typeByteCodes()));
 
         return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
     }

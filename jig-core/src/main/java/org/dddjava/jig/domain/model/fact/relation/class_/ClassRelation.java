@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.fact.relation.class_;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.relation.packages.PackageRelation;
 
 /**
  * 型の依存関係
@@ -14,10 +13,6 @@ public class ClassRelation {
     public ClassRelation(TypeIdentifier from, TypeIdentifier to) {
         this.from = from;
         this.to = to;
-    }
-
-    public PackageRelation toPackageDependency() {
-        return new PackageRelation(from.packageIdentifier(), to.packageIdentifier());
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {

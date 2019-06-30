@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.fact.relation.packages;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,16 @@ public class PackageRelations {
 
     public PackageRelations(List<PackageRelation> dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public static PackageRelations fromClassRelations(ClassRelations classRelations) {
+        List<PackageRelation> packageRelationList = classRelations.list().stream()
+                .map(PackageRelation::fromClassRelation)
+                .filter(PackageRelation::notSelfRelation)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return new PackageRelations(packageRelationList);
     }
 
     public List<PackageRelation> list() {

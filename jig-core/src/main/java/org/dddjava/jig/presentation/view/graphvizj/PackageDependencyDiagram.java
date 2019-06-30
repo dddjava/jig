@@ -51,8 +51,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
     private DotText toDotText(PackageNetwork packageNetwork) {
         PackageRelations packageRelations = packageNetwork.packageDependencies();
-
-        BidirectionalRelations bidirectionalRelations = BidirectionalRelations.from(packageRelations);
+        BidirectionalRelations bidirectionalRelations = packageNetwork.bidirectionalRelations();
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         for (PackageRelation packageRelation : packageRelations.list()) {

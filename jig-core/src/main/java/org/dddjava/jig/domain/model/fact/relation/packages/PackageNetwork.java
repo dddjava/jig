@@ -64,4 +64,8 @@ public class PackageNetwork {
     public PackageDepth maxDepth() {
         return packageIdentifiers.maxDepth();
     }
+
+    public BidirectionalRelations bidirectionalRelations() {
+        return BidirectionalRelations.from(packageRelations);
+    }
 }

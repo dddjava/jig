@@ -11,14 +11,10 @@ import java.util.StringJoiner;
  */
 public class BidirectionalRelations {
 
-    private final List<BidirectionalRelation> list;
+    List<BidirectionalRelation> list;
 
     private BidirectionalRelations(List<BidirectionalRelation> list) {
         this.list = list;
-    }
-
-    public List<BidirectionalRelation> list() {
-        return list;
     }
 
     public boolean notContains(PackageRelation packageRelation) {

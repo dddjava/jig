@@ -24,4 +24,9 @@ public class PackageDepth {
         }
         return list;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
+    }
 }

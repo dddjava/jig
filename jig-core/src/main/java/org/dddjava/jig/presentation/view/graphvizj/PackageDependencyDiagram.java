@@ -13,9 +13,11 @@ import org.dddjava.jig.domain.model.fact.relation.packages.PackageRelations;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -50,10 +52,6 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     private DotText toDotText(PackageNetwork packageNetwork) {
-        if (packageNetwork.hasBidirectionalRelation()) {
-            logger.info("BidirectionalRelations reason ClassRelation: {}", packageNetwork.bidirectionalRelationReasonText());
-        }
-
         PackageRelations packageRelations = packageNetwork.packageDependencies();
         BidirectionalRelations bidirectionalRelations = packageNetwork.bidirectionalRelations();
 
@@ -102,7 +100,22 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
                 .toString();
         PackageDepth packageDepth = packageNetwork.appliedDepth();
         DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
-        return new DotText(documentSuffix, text);
+
+        return new DotText(documentSuffix, text) {
+            @Override
+            protected void additionalWrite(JigDocumentWriter jigDocumentWriter) {
+                if (packageNetwork.hasBidirectionalRelation()) {
+                    jigDocumentWriter.write(
+                            outputStream -> {
+                                try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                                    writer.write(packageNetwork.bidirectionalRelationReasonText());
+                                }
+                            },
+                            "bidirectionalRelations-depth" + packageDepth + ".txt"
+                    );
+                }
+            }
+        };
     }
 
     private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {

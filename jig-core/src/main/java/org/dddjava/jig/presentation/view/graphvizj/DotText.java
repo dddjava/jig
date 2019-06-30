@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.presentation.view.DocumentSuffix;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 
 class DotText {
     DocumentSuffix documentSuffix;
@@ -31,5 +32,9 @@ class DotText {
 
     static DotText empty() {
         return new DotText(null);
+    }
+
+    protected void additionalWrite(JigDocumentWriter jigDocumentWriter) {
+        // no-op
     }
 }

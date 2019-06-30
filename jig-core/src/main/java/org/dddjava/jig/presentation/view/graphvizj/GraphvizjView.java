@@ -42,6 +42,8 @@ public class GraphvizjView<T> implements JigView<T> {
                                     .toOutputStream(outputStream),
                     diagramFormat,
                     dot.documentSuffix());
+
+            dot.additionalWrite(jigDocumentWriter);
         }
     }
 

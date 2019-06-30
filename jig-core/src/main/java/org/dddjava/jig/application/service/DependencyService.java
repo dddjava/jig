@@ -42,12 +42,13 @@ public class DependencyService {
 
         if (businessRules.empty()) {
             LOGGER.warn(Warning.ビジネスルールが見つからないので出力されない通知.text());
-            return new PackageNetwork(new PackageIdentifiers(Collections.emptyList()), new PackageRelations(Collections.emptyList()));
+            return PackageNetwork.empty();
         }
 
-        PackageRelations packageRelations = PackageRelations.fromClassRelations(new ClassRelations(analyzedImplementation.typeByteCodes()));
+        ClassRelations classRelations = new ClassRelations(analyzedImplementation.typeByteCodes());
+        PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
 
-        return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations);
+        return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
     }
 
     public BusinessRuleNetwork businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {

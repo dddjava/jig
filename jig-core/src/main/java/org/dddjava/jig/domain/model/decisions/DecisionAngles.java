@@ -14,9 +14,11 @@ import java.util.stream.Collectors;
 public class DecisionAngles {
 
     TypeByteCodes typeByteCodes;
+    Architecture architecture;
 
     public DecisionAngles(TypeByteCodes typeByteCodes, Architecture architecture) {
         this.typeByteCodes = typeByteCodes;
+        this.architecture = architecture;
     }
 
     List<DecisionAngle> toDecisionAngleList(TypeByteCodes list) {
@@ -29,14 +31,14 @@ public class DecisionAngles {
     }
 
     public List<DecisionAngle> listApplications() {
-        return toDecisionAngleList(ApplicationLayer.APPLICATION.filter(typeByteCodes));
+        return toDecisionAngleList(ApplicationLayer.APPLICATION.filter(typeByteCodes, architecture));
     }
 
     public List<DecisionAngle> listPresentations() {
-        return toDecisionAngleList(ApplicationLayer.PRESENTATION.filter(typeByteCodes));
+        return toDecisionAngleList(ApplicationLayer.PRESENTATION.filter(typeByteCodes, architecture));
     }
 
     public List<DecisionAngle> listInfrastructures() {
-        return toDecisionAngleList(ApplicationLayer.INFRASTRUCTURE.filter(typeByteCodes));
+        return toDecisionAngleList(ApplicationLayer.INFRASTRUCTURE.filter(typeByteCodes, architecture));
     }
 }

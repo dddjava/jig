@@ -1,6 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.presentation.view.JigDocument;
@@ -32,7 +31,7 @@ public class JigConfig {
 
     public JigProperties asProperties() {
         return new JigProperties(
-                new BusinessRuleCondition(modelPattern),
+                modelPattern,
                 new OutputOmitPrefix(outputOmitPrefix)
         );
     }

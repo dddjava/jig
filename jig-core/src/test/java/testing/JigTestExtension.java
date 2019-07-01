@@ -1,9 +1,8 @@
 package testing;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.fact.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.fact.source.SourcePaths;
 import org.dddjava.jig.domain.model.fact.source.Sources;
 import org.dddjava.jig.domain.model.fact.source.binary.BinarySourcePaths;
@@ -29,7 +28,7 @@ public class JigTestExtension implements ParameterResolver {
     public JigTestExtension() {
         configuration = new Configuration(
                 new JigProperties(
-                        new BusinessRuleCondition("stub.domain.model.+"),
+                        "stub.domain.model.+",
                         new OutputOmitPrefix()
                 ),
                 new SourceCodeAliasReader(new JavaparserAliasReader())

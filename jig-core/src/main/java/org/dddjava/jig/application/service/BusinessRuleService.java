@@ -1,12 +1,13 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
+import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
@@ -20,17 +21,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class BusinessRuleService {
 
-    BusinessRuleCondition businessRuleCondition;
+    Architecture architecture;
 
-    public BusinessRuleService(BusinessRuleCondition businessRuleCondition) {
-        this.businessRuleCondition = businessRuleCondition;
+    public BusinessRuleService(Architecture architecture) {
+        this.architecture = architecture;
     }
 
     /**
      * ビジネスルール一覧を取得する
      */
     public BusinessRules businessRules(AnalyzedImplementation analyzedImplementation) {
-        return businessRuleCondition.sorting(analyzedImplementation.typeByteCodes());
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
+        return BusinessRules.from(typeByteCodes, architecture);
     }
 
     /**

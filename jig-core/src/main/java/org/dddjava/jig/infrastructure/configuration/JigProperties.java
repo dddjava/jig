@@ -1,14 +1,12 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleCondition;
-
 public class JigProperties {
-    BusinessRuleCondition businessRuleCondition;
 
     OutputOmitPrefix outputOmitPrefix;
+    String businessRulePattern;
 
-    public JigProperties(BusinessRuleCondition businessRuleCondition, OutputOmitPrefix outputOmitPrefix) {
-        this.businessRuleCondition = businessRuleCondition;
+    public JigProperties(String businessRulePattern, OutputOmitPrefix outputOmitPrefix) {
+        this.businessRulePattern = businessRulePattern;
         this.outputOmitPrefix = outputOmitPrefix;
     }
 
@@ -16,7 +14,7 @@ public class JigProperties {
         return outputOmitPrefix;
     }
 
-    public BusinessRuleCondition getBusinessRuleCondition() {
-        return businessRuleCondition;
+    public String getBusinessRulePattern() {
+        return businessRulePattern;
     }
 }

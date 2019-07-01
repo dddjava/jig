@@ -54,7 +54,7 @@ public class ApplicationService {
      */
     public ServiceAngles serviceAngles(AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes);
+        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
             LOGGER.warn(Warning.サービスメソッドが見つからないので出力されない通知.text());

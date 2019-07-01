@@ -1,15 +1,29 @@
 package org.dddjava.jig.domain.model.architecture;
 
+import org.dddjava.jig.domain.model.businessrules.IsBusinessRule;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * アーキテクチャ
  */
 public class Architecture {
+
+    IsBusinessRule isBusinessRule;
+
+    public Architecture(JigProperties properties) {
+        Pattern businessRulePattern = Pattern.compile(properties.getBusinessRulePattern());
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        this.isBusinessRule = typeByteCode -> {
+            String fqn = typeByteCode.typeIdentifier().fullQualifiedName();
+            return businessRulePattern.matcher(fqn).matches() && !compilerGeneratedClassPattern.matcher(fqn).matches();
+        };
+    }
 
     public boolean isService(List<TypeAnnotation> typeAnnotations) {
         TypeIdentifier serviceAnnotation = new TypeIdentifier("org.springframework.stereotype.Service");
@@ -34,5 +48,9 @@ public class Architecture {
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(controller)
                         || typeAnnotation.typeIs(restController)
                         || typeAnnotation.typeIs(controllerAdvice));
+    }
+
+    public boolean isBusinessRule(TypeByteCode typeByteCode) {
+        return isBusinessRule.isBusinessRule(typeByteCode);
     }
 }

@@ -24,10 +24,11 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
-        this.businessRuleService = new BusinessRuleService(properties.getBusinessRuleCondition());
+        Architecture architecture = new Architecture(properties);
+        this.businessRuleService = new BusinessRuleService(architecture);
         this.dependencyService = new DependencyService(businessRuleService);
         this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
-        this.applicationService = new ApplicationService(new Architecture());
+        this.applicationService = new ApplicationService(architecture);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

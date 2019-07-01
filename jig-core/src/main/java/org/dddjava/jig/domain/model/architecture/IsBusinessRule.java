@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.businessrules;
+package org.dddjava.jig.domain.model.architecture;
 
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
 

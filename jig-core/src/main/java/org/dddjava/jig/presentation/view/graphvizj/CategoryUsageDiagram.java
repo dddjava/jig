@@ -45,11 +45,7 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
             }
         }
 
-        String userLabel = categoryAngles.list().stream().flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
-                // 重複を除く
-                .distinct()
-                // enumを除く
-                .filter(typeIdentifier -> !enumTypes.contains(typeIdentifier))
+        String userLabel = categoryAngles.userTypeIdentifiers().list().stream()
                 .map(typeIdentifier ->
                         Node.of(typeIdentifier)
                                 .label(typeNameOf(typeIdentifier))

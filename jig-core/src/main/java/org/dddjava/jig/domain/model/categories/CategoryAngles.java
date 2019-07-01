@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.categories;
 
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
@@ -19,20 +17,12 @@ public class CategoryAngles {
 
     List<CategoryAngle> list;
 
-    CategoryAngles(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
-        List<CategoryAngle> list = new ArrayList<>();
-        for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType, classRelations, fieldDeclarations, staticFieldDeclarations));
-        }
-        this.list = list;
-    }
-
-    CategoryAngles(CategoryTypes categoryTypes, TypeByteCodes typeByteCodes) {
-        this(categoryTypes, new ClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields());
-    }
-
     public CategoryAngles(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation) {
-        this(categoryTypes, analyzedImplementation.typeByteCodes());
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
+        this.list = new ArrayList<>();
+        for (CategoryType categoryType : categoryTypes.list()) {
+            list.add(new CategoryAngle(categoryType, new ClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields()));
+        }
     }
 
     public List<CategoryAngle> list() {

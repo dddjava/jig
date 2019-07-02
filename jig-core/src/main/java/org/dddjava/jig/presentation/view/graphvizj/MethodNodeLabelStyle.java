@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.alias.AliasFinder;
-import org.dddjava.jig.domain.model.fact.alias.TypeAlias;
+import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
+import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 
 import java.util.function.Function;
 

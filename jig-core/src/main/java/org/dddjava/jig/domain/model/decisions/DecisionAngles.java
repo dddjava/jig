@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.decisions;
 
-import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
+import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
+import org.dddjava.jig.domain.model.interpret.richmethod.Method;
 
 import java.util.List;
 import java.util.stream.Collectors;

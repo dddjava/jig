@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.repositories;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.richmethod.Method;
+import org.dddjava.jig.domain.model.interpret.richmethod.Method;
 
 /**
  * データソースの構造

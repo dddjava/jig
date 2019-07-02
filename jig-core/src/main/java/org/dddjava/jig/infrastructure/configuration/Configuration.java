@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.fact.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;

@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.richmethod.Method;
-import org.dddjava.jig.domain.model.richmethod.MethodWorries;
-import org.dddjava.jig.domain.model.richmethod.UsingFields;
-import org.dddjava.jig.domain.model.richmethod.UsingMethods;
+import org.dddjava.jig.domain.model.interpret.richmethod.Method;
+import org.dddjava.jig.domain.model.interpret.richmethod.MethodWorries;
+import org.dddjava.jig.domain.model.interpret.richmethod.UsingFields;
+import org.dddjava.jig.domain.model.interpret.richmethod.UsingMethods;
 
 /**
  * サービスメソッド

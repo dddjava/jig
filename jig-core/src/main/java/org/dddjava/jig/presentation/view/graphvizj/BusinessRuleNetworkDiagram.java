@@ -3,8 +3,8 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.businessrules.*;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.fact.alias.AliasFinder;
-import org.dddjava.jig.domain.model.fact.alias.TypeAlias;
+import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
+import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 /**
  * ビジネスルール

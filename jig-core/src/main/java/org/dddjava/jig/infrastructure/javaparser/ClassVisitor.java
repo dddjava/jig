@@ -7,10 +7,10 @@ import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.alias.Alias;
-import org.dddjava.jig.domain.model.fact.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.fact.alias.MethodAlias;
-import org.dddjava.jig.domain.model.fact.alias.TypeAlias;
+import org.dddjava.jig.domain.model.interpret.alias.Alias;
+import org.dddjava.jig.domain.model.interpret.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.interpret.alias.MethodAlias;
+import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.categories;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;

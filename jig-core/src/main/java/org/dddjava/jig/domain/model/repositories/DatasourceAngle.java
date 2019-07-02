@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.repositories;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.datasource.SqlType;
-import org.dddjava.jig.domain.model.fact.datasource.Sqls;
+import org.dddjava.jig.domain.model.implementation.datasource.SqlType;
+import org.dddjava.jig.domain.model.implementation.datasource.Sqls;
 
 /**
  * データソースの切り口

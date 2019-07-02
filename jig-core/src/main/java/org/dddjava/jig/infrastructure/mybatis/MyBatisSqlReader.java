@@ -8,8 +8,8 @@ import org.apache.ibatis.scripting.xmltags.MixedSqlNode;
 import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
-import org.dddjava.jig.domain.model.fact.datasource.*;
-import org.dddjava.jig.domain.model.fact.source.code.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.implementation.datasource.*;
+import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

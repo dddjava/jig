@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.richmethod.UsingFields;
+import org.dddjava.jig.domain.model.interpret.richmethod.UsingFields;
 import org.dddjava.jig.domain.model.services.ServiceAngle;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.presentation.view.report.ReportItem;

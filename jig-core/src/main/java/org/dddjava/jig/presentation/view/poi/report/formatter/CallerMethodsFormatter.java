@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
-import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethods;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

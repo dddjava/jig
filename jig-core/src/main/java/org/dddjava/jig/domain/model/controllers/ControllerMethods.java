@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.controllers;
 
-import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.fact.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
+import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
+import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.interpret.richmethod.RequestHandlerMethod;
 
 import java.util.ArrayList;
 import java.util.List;

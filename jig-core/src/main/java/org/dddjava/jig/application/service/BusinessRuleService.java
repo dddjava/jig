@@ -1,14 +1,14 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.collections.CollectionTypes;
-import org.dddjava.jig.domain.model.fact.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
+import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
 import org.dddjava.jig.domain.model.values.ValueKind;

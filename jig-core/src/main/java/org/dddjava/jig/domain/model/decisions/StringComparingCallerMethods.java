@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.relation.method.CalleeMethod;
-import org.dddjava.jig.domain.model.fact.relation.method.CallerMethod;
-import org.dddjava.jig.domain.model.fact.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.fact.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.interpret.relation.method.CalleeMethod;
+import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethod;
+import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.interpret.relation.method.MethodRelations;
 
 import java.util.Collections;
 import java.util.List;

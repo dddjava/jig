@@ -3,11 +3,11 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.alias.*;
-import org.dddjava.jig.domain.model.fact.source.code.AliasSource;
-import org.dddjava.jig.domain.model.fact.source.code.javacode.JavaSources;
-import org.dddjava.jig.domain.model.fact.source.code.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.fact.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.implementation.source.code.AliasSource;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
+import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.interpret.alias.*;
 import org.springframework.stereotype.Service;
 
 /**

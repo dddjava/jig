@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.architecture.Architecture;
-import org.dddjava.jig.domain.model.architecture.BuildingBlock;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
+import org.dddjava.jig.domain.model.interpret.architecture.BuildingBlock;
 
 import java.util.ArrayList;
 import java.util.List;

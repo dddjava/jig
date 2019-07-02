@@ -3,10 +3,10 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.fact.alias.AliasRepository;
-import org.dddjava.jig.domain.model.fact.alias.MethodAlias;
-import org.dddjava.jig.domain.model.fact.alias.PackageAlias;
-import org.dddjava.jig.domain.model.fact.alias.TypeAlias;
+import org.dddjava.jig.domain.model.interpret.alias.AliasRepository;
+import org.dddjava.jig.domain.model.interpret.alias.MethodAlias;
+import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
+import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

@@ -20,7 +20,7 @@ public class DependencyServiceTest {
         PackageNetwork packageNetwork = dependencyService.packageDependencies(analyzedImplementation);
 
         // パッケージのリストアップ
-        List<String> packageNames = packageNetwork.allPackages().stream()
+        List<String> packageNames = packageNetwork.allPackages().list().stream()
                 .map(packageIdentifier -> packageIdentifier.format(value -> value))
                 .collect(Collectors.toList());
         assertThat(packageNames)

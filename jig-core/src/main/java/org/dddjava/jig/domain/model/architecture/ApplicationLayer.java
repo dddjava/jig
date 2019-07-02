@@ -12,32 +12,26 @@ import static java.util.stream.Collectors.toList;
  * 三層＋ドメインモデルの三層部分を表す。
  */
 public enum ApplicationLayer {
-    PRESENTATION(BuildingBlock.PRESENTATION) {
+    PRESENTATION {
         @Override
         boolean match(TypeByteCode typeByteCode, Architecture architecture) {
-            return architecture.isController(typeByteCode.typeAnnotations());
+            return BuildingBlock.PRESENTATION_CONTROLLER.satisfy(typeByteCode, architecture);
         }
     },
 
-    APPLICATION(BuildingBlock.APPLICATION) {
+    APPLICATION {
         @Override
         boolean match(TypeByteCode typeByteCode, Architecture architecture) {
-            return architecture.isService(typeByteCode.typeAnnotations());
+            return BuildingBlock.SERVICE.satisfy(typeByteCode, architecture);
         }
     },
 
-    INFRASTRUCTURE(BuildingBlock.DATASOURCE) {
+    INFRASTRUCTURE {
         @Override
         boolean match(TypeByteCode typeByteCode, Architecture architecture) {
-            return architecture.isDataSource(typeByteCode);
+            return BuildingBlock.DATASOURCE.satisfy(typeByteCode, architecture);
         }
     };
-
-    BuildingBlock buildingBlock;
-
-    ApplicationLayer(BuildingBlock buildingBlock) {
-        this.buildingBlock = buildingBlock;
-    }
 
     public TypeByteCodes filter(TypeByteCodes typeByteCodes, Architecture architecture) {
         List<TypeByteCode> list = typeByteCodes.list().stream()

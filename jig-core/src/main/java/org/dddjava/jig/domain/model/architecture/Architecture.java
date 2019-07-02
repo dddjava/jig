@@ -16,8 +16,9 @@ public class Architecture {
     IsBusinessRule isBusinessRule;
 
     public Architecture(JigProperties properties) {
-        Pattern businessRulePattern = Pattern.compile(properties.getBusinessRulePattern());
         Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+
+        Pattern businessRulePattern = Pattern.compile(properties.getBusinessRulePattern());
         this.isBusinessRule = typeByteCode -> {
             String fqn = typeByteCode.typeIdentifier().fullQualifiedName();
             return businessRulePattern.matcher(fqn).matches() && !compilerGeneratedClassPattern.matcher(fqn).matches();

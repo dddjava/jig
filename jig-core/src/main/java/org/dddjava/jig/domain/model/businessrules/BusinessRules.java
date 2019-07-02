@@ -80,13 +80,13 @@ public class BusinessRules {
 
     public List<BusinessRule> listValue(ValueKind valueKind) {
         return list.stream()
-                .filter(businessRule -> !businessRule.isCategory() && businessRule.satisfyValue(valueKind))
+                .filter(businessRule -> !businessRule.satisfyCategory() && businessRule.satisfyValue(valueKind))
                 .collect(Collectors.toList());
     }
 
     public List<BusinessRule> listCategory() {
         return list.stream()
-                .filter(businessRule -> businessRule.isCategory())
+                .filter(businessRule -> businessRule.satisfyCategory())
                 .collect(Collectors.toList());
     }
 }

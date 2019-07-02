@@ -35,12 +35,12 @@ public class BusinessRule {
         return businessRuleFields.satisfyValue(valueKind);
     }
 
-    public BusinessRuleFields fields() {
-        return businessRuleFields;
+    boolean satisfyCategory() {
+        return typeByteCode.isEnum();
     }
 
-    boolean isCategory() {
-        return typeByteCode.isEnum();
+    public BusinessRuleFields fields() {
+        return businessRuleFields;
     }
 
     public TypeIdentifier typeIdentifier() {

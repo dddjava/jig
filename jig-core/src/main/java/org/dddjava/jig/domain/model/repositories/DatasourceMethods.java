@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.repositories;
 
 import org.dddjava.jig.domain.model.architecture.Architecture;
+import org.dddjava.jig.domain.model.architecture.BuildingBlock;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -22,7 +23,7 @@ public class DatasourceMethods {
     public DatasourceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         this.list = new ArrayList<>();
         for (TypeByteCode concreteByteCode : typeByteCodes.list()) {
-            if (!architecture.isDataSource(concreteByteCode)) {
+            if (!BuildingBlock.DATASOURCE.satisfy(concreteByteCode, architecture)) {
                 continue;
             }
 

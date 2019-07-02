@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.controllers;
 
+import org.dddjava.jig.domain.model.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.architecture.Architecture;
 import org.dddjava.jig.domain.model.fact.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.fact.bytecode.TypeByteCode;
@@ -22,7 +23,7 @@ public class ControllerMethods {
     public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
         List<RequestHandlerMethod> result = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (architecture.isController(typeByteCode.typeAnnotations())) {
+            if (ApplicationLayer.PRESENTATION.satisfy(typeByteCode, architecture)) {
                 for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
                     RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(methodByteCode, typeByteCode);
                     if (requestHandlerMethod.valid()) {

@@ -5,11 +5,11 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 /**
  * ビジネスルールのグループ（パッケージ）
  */
-public class BusinessRuleGroup {
+public class BusinessRulePackage {
     PackageIdentifier packageIdentifier;
     BusinessRules businessRules;
 
-    public BusinessRuleGroup(PackageIdentifier packageIdentifier, BusinessRules businessRules) {
+    public BusinessRulePackage(PackageIdentifier packageIdentifier, BusinessRules businessRules) {
         this.packageIdentifier = packageIdentifier;
         this.businessRules = businessRules;
     }

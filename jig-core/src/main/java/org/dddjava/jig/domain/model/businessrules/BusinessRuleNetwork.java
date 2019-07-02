@@ -22,13 +22,13 @@ public class BusinessRuleNetwork {
         this.classRelations = classRelations;
     }
 
-    public List<BusinessRuleGroup> groups() {
+    public List<BusinessRulePackage> groups() {
         Map<PackageIdentifier, List<BusinessRule>> collect = businessRules.list().stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.type().identifier().packageIdentifier()
                 ));
         return collect.entrySet().stream()
-                .map(entity -> new BusinessRuleGroup(
+                .map(entity -> new BusinessRulePackage(
                         entity.getKey(),
                         new BusinessRules(entity.getValue())
                 )).collect(Collectors.toList());

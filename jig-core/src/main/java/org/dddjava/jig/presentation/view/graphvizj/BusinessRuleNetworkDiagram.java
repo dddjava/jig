@@ -36,13 +36,13 @@ public class BusinessRuleNetworkDiagram implements DotTextEditor<BusinessRuleNet
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes
-        List<BusinessRuleGroup> list = network.groups();
-        for (BusinessRuleGroup businessRuleGroup : list) {
-            PackageIdentifier packageIdentifier = businessRuleGroup.packageIdentifier();
+        List<BusinessRulePackage> list = network.groups();
+        for (BusinessRulePackage businessRulePackage : list) {
+            PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
             StringJoiner subgraph = new StringJoiner("\n", "subgraph \"cluster_" + packageIdentifier.asText() + "\" {", "}")
                     .add("label=\"" + packageIdentifier.format(packageIdentifierFormatter) + "\"");
 
-            List<BusinessRule> businessRules = businessRuleGroup.businessRules().list();
+            List<BusinessRule> businessRules = businessRulePackage.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
                 TypeAlias typeAlias = aliasFinder.find(businessRule.type().identifier());
                 String aliasLine = "";

@@ -28,6 +28,7 @@ public class MethodSmellAngle {
     }
 
     public boolean notUseField() {
+        // TODO MethodWorry.メンバを使用していない を対応したらそちらに任せる
         return !fieldDeclarations.list().isEmpty() &&
                 method.usingFields().empty();
     }

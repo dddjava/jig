@@ -11,6 +11,7 @@ public enum MethodWorry {
     メンバを使用していない {
         @Override
         boolean judge(MethodByteCode methodByteCode) {
+            // TODO 自インスタンスに対するメソッドやフィールドのインタラクションが存在しなければtrue
             return false;
         }
     },

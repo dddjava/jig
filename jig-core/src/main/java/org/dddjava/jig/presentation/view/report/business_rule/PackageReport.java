@@ -1,5 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRulePackage;
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -8,15 +10,20 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("PACKAGE")
 public class PackageReport {
 
-    PackageIdentifier packageIdentifier;
+    BusinessRulePackage businessRulePackage;
 
-    public PackageReport(PackageIdentifier businessRule) {
-        this.packageIdentifier = businessRule;
+    public PackageReport(BusinessRulePackage businessRulePackage) {
+        this.businessRulePackage = businessRulePackage;
     }
 
     @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.パッケージ別名)
     public PackageIdentifier packageIdentifier() {
-        return packageIdentifier;
+        return businessRulePackage.packageIdentifier();
+    }
+
+    @ReportItemFor(ReportItem.クラス数)
+    public BusinessRules businessRules() {
+        return businessRulePackage.businessRules();
     }
 }

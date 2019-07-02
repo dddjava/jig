@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
+import org.dddjava.jig.domain.model.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
@@ -65,8 +66,8 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> packageReport(AnalyzedImplementation implementations) {
-        PackageIdentifiers packageIdentifiers = businessRuleService.businessRules(implementations).identifiers().packageIdentifiers();
-        return new ModelReport<>(packageIdentifiers.list(), PackageReport::new, PackageReport.class);
+        BusinessRulePackages businessRulePackages = businessRuleService.businessRules(implementations).businessRulePackages();
+        return new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class);
     }
 
     ModelReport<?> businessRulesReport(AnalyzedImplementation implementations) {

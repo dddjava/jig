@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
+import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.collections.CollectionField;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
@@ -39,8 +40,15 @@ public class ReportItemFormatters {
         }
 
         if (item instanceof CollectionField) {
+            CollectionField collectionField = (CollectionField) item;
             if (reportItem == ReportItem.フィールドの型) {
-                return ((CollectionField)item).fieldType().asSimpleText();
+                return collectionField.fieldType().asSimpleText();
+            }
+        }
+        if (item instanceof BusinessRules) {
+            BusinessRules businessRules = (BusinessRules) item;
+            if (reportItem == ReportItem.クラス数) {
+                return String.valueOf(businessRules.list().size());
             }
         }
 

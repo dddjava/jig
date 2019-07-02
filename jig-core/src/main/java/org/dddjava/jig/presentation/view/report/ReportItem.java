@@ -27,6 +27,7 @@ public enum ReportItem {
     使用箇所数("userNumber"),
     使用箇所("userType"),
 
+    クラス数("classNumber"),
     メソッド数("methodNumber"),
     メソッド一覧("methods"),
 

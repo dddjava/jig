@@ -8,4 +8,8 @@ public class BusinessRulePackages {
     BusinessRulePackages(List<BusinessRulePackage> list) {
         this.list = list;
     }
+
+    public List<BusinessRulePackage> list() {
+        return list;
+    }
 }

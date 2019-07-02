@@ -1,13 +1,10 @@
 package org.dddjava.jig.domain.model.businessrules;
 
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.fact.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * ビジネスルールの関連網
@@ -23,15 +20,8 @@ public class BusinessRuleNetwork {
     }
 
     public List<BusinessRulePackage> groups() {
-        Map<PackageIdentifier, List<BusinessRule>> collect = businessRules.list().stream()
-                .collect(Collectors.groupingBy(
-                        businessRule -> businessRule.type().identifier().packageIdentifier()
-                ));
-        return collect.entrySet().stream()
-                .map(entity -> new BusinessRulePackage(
-                        entity.getKey(),
-                        new BusinessRules(entity.getValue())
-                )).collect(Collectors.toList());
+        BusinessRulePackages businessRulePackages = businessRules.businessRulePackages();
+        return businessRulePackages.list;
     }
 
     public BusinessRuleRelations relations() {

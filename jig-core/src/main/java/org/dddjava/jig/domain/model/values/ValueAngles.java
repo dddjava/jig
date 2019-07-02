@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.values;
 
+import org.dddjava.jig.domain.model.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
 
 import java.util.ArrayList;

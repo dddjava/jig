@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.values.ValueAngle;
 import org.dddjava.jig.domain.model.values.ValueAngles;
-import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.domain.model.businessrules.ValueKind;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.category.ParameterizedEnum;
 import stub.domain.model.category.SimpleEnum;

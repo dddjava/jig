@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
-import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.domain.model.businessrules.ValueKind;
 import org.dddjava.jig.presentation.view.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;

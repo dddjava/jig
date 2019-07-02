@@ -71,4 +71,22 @@ public class BusinessRules {
                 )).collect(Collectors.toList());
         return new BusinessRulePackages(list);
     }
+
+    public List<BusinessRule> listCollection() {
+        return list.stream()
+                .filter(BusinessRule::isCollection)
+                .collect(Collectors.toList());
+    }
+
+    public List<BusinessRule> listValue(ValueKind valueKind) {
+        return list.stream()
+                .filter(businessRule -> !businessRule.isCategory() && valueKind.matches(businessRule.fields()))
+                .collect(Collectors.toList());
+    }
+
+    public List<BusinessRule> listCategory() {
+        return list.stream()
+                .filter(businessRule -> businessRule.isCategory())
+                .collect(Collectors.toList());
+    }
 }

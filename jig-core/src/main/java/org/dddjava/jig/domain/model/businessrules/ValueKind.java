@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.values;
+package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -39,5 +39,9 @@ public enum ValueKind {
         }
     };
 
-    public abstract boolean matches(FieldDeclarations fieldDeclarations);
+    public boolean matches(BusinessRuleFields businessRuleFields) {
+        return matches(businessRuleFields.fieldDeclarations());
+    }
+
+    abstract boolean matches(FieldDeclarations fieldDeclarations);
 }

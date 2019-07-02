@@ -22,7 +22,7 @@ public class CollectionType {
     }
 
     public MethodDeclarations methods() {
-        return businessRule.typeByteCode().methodDeclarations();
+        return businessRule.methodDeclarations();
     }
 
     public CollectionField field() {

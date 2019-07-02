@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +16,8 @@ public class CategoryTypes {
 
     public CategoryTypes(BusinessRules businessRules) {
         list = new ArrayList<>();
-        for (BusinessRule businessRule: businessRules.list()) {
-            TypeByteCode typeByteCode = businessRule.typeByteCode();
-            if (typeByteCode.isEnum()) {
-                list.add(new CategoryType(typeByteCode));
-            }
+        for (BusinessRule businessRule : businessRules.listCategory()) {
+            list.add(new CategoryType(businessRule.typeByteCode()));
         }
     }
 

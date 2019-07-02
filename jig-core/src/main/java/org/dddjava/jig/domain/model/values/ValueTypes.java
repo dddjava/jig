@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.values;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.businessrules.ValueKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +15,8 @@ public class ValueTypes {
 
     public ValueTypes(BusinessRules businessRules, ValueKind valueKind) {
         list = new ArrayList<>();
-        for (BusinessRule businessRule: businessRules.list()) {
-            TypeByteCode typeByteCode = businessRule.typeByteCode();
-            if (typeByteCode.isEnum()) {
-                continue;
-            }
-            if (valueKind.matches(typeByteCode.fieldDeclarations())) {
-                list.add(new ValueType(typeByteCode.typeIdentifier()));
-            }
+        for (BusinessRule businessRule : businessRules.listValue(valueKind)) {
+            list.add(new ValueType(businessRule.typeIdentifier()));
         }
     }
 

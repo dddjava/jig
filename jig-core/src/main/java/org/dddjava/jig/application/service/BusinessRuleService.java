@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.values.ValueAngles;
-import org.dddjava.jig.domain.model.values.ValueKind;
+import org.dddjava.jig.domain.model.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.values.ValueTypes;
 import org.springframework.stereotype.Service;
 

@@ -27,8 +27,12 @@ public class BusinessRule {
         return typeByteCode;
     }
 
-    boolean isCollection() {
+    boolean satisfyCollection() {
         return businessRuleFields.satisfyCollection();
+    }
+
+    boolean satisfyValue(ValueKind valueKind) {
+        return businessRuleFields.satisfyValue(valueKind);
     }
 
     public BusinessRuleFields fields() {

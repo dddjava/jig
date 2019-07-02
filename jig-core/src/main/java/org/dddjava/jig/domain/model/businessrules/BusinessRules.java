@@ -74,13 +74,13 @@ public class BusinessRules {
 
     public List<BusinessRule> listCollection() {
         return list.stream()
-                .filter(BusinessRule::isCollection)
+                .filter(BusinessRule::satisfyCollection)
                 .collect(Collectors.toList());
     }
 
     public List<BusinessRule> listValue(ValueKind valueKind) {
         return list.stream()
-                .filter(businessRule -> !businessRule.isCategory() && valueKind.matches(businessRule.fields()))
+                .filter(businessRule -> !businessRule.isCategory() && businessRule.satisfyValue(valueKind))
                 .collect(Collectors.toList());
     }
 

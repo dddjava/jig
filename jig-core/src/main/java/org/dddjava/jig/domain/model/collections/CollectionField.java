@@ -11,6 +11,6 @@ public class CollectionField {
     }
 
     public FieldType fieldType() {
-        return businessRuleFields.fieldType();
+        return businessRuleFields.onlyOneFieldType();
     }
 }

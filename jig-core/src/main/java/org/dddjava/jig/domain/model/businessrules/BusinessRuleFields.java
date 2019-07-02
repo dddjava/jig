@@ -20,11 +20,15 @@ public class BusinessRuleFields {
                 || fieldDeclarations.matches(new TypeIdentifier(Set.class)));
     }
 
-    public FieldType fieldType() {
+    public FieldType onlyOneFieldType() {
         return fieldDeclarations.onlyOneField().fieldType();
     }
 
     public FieldDeclarations fieldDeclarations() {
         return fieldDeclarations;
+    }
+
+    public boolean satisfyValue(ValueKind valueKind) {
+        return valueKind.matches(fieldDeclarations);
     }
 }

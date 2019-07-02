@@ -39,9 +39,5 @@ public enum ValueKind {
         }
     };
 
-    public boolean matches(BusinessRuleFields businessRuleFields) {
-        return matches(businessRuleFields.fieldDeclarations());
-    }
-
     abstract boolean matches(FieldDeclarations fieldDeclarations);
 }

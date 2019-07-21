@@ -228,8 +228,8 @@ public class AsmByteCodeFactoryTest {
                         tuple("分岐なしメソッド()", "0"),
                         tuple("ifがあるメソッド()", "1"),
                         tuple("switchがあるメソッド()", "1"),
-                        // forは ifeq と goto で構成されるのでifと区別つかない
-                        tuple("forがあるメソッド()", "2")
+                        // forは ifeq と goto で構成されるある意味での分岐
+                        tuple("forがあるメソッド()", "1")
                 );
     }
 

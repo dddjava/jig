@@ -186,8 +186,10 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitJumpInsn(int opcode, Label label) {
-                // 何かしらの分岐がある
-                methodByteCode.registerJumpInstruction();
+                if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
+                    // 何かしらの分岐がある
+                    methodByteCode.registerJumpInstruction();
+                }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                     methodByteCode.markJudgeNull();

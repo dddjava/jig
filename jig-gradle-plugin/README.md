@@ -35,7 +35,6 @@ $ gradle clean build jig
 ```
 jig {
     modelPattern = '.+\\.domain\\.model\\..+'
-    repositoryPattern = '.+Repository'
     documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
     outputDirectory = '' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン

@@ -44,30 +44,30 @@ public class JigConfig {
         this.modelPattern = modelPattern;
     }
 
-    List<String> getDocumentTypes() {
+    public List<String> getDocumentTypes() {
         return documentTypes;
     }
 
-    void setDocumentTypes(List<String> documentTypes) {
+    public void setDocumentTypes(List<String> documentTypes) {
         this.documentTypes = documentTypes;
     }
 
-    String getOutputDirectory() {
+    public String getOutputDirectory() {
         return outputDirectory;
     }
 
-    void setOutputDirectory(String outputDirectory) {
+    public void setOutputDirectory(String outputDirectory) {
         if (!Paths.get(outputDirectory).isAbsolute()) {
             throw new IllegalArgumentException("outputDirectoryは絶対パスを指定してください");
         }
         this.outputDirectory = outputDirectory;
     }
 
-    String getOutputOmitPrefix() {
+    public String getOutputOmitPrefix() {
         return outputOmitPrefix;
     }
 
-    void setOutputOmitPrefix(String outputOmitPrefix) {
+    public void setOutputOmitPrefix(String outputOmitPrefix) {
         this.outputOmitPrefix = outputOmitPrefix;
     }
 

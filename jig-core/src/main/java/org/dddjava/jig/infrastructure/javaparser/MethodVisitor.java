@@ -30,6 +30,8 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
                             new MethodSignature(
                                     n.getNameAsString(),
                                     // TODO 引数を取得したい
+                                    // n.getParameters() でパラメタは取れるが、fqnは直接とれず、もしとれたとしても確実ではない。
+                                    // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
                                     new Arguments(Collections.emptyList())
                             )),
                     new JavadocAliasSource(javadocText).toAlias()

@@ -17,8 +17,7 @@ public enum MethodWorry {
     },
     基本型の授受を行なっている {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            MethodDeclaration methodDeclaration = methodByteCode.methodDeclaration();
+        boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
             return methodDeclaration.methodReturn().isPrimitive()
                     || methodDeclaration.methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
         }
@@ -37,8 +36,8 @@ public enum MethodWorry {
     },
     真偽値を返している {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            return methodByteCode.methodDeclaration().methodReturn().typeIdentifier().isBoolean();
+        boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
+            return methodDeclaration.methodReturn().typeIdentifier().isBoolean();
         }
     },
     StreamAPIを使用している {
@@ -49,5 +48,11 @@ public enum MethodWorry {
         }
     };
 
-    abstract boolean judge(MethodByteCode methodByteCode);
+    boolean judge(MethodByteCode methodByteCode) {
+        return judgeDeclaration(methodByteCode.methodDeclaration());
+    }
+
+    boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
+        return false;
+    }
 }

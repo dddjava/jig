@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.interpret.richmethod;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 
@@ -46,13 +47,24 @@ public enum MethodWorry {
             UsingMethods usingMethods = new UsingMethods(methodByteCode.usingMethods());
             return usingMethods.containsStream();
         }
-    };
+    },
+    voidを返している {
+        @Override
+        boolean judgeMethodReturn(MethodReturn methodReturn) {
+            return methodReturn.isVoid();
+        }
+    }
+    ;
 
     boolean judge(MethodByteCode methodByteCode) {
         return judgeDeclaration(methodByteCode.methodDeclaration());
     }
 
     boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
+        return judgeMethodReturn(methodDeclaration.methodReturn());
+    }
+
+    boolean judgeMethodReturn(MethodReturn methodReturn) {
         return false;
     }
 }

@@ -19,6 +19,7 @@ class BusinessRuleServiceTest {
                         .fullQualifiedName().equals("stub.domain.model.smell.SmellMethods"))
                 .extracting(methodSmellAngle -> methodSmellAngle.methodDeclaration().identifier().methodSignature().methodName())
                 .contains(
+                        "returnVoid",
                         "returnInt",
                         "longParameter",
                         "judgeNull"

@@ -42,7 +42,9 @@ public class MethodSmellAngle {
     }
 
     public boolean hasSmell() {
-        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision();
+        // TODO このメソッドの並びと各実装がダメな感じなのでなんとかする。
+        // 現状はここにメソッド追加するのと、列挙に追加するのと、判定メソッド作るのと、やってる。
+        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision() || returnsVoid();
     }
 
     public boolean referenceNull() {
@@ -55,5 +57,9 @@ public class MethodSmellAngle {
 
     public CallerMethods callerMethods() {
         return callerMethods;
+    }
+
+    public boolean returnsVoid() {
+        return method.methodWorries().contains(MethodWorry.voidを返している);
     }
 }

@@ -2,6 +2,9 @@ package stub.domain.model.smell;
 
 public class SmellMethods {
 
+    void returnVoid() {
+    }
+
     int returnInt() {
         return 0;
     }

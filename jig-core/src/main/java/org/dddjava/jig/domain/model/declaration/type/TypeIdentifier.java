@@ -96,4 +96,8 @@ public class TypeIdentifier {
         // java.util.streamパッケージかで見たほうがいいかも？
         return equals(new TypeIdentifier(Stream.class));
     }
+
+    public boolean isVoid() {
+        return value.equals("void");
+    }
 }

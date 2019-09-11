@@ -15,11 +15,13 @@ class BusinessRuleServiceTest {
         MethodSmellAngles methodSmellAngles = businessRuleService.methodSmells(analyzedImplementation);
 
         assertThat(methodSmellAngles.list())
-                .extracting(methodSmellAngle -> methodSmellAngle.methodDeclaration().asFullNameText())
+                .filteredOn(methodSmellAngle -> methodSmellAngle.methodDeclaration().declaringType()
+                        .fullQualifiedName().equals("stub.domain.model.smell.SmellMethods"))
+                .extracting(methodSmellAngle -> methodSmellAngle.methodDeclaration().identifier().methodSignature().methodName())
                 .contains(
-                        "stub.domain.model.smell.SmellMethods.returnInt()",
-                        "stub.domain.model.smell.SmellMethods.longParameter(long)",
-                        "stub.domain.model.smell.SmellMethods.judgeNull()"
+                        "returnInt",
+                        "longParameter",
+                        "judgeNull"
                 );
     }
 }

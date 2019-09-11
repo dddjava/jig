@@ -42,7 +42,7 @@ public class MethodSmellAngle {
     }
 
     public boolean hasSmell() {
-        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull();
+        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision();
     }
 
     public boolean referenceNull() {

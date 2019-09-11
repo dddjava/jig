@@ -34,6 +34,7 @@ public class DependencyServiceTest {
                         "stub.domain.model.relation.field",
                         "stub.domain.model.relation.annotation",
                         "stub.domain.model.relation.enumeration",
+                        "stub.domain.model.smell",
                         "stub.domain.model.type",
                         "stub.domain.model.type.fuga",
                         "stub.domain.model.relation.constant.to_primitive_constant",

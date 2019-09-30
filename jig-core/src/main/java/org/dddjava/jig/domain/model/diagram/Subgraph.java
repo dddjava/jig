@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.domain.model.diagram;
 
 import java.util.StringJoiner;
 
@@ -25,7 +25,7 @@ public class Subgraph {
         return add("style=filled;fillcolor=\"" + color + "\";");
     }
 
-    Subgraph add(CharSequence charSequence) {
+    public Subgraph add(CharSequence charSequence) {
         stringJoiner.add(charSequence);
         return this;
     }

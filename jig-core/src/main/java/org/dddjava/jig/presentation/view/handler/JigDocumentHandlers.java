@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.presentation.controller.*;
-import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;

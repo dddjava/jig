@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.presentation.view.JigDocument;
+import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.domain.model.diagram;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
@@ -11,7 +11,7 @@ import java.util.StringJoiner;
  */
 public class Node {
 
-    static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";
+    public static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";
 
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");
@@ -65,19 +65,19 @@ public class Node {
         return this;
     }
 
-    Node notPublicMethod() {
+    public Node notPublicMethod() {
         return style("solid").color("black");
     }
 
-    Node lambda() {
+    public Node lambda() {
         return shape("ellipse").color("gray");
     }
 
-    Node handlerMethod() {
+    public Node handlerMethod() {
         return color("greenyellow");
     }
 
-    Node notEnum() {
+    public Node notEnum() {
         return color("lightyellow");
     }
 

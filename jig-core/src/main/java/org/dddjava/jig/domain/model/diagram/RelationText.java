@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.domain.model.diagram;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;

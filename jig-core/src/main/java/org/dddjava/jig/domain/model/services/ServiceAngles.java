@@ -137,6 +137,10 @@ public class ServiceAngles {
     }
 
     public DotText methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle, ServiceMethodCallDiagram serviceMethodCallDiagram) {
+        if (isEmpty()) {
+            return DotText.empty();
+        }
+
         List<ServiceAngle> angles = list();
 
         // メソッド間の関連

@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-import java.util.Collections;
-
 public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     final AliasFinder aliasFinder;
@@ -21,10 +19,6 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
     @Override
     public DotTexts edit(ServiceAngles serviceAngles) {
-        if (serviceAngles.isEmpty()) {
-            return new DotTexts(Collections.singletonList(DotText.empty()));
-        }
-
         DotText dotText = serviceAngles.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle, this);
         return new DotTexts(dotText);
     }

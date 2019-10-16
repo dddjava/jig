@@ -75,7 +75,11 @@ public class ServiceAngles {
         return list.isEmpty();
     }
 
-    public DotText getDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    public DotText booleanServiceTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+        if (isEmpty()) {
+            return DotText.empty();
+        }
+
         // メソッド間の関連
         RelationText relationText = new RelationText();
         for (ServiceAngle serviceAngle : list()) {

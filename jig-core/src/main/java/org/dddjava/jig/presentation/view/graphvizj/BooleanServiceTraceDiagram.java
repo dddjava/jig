@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-import java.util.Collections;
-
 public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> {
 
     private final AliasFinder aliasFinder;
@@ -23,10 +21,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     public DotTexts edit(ServiceAngles model) {
         ServiceAngles booleanServiceAngles = model.filterReturnsBoolean();
 
-        if (booleanServiceAngles.isEmpty()) {
-            return new DotTexts(Collections.singletonList(DotText.empty()));
-        }
-        DotText dotText = booleanServiceAngles.getDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
+        DotText dotText = booleanServiceAngles.booleanServiceTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
         return new DotTexts(dotText);
     }
 }

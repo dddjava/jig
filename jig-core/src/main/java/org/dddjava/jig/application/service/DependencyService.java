@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.declaration.package_.AllPackageIdentifiers;
+import org.dddjava.jig.domain.model.interpret.structure.PackageStructure;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.notice.Warning;
@@ -27,9 +27,9 @@ public class DependencyService {
         this.businessRuleService = businessRuleService;
     }
 
-    public AllPackageIdentifiers allPackageIdentifiers(AnalyzedImplementation analyzedImplementation) {
+    public PackageStructure allPackageIdentifiers(AnalyzedImplementation analyzedImplementation) {
         PackageIdentifiers packageIdentifiers = analyzedImplementation.typeByteCodes().types().packages();
-        return packageIdentifiers.allPackageIdentifiers();
+        return PackageStructure.from(packageIdentifiers);
     }
 
     /**

@@ -24,10 +24,6 @@ public class PackageIdentifiers {
         return new PackageIdentifiers(list);
     }
 
-    public AllPackageIdentifiers allPackageIdentifiers() {
-        return new AllPackageIdentifiers(list);
-    }
-
     public PackageDepth maxDepth() {
         return list.stream()
                 .map(PackageIdentifier::depth)

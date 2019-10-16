@@ -1,5 +1,7 @@
-package org.dddjava.jig.domain.model.declaration.package_;
+package org.dddjava.jig.domain.model.interpret.structure;
 
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.diagram.DotText;
 import org.dddjava.jig.domain.model.diagram.Node;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
@@ -10,11 +12,14 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
-public class AllPackageIdentifiers {
+/**
+ * パッケージ構造
+ */
+public class PackageStructure {
 
     List<PackageIdentifier> list;
 
-    AllPackageIdentifiers(List<PackageIdentifier> list) {
+    PackageStructure(List<PackageIdentifier> list) {
         this.list = new ArrayList<>();
         for (PackageIdentifier packageIdentifier : list) {
             if (this.list.contains(packageIdentifier)) {
@@ -29,6 +34,10 @@ public class AllPackageIdentifiers {
                 tmp = tmp.parent();
             }
         }
+    }
+
+    public static PackageStructure from(PackageIdentifiers packageIdentifiers) {
+        return new PackageStructure(packageIdentifiers.list());
     }
 
     public DotText treeDotText(AliasFinder aliasFinder) {

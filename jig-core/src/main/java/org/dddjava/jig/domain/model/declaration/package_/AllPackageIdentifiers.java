@@ -39,7 +39,11 @@ public class AllPackageIdentifiers {
         return list;
     }
 
-    public DotText getDotText(AliasFinder aliasFinder) {
+    public DotText treeDotText(AliasFinder aliasFinder) {
+        if (isEmpty()) {
+            return DotText.empty();
+        }
+
         Map<PackageIdentifier, List<PackageIdentifier>> map = new HashMap<>();
         for (PackageIdentifier packageIdentifier : list()) {
             map.putIfAbsent(packageIdentifier, new ArrayList<>());

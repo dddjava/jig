@@ -52,31 +52,13 @@ public class ServiceAngles {
         return new ServiceAngles(collect);
     }
 
-    public MethodDeclarations userServiceMethods() {
-        return list.stream()
-                .flatMap(serviceAngle -> serviceAngle.userServiceMethods().list().stream())
-                .distinct()
-                .collect(MethodDeclarations.collector());
-    }
-
-    public MethodDeclarations userControllerMethods() {
-        return list.stream()
-                .flatMap(serviceAngle -> serviceAngle.userControllerMethods().list().stream())
-                .distinct()
-                .collect(MethodDeclarations.collector());
-    }
-
-    public boolean notContains(MethodDeclaration methodDeclaration) {
+    boolean notContains(MethodDeclaration methodDeclaration) {
         return list.stream()
                 .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
 
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
-
     public DotText returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             return DotText.empty();
         }
 
@@ -108,12 +90,21 @@ public class ServiceAngles {
 
 
         // 使用メソッドのラベル
-        String userApplicationMethodsText = userServiceMethods().list().stream()
+        MethodDeclarations userServiceMethods = list.stream()
+                .flatMap(serviceAngle1 -> serviceAngle1.userServiceMethods().list().stream())
+                .distinct()
+                .collect(MethodDeclarations.collector());
+        String userApplicationMethodsText = userServiceMethods.list().stream()
                 // booleanメソッドを除く
                 .filter(userMethod -> notContains(userMethod))
                 .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, aliasFinder)).asText())
                 .collect(joining("\n"));
-        String userControllerMethodsText = userControllerMethods().list().stream()
+
+        MethodDeclarations userControllerMethods = list.stream()
+                .flatMap(serviceAngle -> serviceAngle.userControllerMethods().list().stream())
+                .distinct()
+                .collect(MethodDeclarations.collector());
+        String userControllerMethodsText = userControllerMethods.list().stream()
                 .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, aliasFinder)).asText())
                 .collect(joining("\n"));
 
@@ -137,7 +128,7 @@ public class ServiceAngles {
     }
 
     public DotText methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle, ServiceMethodCallDiagram serviceMethodCallDiagram) {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             return DotText.empty();
         }
 

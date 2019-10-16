@@ -1,9 +1,10 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.domain.model.diagram;
 
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 
-class DotText {
+public class DotText {
+    // FIXME DotTextがDocument名を持つのはおかしい
     DocumentSuffix documentSuffix;
     String text;
 
@@ -16,25 +17,26 @@ class DotText {
         this(new DocumentSuffix(""), text);
     }
 
-    String text() {
+    public String text() {
         if (isEmpty()) throw new NullPointerException();
         return text;
     }
 
-    DocumentSuffix documentSuffix() {
+    public DocumentSuffix documentSuffix() {
         if (isEmpty()) throw new NullPointerException();
         return documentSuffix;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return text == null;
     }
 
-    static DotText empty() {
+    public static DotText empty() {
         return new DotText(null);
     }
 
-    protected void additionalWrite(JigDocumentWriter jigDocumentWriter) {
+    @Deprecated
+    public void additionalWrite(JigDocumentWriter jigDocumentWriter) {
         // no-op
     }
 }

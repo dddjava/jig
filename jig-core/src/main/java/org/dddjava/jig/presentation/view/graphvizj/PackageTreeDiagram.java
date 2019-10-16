@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.declaration.package_.AllPackageIdentifiers;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.diagram.DotText;
 import org.dddjava.jig.domain.model.diagram.Node;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;

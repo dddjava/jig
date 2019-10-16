@@ -4,9 +4,7 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.declaration.package_.PackageTree;
-import org.dddjava.jig.domain.model.diagram.Node;
-import org.dddjava.jig.domain.model.diagram.RelationText;
-import org.dddjava.jig.domain.model.diagram.Subgraph;
+import org.dddjava.jig.domain.model.diagram.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
 import org.dddjava.jig.domain.model.interpret.relation.packages.BidirectionalRelations;
@@ -14,7 +12,6 @@ import org.dddjava.jig.domain.model.interpret.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageRelations;
 import org.dddjava.jig.presentation.view.DocumentSuffix;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.slf4j.Logger;
@@ -106,7 +103,7 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
         return new DotText(documentSuffix, text) {
             @Override
-            protected void additionalWrite(JigDocumentWriter jigDocumentWriter) {
+            public void additionalWrite(JigDocumentWriter jigDocumentWriter) {
                 if (packageNetwork.hasBidirectionalRelation()) {
                     jigDocumentWriter.write(
                             outputStream -> {

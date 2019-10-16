@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.diagram.DotText;
 import org.dddjava.jig.domain.model.diagram.Node;
 import org.dddjava.jig.domain.model.diagram.RelationText;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;

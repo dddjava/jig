@@ -1,5 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
+import org.dddjava.jig.domain.model.diagram.DotText;
+
 import java.util.Collections;
 import java.util.List;
 

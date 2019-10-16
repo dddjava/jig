@@ -75,7 +75,7 @@ public class ServiceAngles {
         return list.isEmpty();
     }
 
-    public DotText booleanServiceTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    public DotText returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
         if (isEmpty()) {
             return DotText.empty();
         }

@@ -19,23 +19,23 @@ public class JigDocumentHandlers {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
-    Object[] controllers;
+    Object[] handlers;
 
     public JigDocumentHandlers(BusinessRuleListController businessRuleListController,
                                ClassListController classListController,
                                DiagramController diagramController) {
         // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
-        this.controllers = new Object[]{
+        this.handlers = new Object[]{
                 businessRuleListController,
                 classListController,
                 diagramController
         };
     }
 
-    JigModelAndView<?> resolveHandlerMethod(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver) {
+    JigModelAndView<?> invokeHandlerMethod(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver) {
         try {
-            for (Object controller : controllers) {
-                Optional<Method> mayBeHandlerMethod = Arrays.stream(controller.getClass().getMethods())
+            for (Object handler : handlers) {
+                Optional<Method> mayBeHandlerMethod = Arrays.stream(handler.getClass().getMethods())
                         .filter(method -> method.isAnnotationPresent(DocumentMapping.class))
                         .filter(method -> method.getAnnotation(DocumentMapping.class).value() == jigDocument)
                         .findFirst();
@@ -44,7 +44,7 @@ public class JigDocumentHandlers {
                     Object[] args = Arrays.stream(method.getParameterTypes())
                             .map(clz -> argumentResolver.resolve(clz))
                             .toArray();
-                    return (JigModelAndView<?>) method.invoke(controller, args);
+                    return (JigModelAndView<?>) method.invoke(handler, args);
                 }
             }
         } catch (ReflectiveOperationException e) {
@@ -55,7 +55,7 @@ public class JigDocumentHandlers {
 
     public HandleResult handle(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver, Path outputDirectory) {
         try {
-            JigModelAndView<?> jigModelAndView = resolveHandlerMethod(jigDocument, argumentResolver);
+            JigModelAndView<?> jigModelAndView = invokeHandlerMethod(jigDocument, argumentResolver);
 
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);

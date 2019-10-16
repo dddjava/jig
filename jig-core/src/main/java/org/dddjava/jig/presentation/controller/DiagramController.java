@@ -10,8 +10,6 @@ import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.interpret.structure.PackageStructure;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.presentation.view.JigModelAndView;
-import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
 
@@ -22,54 +20,44 @@ public class DiagramController {
     BusinessRuleService businessRuleService;
     ApplicationService applicationService;
 
-    ViewResolver viewResolver;
-
-    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, ViewResolver viewResolver) {
+    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService) {
         this.dependencyService = dependencyService;
         this.businessRuleService = businessRuleService;
         this.applicationService = applicationService;
-        this.viewResolver = viewResolver;
     }
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)
-    public JigModelAndView<PackageNetwork> packageDependency(AnalyzedImplementation implementations) {
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(implementations);
-        return new JigModelAndView<>(packageNetwork, viewResolver.dependencyWriter());
+    public PackageNetwork packageDependency(AnalyzedImplementation implementations) {
+        return dependencyService.packageDependencies(implementations);
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
-    public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(AnalyzedImplementation implementations) {
-        BusinessRuleNetwork network = dependencyService.businessRuleNetwork(implementations);
-        return new JigModelAndView<>(network, viewResolver.businessRuleRelationWriter());
+    public BusinessRuleNetwork businessRuleRelation(AnalyzedImplementation implementations) {
+        return dependencyService.businessRuleNetwork(implementations);
     }
 
     @DocumentMapping(JigDocument.PackageTreeDiagram)
-    public JigModelAndView<PackageStructure> packageTreeDiagram(AnalyzedImplementation implementations) {
-        PackageStructure packages = dependencyService.allPackageIdentifiers(implementations);
-        return new JigModelAndView<>(packages, viewResolver.packageTreeWriter());
+    public PackageStructure packageTreeDiagram(AnalyzedImplementation implementations) {
+        return dependencyService.allPackageIdentifiers(implementations);
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)
-    public JigModelAndView<CategoryAngles> enumUsage(AnalyzedImplementation implementations) {
-        CategoryAngles categoryAngles = businessRuleService.categories(implementations);
-        return new JigModelAndView<>(categoryAngles, viewResolver.enumUsage());
+    public CategoryAngles enumUsage(AnalyzedImplementation implementations) {
+        return businessRuleService.categories(implementations);
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)
-    public JigModelAndView<CategoryAngles> categories(AnalyzedImplementation implementations) {
-        CategoryAngles categoryAngles = businessRuleService.categories(implementations);
-        return new JigModelAndView<>(categoryAngles, viewResolver.categories());
+    public CategoryAngles categories(AnalyzedImplementation implementations) {
+        return businessRuleService.categories(implementations);
     }
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
-    public JigModelAndView<ServiceAngles> serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
-        return new JigModelAndView<>(serviceAngles, viewResolver.serviceMethodCallHierarchy());
+    public ServiceAngles serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
+        return applicationService.serviceAngles(implementations);
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
-    public JigModelAndView<?> booleanServiceTrace(AnalyzedImplementation implementations) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
-        return new JigModelAndView<>(serviceAngles, viewResolver.booleanServiceTrace());
+    public ServiceAngles booleanServiceTrace(AnalyzedImplementation implementations) {
+        return applicationService.serviceAngles(implementations);
     }
 }

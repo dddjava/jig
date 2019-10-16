@@ -56,8 +56,7 @@ public class Configuration {
         DiagramController diagramController = new DiagramController(
                 dependencyService,
                 businessRuleService,
-                applicationService,
-                viewResolver
+                applicationService
         );
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),

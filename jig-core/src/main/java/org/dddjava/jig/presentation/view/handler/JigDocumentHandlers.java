@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
+import org.dddjava.jig.presentation.view.DiagramView;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.ViewResolver;
@@ -48,7 +49,14 @@ public class JigDocumentHandlers {
                     Object[] args = Arrays.stream(method.getParameterTypes())
                             .map(clz -> argumentResolver.resolve(clz))
                             .toArray();
-                    return (JigModelAndView<?>) method.invoke(handler, args);
+                    Object result = method.invoke(handler, args);
+
+                    if (result instanceof  JigModelAndView) {
+                        return (JigModelAndView<?>) result;
+                    }
+
+                    DiagramView diagramView = DiagramView.of(jigDocument);
+                    return diagramView.createModelAndView(result, viewResolver);
                 }
             }
         } catch (ReflectiveOperationException e) {

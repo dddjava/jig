@@ -27,7 +27,7 @@ public class DependencyService {
         this.businessRuleService = businessRuleService;
     }
 
-    public PackageStructure allPackageIdentifiers(AnalyzedImplementation analyzedImplementation) {
+    public PackageStructure packageStructure(AnalyzedImplementation analyzedImplementation) {
         PackageIdentifiers packageIdentifiers = analyzedImplementation.typeByteCodes().types().packages();
         return PackageStructure.from(packageIdentifiers);
     }

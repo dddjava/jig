@@ -38,7 +38,7 @@ public class DiagramController {
 
     @DocumentMapping(JigDocument.PackageTreeDiagram)
     public PackageStructure packageTreeDiagram(AnalyzedImplementation implementations) {
-        return dependencyService.allPackageIdentifiers(implementations);
+        return dependencyService.packageStructure(implementations);
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)

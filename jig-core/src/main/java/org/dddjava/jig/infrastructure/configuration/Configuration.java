@@ -50,17 +50,9 @@ public class Configuration {
                 applicationService,
                 businessRuleService
         );
-        EnumUsageController enumUsageController = new EnumUsageController(
-                businessRuleService,
-                aliasService,
-                viewResolver
-        );
-        PackageDependencyController packageDependencyController = new PackageDependencyController(
+        DiagramController diagramController = new DiagramController(
                 dependencyService,
-                aliasService,
-                viewResolver
-        );
-        ServiceDiagramController serviceDiagramController = new ServiceDiagramController(
+                businessRuleService,
                 applicationService,
                 aliasService,
                 viewResolver
@@ -72,11 +64,9 @@ public class Configuration {
                 new LocalFileSourceReader()
         );
         this.documentHandlers = new JigDocumentHandlers(
-                serviceDiagramController,
                 businessRuleListController,
                 classListController,
-                packageDependencyController,
-                enumUsageController
+                diagramController
         );
     }
 

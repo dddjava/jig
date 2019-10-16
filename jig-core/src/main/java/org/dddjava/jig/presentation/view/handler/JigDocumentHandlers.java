@@ -1,7 +1,9 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.presentation.controller.*;
 import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.presentation.controller.BusinessRuleListController;
+import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.slf4j.Logger;
@@ -19,18 +21,14 @@ public class JigDocumentHandlers {
 
     Object[] controllers;
 
-    public JigDocumentHandlers(ServiceDiagramController serviceDiagramController,
-                               BusinessRuleListController businessRuleListController,
+    public JigDocumentHandlers(BusinessRuleListController businessRuleListController,
                                ClassListController classListController,
-                               PackageDependencyController packageDependencyController,
-                               EnumUsageController enumUsageController) {
+                               DiagramController diagramController) {
         // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
         this.controllers = new Object[]{
-                serviceDiagramController,
                 businessRuleListController,
                 classListController,
-                packageDependencyController,
-                enumUsageController
+                diagramController
         };
     }
 

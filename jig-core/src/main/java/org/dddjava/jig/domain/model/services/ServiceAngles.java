@@ -14,7 +14,6 @@ import org.dddjava.jig.domain.model.interpret.richmethod.Method;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
-import org.dddjava.jig.presentation.view.graphvizj.ServiceMethodCallDiagram;
 
 import java.util.*;
 import java.util.stream.Collectors;

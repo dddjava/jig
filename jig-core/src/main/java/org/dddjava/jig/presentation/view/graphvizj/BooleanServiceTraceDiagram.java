@@ -7,8 +7,8 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> {
 
-    private final AliasFinder aliasFinder;
-    private final MethodNodeLabelStyle methodNodeLabelStyle;
+    AliasFinder aliasFinder;
+    MethodNodeLabelStyle methodNodeLabelStyle;
     JigDocumentContext jigDocumentContext;
 
     public BooleanServiceTraceDiagram(AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {

@@ -7,8 +7,8 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
 
-    final AliasFinder aliasFinder;
-    final MethodNodeLabelStyle methodNodeLabelStyle;
+    AliasFinder aliasFinder;
+    MethodNodeLabelStyle methodNodeLabelStyle;
     JigDocumentContext jigDocumentContext;
 
     public ServiceMethodCallDiagram(AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {

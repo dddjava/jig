@@ -9,7 +9,7 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
  */
 public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
 
-    private final AliasFinder aliasFinder;
+    AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
     public CategoryDiagram(AliasFinder aliasFinder) {

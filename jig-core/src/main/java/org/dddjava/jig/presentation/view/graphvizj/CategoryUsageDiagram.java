@@ -7,7 +7,7 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
-    private final AliasFinder aliasFinder;
+    AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
     public CategoryUsageDiagram(AliasFinder aliasFinder) {

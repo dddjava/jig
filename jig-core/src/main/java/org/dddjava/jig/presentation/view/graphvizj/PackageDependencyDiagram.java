@@ -17,8 +17,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
     static final Logger logger = LoggerFactory.getLogger(PackageDependencyDiagram.class);
 
-    final PackageIdentifierFormatter formatter;
-    final AliasFinder aliasFinder;
+    PackageIdentifierFormatter formatter;
+    AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;
 
     public PackageDependencyDiagram(PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {

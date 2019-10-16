@@ -64,7 +64,7 @@ subprojects {
     }
 }
 
-configure([project(":jig-annotation"), project(":jig-core")]) {
+configure([project(":jig-core")]) {
 
     javadoc {
         options.addStringOption('Xdoclint:none', '-quiet')
@@ -75,83 +75,6 @@ String findSettingValue(String envName, String propertyName) {
     def env = System.getenv().get(envName)
     def property = env ? env : System.properties.getProperty(propertyName)
     property ? property : ''
-}
-
-project(':jig-annotation') {
-    apply plugin: 'maven-publish'
-    apply plugin: 'com.jfrog.bintray'
-
-    ext {
-        artifactId = 'jig-annotation'
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId project.group
-                artifactId project.artifactId
-                version project.version
-                from components.java
-                pom {
-                    name = 'jig-annotation'
-                    description = "Annotations of Jig"
-                    url = "https://github.com/dddjava/Jig"
-                    licenses {
-                        license {
-                            name = "The Apache Software License, Version 2.0"
-                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                            distribution = "repo"
-                        }
-                    }
-                    developers {
-                        developer {
-                            id = "irof"
-                            name = "irof"
-                            email = "irof@hogedriven.net"
-                        }
-                        developer {
-                            id = "haljik"
-                            name = "haljik"
-                            email = "seiji.kawakami@sora-works.com"
-                        }
-                    }
-                    scm {
-                        url = "https://github.com/dddjava/Jig.git"
-                    }
-                }
-            }
-        }
-    }
-
-    bintray {
-        user = findSettingValue('BINTRAY_USER', 'bintray.user');
-        key = findSettingValue('BINTRAY_APIKEY', 'bintray.apikey')
-
-        configurations = ['archives']
-        publications = ['maven']
-        pkg {
-            repo = 'jig'
-            name = 'jig-annotation'
-            desc = 'Annotations of Jig'
-            userOrg = 'dddjava'
-            websiteUrl = 'https://github.com/dddjava/Jig'
-            vcsUrl = 'https://github.com/dddjava/Jig.git'
-            licenses = ["Apache-2.0"]
-            publish = true
-            publicDownloadNumbers = true
-        }
-    }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
-
-    build.dependsOn(publishToMavenLocal)
 }
 
 project(':jig-core') {
@@ -231,7 +154,6 @@ project(':jig-core') {
     }
 
     dependencies {
-        api project(':jig-annotation')
         api 'org.springframework:spring-context'
         api 'org.slf4j:slf4j-api'
         api 'ch.qos.logback:logback-classic'

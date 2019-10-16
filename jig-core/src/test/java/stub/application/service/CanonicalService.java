@@ -1,6 +1,5 @@
 package stub.application.service;
 
-import org.dddjava.jig.annotation.Progress;
 import org.springframework.stereotype.Service;
 import stub.domain.model.type.HogeRepository;
 import stub.domain.model.type.fuga.Fuga;
@@ -13,7 +12,6 @@ import stub.domain.model.type.fuga.FugaRepository;
  * 3行目は出力しない
  */
 @Service
-@Progress("CanonicalServiceクラスに付けた進捗")
 public class CanonicalService {
 
     HogeRepository hogeRepository;

@@ -3,16 +3,11 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
 import org.dddjava.jig.domain.model.interpret.notice.Warning;
 import org.dddjava.jig.domain.model.interpret.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.interpret.richmethod.Methods;
-import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
@@ -95,16 +90,5 @@ public class ApplicationService {
      */
     public DecisionAngles decision(AnalyzedImplementation analyzedImplementation) {
         return new DecisionAngles(analyzedImplementation.typeByteCodes(), architecture);
-    }
-
-    /**
-     * 進捗を分析する
-     */
-    public ProgressAngles progressAngles(AnalyzedImplementation analyzedImplementation) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        MethodAnnotations methodAnnotations = typeByteCodes.annotatedMethods();
-        TypeAnnotations typeAnnotations = typeByteCodes.typeAnnotations();
-        MethodDeclarations declarations = new Methods(typeByteCodes).declarations();
-        return new ProgressAngles(declarations, typeAnnotations, methodAnnotations);
     }
 }

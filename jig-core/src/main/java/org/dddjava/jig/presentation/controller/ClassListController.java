@@ -7,12 +7,11 @@ import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
+import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.progresses.ProgressAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -68,19 +67,17 @@ public class ClassListController {
 
     ModelReport<?> controllerReport(AnalyzedImplementation implementations) {
         ControllerMethods controllerMethods = applicationService.controllerAngles(implementations);
-        ProgressAngles progressAngles = applicationService.progressAngles(implementations);
 
         return new ModelReport<>(controllerMethods.list(),
-                requestHandlerMethod -> new ControllerReport(requestHandlerMethod, progressAngles.progressOf(requestHandlerMethod.method().declaration())),
+                requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
                 ControllerReport.class);
     }
 
     ModelReport<?> serviceReport(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
-        ProgressAngles progressAngles = applicationService.progressAngles(implementations);
 
         return new ModelReport<>(serviceAngles.list(),
-                serviceAngle -> new ServiceReport(serviceAngle, progressAngles.progressOf(serviceAngle.method())),
+                serviceAngle -> new ServiceReport(serviceAngle),
                 ServiceReport.class);
     }
 

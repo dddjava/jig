@@ -11,11 +11,9 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 public class ControllerReport {
 
     RequestHandlerMethod requestHandlerMethod;
-    String progressText;
 
-    public ControllerReport(RequestHandlerMethod requestHandlerMethod, String progressText) {
+    public ControllerReport(RequestHandlerMethod requestHandlerMethod) {
         this.requestHandlerMethod = requestHandlerMethod;
-        this.progressText = progressText;
     }
 
     @ReportItemFor(ReportItem.クラス名)
@@ -34,10 +32,5 @@ public class ControllerReport {
     @ReportItemFor(value = ReportItem.汎用文字列, label = "パス", order = 1)
     public String path() {
         return requestHandlerMethod.pathText();
-    }
-
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 2)
-    public String progress() {
-        return progressText;
     }
 }

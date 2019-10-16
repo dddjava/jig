@@ -19,7 +19,7 @@ public class ControllerAnglesTest {
         assertThat(controllerMethods.list())
                 .extracting(
                         controllerMethod -> controllerMethod.method().declaration().asFullNameText(),
-                        controllerMethod -> new ControllerReport(controllerMethod, "dummy").path()
+                        controllerMethod -> new ControllerReport(controllerMethod).path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "simple-class/simple-method"),

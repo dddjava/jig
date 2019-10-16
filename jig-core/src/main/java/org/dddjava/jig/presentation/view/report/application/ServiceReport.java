@@ -12,11 +12,9 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 public class ServiceReport {
 
     ServiceAngle angle;
-    String progressText;
 
-    public ServiceReport(ServiceAngle angle, String progressText) {
+    public ServiceReport(ServiceAngle angle) {
         this.angle = angle;
-        this.progressText = progressText;
     }
 
     @ReportItemFor(ReportItem.クラス名)
@@ -58,10 +56,5 @@ public class ServiceReport {
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "stream使用", order = 4)
     public boolean useStream() {
         return angle.useStream();
-    }
-
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "進捗", order = 5)
-    public String progress() {
-        return progressText;
     }
 }

@@ -1,6 +1,5 @@
 package stub.application.service;
 
-import org.dddjava.jig.annotation.Progress;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class DecisionService {
 
-    @Progress("DecisionService#分岐のあるメソッドの進捗")
     void 分岐のあるメソッド(Object 条件) {
         if (条件 == null) {
             throw new NullPointerException();

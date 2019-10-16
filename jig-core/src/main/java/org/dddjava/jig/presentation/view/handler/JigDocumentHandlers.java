@@ -6,6 +6,7 @@ import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +20,14 @@ public class JigDocumentHandlers {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
+    ViewResolver viewResolver;
     Object[] handlers;
 
-    public JigDocumentHandlers(BusinessRuleListController businessRuleListController,
+    public JigDocumentHandlers(ViewResolver viewResolver,
+                               BusinessRuleListController businessRuleListController,
                                ClassListController classListController,
                                DiagramController diagramController) {
+        this.viewResolver = viewResolver;
         // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
         this.handlers = new Object[]{
                 businessRuleListController,

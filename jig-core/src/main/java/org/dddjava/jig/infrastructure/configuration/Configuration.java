@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
+import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -32,7 +33,9 @@ public class Configuration {
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
+        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(aliasService);
         ViewResolver viewResolver = new ViewResolver(
+                aliasFinder,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
@@ -54,7 +57,6 @@ public class Configuration {
                 dependencyService,
                 businessRuleService,
                 applicationService,
-                aliasService,
                 viewResolver
         );
         this.implementationService = new ImplementationService(
@@ -64,6 +66,7 @@ public class Configuration {
                 new LocalFileSourceReader()
         );
         this.documentHandlers = new JigDocumentHandlers(
+                viewResolver,
                 businessRuleListController,
                 classListController,
                 diagramController

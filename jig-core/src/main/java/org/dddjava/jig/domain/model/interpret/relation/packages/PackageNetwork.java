@@ -130,7 +130,11 @@ public class PackageNetwork {
     }
 
 
-    public DotText toDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+    public DotText dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+        if (!available()) {
+            return DotText.empty();
+        }
+
         PackageRelations packageRelations = packageDependencies();
         BidirectionalRelations bidirectionalRelations = bidirectionalRelations();
 

@@ -33,10 +33,8 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
 
         List<DotText> dotTexts = depths.stream()
                 .map(packageNetwork::applyDepth)
-                .filter(PackageNetwork::available)
-                .map(packageNetwork1 -> packageNetwork1.toDotText(jigDocumentContext, formatter, aliasFinder))
+                .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, formatter, aliasFinder))
                 .collect(toList());
         return new DotTexts(dotTexts);
     }
-
 }

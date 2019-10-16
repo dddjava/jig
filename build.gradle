@@ -212,7 +212,7 @@ project(':jig-cli') {
         metaInf { from(rootDir) { include 'LICENSE' } }
         archiveName 'jig-cli.jar'
         manifest {
-            attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + ".LOCAL-SNAPSHOT" ))
+            attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + "." + LocalDateTime.now().format("MMddHHmm") + ".LOCAL-SNAPSHOT" ))
         }
     }
 }

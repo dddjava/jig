@@ -1,12 +1,22 @@
 package org.dddjava.jig.domain.model.interpret.relation.packages;
 
-import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.declaration.package_.*;
+import org.dddjava.jig.domain.model.diagram.*;
+import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
+import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.presentation.view.DocumentSuffix;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 
+import java.io.OutputStreamWriter;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * パッケージの関連
@@ -94,5 +104,96 @@ public class PackageNetwork {
             }
         }
         return sj.toString();
+    }
+
+
+    private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent, AliasFinder aliasFinder, PackageIdentifierFormatter formatter) {
+        if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
+            // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
+            return label(packageIdentifier, formatter, aliasFinder);
+        }
+        String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
+        return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+    }
+
+    private String label(PackageIdentifier packageIdentifier, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+        String labelText = packageIdentifier.format(formatter);
+        return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+    }
+
+    private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasFinder aliasFinder) {
+        PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
+        if (packageAlias.exists()) {
+            return packageAlias.asText() + "\\n" + labelText;
+        }
+        return labelText;
+    }
+
+
+    public DotText toDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+        PackageRelations packageRelations = packageDependencies();
+        BidirectionalRelations bidirectionalRelations = bidirectionalRelations();
+
+        RelationText unidirectionalRelation = new RelationText("edge [color=black];");
+        for (PackageRelation packageRelation : packageRelations.list()) {
+            if (bidirectionalRelations.notContains(packageRelation)) {
+                unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
+            }
+        }
+
+        PackageTree tree = allPackages().tree();
+        PackageIdentifier root = tree.rootPackage();
+        Map<PackageIdentifier, List<PackageIdentifier>> map = tree.map();
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        for (PackageIdentifier parent : map.keySet()) {
+            List<PackageIdentifier> children = map.get(parent);
+            if (root.equals(parent)) {
+                String labelsText = children.stream()
+                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
+                        .collect(joining("\n"));
+                stringJoiner.add(labelsText);
+            } else {
+                String labelsText = children.stream()
+                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
+                        .collect(joining("\n"));
+                Subgraph subgraph = new Subgraph(parent.asText())
+                        .add(labelsText)
+                        .label(label(parent, formatter, aliasFinder))
+                        .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
+                stringJoiner.add(subgraph.toString());
+            }
+        }
+
+        String summaryText = "summary[shape=note,label=\""
+                + jigDocumentContext.label("number_of_packages") + ": " + allPackages().number().asText() + "\\l"
+                + jigDocumentContext.label("number_of_relations") + ": " + packageRelations.number().asText() + "\\l"
+                + "\"]";
+
+        String text = new StringJoiner("\n", "digraph {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.PackageRelationDiagram) + "\";")
+                .add(summaryText)
+                .add(Node.DEFAULT)
+                .add(unidirectionalRelation.asText())
+                .add(bidirectionalRelations.dotRelationText())
+                .add(stringJoiner.toString())
+                .toString();
+        PackageDepth packageDepth = appliedDepth();
+        DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
+
+        return new DotText(documentSuffix, text) {
+            @Override
+            public void additionalWrite(JigDocumentWriter jigDocumentWriter) {
+                if (hasBidirectionalRelation()) {
+                    jigDocumentWriter.write(
+                            outputStream -> {
+                                try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                                    writer.write(bidirectionalRelationReasonText());
+                                }
+                            },
+                            "bidirectionalRelations-depth" + packageDepth + ".txt"
+                    );
+                }
+            }
+        };
     }
 }

@@ -1,14 +1,22 @@
 package org.dddjava.jig.domain.model.categories;
 
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.diagram.*;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
+import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * 区分の切り口一覧
@@ -49,5 +57,88 @@ public class CategoryAngles {
 
     public boolean isEmpty() {
         return list.isEmpty();
+    }
+
+    public DotText dotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+        String records = list().stream()
+                .map(categoryAngle -> {
+                    String values = categoryAngle.constantsDeclarations().list().stream()
+                            .map(StaticFieldDeclaration::nameText)
+                            .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+
+                    TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
+                    return new Node(typeIdentifier.fullQualifiedName())
+                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(aliasFinder, typeIdentifier) + "</td></tr>" + values + "</table>")
+                            .asText();
+                })
+                .collect(joining("\n"));
+
+        return new DotText(
+                new StringJoiner("\n", "digraph {", "}")
+                        .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
+                        .add("layout=circo;")
+                        .add("rankdir=LR;")
+                        .add(Node.DEFAULT)
+                        .add(records)
+                        .toString());
+    }
+
+    private String typeNameOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
+        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+        if (typeAlias.exists()) {
+            return typeAlias.asText() + "\\n" + typeIdentifier.asSimpleText();
+        }
+        return typeIdentifier.asSimpleText();
+    }
+
+    private String typeNameOf(AliasFinder aliasFinder, TypeIdentifier typeIdentifier) {
+        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+        if (typeAlias.exists()) {
+            return typeAlias.asText() + "<br/>" + typeIdentifier.asSimpleText();
+        }
+        return typeIdentifier.asSimpleText();
+    }
+
+    public DotText toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
+        TypeIdentifiers enumTypes = typeIdentifiers();
+
+        String enumsText = enumTypes.list().stream()
+                .map(enumType -> Node.of(enumType)
+                        .label(typeNameOf(enumType, aliasFinder))
+                        .asText())
+                .collect(joining("\n"));
+
+        RelationText relationText = new RelationText();
+        for (CategoryAngle categoryAngle : list()) {
+            for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
+                relationText.add(userType, categoryAngle.typeIdentifier());
+            }
+        }
+
+        String userLabel = userTypeIdentifiers().list().stream()
+                .map(typeIdentifier ->
+                        Node.of(typeIdentifier)
+                                .label(typeNameOf(typeIdentifier, aliasFinder))
+                                .notEnum()
+                                .asText())
+                .collect(joining("\n"));
+
+        String legendText = new Subgraph("legend")
+                .label(jigDocumentContext.label("legend"))
+                .add(new Node(jigDocumentContext.label("enum")).asText())
+                .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
+                .toString();
+
+        return new DotText(new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryUsageDiagram) + "\";")
+                .add("rankdir=LR;")
+                .add(Node.DEFAULT)
+                .add(legendText)
+                .add("{ rank=same;")
+                .add(enumsText)
+                .add("}")
+                .add(relationText.asText())
+                .add(userLabel)
+                .toString());
     }
 }

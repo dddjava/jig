@@ -12,8 +12,8 @@ public class DotTexts {
         this.values = values;
     }
 
-    public DotTexts(String value) {
-        this(Collections.singletonList(new DotText(value)));
+    public DotTexts(DotText dotText) {
+        this(Collections.singletonList(dotText));
     }
 
     public List<DotText> list() {

@@ -31,21 +31,13 @@ public class AllPackageIdentifiers {
         }
     }
 
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
-
-    public List<PackageIdentifier> list() {
-        return list;
-    }
-
     public DotText treeDotText(AliasFinder aliasFinder) {
-        if (isEmpty()) {
+        if (list.isEmpty()) {
             return DotText.empty();
         }
 
         Map<PackageIdentifier, List<PackageIdentifier>> map = new HashMap<>();
-        for (PackageIdentifier packageIdentifier : list()) {
+        for (PackageIdentifier packageIdentifier : list) {
             map.putIfAbsent(packageIdentifier, new ArrayList<>());
             PackageIdentifier parent = packageIdentifier.parent();
             map.putIfAbsent(parent, new ArrayList<>());
@@ -69,7 +61,7 @@ public class AllPackageIdentifiers {
                 })
                 .collect(joining("\n"));
 
-        String relations = list().stream()
+        String relations = list.stream()
                 .map(packageIdentifier -> {
                     PackageIdentifier parent = packageIdentifier.parent();
                     return String.format("\"%s\":\"%s\" -> \"%s\";", parent.asText(), packageIdentifier.asText(), packageIdentifier.asText());

@@ -27,13 +27,16 @@ public class DependencyService {
         this.businessRuleService = businessRuleService;
     }
 
+    /**
+     * パッケージ構造を取得する
+     */
     public PackageStructure packageStructure(AnalyzedImplementation analyzedImplementation) {
         PackageIdentifiers packageIdentifiers = analyzedImplementation.typeByteCodes().types().packages();
         return PackageStructure.from(packageIdentifiers);
     }
 
     /**
-     * パッケージ依存を取得する
+     * パッケージの関連を取得する
      */
     public PackageNetwork packageDependencies(AnalyzedImplementation analyzedImplementation) {
         BusinessRules businessRules = businessRuleService.businessRules(analyzedImplementation);
@@ -49,6 +52,9 @@ public class DependencyService {
         return new PackageNetwork(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
     }
 
+    /**
+     * ビジネスルールの関連を取得する
+     */
     public BusinessRuleNetwork businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {
         BusinessRuleNetwork businessRuleNetwork = new BusinessRuleNetwork(
                 businessRuleService.businessRules(analyzedImplementation),

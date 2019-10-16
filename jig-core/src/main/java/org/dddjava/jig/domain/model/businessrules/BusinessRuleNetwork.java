@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * ビジネスルールの関連網
+ * ビジネスルールの関連
  */
 public class BusinessRuleNetwork {
 

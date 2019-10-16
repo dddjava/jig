@@ -41,8 +41,8 @@ public class ViewResolver {
         return newGraphvizjView(new BooleanServiceTraceDiagram(aliasFinder, methodNodeLabelStyle));
     }
 
-    public JigView<BusinessRuleNetwork> businessRuleNetworkWriter(AliasFinder aliasFinder) {
-        return newGraphvizjView(new BusinessRuleNetworkDiagram(packageIdentifierFormatter, aliasFinder));
+    public JigView<BusinessRuleNetwork> businessRuleRelationWriter(AliasFinder aliasFinder) {
+        return newGraphvizjView(new BusinessRuleRelationDiagram(packageIdentifierFormatter, aliasFinder));
     }
 
     public JigView<CategoryAngles> categories(AliasFinder aliasFinder) {

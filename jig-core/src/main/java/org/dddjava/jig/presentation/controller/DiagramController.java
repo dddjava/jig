@@ -46,7 +46,7 @@ public class DiagramController {
     public JigModelAndView<BusinessRuleNetwork> businessRuleRelation(AnalyzedImplementation implementations) {
         BusinessRuleNetwork network = dependencyService.businessRuleNetwork(implementations);
         AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(aliasService);
-        return new JigModelAndView<>(network, viewResolver.businessRuleNetworkWriter(aliasFinder));
+        return new JigModelAndView<>(network, viewResolver.businessRuleRelationWriter(aliasFinder));
     }
 
     @DocumentMapping(JigDocument.PackageTreeDiagram)

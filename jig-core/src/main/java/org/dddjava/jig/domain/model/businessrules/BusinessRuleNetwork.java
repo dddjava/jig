@@ -44,7 +44,7 @@ public class BusinessRuleNetwork {
         return new BusinessRuleRelations(list);
     }
 
-    public DotText toDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
+    public DotText relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
 
         if (businessRules.empty()) {
             return DotText.empty();

@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.diagram.DotText;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DotTexts {
     List<DotText> values;
@@ -17,7 +18,7 @@ public class DotTexts {
     }
 
     public List<DotText> list() {
-        return values;
+        return values.stream().filter(dotText -> !dotText.isEmpty()).collect(Collectors.toList());
     }
 
     public boolean isEmpty() {

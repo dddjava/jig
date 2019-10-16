@@ -45,6 +45,11 @@ public class BusinessRuleNetwork {
     }
 
     public DotText toDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
+
+        if (businessRules.empty()) {
+            return DotText.empty();
+        }
+
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.BusinessRuleRelationDiagram) + "\";")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");

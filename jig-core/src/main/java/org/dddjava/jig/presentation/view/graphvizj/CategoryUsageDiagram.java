@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.diagram.DotText;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-import java.util.Collections;
-
 public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
     private final AliasFinder aliasFinder;
@@ -19,10 +17,6 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
 
     @Override
     public DotTexts edit(CategoryAngles categoryAngles) {
-        if (categoryAngles.isEmpty()) {
-            return new DotTexts(Collections.singletonList(DotText.empty()));
-        }
-
         DotText dotText = categoryAngles.toUsageDotText(aliasFinder, jigDocumentContext);
         return new DotTexts(dotText);
     }

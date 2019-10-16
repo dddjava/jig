@@ -37,7 +37,7 @@ public class CategoryAngles {
         return list;
     }
 
-    public TypeIdentifiers userTypeIdentifiers() {
+    TypeIdentifiers userTypeIdentifiers() {
         List<TypeIdentifier> userTypeIdentifiers = list().stream()
                 .flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
                 .distinct()
@@ -51,15 +51,11 @@ public class CategoryAngles {
                 .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
     }
 
-    public TypeIdentifiers typeIdentifiers() {
-        return list.stream().map(CategoryAngle::typeIdentifier).collect(TypeIdentifiers.collector());
-    }
+    public DotText valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+        if (list.isEmpty()) {
+            return DotText.empty();
+        }
 
-    public boolean isEmpty() {
-        return list.isEmpty();
-    }
-
-    public DotText dotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         String records = list().stream()
                 .map(categoryAngle -> {
                     String values = categoryAngle.constantsDeclarations().list().stream()
@@ -100,7 +96,13 @@ public class CategoryAngles {
     }
 
     public DotText toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
-        TypeIdentifiers enumTypes = typeIdentifiers();
+        if (list.isEmpty()) {
+            return DotText.empty();
+        }
+
+        TypeIdentifiers enumTypes = list.stream()
+                .map(CategoryAngle::typeIdentifier)
+                .collect(TypeIdentifiers.collector());
 
         String enumsText = enumTypes.list().stream()
                 .map(enumType -> Node.of(enumType)

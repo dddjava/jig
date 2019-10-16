@@ -130,7 +130,7 @@ public class ServiceAngles {
         return new DotText(graphText);
     }
 
-    public DotText methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle, ServiceMethodCallDiagram serviceMethodCallDiagram) {
+    public DotText methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         if (list.isEmpty()) {
             return DotText.empty();
         }

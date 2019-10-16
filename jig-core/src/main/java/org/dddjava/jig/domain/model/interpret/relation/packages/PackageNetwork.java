@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.interpret.relation.packages;
 
-import org.dddjava.jig.domain.model.declaration.package_.*;
+import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.diagram.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
@@ -11,11 +14,9 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 
 import java.io.OutputStreamWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -145,9 +146,14 @@ public class PackageNetwork {
             }
         }
 
-        PackageTree tree = allPackages().tree();
-        PackageIdentifier root = tree.rootPackage();
-        Map<PackageIdentifier, List<PackageIdentifier>> map = tree.map();
+        Map<PackageIdentifier, List<PackageIdentifier>> map = allPackages().list().stream()
+                .collect(groupingBy(PackageIdentifier::parent));
+
+        //TODO: このとり方で良い？複数あるときはやっちゃだめじゃない？
+        PackageIdentifier root = map.keySet().stream()
+                .min(Comparator.comparingInt(o -> o.depth().value()))
+                .orElseGet(PackageIdentifier::defaultPackage);
+
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (PackageIdentifier parent : map.keySet()) {
             List<PackageIdentifier> children = map.get(parent);

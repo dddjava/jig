@@ -45,19 +45,22 @@ public class ServiceAngles {
         this.list = list;
     }
 
-    public ServiceAngles filterReturnsBoolean() {
-        List<ServiceAngle> collect = list.stream()
-                .filter(serviceAngle -> serviceAngle.method().methodReturn().isBoolean())
-                .collect(Collectors.toList());
-        return new ServiceAngles(collect);
-    }
-
     boolean notContains(MethodDeclaration methodDeclaration) {
         return list.stream()
                 .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
 
     public DotText returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+        List<ServiceAngle> collect = list.stream()
+                .filter(serviceAngle -> serviceAngle.method().methodReturn().isBoolean())
+                .collect(Collectors.toList());
+
+        ServiceAngles booleanServiceAngles = new ServiceAngles(collect);
+        return booleanServiceAngles.methodTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
+    }
+
+    DotText methodTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+
         if (list.isEmpty()) {
             return DotText.empty();
         }

@@ -33,7 +33,7 @@ public class IntegrationTest {
     }
 
     static Stream<String> versions() {
-        return Stream.of("4.9", "5.0");
+        return Stream.of("5.0", "5.6.2");
     }
 
     @ParameterizedTest

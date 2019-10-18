@@ -72,15 +72,15 @@ commands:
       - release
 
 jobs:
-  java-8:
+  build-java-8:
     executor: circleci-openjdk-8-executor
     steps:
       - build
-  java-11:
+  build-java-11:
     executor: circleci-openjdk-11-executor
     steps:
       - build
-  java-13:
+  build-java-13:
     executor: circleci-openjdk-13-executor
     steps:
       - build
@@ -93,16 +93,16 @@ workflows:
   version: 2
   usually:
     jobs:
-      - java-8:
+      - build-java-8:
           filters:
             branches:
               only: 'master'
-      - java-11:
+      - build-java-11:
           requires:
-            - java-8
-      - java-13:
+            - build-java-8
+      - build-java-13:
           requires:
-            - java-8
+            - build-java-8
   release:
     jobs:
       - release-build:

@@ -4,6 +4,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
+import org.junit.jupiter.api.condition.DisabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+@DisabledOnJre(JRE.JAVA_13)
 public class IntegrationTest {
     final Path outputDir = Paths.get("stub/sub-project/build/jig");
 

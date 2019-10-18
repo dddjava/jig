@@ -1,15 +1,22 @@
 version: 2.1
 executors:
-  java8-executor:
+  circleci-openjdk-8-executor:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
-  java11-executor:
+  circleci-openjdk-11-executor:
     docker:
       - image: circleci/openjdk:11.0.4-jdk-stretch
+    working_directory: ~/repo
+    environment:
+      JVM_OPTS: -Xmx3200m
+      TERM: dumb
+  circleci-openjdk-13-executor:
+    docker:
+      - image: circleci/openjdk:13.0.1-jdk-buster
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m
@@ -66,15 +73,19 @@ commands:
 
 jobs:
   java-8:
-    executor: java8-executor
+    executor: circleci-openjdk-8-executor
     steps:
       - build
   java-11:
-    executor: java11-executor
+    executor: circleci-openjdk-11-executor
+    steps:
+      - build
+  java-13:
+    executor: circleci-openjdk-13-executor
     steps:
       - build
   release-build:
-    executor: java8-executor
+    executor: circleci-openjdk-8-executor
     steps:
       - build-release
 
@@ -89,9 +100,9 @@ workflows:
       - java-11:
           requires:
             - java-8
-          filters:
-            branches:
-              only: 'master'
+      - java-13:
+          requires:
+            - java-8
   release:
     jobs:
       - release-build:

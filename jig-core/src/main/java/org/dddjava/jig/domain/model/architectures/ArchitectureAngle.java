@@ -32,6 +32,10 @@ public class ArchitectureAngle {
         ClassRelations classRelations = new ClassRelations(typeByteCodes);
         PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
 
+        if (!packageRelations.available()) {
+            return DotText.empty();
+        }
+
         Pattern pattern = Pattern.compile("(.*\\.)(application|domain|infrastructure|presentation)\\..*");
         List<PackageRelation> list = packageRelations.list()
                 .stream()

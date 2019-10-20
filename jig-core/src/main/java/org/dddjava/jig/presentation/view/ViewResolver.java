@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
@@ -53,5 +54,9 @@ public class ViewResolver {
 
     public JigView<PackageStructure> packageTreeWriter() {
         return newGraphvizjView(new PackageTreeDiagram(packageIdentifierFormatter, aliasFinder));
+    }
+
+    public JigView<ArchitectureAngle> architecture() {
+        return newGraphvizjView(model -> new DotTexts(model.dotText(JigDocumentContext.getInstance())));
     }
 }

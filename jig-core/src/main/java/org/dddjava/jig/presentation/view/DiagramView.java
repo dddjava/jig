@@ -45,6 +45,12 @@ public enum DiagramView {
         JigView<?> create(ViewResolver viewResolver) {
             return viewResolver.packageTreeWriter();
         }
+    },
+    ArchitectureDiagram(JigDocument.ArchitectureDiagram) {
+        @Override
+        JigView<?> create(ViewResolver viewResolver) {
+            return viewResolver.architecture();
+        }
     };
 
     final JigDocument jigDocument;

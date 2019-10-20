@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
+import org.dddjava.jig.domain.model.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.diagram.JigDocument;
@@ -59,5 +60,10 @@ public class DiagramController {
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
     public ServiceAngles booleanServiceTrace(AnalyzedImplementation implementations) {
         return applicationService.serviceAngles(implementations);
+    }
+
+    @DocumentMapping(JigDocument.ArchitectureDiagram)
+    public ArchitectureAngle architecture(AnalyzedImplementation implementations) {
+        return new ArchitectureAngle(implementations);
     }
 }

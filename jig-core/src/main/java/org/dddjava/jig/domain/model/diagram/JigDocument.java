@@ -88,7 +88,13 @@ public enum JigDocument {
      *
      * パッケージ階層を可視化する。
      */
-    PackageTreeDiagram("package-tree");
+    PackageTreeDiagram("package-tree"),
+
+    /**
+     * アーキテクチャダイアグラム
+     */
+    ArchitectureDiagram("architecture"),
+    ;
 
     private final String documentFileName;
 

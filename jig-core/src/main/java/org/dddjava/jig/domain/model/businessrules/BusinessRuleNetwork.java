@@ -2,10 +2,7 @@ package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.diagram.DotText;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
-import org.dddjava.jig.domain.model.diagram.Node;
-import org.dddjava.jig.domain.model.diagram.RelationText;
+import org.dddjava.jig.domain.model.diagram.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;
@@ -58,8 +55,10 @@ public class BusinessRuleNetwork {
         List<BusinessRulePackage> list = groups();
         for (BusinessRulePackage businessRulePackage : list) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
-            StringJoiner subgraph = new StringJoiner("\n", "subgraph \"cluster_" + packageIdentifier.asText() + "\" {", "}")
-                    .add("label=\"" + packageIdentifier.format(packageIdentifierFormatter) + "\"");
+
+            Subgraph subgraph = new Subgraph(packageIdentifier.asText())
+                    .label(packageIdentifier.format(packageIdentifierFormatter))
+                    .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             List<BusinessRule> businessRules = businessRulePackage.businessRules().list();
             for (BusinessRule businessRule : businessRules) {

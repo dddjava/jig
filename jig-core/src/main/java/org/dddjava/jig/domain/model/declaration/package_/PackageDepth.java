@@ -29,4 +29,8 @@ public class PackageDepth {
     public String toString() {
         return Integer.toString(value);
     }
+
+    public boolean just(PackageDepth other) {
+        return this.value == other.value;
+    }
 }

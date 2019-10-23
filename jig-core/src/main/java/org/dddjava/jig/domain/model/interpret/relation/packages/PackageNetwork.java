@@ -16,7 +16,6 @@ import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
 
 /**
@@ -84,35 +83,12 @@ public class PackageNetwork {
         return bidirectionalRelations;
     }
 
-    public boolean hasBidirectionalRelation() {
-        return !bidirectionalRelations().list.isEmpty();
-    }
-
-    public String bidirectionalRelationReasonText() {
-        StringJoiner sj = new StringJoiner("\n");
-        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list) {
-            sj.add("# " + bidirectionalRelation.toString());
-            String package1 = bidirectionalRelation.packageRelation.from.asText();
-            String package2 = bidirectionalRelation.packageRelation.to.asText();
-            for (ClassRelation classRelation : classRelations.list()) {
-                String from = classRelation.from().fullQualifiedName();
-                String to = classRelation.to().fullQualifiedName();
-
-                if ((from.startsWith(package1) && to.startsWith(package2))
-                        || (from.startsWith(package2) && to.startsWith(package1))) {
-                    sj.add("- " + classRelation.toString());
-                }
-            }
-        }
-        return sj.toString();
-    }
-
-
     private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent, AliasFinder aliasFinder, PackageIdentifierFormatter formatter) {
         if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
             // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
             return label(packageIdentifier, formatter, aliasFinder);
         }
+        // parentでくくる場合にパッケージ名をの重複を省く
         String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
         return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
     }
@@ -130,7 +106,6 @@ public class PackageNetwork {
         return labelText;
     }
 
-
     public DotText dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         if (!available()) {
             return DotText.empty();
@@ -146,33 +121,44 @@ public class PackageNetwork {
             }
         }
 
-        Map<PackageIdentifier, List<PackageIdentifier>> map = allPackages().list().stream()
-                .collect(groupingBy(PackageIdentifier::parent));
+        PackageDepth maxDepth = allPackages().maxDepth();
+        // 最下層を一つ上でグルーピング
+        Map<PackageIdentifier, List<PackageIdentifier>> groupingPackages = new HashMap<>();
+        // 最下層以外
+        List<PackageIdentifier> standalonePackages = new ArrayList<>();
 
-        //TODO: このとり方で良い？複数あるときはやっちゃだめじゃない？
-        PackageIdentifier root = map.keySet().stream()
-                .min(Comparator.comparingInt(o -> o.depth().value()))
-                .orElseGet(PackageIdentifier::defaultPackage);
-
-        StringJoiner stringJoiner = new StringJoiner("\n");
-        for (PackageIdentifier parent : map.keySet()) {
-            List<PackageIdentifier> children = map.get(parent);
-            if (root.equals(parent)) {
-                String labelsText = children.stream()
-                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
-                        .collect(joining("\n"));
-                stringJoiner.add(labelsText);
+        for (PackageIdentifier packageIdentifier : allPackages().list()) {
+            if (packageIdentifier.depth().just(maxDepth)) {
+                groupingPackages.computeIfAbsent(packageIdentifier.parent(), k -> new ArrayList<>())
+                        .add(packageIdentifier);
             } else {
-                String labelsText = children.stream()
-                        .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
-                        .collect(joining("\n"));
-                Subgraph subgraph = new Subgraph(parent.asText())
-                        .add(labelsText)
-                        .label(label(parent, formatter, aliasFinder))
-                        .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
-                stringJoiner.add(subgraph.toString());
+                standalonePackages.add(packageIdentifier);
             }
         }
+        // 1つにグルーピングされていたら剥がす
+        if (standalonePackages.isEmpty() && groupingPackages.size() == 1) {
+            for (List<PackageIdentifier> value : groupingPackages.values()) {
+                standalonePackages.addAll(value);
+            }
+            groupingPackages.clear();
+        }
+
+        StringJoiner stringJoiner = new StringJoiner("\n");
+        for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
+            PackageIdentifier parent = entry.getKey();
+            String labelsText = entry.getValue().stream()
+                    .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
+                    .collect(joining("\n"));
+            Subgraph subgraph = new Subgraph(parent.asText())
+                    .add(labelsText)
+                    .label(label(parent, formatter, aliasFinder))
+                    .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
+            stringJoiner.add(subgraph.toString());
+        }
+        String labelsText = standalonePackages.stream()
+                .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
+                .collect(joining("\n"));
+        stringJoiner.add(labelsText);
 
         String summaryText = "summary[shape=note,label=\""
                 + jigDocumentContext.label("number_of_packages") + ": " + allPackages().number().asText() + "\\l"
@@ -205,5 +191,28 @@ public class PackageNetwork {
                 }
             }
         };
+    }
+
+    private boolean hasBidirectionalRelation() {
+        return !bidirectionalRelations().list.isEmpty();
+    }
+
+    private String bidirectionalRelationReasonText() {
+        StringJoiner sj = new StringJoiner("\n");
+        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list) {
+            sj.add("# " + bidirectionalRelation.toString());
+            String package1 = bidirectionalRelation.packageRelation.from.asText();
+            String package2 = bidirectionalRelation.packageRelation.to.asText();
+            for (ClassRelation classRelation : classRelations.list()) {
+                String from = classRelation.from().fullQualifiedName();
+                String to = classRelation.to().fullQualifiedName();
+
+                if ((from.startsWith(package1) && to.startsWith(package2))
+                        || (from.startsWith(package2) && to.startsWith(package1))) {
+                    sj.add("- " + classRelation.toString());
+                }
+            }
+        }
+        return sj.toString();
     }
 }

@@ -46,4 +46,8 @@ public class PackageIdentifiers {
     public List<PackageIdentifier> list() {
         return list;
     }
+
+    public PackageIdentifiers parent() {
+        return applyDepth(new PackageDepth(maxDepth().value() - 1));
+    }
 }

@@ -56,26 +56,39 @@ public class CategoryAngles {
             return DotText.empty();
         }
 
-        String records = list().stream()
-                .map(categoryAngle -> {
-                    String values = categoryAngle.constantsDeclarations().list().stream()
-                            .map(StaticFieldDeclaration::nameText)
-                            .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+        List<TypeIdentifier> categoryTypeIdentifiers = list.stream()
+                .map(categoryAngle -> categoryAngle.typeIdentifier())
+                .collect(Collectors.toList());
 
-                    TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
-                    return new Node(typeIdentifier.fullQualifiedName())
-                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(aliasFinder, typeIdentifier) + "</td></tr>" + values + "</table>")
-                            .asText();
-                })
-                .collect(joining("\n"));
+        PackageStructure packageStructure = PackageStructure.from(categoryTypeIdentifiers);
+
+        String structureText = packageStructure.toDotText(
+                packageIdentifier -> new Subgraph(packageIdentifier.asText())
+                        .label(packageIdentifier.simpleName()),
+                typeIdentifier -> Node.of(typeIdentifier)
+        );
+
+        StringJoiner categoryText = new StringJoiner("\n");
+        for (CategoryAngle categoryAngle : list) {
+            String values = categoryAngle.constantsDeclarations().list().stream()
+                    .map(StaticFieldDeclaration::nameText)
+                    .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+            TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
+            String nodeText = new Node(typeIdentifier.fullQualifiedName())
+                    .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(aliasFinder, typeIdentifier) + "</td></tr>" + values + "</table>")
+                    .asText();
+
+            categoryText.add(nodeText);
+        }
 
         return new DotText(
-                new StringJoiner("\n", "digraph {", "}")
+                new StringJoiner("\n", "graph {", "}")
                         .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
-                        .add("layout=circo;")
+                        .add("layout=fdp;")
                         .add("rankdir=LR;")
                         .add(Node.DEFAULT)
-                        .add(records)
+                        .add(structureText)
+                        .add(categoryText.toString())
                         .toString());
     }
 

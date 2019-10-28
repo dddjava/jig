@@ -70,8 +70,10 @@ public class GradleProject {
             return Stream.empty();
         }
 
-        DependencySet dependencies = root.getConfigurations().getByName("compile").getAllDependencies();
-        Stream<Project> descendantStream = dependencies.stream()
+        //FIXME: 誰かcompileとimplementation両方が取得できるより良い方法があれば
+        DependencySet compileDependencies = root.getConfigurations().getByName("compile").getAllDependencies();
+        DependencySet implementationDependencies = root.getConfigurations().getByName("implementation").getAllDependencies();
+        Stream<Project> descendantStream = Stream.concat(compileDependencies.stream(), implementationDependencies.stream())
                 .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
                 .map(ProjectDependency.class::cast)
                 .map(ProjectDependency::getDependencyProject)

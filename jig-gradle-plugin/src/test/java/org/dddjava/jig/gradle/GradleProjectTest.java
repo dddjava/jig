@@ -67,17 +67,33 @@ class GradleProjectTest {
                         }
                 ),
                 arguments(
-                        "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト",
+                        "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト",
                         new String[]{
-                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
-                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
+                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
+                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
                                 "javaChild/build/classes/java/main",
                                 "javaChild/build/resources/main",
                                 "javaGrandson/build/classes/java/main",
                                 "javaGrandson/build/resources/main"
                         },
                         new String[]{
-                                "3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
+                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
+                                "javaChild/src/main/java",
+                                "javaGrandson/src/main/java"
+                        }
+                ),
+                arguments(
+                        "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト",
+                        new String[]{
+                                "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
+                                "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
+                                "javaChild/build/classes/java/main",
+                                "javaChild/build/resources/main",
+                                "javaGrandson/build/classes/java/main",
+                                "javaGrandson/build/resources/main"
+                        },
+                        new String[]{
+                                "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
                                 "javaChild/src/main/java",
                                 "javaGrandson/src/main/java"
                         }
@@ -128,8 +144,8 @@ class GradleProjectTest {
         return project;
     }
 
-    private static Project _3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project root = javaProjectOf("3階層構造で依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir);
+    private static Project _3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
+        Project root = javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir);
         DependencyHandler dependencies = root.getDependencies();
 
         ProjectInternal javaChild = javaProjectOf("javaChild", tempDir);
@@ -150,6 +166,31 @@ class GradleProjectTest {
         grandsons
                 .map(GradleProjectTest::dependencyOf)
                 .forEach(dependency -> javaChildDependencies.add("compile", dependency));
+        return root;
+    }
+
+    private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
+        Project root = javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir);
+        DependencyHandler dependencies = root.getDependencies();
+
+        ProjectInternal javaChild = javaProjectOf("javaChild", tempDir);
+        Stream<ProjectInternal> children = Stream.of(
+                projectOf("nonJavaChild", tempDir),
+                javaChild
+        );
+        children
+                .map(GradleProjectTest::dependencyOf)
+                .forEach(dependency -> dependencies.add("implementation", dependency));
+
+
+        DependencyHandler javaChildDependencies = javaChild.getDependencies();
+        Stream<ProjectInternal> grandsons = Stream.of(
+                projectOf("nonJavaGrandson", tempDir),
+                javaProjectOf("javaGrandson", tempDir)
+        );
+        grandsons
+                .map(GradleProjectTest::dependencyOf)
+                .forEach(dependency -> javaChildDependencies.add("implementation", dependency));
         return root;
     }
 

@@ -24,7 +24,7 @@
 
 JIGの生成する分析・設計情報をJIGドキュメントと呼びます。
 
-種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/presentation/view/JigDocument.java) を参照してください。
+種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/diagram/JigDocument.java) を参照してください。
 
 ## 使い方
 

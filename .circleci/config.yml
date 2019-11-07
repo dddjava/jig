@@ -9,7 +9,7 @@ executors:
       TERM: dumb
   circleci-openjdk-11-executor:
     docker:
-      - image: circleci/openjdk:11.0.4-jdk-stretch
+      - image: circleci/openjdk:11.0.5-jdk-stretch
     working_directory: ~/repo
     environment:
       JVM_OPTS: -Xmx3200m

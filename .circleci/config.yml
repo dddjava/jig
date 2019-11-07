@@ -1,5 +1,5 @@
 version: 2.1
-executors:
+axecutors:
   circleci-openjdk-8-executor:
     docker:
       - image: circleci/openjdk:8-jdk
@@ -36,7 +36,7 @@ commands:
   build:
     steps:
       - pre-build
-      - run: ./gradlew --no-daemon build
+      - run: ./gradlew --debug --no-daemon build
       - post-build
   release:
     steps:

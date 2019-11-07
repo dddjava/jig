@@ -3,7 +3,6 @@ package org.dddjava.jig.gradle;
 import org.assertj.core.api.SoftAssertions;
 import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,18 +11,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 @DisabledOnJre(JRE.JAVA_13)
 public class IntegrationTest {
     final Path outputDir = Paths.get("stub/sub-project/build/jig");
+    final GradleTaskRunner runner = new GradleTaskRunner(new File("./stub"));
 
     @Before
     public void clean() {
@@ -42,7 +38,7 @@ public class IntegrationTest {
     @ParameterizedTest
     @MethodSource("versions")
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(String version) throws IOException, URISyntaxException {
-        BuildResult result = executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
+        BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
@@ -65,7 +61,7 @@ public class IntegrationTest {
         softly.assertThat(includedFile).exists();
         softly.assertAll();
 
-        BuildResult result = executeGradleTasks(version, "clean");
+        BuildResult result = runner.executeGradleTasks(version, "clean");
 
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
         softly.assertThat(includedFile).doesNotExist();
@@ -73,19 +69,6 @@ public class IntegrationTest {
         softly.assertAll();
     }
 
-    private BuildResult executeGradleTasks(String version, String... tasks) throws IOException, URISyntaxException {
-        URL resource = getClass().getClassLoader().getResource("plugin-classpath.txt");
-        List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.toURI())).stream()
-                .map(File::new)
-                .collect(toList());
-
-        return GradleRunner.create()
-                .withGradleVersion(version)
-                .withProjectDir(new File("./stub"))
-                .withArguments(tasks)
-                .withPluginClasspath(pluginClasspath)
-                .build();
-    }
 
 
 }

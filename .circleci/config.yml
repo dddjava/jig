@@ -1,5 +1,5 @@
 version: 2.1
-axecutors:
+executors:
   circleci-openjdk-8-executor:
     docker:
       - image: circleci/openjdk:8-jdk

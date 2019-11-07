@@ -14,13 +14,6 @@ executors:
     environment:
       JVM_OPTS: -Xmx3200m
       TERM: dumb
-  circleci-openjdk-13-executor:
-    docker:
-      - image: circleci/openjdk:13.0.1-jdk-buster
-    working_directory: ~/repo
-    environment:
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
 commands:
   pre-build:
     steps:
@@ -80,10 +73,6 @@ jobs:
     executor: circleci-openjdk-11-executor
     steps:
       - build
-  build-java-13:
-    executor: circleci-openjdk-13-executor
-    steps:
-      - build
   release-build:
     executor: circleci-openjdk-8-executor
     steps:
@@ -98,9 +87,6 @@ workflows:
             branches:
               only: 'master'
       - build-java-11:
-          requires:
-            - build-java-8
-      - build-java-13:
           requires:
             - build-java-8
   release:

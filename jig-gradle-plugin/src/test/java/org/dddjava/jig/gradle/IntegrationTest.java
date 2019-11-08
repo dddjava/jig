@@ -3,9 +3,11 @@ package org.dddjava.jig.gradle;
 import org.assertj.core.api.SoftAssertions;
 import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
@@ -14,7 +16,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 @DisabledOnJre(JRE.JAVA_13)
 public class IntegrationTest {
@@ -31,13 +32,9 @@ public class IntegrationTest {
         }
     }
 
-    static Stream<String> versions() {
-        return Stream.of("5.0", "5.6.2");
-    }
-
     @ParameterizedTest
-    @MethodSource("versions")
-    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(String version) throws IOException, URISyntaxException {
+    @EnumSource(GradleVersions.class)
+    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(GradleVersions version) throws IOException, URISyntaxException {
         BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
@@ -50,8 +47,8 @@ public class IntegrationTest {
 
     //TODO 並列で走ると競合して落ちる
     @ParameterizedTest
-    @MethodSource("versions")
-    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(String version) throws IOException, URISyntaxException {
+    @EnumSource(GradleVersions.class)
+    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(GradleVersions version) throws IOException, URISyntaxException {
         Files.createDirectories(outputDir);
         Path includedFile = outputDir.resolve("somme.txt");
         Files.createFile(includedFile);

@@ -28,7 +28,7 @@ public class IntegrationTestForKotlinDSL {
 
     @Test
     void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること() throws IOException, URISyntaxException {
-        BuildResult result = runner.executeGradleTasks("5.6", "clean", "compileJava", "jigReports", "--stacktrace");
+        BuildResult result = runner.executeGradleTasks(GradleVersions.CURRENT, "clean", "compileJava", "jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
@@ -36,7 +36,4 @@ public class IntegrationTestForKotlinDSL {
         softly.assertThat(outputDir.resolve("package-relation-depth4.svg")).exists();
         softly.assertAll();
     }
-
-
-
 }

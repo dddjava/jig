@@ -1,6 +1,6 @@
 # JIG
 
-[![CircleCI](https://circleci.com/gh/dddjava/Jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/Jig/tree/master)
+[![CircleCI](https://circleci.com/gh/dddjava/jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/jig/tree/master)
 [![Build status](https://ci.appveyor.com/api/projects/status/yklsnjlvds0l3ka5/branch/master?svg=true)](https://ci.appveyor.com/project/irof/jig/branch/master)
 
 [JIGの紹介](https://speakerdeck.com/irof/jigfalseshao-jie)

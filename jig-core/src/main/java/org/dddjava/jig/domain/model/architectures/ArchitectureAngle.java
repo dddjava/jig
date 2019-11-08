@@ -48,6 +48,10 @@ public class ArchitectureAngle {
                                 && pattern.matcher(packageRelation.to().asText()).matches())
                 .collect(Collectors.toList());
 
+        if (list.isEmpty()) {
+            return DotText.empty();
+        }
+
         String packageName = list.stream()
                 .findFirst()
                 .map(packageRelation -> packageRelation.from())

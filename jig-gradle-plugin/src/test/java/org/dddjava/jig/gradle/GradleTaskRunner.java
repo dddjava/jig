@@ -32,6 +32,7 @@ public class GradleTaskRunner {
         HashMap<String, String> env = new HashMap<>();
         Map<String, String> systemEnv = System.getenv();
         env.putAll(systemEnv);
+        env.remove("JAVA_OPTS");
         env.put("GRADLE_OPTS","-Dorg.gradle.daemon=false");
 
         return GradleRunner.create()

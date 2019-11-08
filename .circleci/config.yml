@@ -6,6 +6,7 @@ executors:
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m
+      GRADLE_OPTS: -Dkotlin.compiler.execution.strategy="in-process"
       TERM: dumb
   circleci-openjdk-11-executor:
     docker:
@@ -13,6 +14,7 @@ executors:
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m
+      GRADLE_OPTS: -Dkotlin.compiler.execution.strategy="in-process"
       TERM: dumb
 commands:
   pre-build:

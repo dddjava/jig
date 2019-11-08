@@ -5,14 +5,14 @@ executors:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/repo
     environment:
-      GRADLE_OPTS: -Xmx1600m
+      _JAVA_OPTIONS: -Xmx512m
       TERM: dumb
   circleci-openjdk-11-executor:
     docker:
       - image: circleci/openjdk:11.0.5-jdk-stretch
     working_directory: ~/repo
     environment:
-      GRADLE_OPTS: -Xmx1600m
+      _JAVA_OPTIONS: -Xmx512m
       TERM: dumb
 commands:
   pre-build:
@@ -36,7 +36,7 @@ commands:
   build:
     steps:
       - pre-build
-      - run: ./gradlew --debug --no-daemon build
+      - run: ./gradlew --debug build
       - post-build
   release:
     steps:

@@ -76,4 +76,9 @@ public class PackageIdentifier {
         if (value.lastIndexOf(".") == -1) return value;
         return value.substring(value.lastIndexOf(".") + 1);
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

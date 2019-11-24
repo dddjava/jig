@@ -41,12 +41,17 @@ public class PackageStructure {
             }
         }
 
+        // defaultパッケージからsubpackageが1つの間、子パッケージを探す
         PackageIdentifier rootPackage = PackageIdentifier.defaultPackage();
         Set<PackageIdentifier> packageIdentifiers = subPackageMap.get(PackageIdentifier.defaultPackage());
         while (packageIdentifiers.size() == 1) {
             PackageIdentifier onlyOnePackage = packageIdentifiers.iterator().next();
             rootPackage = onlyOnePackage;
             packageIdentifiers = subPackageMap.get(onlyOnePackage);
+            // 所属するクラスがあったら終了
+            if (belongTypeMap.containsKey(onlyOnePackage)) {
+                break;
+            }
         }
 
         return new PackageStructure(rootPackage, subPackageMap, belongTypeMap);

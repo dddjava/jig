@@ -3,3 +3,15 @@
 build/
 out/
 *.iml
+.classpath
+.project
+.cache-main
+.cache-tests
+.settings/
+target/
+project/target
+.cache
+.idea/
+.cache-main
+.envrc
+bin/

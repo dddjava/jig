@@ -2,10 +2,10 @@ package org.dddjava.jig.domain.model.architectures;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.diagram.DotText;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
-import org.dddjava.jig.domain.model.diagram.Node;
-import org.dddjava.jig.domain.model.diagram.RelationText;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.Node;
+import org.dddjava.jig.domain.model.jigdocument.RelationText;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;

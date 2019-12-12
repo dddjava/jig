@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.diagram.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;

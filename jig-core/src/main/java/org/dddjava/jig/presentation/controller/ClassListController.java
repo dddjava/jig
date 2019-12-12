@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngle;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.repositories.DatasourceAngles;

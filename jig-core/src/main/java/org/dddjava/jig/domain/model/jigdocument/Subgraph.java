@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.diagram;
+package org.dddjava.jig.domain.model.jigdocument;
 
 import java.util.StringJoiner;
 

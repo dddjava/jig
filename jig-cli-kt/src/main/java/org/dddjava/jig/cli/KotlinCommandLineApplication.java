@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;

@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.diagram.*;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;

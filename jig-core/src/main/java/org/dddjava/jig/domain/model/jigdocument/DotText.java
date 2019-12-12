@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.diagram;
+package org.dddjava.jig.domain.model.jigdocument;
 
 import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;

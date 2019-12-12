@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.categories;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.diagram.*;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.diagram.*;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;

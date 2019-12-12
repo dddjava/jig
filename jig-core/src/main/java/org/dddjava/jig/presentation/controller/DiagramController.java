@@ -6,7 +6,7 @@ import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.interpret.structure.PackageStructure;

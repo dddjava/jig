@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 
 public class DocumentSuffix {
     String name;

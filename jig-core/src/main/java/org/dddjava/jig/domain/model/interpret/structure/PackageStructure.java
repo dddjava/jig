@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.interpret.structure;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.diagram.DotText;
-import org.dddjava.jig.domain.model.diagram.Node;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
+import org.dddjava.jig.domain.model.jigdocument.Node;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
 

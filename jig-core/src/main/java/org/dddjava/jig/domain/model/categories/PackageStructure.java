@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.categories;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.diagram.Node;
-import org.dddjava.jig.domain.model.diagram.Subgraph;
+import org.dddjava.jig.domain.model.jigdocument.Node;
+import org.dddjava.jig.domain.model.jigdocument.Subgraph;
 
 import java.util.*;
 import java.util.function.Function;

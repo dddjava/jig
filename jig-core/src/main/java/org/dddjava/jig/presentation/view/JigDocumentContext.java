@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;

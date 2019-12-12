@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
-import org.dddjava.jig.domain.model.diagram.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 

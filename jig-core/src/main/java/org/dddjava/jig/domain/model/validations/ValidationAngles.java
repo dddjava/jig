@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.validations;
 
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 
 /**
  * ビジネスルールの関連

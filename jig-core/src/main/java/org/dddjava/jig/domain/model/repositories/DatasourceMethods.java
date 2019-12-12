@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
-import org.dddjava.jig.domain.model.interpret.architecture.BuildingBlock;
-import org.dddjava.jig.domain.model.interpret.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigloaded.architecture.BuildingBlock;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 
 import java.util.ArrayList;
 import java.util.List;

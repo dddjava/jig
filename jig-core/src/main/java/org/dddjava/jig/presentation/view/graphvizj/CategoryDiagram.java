@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 /**

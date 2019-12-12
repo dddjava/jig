@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
-import org.dddjava.jig.domain.model.interpret.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

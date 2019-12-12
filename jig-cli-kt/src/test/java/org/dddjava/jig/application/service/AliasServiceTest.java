@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.implementation.source.Sources;
 import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.implementation.source.code.AliasSource;
 import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
-import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigloaded.alias.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;

@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.implementation.source.SourceReader;
 import org.dddjava.jig.domain.model.implementation.source.Sources;
 import org.dddjava.jig.domain.model.implementation.source.binary.ClassSources;
 import org.dddjava.jig.domain.model.implementation.source.code.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.springframework.stereotype.Service;
 
 /**

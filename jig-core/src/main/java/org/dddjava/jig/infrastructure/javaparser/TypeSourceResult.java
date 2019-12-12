@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.interpret.alias.MethodAlias;
-import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 
 import java.util.List;
 

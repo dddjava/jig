@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.smells.MethodSmellAngles;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

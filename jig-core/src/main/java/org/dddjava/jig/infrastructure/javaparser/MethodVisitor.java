@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.interpret.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.interpret.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigloaded.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 
 import java.util.Collections;
 import java.util.List;

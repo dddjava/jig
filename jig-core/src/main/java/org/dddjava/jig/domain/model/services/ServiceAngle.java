@@ -3,10 +3,11 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.interpret.relation.method.CalleeMethod;
-import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.interpret.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.CalleeMethod;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.interpret.richmethod.*;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.*;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.repositories.RepositoryMethods;
 

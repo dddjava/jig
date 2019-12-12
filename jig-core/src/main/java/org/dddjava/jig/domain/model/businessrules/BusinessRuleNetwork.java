@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.businessrules;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigdocument.*;
-import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
-import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.ArrayList;

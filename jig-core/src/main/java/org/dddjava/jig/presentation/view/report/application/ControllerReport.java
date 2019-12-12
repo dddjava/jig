@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.interpret.richmethod.Method;
-import org.dddjava.jig.domain.model.interpret.richmethod.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.interpret.richmethod.UsingFields;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingFields;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

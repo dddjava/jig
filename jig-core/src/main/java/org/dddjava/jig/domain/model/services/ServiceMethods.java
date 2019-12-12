@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.services;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
-import org.dddjava.jig.domain.model.interpret.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.interpret.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.architecture.ApplicationLayer;
+import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 
 import java.util.List;
 

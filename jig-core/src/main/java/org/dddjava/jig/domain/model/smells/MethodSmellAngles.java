@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.smells;
 import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.interpret.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.interpret.richmethod.Method;
-import org.dddjava.jig.domain.model.interpret.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Methods;
 
 import java.util.ArrayList;
 import java.util.List;

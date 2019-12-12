@@ -8,9 +8,9 @@ import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.interpret.alias.Alias;
-import org.dddjava.jig.domain.model.interpret.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.interpret.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigloaded.alias.Alias;
+import org.dddjava.jig.domain.model.jigloaded.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
 
 import java.util.Optional;
 

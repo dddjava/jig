@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSour
 import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.interpret.alias.*;
+import org.dddjava.jig.domain.model.jigloaded.alias.*;
 import org.springframework.stereotype.Service;
 
 /**

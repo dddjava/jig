@@ -2,9 +2,9 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzeStatuses;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzeStatus;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;

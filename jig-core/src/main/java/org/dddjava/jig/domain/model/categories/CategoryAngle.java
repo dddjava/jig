@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 
 /**
  * 区分の切り口

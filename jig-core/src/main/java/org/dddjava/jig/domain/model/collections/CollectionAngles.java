@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.collections;
 
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;

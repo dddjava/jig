@@ -7,10 +7,10 @@ import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.Node;
 import org.dddjava.jig.domain.model.jigdocument.RelationText;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.interpret.relation.packages.PackageRelation;
-import org.dddjava.jig.domain.model.interpret.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.List;

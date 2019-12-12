@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
-import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.ArrayList;

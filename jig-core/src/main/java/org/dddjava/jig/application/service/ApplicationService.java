@@ -4,17 +4,15 @@ import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
-import org.dddjava.jig.domain.model.interpret.notice.Warning;
-import org.dddjava.jig.domain.model.interpret.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigloaded.notice.Warning;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**

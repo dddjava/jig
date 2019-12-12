@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigloaded.alias;
 
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSources;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSources;
 
 /**
  * JavaSourceから別名を読み取る

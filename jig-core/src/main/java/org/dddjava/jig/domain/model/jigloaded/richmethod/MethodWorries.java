@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigloaded.richmethod;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 
 import java.util.Arrays;
 import java.util.List;

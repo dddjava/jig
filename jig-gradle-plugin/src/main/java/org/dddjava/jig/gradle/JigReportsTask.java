@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.dddjava.jig.domain.model.jigloaded.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzeStatuses;

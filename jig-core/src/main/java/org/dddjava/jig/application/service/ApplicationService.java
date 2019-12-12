@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigloaded.notice.Warning;

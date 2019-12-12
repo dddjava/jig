@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.collections.CollectionTypes;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;

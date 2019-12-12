@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigloaded.relation.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;

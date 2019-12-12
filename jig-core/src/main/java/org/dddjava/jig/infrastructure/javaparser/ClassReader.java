@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.JavaSource;
+import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSource;
 
 class ClassReader {
 

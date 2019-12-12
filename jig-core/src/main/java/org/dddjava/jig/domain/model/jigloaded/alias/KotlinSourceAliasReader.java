@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigloaded.alias;
 
-import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
 
 /**
  * KotlinSourceから別名を読み取る

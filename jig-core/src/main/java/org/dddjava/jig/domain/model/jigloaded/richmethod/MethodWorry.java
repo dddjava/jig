@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigloaded.richmethod;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.implementation.bytecode.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 
 /**
  * メソッドの気になるところ

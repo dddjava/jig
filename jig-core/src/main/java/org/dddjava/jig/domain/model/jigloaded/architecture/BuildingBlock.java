@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigloaded.architecture;
 
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 
 /**
  * アーキテクチャの構成要素

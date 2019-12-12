@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigloaded.analyzed;
 
-import org.dddjava.jig.domain.model.implementation.datasource.SqlReadStatus;
+import org.dddjava.jig.domain.model.jigsource.datasource.SqlReadStatus;
 
 /**
  * 解析結果

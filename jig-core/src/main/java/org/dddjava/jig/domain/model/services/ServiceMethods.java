@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.services;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigloaded.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;

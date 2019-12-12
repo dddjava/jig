@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigloaded.richmethod;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.Comparator;
 import java.util.List;

@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.services.ServiceAngles;
 import org.dddjava.jig.domain.model.services.ServiceMethods;
+import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationService.class);
 
     Architecture architecture;
 
@@ -38,7 +38,8 @@ public class ApplicationService {
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
-            LOGGER.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.text());
+            MessageLogger.of(this.getClass())
+                    .warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
         }
 
         return controllerMethods;
@@ -52,7 +53,8 @@ public class ApplicationService {
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
-            LOGGER.warn(Warning.サービスメソッドが見つからないので出力されない通知.text());
+            MessageLogger.of(this.getClass())
+                    .warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
@@ -72,7 +74,8 @@ public class ApplicationService {
         DatasourceMethods datasourceMethods = new DatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
 
         if (datasourceMethods.empty()) {
-            LOGGER.warn(Warning.リポジトリが見つからないので出力されない通知.text());
+            MessageLogger.of(this.getClass())
+                    .warn(Warning.リポジトリが見つからないので出力されない通知);
         }
 
         return new DatasourceAngles(datasourceMethods, analyzedImplementation.sqls());

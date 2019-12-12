@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.interpret.notice.Warning;
 import org.dddjava.jig.domain.model.interpret.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.interpret.relation.packages.PackageRelations;
+import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DependencyService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DependencyService.class);
 
     BusinessRuleService businessRuleService;
 
@@ -42,7 +41,8 @@ public class DependencyService {
         BusinessRules businessRules = businessRuleService.businessRules(analyzedImplementation);
 
         if (businessRules.empty()) {
-            LOGGER.warn(Warning.ビジネスルールが見つからないので出力されない通知.text());
+            MessageLogger.of(this.getClass())
+                    .warn(Warning.ビジネスルールが見つからないので出力されない通知);
             return PackageNetwork.empty();
         }
 

@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
 import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
+import org.dddjava.jig.domain.model.interpret.architecture.IsBusinessRule;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -15,6 +16,8 @@ import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
+import java.util.regex.Pattern;
+
 public class Configuration {
 
     ImplementationService implementationService;
@@ -25,7 +28,14 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
-        Architecture architecture = new Architecture(properties);
+        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
+        Pattern businessRulePattern = Pattern.compile(properties.getBusinessRulePattern());
+        IsBusinessRule isBusinessRule = typeByteCode -> {
+            String fqn = typeByteCode.typeIdentifier().fullQualifiedName();
+            return businessRulePattern.matcher(fqn).matches() && !compilerGeneratedClassPattern.matcher(fqn).matches();
+        };
+        Architecture architecture = new Architecture(isBusinessRule);
+
         this.businessRuleService = new BusinessRuleService(architecture);
         this.dependencyService = new DependencyService(businessRuleService);
         this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());

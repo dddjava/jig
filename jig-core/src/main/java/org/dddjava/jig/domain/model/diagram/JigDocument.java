@@ -10,11 +10,12 @@ import java.util.stream.Collectors;
 public enum JigDocument {
 
     /**
-     * サービスメソッド呼び出しダイアグラム
+     * ビジネスルール一覧
      *
-     * サービスクラスのメソッド呼び出しを可視化する。
+     * ビジネスルールを表すクラスの一覧。
+     * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
      */
-    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy"),
+    BusinessRuleList("business-rule"),
 
     /**
      * パッケージ関連ダイアグラム
@@ -35,6 +36,21 @@ public enum JigDocument {
     BusinessRuleRelationDiagram("business-rule-relation"),
 
     /**
+     * 区分ダイアグラム
+     *
+     * 区分と区分値を可視化する。
+     * 区分の充実はドメインの把握具合と密接に関わる。
+     */
+    CategoryDiagram("category"),
+
+    /**
+     * 区分使用ダイアグラム
+     *
+     * 区分を使用しているクラスを可視化する。
+     */
+    CategoryUsageDiagram("category-usage"),
+
+    /**
      * 機能一覧
      *
      * 機能を提供するメソッドの一覧。
@@ -46,14 +62,6 @@ public enum JigDocument {
     ApplicationList("application"),
 
     /**
-     * ビジネスルール一覧
-     *
-     * ビジネスルールを表すクラスの一覧。
-     * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
-     */
-    BusinessRuleList("business-rule"),
-
-    /**
      * 分岐数一覧
      *
      * メソッドごとの分岐数の一覧。
@@ -61,19 +69,11 @@ public enum JigDocument {
     BranchList("branches"),
 
     /**
-     * 区分使用ダイアグラム
+     * サービスメソッド呼び出しダイアグラム
      *
-     * 区分を使用しているクラスを可視化する。
+     * サービスクラスのメソッド呼び出しを可視化する。
      */
-    CategoryUsageDiagram("category-usage"),
-
-    /**
-     * 区分ダイアグラム
-     *
-     * 区分と区分値を可視化する。
-     * 区分の充実はドメインの把握具合と密接に関わる。
-     */
-    CategoryDiagram("category"),
+    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy"),
 
     /**
      * 真偽値サービス関連ダイアグラム
@@ -84,16 +84,18 @@ public enum JigDocument {
     BooleanServiceDiagram("boolean-service"),
 
     /**
-     * パッケージツリーダイアグラム
-     *
-     * パッケージ階層を可視化する。
-     */
-    PackageTreeDiagram("package-tree"),
-
-    /**
      * アーキテクチャダイアグラム
      */
     ArchitectureDiagram("architecture"),
+
+    /**
+     * パッケージツリーダイアグラム
+     *
+     * パッケージ階層を可視化する。
+     * @deprecated 廃止予定
+     */
+    @Deprecated
+    PackageTreeDiagram("package-tree"),
     ;
 
     private final String documentFileName;

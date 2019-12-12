@@ -3,10 +3,8 @@ package org.dddjava.jig.domain.model.interpret.architecture;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.implementation.bytecode.TypeByteCode;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * アーキテクチャ

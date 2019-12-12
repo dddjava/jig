@@ -184,20 +184,8 @@ project(':jig-core') {
         expand(version: version)
     }
 
-    jigReports.dependsOn(clean, compileJava, processResources)
-    jig {
-        documentTypes = [
-                'ServiceMethodCallHierarchyDiagram',
-                'PackageRelationDiagram',
-                //'BusinessRuleRelationDiagram',
-                'ApplicationList',
-                'BusinessRuleList',
-                'BranchList',
-                'CategoryUsageDiagram',
-                'CategoryDiagram',
-                'BooleanServiceDiagram',
-                'PackageTreeDiagram']
-    }
+    classes.dependsOn(clean)
+    jigReports.dependsOn(classes)
 }
 
 project(':jig-cli') {

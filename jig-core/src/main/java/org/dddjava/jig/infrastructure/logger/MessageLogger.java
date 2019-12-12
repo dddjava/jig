@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.logger;
 
-import org.dddjava.jig.domain.model.jigloaded.notice.Warning;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.Warning;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

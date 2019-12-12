@@ -53,8 +53,7 @@ public enum MethodWorry {
         boolean judgeMethodReturn(MethodReturn methodReturn) {
             return methodReturn.isVoid();
         }
-    }
-    ;
+    };
 
     boolean judge(MethodByteCode methodByteCode) {
         return judgeDeclaration(methodByteCode.methodDeclaration());

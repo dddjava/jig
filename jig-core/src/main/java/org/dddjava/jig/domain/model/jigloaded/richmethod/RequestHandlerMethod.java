@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

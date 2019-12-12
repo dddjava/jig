@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.services.ServiceAngle;
-import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;

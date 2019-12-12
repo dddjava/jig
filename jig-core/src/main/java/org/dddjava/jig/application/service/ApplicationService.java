@@ -1,17 +1,17 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.decisions.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloaded.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigloaded.notice.Warning;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
-import org.dddjava.jig.domain.model.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.services.ServiceAngles;
-import org.dddjava.jig.domain.model.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.Warning;
+import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
+import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigpresentation.decisions.DecisionAngles;
+import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.springframework.stereotype.Service;
 

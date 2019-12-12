@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.jigloaded.structure.PackageStructure;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigpresentation.structure.PackageStructure;
 
 /**
  * パッケージツリー

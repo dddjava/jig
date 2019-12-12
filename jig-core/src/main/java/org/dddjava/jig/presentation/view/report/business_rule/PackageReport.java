@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRulePackage;
-import org.dddjava.jig.domain.model.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

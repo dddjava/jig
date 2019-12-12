@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

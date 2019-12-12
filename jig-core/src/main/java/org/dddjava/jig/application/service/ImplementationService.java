@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.datasource.SqlReader;
@@ -9,7 +10,6 @@ import org.dddjava.jig.domain.model.jigsource.source.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.source.Sources;
 import org.dddjava.jig.domain.model.jigsource.source.binary.ClassSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
 import org.springframework.stereotype.Service;
 
 /**

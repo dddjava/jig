@@ -52,7 +52,7 @@ public class Node {
 
     public String asText() {
         // "hoge"[label="fuga",color="piyo"];
-        return '"' + identifier + '"' + attribute + ';' ;
+        return '"' + identifier + '"' + attribute + ';';
     }
 
     public Node style(String value) {

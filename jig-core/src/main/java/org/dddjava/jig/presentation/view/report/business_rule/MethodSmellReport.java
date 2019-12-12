@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.smells.MethodSmellAngle;
+import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -43,6 +43,7 @@ public class MethodSmellReport {
     public boolean returnsBoolean() {
         return angle.returnsBoolean();
     }
+
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "voidの返却", order = 4)
     public boolean returnsVoid() {
         return angle.returnsVoid();
@@ -52,6 +53,7 @@ public class MethodSmellReport {
     public boolean referenceNull() {
         return angle.referenceNull();
     }
+
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "nullによる判定", order = 6)
     public boolean nullDecision() {
         return angle.nullDecision();

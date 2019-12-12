@@ -51,7 +51,7 @@ public class JigDocumentHandlers {
                             .toArray();
                     Object result = method.invoke(handler, args);
 
-                    if (result instanceof  JigModelAndView) {
+                    if (result instanceof JigModelAndView) {
                         return (JigModelAndView<?>) result;
                     }
 

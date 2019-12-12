@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
-import org.dddjava.jig.domain.model.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

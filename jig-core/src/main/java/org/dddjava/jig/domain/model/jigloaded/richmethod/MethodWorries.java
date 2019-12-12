@@ -25,7 +25,7 @@ public class MethodWorries {
 
     public boolean contains(MethodWorry... methodWorries) {
         for (MethodWorry methodWorry : methodWorries) {
-           if (list.contains(methodWorry)) return true;
+            if (list.contains(methodWorry)) return true;
         }
         return false;
     }

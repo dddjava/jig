@@ -1,14 +1,14 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
-import org.dddjava.jig.domain.model.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigloaded.structure.PackageStructure;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.jigloaded.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloaded.notice.Warning;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.Warning;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigpresentation.structure.PackageStructure;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.springframework.stereotype.Service;
 

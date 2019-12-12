@@ -1,8 +1,10 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
-import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.interpret.alias.*;
 import org.dddjava.jig.domain.model.interpret.architecture.Architecture;
 import org.dddjava.jig.domain.model.interpret.architecture.IsBusinessRule;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -10,7 +12,9 @@ import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
-import org.dddjava.jig.presentation.controller.*;
+import org.dddjava.jig.presentation.controller.BusinessRuleListController;
+import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
@@ -43,7 +47,22 @@ public class Configuration {
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
-        AliasFinder aliasFinder = new AliasFinder.GlossaryServiceAdapter(aliasService);
+        AliasFinder aliasFinder = new AliasFinder() {
+            @Override
+            public PackageAlias find(PackageIdentifier packageIdentifier) {
+                return aliasService.packageAliasOf(packageIdentifier);
+            }
+
+            @Override
+            public TypeAlias find(TypeIdentifier typeIdentifier) {
+                return aliasService.typeAliasOf(typeIdentifier);
+            }
+
+            @Override
+            public MethodAlias find(MethodIdentifier methodIdentifier) {
+                return aliasService.methodAliasOf(methodIdentifier);
+            }
+        };
         ViewResolver viewResolver = new ViewResolver(
                 aliasFinder,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
@@ -51,7 +70,7 @@ public class Configuration {
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 prefixRemoveIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
-        BusinessRuleListController businessRuleListController= new BusinessRuleListController(
+        BusinessRuleListController businessRuleListController = new BusinessRuleListController(
                 prefixRemoveIdentifierFormatter,
                 aliasService,
                 applicationService,

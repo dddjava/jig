@@ -1,4 +1,4 @@
 /**
- * 情報源
+ * ソースコード
  */
 package org.dddjava.jig.domain.model.jigsource.source;

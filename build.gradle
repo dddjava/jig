@@ -184,7 +184,7 @@ project(':jig-core') {
         expand(version: version)
     }
 
-    [compileJava, processResources].each { it.mustRunAfter(clean) }
+    [compileJava, processResources]*.mustRunAfter(clean)
     jigReports.dependsOn(clean, classes)
 }
 

@@ -184,7 +184,7 @@ project(':jig-core') {
         expand(version: version)
     }
 
-    classes.dependsOn(clean)
+    compileJava.dependsOn(clean)
     jigReports.dependsOn(classes)
 }
 

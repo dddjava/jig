@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.datasource;
+package org.dddjava.jig.domain.model.jigloaded.datasource;
 
 /**
  * SQL

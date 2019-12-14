@@ -48,7 +48,7 @@ public class GraphvizjView<T> implements JigView<T> {
         }
     }
 
-    public void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {
+    public static void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {
         // graphvizがインストールされていることを GraphvizCmdLineEngine#doInit で確認する
         try {
             Method doInit = GraphvizCmdLineEngine.class.getDeclaredMethod("doInit");

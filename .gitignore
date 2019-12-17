@@ -15,3 +15,4 @@ project/target
 .cache-main
 .envrc
 bin/
+.DS_Store

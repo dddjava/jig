@@ -11,14 +11,24 @@ public class SourceCodeAliasReader {
 
     JavaSourceAliasReader javaSourceAliasReader;
     KotlinSourceAliasReader kotlinSourceAliasReader;
+    ScalaSourceAliasReader scalaSourceAliasReader;
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> TypeAliases.empty());
+        this(javaSourceAliasReader, sources -> TypeAliases.empty(), sources -> TypeAliases.empty());
     }
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
+        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> TypeAliases.empty());
+    }
+
+    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+        this(javaSourceAliasReader, sources -> TypeAliases.empty(), scalaSourceAliasReader);
+    }
+
+    private SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
         this.javaSourceAliasReader = javaSourceAliasReader;
         this.kotlinSourceAliasReader = kotlinSourceAliasReader;
+        this.scalaSourceAliasReader = scalaSourceAliasReader;
     }
 
     public PackageAliases readPackages(PackageInfoSources packageInfoSources) {

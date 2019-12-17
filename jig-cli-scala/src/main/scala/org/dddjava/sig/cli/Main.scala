@@ -11,7 +11,7 @@ import scala.jdk.CollectionConverters._
 object Main extends App {
   private val LOGGER = LoggerFactory.getLogger("Main")
 
-  private val cliConfig = CliConfig()
+  private val cliConfig = ScalaCliConfig()
 
   private val jigMessages   = Utf8ResourceBundle.messageBundle()
   private val jigDocuments  = cliConfig.jigDocuments()

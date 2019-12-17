@@ -15,7 +15,7 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader
 
 import scala.jdk.CollectionConverters._
 
-case class CliConfig() {
+case class ScalaCliConfig() {
 
   private val config = ConfigFactory.load()
   private val documentTypeText    = config.getString("documentType")

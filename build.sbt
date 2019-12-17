@@ -23,10 +23,10 @@ lazy val `jig-core` = (project in file("./jig-core"))
     )
   )
 
-lazy val `sig-cli` = (project in file("./sig-cli"))
+lazy val `jig-cli-scala` = (project in file("./jig-cli-scala"))
   .settings(coreSettings)
   .settings(
-    name := "sig-cli"
+    name := "jig-cli-scala"
   )
   .dependsOn(`jig-core`)
 
@@ -35,4 +35,4 @@ lazy val root = (project in file("."))
   .settings(
     name := s"$baseName"
   )
-  .aggregate(`jig-core`, `sig-cli`)
+  .aggregate(`jig-core`, `jig-cli-scala`)

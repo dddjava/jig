@@ -45,7 +45,6 @@ object Main extends App {
       LOGGER
         .warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey))
     }
-    throw new RuntimeException("implementation.warning")
   }
 
   private val outputDirectory: Path = cliConfig.outputDirectory()

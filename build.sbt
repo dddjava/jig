@@ -26,7 +26,10 @@ lazy val `jig-core` = (project in file("./jig-core"))
 lazy val `jig-cli-scala` = (project in file("./jig-cli-scala"))
   .settings(coreSettings)
   .settings(
-    name := "jig-cli-scala"
+    name := "jig-cli-scala",
+    libraryDependencies ++= Seq(
+      "com.typesafe" % "config" % "1.4.0"
+    )
   )
   .dependsOn(`jig-core`)
 

@@ -1,31 +1,33 @@
 package org.dddjava.sig.cli
 
-import java.io.{ IOException, UncheckedIOException }
-import java.nio.file.{ Files, Path, Paths }
+import java.io.{IOException, UncheckedIOException}
+import java.nio.file.{Files, Path, Paths}
 import java.util.StringJoiner
 
-import org.dddjava.jig.domain.model.diagram.JigDocument
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths
-import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader
-import org.dddjava.jig.infrastructure.configuration.{ Configuration, JigProperties, OutputOmitPrefix }
+import com.typesafe.config.ConfigFactory
+import org.dddjava.jig.domain.model.jigdocument.JigDocument
+import org.dddjava.jig.domain.model.jigloaded.alias.SourceCodeAliasReader
+import org.dddjava.jig.domain.model.jigsource.source.SourcePaths
+import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths
+import org.dddjava.jig.infrastructure.configuration.{Configuration, JigProperties, OutputOmitPrefix}
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader
 
 import scala.jdk.CollectionConverters._
 
 case class CliConfig() {
 
-  private val documentTypeText    = ""
-  private val outputDirectoryText = "./build/jig"
+  private val config = ConfigFactory.load()
+  private val documentTypeText    = config.getString("documentType")
+  private val outputDirectoryText = config.getString("outputDirectory")
 
-  private val outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\."
-  private val modelPattern     = ".+\\.domain\\.(model|type)\\..+"
+  private val outputOmitPrefix = config.getString("output.omit.prefix")
+  private val modelPattern     = config.getString("jig.model.pattern")
 
-  private val projectPath        = "/Users/yoshiyoshifujii/workspace/git/dddjava/Jig/jig-core"
-  private val directoryClasses   = "build/classes/java/main"
-  private val directoryResources = "build/resources/main"
-  private val directorySources   = "src/main/java"
+  private val projectPath        = config.getString("project.path")
+  private val directoryClasses   = config.getString("directory.classes")
+  private val directoryResources = config.getString("directory.resources")
+  private val directorySources   = config.getString("directory.sources")
 
   def propertiesText(): String =
     new StringJoiner("\n")

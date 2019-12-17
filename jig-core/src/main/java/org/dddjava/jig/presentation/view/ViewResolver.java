@@ -1,13 +1,13 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.architectures.ArchitectureAngle;
-import org.dddjava.jig.domain.model.businessrules.BusinessRuleNetwork;
-import org.dddjava.jig.domain.model.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.interpret.alias.AliasFinder;
-import org.dddjava.jig.domain.model.interpret.relation.packages.PackageNetwork;
-import org.dddjava.jig.domain.model.interpret.structure.PackageStructure;
-import org.dddjava.jig.domain.model.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
+import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.jigpresentation.structure.PackageStructure;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 
 public class ViewResolver {

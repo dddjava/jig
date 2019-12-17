@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.repositories.DatasourceAngles;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;

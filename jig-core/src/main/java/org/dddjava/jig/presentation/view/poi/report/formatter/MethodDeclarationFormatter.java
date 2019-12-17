@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.poi.report.formatter;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.text.Text;
-import org.dddjava.jig.domain.model.interpret.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

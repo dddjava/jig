@@ -1,12 +1,12 @@
 package testing;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.Sources;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
-import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloaded.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.Sources;
+import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -52,7 +52,8 @@ public class JigTestExtension implements ParameterResolver {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
         if (parameterContext.getParameter().getType() == Sources.class) return getTestRawSource();
-        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class) return getAnalyzedImplementation();
+        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class)
+            return getAnalyzedImplementation();
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 try {

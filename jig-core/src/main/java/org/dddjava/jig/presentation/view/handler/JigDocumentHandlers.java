@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.ClassListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
@@ -51,7 +51,7 @@ public class JigDocumentHandlers {
                             .toArray();
                     Object result = method.invoke(handler, args);
 
-                    if (result instanceof  JigModelAndView) {
+                    if (result instanceof JigModelAndView) {
                         return (JigModelAndView<?>) result;
                     }
 

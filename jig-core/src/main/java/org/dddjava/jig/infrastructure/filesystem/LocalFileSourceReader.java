@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.filesystem;
 
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.SourceReader;
-import org.dddjava.jig.domain.model.implementation.source.Sources;
-import org.dddjava.jig.domain.model.implementation.source.binary.*;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSource;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourceFile;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSources;
-import org.dddjava.jig.domain.model.implementation.source.code.javacode.*;
-import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSource;
-import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSourceFile;
-import org.dddjava.jig.domain.model.implementation.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.SourceReader;
+import org.dddjava.jig.domain.model.jigsource.source.Sources;
+import org.dddjava.jig.domain.model.jigsource.source.binary.*;
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSource;
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourceFile;
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.javacode.*;
+import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSource;
+import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSourceFile;
+import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

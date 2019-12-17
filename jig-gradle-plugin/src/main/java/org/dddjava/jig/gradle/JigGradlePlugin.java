@@ -16,5 +16,9 @@ public class JigGradlePlugin implements Plugin<Project> {
         JigReportsTask jigReports = tasks.create("jigReports", JigReportsTask.class);
         jigReports.setGroup("JIG");
         jigReports.setDescription("Generates JIG documentation for the main source code.");
+
+        VerifyJigEnvironmentTask verifyTask = tasks.create("verifyJigEnvironment", VerifyJigEnvironmentTask.class);
+        verifyTask.setGroup("JIG");
+        verifyTask.setDescription("Verify JIG environment.");
     }
 }

@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
-import org.dddjava.jig.domain.model.diagram.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 
@@ -48,7 +48,7 @@ public class GraphvizjView<T> implements JigView<T> {
         }
     }
 
-    public void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {
+    public static void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {
         // graphvizがインストールされていることを GraphvizCmdLineEngine#doInit で確認する
         try {
             Method doInit = GraphvizCmdLineEngine.class.getDeclaredMethod("doInit");

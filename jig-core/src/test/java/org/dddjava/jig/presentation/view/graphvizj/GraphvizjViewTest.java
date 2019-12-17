@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.diagram.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

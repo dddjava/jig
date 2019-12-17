@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.decisions.DecisionAngles;
-import org.dddjava.jig.domain.model.interpret.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigpresentation.decisions.DecisionAngles;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 

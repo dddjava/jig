@@ -1,14 +1,14 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.implementation.source.SourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.implementation.source.code.CodeSourcePaths;
-import org.dddjava.jig.domain.model.interpret.alias.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths;
+import org.dddjava.jig.domain.model.jigloaded.alias.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
-import org.dddjava.jig.domain.model.diagram.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

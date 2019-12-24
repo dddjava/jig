@@ -1,11 +1,12 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorry;
 import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
-import org.dddjava.jig.presentation.view.report.ReportItemFor;
-import org.dddjava.jig.presentation.view.report.ReportItemsFor;
-import org.dddjava.jig.presentation.view.report.ReportTitle;
+import org.dddjava.jig.presentation.view.report.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,23 +25,58 @@ public class ModelReport<MODEL> {
     }
 
     public <REPORT> ModelReport(String title, List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
-        this(title, pivotModels, modelReporter,
-                Arrays.stream(reportClass.getMethods())
-                        .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
-                        .flatMap(method -> {
-                            // 複数アノテーションがついていたら展開
-                            if (method.isAnnotationPresent(ReportItemsFor.class)) {
-                                return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
-                                        .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
-                            }
-
-                            // 1つだけのはそのまま
-                            ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
-                            return Stream.of(new ReportItemMethod(method, reportItemFor));
-                        })
-                        .sorted()
-                        .collect(toList())
+        this(title, pivotModels, modelReporter, collectReportItemMethods(reportClass)
         );
+    }
+
+    private static <REPORT> List<ReportItemMethod> collectReportItemMethods(Class<REPORT> reportClass) {
+        Stream<ReportItemMethod> items = Arrays.stream(reportClass.getMethods())
+                .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
+                .flatMap(method -> {
+                    // 複数アノテーションがついていたら展開
+                    if (method.isAnnotationPresent(ReportItemsFor.class)) {
+                        return Arrays.stream(method.getAnnotation(ReportItemsFor.class).value())
+                                .map(reportItemFor -> new ReportItemMethod(method, reportItemFor));
+                    }
+
+                    // 1つだけのはそのまま
+                    ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
+                    return Stream.of(new ReportItemMethod(method, reportItemFor));
+                });
+        Stream<ReportItemMethod> methodWorries = Arrays.stream(reportClass.getMethods())
+                .filter(method -> method.isAnnotationPresent(ReportMethodWorryOf.class))
+                .map(method -> new ReportItemMethod(method, generateReportItemForInstance(method)));
+        return Stream.concat(items, methodWorries)
+                .sorted()
+                .collect(toList());
+    }
+
+    private static ReportItemFor generateReportItemForInstance(Method method) {
+        ReportMethodWorryOf reportMethodWorryOf = method.getAnnotation(ReportMethodWorryOf.class);
+        MethodWorry value = reportMethodWorryOf.value();
+        return new ReportItemFor() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return ReportItemFor.class;
+            }
+
+            @Override
+            public ReportItem value() {
+                return ReportItem.汎用真偽値;
+            }
+
+            @Override
+            public int order() {
+                // とりあえず後ろにしておく
+                return 100 + value.ordinal();
+            }
+
+            @Override
+            public String label() {
+                return value.toString();
+            }
+        };
     }
 
     private ModelReport(String title, List<MODEL> pivotModels, ModelReporter<?, MODEL> modelReporter, List<ReportItemMethod> reportItemMethods) {

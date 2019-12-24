@@ -2,9 +2,11 @@ package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
+import org.dddjava.jig.presentation.view.report.ReportMethodWorryOf;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
 
 @ReportTitle("注意メソッド")
@@ -29,32 +31,32 @@ public class MethodSmellReport {
         return angle.callerMethods();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "フィールド未使用", order = 1)
+    @ReportMethodWorryOf(MethodWorry.メンバを使用していない)
     public boolean notUseField() {
         return angle.notUseField();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "基本型の授受", order = 2)
+    @ReportMethodWorryOf(MethodWorry.基本型の授受を行なっている)
     public boolean primitiveInterface() {
         return angle.primitiveInterface();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "真偽値の返却", order = 3)
+    @ReportMethodWorryOf(MethodWorry.真偽値を返している)
     public boolean returnsBoolean() {
         return angle.returnsBoolean();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "voidの返却", order = 4)
+    @ReportMethodWorryOf(MethodWorry.voidを返している)
     public boolean returnsVoid() {
         return angle.returnsVoid();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "nullリテラルの使用", order = 5)
+    @ReportMethodWorryOf(MethodWorry.NULLリテラルを使用している)
     public boolean referenceNull() {
         return angle.referenceNull();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "nullによる判定", order = 6)
+    @ReportMethodWorryOf(MethodWorry.NULL判定をしている)
     public boolean nullDecision() {
         return angle.nullDecision();
     }

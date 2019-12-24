@@ -12,8 +12,8 @@ public enum MethodWorry {
     メンバを使用していない {
         @Override
         boolean judge(MethodByteCode methodByteCode) {
-            // TODO 自インスタンスに対するメソッドやフィールドのインタラクションが存在しなければtrue
-            return false;
+            return methodByteCode.usingFields().empty()
+                    && methodByteCode.usingMethods().empty();
         }
     },
     基本型の授受を行なっている {
@@ -55,6 +55,9 @@ public enum MethodWorry {
         }
     };
 
+    // TODO MethodByteCodeじゃなくMethodで判定するのが妥当
+    // スメルとしてみるのは情報源であるMethodByteCodeではなく、JIGの読み取り内容なので。
+    // 強いて言えばこのスメルはjigmodelが妥当な気もする。
     boolean judge(MethodByteCode methodByteCode) {
         return judgeDeclaration(methodByteCode.methodDeclaration());
     }

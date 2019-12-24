@@ -24,6 +24,7 @@ public class FieldDeclarations {
         return Collectors.collectingAndThen(Collectors.toList(), FieldDeclarations::new);
     }
 
+    @Deprecated
     public List<FieldDeclaration> list() {
         return list;
     }
@@ -54,5 +55,9 @@ public class FieldDeclarations {
     public FieldDeclaration onlyOneField() {
         // TODO 0個 or
         return list.get(0);
+    }
+
+    public boolean empty() {
+        return list.isEmpty();
     }
 }

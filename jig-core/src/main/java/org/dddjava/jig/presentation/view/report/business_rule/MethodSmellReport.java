@@ -32,8 +32,8 @@ public class MethodSmellReport {
     }
 
     @ReportMethodWorryOf(MethodWorry.メンバを使用していない)
-    public boolean notUseField() {
-        return angle.notUseField();
+    public boolean notUseMember() {
+        return angle.notUseMember();
     }
 
     @ReportMethodWorryOf(MethodWorry.基本型の授受を行なっている)

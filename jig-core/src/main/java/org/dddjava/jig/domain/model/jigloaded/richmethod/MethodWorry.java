@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.jigloaded.richmethod;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 
 /**
  * メソッドの気になるところ
@@ -11,9 +10,8 @@ import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 public enum MethodWorry {
     メンバを使用していない {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            return methodByteCode.usingFields().empty()
-                    && methodByteCode.usingMethods().empty();
+        boolean judge(Method method) {
+            return method.notUseMember();
         }
     },
     基本型の授受を行なっている {
@@ -25,14 +23,14 @@ public enum MethodWorry {
     },
     NULLリテラルを使用している {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            return methodByteCode.referenceNull();
+        boolean judge(Method method) {
+            return method.referenceNull();
         }
     },
     NULL判定をしている {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            return methodByteCode.judgeNull();
+        boolean judge(Method method) {
+            return method.conditionalNull();
         }
     },
     真偽値を返している {
@@ -43,9 +41,8 @@ public enum MethodWorry {
     },
     StreamAPIを使用している {
         @Override
-        boolean judge(MethodByteCode methodByteCode) {
-            UsingMethods usingMethods = new UsingMethods(methodByteCode.usingMethods());
-            return usingMethods.containsStream();
+        boolean judge(Method method) {
+            return method.usingMethods().containsStream();
         }
     },
     voidを返している {
@@ -55,11 +52,8 @@ public enum MethodWorry {
         }
     };
 
-    // TODO MethodByteCodeじゃなくMethodで判定するのが妥当
-    // スメルとしてみるのは情報源であるMethodByteCodeではなく、JIGの読み取り内容なので。
-    // 強いて言えばこのスメルはjigmodelが妥当な気もする。
-    boolean judge(MethodByteCode methodByteCode) {
-        return judgeDeclaration(methodByteCode.methodDeclaration());
+    boolean judge(Method method) {
+        return judgeDeclaration(method.declaration());
     }
 
     boolean judgeDeclaration(MethodDeclaration methodDeclaration) {

@@ -23,4 +23,8 @@ public class UsingMethods {
     public MethodDeclarations methodDeclarations() {
         return list;
     }
+
+    public boolean empty() {
+        return list.empty();
+    }
 }

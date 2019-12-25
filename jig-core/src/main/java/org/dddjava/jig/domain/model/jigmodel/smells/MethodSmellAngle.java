@@ -27,10 +27,12 @@ public class MethodSmellAngle {
         return method.declaration();
     }
 
-    public boolean notUseField() {
-        // TODO MethodWorry.メンバを使用していない を対応したらそちらに任せる
-        return !fieldDeclarations.list().isEmpty() &&
-                method.usingFields().empty();
+    public boolean notUseMember() {
+        // フィールド無しはクラスのスメル？
+        if (!fieldDeclarations.list().isEmpty()) {
+            return false;
+        }
+        return method.methodWorries().contains(MethodWorry.メンバを使用していない);
     }
 
     public boolean primitiveInterface() {
@@ -44,7 +46,7 @@ public class MethodSmellAngle {
     public boolean hasSmell() {
         // TODO このメソッドの並びと各実装がダメな感じなのでなんとかする。
         // 現状はここにメソッド追加するのと、列挙に追加するのと、判定メソッド作るのと、やってる。
-        return notUseField() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision() || returnsVoid();
+        return notUseMember() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision() || returnsVoid();
     }
 
     public boolean referenceNull() {

@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigloaded.alias;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources;
 
 /**
  * コードを使用する別名別名読み取り機
@@ -41,5 +42,9 @@ public class SourceCodeAliasReader {
 
     public TypeAliases readKotlinSources(KotlinSources kotlinSources) {
         return kotlinSourceAliasReader.readAlias(kotlinSources);
+    }
+
+    public TypeAliases readScalaSources(ScalaSources scalaSources) {
+        return scalaSourceAliasReader.readAlias(scalaSources);
     }
 }

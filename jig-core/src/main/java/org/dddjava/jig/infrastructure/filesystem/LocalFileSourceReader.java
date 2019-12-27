@@ -11,6 +11,9 @@ import org.dddjava.jig.domain.model.jigsource.source.code.javacode.*;
 import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSource;
 import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSourceFile;
 import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSource;
+import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSourceFile;
+import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,7 @@ public class LocalFileSourceReader implements SourceReader {
             try {
                 List<JavaSource> javaSources = new ArrayList<>();
                 List<KotlinSource> kotlinSources = new ArrayList<>();
+                List<ScalaSource> scalaSources = new ArrayList<>();
                 List<PackageInfoSource> packageInfoSources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
@@ -73,6 +77,7 @@ public class LocalFileSourceReader implements SourceReader {
                             CodeSourceFile codeSourceFile = new CodeSourceFile(file);
                             JavaSourceFile javaSourceFile = codeSourceFile.asJava();
                             KotlinSourceFile kotlinSourceFile = codeSourceFile.asKotlin();
+                            ScalaSourceFile scalaSourceFile = codeSourceFile.asScala();
                             if (javaSourceFile.isJava()) {
                                 JavaSource javaSource = new JavaSource(javaSourceFile, Files.readAllBytes(file));
                                 if (javaSourceFile.isPackageInfo()) {
@@ -83,6 +88,9 @@ public class LocalFileSourceReader implements SourceReader {
                             } else if (kotlinSourceFile.isKotlin()) {
                                 KotlinSource kotlinSource = new KotlinSource(kotlinSourceFile, Files.readAllBytes(file));
                                 kotlinSources.add(kotlinSource);
+                            } else if (scalaSourceFile.isScala()) {
+                                ScalaSource scalaSource = new ScalaSource(scalaSourceFile, Files.readAllBytes(file));
+                                scalaSources.add(scalaSource);
                             }
 
                             return FileVisitResult.CONTINUE;
@@ -91,7 +99,7 @@ public class LocalFileSourceReader implements SourceReader {
                         }
                     }
                 });
-                list.add(new CodeSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new PackageInfoSources(packageInfoSources)));
+                list.add(new CodeSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new ScalaSources(scalaSources), new PackageInfoSources(packageInfoSources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }

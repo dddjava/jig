@@ -4,6 +4,6 @@ import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources
 
 public interface ScalaSourceAliasReader {
 
-    TypeAliases readAlias(ScalaSources scalaSources);
+    TypeAliases readAlias(ScalaSources sources);
 
 }

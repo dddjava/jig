@@ -1,4 +1,4 @@
-package org.dddjava.sig.cli
+package org.dddjava.jig.cli
 
 import java.nio.file.Path
 

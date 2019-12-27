@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigsource.source.code.AliasSource;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources;
 import org.springframework.stereotype.Service;
 
 /**
@@ -69,6 +70,14 @@ public class AliasService {
         loadAliases(typeAliases);
     }
 
+    /**
+     * ScalaDocから別名を取り込む
+     */
+    void loadAliases(ScalaSources scalaSources) {
+        TypeAliases typeAliases = reader.readScalaSources(scalaSources);
+        loadAliases(typeAliases);
+    }
+
     private void loadAliases(TypeAliases typeAliases) {
         for (TypeAlias typeAlias : typeAliases.list()) {
             repository.register(typeAlias);
@@ -82,6 +91,7 @@ public class AliasService {
     public void loadAliases(AliasSource aliasSource) {
         loadAliases(aliasSource.javaSources());
         loadAliases(aliasSource.kotlinSources());
+        loadAliases(aliasSource.scalaSources());
         loadPackageAliases(aliasSource.packageInfoSources());
     }
 }

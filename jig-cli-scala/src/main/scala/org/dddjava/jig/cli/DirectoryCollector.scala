@@ -1,4 +1,4 @@
-package org.dddjava.sig.cli
+package org.dddjava.jig.cli
 
 import java.io.IOException
 import java.nio.file.attribute.BasicFileAttributes

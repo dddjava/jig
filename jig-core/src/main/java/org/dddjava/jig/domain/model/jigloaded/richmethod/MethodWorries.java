@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.jigloaded.richmethod;
 
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,15 +10,10 @@ import java.util.stream.Collectors;
 public class MethodWorries {
     List<MethodWorry> list;
 
-    MethodWorries(List<MethodWorry> list) {
-        this.list = list;
-    }
-
-    public static MethodWorries from(MethodByteCode methodByteCode) {
-        List<MethodWorry> list = Arrays.stream(MethodWorry.values())
-                .filter(methodWorry -> methodWorry.judge(methodByteCode))
+    public MethodWorries(Method method) {
+        this.list = Arrays.stream(MethodWorry.values())
+                .filter(methodWorry -> methodWorry.judge(method))
                 .collect(Collectors.toList());
-        return new MethodWorries(list);
     }
 
     public boolean contains(MethodWorry... methodWorries) {

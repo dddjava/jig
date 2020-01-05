@@ -11,6 +11,9 @@ import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
  */
 public class Method {
 
+    boolean nullDecision;
+    boolean referenceNull;
+
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
@@ -21,12 +24,13 @@ public class Method {
 
     public Method(MethodByteCode methodByteCode) {
         this.methodDeclaration = methodByteCode.methodDeclaration();
+        this.nullDecision = methodByteCode.judgeNull();
+        this.referenceNull = methodByteCode.referenceNull();
         this.decisionNumber = methodByteCode.decisionNumber();
         this.methodAnnotations = methodByteCode.annotatedMethods();
         this.accessor = methodByteCode.accessor();
         this.usingFields = new UsingFields(methodByteCode.usingFields().list());
         this.usingMethods = new UsingMethods(methodByteCode.usingMethods());
-        this.methodWorries = MethodWorries.from(methodByteCode);
     }
 
     public MethodDeclaration declaration() {
@@ -54,6 +58,18 @@ public class Method {
     }
 
     public MethodWorries methodWorries() {
-        return methodWorries;
+        return new MethodWorries(this);
+    }
+
+    public boolean conditionalNull() {
+        return nullDecision;
+    }
+
+    public boolean referenceNull() {
+        return referenceNull;
+    }
+
+    public boolean notUseMember() {
+        return usingFields().empty() && usingMethods().empty();
     }
 }

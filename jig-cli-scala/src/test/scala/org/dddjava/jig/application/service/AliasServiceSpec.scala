@@ -17,6 +17,7 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository
 import org.scalatest._
 import stub.domain.model.ScalaMethodScaladocStub.ObjectInObject.ObjectInObjectInObject
 import stub.domain.model.ScalaMethodScaladocStub.SealedTrait
+import stub.domain.model.pkg1.PackageObjectTrait
 import stub.domain.model.{ScalaMethodScaladocStub, ScalaStub}
 
 class AliasServiceSpec extends FreeSpec {
@@ -63,6 +64,9 @@ class AliasServiceSpec extends FreeSpec {
 
       val typeAlias5 = sut.typeAliasOf(new TypeIdentifier(classOf[ObjectInObjectInObject]))
       assert(typeAlias5.asText() === "Objectの中のObjectの中のObject")
+
+      val typeAlias6 = sut.typeAliasOf(new TypeIdentifier(classOf[PackageObjectTrait]))
+      assert(typeAlias6.asText() === "パッケージObjectのTrait")
     }
 
 //    "Scalaメソッドの和名取得" in {

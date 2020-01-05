@@ -35,17 +35,14 @@ class ScalametaAliasReader() extends ScalaSourceAliasReader {
         case None =>
           acc match {
             case Nil => None
-            case l   => Some(l.map {
-              case p: Pkg => s"${p.ref.syntax}."
-              case d: Defn.Class => d.name.value
-              case d: Defn.Object => s"${d.name.value}$$"
-              case d: Defn.Trait => d.name.value
-              case _ => ""
-            }.reverse.mkString(""))
+            case l =>
+              Some(
+                l.map(_.packageString).reverse.mkString("")
+              )
           }
       }
 
-    private lazy val packageName: String = recursiveGetName(Nil, parent).getOrElse("")
+    private lazy val packageName: String    = recursiveGetName(Nil, parent).getOrElse("")
     private lazy val fullName: String       = s"$packageName${tree.name}"
     lazy val typeIdentifier: TypeIdentifier = new TypeIdentifier(fullName)
     lazy val maybeAlias: Option[Alias] = doxText match {
@@ -59,6 +56,7 @@ class ScalametaAliasReader() extends ScalaSourceAliasReader {
 
     lazy val isTypeIdentifierCandidates: Boolean = tree match {
       case _: Pkg         => true
+      case _: Pkg.Object  => true
       case _: Defn.Class  => true
       case _: Defn.Object => true
       case _: Defn.Trait  => true
@@ -67,6 +65,16 @@ class ScalametaAliasReader() extends ScalaSourceAliasReader {
 
     lazy val name: String = tree match {
       case p: Pkg         => p.ref.syntax
+      case p: Pkg.Object  => p.name.value
+      case d: Defn.Class  => d.name.value
+      case d: Defn.Object => s"${d.name.value}$$"
+      case d: Defn.Trait  => d.name.value
+      case _              => ""
+    }
+
+    lazy val packageString: String = tree match {
+      case p: Pkg         => s"${p.ref.syntax}."
+      case p: Pkg.Object  => s"${p.name.value}.package$$"
       case d: Defn.Class  => d.name.value
       case d: Defn.Object => s"${d.name.value}$$"
       case d: Defn.Trait  => d.name.value

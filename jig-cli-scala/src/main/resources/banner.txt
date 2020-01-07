@@ -1,5 +1,5 @@
 ------------------------------------------------------------
-    JIG - Command Line Edition for Kotlin
+    JIG - Command Line Edition for Scala
 
         Build: ${application.version}
 ------------------------------------------------------------

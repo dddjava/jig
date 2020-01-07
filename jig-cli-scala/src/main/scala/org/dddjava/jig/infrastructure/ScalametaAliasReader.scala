@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.declaration.`type`.TypeIdentifier
 import org.dddjava.jig.domain.model.jigloaded.alias._
 import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.meta._
 import scala.meta.contrib._
 

@@ -32,6 +32,7 @@ JIGは二種類の実行方法を提供しています。使い方や設定は�
 
 - [コマンドライン](./jig-cli)
   - [Kotlin用](./jig-cli-kt)
+  - [Scala用](./jig-cli-scala)
 - [Gradleプラグイン](./jig-gradle-plugin)
 
 ### 実行環境

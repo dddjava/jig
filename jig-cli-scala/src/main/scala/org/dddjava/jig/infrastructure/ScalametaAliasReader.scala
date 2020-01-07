@@ -1,17 +1,9 @@
 package org.dddjava.jig.infrastructure
 
 import java.nio.charset.StandardCharsets
-import java.util.Collections
 
 import org.dddjava.jig.domain.model.declaration.`type`.TypeIdentifier
-import org.dddjava.jig.domain.model.jigloaded.alias.{
-  Alias,
-  JavadocAliasSource,
-  MethodAlias,
-  ScalaSourceAliasReader,
-  TypeAlias,
-  TypeAliases
-}
+import org.dddjava.jig.domain.model.jigloaded.alias._
 import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources
 
 import scala.jdk.CollectionConverters._
@@ -45,6 +37,7 @@ class ScalametaAliasReader() extends ScalaSourceAliasReader {
     private lazy val packageName: String    = recursiveGetName(Nil, parent).getOrElse("")
     private lazy val fullName: String       = s"$packageName${tree.name}"
     lazy val typeIdentifier: TypeIdentifier = new TypeIdentifier(fullName)
+
     lazy val maybeAlias: Option[Alias] = doxText match {
       case Some(DocToken(DocToken.Description, Some(name), _) :: _) => Some(new JavadocAliasSource(name).toAlias)
       case Some(DocToken(DocToken.Description, _, Some(body)) :: _) => Some(new JavadocAliasSource(body).toAlias)
@@ -119,12 +112,12 @@ class ScalametaAliasReader() extends ScalaSourceAliasReader {
           val input         = Input.Stream(scalaSource.toInputStream, StandardCharsets.UTF_8)
           val source        = parse(input)
           val documentables = extractFromTree(source)
-          val a = for {
+          val typeAliasList = for {
             documentable <- documentables
             alias        <- documentable.maybeAlias
           } yield new TypeAlias(documentable.typeIdentifier, alias)
 
-          (acc1 ::: a, acc2)
+          (acc1 ::: typeAliasList, acc2)
       }
     new TypeAliases(typeAliasList.asJava, methodAliasList.asJava)
   }

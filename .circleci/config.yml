@@ -48,6 +48,9 @@ commands:
       - store_artifacts:
           path: jig-cli-kt/build/libs
           destination: module
+      - store_artifacts:
+          path: jig-cli-scala/build/libs
+          destination: module
       - run: |
          java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example
       - store_artifacts:

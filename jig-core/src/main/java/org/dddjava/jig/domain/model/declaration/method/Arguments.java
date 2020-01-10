@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.declaration.method;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.joining;
@@ -16,6 +17,10 @@ public class Arguments {
 
     public Arguments(List<TypeIdentifier> argumentTypes) {
         this.argumentTypes = argumentTypes;
+    }
+
+    public static Arguments empty() {
+        return new Arguments(Collections.emptyList());
     }
 
     String argumentsAsText() {

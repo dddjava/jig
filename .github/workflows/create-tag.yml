@@ -1,6 +1,9 @@
 name: create weekly tag
 
-on: push
+on:
+  schedule:
+    # 毎週土曜 0:00(UTC)
+    - cron: '0 0 * * 6'
 
 jobs:
   create-tag:

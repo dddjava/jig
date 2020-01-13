@@ -1,0 +1,19 @@
+name: create weekly tag
+
+on: push
+
+jobs:
+  create-tag:
+    name: create tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v1
+      - name: calculate tag
+        run: |
+          week_of_year=$(date "+%U")
+          base_week_of_year=$(date "+%-U" --date $(date "+%Y-%m-1"))
+          week_of_month=$[ week_of_year - base_week_of_year + 1 ]
+          tag_name=$(date "+%Y.%-m.")${week_of_month}
+          git tag ${tag_name}
+          git tag

@@ -8,12 +8,12 @@ import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
  */
 public class DatasourceMethod {
     Method repositoryMethod;
-    Method datasourceMethod;
+    Method concreteMethod;
     MethodDeclarations usingMethods;
 
-    public DatasourceMethod(Method repositoryMethod, Method datasourceMethod, MethodDeclarations usingMethods) {
+    public DatasourceMethod(Method repositoryMethod, Method concreteMethod, MethodDeclarations usingMethods) {
         this.repositoryMethod = repositoryMethod;
-        this.datasourceMethod = datasourceMethod;
+        this.concreteMethod = concreteMethod;
         this.usingMethods = usingMethods;
     }
 
@@ -21,8 +21,8 @@ public class DatasourceMethod {
         return repositoryMethod;
     }
 
-    public Method datasourceMethod() {
-        return datasourceMethod;
+    public Method concreteMethod() {
+        return concreteMethod;
     }
 
     public MethodDeclarations usingMethods() {

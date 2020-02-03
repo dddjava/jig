@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingFields;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
@@ -24,8 +25,9 @@ public class ServiceReport {
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     @ReportItemFor(ReportItem.メソッド戻り値の型の別名)
     @ReportItemFor(ReportItem.メソッド引数の型の別名)
-    public MethodDeclaration method() {
-        return angle.method();
+    @ReportItemFor(ReportItem.分岐数)
+    public Method method() {
+        return angle.serviceMethod().method();
     }
 
     @ReportItemFor(ReportItem.イベントハンドラ)

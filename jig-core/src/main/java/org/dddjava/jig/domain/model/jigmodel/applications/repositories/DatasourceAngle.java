@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.datasource.SqlType;
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 
 /**
  * データソースの切り口
@@ -12,10 +13,12 @@ public class DatasourceAngle {
 
     MethodDeclaration methodDeclaration;
     Sqls sqls;
+    Method concreteMethod;
 
     public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls) {
         this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
         this.sqls = allSqls.filterRelationOn(datasourceMethod.usingMethods());
+        this.concreteMethod = datasourceMethod.concreteMethod();
     }
 
     public TypeIdentifier declaringType() {
@@ -40,5 +43,9 @@ public class DatasourceAngle {
 
     public String deleteTables() {
         return sqls.tables(SqlType.DELETE).asText();
+    }
+
+    public Method concreteMethod() {
+        return concreteMethod;
     }
 }

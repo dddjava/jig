@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -21,6 +22,11 @@ public class RepositoryReport {
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     public MethodDeclaration method() {
         return angle.method();
+    }
+
+    @ReportItemFor(value = ReportItem.分岐数)
+    public Method concreteMethod() {
+        return angle.concreteMethod();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "INSERT", order = 1)

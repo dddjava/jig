@@ -24,10 +24,12 @@ public class ServiceAngle {
 
     UsingFields usingFields;
     RepositoryMethods usingRepositoryMethods;
-    private boolean isPublic;
+    boolean isPublic;
     MethodWorries methodWorries;
+    ServiceMethod serviceMethod;
 
     ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, ControllerMethods controllerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
+        this.serviceMethod = serviceMethod;
         this.methodDeclaration = serviceMethod.methodDeclaration();
         this.usingFields = serviceMethod.methodUsingFields();
         this.isPublic = serviceMethod.isPublic();
@@ -41,6 +43,10 @@ public class ServiceAngle {
         CallerMethods callerMethods = methodRelations.callerMethodsOf(new CalleeMethod(serviceMethod.methodDeclaration()));
         this.userControllerMethods = controllerMethods.filter(callerMethods);
         this.userServiceMethods = serviceMethods.filter(callerMethods);
+    }
+
+    public ServiceMethod serviceMethod() {
+        return serviceMethod;
     }
 
     public MethodDeclaration method() {

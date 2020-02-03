@@ -35,4 +35,8 @@ public class ServiceMethod {
     public MethodWorries methodWorries() {
         return method.methodWorries();
     }
+
+    public Method method() {
+        return method;
+    }
 }

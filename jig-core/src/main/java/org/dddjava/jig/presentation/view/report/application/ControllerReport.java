@@ -20,6 +20,7 @@ public class ControllerReport {
     @ReportItemFor(ReportItem.クラス別名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
+    @ReportItemFor(ReportItem.分岐数)
     public Method method() {
         return requestHandlerMethod.method();
     }

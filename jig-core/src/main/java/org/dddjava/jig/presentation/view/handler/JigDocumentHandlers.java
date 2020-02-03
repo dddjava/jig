@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
-import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.DiagramView;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
@@ -26,13 +26,13 @@ public class JigDocumentHandlers {
 
     public JigDocumentHandlers(ViewResolver viewResolver,
                                BusinessRuleListController businessRuleListController,
-                               ClassListController classListController,
+                               ApplicationListController applicationListController,
                                DiagramController diagramController) {
         this.viewResolver = viewResolver;
         // FIXME @Controllerをスキャンするようにしたい。現状はController追加のたびにここに足す必要がある。
         this.handlers = new Object[]{
                 businessRuleListController,
-                classListController,
+                applicationListController,
                 diagramController
         };
     }

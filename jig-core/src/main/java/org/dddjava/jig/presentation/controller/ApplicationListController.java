@@ -27,16 +27,16 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
-public class ClassListController {
+public class ApplicationListController {
 
     ConvertContext convertContext;
     ApplicationService applicationService;
     BusinessRuleService businessRuleService;
 
-    public ClassListController(TypeIdentifierFormatter typeIdentifierFormatter,
-                               AliasService aliasService,
-                               ApplicationService applicationService,
-                               BusinessRuleService businessRuleService) {
+    public ApplicationListController(TypeIdentifierFormatter typeIdentifierFormatter,
+                                     AliasService aliasService,
+                                     ApplicationService applicationService,
+                                     BusinessRuleService businessRuleService) {
         this.convertContext = new ConvertContext(aliasService, typeIdentifierFormatter);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;

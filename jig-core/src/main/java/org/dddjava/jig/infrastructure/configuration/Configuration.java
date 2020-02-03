@@ -13,7 +13,7 @@ import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
-import org.dddjava.jig.presentation.controller.ClassListController;
+import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
@@ -76,7 +76,7 @@ public class Configuration {
                 applicationService,
                 businessRuleService
         );
-        ClassListController classListController = new ClassListController(
+        ApplicationListController applicationListController = new ApplicationListController(
                 prefixRemoveIdentifierFormatter,
                 aliasService,
                 applicationService,
@@ -96,7 +96,7 @@ public class Configuration {
         this.documentHandlers = new JigDocumentHandlers(
                 viewResolver,
                 businessRuleListController,
-                classListController,
+                applicationListController,
                 diagramController
         );
     }

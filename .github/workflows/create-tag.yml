@@ -1,4 +1,4 @@
-name: create weekly tag
+name: create weekly release tag
 
 on:
   schedule:
@@ -18,5 +18,9 @@ jobs:
           base_week_of_year=$(date "+%-U" --date $(date "+%Y-%m-1"))
           week_of_month=$[ week_of_year - base_week_of_year + 1 ]
           tag_name=$(date "+%Y.%-m.")${week_of_month}
+          echo new tag ${tag_name}
+      - name: create and push tag
           git tag ${tag_name}
-          git tag
+          push_url="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}"
+          git push ${push_url} ${tag_name}
+

@@ -9,9 +9,6 @@ import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.DecisionAngle;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.DecisionAngles;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -21,10 +18,7 @@ import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
-import org.dddjava.jig.presentation.view.report.branch.DecisionReport;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Controller
 public class ApplicationListController {
@@ -53,18 +47,6 @@ public class ApplicationListController {
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
-    @DocumentMapping(JigDocument.BranchList)
-    public JigModelAndView<ModelReports> branchList(AnalyzedImplementation implementations) {
-        DecisionAngles decisionAngles = applicationService.decision(implementations);
-        ModelReports modelReports = new ModelReports(
-                decisionReport(decisionAngles.listPresentations(), ApplicationLayer.PRESENTATION),
-                decisionReport(decisionAngles.listApplications(), ApplicationLayer.APPLICATION),
-                decisionReport(decisionAngles.listInfrastructures(), ApplicationLayer.INFRASTRUCTURE)
-        );
-
-        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
-    }
-
     ModelReport<?> controllerReport(AnalyzedImplementation implementations) {
         ControllerMethods controllerMethods = applicationService.controllerAngles(implementations);
 
@@ -85,9 +67,4 @@ public class ApplicationListController {
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles(implementations);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
-
-    ModelReport<?> decisionReport(List<DecisionAngle> decisionAngles, ApplicationLayer applicationLayer) {
-        return new ModelReport<>(applicationLayer.name(), decisionAngles, DecisionReport::new, DecisionReport.class);
-    }
-
 }

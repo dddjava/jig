@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigmodel.applications.repositories.Datasourc
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.DecisionAngles;
 import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
@@ -84,12 +83,5 @@ public class ApplicationService {
      */
     public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
         return new StringComparingCallerMethods(new MethodRelations(analyzedImplementation.typeByteCodes()));
-    }
-
-    /**
-     * 分岐箇所を分析する
-     */
-    public DecisionAngles decision(AnalyzedImplementation analyzedImplementation) {
-        return new DecisionAngles(analyzedImplementation.typeByteCodes(), architecture);
     }
 }

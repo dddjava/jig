@@ -38,7 +38,14 @@ public class ArchitectureAngle {
 
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ArchitectureDiagram) + "\";")
-                .add(Node.DEFAULT);
+                .add("{")
+                .add(Node.DEFAULT)
+                .add(new Node("domain").asText())
+                .add(new Node("presentation").asText())
+                .add(new Node("application").asText())
+                .add(new Node("infrastructure").asText())
+                .add("}")
+                .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
         RelationText relationText = architectureRelation.toRelationText();
         graph.add(relationText.asText());
         return new DotText(graph.toString());

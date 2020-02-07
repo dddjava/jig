@@ -52,6 +52,6 @@ public class ViewResolver {
     }
 
     public JigView<ArchitectureAngle> architecture() {
-        return newGraphvizjView(model -> new DotTexts(model.dotText(JigDocumentContext.getInstance())));
+        return newGraphvizjView(model -> model.dotText(JigDocumentContext.getInstance()));
     }
 }

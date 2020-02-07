@@ -21,7 +21,7 @@ public class GraphvizjView<T> implements JigView<T> {
 
     @Override
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
-        DotTexts dotTexts = editor.edit(model);
+        DotTexts dotTexts = editor.dotTexts(model);
 
         if (dotTexts.isEmpty()) {
             jigDocumentWriter.skip();

@@ -18,8 +18,7 @@ public class BooleanServiceTraceDiagram implements DotTextEditor<ServiceAngles> 
     }
 
     @Override
-    public DotTexts edit(ServiceAngles model) {
-        DotText dotText = model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
-        return new DotTexts(dotText);
+    public DotText edit(ServiceAngles model) {
+        return model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
     }
 }

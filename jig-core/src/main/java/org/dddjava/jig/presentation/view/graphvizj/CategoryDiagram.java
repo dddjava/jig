@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
+import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
@@ -18,7 +19,7 @@ public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
     }
 
     @Override
-    public DotTexts edit(CategoryAngles categoryAngles) {
-        return new DotTexts(categoryAngles.valuesDotText(jigDocumentContext, aliasFinder));
+    public DotText edit(CategoryAngles categoryAngles) {
+        return categoryAngles.valuesDotText(jigDocumentContext, aliasFinder);
     }
 }

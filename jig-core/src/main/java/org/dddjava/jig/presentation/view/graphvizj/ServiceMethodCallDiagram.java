@@ -18,8 +18,7 @@ public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
     }
 
     @Override
-    public DotTexts edit(ServiceAngles serviceAngles) {
-        DotText dotText = serviceAngles.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle);
-        return new DotTexts(dotText);
+    public DotText edit(ServiceAngles serviceAngles) {
+        return serviceAngles.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle);
     }
 }

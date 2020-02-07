@@ -16,8 +16,7 @@ public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
     }
 
     @Override
-    public DotTexts edit(CategoryAngles categoryAngles) {
-        DotText dotText = categoryAngles.toUsageDotText(aliasFinder, jigDocumentContext);
-        return new DotTexts(dotText);
+    public DotText edit(CategoryAngles categoryAngles) {
+        return categoryAngles.toUsageDotText(aliasFinder, jigDocumentContext);
     }
 }

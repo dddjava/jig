@@ -28,7 +28,12 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     @Override
-    public DotTexts edit(PackageNetwork packageNetwork) {
+    public DotText edit(PackageNetwork model) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DotTexts dotTexts(PackageNetwork packageNetwork) {
         List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
 
         List<DotText> dotTexts = depths.stream()

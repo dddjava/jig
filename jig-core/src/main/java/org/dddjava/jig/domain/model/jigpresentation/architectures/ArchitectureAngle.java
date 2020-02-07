@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigpresentation.architectures;
 
-import org.dddjava.jig.application.repository.ArchitectureFactory;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigdocument.DotText;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.Node;

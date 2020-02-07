@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.repository.ArchitectureFactory;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;

@@ -16,7 +16,6 @@ public enum JigDocument {
     CategoryUsageDiagram(BusinessRuleDocument.CategoryUsageDiagram, "category-usage"),
 
     ApplicationList(ApplicationDocument.ApplicationList, "application"),
-    BranchList(ApplicationDocument.BranchList, "branches"),
     ServiceMethodCallHierarchyDiagram(ApplicationDocument.ServiceMethodCallHierarchyDiagram, "service-method-call-hierarchy"),
     BooleanServiceDiagram(ApplicationDocument.BooleanServiceDiagram, "boolean-service"),
 

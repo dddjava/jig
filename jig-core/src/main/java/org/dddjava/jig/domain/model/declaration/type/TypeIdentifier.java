@@ -79,17 +79,7 @@ public class TypeIdentifier {
     }
 
     public boolean isPrimitive() {
-        switch (value) {
-            case "int":
-            case "long":
-            case "boolean":
-            case "double":
-            case "float":
-            case "byte":
-            case "char":
-                return true;
-        }
-        return false;
+        return value.matches("(int|long|boolean|double|float|byte|char|short)(\\[\\])?");
     }
 
     public boolean isStream() {
@@ -99,5 +89,9 @@ public class TypeIdentifier {
 
     public boolean isVoid() {
         return value.equals("void");
+    }
+
+    public boolean isJavaLanguageType() {
+        return isPrimitive() || isVoid() || value.startsWith("java");
     }
 }

@@ -67,6 +67,6 @@ public class DiagramController {
 
     @DocumentMapping(JigDocument.ArchitectureDiagram)
     public ArchitectureAngle architecture(AnalyzedImplementation implementations) {
-        return new ArchitectureAngle(implementations);
+        return new ArchitectureAngle(implementations, architectureFactory);
     }
 }

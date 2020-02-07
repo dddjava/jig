@@ -80,7 +80,8 @@ public class Configuration {
         DiagramController diagramController = new DiagramController(
                 dependencyService,
                 businessRuleService,
-                applicationService
+                applicationService,
+                architectureFactory
         );
         this.implementationService = new ImplementationService(
                 new AsmByteCodeFactory(),

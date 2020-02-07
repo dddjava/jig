@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.controller;
 
+import org.dddjava.jig.application.repository.ArchitectureFactory;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
@@ -20,11 +21,13 @@ public class DiagramController {
     DependencyService dependencyService;
     BusinessRuleService businessRuleService;
     ApplicationService applicationService;
+    ArchitectureFactory architectureFactory;
 
-    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService) {
+    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, ArchitectureFactory architectureFactory) {
         this.dependencyService = dependencyService;
         this.businessRuleService = businessRuleService;
         this.applicationService = applicationService;
+        this.architectureFactory = architectureFactory;
     }
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)

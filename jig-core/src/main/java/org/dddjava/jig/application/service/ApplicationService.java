@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.infrastructure.configuration.PropertyArchitectureFactory;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +21,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationService {
 
-
     Architecture architecture;
 
-    public ApplicationService(Architecture architecture) {
-        this.architecture = architecture;
+    public ApplicationService(PropertyArchitectureFactory architecture) {
+        this.architecture = architecture.architecture();
     }
 
     /**

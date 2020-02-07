@@ -32,18 +32,13 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
-        Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        Pattern businessRulePattern = Pattern.compile(properties.getBusinessRulePattern());
-        IsBusinessRule isBusinessRule = typeByteCode -> {
-            String fqn = typeByteCode.typeIdentifier().fullQualifiedName();
-            return businessRulePattern.matcher(fqn).matches() && !compilerGeneratedClassPattern.matcher(fqn).matches();
-        };
-        Architecture architecture = new Architecture(isBusinessRule);
 
-        this.businessRuleService = new BusinessRuleService(architecture);
+        PropertyArchitectureFactory architectureFactory = new PropertyArchitectureFactory(properties);
+
+        this.businessRuleService = new BusinessRuleService(architectureFactory);
         this.dependencyService = new DependencyService(businessRuleService);
         this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
-        this.applicationService = new ApplicationService(architecture);
+        this.applicationService = new ApplicationService(architectureFactory);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.jigpresentation.structure.PackageStructure;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
 
@@ -38,11 +37,6 @@ public class DiagramController {
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
     public BusinessRuleNetwork businessRuleRelation(AnalyzedImplementation implementations) {
         return dependencyService.businessRuleNetwork(implementations);
-    }
-
-    @DocumentMapping(JigDocument.PackageTreeDiagram)
-    public PackageStructure packageTreeDiagram(AnalyzedImplementation implementations) {
-        return dependencyService.packageStructure(implementations);
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)

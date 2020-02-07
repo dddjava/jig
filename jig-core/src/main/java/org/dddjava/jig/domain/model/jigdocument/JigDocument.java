@@ -20,7 +20,6 @@ public enum JigDocument {
     BooleanServiceDiagram(ApplicationDocument.BooleanServiceDiagram, "boolean-service"),
 
     ArchitectureDiagram(ArchitectureDocument.ArchitectureDiagram, "architecture"),
-    PackageTreeDiagram(ArchitectureDocument.PackageTreeDiagram, "package-tree"),
     ;
 
     private final String documentFileName;
@@ -43,7 +42,6 @@ public enum JigDocument {
 
     public static List<JigDocument> canonical() {
         return Arrays.stream(values())
-                .filter(value -> value != PackageTreeDiagram)
                 .collect(Collectors.toList());
     }
 

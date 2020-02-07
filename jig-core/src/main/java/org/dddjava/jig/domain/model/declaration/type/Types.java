@@ -26,11 +26,4 @@ public class Types {
     public List<Type> list() {
         return list;
     }
-
-    public PackageIdentifiers packages() {
-        List<TypeIdentifier> typeIdentifiers = list.stream()
-                .map(type -> type.identifier())
-                .collect(Collectors.toList());
-        return new TypeIdentifiers(typeIdentifiers).packageIdentifiers();
-    }
 }

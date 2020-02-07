@@ -61,10 +61,10 @@ public class RoundingPackageRelations {
         }
 
         String fqn = typeIdentifier.fullQualifiedName();
-        // 3階層までに丸める
+        // 2階層までに丸める
         String[] split = fqn.split("\\.");
         String name = Arrays.stream(split)
-                .limit(split.length < 4 ? split.length - 1 : 3)
+                .limit(split.length < 3 ? split.length - 1 : 2)
                 .collect(Collectors.joining("."));
         return new PackageIdentifier(name);
     }

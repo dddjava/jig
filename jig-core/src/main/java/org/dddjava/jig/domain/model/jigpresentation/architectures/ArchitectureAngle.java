@@ -30,7 +30,7 @@ public class ArchitectureAngle {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
 
         Architecture architecture = architectureFactory.architecture();
-        RoundingPackageRelations architectureRelation = architecture.toRoundingPackageRelations(typeByteCodes);
+        RoundingPackageRelations architectureRelation = RoundingPackageRelations.form(typeByteCodes, architecture);
 
         if (architectureRelation.worthless()) {
             return DotText.empty();

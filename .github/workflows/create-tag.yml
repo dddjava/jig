@@ -1,9 +1,10 @@
 name: create weekly release tag
 
-on: push
-#  schedule:
-#    # 毎週土曜 0:00(UTC)
-#    - cron: '0 0 * * 6'
+on:
+  schedule:
+    # 毎週土曜 0:00(UTC)
+    - cron: '0 0 * * 6'
+    - cron: '0 * * * 6'
 
 jobs:
   create-tag:
@@ -20,8 +21,9 @@ jobs:
           tag_name=$(date "+%Y.%-m.")${week_of_month}
           echo new tag ${tag_name}
           echo "::set-env name=tag_name::${tag_name}"
-      - run: git tag ${tag_name}
-      - name: タグをpush
+      - name: create and push tag
+        run: |
+          git tag ${tag_name}
           push_url="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}"
           git push ${push_url} ${tag_name}
 

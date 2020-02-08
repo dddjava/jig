@@ -4,6 +4,7 @@ on:
   schedule:
     # 毎週土曜 0:00(UTC)
     - cron: '0 0 * * 6'
+    - cron: '0 * * * 6'
 
 jobs:
   create-tag:
@@ -12,13 +13,14 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v1
-      - name: calculate tag
+      - name: 日付からタグ名を作成
         run: |
           week_of_year=$(date "+%U")
           base_week_of_year=$(date "+%-U" --date $(date "+%Y-%m-1"))
           week_of_month=$[ week_of_year - base_week_of_year + 1 ]
           tag_name=$(date "+%Y.%-m.")${week_of_month}
           echo new tag ${tag_name}
+          echo "::set-env name=tag_name::${tag_name}"
       - name: create and push tag
         run: |
           git tag ${tag_name}

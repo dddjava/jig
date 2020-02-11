@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  slack: circleci/slack@3.4.2
+
 executors:
   circleci-openjdk-8-executor:
     docker:
@@ -71,6 +75,8 @@ jobs:
     executor: circleci-openjdk-8-executor
     steps:
       - build
+      - slack/notify:
+          message: This is a custom message notification
   build-java-11:
     executor: circleci-openjdk-11-executor
     steps:

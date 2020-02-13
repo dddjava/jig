@@ -52,16 +52,10 @@ public class BusinessRuleListController {
                 valuesReport(ValueKind.DATE, implementations),
                 valuesReport(ValueKind.TERM, implementations),
                 validateAnnotationReport(implementations),
-                stringComparingReport(implementations),
                 smellReport(implementations)
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
-    }
-
-    ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
-        StringComparingCallerMethods stringComparingCallerMethods = applicationService.stringComparing(implementations);
-        return new ModelReport<>(stringComparingCallerMethods.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
     ModelReport<?> packageReport(AnalyzedImplementation implementations) {

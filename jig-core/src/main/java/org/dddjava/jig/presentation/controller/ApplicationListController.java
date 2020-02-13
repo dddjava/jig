@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -18,6 +19,7 @@ import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
+import org.dddjava.jig.presentation.view.report.business_rule.StringComparingReport;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -41,7 +43,8 @@ public class ApplicationListController {
         ModelReports modelReports = new ModelReports(
                 controllerReport(implementations),
                 serviceReport(implementations),
-                datasourceReport(implementations)
+                datasourceReport(implementations),
+                stringComparingReport(implementations)
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
@@ -66,5 +69,10 @@ public class ApplicationListController {
     ModelReport<?> datasourceReport(AnalyzedImplementation implementations) {
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles(implementations);
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
+    }
+
+    ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
+        StringComparingCallerMethods stringComparingCallerMethods = applicationService.stringComparing(implementations);
+        return new ModelReport<>(stringComparingCallerMethods.list(), StringComparingReport::new, StringComparingReport.class);
     }
 }

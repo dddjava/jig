@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.repositories.Datasourc
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.infrastructure.configuration.PropertyArchitectureFactory;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
@@ -82,6 +82,6 @@ public class ApplicationService {
      * 文字列比較を分析する
      */
     public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
-        return new StringComparingCallerMethods(new MethodRelations(analyzedImplementation.typeByteCodes()));
+        return StringComparingCallerMethods.from(analyzedImplementation, architecture);
     }
 }

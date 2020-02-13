@@ -2,9 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.architecture;
 
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.relation.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.List;
 

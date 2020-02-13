@@ -39,4 +39,8 @@ public class ServiceMethod {
     public Method method() {
         return method;
     }
+
+    public boolean isCall(MethodDeclaration methodDeclaration) {
+        return method.usingMethods().methodDeclarations().contains(methodDeclaration);
+    }
 }

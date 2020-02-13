@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;

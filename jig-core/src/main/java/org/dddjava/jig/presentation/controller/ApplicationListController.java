@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigpresentation.decisions.StringComparingCallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;

@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
-import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 
 import java.util.*;
 import java.util.stream.Collectors;

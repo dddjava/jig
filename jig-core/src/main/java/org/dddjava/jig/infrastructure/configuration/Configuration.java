@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.alias.*;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigmodel.architecture.IsBusinessRule;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -17,10 +15,8 @@ import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
-import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
-
-import java.util.regex.Pattern;
 
 public class Configuration {
 

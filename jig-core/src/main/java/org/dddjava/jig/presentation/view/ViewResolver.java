@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;

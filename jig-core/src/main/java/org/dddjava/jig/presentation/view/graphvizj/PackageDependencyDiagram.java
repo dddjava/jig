@@ -33,13 +33,13 @@ public class PackageDependencyDiagram implements DotTextEditor<PackageNetwork> {
     }
 
     @Override
-    public DotTexts dotTexts(PackageNetwork packageNetwork) {
+    public DiagramSource dotTexts(PackageNetwork packageNetwork) {
         List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
 
         List<DotText> dotTexts = depths.stream()
                 .map(packageNetwork::applyDepth)
                 .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, formatter, aliasFinder))
                 .collect(toList());
-        return new DotTexts(dotTexts);
+        return new DiagramSource(dotTexts);
     }
 }

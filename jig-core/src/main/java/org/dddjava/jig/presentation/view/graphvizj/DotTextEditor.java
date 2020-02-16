@@ -6,7 +6,7 @@ public interface DotTextEditor<T> {
 
     DotText edit(T model);
 
-    default DotTexts dotTexts(T model) {
-        return new DotTexts(edit(model));
+    default DiagramSource dotTexts(T model) {
+        return new DiagramSource(edit(model));
     }
 }

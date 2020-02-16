@@ -21,9 +21,9 @@ public class GraphvizjView<T> implements JigView<T> {
 
     @Override
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
-        DotTexts dotTexts = editor.dotTexts(model);
+        DiagramSource diagramSource = editor.dotTexts(model);
 
-        if (dotTexts.isEmpty()) {
+        if (diagramSource.isEmpty()) {
             jigDocumentWriter.skip();
             return;
         }
@@ -35,7 +35,7 @@ public class GraphvizjView<T> implements JigView<T> {
 
         Graphviz.useEngine(graphvizCmdLineEngine);
 
-        for (DotText dot : dotTexts.list()) {
+        for (DotText dot : diagramSource.list()) {
             jigDocumentWriter.writeDiagram(
                     outputStream ->
                             Graphviz.fromString(dot.text())

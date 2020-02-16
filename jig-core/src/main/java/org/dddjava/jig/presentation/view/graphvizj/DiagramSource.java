@@ -6,14 +6,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DotTexts {
+/**
+ * ダイアグラムの出力情報
+ */
+public class DiagramSource {
     List<DotText> values;
 
-    public DotTexts(List<DotText> values) {
+    public DiagramSource(List<DotText> values) {
         this.values = values;
     }
 
-    public DotTexts(DotText dotText) {
+    public DiagramSource(DotText dotText) {
         this(Collections.singletonList(dotText));
     }
 

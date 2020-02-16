@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +46,9 @@ public class BusinessRuleNetwork {
             return DiagramSource.empty();
         }
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.BusinessRuleRelationDiagram);
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.BusinessRuleRelationDiagram) + "\";")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes
@@ -83,6 +83,6 @@ public class BusinessRuleNetwork {
         }
         graph.add(relationText.asText());
 
-        return new DiagramSource(DocumentName.of(JigDocument.BusinessRuleRelationDiagram), graph.toString());
+        return new DiagramSource(documentName, graph.toString());
     }
 }

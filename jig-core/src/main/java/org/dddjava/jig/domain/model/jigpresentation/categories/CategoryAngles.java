@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,9 +80,10 @@ public class CategoryAngles {
             categoryText.add(nodeText);
         }
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
         return new DiagramSource(
-                DocumentName.of(JigDocument.CategoryDiagram), new StringJoiner("\n", "graph {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
+                documentName, new StringJoiner("\n", "graph {", "}")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("layout=fdp;")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
@@ -144,8 +144,9 @@ public class CategoryAngles {
                 .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
                 .toString();
 
-        return new DiagramSource(DocumentName.of(JigDocument.CategoryUsageDiagram), new StringJoiner("\n", "digraph JIG {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryUsageDiagram) + "\";")
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
+        return new DiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
                 .add(legendText)

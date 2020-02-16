@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.*;
 
@@ -162,8 +161,9 @@ public class PackageNetwork {
                 + jigDocumentContext.label("number_of_relations") + ": " + packageRelations.number().asText() + "\\l"
                 + "\"]";
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.PackageRelationDiagram);
         String text = new StringJoiner("\n", "digraph {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.PackageRelationDiagram) + "\";")
+                .add("label=\"" + documentName.label() + "\";")
                 .add(summaryText)
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
@@ -172,8 +172,7 @@ public class PackageNetwork {
                 .toString();
         PackageDepth packageDepth = appliedDepth();
 
-        DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram, "-depth" + packageDepth.value());
-        return new DiagramSource(documentName, text, additionalText());
+        return new DiagramSource(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
     }
 
     private AdditionalText additionalText() {

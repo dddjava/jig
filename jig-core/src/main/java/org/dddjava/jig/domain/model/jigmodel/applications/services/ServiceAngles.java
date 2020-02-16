@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
 import org.dddjava.jig.presentation.view.graphvizj.MethodNodeLabelStyle;
 
 import java.util.*;
@@ -107,9 +106,10 @@ public class ServiceAngles {
                 .map(userMethod -> Node.of(userMethod).label(methodNodeLabelStyle.typeNameAndMethodName(userMethod, aliasFinder)).asText())
                 .collect(joining("\n"));
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.BooleanServiceDiagram);
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.BooleanServiceDiagram) + "\";")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")
                 .add(relationText.asText())
@@ -123,7 +123,7 @@ public class ServiceAngles {
                 .add("{").add("rank=same;").add("\"Controller Method\"").add("/* userControllerMethodsText */").add(userControllerMethodsText).add("}")
                 .toString();
 
-        return new DiagramSource(DocumentName.of(JigDocument.BooleanServiceDiagram), graphText);
+        return new DiagramSource(documentName, graphText);
     }
 
     public DiagramSource methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
@@ -180,9 +180,10 @@ public class ServiceAngles {
                                 + "}")
                 .collect(joining("\n"));
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.ServiceMethodCallHierarchyDiagram);
 
         String graphText = new StringJoiner("\n", "digraph JIG {", "}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ServiceMethodCallHierarchyDiagram) + "\";")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
                 .add(relationText.asText())
@@ -192,7 +193,7 @@ public class ServiceAngles {
                 .add(repositoryText(angles))
                 .add(legendText(jigDocumentContext))
                 .toString();
-        return new DiagramSource(DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram), graphText);
+        return new DiagramSource(documentName, graphText);
     }
 
 

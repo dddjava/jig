@@ -1,6 +1,8 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.JigDocumentContext;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
@@ -10,21 +12,21 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class JigDocumentContext {
+public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentContext.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceBundleJigDocumentContext.class);
 
     Properties jigProperties;
     ResourceBundle jigDocumentResource;
 
-    JigDocumentContext() {
+    ResourceBundleJigDocumentContext() {
         init();
     }
 
     private void init() {
         try {
             jigProperties = new Properties();
-            try (InputStream is = JigDocumentContext.class.getClassLoader().getResourceAsStream("jig.properties")) {
+            try (InputStream is = ResourceBundleJigDocumentContext.class.getClassLoader().getResourceAsStream("jig.properties")) {
                 jigProperties.load(is);
             }
             jigDocumentResource = Utf8ResourceBundle.documentBundle();
@@ -45,10 +47,11 @@ public class JigDocumentContext {
         return jigDocumentLabel(jigDocument) + " [" + version() + "]";
     }
 
-    public static JigDocumentContext getInstance() {
-        return new JigDocumentContext();
+    public static ResourceBundleJigDocumentContext getInstance() {
+        return new ResourceBundleJigDocumentContext();
     }
 
+    @Override
     public String label(String key) {
         if (jigDocumentResource.containsKey(key)) {
             return jigDocumentResource.getString(key);
@@ -60,5 +63,10 @@ public class JigDocumentContext {
 
     public String reportLabel(ReportItem reportItem) {
         return label(reportItem.key);
+    }
+
+    @Override
+    public DocumentName documentName(JigDocument jigDocument) {
+        return DocumentName.of(jigDocument, diagramLabel(jigDocument));
     }
 }

@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigmodel.relation.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
 
 import java.util.StringJoiner;
 
@@ -33,6 +32,8 @@ public class ArchitectureAngle {
             return DiagramSource.empty();
         }
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
+
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
                 .add("subgraph clusterArchitecture {")
                 .add(Node.DEFAULT)
@@ -41,10 +42,10 @@ public class ArchitectureAngle {
                 .add(new Node("application").asText())
                 .add(new Node("infrastructure").asText())
                 .add("}")
-                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.ArchitectureDiagram) + "\";")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
         RelationText relationText = architectureRelation.toRelationText();
         graph.add(relationText.asText());
-        return new DiagramSource(DocumentName.of(JigDocument.ArchitectureDiagram), graph.toString());
+        return new DiagramSource(documentName, graph.toString());
     }
 }

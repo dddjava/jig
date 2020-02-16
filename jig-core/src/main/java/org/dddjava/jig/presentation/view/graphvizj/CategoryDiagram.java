@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 
 /**
  * システムが持つEnumと列挙値の1枚絵
@@ -11,11 +11,11 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 public class CategoryDiagram implements DiagramSourceEditor<CategoryAngles> {
 
     AliasFinder aliasFinder;
-    JigDocumentContext jigDocumentContext;
+    ResourceBundleJigDocumentContext jigDocumentContext;
 
     public CategoryDiagram(AliasFinder aliasFinder) {
         this.aliasFinder = aliasFinder;
-        this.jigDocumentContext = JigDocumentContext.getInstance();
+        this.jigDocumentContext = ResourceBundleJigDocumentContext.getInstance();
     }
 
     @Override

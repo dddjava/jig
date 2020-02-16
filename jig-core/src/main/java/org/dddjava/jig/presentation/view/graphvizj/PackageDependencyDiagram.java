@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
-import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +19,12 @@ public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetw
 
     PackageIdentifierFormatter formatter;
     AliasFinder aliasFinder;
-    JigDocumentContext jigDocumentContext;
+    ResourceBundleJigDocumentContext jigDocumentContext;
 
     public PackageDependencyDiagram(PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         this.formatter = formatter;
         this.aliasFinder = aliasFinder;
-        this.jigDocumentContext = JigDocumentContext.getInstance();
+        this.jigDocumentContext = ResourceBundleJigDocumentContext.getInstance();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.presentation.view.JigDocumentContext;
+import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
 class ReportItemMethod implements Comparable<ReportItemMethod> {
@@ -18,7 +18,7 @@ class ReportItemMethod implements Comparable<ReportItemMethod> {
     }
 
     private String name() {
-        JigDocumentContext context = JigDocumentContext.getInstance();
+        ResourceBundleJigDocumentContext context = ResourceBundleJigDocumentContext.getInstance();
         return context.reportLabel(reportItemFor.value());
     }
 

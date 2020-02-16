@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-public class BusinessRuleRelationDiagram implements DiagramEditor<BusinessRuleNetwork> {
+public class BusinessRuleRelationDiagram implements DiagramSourceEditor<BusinessRuleNetwork> {
 
     PackageIdentifierFormatter packageIdentifierFormatter;
     AliasFinder aliasFinder;

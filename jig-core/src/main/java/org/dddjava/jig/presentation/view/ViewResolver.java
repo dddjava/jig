@@ -35,7 +35,7 @@ public class ViewResolver {
         return newGraphvizjView(new CategoryUsageDiagram(aliasFinder));
     }
 
-    private <T> JigView<T> newGraphvizjView(DiagramEditor<T> diagram) {
+    private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {
         return new GraphvizjView<>(diagram, diagramFormat);
     }
 

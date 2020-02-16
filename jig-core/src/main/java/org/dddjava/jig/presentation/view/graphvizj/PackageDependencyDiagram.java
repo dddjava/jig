@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class PackageDependencyDiagram implements DiagramEditor<PackageNetwork> {
+public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetwork> {
 
     static final Logger logger = LoggerFactory.getLogger(PackageDependencyDiagram.class);
 

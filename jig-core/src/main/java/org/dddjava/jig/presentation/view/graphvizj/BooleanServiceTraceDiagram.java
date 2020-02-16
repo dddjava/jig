@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-public class BooleanServiceTraceDiagram implements DiagramEditor<ServiceAngles> {
+public class BooleanServiceTraceDiagram implements DiagramSourceEditor<ServiceAngles> {
 
     AliasFinder aliasFinder;
     MethodNodeLabelStyle methodNodeLabelStyle;

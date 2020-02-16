@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.jigdocument.DotText;
 
-public interface DotTextEditor<T> {
+public interface DiagramEditor<T> {
 
     DotText edit(T model);
 

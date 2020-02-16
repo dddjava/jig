@@ -8,7 +8,7 @@ import org.dddjava.jig.presentation.view.JigDocumentContext;
 /**
  * システムが持つEnumと列挙値の1枚絵
  */
-public class CategoryDiagram implements DotTextEditor<CategoryAngles> {
+public class CategoryDiagram implements DiagramEditor<CategoryAngles> {
 
     AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;

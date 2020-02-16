@@ -11,10 +11,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class GraphvizjView<T> implements JigView<T> {
-    DotTextEditor<T> editor;
+    DiagramEditor<T> editor;
     DiagramFormat diagramFormat;
 
-    public GraphvizjView(DotTextEditor<T> editor, DiagramFormat diagramFormat) {
+    public GraphvizjView(DiagramEditor<T> editor, DiagramFormat diagramFormat) {
         this.editor = editor;
         this.diagramFormat = diagramFormat;
     }

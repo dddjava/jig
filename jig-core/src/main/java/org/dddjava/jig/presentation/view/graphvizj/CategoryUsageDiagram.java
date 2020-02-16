@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-public class CategoryUsageDiagram implements DotTextEditor<CategoryAngles> {
+public class CategoryUsageDiagram implements DiagramEditor<CategoryAngles> {
 
     AliasFinder aliasFinder;
     JigDocumentContext jigDocumentContext;

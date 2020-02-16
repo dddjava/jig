@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
 
-public class ServiceMethodCallDiagram implements DotTextEditor<ServiceAngles> {
+public class ServiceMethodCallDiagram implements DiagramEditor<ServiceAngles> {
 
     AliasFinder aliasFinder;
     MethodNodeLabelStyle methodNodeLabelStyle;

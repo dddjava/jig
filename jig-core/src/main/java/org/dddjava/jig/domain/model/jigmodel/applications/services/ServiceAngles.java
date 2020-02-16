@@ -3,10 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.applications.services;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigdocument.DotText;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.Node;
-import org.dddjava.jig.domain.model.jigdocument.RelationText;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
@@ -49,7 +46,7 @@ public class ServiceAngles {
                 .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
 
-    public DotText returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    public DiagramSource returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
         List<ServiceAngle> collect = list.stream()
                 .filter(serviceAngle -> serviceAngle.method().methodReturn().isBoolean())
                 .collect(Collectors.toList());
@@ -58,10 +55,10 @@ public class ServiceAngles {
         return booleanServiceAngles.methodTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
     }
 
-    DotText methodTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    DiagramSource methodTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
 
         if (list.isEmpty()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         // メソッド間の関連
@@ -126,12 +123,12 @@ public class ServiceAngles {
                 .add("{").add("rank=same;").add("\"Controller Method\"").add("/* userControllerMethodsText */").add(userControllerMethodsText).add("}")
                 .toString();
 
-        return new DotText(graphText);
+        return new DiagramSource(DocumentName.of(JigDocument.BooleanServiceDiagram), graphText);
     }
 
-    public DotText methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
+    public DiagramSource methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         if (list.isEmpty()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         List<ServiceAngle> angles = list();
@@ -195,7 +192,7 @@ public class ServiceAngles {
                 .add(repositoryText(angles))
                 .add(legendText(jigDocumentContext))
                 .toString();
-        return new DotText(graphText);
+        return new DiagramSource(DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram), graphText);
     }
 
 

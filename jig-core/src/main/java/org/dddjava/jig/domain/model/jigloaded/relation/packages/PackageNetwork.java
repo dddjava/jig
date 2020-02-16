@@ -9,11 +9,8 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.presentation.view.DocumentSuffix;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
-import org.dddjava.jig.presentation.view.JigDocumentWriter;
 
-import java.io.OutputStreamWriter;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
@@ -106,9 +103,9 @@ public class PackageNetwork {
         return labelText;
     }
 
-    public DotText dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         if (!available()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         PackageRelations packageRelations = packageDependencies();
@@ -174,27 +171,16 @@ public class PackageNetwork {
                 .add(stringJoiner.toString())
                 .toString();
         PackageDepth packageDepth = appliedDepth();
-        DocumentSuffix documentSuffix = new DocumentSuffix("-depth" + packageDepth.value());
 
-        return new DotText(documentSuffix, text) {
-            @Override
-            public void additionalWrite(JigDocumentWriter jigDocumentWriter) {
-                if (hasBidirectionalRelation()) {
-                    jigDocumentWriter.write(
-                            outputStream -> {
-                                try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                                    writer.write(bidirectionalRelationReasonText());
-                                }
-                            },
-                            "bidirectionalRelations-depth" + packageDepth + ".txt"
-                    );
-                }
-            }
-        };
+        DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram, "-depth" + packageDepth.value());
+        return new DiagramSource(documentName, text, additionalText());
     }
 
-    private boolean hasBidirectionalRelation() {
-        return !bidirectionalRelations().list.isEmpty();
+    private AdditionalText additionalText() {
+        if (bidirectionalRelations().list.isEmpty()) {
+            return AdditionalText.empty();
+        }
+        return new AdditionalText(bidirectionalRelationReasonText());
     }
 
     private String bidirectionalRelationReasonText() {

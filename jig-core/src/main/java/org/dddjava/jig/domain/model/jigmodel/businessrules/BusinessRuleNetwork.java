@@ -41,10 +41,10 @@ public class BusinessRuleNetwork {
         return new BusinessRuleRelations(list);
     }
 
-    public DotText relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
+    public DiagramSource relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
 
         if (businessRules.empty()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
@@ -83,6 +83,6 @@ public class BusinessRuleNetwork {
         }
         graph.add(relationText.asText());
 
-        return new DotText(graph.toString());
+        return new DiagramSource(DocumentName.of(JigDocument.BusinessRuleRelationDiagram), graph.toString());
     }
 }

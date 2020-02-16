@@ -51,9 +51,9 @@ public class CategoryAngles {
                 .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
     }
 
-    public DotText valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+    public DiagramSource valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         List<TypeIdentifier> categoryTypeIdentifiers = list.stream()
@@ -81,15 +81,15 @@ public class CategoryAngles {
             categoryText.add(nodeText);
         }
 
-        return new DotText(
-                new StringJoiner("\n", "graph {", "}")
-                        .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
-                        .add("layout=fdp;")
-                        .add("rankdir=LR;")
-                        .add(Node.DEFAULT)
-                        .add(structureText)
-                        .add(categoryText.toString())
-                        .toString());
+        return new DiagramSource(
+                DocumentName.of(JigDocument.CategoryDiagram), new StringJoiner("\n", "graph {", "}")
+                .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryDiagram) + "\";")
+                .add("layout=fdp;")
+                .add("rankdir=LR;")
+                .add(Node.DEFAULT)
+                .add(structureText)
+                .add(categoryText.toString())
+                .toString());
     }
 
     private String typeNameOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
@@ -108,9 +108,9 @@ public class CategoryAngles {
         return typeIdentifier.asSimpleText();
     }
 
-    public DotText toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
+    public DiagramSource toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         TypeIdentifiers enumTypes = list.stream()
@@ -144,7 +144,7 @@ public class CategoryAngles {
                 .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
                 .toString();
 
-        return new DotText(new StringJoiner("\n", "digraph JIG {", "}")
+        return new DiagramSource(DocumentName.of(JigDocument.CategoryUsageDiagram), new StringJoiner("\n", "digraph JIG {", "}")
                 .add("label=\"" + jigDocumentContext.diagramLabel(JigDocument.CategoryUsageDiagram) + "\";")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)

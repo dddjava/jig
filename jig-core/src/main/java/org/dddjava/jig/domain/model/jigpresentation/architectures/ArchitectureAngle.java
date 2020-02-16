@@ -1,12 +1,9 @@
 package org.dddjava.jig.domain.model.jigpresentation.architectures;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
-import org.dddjava.jig.domain.model.jigdocument.DotText;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.Node;
-import org.dddjava.jig.domain.model.jigdocument.RelationText;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigmodel.relation.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
@@ -26,14 +23,14 @@ public class ArchitectureAngle {
         this.architectureFactory = architectureFactory;
     }
 
-    public DotText dotText(JigDocumentContext jigDocumentContext) {
+    public DiagramSource dotText(JigDocumentContext jigDocumentContext) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
 
         Architecture architecture = architectureFactory.architecture();
         RoundingPackageRelations architectureRelation = RoundingPackageRelations.form(typeByteCodes, architecture);
 
         if (architectureRelation.worthless()) {
-            return DotText.empty();
+            return DiagramSource.empty();
         }
 
         StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
@@ -48,6 +45,6 @@ public class ArchitectureAngle {
                 .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
         RelationText relationText = architectureRelation.toRelationText();
         graph.add(relationText.asText());
-        return new DotText(graph.toString());
+        return new DiagramSource(DocumentName.of(JigDocument.ArchitectureDiagram), graph.toString());
     }
 }

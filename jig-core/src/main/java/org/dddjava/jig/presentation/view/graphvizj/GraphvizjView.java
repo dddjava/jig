@@ -3,10 +3,13 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
-import org.dddjava.jig.domain.model.jigdocument.DotText;
+import org.dddjava.jig.domain.model.jigdocument.AdditionalText;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 
+import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -21,9 +24,9 @@ public class GraphvizjView<T> implements JigView<T> {
 
     @Override
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
-        DiagramSource diagramSource = editor.editDiagramSourceFrom(model);
+        DiagramSource diagramSource = editor.edit(model);
 
-        if (diagramSource.isEmpty()) {
+        if (diagramSource.noValue()) {
             jigDocumentWriter.skip();
             return;
         }
@@ -35,16 +38,29 @@ public class GraphvizjView<T> implements JigView<T> {
 
         Graphviz.useEngine(graphvizCmdLineEngine);
 
-        for (DotText dot : diagramSource.list()) {
-            jigDocumentWriter.writeDiagram(
-                    outputStream ->
-                            Graphviz.fromString(dot.text())
-                                    .render(diagramFormat.graphvizjFormat())
-                                    .toOutputStream(outputStream),
-                    diagramFormat,
-                    dot.documentSuffix());
+        diagramSource.each(element -> writeDocument(jigDocumentWriter, element));
+    }
 
-            dot.additionalWrite(jigDocumentWriter);
+    private void writeDocument(JigDocumentWriter jigDocumentWriter, DiagramSource diagramSource) {
+        DocumentName documentName = diagramSource.documentName();
+
+        jigDocumentWriter.write(
+                outputStream ->
+                        Graphviz.fromString(diagramSource.text())
+                                .render(diagramFormat.graphvizjFormat())
+                                .toOutputStream(outputStream),
+                documentName.withExtension(diagramFormat.extension()));
+
+        AdditionalText additionalText = diagramSource.additionalText();
+        if (additionalText.enable()) {
+            jigDocumentWriter.write(
+                    outputStream -> {
+                        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                            writer.write(additionalText.value());
+                        }
+                    },
+                    documentName.withExtension("additional.txt")
+            );
         }
     }
 

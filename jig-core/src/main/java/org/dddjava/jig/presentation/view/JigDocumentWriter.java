@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.jigdocument.AdditionalText;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.slf4j.Logger;
@@ -25,11 +26,6 @@ public class JigDocumentWriter {
     public JigDocumentWriter(JigDocument jigDocument, Path directory) {
         this.jigDocument = jigDocument;
         this.directory = directory;
-    }
-
-    public void writeDiagram(OutputStreamWriter writer, DiagramFormat diagramFormat, DocumentSuffix documentSuffix) {
-        String fileName = documentSuffix.withFileNameOf(jigDocument) + "." + diagramFormat.name().toLowerCase(Locale.ENGLISH);
-        write(writer, fileName);
     }
 
     public void writeXlsx(OutputStreamWriter writer) {

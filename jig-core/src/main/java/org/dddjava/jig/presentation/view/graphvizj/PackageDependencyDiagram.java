@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.jigdocument.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
 import org.dddjava.jig.presentation.view.JigDocumentContext;
@@ -28,18 +28,14 @@ public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetw
     }
 
     @Override
-    public DotText edit(PackageNetwork model) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public DiagramSource editDiagramSourceFrom(PackageNetwork packageNetwork) {
+    public DiagramSource edit(PackageNetwork packageNetwork) {
         List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
 
-        List<DotText> dotTexts = depths.stream()
+        List<DiagramSource> diagramSources = depths.stream()
                 .map(packageNetwork::applyDepth)
                 .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, formatter, aliasFinder))
+                .filter(diagramSource -> !diagramSource.noValue())
                 .collect(toList());
-        return new DiagramSource(dotTexts);
+        return new DiagramSource(diagramSources);
     }
 }

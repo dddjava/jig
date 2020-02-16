@@ -1,12 +1,8 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.jigdocument.DotText;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 
 public interface DiagramSourceEditor<T> {
 
-    DotText edit(T model);
-
-    default DiagramSource editDiagramSourceFrom(T model) {
-        return new DiagramSource(edit(model));
-    }
+    DiagramSource edit(T model);
 }

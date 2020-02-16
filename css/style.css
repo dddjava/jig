@@ -1,0 +1,19 @@
+header {
+    border-bottom:solid 1px #999;
+}
+header h1 {
+    margin-bottom: 0;
+}
+header p {
+    font-size: 0.6em;
+    margin-top: 0;
+}
+
+body > div {
+    margin:0 auto;
+    max-width: 800px;
+}
+
+main {
+    padding-left: 20px;
+}

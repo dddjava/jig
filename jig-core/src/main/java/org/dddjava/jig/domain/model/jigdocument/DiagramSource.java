@@ -23,10 +23,9 @@ public class DiagramSource {
     }
 
     public DiagramSource(List<DiagramSource> diagramSources) {
-        DiagramSource first = diagramSources.get(0);
-        this.documentName = first.documentName;
-        this.text = first.text;
-        this.additionalText = first.additionalText;
+        this.documentName = null;
+        this.text = null;
+        this.additionalText = null;
         this.compositeDiagramSources = diagramSources;
     }
 

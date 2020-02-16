@@ -1,0 +1,8 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: echo 'no-op'
+

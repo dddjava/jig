@@ -43,7 +43,7 @@ public class DiagramSource {
     }
 
     public boolean noValue() {
-        return text == null;
+        return text == null && compositeDiagramSources.isEmpty();
     }
 
     public static DiagramSource empty() {

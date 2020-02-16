@@ -31,10 +31,10 @@ public class Configuration {
 
         PropertyArchitectureFactory architectureFactory = new PropertyArchitectureFactory(properties);
 
-        this.businessRuleService = new BusinessRuleService(architectureFactory);
+        this.businessRuleService = new BusinessRuleService(architectureFactory.architecture());
         this.dependencyService = new DependencyService(businessRuleService);
         this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
-        this.applicationService = new ApplicationService(architectureFactory);
+        this.applicationService = new ApplicationService(architectureFactory.architecture());
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

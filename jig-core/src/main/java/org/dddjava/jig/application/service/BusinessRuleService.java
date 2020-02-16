@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.infrastructure.configuration.PropertyArchitectureFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,8 +23,8 @@ public class BusinessRuleService {
 
     Architecture architecture;
 
-    public BusinessRuleService(PropertyArchitectureFactory architecture) {
-        this.architecture = architecture.architecture();
+    public BusinessRuleService(Architecture architecture) {
+        this.architecture = architecture;
     }
 
     /**

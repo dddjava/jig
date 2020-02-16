@@ -5,17 +5,18 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.alias.*;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
+import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
-import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
+import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
@@ -32,9 +33,9 @@ public class Configuration {
         PropertyArchitectureFactory architectureFactory = new PropertyArchitectureFactory(properties);
 
         this.businessRuleService = new BusinessRuleService(architectureFactory.architecture());
-        this.dependencyService = new DependencyService(businessRuleService);
+        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class));
         this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
-        this.applicationService = new ApplicationService(architectureFactory.architecture());
+        this.applicationService = new ApplicationService(architectureFactory.architecture(), new MessageLogger(ApplicationService.class));
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );

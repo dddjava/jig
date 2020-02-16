@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
@@ -7,7 +8,6 @@ import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.Warning;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DependencyService {
 
+    JigLogger jigLogger;
     BusinessRuleService businessRuleService;
 
-    public DependencyService(BusinessRuleService businessRuleService) {
+    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger) {
         this.businessRuleService = businessRuleService;
+        this.jigLogger = jigLogger;
     }
 
     /**
@@ -29,8 +31,7 @@ public class DependencyService {
         BusinessRules businessRules = businessRuleService.businessRules(analyzedImplementation);
 
         if (businessRules.empty()) {
-            MessageLogger.of(this.getClass())
-                    .warn(Warning.ビジネスルールが見つからないので出力されない通知);
+            jigLogger.warn(Warning.ビジネスルールが見つからないので出力されない通知);
             return PackageNetwork.empty();
         }
 

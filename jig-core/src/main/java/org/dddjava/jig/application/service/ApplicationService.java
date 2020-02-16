@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.Warning;
@@ -11,7 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,9 +21,11 @@ import org.springframework.stereotype.Service;
 public class ApplicationService {
 
     Architecture architecture;
+    JigLogger jigLogger;
 
-    public ApplicationService(Architecture architecture) {
+    public ApplicationService(Architecture architecture, JigLogger jigLogger) {
         this.architecture = architecture;
+        this.jigLogger = jigLogger;
     }
 
     /**
@@ -34,8 +36,7 @@ public class ApplicationService {
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
-            MessageLogger.of(this.getClass())
-                    .warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
+            jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
         }
 
         return controllerMethods;
@@ -49,8 +50,7 @@ public class ApplicationService {
         ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
-            MessageLogger.of(this.getClass())
-                    .warn(Warning.サービスメソッドが見つからないので出力されない通知);
+            jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
         ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
@@ -70,8 +70,7 @@ public class ApplicationService {
         DatasourceMethods datasourceMethods = new DatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
 
         if (datasourceMethods.empty()) {
-            MessageLogger.of(this.getClass())
-                    .warn(Warning.リポジトリが見つからないので出力されない通知);
+            jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
         }
 
         return new DatasourceAngles(datasourceMethods, analyzedImplementation.sqls());

@@ -33,7 +33,7 @@ public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetw
     }
 
     @Override
-    public DiagramSource dotTexts(PackageNetwork packageNetwork) {
+    public DiagramSource editDiagramSourceFrom(PackageNetwork packageNetwork) {
         List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
 
         List<DotText> dotTexts = depths.stream()

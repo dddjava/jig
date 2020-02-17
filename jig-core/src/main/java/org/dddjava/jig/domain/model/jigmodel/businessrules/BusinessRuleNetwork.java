@@ -25,21 +25,6 @@ public class BusinessRuleNetwork {
         this.classRelations = classRelations;
     }
 
-    public List<BusinessRulePackage> groups() {
-        BusinessRulePackages businessRulePackages = businessRules.businessRulePackages();
-        return businessRulePackages.list;
-    }
-
-    public BusinessRuleRelations relations() {
-        List<BusinessRuleRelation> list = new ArrayList<>();
-        for (ClassRelation classRelation : classRelations.list()) {
-            if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
-                list.add(new BusinessRuleRelation(classRelation));
-            }
-        }
-        return new BusinessRuleRelations(list);
-    }
-
     public DiagramSource relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
 
         if (businessRules.empty()) {
@@ -52,7 +37,8 @@ public class BusinessRuleNetwork {
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes
-        List<BusinessRulePackage> list = groups();
+        List<BusinessRulePackage> list = businessRules.businessRulePackages().list;
+
         for (BusinessRulePackage businessRulePackage : list) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
@@ -76,9 +62,15 @@ public class BusinessRuleNetwork {
         }
 
         // relations
-        BusinessRuleRelations relations = relations();
+        List<BusinessRuleRelation> businessRuleRelations = new ArrayList<>();
+        for (ClassRelation classRelation : classRelations.list()) {
+            if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
+                businessRuleRelations.add(new BusinessRuleRelation(classRelation));
+            }
+        }
+
         RelationText relationText = new RelationText();
-        for (BusinessRuleRelation relation : relations.list()) {
+        for (BusinessRuleRelation relation : businessRuleRelations) {
             relationText.add(relation.from(), relation.to());
         }
         graph.add(relationText.asText());

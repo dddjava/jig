@@ -80,6 +80,24 @@ jobs:
     executor: circleci-openjdk-8-executor
     steps:
       - build-release
+  update-bucket:
+    docker:
+      - image: irof/gam:latest
+    steps:
+      - restore_cache:
+          key: gradle-dependencies-{{ checksum "build.gradle" }}
+      - checkout
+      - run:
+          name: compile jig-core
+          command: gradle :jig-core:build -x test
+      - run:
+          name: documentation with jig-cli
+          command: |
+            cd jig-core
+            jig
+      - run:
+          name: upload s3
+          command: aws s3 sync build/jig ${AWS_S3_URL}/jig-master
 
 workflows:
   version: 2
@@ -90,6 +108,9 @@ workflows:
             branches:
               only: 'master'
       - build-java-11:
+          requires:
+            - build-java-8
+      - update-bucket:
           requires:
             - build-java-8
   release:

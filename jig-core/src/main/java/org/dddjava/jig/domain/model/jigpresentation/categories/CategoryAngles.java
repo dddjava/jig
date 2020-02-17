@@ -81,7 +81,7 @@ public class CategoryAngles {
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
-        return new DiagramSource(
+        return DiagramSource.createDiagramSource(
                 documentName, new StringJoiner("\n", "graph {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("layout=fdp;")
@@ -145,7 +145,7 @@ public class CategoryAngles {
                 .toString();
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
-        return new DiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
+        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)

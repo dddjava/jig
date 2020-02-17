@@ -11,22 +11,30 @@ public class DiagramSource {
     AdditionalText additionalText;
     List<DiagramSource> compositeDiagramSources;
 
-    public DiagramSource(DocumentName documentName, String text) {
-        this(documentName, text, AdditionalText.empty());
-    }
-
-    public DiagramSource(DocumentName documentName, String text, AdditionalText additionalText) {
+    private DiagramSource(DocumentName documentName, String text, AdditionalText additionalText) {
         this.documentName = documentName;
         this.text = text;
         this.additionalText = additionalText;
         this.compositeDiagramSources = Collections.emptyList();
     }
 
-    public DiagramSource(List<DiagramSource> diagramSources) {
+    private DiagramSource(List<DiagramSource> diagramSources) {
         this.documentName = null;
         this.text = null;
         this.additionalText = null;
         this.compositeDiagramSources = diagramSources;
+    }
+
+    public static DiagramSource createDiagramSource(DocumentName documentName, String text) {
+        return new DiagramSource(documentName, text, AdditionalText.empty());
+    }
+
+    public static DiagramSource createDiagramSource(DocumentName documentName, String text, AdditionalText additionalText) {
+        return new DiagramSource(documentName, text, additionalText);
+    }
+
+    public static DiagramSource createDiagramSource(List<DiagramSource> diagramSources) {
+        return new DiagramSource(diagramSources);
     }
 
     public String text() {
@@ -47,7 +55,7 @@ public class DiagramSource {
     }
 
     public static DiagramSource empty() {
-        return new DiagramSource(null, null);
+        return createDiagramSource(null, null);
     }
 
     public void each(Consumer<DiagramSource> consumer) {

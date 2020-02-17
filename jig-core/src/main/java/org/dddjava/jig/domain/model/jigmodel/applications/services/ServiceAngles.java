@@ -122,7 +122,7 @@ public class ServiceAngles {
                 .add("{").add("rank=same;").add("\"Controller Method\"").add("/* userControllerMethodsText */").add(userControllerMethodsText).add("}")
                 .toString();
 
-        return new DiagramSource(documentName, graphText);
+        return DiagramSource.createDiagramSource(documentName, graphText);
     }
 
     public DiagramSource methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
@@ -192,7 +192,7 @@ public class ServiceAngles {
                 .add(repositoryText(angles))
                 .add(legendText(jigDocumentContext))
                 .toString();
-        return new DiagramSource(documentName, graphText);
+        return DiagramSource.createDiagramSource(documentName, graphText);
     }
 
 

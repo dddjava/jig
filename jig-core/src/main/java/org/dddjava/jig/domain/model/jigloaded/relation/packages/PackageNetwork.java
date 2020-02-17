@@ -172,7 +172,7 @@ public class PackageNetwork {
                 .toString();
         PackageDepth packageDepth = appliedDepth();
 
-        return new DiagramSource(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
+        return DiagramSource.createDiagramSource(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
     }
 
     private AdditionalText additionalText() {

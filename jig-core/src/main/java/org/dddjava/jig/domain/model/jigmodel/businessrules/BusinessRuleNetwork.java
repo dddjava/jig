@@ -75,6 +75,6 @@ public class BusinessRuleNetwork {
         }
         graph.add(relationText.asText());
 
-        return new DiagramSource(documentName, graph.toString());
+        return DiagramSource.createDiagramSource(documentName, graph.toString());
     }
 }

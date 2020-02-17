@@ -36,6 +36,6 @@ public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetw
                 .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, formatter, aliasFinder))
                 .filter(diagramSource -> !diagramSource.noValue())
                 .collect(toList());
-        return new DiagramSource(diagramSources);
+        return DiagramSource.createDiagramSource(diagramSources);
     }
 }

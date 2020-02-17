@@ -46,6 +46,6 @@ public class ArchitectureAngle {
                 .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
         RelationText relationText = architectureRelation.toRelationText();
         graph.add(relationText.asText());
-        return new DiagramSource(documentName, graph.toString());
+        return DiagramSource.createDiagramSource(documentName, graph.toString());
     }
 }

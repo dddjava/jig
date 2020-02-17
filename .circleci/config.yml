@@ -84,12 +84,16 @@ jobs:
     docker:
       - image: irof/gam:latest
     steps:
+      - checkout
       - restore_cache:
           key: gradle-dependencies-{{ checksum "build.gradle" }}
-      - checkout
       - run:
           name: compile jig-core
           command: gradle :jig-core:build -x test
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradle-dependencies-{{ checksum "build.gradle" }}
       - run:
           name: documentation with jig-cli
           command: |
@@ -97,7 +101,10 @@ jobs:
             jig
       - run:
           name: upload s3
-          command: aws s3 sync build/jig ${AWS_S3_URL}/jig-master
+          command: |
+            pwd
+            cd jig-core
+            aws s3 sync ./build/jig ${AWS_S3_URL}/jig/master
 
 workflows:
   version: 2
@@ -111,8 +118,9 @@ workflows:
           requires:
             - build-java-8
       - update-bucket:
-          requires:
-            - build-java-8
+          filters:
+            branches:
+              only: 'master'
   release:
     jobs:
       - release-build:

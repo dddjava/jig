@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
 import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
@@ -28,7 +29,7 @@ public class PackageDependencyDiagram implements DiagramSourceEditor<PackageNetw
     }
 
     @Override
-    public DiagramSource edit(PackageNetwork packageNetwork) {
+    public DiagramSources edit(PackageNetwork packageNetwork) {
         List<PackageDepth> depths = packageNetwork.maxDepth().surfaceList();
 
         List<DiagramSource> diagramSources = depths.stream()

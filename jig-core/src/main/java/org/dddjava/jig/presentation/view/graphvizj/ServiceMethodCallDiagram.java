@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
@@ -19,7 +19,7 @@ public class ServiceMethodCallDiagram implements DiagramSourceEditor<ServiceAngl
     }
 
     @Override
-    public DiagramSource edit(ServiceAngles serviceAngles) {
+    public DiagramSources edit(ServiceAngles serviceAngles) {
         return serviceAngles.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle);
     }
 }

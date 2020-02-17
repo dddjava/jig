@@ -3,9 +3,7 @@ package org.dddjava.jig.presentation.view.graphvizj;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
-import org.dddjava.jig.domain.model.jigdocument.AdditionalText;
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocument.DocumentName;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 
@@ -24,9 +22,9 @@ public class GraphvizjView<T> implements JigView<T> {
 
     @Override
     public void render(T model, JigDocumentWriter jigDocumentWriter) {
-        DiagramSource diagramSource = editor.edit(model);
+        DiagramSources diagramSources = editor.edit(model);
 
-        if (diagramSource.noValue()) {
+        if (diagramSources.noEntity()) {
             jigDocumentWriter.skip();
             return;
         }
@@ -38,7 +36,7 @@ public class GraphvizjView<T> implements JigView<T> {
 
         Graphviz.useEngine(graphvizCmdLineEngine);
 
-        diagramSource.each(element -> writeDocument(jigDocumentWriter, element));
+        diagramSources.each(element -> writeDocument(jigDocumentWriter, element));
     }
 
     private void writeDocument(JigDocumentWriter jigDocumentWriter, DiagramSource diagramSource) {

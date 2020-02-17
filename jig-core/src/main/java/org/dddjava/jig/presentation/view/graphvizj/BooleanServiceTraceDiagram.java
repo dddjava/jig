@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
@@ -19,7 +19,7 @@ public class BooleanServiceTraceDiagram implements DiagramSourceEditor<ServiceAn
     }
 
     @Override
-    public DiagramSource edit(ServiceAngles model) {
+    public DiagramSources edit(ServiceAngles model) {
         return model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
     }
 }

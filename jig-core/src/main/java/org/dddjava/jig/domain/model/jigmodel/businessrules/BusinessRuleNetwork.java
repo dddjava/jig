@@ -25,7 +25,7 @@ public class BusinessRuleNetwork {
         this.classRelations = classRelations;
     }
 
-    public DiagramSource relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
+    public DiagramSources relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
 
         if (businessRules.empty()) {
             return DiagramSource.empty();

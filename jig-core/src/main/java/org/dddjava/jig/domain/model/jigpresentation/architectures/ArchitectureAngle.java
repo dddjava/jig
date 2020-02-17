@@ -22,7 +22,7 @@ public class ArchitectureAngle {
         this.architectureFactory = architectureFactory;
     }
 
-    public DiagramSource dotText(JigDocumentContext jigDocumentContext) {
+    public DiagramSources dotText(JigDocumentContext jigDocumentContext) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
 
         Architecture architecture = architectureFactory.architecture();

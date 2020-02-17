@@ -50,7 +50,7 @@ public class CategoryAngles {
                 .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
     }
 
-    public DiagramSource valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+    public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }
@@ -108,7 +108,7 @@ public class CategoryAngles {
         return typeIdentifier.asSimpleText();
     }
 
-    public DiagramSource toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
+    public DiagramSources toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }

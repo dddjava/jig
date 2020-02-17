@@ -1,8 +1,9 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 
 public interface DiagramSourceEditor<T> {
 
-    DiagramSource edit(T model);
+    DiagramSources edit(T model);
 }

@@ -44,7 +44,7 @@ public class ServiceAngles {
                 .noneMatch(serviceAngle -> serviceAngle.method().sameIdentifier(methodDeclaration));
     }
 
-    public DiagramSource returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    public DiagramSources returnBooleanTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
         List<ServiceAngle> collect = list.stream()
                 .filter(serviceAngle -> serviceAngle.method().methodReturn().isBoolean())
                 .collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class ServiceAngles {
         return booleanServiceAngles.methodTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder);
     }
 
-    DiagramSource methodTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
+    DiagramSources methodTraceDotText(JigDocumentContext jigDocumentContext, MethodNodeLabelStyle methodNodeLabelStyle, AliasFinder aliasFinder) {
 
         if (list.isEmpty()) {
             return DiagramSource.empty();
@@ -125,7 +125,7 @@ public class ServiceAngles {
         return DiagramSource.createDiagramSource(documentName, graphText);
     }
 
-    public DiagramSource methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
+    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.graphvizj;
 
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
@@ -16,7 +16,7 @@ public class CategoryUsageDiagram implements DiagramSourceEditor<CategoryAngles>
     }
 
     @Override
-    public DiagramSource edit(CategoryAngles categoryAngles) {
+    public DiagramSources edit(CategoryAngles categoryAngles) {
         return categoryAngles.toUsageDotText(aliasFinder, jigDocumentContext);
     }
 }

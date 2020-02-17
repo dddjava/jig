@@ -104,7 +104,7 @@ public class PackageNetwork {
 
     public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         if (!available()) {
-            return DiagramSource.empty();
+            return DiagramSource.emptyUnit();
         }
 
         PackageRelations packageRelations = packageDependencies();
@@ -172,7 +172,7 @@ public class PackageNetwork {
                 .toString();
         PackageDepth packageDepth = appliedDepth();
 
-        return DiagramSource.createDiagramSource(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
+        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
     }
 
     private AdditionalText additionalText() {

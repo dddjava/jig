@@ -86,14 +86,14 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: gradle-dependencies-{{ checksum "build.gradle" }}
+          key: update-bucket-gradle-{{ checksum "build.gradle" }}
       - run:
           name: compile jig-core
           command: gradle :jig-core:build -x test
       - save_cache:
           paths:
             - ~/.gradle
-          key: gradle-dependencies-{{ checksum "build.gradle" }}
+          key: update-bucket-gradle-{{ checksum "build.gradle" }}
       - run:
           name: documentation with jig-cli
           command: |

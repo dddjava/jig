@@ -214,7 +214,7 @@ project(':jig-cli-kt') {
         implementation 'org.springframework.boot:spring-boot-starter'
         // kotlinのコメント取得: infrastructure/kotlinparser
         api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.3.70'
-        api 'org.jetbrains.kotlin:kotlin-stdlib:1.3.61'
+        api 'org.jetbrains.kotlin:kotlin-stdlib:1.3.70'
     }
 
     bootJar {

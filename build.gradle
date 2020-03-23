@@ -169,7 +169,7 @@ project(':jig-core') {
         api 'org.apache.poi:poi:4.1.2'
         api 'org.apache.poi:poi-ooxml:4.1.2'
         // ダイアグラム出力: presentation/graphvizj
-        api('guru.nidi:graphviz-java:0.10.1') {
+        api('guru.nidi:graphviz-java:0.14.2') {
             exclude group: 'com.eclipsesource.j2v8'
             exclude group: 'net.arnx', module: 'nashorn-promise'
             exclude group: 'com.google.code.findbugs'

@@ -29,4 +29,11 @@ public class TypeAlias {
     public String asText() {
         return alias.toString();
     }
+
+    public String asTextOrDefault(String defaultText) {
+        if (exists()) {
+            return asText();
+        }
+        return defaultText;
+    }
 }

@@ -45,6 +45,12 @@ public enum DiagramView {
         JigView<?> create(ViewResolver viewResolver) {
             return viewResolver.architecture();
         }
+    },
+    UseCaseAndFellows(JigDocument.UseCaseAndFellowsDiagram) {
+        @Override
+        JigView<?> create(ViewResolver viewResolver) {
+            return viewResolver.useCase();
+        }
     };
 
     final JigDocument jigDocument;

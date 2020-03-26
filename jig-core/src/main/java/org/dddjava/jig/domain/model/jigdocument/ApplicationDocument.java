@@ -36,5 +36,10 @@ public enum ApplicationDocument {
      * 真偽値を返すサービスと使用しているメソッドを可視化する。
      * 真偽値にビジネスルールが埋もれていないかの検出に使用できる。
      */
-    BooleanServiceDiagram;
+    BooleanServiceDiagram,
+
+    /**
+     * ユースケース複合図
+     */
+    UseCaseAndFellowsDiagram;
 }

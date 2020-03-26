@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellows;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 
 public class ViewResolver {
@@ -34,6 +35,10 @@ public class ViewResolver {
 
     public JigView<CategoryAngles> enumUsage() {
         return newGraphvizjView(new CategoryUsageDiagram(aliasFinder));
+    }
+
+    public JigView<UseCaseAndFellows> useCase() {
+        return newGraphvizjView(new UseCaseDiagram());
     }
 
     private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {

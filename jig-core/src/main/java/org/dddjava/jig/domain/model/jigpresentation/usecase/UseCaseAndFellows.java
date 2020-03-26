@@ -15,16 +15,16 @@ public class UseCaseAndFellows {
     }
 
     public String dotText(AliasFinder aliasFinder) {
-        String useCaseName = "\"" + useCase.useCaseIdentifier() + "\"";
-        String useCaseLabel = "\"" + useCase.useCaseLabel(aliasFinder) + "\"";
+        String useCaseIdentifier = "\"" + useCase.useCaseIdentifier() + "\"";
+        String useCaseLabel = useCase.useCaseLabel(aliasFinder);
 
         StringBuilder sb = new StringBuilder()
-                .append(useCaseName).append("[label=").append(useCaseLabel).append(",style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n");
+                .append(String.format("%s[label=\"%s\",style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n", useCaseIdentifier, useCaseLabel));
 
         // bold, headなし
         TypeIdentifier returnType = useCase.returnType();
         if (!returnType.isJavaLanguageType()) {
-            sb.append(String.format("%s -> %s[style=bold,arrowhead=none];\n", returnType.asSimpleText(), useCaseName));
+            sb.append(String.format("%s -> %s[style=bold,arrowhead=none];\n", returnType.asSimpleText(), useCaseIdentifier));
         }
 
         // dashed, headあり
@@ -32,7 +32,7 @@ public class UseCaseAndFellows {
             // returnでだしたら出力しない
             if (requireType.equals(returnType)) continue;
 
-            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseName, requireType.asSimpleText()));
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseIdentifier, requireType.asSimpleText()));
         }
 
         // dotted, headあり
@@ -42,7 +42,7 @@ public class UseCaseAndFellows {
             // requireでだしたら出力しない
             if (useCase.requireTypes().contains(usingType)) continue;
 
-            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseName, usingType.asSimpleText()));
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseIdentifier, usingType.asSimpleText()));
         }
         return sb.toString();
     }

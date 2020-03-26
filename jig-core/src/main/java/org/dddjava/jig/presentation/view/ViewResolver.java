@@ -39,7 +39,7 @@ public class ViewResolver {
     }
 
     public JigView<UseCaseAndFellowsAngle> useCase() {
-        return newGraphvizjView(new UseCaseDiagram());
+        return newGraphvizjView(new UseCaseDiagram(aliasFinder));
     }
 
     private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {

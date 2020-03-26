@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class UseCaseAndFellowsAngle {
                 .collect(Collectors.toList());
     }
 
-    public DiagramSources diagramSource() {
+    public DiagramSources diagramSource(AliasFinder aliasFinder) {
         if (list.isEmpty()) {
             return DiagramSources.empty();
         }
 
         String text = list.stream()
-                .map(useCaseAndFellows -> useCaseAndFellows.dotText())
+                .map(useCaseAndFellows -> useCaseAndFellows.dotText(aliasFinder))
                 .collect(Collectors.joining("\n", "digraph JIG {\n" +
                         "layout=fdp;\n" +
                         "node[shape=box];\n" +

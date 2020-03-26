@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 
 /**
@@ -13,9 +14,9 @@ public class UseCaseAndFellows {
         useCase = new UseCase(serviceAngle.serviceMethod());
     }
 
-    public String dotText() {
+    public String dotText(AliasFinder aliasFinder) {
         String useCaseName = "\"" + useCase.useCaseIdentifier() + "\"";
-        String useCaseLabel = "\"" + useCase.useCaseLabel() + "\"";
+        String useCaseLabel = "\"" + useCase.useCaseLabel(aliasFinder) + "\"";
 
         StringBuilder sb = new StringBuilder()
                 .append(useCaseName).append("[label=").append(useCaseLabel).append(",style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n");

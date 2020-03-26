@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 
 import java.util.List;
@@ -38,7 +40,8 @@ public class UseCase {
         return serviceMethod.methodDeclaration().asFullNameText();
     }
 
-    public String useCaseLabel() {
-        return serviceMethod.methodDeclaration().declaringType().asSimpleText() + "\\n" + serviceMethod.methodDeclaration().methodSignature().methodName();
+    public String useCaseLabel(AliasFinder aliasFinder) {
+        MethodAlias methodAlias = aliasFinder.find(serviceMethod.methodDeclaration().identifier());
+        return methodAlias.asTextOrDefault(serviceMethod.methodDeclaration().declaringType().asSimpleText() + "\\n" + serviceMethod.methodDeclaration().methodSignature().methodName());
     }
 }

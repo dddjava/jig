@@ -25,4 +25,11 @@ public class MethodAlias {
     public String asText() {
         return alias.toString();
     }
+
+    public String asTextOrDefault(String defaultText) {
+        if (alias.exists()) {
+            return asText();
+        }
+        return defaultText;
+    }
 }

@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
-import org.dddjava.jig.domain.model.jigdocument.DocumentName;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 
@@ -20,24 +17,20 @@ public class UseCaseAndFellowsAngle {
                 .collect(Collectors.toList());
     }
 
-    public DiagramSources diagramSource(AliasFinder aliasFinder) {
+    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
             return DiagramSources.empty();
         }
 
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.UseCaseAndFellowsDiagram);
         String text = list.stream()
                 .map(useCaseAndFellows -> useCaseAndFellows.dotText(aliasFinder))
                 .collect(Collectors.joining("\n", "digraph JIG {\n" +
                         "layout=fdp;\n" +
+                        "label=\"" + documentName.label() + "\";\n" +
                         "node[shape=box];\n" +
                         "", "}"));
 
-        return DiagramSource.createDiagramSource(
-                DocumentName.of(
-                        JigDocument.UseCaseAndFellowsDiagram,
-                        "ユースケース複合図"
-                ),
-                text
-        );
+        return DiagramSource.createDiagramSource(DocumentName.of(JigDocument.UseCaseAndFellowsDiagram, "ユースケース複合図"), text);
     }
 }

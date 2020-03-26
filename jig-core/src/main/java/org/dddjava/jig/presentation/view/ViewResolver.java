@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellows;
+import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.graphvizj.*;
 
 public class ViewResolver {
@@ -37,7 +38,7 @@ public class ViewResolver {
         return newGraphvizjView(new CategoryUsageDiagram(aliasFinder));
     }
 
-    public JigView<UseCaseAndFellows> useCase() {
+    public JigView<UseCaseAndFellowsAngle> useCase() {
         return newGraphvizjView(new UseCaseDiagram());
     }
 

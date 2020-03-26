@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocument.DiagramSources;
-import org.dddjava.jig.domain.model.jigdocument.DocumentName;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 
 /**
  * ユースケースと愉快な仲間たち
@@ -11,14 +8,23 @@ import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 public class UseCaseAndFellows {
     UseCase useCase;
 
-    public DiagramSources diagramSource() {
-        String text = "digraph JIG { a -> b }";
-        return DiagramSource.createDiagramSource(
-                DocumentName.of(
-                        JigDocument.UseCaseAndFellowsDiagram,
-                        "ユースケース複合図"
-                ),
-                text
-        );
+    UseCaseAndFellows(ServiceAngle serviceAngle) {
+        useCase = new UseCase(serviceAngle.serviceMethod());
+    }
+
+    public String dotText() {
+        String useCaseName = useCase.useCaseName();
+
+        StringBuilder sb = new StringBuilder()
+                .append(useCaseName)
+                .append("[style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n");
+
+        for (String relationName : useCase.listRelationTexts()) {
+            sb.append(relationName);
+            sb.append(" -- ");
+            sb.append(useCaseName);
+            sb.append(";\n");
+        }
+        return sb.toString();
     }
 }

@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellows;
+import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
 
@@ -66,7 +66,7 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.UseCaseAndFellowsDiagram)
-    public UseCaseAndFellows useCaseDiagram(AnalyzedImplementation analyzedImplementation) {
-        return new UseCaseAndFellows();
+    public UseCaseAndFellowsAngle useCaseDiagram(AnalyzedImplementation analyzedImplementation) {
+        return new UseCaseAndFellowsAngle(applicationService.serviceAngles(analyzedImplementation));
     }
 }

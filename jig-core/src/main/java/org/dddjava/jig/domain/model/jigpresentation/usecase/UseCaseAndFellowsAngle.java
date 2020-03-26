@@ -20,6 +20,10 @@ public class UseCaseAndFellowsAngle {
     }
 
     public DiagramSources diagramSource() {
+        if (list.isEmpty()) {
+            return DiagramSources.empty();
+        }
+
         String text = list.stream()
                 .map(useCaseAndFellows -> useCaseAndFellows.dotText())
                 .collect(Collectors.joining("\n", "digraph JIG {\n" +

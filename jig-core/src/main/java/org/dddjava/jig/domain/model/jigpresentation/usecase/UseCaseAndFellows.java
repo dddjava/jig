@@ -32,7 +32,7 @@ public class UseCaseAndFellows {
             // returnでだしたら出力しない
             if (requireType.equals(returnType)) continue;
 
-            sb.append(String.format("%s -> %s[style=dashed,arrowhead=normal];\n", useCaseName, requireType.asSimpleText()));
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseName, requireType.asSimpleText()));
         }
 
         // dotted, headあり
@@ -42,7 +42,7 @@ public class UseCaseAndFellows {
             // requireでだしたら出力しない
             if (useCase.requireTypes().contains(usingType)) continue;
 
-            sb.append(String.format("%s -> %s[style=dashed,arrowhead=normal];\n", useCaseName, usingType.asSimpleText()));
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=open];\n", useCaseName, usingType.asSimpleText()));
         }
         return sb.toString();
     }

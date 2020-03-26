@@ -13,11 +13,11 @@ public class UseCaseAndFellows {
     }
 
     public String dotText() {
-        String useCaseName = useCase.useCaseName();
+        String useCaseName = "\"" + useCase.useCaseIdentifier() + "\"";
+        String useCaseLabel = "\"" + useCase.useCaseLabel() + "\"";
 
         StringBuilder sb = new StringBuilder()
-                .append(useCaseName)
-                .append("[style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n");
+                .append(useCaseName).append("[label=").append(useCaseLabel).append(",style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n");
 
         for (String relationName : useCase.listRelationTexts()) {
             sb.append(relationName);

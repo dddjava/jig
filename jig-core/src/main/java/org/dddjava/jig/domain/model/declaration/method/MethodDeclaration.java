@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.declaration.method;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+
+import java.util.ArrayList;
 
 /**
  * メソッド定義
@@ -67,5 +70,12 @@ public class MethodDeclaration {
 
     public String asSimpleText() {
         return methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.methodSignature().methodName();
+    }
+
+    public TypeIdentifiers relateTypes() {
+        ArrayList<TypeIdentifier> types = new ArrayList<>();
+        types.add(methodReturn().typeIdentifier());
+        types.addAll(methodSignature().arguments());
+        return new TypeIdentifiers(types);
     }
 }

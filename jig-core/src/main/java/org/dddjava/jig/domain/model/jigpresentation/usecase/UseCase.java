@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 
 import java.util.List;
@@ -17,19 +16,22 @@ public class UseCase {
         this.serviceMethod = serviceMethod;
     }
 
-    public List<String> listRelationTexts() {
-        UsingMethods usingMethods = serviceMethod.usingMethods();
-        List<TypeIdentifier> list2 = usingMethods.methodDeclarations().list().stream()
+    List<TypeIdentifier> internalUsingTypes() {
+        List<TypeIdentifier> list = serviceMethod.usingMethods().methodDeclarations().list().stream()
                 .flatMap(methodDeclaration -> methodDeclaration.relateTypes().list().stream())
-                .collect(Collectors.toList());
-
-        return list2.stream()
                 .filter(typeIdentifier -> !typeIdentifier.isPrimitive())
                 .filter(typeIdentifier -> !typeIdentifier.isVoid())
-                .map(typeIdentifier -> typeIdentifier.asSimpleText())
-                .sorted()
                 .distinct()
                 .collect(Collectors.toList());
+        return list;
+    }
+
+    TypeIdentifier returnType() {
+        return serviceMethod.methodDeclaration().methodReturn().typeIdentifier();
+    }
+
+    List<TypeIdentifier> requireTypes() {
+        return serviceMethod.methodDeclaration().methodSignature().arguments();
     }
 
     public String useCaseIdentifier() {

@@ -22,7 +22,7 @@ public class UseCaseAndFellowsAngle {
     public DiagramSources diagramSource() {
         String text = list.stream()
                 .map(useCaseAndFellows -> useCaseAndFellows.dotText())
-                .collect(Collectors.joining("\n", "graph JIG {\n" +
+                .collect(Collectors.joining("\n", "digraph JIG {\n" +
                         "layout=fdp;\n" +
                         "node[shape=box];\n" +
                         "", "}"));

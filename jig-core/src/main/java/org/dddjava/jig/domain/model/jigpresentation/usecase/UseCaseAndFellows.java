@@ -24,11 +24,7 @@ public class UseCaseAndFellows {
         // bold, headなし
         TypeIdentifier returnType = useCase.returnType();
         if (!returnType.isJavaLanguageType()) {
-            sb.append(returnType.asSimpleText());
-            sb.append(" -> ");
-            sb.append(useCaseName);
-            sb.append("[style=bold,arrowhead=none]");
-            sb.append(";\n");
+            sb.append(String.format("%s -> %s[style=bold,arrowhead=none];\n", returnType.asSimpleText(), useCaseName));
         }
 
         // dashed, headあり
@@ -36,25 +32,17 @@ public class UseCaseAndFellows {
             // returnでだしたら出力しない
             if (requireType.equals(returnType)) continue;
 
-            sb.append(useCaseName);
-            sb.append(" -> ");
-            sb.append(requireType.asSimpleText());
-            sb.append("[style=dashed,arrowhead=normal]");
-            sb.append(";\n");
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=normal];\n", useCaseName, requireType.asSimpleText()));
         }
 
         // dotted, headあり
-        for (TypeIdentifier typeIdentifier : useCase.internalUsingTypes()) {
+        for (TypeIdentifier usingType : useCase.internalUsingTypes()) {
             // returnでだしたら出力しない
-            if (typeIdentifier.equals(returnType)) continue;
+            if (usingType.equals(returnType)) continue;
             // requireでだしたら出力しない
-            if (useCase.requireTypes().contains(typeIdentifier)) continue;
+            if (useCase.requireTypes().contains(usingType)) continue;
 
-            sb.append(useCaseName);
-            sb.append(" -> ");
-            sb.append(typeIdentifier.asSimpleText());
-            sb.append("[style=dotted,arrowhead=normal]");
-            sb.append(";\n");
+            sb.append(String.format("%s -> %s[style=dashed,arrowhead=normal];\n", useCaseName, usingType.asSimpleText()));
         }
         return sb.toString();
     }

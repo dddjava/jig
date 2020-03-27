@@ -31,6 +31,6 @@ public class UseCaseAndFellowsAngle {
                         "node[shape=box];\n" +
                         "", "}"));
 
-        return DiagramSource.createDiagramSource(DocumentName.of(JigDocument.UseCaseAndFellowsDiagram, "ユースケース複合図"), text);
+        return DiagramSource.createDiagramSource(documentName, text);
     }
 }

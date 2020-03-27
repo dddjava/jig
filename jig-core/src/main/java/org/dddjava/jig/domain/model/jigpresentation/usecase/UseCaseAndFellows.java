@@ -73,7 +73,7 @@ public class UseCaseAndFellows {
                     controllerType.fullQualifiedName(), typeAlias.asTextOrDefault(controllerType.asSimpleText())));
 
             // dotted, headあり
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", controllerType.fullQualifiedName(), useCaseIdentifier));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted,arrowhead=open];\n", controllerType.fullQualifiedName(), useCaseIdentifier));
         }
 
         return sb.toString();

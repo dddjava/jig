@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -23,17 +24,24 @@ public class UseCase {
                 .flatMap(methodDeclaration -> methodDeclaration.relateTypes().list().stream())
                 .filter(typeIdentifier -> !typeIdentifier.isPrimitive())
                 .filter(typeIdentifier -> !typeIdentifier.isVoid())
+                .filter(typeIdentifier -> !primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isPresent())
+                .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
                 .distinct()
                 .collect(Collectors.toList());
         return list;
     }
 
-    TypeIdentifier returnType() {
-        return serviceMethod.methodDeclaration().methodReturn().typeIdentifier();
+    Optional<TypeIdentifier> primaryType() {
+        TypeIdentifier typeIdentifier = serviceMethod.methodDeclaration().methodReturn().typeIdentifier();
+        if (typeIdentifier.isVoid()) return Optional.empty();
+        return Optional.of(typeIdentifier);
     }
 
     List<TypeIdentifier> requireTypes() {
-        return serviceMethod.methodDeclaration().methodSignature().arguments();
+        List<TypeIdentifier> arguments = serviceMethod.methodDeclaration().methodSignature().arguments();
+        // primaryTypeは除く
+        primaryType().ifPresent(arguments::remove);
+        return arguments;
     }
 
     public String useCaseIdentifier() {

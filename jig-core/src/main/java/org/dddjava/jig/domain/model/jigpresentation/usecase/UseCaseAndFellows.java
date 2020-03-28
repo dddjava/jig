@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,29 +35,21 @@ public class UseCaseAndFellows {
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 
         // bold, headなし
-        TypeIdentifier returnType = useCase.returnType();
-        if (!returnType.isJavaLanguageType()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=bold,arrowhead=none];\n", returnType.fullQualifiedName(), useCaseIdentifier));
-
-            otherTypes.add(returnType);
-        }
+        Optional<TypeIdentifier> primaryType = useCase.primaryType();
+        primaryType.ifPresent(typeIdentifier -> {
+                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold,arrowhead=none];\n", typeIdentifier.fullQualifiedName(), useCaseIdentifier));
+                    otherTypes.add(typeIdentifier);
+                }
+        );
 
         // dashed, headあり
         for (TypeIdentifier requireType : useCase.requireTypes()) {
-            // returnでだしたら出力しない
-            if (requireType.equals(returnType)) continue;
-
             sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, requireType.fullQualifiedName()));
             otherTypes.add(requireType);
         }
 
         // dotted, headあり
         for (TypeIdentifier usingType : useCase.internalUsingTypes()) {
-            // returnでだしたら出力しない
-            if (usingType.equals(returnType)) continue;
-            // requireでだしたら出力しない
-            if (useCase.requireTypes().contains(usingType)) continue;
-
             sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }

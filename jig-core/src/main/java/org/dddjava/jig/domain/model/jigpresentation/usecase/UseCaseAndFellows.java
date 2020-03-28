@@ -26,7 +26,7 @@ public class UseCaseAndFellows {
                 .collect(Collectors.toList());
     }
 
-    public String dotText(AliasFinder aliasFinder) {
+    String dotText(AliasFinder aliasFinder) {
         String useCaseIdentifier = useCase.useCaseIdentifier();
 
         StringBuilder sb = new StringBuilder()

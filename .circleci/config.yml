@@ -39,7 +39,7 @@ commands:
   build:
     steps:
       - pre-build
-      - run: ./gradlew --debug build
+      - run: ./gradlew build
       - post-build
   release:
     steps:

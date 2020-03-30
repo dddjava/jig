@@ -3,7 +3,19 @@
 [![CircleCI](https://circleci.com/gh/dddjava/jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/jig/tree/master)
 [![Build status](https://ci.appveyor.com/api/projects/status/yklsnjlvds0l3ka5/branch/master?svg=true)](https://ci.appveyor.com/project/irof/jig/branch/master)
 
-[JIGの紹介](https://speakerdeck.com/irof/jigfalseshao-jie)
+## 紹介
+
+JIGはバイトコードおよびソースコードから、一覧（Excel形式）やダイアグラム（SVG形式）を出力するツールです。実行には Java8以降 と [Graphviz](https://www.graphviz.org/) が必要です。
+
+- [JIGの紹介](https://speakerdeck.com/irof/jigfalseshao-jie) （スライド）
+
+## 使い方
+- [コマンドラインでの使い方](./jig-cli)
+  - [Kotlin用](./jig-cli-kt)
+- [Gradleプラグインでの使い方](./jig-gradle-plugin)
+- [チュートリアル](https://github.com/dddjava/jig-tutorial)
+
+うまく動かない場合などは [issue](https://github.com/dddjava/jig/issues/new/choose) でお問い合わせください。
 
 ## コンセプト
 
@@ -25,19 +37,6 @@
 JIGの生成する分析・設計情報をJIGドキュメントと呼びます。
 
 種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/jigdocument/JigDocument.java) を参照してください。
-
-## 使い方
-
-JIGは二種類の実行方法を提供しています。使い方や設定はそれぞれのREADMEを参照してください。
-
-- [コマンドライン](./jig-cli)
-  - [Kotlin用](./jig-cli-kt)
-- [Gradleプラグイン](./jig-gradle-plugin)
-
-### 実行環境
-
-- Java8以降。
-- ダイアグラム出力には [Graphviz](https://www.graphviz.org/) が必要です。
 
 ## LICENSE
 

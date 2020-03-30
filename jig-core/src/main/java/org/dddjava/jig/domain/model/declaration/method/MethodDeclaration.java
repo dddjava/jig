@@ -52,7 +52,7 @@ public class MethodDeclaration {
         return methodSignature().isLambda();
     }
 
-    String asSimpleTextWithDeclaringType() {
+    public String asSimpleTextWithDeclaringType() {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }
 

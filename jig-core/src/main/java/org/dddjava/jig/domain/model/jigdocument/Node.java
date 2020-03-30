@@ -89,4 +89,9 @@ public class Node {
     public Node normalColor() {
         return color("lightgoldenrod");
     }
+
+    public Node tooltip(String tooltip) {
+        attribute.add("tooltip=\"" + tooltip + "\"");
+        return this;
+    }
 }

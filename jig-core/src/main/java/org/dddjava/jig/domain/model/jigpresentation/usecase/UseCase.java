@@ -62,6 +62,7 @@ public class UseCase {
         Node node = new Node(useCaseIdentifier())
                 .shape("ellipse")
                 .label(useCaseLabel(aliasFinder))
+                .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
                 .style("filled");
         if (useController) {
             return node.handlerMethod().asText();

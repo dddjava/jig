@@ -45,7 +45,7 @@ public class Node {
         return this;
     }
 
-    private Node color(String value) {
+    Node color(String value) {
         attribute.add("fillcolor=\"" + value + "\"");
         return this;
     }
@@ -84,5 +84,9 @@ public class Node {
     public Node html(String html) {
         attribute.add("label=<" + html + ">;");
         return this;
+    }
+
+    public Node normalColor() {
+        return color("lightgoldenrod");
     }
 }

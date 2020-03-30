@@ -19,7 +19,7 @@ public class UseCaseAndFellows {
     List<TypeIdentifier> controllerTypes;
 
     UseCaseAndFellows(ServiceAngle serviceAngle) {
-        this.useCase = new UseCase(serviceAngle.serviceMethod());
+        this.useCase = new UseCase(serviceAngle);
         this.controllerTypes = serviceAngle.userControllerMethods().list().stream()
                 .map(methodDeclaration -> methodDeclaration.declaringType())
                 .distinct()
@@ -30,7 +30,7 @@ public class UseCaseAndFellows {
         String useCaseIdentifier = useCase.useCaseIdentifier();
 
         StringBuilder sb = new StringBuilder()
-                .append(String.format("\"%s\"[label=\"%s\",style=filled,fillcolor=lightgoldenrod,shape=ellipse];\n", useCaseIdentifier, useCase.useCaseLabel(aliasFinder)));
+                .append(useCase.dotText(aliasFinder));
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 

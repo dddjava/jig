@@ -95,10 +95,9 @@ jobs:
             - ~/.gradle
           key: update-bucket-gradle-{{ checksum "build.gradle" }}
       - run:
-          name: documentation with jig-cli
+          name: documentation with jig-gradle-plubin
           command: |
-            cd jig-core
-            jig
+            gradle jig
       - run:
           name: upload s3
           command: |

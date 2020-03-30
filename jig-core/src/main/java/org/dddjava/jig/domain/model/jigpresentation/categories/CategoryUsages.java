@@ -86,7 +86,7 @@ public class CategoryUsages {
             nodeTexts.add(node.asText());
         }
 
-        // TODO serviceMethod --> BusinessRule のリレーション
+        StringJoiner useCaseText = new StringJoiner("\n");
         RelationText serviceRelationText = new RelationText();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
             boolean relateService = false;
@@ -106,7 +106,7 @@ public class CategoryUsages {
                     .label(useCaseLabel(serviceMethod, aliasFinder))
                     .normalColor()
                     .useCase();
-            nodeTexts.add(node.asText());
+            useCaseText.add(node.asText());
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
@@ -116,12 +116,16 @@ public class CategoryUsages {
                 //.add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
-                //.add("rank=same;")
+                .add("rank=sink;")
                 .add(enumsText)
                 .add("}")
+                .add("{")
+                .add("rank=source;")
+                .add(useCaseText.toString())
+                .add("}")
+                .add(nodeTexts.toString())
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
-                .add(nodeTexts.toString())
                 .toString());
     }
 

@@ -17,3 +17,11 @@ body > div {
 main {
     padding-left: 20px;
 }
+
+img {
+    max-width: 90%;
+}
+
+h3 {
+    border-bottom:dashed 1px #999;
+}

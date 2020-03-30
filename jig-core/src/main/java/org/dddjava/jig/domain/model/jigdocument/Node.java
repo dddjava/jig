@@ -94,4 +94,9 @@ public class Node {
         attribute.add("tooltip=\"" + tooltip + "\"");
         return this;
     }
+
+    public Node screenNode() {
+        // 画面
+        return style("filled").color("lightgray").shape("Msquare");
+    }
 }

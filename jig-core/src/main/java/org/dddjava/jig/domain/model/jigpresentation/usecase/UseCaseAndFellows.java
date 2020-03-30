@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigpresentation.usecase;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigdocument.Node;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
@@ -34,6 +35,7 @@ public class UseCaseAndFellows {
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 
+        // 戻り値へのEdge
         // bold, headなし
         Optional<TypeIdentifier> primaryType = useCase.primaryType();
         primaryType.ifPresent(typeIdentifier -> {
@@ -42,28 +44,41 @@ public class UseCaseAndFellows {
                 }
         );
 
+        // 引数へのEdge
         // dashed, headあり
         for (TypeIdentifier requireType : useCase.requireTypes()) {
             sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, requireType.fullQualifiedName()));
             otherTypes.add(requireType);
         }
 
+        // 内部使用クラスへのEdge
         // dotted, headあり
         for (TypeIdentifier usingType : useCase.internalUsingTypes()) {
             sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }
 
+        // UseCaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
             TypeAlias typeAlias = aliasFinder.find(otherType);
-            sb.append(String.format("\"%s\"[label=\"%s\"];\n", otherType.fullQualifiedName(), typeAlias.asTextOrDefault(otherType.asSimpleText())));
+            sb.append(
+                    new Node(otherType.fullQualifiedName())
+                            .label(typeAlias.asTextOrDefault(otherType.asSimpleText()))
+                            .tooltip(otherType.asSimpleText())
+                            .asText()
+            );
         }
 
+        // controllerのNodeおよびedge
         for (TypeIdentifier controllerType : controllerTypes) {
-            // controllerの表示
             TypeAlias typeAlias = aliasFinder.find(controllerType);
-            sb.append(String.format("\"%s\"[label=\"%s\",style=filled,fillcolor=lightgray,shape=Msquare];\n",
-                    controllerType.fullQualifiedName(), typeAlias.asTextOrDefault(controllerType.asSimpleText())));
+            sb.append(
+                    new Node(controllerType.fullQualifiedName())
+                            .label(typeAlias.asTextOrDefault(controllerType.asSimpleText()))
+                            .tooltip(controllerType.asSimpleText())
+                            .screenNode()
+                            .asText()
+            );
 
             // dotted, headあり
             sb.append(String.format("\"%s\" -> \"%s\"[style=dotted,arrowhead=open];\n", controllerType.fullQualifiedName(), useCaseIdentifier));

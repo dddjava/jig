@@ -7,6 +7,10 @@ import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorries;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingFields;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingMethods;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 /**
  * サービスメソッド
  */
@@ -47,5 +51,33 @@ public class ServiceMethod {
 
     public TypeIdentifier declaringType() {
         return methodDeclaration().declaringType();
+    }
+
+    // TODO type
+    public List<TypeIdentifier> internalUsingTypes() {
+        List<TypeIdentifier> list = usingMethods().methodDeclarations().list().stream()
+                .flatMap(methodDeclaration -> methodDeclaration.relateTypes().list().stream())
+                .filter(typeIdentifier -> !typeIdentifier.isPrimitive())
+                .filter(typeIdentifier -> !typeIdentifier.isVoid())
+                .filter(typeIdentifier -> !primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isPresent())
+                .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
+                .distinct()
+                .collect(Collectors.toList());
+        return list;
+    }
+
+    // TODO type
+    public Optional<TypeIdentifier> primaryType() {
+        TypeIdentifier typeIdentifier = methodDeclaration().methodReturn().typeIdentifier();
+        if (typeIdentifier.isVoid()) return Optional.empty();
+        return Optional.of(typeIdentifier);
+    }
+
+    // TODO type
+    public List<TypeIdentifier> requireTypes() {
+        List<TypeIdentifier> arguments = methodDeclaration().methodSignature().arguments();
+        // primaryTypeは除く
+        primaryType().ifPresent(arguments::remove);
+        return arguments;
     }
 }

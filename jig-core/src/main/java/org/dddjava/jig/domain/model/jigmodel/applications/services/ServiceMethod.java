@@ -2,14 +2,17 @@ package org.dddjava.jig.domain.model.jigmodel.applications.services;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorries;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingFields;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.UsingMethods;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * サービスメソッド
@@ -79,5 +82,12 @@ public class ServiceMethod {
         // primaryTypeは除く
         primaryType().ifPresent(arguments::remove);
         return arguments;
+    }
+
+    public TypeIdentifiers usingTypes() {
+        List<TypeIdentifier> list = new ArrayList<>(internalUsingTypes());
+        list.addAll(requireTypes());
+        primaryType().ifPresent(list::add);
+        return new TypeIdentifiers(list);
     }
 }

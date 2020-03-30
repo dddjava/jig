@@ -95,4 +95,8 @@ public class Node {
         // 画面
         return style("filled").color("lightgray").shape("Msquare");
     }
+
+    public Node useCase() {
+        return shape("ellipse");
+    }
 }

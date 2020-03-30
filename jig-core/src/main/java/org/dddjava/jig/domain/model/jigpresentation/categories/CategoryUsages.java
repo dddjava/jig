@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
@@ -86,6 +87,27 @@ public class CategoryUsages {
         }
 
         // TODO serviceMethod --> BusinessRule のリレーション
+        RelationText serviceRelationText = new RelationText();
+        for (ServiceMethod serviceMethod : serviceMethods.list()) {
+            boolean relateService = false;
+            TypeIdentifiers serviceUsingTypes = serviceMethod.usingTypes();
+            for (TypeIdentifier usingTypeIdentifier : serviceUsingTypes.list()) {
+                if (typeIdentifiers.contains(usingTypeIdentifier)) {
+                    serviceRelationText.add(serviceMethod.methodDeclaration(), usingTypeIdentifier);
+                    relateService = true;
+                }
+            }
+            if (!relateService) {
+                // enumから関連していないのは出力しない
+                continue;
+            }
+
+            Node node = Node.of(serviceMethod.methodDeclaration())
+                    .label(useCaseLabel(serviceMethod, aliasFinder))
+                    .normalColor()
+                    .useCase();
+            nodeTexts.add(node.asText());
+        }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
         return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
@@ -98,8 +120,14 @@ public class CategoryUsages {
                 .add(enumsText)
                 .add("}")
                 .add(RelationText.fromClassRelation(relations).asText())
+                .add(serviceRelationText.asText())
                 .add(nodeTexts.toString())
                 .toString());
+    }
+
+    String useCaseLabel(ServiceMethod serviceMethod, AliasFinder aliasFinder) {
+        MethodAlias methodAlias = aliasFinder.find(serviceMethod.methodDeclaration().identifier());
+        return methodAlias.asTextOrDefault(serviceMethod.methodDeclaration().declaringType().asSimpleText() + "\\n" + serviceMethod.methodDeclaration().methodSignature().methodName());
     }
 
     private String typeNameOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {

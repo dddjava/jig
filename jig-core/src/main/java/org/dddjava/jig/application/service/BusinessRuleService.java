@@ -70,7 +70,8 @@ public class BusinessRuleService {
         return new CollectionAngles(collectionTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
-    public CategoryUsages categoryUsages(AnalyzedImplementation implementations) {
-        return new CategoryUsages(categories(implementations));
+    public CategoryUsages categoryUsages(AnalyzedImplementation analyzedImplementation) {
+        CategoryTypes categoryTypes = new CategoryTypes(businessRules(analyzedImplementation));
+        return new CategoryUsages(categoryTypes, analyzedImplementation, architecture);
     }
 }

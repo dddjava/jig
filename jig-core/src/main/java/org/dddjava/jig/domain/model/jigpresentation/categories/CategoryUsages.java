@@ -5,7 +5,17 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -17,77 +27,78 @@ import static java.util.stream.Collectors.joining;
  */
 public class CategoryUsages {
 
-    CategoryAngles categoryAngles;
+    ServiceMethods serviceMethods;
+    CategoryTypes categoryTypes;
+    ClassRelations classRelations;
 
-    public CategoryUsages(CategoryAngles categoryAngles) {
-        this.categoryAngles = categoryAngles;
-    }
+    public CategoryUsages(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation, Architecture architecture) {
+        this.categoryTypes = categoryTypes;
 
-    private List<CategoryAngle> list() {
-        return categoryAngles.list();
-    }
-
-    TypeIdentifiers userTypeIdentifiers() {
-        List<TypeIdentifier> userTypeIdentifiers = list().stream()
-                .flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
-                .distinct()
-                .filter(this::notCategory)
+        List<TypeByteCode> collect = analyzedImplementation.typeByteCodes().list()
+                .stream()
+                .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
                 .collect(Collectors.toList());
-        return new TypeIdentifiers(userTypeIdentifiers);
+        this.classRelations = new ClassRelations(new TypeByteCodes(collect));
+
+        this.serviceMethods = new ServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
     }
 
-    boolean notCategory(TypeIdentifier typeIdentifier) {
-        return list().stream()
-                .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
+    ClassRelations relations() {
+        HashSet<ClassRelation> set = new HashSet<>();
+
+        TypeIdentifiers toTypeIdentifiers = categoryTypes.typeIdentifiers();
+        int size = set.size();
+        while (true) {
+            ClassRelations temp = classRelations.filterRelationsTo(toTypeIdentifiers);
+            set.addAll(temp.list());
+
+            if (size == set.size()) break;
+            size = set.size();
+            toTypeIdentifiers = temp.fromTypeIdentifiers();
+        }
+        return new ClassRelations(new ArrayList<>(set));
     }
 
     public DiagramSources diagramSource(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
-        if (list().isEmpty()) {
+        if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }
 
-        TypeIdentifiers enumTypes = list().stream()
-                .map(CategoryAngle::typeIdentifier)
-                .collect(TypeIdentifiers.collector());
-
-        String enumsText = enumTypes.list().stream()
-                .map(enumType -> Node.of(enumType)
-                        .label(typeNameOf(enumType, aliasFinder))
+        String enumsText = categoryTypes.list().stream()
+                .map(categoryType -> categoryType.typeIdentifier)
+                .map(typeIdentifier -> Node.of(typeIdentifier)
+                        .normalColor()
+                        .label(typeNameOf(typeIdentifier, aliasFinder))
                         .asText())
                 .collect(joining("\n"));
 
-        RelationText relationText = new RelationText();
-        for (CategoryAngle categoryAngle : list()) {
-            for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
-                relationText.add(userType, categoryAngle.typeIdentifier());
+        ClassRelations relations = relations();
+        TypeIdentifiers typeIdentifiers = relations.collectTypeIdentifiers();
+        StringJoiner nodeTexts = new StringJoiner("\n");
+        for (TypeIdentifier typeIdentifier : typeIdentifiers.list()) {
+            if (categoryTypes.contains(typeIdentifier)) {
+                continue;
             }
+
+            Node node = Node.of(typeIdentifier)
+                    .label(aliasFinder.find(typeIdentifier).asTextOrDefault(typeIdentifier.asSimpleText()));
+            nodeTexts.add(node.asText());
         }
 
-        String userLabel = userTypeIdentifiers().list().stream()
-                .map(typeIdentifier ->
-                        Node.of(typeIdentifier)
-                                .label(typeNameOf(typeIdentifier, aliasFinder))
-                                .notEnum()
-                                .asText())
-                .collect(joining("\n"));
-
-        String legendText = new Subgraph("legend")
-                .label(jigDocumentContext.label("legend"))
-                .add(new Node(jigDocumentContext.label("enum")).asText())
-                .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
-                .toString();
+        // TODO serviceMethod --> BusinessRule のリレーション
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
         return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
-                .add(Node.DEFAULT)
-                .add(legendText)
-                .add("{ rank=same;")
+                //.add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
+                .add("node [shape=box,style=filled,fillcolor=white];")
+                .add("{")
+                //.add("rank=same;")
                 .add(enumsText)
                 .add("}")
-                .add(relationText.asText())
-                .add(userLabel)
+                .add(RelationText.fromClassRelation(relations).asText())
+                .add(nodeTexts.toString())
                 .toString());
     }
 

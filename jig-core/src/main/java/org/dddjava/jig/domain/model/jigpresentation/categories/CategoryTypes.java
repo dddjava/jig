@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigpresentation.categories;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 
@@ -27,5 +28,15 @@ public class CategoryTypes {
 
     public List<CategoryType> list() {
         return list;
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public TypeIdentifiers typeIdentifiers() {
+        return list.stream()
+                .map(categoryType -> categoryType.typeIdentifier)
+                .collect(TypeIdentifiers.collector());
     }
 }

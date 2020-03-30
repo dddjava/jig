@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.services;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
@@ -60,5 +61,13 @@ public class ServiceMethods {
                 .map(Method::declaration)
                 .collect(MethodDeclarations.collector())
                 .asSimpleText();
+    }
+
+    public TypeIdentifiers typeIdentifiers() {
+        return methods.stream()
+                .map(method -> method.declaration().declaringType())
+                .sorted()
+                .distinct()
+                .collect(TypeIdentifiers.collector());
     }
 }

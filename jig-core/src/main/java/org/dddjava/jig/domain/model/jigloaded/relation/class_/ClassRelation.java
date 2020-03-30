@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.jigloaded.relation.class_;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
+import java.util.Objects;
+
 /**
  * 型の依存関係
  */
@@ -34,5 +36,23 @@ public class ClassRelation {
     @Override
     public String toString() {
         return from.fullQualifiedName() + " -> " + to.fullQualifiedName();
+    }
+
+    public boolean sameRelation(ClassRelation other) {
+        return from.equals(other.from) && to.equals(other.to);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClassRelation that = (ClassRelation) o;
+        return Objects.equals(from, that.from) &&
+                Objects.equals(to, that.to);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(from, to);
     }
 }

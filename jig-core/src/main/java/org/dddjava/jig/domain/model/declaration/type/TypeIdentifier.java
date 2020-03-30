@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * 型の識別子
  */
-public class TypeIdentifier {
+public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
     String value;
 
@@ -93,5 +93,10 @@ public class TypeIdentifier {
 
     public boolean isJavaLanguageType() {
         return isPrimitive() || isVoid() || value.startsWith("java");
+    }
+
+    @Override
+    public int compareTo(TypeIdentifier others) {
+        return value.compareTo(others.value);
     }
 }

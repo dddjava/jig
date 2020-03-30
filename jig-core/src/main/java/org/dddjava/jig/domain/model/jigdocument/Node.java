@@ -77,10 +77,6 @@ public class Node {
         return color("greenyellow");
     }
 
-    public Node notEnum() {
-        return color("lightyellow");
-    }
-
     public Node html(String html) {
         attribute.add("label=<" + html + ">;");
         return this;

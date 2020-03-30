@@ -3,6 +3,8 @@ package org.dddjava.jig.domain.model.jigdocument;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;
 
@@ -20,6 +22,14 @@ public class RelationText {
     public RelationText(String attribute) {
         this.stringJoiner = new StringJoiner("\n");
         stringJoiner.add(attribute);
+    }
+
+    public static RelationText fromClassRelation(ClassRelations relations) {
+        RelationText relationText = new RelationText();
+        for (ClassRelation classRelation : relations.distinctList()) {
+            relationText.add(classRelation.from(), classRelation.to());
+        }
+        return relationText;
     }
 
     private void add(String from, String to) {

@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
@@ -54,9 +55,9 @@ public class ViewResolver {
                 model.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle));
     }
 
-    public JigView<CategoryAngles> enumUsage() {
+    public JigView<CategoryUsages> enumUsage() {
         return newGraphvizjView(model ->
-                model.toUsageDotText(aliasFinder, jigDocumentContext));
+                model.diagramSource(aliasFinder, jigDocumentContext));
     }
 
     public JigView<UseCaseAndFellowsAngle> useCase() {

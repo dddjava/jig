@@ -36,20 +36,6 @@ public class CategoryAngles {
         return list;
     }
 
-    TypeIdentifiers userTypeIdentifiers() {
-        List<TypeIdentifier> userTypeIdentifiers = list().stream()
-                .flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
-                .distinct()
-                .filter(this::notCategory)
-                .collect(Collectors.toList());
-        return new TypeIdentifiers(userTypeIdentifiers);
-    }
-
-    boolean notCategory(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
-    }
-
     public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
@@ -92,69 +78,11 @@ public class CategoryAngles {
                 .toString());
     }
 
-    private String typeNameOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
-        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
-        if (typeAlias.exists()) {
-            return typeAlias.asText() + "\\n" + typeIdentifier.asSimpleText();
-        }
-        return typeIdentifier.asSimpleText();
-    }
-
     private String typeNameOf(AliasFinder aliasFinder, TypeIdentifier typeIdentifier) {
         TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
         if (typeAlias.exists()) {
             return typeAlias.asText() + "<br/>" + typeIdentifier.asSimpleText();
         }
         return typeIdentifier.asSimpleText();
-    }
-
-    public DiagramSources toUsageDotText(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
-        if (list.isEmpty()) {
-            return DiagramSource.empty();
-        }
-
-        TypeIdentifiers enumTypes = list.stream()
-                .map(CategoryAngle::typeIdentifier)
-                .collect(TypeIdentifiers.collector());
-
-        String enumsText = enumTypes.list().stream()
-                .map(enumType -> Node.of(enumType)
-                        .label(typeNameOf(enumType, aliasFinder))
-                        .asText())
-                .collect(joining("\n"));
-
-        RelationText relationText = new RelationText();
-        for (CategoryAngle categoryAngle : list()) {
-            for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
-                relationText.add(userType, categoryAngle.typeIdentifier());
-            }
-        }
-
-        String userLabel = userTypeIdentifiers().list().stream()
-                .map(typeIdentifier ->
-                        Node.of(typeIdentifier)
-                                .label(typeNameOf(typeIdentifier, aliasFinder))
-                                .notEnum()
-                                .asText())
-                .collect(joining("\n"));
-
-        String legendText = new Subgraph("legend")
-                .label(jigDocumentContext.label("legend"))
-                .add(new Node(jigDocumentContext.label("enum")).asText())
-                .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
-                .toString();
-
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
-        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
-                .add("label=\"" + documentName.label() + "\";")
-                .add("rankdir=LR;")
-                .add(Node.DEFAULT)
-                .add(legendText)
-                .add("{ rank=same;")
-                .add(enumsText)
-                .add("}")
-                .add(relationText.asText())
-                .add(userLabel)
-                .toString());
     }
 }

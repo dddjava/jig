@@ -1,0 +1,101 @@
+package org.dddjava.jig.domain.model.jigpresentation.categories;
+
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigdocument.*;
+import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
+
+/**
+ * 区分使用図
+ */
+public class CategoryUsages {
+
+    CategoryAngles categoryAngles;
+
+    public CategoryUsages(CategoryAngles categoryAngles) {
+        this.categoryAngles = categoryAngles;
+    }
+
+    private List<CategoryAngle> list() {
+        return categoryAngles.list();
+    }
+
+    TypeIdentifiers userTypeIdentifiers() {
+        List<TypeIdentifier> userTypeIdentifiers = list().stream()
+                .flatMap(categoryAngle -> categoryAngle.userTypeIdentifiers().list().stream())
+                .distinct()
+                .filter(this::notCategory)
+                .collect(Collectors.toList());
+        return new TypeIdentifiers(userTypeIdentifiers);
+    }
+
+    boolean notCategory(TypeIdentifier typeIdentifier) {
+        return list().stream()
+                .noneMatch(categoryAngle -> categoryAngle.categoryType.typeIdentifier.equals(typeIdentifier));
+    }
+
+    public DiagramSources diagramSource(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
+        if (list().isEmpty()) {
+            return DiagramSource.empty();
+        }
+
+        TypeIdentifiers enumTypes = list().stream()
+                .map(CategoryAngle::typeIdentifier)
+                .collect(TypeIdentifiers.collector());
+
+        String enumsText = enumTypes.list().stream()
+                .map(enumType -> Node.of(enumType)
+                        .label(typeNameOf(enumType, aliasFinder))
+                        .asText())
+                .collect(joining("\n"));
+
+        RelationText relationText = new RelationText();
+        for (CategoryAngle categoryAngle : list()) {
+            for (TypeIdentifier userType : categoryAngle.userTypeIdentifiers().list()) {
+                relationText.add(userType, categoryAngle.typeIdentifier());
+            }
+        }
+
+        String userLabel = userTypeIdentifiers().list().stream()
+                .map(typeIdentifier ->
+                        Node.of(typeIdentifier)
+                                .label(typeNameOf(typeIdentifier, aliasFinder))
+                                .notEnum()
+                                .asText())
+                .collect(joining("\n"));
+
+        String legendText = new Subgraph("legend")
+                .label(jigDocumentContext.label("legend"))
+                .add(new Node(jigDocumentContext.label("enum")).asText())
+                .add(new Node(jigDocumentContext.label("not_enum")).notEnum().asText())
+                .toString();
+
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
+        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
+                .add("label=\"" + documentName.label() + "\";")
+                .add("rankdir=LR;")
+                .add(Node.DEFAULT)
+                .add(legendText)
+                .add("{ rank=same;")
+                .add(enumsText)
+                .add("}")
+                .add(relationText.asText())
+                .add(userLabel)
+                .toString());
+    }
+
+    private String typeNameOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
+        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+        if (typeAlias.exists()) {
+            return typeAlias.asText() + "\\n" + typeIdentifier.asSimpleText();
+        }
+        return typeIdentifier.asSimpleText();
+    }
+}

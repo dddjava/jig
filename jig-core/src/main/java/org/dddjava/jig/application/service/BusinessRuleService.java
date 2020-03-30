@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
@@ -67,5 +68,9 @@ public class BusinessRuleService {
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
         return new CollectionAngles(collectionTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
+    }
+
+    public CategoryUsages categoryUsages(AnalyzedImplementation implementations) {
+        return new CategoryUsages(categories(implementations));
     }
 }

@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
@@ -41,8 +42,8 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)
-    public CategoryAngles enumUsage(AnalyzedImplementation implementations) {
-        return businessRuleService.categories(implementations);
+    public CategoryUsages enumUsage(AnalyzedImplementation implementations) {
+        return businessRuleService.categoryUsages(implementations);
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)

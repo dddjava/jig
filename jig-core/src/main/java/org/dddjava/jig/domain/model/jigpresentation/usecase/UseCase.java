@@ -18,7 +18,7 @@ public class UseCase {
     ServiceMethod serviceMethod;
     boolean useController;
 
-    UseCase(ServiceAngle serviceAngle) {
+    public UseCase(ServiceAngle serviceAngle) {
         this.serviceMethod = serviceAngle.serviceMethod();
         this.useController = serviceAngle.usingFromController();
     }
@@ -45,14 +45,15 @@ public class UseCase {
     }
 
     public String dotText(AliasFinder aliasFinder) {
+        return node(aliasFinder).asText();
+    }
+
+    public Node node(AliasFinder aliasFinder) {
         Node node = new Node(useCaseIdentifier())
                 .shape("ellipse")
                 .label(useCaseLabel(aliasFinder))
                 .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
                 .style("filled");
-        if (useController) {
-            return node.handlerMethod().asText();
-        }
-        return node.normalColor().asText();
+        return useController ? node.handlerMethod() : node.normalColor();
     }
 }

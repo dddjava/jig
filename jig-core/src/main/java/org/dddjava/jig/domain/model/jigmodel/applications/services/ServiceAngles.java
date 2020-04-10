@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCase;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -142,26 +143,22 @@ public class ServiceAngles {
 
         // メソッドの表示方法
         String serviceMethodText = angles.stream()
-                .map(angle -> {
-                    MethodDeclaration method = angle.method();
+                .map(serviceAngle -> {
+                    MethodDeclaration method = serviceAngle.method();
                     Node node = Node.of(method);
                     if (method.isLambda()) {
-                        node.label("(lambda)").lambda();
-                    } else {
-                        // ラベルに別名をつける
-                        node.label(aliasLineOf(method, aliasFinder) + methodNodeLabelStyle.apply(method, aliasFinder));
-
-                        // 非publicは色なし
-                        if (angle.isNotPublicMethod()) {
-                            node.notPublicMethod();
-                        }
-
-                        // ハンドラを強調
-                        if (angle.usingFromController()) {
-                            node.handlerMethod();
-                        }
+                        return node.label("(lambda)").lambda().asText();
                     }
-                    return node.asText();
+                    UseCase useCase = new UseCase(serviceAngle);
+
+                    Node useCaseNode = useCase.node(aliasFinder);
+
+                    // 非publicは色なし
+                    if (serviceAngle.isNotPublicMethod()) {
+                        useCaseNode.notPublicMethod();
+                    }
+
+                    return useCaseNode.asText();
                 }).collect(joining("\n"));
 
         // クラス名でグルーピングする

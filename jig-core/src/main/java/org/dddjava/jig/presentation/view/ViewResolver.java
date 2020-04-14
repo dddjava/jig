@@ -52,7 +52,7 @@ public class ViewResolver {
 
     public JigView<ServiceAngles> serviceMethodCallHierarchy() {
         return newGraphvizjView(model ->
-                model.methodCallDotText(jigDocumentContext, aliasFinder, methodNodeLabelStyle));
+                model.methodCallDotText(jigDocumentContext, aliasFinder));
     }
 
     public JigView<CategoryUsages> enumUsage() {

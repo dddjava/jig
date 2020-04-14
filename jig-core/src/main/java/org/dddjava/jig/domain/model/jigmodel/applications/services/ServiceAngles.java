@@ -126,7 +126,7 @@ public class ServiceAngles {
         return DiagramSource.createDiagramSource(documentName, graphText);
     }
 
-    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder, MethodNodeLabelStyle methodNodeLabelStyle) {
+    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }
@@ -259,11 +259,6 @@ public class ServiceAngles {
 
     private String aliasLineOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
         String aliasText = aliasFinder.find(typeIdentifier).asText();
-        return aliasText.isEmpty() ? "" : aliasText + "\n";
-    }
-
-    private String aliasLineOf(MethodDeclaration method, AliasFinder aliasFinder) {
-        String aliasText = aliasFinder.find(method.identifier()).asText();
         return aliasText.isEmpty() ? "" : aliasText + "\n";
     }
 }

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigloaded.relation.packages;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.graalvm.compiler.lir.alloc.lsra.Range;
 
 /**
  * 相互依存

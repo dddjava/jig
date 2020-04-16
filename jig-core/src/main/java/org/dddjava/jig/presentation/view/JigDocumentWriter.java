@@ -1,8 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.jigdocument.AdditionalText;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class JigDocumentWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);

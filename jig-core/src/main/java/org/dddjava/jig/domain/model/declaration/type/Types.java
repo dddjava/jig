@@ -1,10 +1,7 @@
 package org.dddjava.jig.domain.model.declaration.type;
 
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifiers;
-
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 /**
  * 型の一覧

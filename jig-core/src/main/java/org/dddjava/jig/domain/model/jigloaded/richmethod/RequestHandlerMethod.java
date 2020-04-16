@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;

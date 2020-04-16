@@ -2,8 +2,8 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
@@ -93,6 +93,8 @@ public class ApplicationService {
     }
 
     public RoundingPackageRelations buildingBlockRelations(AnalyzedImplementation implementations) {
-        return PresentationFactory.roundingPackageRelations(implementations.typeByteCodes());
+        ClassRelations classRelations = RelationsFactory.createClassRelations(implementations.typeByteCodes());
+
+        return RoundingPackageRelations.getRoundingPackageRelations(classRelations);
     }
 }

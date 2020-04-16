@@ -36,7 +36,7 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)
-    public CategoryUsageDiagram enumUsage(AnalyzedImplementation implementations) {
+    public CategoryUsageDiagram categoryUsage(AnalyzedImplementation implementations) {
         return businessRuleService.categoryUsages(implementations);
     }
 

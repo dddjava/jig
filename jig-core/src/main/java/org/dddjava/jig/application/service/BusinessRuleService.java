@@ -4,11 +4,11 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
@@ -21,6 +21,8 @@ import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 /**
  * ビジネスルールの分析サービス
@@ -83,6 +85,14 @@ public class BusinessRuleService {
 
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        return PresentationFactory.createCategoryUsageDiagram(categoryTypes, analyzedImplementation, architecture);
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        ClassRelations classRelations = RelationsFactory.createClassRelations(
+                new TypeByteCodes(analyzedImplementation.typeByteCodes().list()
+                        .stream()
+                        .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
+                        .collect(Collectors.toList()))
+        );
+
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, classRelations);
     }
 }

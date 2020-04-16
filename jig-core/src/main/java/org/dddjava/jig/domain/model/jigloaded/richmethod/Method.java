@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 
 /**
  * メソッド
@@ -20,17 +19,16 @@ public class Method {
     Accessor accessor;
     UsingFields usingFields;
     UsingMethods usingMethods;
-    MethodWorries methodWorries;
 
-    public Method(MethodByteCode methodByteCode) {
-        this.methodDeclaration = methodByteCode.methodDeclaration();
-        this.nullDecision = methodByteCode.judgeNull();
-        this.referenceNull = methodByteCode.referenceNull();
-        this.decisionNumber = methodByteCode.decisionNumber();
-        this.methodAnnotations = methodByteCode.annotatedMethods();
-        this.accessor = methodByteCode.accessor();
-        this.usingFields = new UsingFields(methodByteCode.usingFields().list());
-        this.usingMethods = new UsingMethods(methodByteCode.usingMethods());
+    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, boolean referenceNull, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, UsingFields usingFields, UsingMethods usingMethods) {
+        this.methodDeclaration = methodDeclaration;
+        this.nullDecision = nullDecision;
+        this.referenceNull = referenceNull;
+        this.decisionNumber = decisionNumber;
+        this.methodAnnotations = methodAnnotations;
+        this.accessor = accessor;
+        this.usingFields = usingFields;
+        this.usingMethods = usingMethods;
     }
 
     public MethodDeclaration declaration() {

@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
@@ -64,7 +64,7 @@ public class ApplicationService {
 
         return new ServiceAngles(
                 serviceMethods,
-                new MethodRelations(typeByteCodes),
+                RelationsFactory.createMethodRelations(typeByteCodes),
                 controllerMethods,
                 datasourceMethods);
     }

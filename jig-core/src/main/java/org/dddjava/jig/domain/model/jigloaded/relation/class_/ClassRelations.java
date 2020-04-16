@@ -2,8 +2,6 @@ package org.dddjava.jig.domain.model.jigloaded.relation.class_;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +14,6 @@ import java.util.stream.Stream;
 public class ClassRelations {
 
     List<ClassRelation> list;
-
-    public ClassRelations(TypeByteCodes typeByteCodes) {
-        this.list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            TypeIdentifier form = typeByteCode.typeIdentifier();
-            for (TypeIdentifier to : typeByteCode.useTypes().list()) {
-                ClassRelation classRelation = new ClassRelation(form, to);
-                if (classRelation.selfRelation()) continue;
-                list.add(classRelation);
-            }
-        }
-    }
 
     public ClassRelations(List<ClassRelation> list) {
         this.list = list;
@@ -84,9 +70,5 @@ public class ClassRelations {
                 .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
-    }
-
-    public boolean nothing() {
-        return list.isEmpty();
     }
 }

@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
@@ -34,9 +36,9 @@ public class MethodSmellAngles {
     }
 
     MethodSmellAngles(TypeByteCodes typeByteCodes, BusinessRules businessRules) {
-        this(new Methods(typeByteCodes),
+        this(MethodFactory.createMethods(typeByteCodes),
                 typeByteCodes.instanceFields(),
-                new MethodRelations(typeByteCodes),
+                RelationsFactory.createMethodRelations(typeByteCodes),
                 businessRules);
     }
 

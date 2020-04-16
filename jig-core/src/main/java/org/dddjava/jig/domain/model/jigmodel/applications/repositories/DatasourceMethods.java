@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.architecture.BuildingBlock;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
@@ -41,8 +41,8 @@ public class DatasourceMethods {
                                 .filter(datasourceMethodByteCode -> interfaceMethodByteCode.sameSignature(datasourceMethodByteCode))
                                 // 0 or 1
                                 .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                        new Method(interfaceMethodByteCode),
-                                        new Method(concreteMethodByteCode),
+                                        MethodFactory.createMethod(interfaceMethodByteCode),
+                                        MethodFactory.createMethod(concreteMethodByteCode),
                                         concreteMethodByteCode.usingMethods()))
                                 );
                     }

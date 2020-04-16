@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,7 @@ public class RequestHandlerMethod {
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    RequestHandlerMethod(Method method, TypeAnnotations typeAnnotations) {
+    public RequestHandlerMethod(Method method, TypeAnnotations typeAnnotations) {
         this.method = method;
 
         this.requestMappingForClass = typeAnnotations.annotations().filterAny(
@@ -40,10 +38,6 @@ public class RequestHandlerMethod {
                 new TypeIdentifier("org.springframework.web.bind.annotation.PutMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.DeleteMapping"),
                 new TypeIdentifier("org.springframework.web.bind.annotation.PatchMapping"));
-    }
-
-    public RequestHandlerMethod(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
-        this(new Method(methodByteCode), new TypeAnnotations(typeByteCode.typeAnnotations()));
     }
 
     public Method method() {

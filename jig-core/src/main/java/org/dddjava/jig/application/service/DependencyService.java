@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.BusinessRuleRelationDiagram;
@@ -35,7 +36,7 @@ public class DependencyService {
             return PackageRelationDiagram.empty();
         }
 
-        ClassRelations classRelations = new ClassRelations(analyzedImplementation.typeByteCodes());
+        ClassRelations classRelations = RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes());
         PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
 
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
@@ -47,7 +48,7 @@ public class DependencyService {
     public BusinessRuleRelationDiagram businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {
         BusinessRuleRelationDiagram businessRuleRelationDiagram = new BusinessRuleRelationDiagram(
                 businessRuleService.businessRules(analyzedImplementation),
-                new ClassRelations(analyzedImplementation.typeByteCodes()));
+                RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
         return businessRuleRelationDiagram;
     }
 }

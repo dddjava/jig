@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.jigloaded.datasource;
+package org.dddjava.jig.domain.model.jigloader;
 
+import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
 import org.dddjava.jig.domain.model.jigsource.source.code.sqlcode.SqlSources;
 
 /**

@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigloaded.datasource.SqlReader;
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;

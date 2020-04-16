@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryType;
@@ -31,7 +31,7 @@ public class CategoryDiagram {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         this.list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType, new ClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields()));
+            list.add(new CategoryAngle(categoryType, RelationsFactory.createClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields()));
         }
     }
 

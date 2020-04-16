@@ -1,11 +1,5 @@
 package org.dddjava.jig.domain.model.jigloaded.relation.method;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -17,16 +11,8 @@ public class MethodRelations {
 
     private final List<MethodRelation> list;
 
-    public MethodRelations(TypeByteCodes typeByteCodes) {
-        this.list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
-                CallerMethod callerMethod = new CallerMethod(methodByteCode.methodDeclaration);
-                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
-                    list.add(new MethodRelation(callerMethod, new CalleeMethod(usingMethod)));
-                }
-            }
-        }
+    public MethodRelations(List<MethodRelation> list) {
+        this.list = list;
     }
 
     public CallerMethods callerMethodsOf(CalleeMethod calleeMethod) {

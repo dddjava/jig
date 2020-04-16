@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.applications.controllers;
 
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
@@ -25,7 +26,7 @@ public class ControllerMethods {
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             if (ApplicationLayer.PRESENTATION.satisfy(typeByteCode, architecture)) {
                 for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(methodByteCode, typeByteCode);
+                    RequestHandlerMethod requestHandlerMethod = MethodFactory.createRequestHandlerMethod(methodByteCode, typeByteCode);
                     if (requestHandlerMethod.valid()) {
                         result.add(requestHandlerMethod);
                     }

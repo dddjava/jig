@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
@@ -57,7 +57,7 @@ public class BusinessRuleService {
     public ValueAngles values(ValueKind valueKind, AnalyzedImplementation analyzedImplementation) {
         ValueTypes valueTypes = new ValueTypes(businessRules(analyzedImplementation), valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
+        return new ValueAngles(valueKind, valueTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
     /**
@@ -67,7 +67,7 @@ public class BusinessRuleService {
         BusinessRules businessRules = businessRules(analyzedImplementation);
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
+        return new CollectionAngles(collectionTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {

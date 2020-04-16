@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ public class AsmByteCodeFactoryTest {
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
-                .filter(e -> new Method(e).declaration().asSignatureSimpleText().equals("method()"))
+                .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
@@ -166,9 +167,9 @@ public class AsmByteCodeFactoryTest {
 
         List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
         MethodByteCode methodByteCode = instanceMethodByteCodes.stream()
-                .filter(e -> new Method(e).declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
+                .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        Method method = new Method(methodByteCode);
+        Method method = MethodFactory.createMethod(methodByteCode);
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 

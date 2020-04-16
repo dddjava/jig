@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.jigloaded.alias;
+package org.dddjava.jig.domain.model.jigloader;
 
+import org.dddjava.jig.domain.model.jigloaded.alias.TypeAliases;
 import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources;
 
 /**

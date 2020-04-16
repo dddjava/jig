@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
@@ -26,7 +27,7 @@ public class ServiceMethods {
         this.methods = applications.list().stream()
                 .map(TypeByteCode::instanceMethodByteCodes)
                 .flatMap(List::stream)
-                .map(methodByteCode -> new Method(methodByteCode))
+                .map(methodByteCode -> MethodFactory.createMethod(methodByteCode))
                 .collect(toList());
     }
 

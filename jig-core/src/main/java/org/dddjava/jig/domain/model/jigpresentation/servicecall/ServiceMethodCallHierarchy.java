@@ -81,7 +81,7 @@ public class ServiceMethodCallHierarchy {
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ServiceMethodCallHierarchyDiagram);
 
-        String graphText = new StringJoiner("\n", "digraph JIG {", "}")
+        String graphText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)

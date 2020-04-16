@@ -167,7 +167,7 @@ public class PackageNetwork {
                 + "\"]";
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.PackageRelationDiagram);
-        String text = new StringJoiner("\n", "digraph {", "}")
+        String text = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add(summaryText)
                 .add(Node.DEFAULT)

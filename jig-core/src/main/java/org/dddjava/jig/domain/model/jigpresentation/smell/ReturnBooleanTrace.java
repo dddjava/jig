@@ -84,7 +84,7 @@ public class ReturnBooleanTrace {
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.BooleanServiceDiagram);
 
-        String graphText = new StringJoiner("\n", "digraph JIG {", "}")
+        String graphText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 .add("node [shape=box,style=filled,color=lightgoldenrod];")

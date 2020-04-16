@@ -111,7 +111,7 @@ public class CategoryUsages {
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
-        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph JIG {", "}")
+        return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 //.add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")

@@ -37,7 +37,7 @@ public class BusinessRuleRelations {
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.BusinessRuleRelationDiagram);
-        StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
+        StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 

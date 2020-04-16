@@ -34,7 +34,7 @@ public class ArchitectureAngle {
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
 
-        StringJoiner graph = new StringJoiner("\n", "digraph {", "}")
+        StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("subgraph clusterArchitecture {")
                 .add(Node.DEFAULT)
                 .add(new Node("domain").asText())

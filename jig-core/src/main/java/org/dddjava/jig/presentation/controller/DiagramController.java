@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
+import org.dddjava.jig.domain.model.jigloader.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.*;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 

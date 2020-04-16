@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;

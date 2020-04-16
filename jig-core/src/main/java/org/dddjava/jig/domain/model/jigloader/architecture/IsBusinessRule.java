@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.architecture;
+package org.dddjava.jig.domain.model.jigloader.architecture;
 
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 

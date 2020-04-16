@@ -5,14 +5,14 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
+import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
+import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
+import org.dddjava.jig.domain.model.jigpresentation.smell.ReturnBooleanTrace;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
@@ -70,7 +70,7 @@ public class ViewResolver {
         return new GraphvizjView<>(diagram, diagramFormat);
     }
 
-    public JigView<ServiceAngles> booleanServiceTrace() {
+    public JigView<ReturnBooleanTrace> booleanServiceTrace() {
         return newGraphvizjView(model ->
                 model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder));
     }

@@ -4,15 +4,15 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
-import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
+import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
+import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
+import org.dddjava.jig.domain.model.jigpresentation.smell.ReturnBooleanTrace;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
@@ -58,8 +58,8 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)
-    public ServiceAngles booleanServiceTrace(AnalyzedImplementation implementations) {
-        return applicationService.serviceAngles(implementations);
+    public ReturnBooleanTrace booleanServiceTrace(AnalyzedImplementation implementations) {
+        return new ReturnBooleanTrace(applicationService.serviceAngles(implementations).list());
     }
 
     @DocumentMapping(JigDocument.ArchitectureDiagram)

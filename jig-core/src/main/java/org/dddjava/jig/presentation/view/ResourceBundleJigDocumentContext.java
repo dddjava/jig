@@ -44,7 +44,7 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     }
 
     public String diagramLabel(JigDocument jigDocument) {
-        return jigDocumentLabel(jigDocument) + " [" + version() + "]";
+        return jigDocumentLabel(jigDocument);
     }
 
     public static ResourceBundleJigDocumentContext getInstance() {

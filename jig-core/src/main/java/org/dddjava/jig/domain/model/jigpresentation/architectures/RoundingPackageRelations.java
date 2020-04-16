@@ -1,9 +1,9 @@
-package org.dddjava.jig.domain.model.jigmodel.relation;
+package org.dddjava.jig.domain.model.jigpresentation.architectures;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigdocument.RelationText;
+import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;

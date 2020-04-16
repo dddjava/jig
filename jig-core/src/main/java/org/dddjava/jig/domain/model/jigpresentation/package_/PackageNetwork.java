@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloaded.relation.packages;
+package org.dddjava.jig.domain.model.jigpresentation.package_;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
@@ -9,6 +9,11 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.BidirectionalRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.BidirectionalRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 
 import java.util.*;
 
@@ -176,7 +181,7 @@ public class PackageNetwork {
     }
 
     private AdditionalText additionalText() {
-        if (bidirectionalRelations().list.isEmpty()) {
+        if (bidirectionalRelations().none()) {
             return AdditionalText.empty();
         }
         return new AdditionalText(bidirectionalRelationReasonText());
@@ -184,10 +189,10 @@ public class PackageNetwork {
 
     private String bidirectionalRelationReasonText() {
         StringJoiner sj = new StringJoiner("\n");
-        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list) {
+        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list()) {
             sj.add("# " + bidirectionalRelation.toString());
-            String package1 = bidirectionalRelation.packageRelation.from.asText();
-            String package2 = bidirectionalRelation.packageRelation.to.asText();
+            String package1 = bidirectionalRelation.packageRelation().from().asText();
+            String package2 = bidirectionalRelation.packageRelation().to().asText();
             for (ClassRelation classRelation : classRelations.list()) {
                 String from = classRelation.from().fullQualifiedName();
                 String to = classRelation.to().fullQualifiedName();

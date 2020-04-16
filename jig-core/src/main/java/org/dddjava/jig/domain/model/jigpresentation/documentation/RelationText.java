@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigdocument;
+package org.dddjava.jig.domain.model.jigpresentation.documentation;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;

@@ -53,4 +53,12 @@ public class BidirectionalRelations {
         }
         return stringJoiner.toString();
     }
+
+    public boolean none() {
+        return list.isEmpty();
+    }
+
+    public List<BidirectionalRelation> list() {
+        return list;
+    }
 }

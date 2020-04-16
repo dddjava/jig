@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.businessrules;
+package org.dddjava.jig.domain.model.jigpresentation.businessrule;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
@@ -7,6 +7,11 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleRelation;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +20,12 @@ import java.util.StringJoiner;
 /**
  * ビジネスルールの関連
  */
-public class BusinessRuleNetwork {
+public class BusinessRuleRelations {
 
     BusinessRules businessRules;
     ClassRelations classRelations;
 
-    public BusinessRuleNetwork(BusinessRules businessRules, ClassRelations classRelations) {
+    public BusinessRuleRelations(BusinessRules businessRules, ClassRelations classRelations) {
         this.businessRules = businessRules;
         this.classRelations = classRelations;
     }
@@ -37,7 +42,7 @@ public class BusinessRuleNetwork {
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         // nodes
-        List<BusinessRulePackage> list = businessRules.businessRulePackages().list;
+        List<BusinessRulePackage> list = businessRules.businessRulePackages().list();
 
         for (BusinessRulePackage businessRulePackage : list) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();

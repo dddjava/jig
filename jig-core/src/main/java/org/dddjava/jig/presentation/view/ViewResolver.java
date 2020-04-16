@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormat
 import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageNetwork;
+import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
+import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
@@ -75,7 +75,7 @@ public class ViewResolver {
                 model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder));
     }
 
-    public JigView<BusinessRuleNetwork> businessRuleRelationWriter() {
+    public JigView<BusinessRuleRelations> businessRuleRelationWriter() {
         return newGraphvizjView(model ->
                 model.relationDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder));
     }

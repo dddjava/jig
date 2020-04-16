@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 
 import java.util.ArrayList;
 import java.util.List;

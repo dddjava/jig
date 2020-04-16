@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.jigdocument.*;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;

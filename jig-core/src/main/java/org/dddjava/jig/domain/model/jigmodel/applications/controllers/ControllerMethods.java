@@ -2,14 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.applications.controllers;
 
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -21,22 +14,7 @@ import static java.util.stream.Collectors.toList;
 public class ControllerMethods {
     List<RequestHandlerMethod> list;
 
-    public ControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
-        List<RequestHandlerMethod> result = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (ApplicationLayer.PRESENTATION.satisfy(typeByteCode, architecture)) {
-                for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                    RequestHandlerMethod requestHandlerMethod = MethodFactory.createRequestHandlerMethod(methodByteCode, typeByteCode);
-                    if (requestHandlerMethod.valid()) {
-                        result.add(requestHandlerMethod);
-                    }
-                }
-            }
-        }
-        this.list = result;
-    }
-
-    private ControllerMethods(List<RequestHandlerMethod> list) {
+    public ControllerMethods(List<RequestHandlerMethod> list) {
         this.list = list;
     }
 

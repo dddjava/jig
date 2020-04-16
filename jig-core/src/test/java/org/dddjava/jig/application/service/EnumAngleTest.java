@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
 import org.junit.jupiter.api.Test;

@@ -4,11 +4,7 @@ import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Methods;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +15,7 @@ import java.util.List;
 public class MethodSmellAngles {
     List<MethodSmellAngle> list;
 
-    MethodSmellAngles(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
+    public MethodSmellAngles(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
         this.list = new ArrayList<>();
         for (Method method : methods.list()) {
             if (businessRules.contains(method.declaration().declaringType())) {
@@ -33,17 +29,6 @@ public class MethodSmellAngles {
                 }
             }
         }
-    }
-
-    MethodSmellAngles(TypeByteCodes typeByteCodes, BusinessRules businessRules) {
-        this(MethodFactory.createMethods(typeByteCodes),
-                typeByteCodes.instanceFields(),
-                RelationsFactory.createMethodRelations(typeByteCodes),
-                businessRules);
-    }
-
-    public MethodSmellAngles(AnalyzedImplementation analyzedImplementation, BusinessRules businessRules) {
-        this(analyzedImplementation.typeByteCodes(), businessRules);
     }
 
     public List<MethodSmellAngle> list() {

@@ -8,12 +8,13 @@ import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
@@ -43,7 +44,7 @@ public class CategoryUsageDiagram {
                 .collect(Collectors.toList());
         this.classRelations = RelationsFactory.createClassRelations(new TypeByteCodes(collect));
 
-        this.serviceMethods = new ServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        this.serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
     }
 
     ClassRelations relations() {

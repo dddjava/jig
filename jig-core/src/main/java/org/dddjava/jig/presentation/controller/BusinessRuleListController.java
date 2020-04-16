@@ -5,7 +5,8 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.TypeFactory;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
@@ -83,7 +84,7 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
-        ValidationAngles validationAngles = new ValidationAngles(implementations);
+        ValidationAngles validationAngles = TypeFactory.createValidationAngles(implementations);
         return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);
     }
 

@@ -6,10 +6,10 @@ import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryType;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 

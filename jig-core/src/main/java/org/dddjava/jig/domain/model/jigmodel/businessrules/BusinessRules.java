@@ -4,12 +4,7 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigmodel.architecture.BuildingBlock;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,16 +18,6 @@ public class BusinessRules {
 
     public BusinessRules(List<BusinessRule> list) {
         this.list = list;
-    }
-
-    public static BusinessRules from(TypeByteCodes typeByteCodes, Architecture architecture) {
-        List<BusinessRule> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (BuildingBlock.BUSINESS_RULE.satisfy(typeByteCode, architecture)) {
-                list.add(new BusinessRule(typeByteCode));
-            }
-        }
-        return new BusinessRules(list);
     }
 
     public List<BusinessRule> list() {

@@ -1,7 +1,6 @@
-package org.dddjava.jig.domain.model.jigpresentation.categories;
+package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 
 /**
  * 区分
@@ -12,11 +11,11 @@ public class CategoryType {
     boolean polymorphism;
     boolean parameterized;
 
-    public CategoryType(TypeByteCode typeByteCode) {
-        this.typeIdentifier = typeByteCode.typeIdentifier();
-        this.parameterized = typeByteCode.hasField();
-        this.behaviour = typeByteCode.hasInstanceMethod();
-        this.polymorphism = typeByteCode.canExtend();
+    public CategoryType(TypeIdentifier typeIdentifier, boolean behaviour, boolean polymorphism, boolean parameterized) {
+        this.typeIdentifier = typeIdentifier;
+        this.behaviour = behaviour;
+        this.polymorphism = polymorphism;
+        this.parameterized = parameterized;
     }
 
     public boolean hasParameter() {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.analyzed;
+package org.dddjava.jig.domain.model.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigloaded.datasource.SqlReadStatus;
 

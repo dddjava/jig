@@ -1,13 +1,13 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzeStatus;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzeStatuses;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzeStatuses;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;

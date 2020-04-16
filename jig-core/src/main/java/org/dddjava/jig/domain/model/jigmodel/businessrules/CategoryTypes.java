@@ -1,11 +1,8 @@
-package org.dddjava.jig.domain.model.jigpresentation.categories;
+package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,11 +12,8 @@ public class CategoryTypes {
 
     private final List<CategoryType> list;
 
-    public CategoryTypes(BusinessRules businessRules) {
-        list = new ArrayList<>();
-        for (BusinessRule businessRule : businessRules.listCategory()) {
-            list.add(new CategoryType(businessRule.typeByteCode()));
-        }
+    public CategoryTypes(List<CategoryType> list) {
+        this.list = list;
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

@@ -1,12 +1,14 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.TypeFactory;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
@@ -33,21 +35,21 @@ public class BusinessRuleService {
      */
     public BusinessRules businessRules(AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        return BusinessRules.from(typeByteCodes, architecture);
+        return TypeFactory.from(typeByteCodes, architecture);
     }
 
     /**
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellAngles methodSmells(AnalyzedImplementation analyzedImplementation) {
-        return new MethodSmellAngles(analyzedImplementation, businessRules(analyzedImplementation));
+        return MethodFactory.createMethodSmellAngles(analyzedImplementation, businessRules(analyzedImplementation));
     }
 
     /**
      * 区分一覧を取得する
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = new CategoryTypes(businessRules(analyzedImplementation));
+        CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         return new CategoryDiagram(categoryTypes, analyzedImplementation);
     }
 
@@ -71,7 +73,7 @@ public class BusinessRuleService {
     }
 
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = new CategoryTypes(businessRules(analyzedImplementation));
+        CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         return new CategoryUsageDiagram(categoryTypes, analyzedImplementation, architecture);
     }
 }

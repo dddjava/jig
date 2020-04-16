@@ -2,8 +2,9 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
+import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
@@ -34,7 +35,7 @@ public class ApplicationService {
      */
     public ControllerMethods controllerAngles(AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
+        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeByteCodes, architecture);
 
         if (controllerMethods.empty()) {
             jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
@@ -53,14 +54,14 @@ public class ApplicationService {
      */
     public ServiceAngles serviceAngles(AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ServiceMethods serviceMethods = new ServiceMethods(typeByteCodes, architecture);
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeByteCodes, architecture);
 
         if (serviceMethods.empty()) {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        ControllerMethods controllerMethods = new ControllerMethods(typeByteCodes, architecture);
-        DatasourceMethods datasourceMethods = new DatasourceMethods(typeByteCodes, architecture);
+        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeByteCodes, architecture);
+        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(typeByteCodes, architecture);
 
         return new ServiceAngles(
                 serviceMethods,
@@ -73,7 +74,7 @@ public class ApplicationService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(AnalyzedImplementation analyzedImplementation) {
-        DatasourceMethods datasourceMethods = new DatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
 
         if (datasourceMethods.empty()) {
             jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
@@ -86,6 +87,6 @@ public class ApplicationService {
      * 文字列比較を分析する
      */
     public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
-        return StringComparingCallerMethods.from(analyzedImplementation, architecture);
+        return MethodFactory.from(analyzedImplementation, architecture);
     }
 }

@@ -4,11 +4,6 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ApplicationLayer;
-import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.List;
 
@@ -21,17 +16,7 @@ import static java.util.stream.Collectors.toList;
 public class ServiceMethods {
     private final List<Method> methods;
 
-    public ServiceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
-        TypeByteCodes applications = ApplicationLayer.APPLICATION.filter(typeByteCodes, architecture);
-
-        this.methods = applications.list().stream()
-                .map(TypeByteCode::instanceMethodByteCodes)
-                .flatMap(List::stream)
-                .map(methodByteCode -> MethodFactory.createMethod(methodByteCode))
-                .collect(toList());
-    }
-
-    private ServiceMethods(List<Method> list) {
+    public ServiceMethods(List<Method> list) {
         this.methods = list;
     }
 

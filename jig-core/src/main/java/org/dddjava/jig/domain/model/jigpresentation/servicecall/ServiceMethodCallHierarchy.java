@@ -90,25 +90,8 @@ public class ServiceMethodCallHierarchy {
                 .add(serviceMethodText)
                 .add(requestHandlerText(angles))
                 .add(repositoryText(angles))
-                .add(legendText(jigDocumentContext))
                 .toString();
         return DiagramSource.createDiagramSource(documentName, graphText);
-    }
-
-
-    /**
-     * 凡例
-     */
-    private String legendText(JigDocumentContext jigDocumentContext) {
-        return new StringJoiner("\n", "subgraph cluster_legend {", "}")
-                .add("label=" + jigDocumentContext.label("legend") + ";")
-                .add(new Node(jigDocumentContext.label("handler_method")).handlerMethod().asText())
-                .add(jigDocumentContext.label("other_method") + ";")
-                .add(new Node(jigDocumentContext.label("not_public_method")).notPublicMethod().asText())
-                .add(new Node("lambda").lambda().asText())
-                .add(new Node(jigDocumentContext.label("controller_method")).other().asText())
-                .add(new Node(jigDocumentContext.label("repository_type")).other().asText())
-                .toString();
     }
 
     /**

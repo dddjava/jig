@@ -7,6 +7,9 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * ユースケース複合図
+ */
 public class UseCaseAndFellowsAngle {
 
     private final List<UseCaseAndFellows> list;
@@ -25,7 +28,7 @@ public class UseCaseAndFellowsAngle {
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.UseCaseAndFellowsDiagram);
         String text = list.stream()
                 .map(useCaseAndFellows -> useCaseAndFellows.dotText(aliasFinder))
-                .collect(Collectors.joining("\n", "digraph JIG {\n" +
+                .collect(Collectors.joining("\n", "digraph \"" + documentName.label() + "\" {\n" +
                         "layout=fdp;\n" +
                         "label=\"" + documentName.label() + "\";\n" +
                         "node[shape=box];\n" +

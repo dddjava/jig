@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCase;
+import org.dddjava.jig.domain.model.jigmodel.usecase.UseCase;
 
 import java.util.HashSet;
 import java.util.List;

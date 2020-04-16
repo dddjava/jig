@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.usecase;
+package org.dddjava.jig.domain.model.jigmodel.usecase;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigdocument.Node;

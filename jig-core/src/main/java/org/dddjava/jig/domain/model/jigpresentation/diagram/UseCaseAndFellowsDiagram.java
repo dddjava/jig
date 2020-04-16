@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigpresentation.diagram;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellows;
+import org.dddjava.jig.domain.model.jigmodel.usecase.UseCaseAndFellows;
 
 import java.util.List;
 import java.util.stream.Collectors;

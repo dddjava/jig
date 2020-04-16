@@ -68,7 +68,7 @@ public class CategoryAngles {
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
         return DiagramSource.createDiagramSource(
-                documentName, new StringJoiner("\n", "graph {", "}")
+                documentName, new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("layout=fdp;")
                 .add("rankdir=LR;")

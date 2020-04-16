@@ -1,17 +1,13 @@
 package org.dddjava.jig.domain.model.jigloader;
 
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigloader.architecture.BuildingBlock;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
-import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngle;
-import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TypeFactory {
 
@@ -41,11 +37,5 @@ public class TypeFactory {
                 typeByteCode.type(),
                 typeByteCode.methodDeclarations(),
                 new CategoryType(typeByteCode.typeIdentifier(), typeByteCode.hasField(), typeByteCode.hasInstanceMethod(), typeByteCode.canExtend()));
-    }
-
-    public static ValidationAngles createValidationAngles(AnalyzedImplementation implementations) {
-        return new ValidationAngles(implementations.typeByteCodes().validationAnnotatedMembers().list().stream()
-                .map(ValidationAngle::new)
-                .collect(Collectors.toList()));
     }
 }

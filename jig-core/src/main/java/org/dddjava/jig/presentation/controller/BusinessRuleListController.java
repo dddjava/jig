@@ -3,9 +3,9 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
+import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
@@ -84,7 +84,9 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
-        ValidationAngles validationAngles = TypeFactory.createValidationAngles(implementations);
+        ValidationAnnotatedMembers validationAnnotatedMembers = implementations.typeByteCodes().validationAnnotatedMembers();
+
+        ValidationAngles validationAngles = ValidationAngles.validationAngles(validationAnnotatedMembers);
         return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);
     }
 

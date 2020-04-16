@@ -6,11 +6,11 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionTypes;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
@@ -46,9 +46,9 @@ public class BusinessRuleService {
     /**
      * 区分一覧を取得する
      */
-    public CategoryAngles categories(AnalyzedImplementation analyzedImplementation) {
+    public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = new CategoryTypes(businessRules(analyzedImplementation));
-        return new CategoryAngles(categoryTypes, analyzedImplementation);
+        return new CategoryDiagram(categoryTypes, analyzedImplementation);
     }
 
     /**
@@ -70,8 +70,8 @@ public class BusinessRuleService {
         return new CollectionAngles(collectionTypes, new ClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
-    public CategoryUsages categoryUsages(AnalyzedImplementation analyzedImplementation) {
+    public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = new CategoryTypes(businessRules(analyzedImplementation));
-        return new CategoryUsages(categoryTypes, analyzedImplementation, architecture);
+        return new CategoryUsageDiagram(categoryTypes, analyzedImplementation, architecture);
     }
 }

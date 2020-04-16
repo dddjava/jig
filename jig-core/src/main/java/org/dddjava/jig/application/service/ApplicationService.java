@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +43,9 @@ public class ApplicationService {
         return controllerMethods;
     }
 
-    public ServiceMethodCallHierarchy serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
+    public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
         ServiceAngles serviceAngles = serviceAngles(implementations);
-        return new ServiceMethodCallHierarchy(serviceAngles.list());
+        return new ServiceMethodCallHierarchyDiagram(serviceAngles.list());
     }
 
     /**

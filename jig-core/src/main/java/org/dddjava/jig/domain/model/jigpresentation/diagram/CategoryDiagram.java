@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.categories;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -7,6 +7,10 @@ import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryType;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
@@ -19,11 +23,11 @@ import static java.util.stream.Collectors.joining;
 /**
  * 区分の切り口一覧
  */
-public class CategoryAngles {
+public class CategoryDiagram {
 
     List<CategoryAngle> list;
 
-    public CategoryAngles(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation) {
+    public CategoryDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation) {
         TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
         this.list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {

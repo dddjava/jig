@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.servicecall;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCase;
 
 import java.util.HashSet;
@@ -20,11 +19,11 @@ import static java.util.stream.Collectors.joining;
 /**
  * サービスメソッド呼び出し
  */
-public class ServiceMethodCallHierarchy {
+public class ServiceMethodCallHierarchyDiagram {
 
     List<ServiceAngle> list;
 
-    public ServiceMethodCallHierarchy(List<ServiceAngle> list) {
+    public ServiceMethodCallHierarchyDiagram(List<ServiceAngle> list) {
         this.list = list;
     }
 

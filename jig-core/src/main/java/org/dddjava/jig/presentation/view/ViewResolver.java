@@ -6,14 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
-import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
-import org.dddjava.jig.domain.model.jigpresentation.businessrule.BusinessRuleRelations;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
-import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
-import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
-import org.dddjava.jig.domain.model.jigpresentation.smell.ReturnBooleanTrace;
-import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.*;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
 import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;
@@ -38,7 +31,7 @@ public class ViewResolver {
         this.diagramFormat = diagramFormat;
     }
 
-    public JigView<PackageNetwork> dependencyWriter() {
+    public JigView<PackageRelationDiagram> dependencyWriter() {
         return newGraphvizjView(model -> {
             List<PackageDepth> depths = model.maxDepth().surfaceList();
 
@@ -51,17 +44,17 @@ public class ViewResolver {
         });
     }
 
-    public JigView<ServiceMethodCallHierarchy> serviceMethodCallHierarchy() {
+    public JigView<ServiceMethodCallHierarchyDiagram> serviceMethodCallHierarchy() {
         return newGraphvizjView(model ->
                 model.methodCallDotText(jigDocumentContext, aliasFinder));
     }
 
-    public JigView<CategoryUsages> enumUsage() {
+    public JigView<CategoryUsageDiagram> enumUsage() {
         return newGraphvizjView(model ->
                 model.diagramSource(aliasFinder, jigDocumentContext));
     }
 
-    public JigView<UseCaseAndFellowsAngle> useCase() {
+    public JigView<UseCaseAndFellowsDiagram> useCase() {
         return newGraphvizjView(model ->
                 model.diagramSource(jigDocumentContext, aliasFinder));
     }
@@ -70,22 +63,22 @@ public class ViewResolver {
         return new GraphvizjView<>(diagram, diagramFormat);
     }
 
-    public JigView<ReturnBooleanTrace> booleanServiceTrace() {
+    public JigView<ReturnBooleanTraceDiagram> booleanServiceTrace() {
         return newGraphvizjView(model ->
                 model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder));
     }
 
-    public JigView<BusinessRuleRelations> businessRuleRelationWriter() {
+    public JigView<BusinessRuleRelationDiagram> businessRuleRelationWriter() {
         return newGraphvizjView(model ->
                 model.relationDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder));
     }
 
-    public JigView<CategoryAngles> categories() {
+    public JigView<CategoryDiagram> categories() {
         return newGraphvizjView(model ->
                 model.valuesDotText(jigDocumentContext, aliasFinder));
     }
 
-    public JigView<ArchitectureAngle> architecture() {
+    public JigView<ArchitectureDiagram> architecture() {
         return newGraphvizjView(model -> model.dotText(ResourceBundleJigDocumentContext.getInstance()));
     }
 }

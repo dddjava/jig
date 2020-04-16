@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 
@@ -15,9 +15,9 @@ public class EnumAngleTest {
 
     @Test
     void readProjectData(BusinessRuleService businessRuleService, AnalyzedImplementation analyzedImplementation) {
-        CategoryAngles categoryAngles = businessRuleService.categories(analyzedImplementation);
+        CategoryDiagram categoryDiagram = businessRuleService.categories(analyzedImplementation);
 
-        assertThat(categoryAngles.list())
+        assertThat(categoryDiagram.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,
                         categoryAngle -> categoryAngle.constantsDeclarationsName(),

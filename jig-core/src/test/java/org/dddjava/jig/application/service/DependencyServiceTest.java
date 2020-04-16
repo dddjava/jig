@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigpresentation.package_.PackageNetwork;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.PackageRelationDiagram;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -17,10 +17,10 @@ public class DependencyServiceTest {
 
     @Test
     void パッケージ依存(DependencyService dependencyService, AnalyzedImplementation analyzedImplementation) {
-        PackageNetwork packageNetwork = dependencyService.packageDependencies(analyzedImplementation);
+        PackageRelationDiagram packageRelationDiagram = dependencyService.packageDependencies(analyzedImplementation);
 
         // パッケージのリストアップ
-        List<String> packageNames = packageNetwork.allPackages().list().stream()
+        List<String> packageNames = packageRelationDiagram.allPackages().list().stream()
                 .map(packageIdentifier -> packageIdentifier.format(value -> value))
                 .collect(Collectors.toList());
         assertThat(packageNames)
@@ -42,7 +42,7 @@ public class DependencyServiceTest {
                 );
 
         // パッケージの関連
-        assertThat(packageNetwork.packageDependencies().list())
+        assertThat(packageRelationDiagram.packageDependencies().list())
                 .extracting(dependency -> {
                     PackageIdentifier from = dependency.from();
                     PackageIdentifier to = dependency.to();

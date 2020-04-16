@@ -30,4 +30,8 @@ public class CategoryType {
     public boolean isPolymorphism() {
         return polymorphism;
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
+    }
 }

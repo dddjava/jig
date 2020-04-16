@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.package_;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigloaded.relation.packages.BidirectionalRel
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.BidirectionalRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 
 import java.util.*;
 
@@ -22,7 +21,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * パッケージの関連
  */
-public class PackageNetwork {
+public class PackageRelationDiagram {
 
     PackageIdentifiers packageIdentifiers;
     PackageRelations packageRelations;
@@ -30,11 +29,11 @@ public class PackageNetwork {
     PackageDepth appliedDepth;
     BidirectionalRelations bidirectionalRelations;
 
-    public PackageNetwork(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations) {
+    public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations) {
         this(packageIdentifiers, packageRelations, classRelations, new PackageDepth(-1));
     }
 
-    private PackageNetwork(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {
+    private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {
         this.packageIdentifiers = packageIdentifiers;
         this.packageRelations = packageRelations.filterBothMatch(packageIdentifiers);
         this.classRelations = classRelations;
@@ -42,8 +41,8 @@ public class PackageNetwork {
         this.bidirectionalRelations = BidirectionalRelations.from(this.packageRelations);
     }
 
-    public static PackageNetwork empty() {
-        return new PackageNetwork(
+    public static PackageRelationDiagram empty() {
+        return new PackageRelationDiagram(
                 new PackageIdentifiers(Collections.emptyList()),
                 new PackageRelations(Collections.emptyList()),
                 null,
@@ -59,8 +58,8 @@ public class PackageNetwork {
         return packageRelations;
     }
 
-    public PackageNetwork applyDepth(PackageDepth depth) {
-        return new PackageNetwork(
+    public PackageRelationDiagram applyDepth(PackageDepth depth) {
+        return new PackageRelationDiagram(
                 packageIdentifiers.applyDepth(depth),
                 packageRelations.applyDepth(depth),
                 this.classRelations,

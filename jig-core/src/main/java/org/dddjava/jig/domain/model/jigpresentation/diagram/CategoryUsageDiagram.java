@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.categories;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
@@ -27,13 +27,13 @@ import static java.util.stream.Collectors.joining;
 /**
  * 区分使用図
  */
-public class CategoryUsages {
+public class CategoryUsageDiagram {
 
     ServiceMethods serviceMethods;
     CategoryTypes categoryTypes;
     ClassRelations classRelations;
 
-    public CategoryUsages(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation, Architecture architecture) {
+    public CategoryUsageDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation, Architecture architecture) {
         this.categoryTypes = categoryTypes;
 
         List<TypeByteCode> collect = analyzedImplementation.typeByteCodes().list()
@@ -67,7 +67,7 @@ public class CategoryUsages {
         }
 
         String enumsText = categoryTypes.list().stream()
-                .map(categoryType -> categoryType.typeIdentifier)
+                .map(categoryType -> categoryType.typeIdentifier())
                 .map(typeIdentifier -> Node.of(typeIdentifier)
                         .normalColor()
                         .label(typeNameOf(typeIdentifier, aliasFinder))

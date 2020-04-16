@@ -1,23 +1,23 @@
-package org.dddjava.jig.domain.model.jigpresentation.architectures;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureFactory;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
+import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.StringJoiner;
 
 /**
- * アーキテクチャの切り口
+ * アーキテクチャ図
  */
-public class ArchitectureAngle {
+public class ArchitectureDiagram {
 
     AnalyzedImplementation analyzedImplementation;
     ArchitectureFactory architectureFactory;
 
-    public ArchitectureAngle(AnalyzedImplementation analyzedImplementation, ArchitectureFactory architectureFactory) {
+    public ArchitectureDiagram(AnalyzedImplementation analyzedImplementation, ArchitectureFactory architectureFactory) {
         this.analyzedImplementation = analyzedImplementation;
         this.architectureFactory = architectureFactory;
     }
@@ -44,7 +44,7 @@ public class ArchitectureAngle {
                 .add("}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
-        RelationText relationText = architectureRelation.toRelationText();
+        RelationText relationText = RelationText.fromPackageRelations(architectureRelation.packageRelations());
         graph.add(relationText.asText());
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }

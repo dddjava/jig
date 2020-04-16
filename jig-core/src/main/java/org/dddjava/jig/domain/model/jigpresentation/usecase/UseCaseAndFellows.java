@@ -19,7 +19,7 @@ public class UseCaseAndFellows {
     UseCase useCase;
     List<TypeIdentifier> controllerTypes;
 
-    UseCaseAndFellows(ServiceAngle serviceAngle) {
+    public UseCaseAndFellows(ServiceAngle serviceAngle) {
         this.useCase = new UseCase(serviceAngle);
         this.controllerTypes = serviceAngle.userControllerMethods().list().stream()
                 .map(methodDeclaration -> methodDeclaration.declaringType())
@@ -27,7 +27,7 @@ public class UseCaseAndFellows {
                 .collect(Collectors.toList());
     }
 
-    String dotText(AliasFinder aliasFinder) {
+    public String dotText(AliasFinder aliasFinder) {
         String useCaseIdentifier = useCase.useCaseIdentifier();
 
         StringBuilder sb = new StringBuilder()

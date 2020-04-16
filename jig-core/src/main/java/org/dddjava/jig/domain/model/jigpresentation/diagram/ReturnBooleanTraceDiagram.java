@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigpresentation.smell;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -14,11 +13,11 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
-public class ReturnBooleanTrace {
+public class ReturnBooleanTraceDiagram {
 
     List<ServiceAngle> list;
 
-    public ReturnBooleanTrace(List<ServiceAngle> list) {
+    public ReturnBooleanTraceDiagram(List<ServiceAngle> list) {
         this.list = list;
     }
 

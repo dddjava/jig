@@ -1,10 +1,12 @@
-package org.dddjava.jig.domain.model.jigpresentation.documentation;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
 
 import java.util.StringJoiner;
 
@@ -28,6 +30,14 @@ public class RelationText {
         RelationText relationText = new RelationText();
         for (ClassRelation classRelation : relations.distinctList()) {
             relationText.add(classRelation.from(), classRelation.to());
+        }
+        return relationText;
+    }
+
+    public static RelationText fromPackageRelations(PackageRelations packageRelations) {
+        RelationText relationText = new RelationText();
+        for (PackageRelation packageRelation : packageRelations.list()) {
+            relationText.add(packageRelation.from(), packageRelation.to());
         }
         return relationText;
     }

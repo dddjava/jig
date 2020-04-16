@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
@@ -78,8 +78,8 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> categoriesReport(AnalyzedImplementation implementations) {
-        CategoryAngles categoryAngles = businessRuleService.categories(implementations);
-        return new ModelReport<>(categoryAngles.list(), CategoryReport::new, CategoryReport.class);
+        CategoryDiagram categoryDiagram = businessRuleService.categories(implementations);
+        return new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class);
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {

@@ -1,8 +1,9 @@
-package org.dddjava.jig.domain.model.jigpresentation.usecase;
+package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellows;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,11 +11,11 @@ import java.util.stream.Collectors;
 /**
  * ユースケース複合図
  */
-public class UseCaseAndFellowsAngle {
+public class UseCaseAndFellowsDiagram {
 
     private final List<UseCaseAndFellows> list;
 
-    public UseCaseAndFellowsAngle(ServiceAngles serviceAngles) {
+    public UseCaseAndFellowsDiagram(ServiceAngles serviceAngles) {
         this.list = serviceAngles.list().stream()
                 .map(UseCaseAndFellows::new)
                 .collect(Collectors.toList());

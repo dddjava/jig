@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigpresentation.documentation.RelationText;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
@@ -69,16 +69,11 @@ public class RoundingPackageRelations {
         return new PackageIdentifier(name);
     }
 
-    public RelationText toRelationText() {
-        RelationText relationText = new RelationText();
-
-        for (PackageRelation packageRelation : list) {
-            relationText.add(packageRelation.from(), packageRelation.to());
-        }
-        return relationText;
-    }
-
     public boolean worthless() {
         return list.isEmpty();
+    }
+
+    public PackageRelations packageRelations() {
+        return new PackageRelations(list);
     }
 }

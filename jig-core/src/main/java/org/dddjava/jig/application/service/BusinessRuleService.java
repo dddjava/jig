@@ -1,5 +1,8 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
@@ -51,7 +54,12 @@ public class BusinessRuleService {
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        return RelationsFactory.createCategoryDiagram(categoryTypes, analyzedImplementation);
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
+        ClassRelations classRelations = RelationsFactory.createClassRelations(typeByteCodes);
+        FieldDeclarations fieldDeclarations = typeByteCodes.instanceFields();
+        StaticFieldDeclarations staticFieldDeclarations = typeByteCodes.staticFields();
+
+        return CategoryDiagram.categoryDiagram(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
     }
 
     /**

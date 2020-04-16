@@ -3,6 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
 import org.dddjava.jig.domain.model.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
@@ -12,6 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.repositories.Datasourc
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
+import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.springframework.stereotype.Service;
@@ -88,5 +90,9 @@ public class ApplicationService {
      */
     public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
         return MethodFactory.from(analyzedImplementation, architecture);
+    }
+
+    public RoundingPackageRelations buildingBlockRelations(AnalyzedImplementation implementations) {
+        return PresentationFactory.roundingPackageRelations(implementations.typeByteCodes());
     }
 }

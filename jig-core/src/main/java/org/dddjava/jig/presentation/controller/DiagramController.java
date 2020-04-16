@@ -4,7 +4,6 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.*;
@@ -58,7 +57,7 @@ public class DiagramController {
 
     @DocumentMapping(JigDocument.ArchitectureDiagram)
     public ArchitectureDiagram architecture(AnalyzedImplementation implementations) {
-        return PresentationFactory.createArchitectureDiagram(implementations, architectureFactory);
+        return new ArchitectureDiagram(applicationService.buildingBlockRelations(implementations));
     }
 
     @DocumentMapping(JigDocument.UseCaseAndFellowsDiagram)

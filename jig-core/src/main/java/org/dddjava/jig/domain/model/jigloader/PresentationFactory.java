@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.jigloader;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigloader.architecture.ArchitectureFactory;
+import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
-import org.dddjava.jig.domain.model.jigpresentation.diagram.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
@@ -21,20 +21,19 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PresentationFactory {
-    public static RoundingPackageRelations roundingPackageRelations(TypeByteCodes typeByteCodes, Architecture architecture) {
-        Pattern protagonistPattern = Pattern.compile(".*\\.(application|domain|infrastructure|presentation)\\..*");
+    public static RoundingPackageRelations roundingPackageRelations(TypeByteCodes typeByteCodes) {
 
         ArrayList<PackageRelation> list = new ArrayList<>();
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             TypeIdentifiers typeIdentifiers = typeByteCode.useTypes();
-            PackageIdentifier fromPackage = packageIdentifier(protagonistPattern, typeByteCode.typeIdentifier());
+            PackageIdentifier fromPackage = packageIdentifier(typeByteCode.typeIdentifier());
 
             for (TypeIdentifier toTypeIdentifier : typeIdentifiers.list()) {
                 if (toTypeIdentifier.isJavaLanguageType()) {
                     // 興味のない関連
                     continue;
                 }
-                PackageIdentifier toPackage = packageIdentifier(protagonistPattern, toTypeIdentifier);
+                PackageIdentifier toPackage = packageIdentifier(toTypeIdentifier);
 
                 if (fromPackage.equals(toPackage)) {
                     // 自己参照
@@ -50,7 +49,9 @@ public class PresentationFactory {
         return new RoundingPackageRelations(list);
     }
 
-    private static PackageIdentifier packageIdentifier(Pattern protagonistPattern, TypeIdentifier typeIdentifier) {
+    private static PackageIdentifier packageIdentifier(TypeIdentifier typeIdentifier) {
+        Pattern protagonistPattern = Pattern.compile(".*\\.(application|domain|infrastructure|presentation)\\..*");
+
         Matcher matcher = protagonistPattern.matcher(typeIdentifier.fullQualifiedName());
         if (matcher.matches()) {
             String protagonistName = matcher.group(1);
@@ -66,18 +67,15 @@ public class PresentationFactory {
         return new PackageIdentifier(name);
     }
 
-    public static ArchitectureDiagram createArchitectureDiagram(AnalyzedImplementation analyzedImplementation, ArchitectureFactory architectureFactory) {
-        return new ArchitectureDiagram(roundingPackageRelations(analyzedImplementation.typeByteCodes(), architectureFactory.architecture()));
-    }
-
     public static CategoryUsageDiagram createCategoryUsageDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation, Architecture architecture) {
-        return new CategoryUsageDiagram(
-                MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture),
-                categoryTypes,
-                RelationsFactory.createClassRelations(new TypeByteCodes(analyzedImplementation.typeByteCodes().list()
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        ClassRelations classRelations = RelationsFactory.createClassRelations(
+                new TypeByteCodes(analyzedImplementation.typeByteCodes().list()
                         .stream()
                         .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
                         .collect(Collectors.toList()))
-                ));
+        );
+
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, classRelations);
     }
 }

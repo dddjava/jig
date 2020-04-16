@@ -1,13 +1,19 @@
 package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -23,6 +29,14 @@ public class CategoryDiagram {
 
     public CategoryDiagram(List<CategoryAngle> list) {
         this.list = list;
+    }
+
+    public static CategoryDiagram categoryDiagram(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+        List<CategoryAngle> list = new ArrayList<>();
+        for (CategoryType categoryType : categoryTypes.list()) {
+            list.add(new CategoryAngle(categoryType, classRelations, fieldDeclarations, staticFieldDeclarations));
+        }
+        return new CategoryDiagram(list);
     }
 
     public List<CategoryAngle> list() {

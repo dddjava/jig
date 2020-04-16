@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
+import org.dddjava.jig.domain.model.jigdocument.Warning;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigdocument.Warning;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
+import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,11 @@ public class ApplicationService {
         }
 
         return controllerMethods;
+    }
+
+    public ServiceMethodCallHierarchy serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
+        ServiceAngles serviceAngles = serviceAngles(implementations);
+        return new ServiceMethodCallHierarchy(serviceAngles.list());
     }
 
     /**

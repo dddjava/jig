@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
+import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
@@ -50,7 +51,7 @@ public class ViewResolver {
         });
     }
 
-    public JigView<ServiceAngles> serviceMethodCallHierarchy() {
+    public JigView<ServiceMethodCallHierarchy> serviceMethodCallHierarchy() {
         return newGraphvizjView(model ->
                 model.methodCallDotText(jigDocumentContext, aliasFinder));
     }

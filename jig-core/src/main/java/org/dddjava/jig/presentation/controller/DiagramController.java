@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleNetwork;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.ArchitectureAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngles;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryUsages;
+import org.dddjava.jig.domain.model.jigpresentation.servicecall.ServiceMethodCallHierarchy;
 import org.dddjava.jig.domain.model.jigpresentation.usecase.UseCaseAndFellowsAngle;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
@@ -52,8 +53,8 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.ServiceMethodCallHierarchyDiagram)
-    public ServiceAngles serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
-        return applicationService.serviceAngles(implementations);
+    public ServiceMethodCallHierarchy serviceMethodCallHierarchy(AnalyzedImplementation implementations) {
+        return applicationService.serviceMethodCallHierarchy(implementations);
     }
 
     @DocumentMapping(JigDocument.BooleanServiceDiagram)

@@ -8,6 +8,11 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
+import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
@@ -41,5 +46,14 @@ public class RelationsFactory {
             }
         }
         return new MethodRelations(list);
+    }
+
+    public static CategoryDiagram createCategoryDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation) {
+        List<CategoryAngle> list = new ArrayList<>();
+        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
+        for (CategoryType categoryType : categoryTypes.list()) {
+            list.add(new CategoryAngle(categoryType, createClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields()));
+        }
+        return new CategoryDiagram(list);
     }
 }

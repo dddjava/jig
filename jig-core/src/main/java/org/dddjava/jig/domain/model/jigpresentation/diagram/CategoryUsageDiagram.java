@@ -8,21 +8,13 @@ import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -35,16 +27,10 @@ public class CategoryUsageDiagram {
     CategoryTypes categoryTypes;
     ClassRelations classRelations;
 
-    public CategoryUsageDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation, Architecture architecture) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, ClassRelations classRelations) {
+        this.serviceMethods = serviceMethods;
         this.categoryTypes = categoryTypes;
-
-        List<TypeByteCode> collect = analyzedImplementation.typeByteCodes().list()
-                .stream()
-                .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
-                .collect(Collectors.toList());
-        this.classRelations = RelationsFactory.createClassRelations(new TypeByteCodes(collect));
-
-        this.serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        this.classRelations = classRelations;
     }
 
     ClassRelations relations() {

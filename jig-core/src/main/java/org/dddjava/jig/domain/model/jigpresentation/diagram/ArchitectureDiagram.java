@@ -1,11 +1,7 @@
 package org.dddjava.jig.domain.model.jigpresentation.diagram;
 
 import org.dddjava.jig.domain.model.jigdocument.*;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigloader.architecture.ArchitectureFactory;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
 import java.util.StringJoiner;
 
@@ -14,20 +10,13 @@ import java.util.StringJoiner;
  */
 public class ArchitectureDiagram {
 
-    AnalyzedImplementation analyzedImplementation;
-    ArchitectureFactory architectureFactory;
+    private final RoundingPackageRelations architectureRelation;
 
-    public ArchitectureDiagram(AnalyzedImplementation analyzedImplementation, ArchitectureFactory architectureFactory) {
-        this.analyzedImplementation = analyzedImplementation;
-        this.architectureFactory = architectureFactory;
+    public ArchitectureDiagram(RoundingPackageRelations architectureRelation) {
+        this.architectureRelation = architectureRelation;
     }
 
     public DiagramSources dotText(JigDocumentContext jigDocumentContext) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-
-        Architecture architecture = architectureFactory.architecture();
-        RoundingPackageRelations architectureRelation = RoundingPackageRelations.form(typeByteCodes, architecture);
-
         if (architectureRelation.worthless()) {
             return DiagramSource.empty();
         }

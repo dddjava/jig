@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigloader.PresentationFactory;
 import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
@@ -50,7 +51,7 @@ public class BusinessRuleService {
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        return new CategoryDiagram(categoryTypes, analyzedImplementation);
+        return RelationsFactory.createCategoryDiagram(categoryTypes, analyzedImplementation);
     }
 
     /**
@@ -74,6 +75,6 @@ public class BusinessRuleService {
 
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        return new CategoryUsageDiagram(categoryTypes, analyzedImplementation, architecture);
+        return PresentationFactory.createCategoryUsageDiagram(categoryTypes, analyzedImplementation, architecture);
     }
 }

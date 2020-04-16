@@ -5,15 +5,9 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -27,12 +21,8 @@ public class CategoryDiagram {
 
     List<CategoryAngle> list;
 
-    public CategoryDiagram(CategoryTypes categoryTypes, AnalyzedImplementation analyzedImplementation) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        this.list = new ArrayList<>();
-        for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType, RelationsFactory.createClassRelations(typeByteCodes), typeByteCodes.instanceFields(), typeByteCodes.staticFields()));
-        }
+    public CategoryDiagram(List<CategoryAngle> list) {
+        this.list = list;
     }
 
     public List<CategoryAngle> list() {
@@ -72,13 +62,13 @@ public class CategoryDiagram {
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
         return DiagramSource.createDiagramSource(
                 documentName, new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
-                .add("label=\"" + documentName.label() + "\";")
-                .add("layout=fdp;")
-                .add("rankdir=LR;")
-                .add(Node.DEFAULT)
-                .add(structureText)
-                .add(categoryText.toString())
-                .toString());
+                        .add("label=\"" + documentName.label() + "\";")
+                        .add("layout=fdp;")
+                        .add("rankdir=LR;")
+                        .add(Node.DEFAULT)
+                        .add(structureText)
+                        .add(categoryText.toString())
+                        .toString());
     }
 
     private String typeNameOf(AliasFinder aliasFinder, TypeIdentifier typeIdentifier) {

@@ -93,7 +93,7 @@ public class Node {
 
     public Node screenNode() {
         // 画面
-        return style("filled").color("lightgray").shape("Msquare");
+        return style("filled").color("lightgray").shape("box");
     }
 
     public Node useCase() {

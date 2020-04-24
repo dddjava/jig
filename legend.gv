@@ -1,24 +1,37 @@
 digraph {
     layout = fdp;
-    label = "凡例 [2020.4.2]";
+    label = "凡例 [2020.4.4]";
     node [shape = box,style = filled,fillcolor = lightgoldenrod];
 
+
+    subgraph cluster1 {
+    label = "サービスメソッド呼び出し図"
+
     usecase [label = "ユースケース", shape = ellipse];
-    handlerMethod [label = "ハンドラとなる\nユースケース", fillcolor = greenyellow, shape = ellipse];
     nonPublicUsecase [label = "パブリックでない\nユースケース", fillcolor = black, style = solid, shape = ellipse];
     lambda [label = "ラムダ", shape = ellipse, fillcolor = gray];
 
-    screen [label = "画面", shape = Msquare, style = filled, fillcolor = lightgray];
-
-    {
-    screen -> usecase [style = dotted,arrowhead = open];
-    usecase -> returnModel [style = bold,arrowhead = none];
-    usecase -> requireModel [style = dashed,arrowhead = open];
-    usecase -> usingModel [style = dotted,arrowhead = open];
+    usecase -> nonPublicUsecase
+    usecase -> lambda
     }
+    subgraph cluster2 {
+    label = "ユースケース複合図"
+
+    handlerUsecase [label = "ハンドラとなる\nユースケース", fillcolor = greenyellow, shape = ellipse];
+    otherUsecase [label = "その他のユースケース", shape = ellipse];
+
+    screen [label = "呼び出し元の画面", shape = box, style = filled, fillcolor = lightgray];
     returnModel [label = "戻り値型", style = solid, fillcolor = whitesmoke]
     requireModel [label = "引数型", style = solid, fillcolor = whitesmoke]
     usingModel [label = "使用する型", style = solid, fillcolor = whitesmoke]
+
+    screen -> handlerUsecase [style = dotted,arrowhead = open];
+    handlerUsecase -> returnModel [style = bold,arrowhead = none];
+    handlerUsecase -> requireModel [style = dashed,arrowhead = open];
+    handlerUsecase -> usingModel [style = dotted,arrowhead = open];
+
+    otherUsecase -> usingModel [style = dotted,arrowhead = open];
+    }
 
     model [label = "一般的なモデル"];
     other1 [label = "主要でないモデル", style = solid, fillcolor = whitesmoke];

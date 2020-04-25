@@ -36,6 +36,10 @@ public class TypeFactory {
                 typeByteCode.isEnum(),
                 typeByteCode.type(),
                 typeByteCode.methodDeclarations(),
-                new CategoryType(typeByteCode.typeIdentifier(), typeByteCode.hasField(), typeByteCode.hasInstanceMethod(), typeByteCode.canExtend()));
+                new CategoryType(
+                        typeByteCode.typeIdentifier(),
+                        typeByteCode.hasField(),
+                        typeByteCode.hasInstanceMethod(),
+                        typeByteCode.canExtend()));
     }
 }

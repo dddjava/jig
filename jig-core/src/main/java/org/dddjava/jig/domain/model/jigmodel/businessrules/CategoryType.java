@@ -11,11 +11,11 @@ public class CategoryType {
     boolean polymorphism;
     boolean parameterized;
 
-    public CategoryType(TypeIdentifier typeIdentifier, boolean behaviour, boolean polymorphism, boolean parameterized) {
+    public CategoryType(TypeIdentifier typeIdentifier, boolean parameterized, boolean behaviour, boolean polymorphism) {
         this.typeIdentifier = typeIdentifier;
+        this.parameterized = parameterized;
         this.behaviour = behaviour;
         this.polymorphism = polymorphism;
-        this.parameterized = parameterized;
     }
 
     public boolean hasParameter() {

@@ -1,8 +1,7 @@
 digraph {
     layout = fdp;
-    label = "凡例 [2020.4.4]";
+    label = "凡例 [2020.5.1]";
     node [shape = box,style = filled,fillcolor = lightgoldenrod];
-
 
     subgraph cluster1 {
     label = "サービスメソッド呼び出し図"
@@ -16,6 +15,7 @@ digraph {
     }
     subgraph cluster2 {
     label = "ユースケース複合図"
+    edge [arrowhead = none];
 
     handlerUsecase [label = "ハンドラとなる\nユースケース", fillcolor = greenyellow, shape = ellipse];
     otherUsecase [label = "その他のユースケース", shape = ellipse];
@@ -25,12 +25,12 @@ digraph {
     requireModel [label = "引数型", style = solid, fillcolor = whitesmoke]
     usingModel [label = "使用する型", style = solid, fillcolor = whitesmoke]
 
-    screen -> handlerUsecase [style = dotted,arrowhead = open];
-    handlerUsecase -> returnModel [style = bold,arrowhead = none];
-    handlerUsecase -> requireModel [style = dashed,arrowhead = open];
-    handlerUsecase -> usingModel [style = dotted,arrowhead = open];
+    screen -> handlerUsecase [style = dotted];
+    handlerUsecase -> returnModel [style = bold];
+    handlerUsecase -> requireModel [style = dashed];
+    handlerUsecase -> usingModel [style = dotted];
 
-    otherUsecase -> usingModel [style = dotted,arrowhead = open];
+    otherUsecase -> usingModel [style = dotted];
     }
 
     model [label = "一般的なモデル"];

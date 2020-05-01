@@ -33,6 +33,7 @@ public class UseCaseAndFellowsDiagram {
                         "layout=fdp;\n" +
                         "label=\"" + documentName.label() + "\";\n" +
                         "node[shape=box];\n" +
+                        "edge[arrowhead=none];\n" +
                         "", "}"));
 
         return DiagramSource.createDiagramSource(documentName, text);

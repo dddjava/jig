@@ -39,22 +39,22 @@ public class UseCaseAndFellows {
         // bold, headなし
         Optional<TypeIdentifier> primaryType = useCase.primaryType();
         primaryType.ifPresent(typeIdentifier -> {
-                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold,arrowhead=none];\n", typeIdentifier.fullQualifiedName(), useCaseIdentifier));
-                    otherTypes.add(typeIdentifier);
+                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeIdentifier.fullQualifiedName(), useCaseIdentifier));
+            otherTypes.add(typeIdentifier);
                 }
         );
 
         // 引数へのEdge
         // dashed, headあり
         for (TypeIdentifier requireType : useCase.requireTypes()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, requireType.fullQualifiedName()));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", useCaseIdentifier, requireType.fullQualifiedName()));
             otherTypes.add(requireType);
         }
 
         // 内部使用クラスへのEdge
         // dotted, headあり
         for (TypeIdentifier usingType : useCase.internalUsingTypes()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed,arrowhead=open];\n", useCaseIdentifier, usingType.fullQualifiedName()));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", useCaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }
 
@@ -81,7 +81,7 @@ public class UseCaseAndFellows {
             );
 
             // dotted, headあり
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted,arrowhead=open];\n", controllerType.fullQualifiedName(), useCaseIdentifier));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted];\n", controllerType.fullQualifiedName(), useCaseIdentifier));
         }
 
         return sb.toString();

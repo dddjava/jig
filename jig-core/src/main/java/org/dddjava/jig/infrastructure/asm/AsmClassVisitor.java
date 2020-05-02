@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.declaration.annotation.*;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.declaration.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.Arguments;
@@ -70,7 +71,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), name, fieldType);
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), fieldType, new FieldIdentifier(name));
             // インスタンスフィールドだけ相手にする
             typeByteCode.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
@@ -125,8 +126,10 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                TypeIdentifier declaringType = new TypeIdentifier(owner);
                 FieldType fieldType = typeDescriptorToFieldType(descriptor);
-                FieldDeclaration fieldDeclaration = new FieldDeclaration(new TypeIdentifier(owner), name, fieldType);
+                FieldIdentifier fieldIdentifier = new FieldIdentifier(name);
+                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, fieldIdentifier);
                 methodByteCode.registerFieldInstruction(fieldDeclaration);
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);

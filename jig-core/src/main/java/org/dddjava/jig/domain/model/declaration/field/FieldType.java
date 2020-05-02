@@ -38,4 +38,8 @@ public class FieldType {
                 .collect(Collectors.joining(", ", "<", ">"));
         return sb.append(typeParametersText).toString();
     }
+
+    public TypeIdentifier nonGenericTypeIdentifier() {
+        return typeIdentifier;
+    }
 }

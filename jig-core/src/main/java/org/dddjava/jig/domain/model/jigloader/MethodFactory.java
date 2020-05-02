@@ -41,7 +41,7 @@ public class MethodFactory {
                 methodByteCode.decisionNumber(),
                 methodByteCode.annotatedMethods(),
                 methodByteCode.accessor(),
-                new UsingFields(methodByteCode.usingFields().list()),
+                new UsingFields(methodByteCode.usingFields()),
                 new UsingMethods(methodByteCode.usingMethods()));
     }
 

@@ -32,7 +32,7 @@ public class BusinessRuleService {
 
     Architecture architecture;
 
-    public BusinessRuleService(Architecture architecture) {
+    BusinessRuleService(Architecture architecture) {
         this.architecture = architecture;
     }
 
@@ -83,6 +83,9 @@ public class BusinessRuleService {
         return new CollectionAngles(collectionTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
     }
 
+    /**
+     * 区分使用図
+     */
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);

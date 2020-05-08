@@ -31,14 +31,6 @@ public enum ApplicationDocument {
     ServiceMethodCallHierarchyDiagram,
 
     /**
-     * 真偽値サービス関連ダイアグラム
-     *
-     * 真偽値を返すサービスと使用しているメソッドを可視化する。
-     * 真偽値にビジネスルールが埋もれていないかの検出に使用できる。
-     */
-    BooleanServiceDiagram,
-
-    /**
      * ユースケース複合図
      */
     UseCaseAndFellowsDiagram;

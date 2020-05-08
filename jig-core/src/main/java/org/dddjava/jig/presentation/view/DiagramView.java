@@ -34,12 +34,6 @@ public enum DiagramView {
             return viewResolver.categories();
         }
     },
-    BooleanServiceDiagram(JigDocument.BooleanServiceDiagram) {
-        @Override
-        JigView<?> create(ViewResolver viewResolver) {
-            return viewResolver.booleanServiceTrace();
-        }
-    },
     ArchitectureDiagram(JigDocument.ArchitectureDiagram) {
         @Override
         JigView<?> create(ViewResolver viewResolver) {

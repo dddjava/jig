@@ -63,11 +63,6 @@ public class ViewResolver {
         return new GraphvizjView<>(diagram, diagramFormat);
     }
 
-    public JigView<ReturnBooleanTraceDiagram> booleanServiceTrace() {
-        return newGraphvizjView(model ->
-                model.returnBooleanTraceDotText(jigDocumentContext, methodNodeLabelStyle, aliasFinder));
-    }
-
     public JigView<BusinessRuleRelationDiagram> businessRuleRelationWriter() {
         return newGraphvizjView(model ->
                 model.relationDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder));

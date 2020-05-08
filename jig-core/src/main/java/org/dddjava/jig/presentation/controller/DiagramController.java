@@ -50,11 +50,6 @@ public class DiagramController {
         return applicationService.serviceMethodCallHierarchy(implementations);
     }
 
-    @DocumentMapping(JigDocument.BooleanServiceDiagram)
-    public ReturnBooleanTraceDiagram booleanServiceTrace(AnalyzedImplementation implementations) {
-        return new ReturnBooleanTraceDiagram(applicationService.serviceAngles(implementations).list());
-    }
-
     @DocumentMapping(JigDocument.ArchitectureDiagram)
     public ArchitectureDiagram architecture(AnalyzedImplementation implementations) {
         return new ArchitectureDiagram(applicationService.buildingBlockRelations(implementations));

@@ -14,7 +14,7 @@ Mavenなど他のビルドツールを使用していたり、ソースやター
 
 ### JIGのダウンロード
 
-[直近のリリース](https://github.com/dddjava/Jig/releases/latest)から `jig-cli.jar` をダウンロードしてください。
+[直近のリリース](https://github.com/dddjava/jig/releases/latest)から `jig-cli.jar` をダウンロードしてください。
 
 ### プロジェクトのビルド
 
@@ -48,4 +48,4 @@ $ java -jar jig-cli.jar --documentType=ServiceMethodCallHierarchyDiagram
 
 ## 困ったら
 
-[HELP](https://github.com/dddjava/Jig/wiki/HELP) を参照してみてください。
+[HELP](https://github.com/dddjava/jig/wiki/HELP) を参照してみてください。

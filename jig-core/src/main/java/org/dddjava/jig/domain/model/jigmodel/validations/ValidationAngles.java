@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.validations;
 
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,8 @@ public class ValidationAngles {
     }
 
     public List<ValidationAngle> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(validationAngle -> validationAngle.typeIdentifier()))
+                .collect(Collectors.toList());
     }
 }

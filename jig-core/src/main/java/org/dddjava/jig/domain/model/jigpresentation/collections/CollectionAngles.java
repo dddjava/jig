@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.jigpresentation.collections;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * コレクションの切り口一覧
@@ -20,6 +22,8 @@ public class CollectionAngles {
     }
 
     public List<CollectionAngle> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(collectionAngle -> collectionAngle.typeIdentifier()))
+                .collect(Collectors.toList());
     }
 }

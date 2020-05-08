@@ -7,7 +7,9 @@ import org.dddjava.jig.domain.model.jigloaded.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * メソッドの不吉なにおい一覧
@@ -32,6 +34,8 @@ public class MethodSmellAngles {
     }
 
     public List<MethodSmellAngle> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(methodSmellAngle -> methodSmellAngle.methodDeclaration().asFullNameText()))
+                .collect(Collectors.toList());
     }
 }

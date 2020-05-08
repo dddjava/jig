@@ -14,15 +14,17 @@ import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * 区分の切り口一覧
  */
+// TODO Diagram以外にも使われている。。。
 public class CategoryDiagram {
 
     List<CategoryAngle> list;
@@ -40,7 +42,9 @@ public class CategoryDiagram {
     }
 
     public List<CategoryAngle> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(categoryAngle -> categoryAngle.typeIdentifier()))
+                .collect(toList());
     }
 
     public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
@@ -50,7 +54,7 @@ public class CategoryDiagram {
 
         List<TypeIdentifier> categoryTypeIdentifiers = list.stream()
                 .map(categoryAngle -> categoryAngle.typeIdentifier())
-                .collect(Collectors.toList());
+                .collect(toList());
 
         PackageStructure packageStructure = PackageStructure.from(categoryTypeIdentifiers);
 

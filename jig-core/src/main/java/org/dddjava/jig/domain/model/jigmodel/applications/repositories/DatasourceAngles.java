@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * データソースの切り口一覧
@@ -21,6 +23,8 @@ public class DatasourceAngles {
     }
 
     public List<DatasourceAngle> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(datasourceAngle -> datasourceAngle.method().asFullNameText()))
+                .collect(Collectors.toList());
     }
 }

@@ -13,7 +13,7 @@ public class BusinessRulePackages {
 
     public List<BusinessRulePackage> list() {
         return list.stream()
-                .sorted(Comparator.comparing(businessRulePackage -> businessRulePackage.packageIdentifier.asText()))
+                .sorted(Comparator.comparing(businessRulePackage -> businessRulePackage.packageIdentifier().asText()))
                 .collect(Collectors.toList());
     }
 }

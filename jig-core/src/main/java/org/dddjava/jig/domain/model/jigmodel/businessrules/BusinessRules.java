@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.declaration.type.Type;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +22,9 @@ public class BusinessRules {
     }
 
     public List<BusinessRule> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(BusinessRule::typeIdentifier))
+                .collect(Collectors.toList());
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

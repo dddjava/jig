@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.applications.controllers;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.RequestHandlerMethod;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -19,7 +20,9 @@ public class ControllerMethods {
     }
 
     public List<RequestHandlerMethod> list() {
-        return list;
+        return list.stream()
+                .sorted(Comparator.comparing(requestHandlerMethod -> requestHandlerMethod.method().declaration().asFullNameText()))
+                .collect(toList());
     }
 
     public boolean empty() {

@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 /**
  * ユースケースと愉快な仲間たち
  */
-public class UseCaseAndFellows {
-    UseCase useCase;
+public class CompositeUsecases {
+    Usecase usecase;
     List<TypeIdentifier> controllerTypes;
 
-    public UseCaseAndFellows(ServiceAngle serviceAngle) {
-        this.useCase = new UseCase(serviceAngle);
+    public CompositeUsecases(ServiceAngle serviceAngle) {
+        this.usecase = new Usecase(serviceAngle);
         this.controllerTypes = serviceAngle.userControllerMethods().list().stream()
                 .map(methodDeclaration -> methodDeclaration.declaringType())
                 .distinct()
@@ -28,37 +28,34 @@ public class UseCaseAndFellows {
     }
 
     public String dotText(AliasFinder aliasFinder) {
-        String useCaseIdentifier = useCase.useCaseIdentifier();
+        String usecaseIdentifier = usecase.usecaseIdentifier();
 
         StringBuilder sb = new StringBuilder()
-                .append(useCase.dotText(aliasFinder));
+                .append(usecase.dotText(aliasFinder));
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 
         // 戻り値へのEdge
-        // bold, headなし
-        Optional<TypeIdentifier> primaryType = useCase.primaryType();
+        Optional<TypeIdentifier> primaryType = usecase.primaryType();
         primaryType.ifPresent(typeIdentifier -> {
-                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeIdentifier.fullQualifiedName(), useCaseIdentifier));
-            otherTypes.add(typeIdentifier);
+                    sb.append(String.format("\"%s\" -> \"%s\"[style=bold];\n", typeIdentifier.fullQualifiedName(), usecaseIdentifier));
+                    otherTypes.add(typeIdentifier);
                 }
         );
 
         // 引数へのEdge
-        // dashed, headあり
-        for (TypeIdentifier requireType : useCase.requireTypes()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", useCaseIdentifier, requireType.fullQualifiedName()));
+        for (TypeIdentifier requireType : usecase.requireTypes()) {
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", usecaseIdentifier, requireType.fullQualifiedName()));
             otherTypes.add(requireType);
         }
 
         // 内部使用クラスへのEdge
-        // dotted, headあり
-        for (TypeIdentifier usingType : useCase.internalUsingTypes()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", useCaseIdentifier, usingType.fullQualifiedName()));
+        for (TypeIdentifier usingType : usecase.internalUsingTypes()) {
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", usecaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }
 
-        // UseCaseが使用しているクラスのNode
+        // Usecaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
             TypeAlias typeAlias = aliasFinder.find(otherType);
             sb.append(
@@ -81,7 +78,7 @@ public class UseCaseAndFellows {
             );
 
             // dotted, headあり
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted];\n", controllerType.fullQualifiedName(), useCaseIdentifier));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted];\n", controllerType.fullQualifiedName(), usecaseIdentifier));
         }
 
         return sb.toString();

@@ -54,7 +54,7 @@ public class ViewResolver {
                 model.diagramSource(aliasFinder, jigDocumentContext));
     }
 
-    public JigView<UseCaseAndFellowsDiagram> useCase() {
+    public JigView<CompositeUsecaseDiagram> compositeUsecaseDiagram() {
         return newGraphvizjView(model ->
                 model.diagramSource(jigDocumentContext, aliasFinder));
     }

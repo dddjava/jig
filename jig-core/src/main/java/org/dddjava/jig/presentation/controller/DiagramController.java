@@ -55,8 +55,8 @@ public class DiagramController {
         return new ArchitectureDiagram(applicationService.buildingBlockRelations(implementations));
     }
 
-    @DocumentMapping(JigDocument.UseCaseAndFellowsDiagram)
-    public UseCaseAndFellowsDiagram useCaseDiagram(AnalyzedImplementation analyzedImplementation) {
-        return new UseCaseAndFellowsDiagram(applicationService.serviceAngles(analyzedImplementation));
+    @DocumentMapping(JigDocument.CompositeUsecaseDiagram)
+    public CompositeUsecaseDiagram useCaseDiagram(AnalyzedImplementation analyzedImplementation) {
+        return new CompositeUsecaseDiagram(applicationService.serviceAngles(analyzedImplementation));
     }
 }

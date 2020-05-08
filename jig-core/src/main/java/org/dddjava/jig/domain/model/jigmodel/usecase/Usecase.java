@@ -13,14 +13,14 @@ import java.util.Optional;
 /**
  * ユースケース
  */
-public class UseCase {
+public class Usecase {
 
     ServiceMethod serviceMethod;
-    boolean useController;
+    UsecaseCategory usecaseCategory;
 
-    public UseCase(ServiceAngle serviceAngle) {
+    public Usecase(ServiceAngle serviceAngle) {
         this.serviceMethod = serviceAngle.serviceMethod();
-        this.useController = serviceAngle.usingFromController();
+        this.usecaseCategory = UsecaseCategory.resolver(serviceAngle);
     }
 
     List<TypeIdentifier> internalUsingTypes() {
@@ -35,7 +35,7 @@ public class UseCase {
         return serviceMethod.requireTypes();
     }
 
-    public String useCaseIdentifier() {
+    public String usecaseIdentifier() {
         return serviceMethod.methodDeclaration().asFullNameText();
     }
 
@@ -49,11 +49,11 @@ public class UseCase {
     }
 
     public Node node(AliasFinder aliasFinder) {
-        Node node = new Node(useCaseIdentifier())
+        Node node = new Node(usecaseIdentifier())
                 .shape("ellipse")
                 .label(useCaseLabel(aliasFinder))
                 .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
                 .style("filled");
-        return useController ? node.handlerMethod() : node.normalColor();
+        return usecaseCategory.handler() ? node.handlerMethod() : node.normalColor();
     }
 }

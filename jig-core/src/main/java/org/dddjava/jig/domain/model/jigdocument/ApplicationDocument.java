@@ -33,5 +33,5 @@ public enum ApplicationDocument {
     /**
      * ユースケース複合図
      */
-    UseCaseAndFellowsDiagram;
+    CompositeUsecaseDiagram;
 }

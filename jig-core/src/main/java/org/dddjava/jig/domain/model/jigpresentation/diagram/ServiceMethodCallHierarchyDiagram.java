@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.*;
 import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigmodel.usecase.UseCase;
+import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
 
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +51,7 @@ public class ServiceMethodCallHierarchyDiagram {
                     if (method.isLambda()) {
                         return node.label("(lambda)").lambda().asText();
                     }
-                    UseCase useCase = new UseCase(serviceAngle);
+                    Usecase useCase = new Usecase(serviceAngle);
 
                     Node useCaseNode = useCase.node(aliasFinder);
 

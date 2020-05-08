@@ -40,10 +40,10 @@ public enum DiagramView {
             return viewResolver.architecture();
         }
     },
-    UseCaseAndFellows(JigDocument.UseCaseAndFellowsDiagram) {
+    CompositeUsecaseDiagram(JigDocument.CompositeUsecaseDiagram) {
         @Override
         JigView<?> create(ViewResolver viewResolver) {
-            return viewResolver.useCase();
+            return viewResolver.compositeUsecaseDiagram();
         }
     };
 

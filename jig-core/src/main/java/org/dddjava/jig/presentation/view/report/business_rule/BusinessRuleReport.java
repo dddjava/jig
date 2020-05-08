@@ -15,6 +15,7 @@ public class BusinessRuleReport {
         this.businessRule = businessRule;
     }
 
+    @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     public Type typeIdentifier() {

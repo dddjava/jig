@@ -16,6 +16,7 @@ public class CategoryReport {
         this.angle = angle;
     }
 
+    @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     public TypeIdentifier typeIdentifier() {

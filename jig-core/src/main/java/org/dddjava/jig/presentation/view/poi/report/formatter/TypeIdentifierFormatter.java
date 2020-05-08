@@ -21,12 +21,13 @@ class TypeIdentifierFormatter implements ReportItemFormatter {
     public String format(ReportItem itemCategory, Object item) {
         TypeIdentifier typeIdentifier = (TypeIdentifier) item;
         switch (itemCategory) {
+            case パッケージ名:
+                return typeIdentifier.packageIdentifier().asText();
             case クラス名:
-                return convertContext.typeIdentifierFormatter.format(typeIdentifier.fullQualifiedName());
-            case クラス別名:
-                return convertContext.aliasService.typeAliasOf(typeIdentifier).asText();
             case 単純クラス名:
                 return typeIdentifier.asSimpleText();
+            case クラス別名:
+                return convertContext.aliasService.typeAliasOf(typeIdentifier).asText();
         }
 
         throw new IllegalArgumentException(itemCategory.name());

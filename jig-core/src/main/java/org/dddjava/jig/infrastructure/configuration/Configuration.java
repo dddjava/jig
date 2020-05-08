@@ -67,13 +67,11 @@ public class Configuration {
                 prefixRemoveIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
         );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(
-                prefixRemoveIdentifierFormatter,
                 aliasService,
                 applicationService,
                 businessRuleService
         );
         ApplicationListController applicationListController = new ApplicationListController(
-                prefixRemoveIdentifierFormatter,
                 aliasService,
                 applicationService,
                 businessRuleService

@@ -14,6 +14,7 @@ public class StringComparingReport {
         this.method = method;
     }
 
+    @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     public Method method() {

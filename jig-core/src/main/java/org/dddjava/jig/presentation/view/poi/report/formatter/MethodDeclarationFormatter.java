@@ -27,6 +27,7 @@ class MethodDeclarationFormatter implements ReportItemFormatter {
     public String format(ReportItem itemCategory, Object item) {
         MethodDeclaration methodDeclaration = (MethodDeclaration) item;
         switch (itemCategory) {
+            case パッケージ名:
             case クラス名:
             case クラス別名:
                 return new TypeIdentifierFormatter(convertContext).format(itemCategory, methodDeclaration.declaringType());

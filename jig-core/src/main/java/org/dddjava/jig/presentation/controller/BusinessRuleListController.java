@@ -4,7 +4,6 @@ import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
@@ -31,11 +30,10 @@ public class BusinessRuleListController {
     ApplicationService applicationService;
     BusinessRuleService businessRuleService;
 
-    public BusinessRuleListController(TypeIdentifierFormatter typeIdentifierFormatter,
-                                      AliasService aliasService,
+    public BusinessRuleListController(AliasService aliasService,
                                       ApplicationService applicationService,
                                       BusinessRuleService businessRuleService) {
-        this.convertContext = new ConvertContext(aliasService, typeIdentifierFormatter);
+        this.convertContext = new ConvertContext(aliasService);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
     }

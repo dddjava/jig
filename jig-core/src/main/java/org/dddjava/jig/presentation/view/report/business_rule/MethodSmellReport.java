@@ -18,6 +18,7 @@ public class MethodSmellReport {
         this.angle = angle;
     }
 
+    @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     @ReportItemFor(ReportItem.メソッドシグネチャ)

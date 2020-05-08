@@ -21,6 +21,7 @@ class MethodFormatter implements ReportItemFormatter {
     public String format(ReportItem itemCategory, Object item) {
         Method method = (Method) item;
         switch (itemCategory) {
+            case パッケージ名:
             case クラス名:
             case クラス別名:
             case メソッドシグネチャ:

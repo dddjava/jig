@@ -32,7 +32,7 @@ public class BusinessRuleService {
 
     Architecture architecture;
 
-    BusinessRuleService(Architecture architecture) {
+    public BusinessRuleService(Architecture architecture) {
         this.architecture = architecture;
     }
 

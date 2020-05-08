@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.List;
 
+import static org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers.collector;
+
 /**
  * 区分一覧
  */
@@ -17,7 +19,8 @@ public class CategoryTypes {
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {
-        return list.stream().anyMatch(categoryType -> categoryType.typeIdentifier.equals(typeIdentifier));
+        return list.stream()
+                .anyMatch(categoryType -> categoryType.typeIdentifier().equals(typeIdentifier));
     }
 
     public List<CategoryType> list() {
@@ -30,7 +33,7 @@ public class CategoryTypes {
 
     public TypeIdentifiers typeIdentifiers() {
         return list.stream()
-                .map(categoryType -> categoryType.typeIdentifier)
-                .collect(TypeIdentifiers.collector());
+                .map(CategoryType::typeIdentifier)
+                .collect(collector());
     }
 }

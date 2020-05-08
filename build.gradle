@@ -96,8 +96,8 @@ project(':jig-core') {
                 from components.java
                 pom {
                     name = "jig-core"
-                    description = "Core of Jig"
-                    url = "https://github.com/dddjava/Jig"
+                    description = "Core of JIG"
+                    url = "https://github.com/dddjava/jig"
                     licenses {
                         license {
                             name = "The Apache Software License, Version 2.0"
@@ -118,7 +118,7 @@ project(':jig-core') {
                         }
                     }
                     scm {
-                        url = "https://github.com/dddjava/Jig.git"
+                        url = "https://github.com/dddjava/jig.git"
                     }
                 }
             }
@@ -134,10 +134,10 @@ project(':jig-core') {
         pkg {
             repo = 'jig'
             name = 'jig-core'
-            desc = 'core of Jig'
+            desc = 'Core of JIG'
             userOrg = 'dddjava'
-            websiteUrl = 'https://github.com/dddjava/Jig'
-            vcsUrl = 'https://github.com/dddjava/Jig.git'
+            websiteUrl = 'https://github.com/dddjava/jig'
+            vcsUrl = 'https://github.com/dddjava/jig.git'
             licenses = ["Apache-2.0"]
             publish = true
             publicDownloadNumbers = true
@@ -284,15 +284,15 @@ project(':jig-gradle-plugin') {
 
 
     pluginBundle {
-        website = 'https://github.com/dddjava/Jig'
-        vcsUrl = 'https://github.com/dddjava/Jig.git'
+        website = 'https://github.com/dddjava/jig'
+        vcsUrl = 'https://github.com/dddjava/jig.git'
         description = 'Visualizing code for DDD'
         tags = ['ddd', 'visualize']
 
         plugins {
             jigGradlePlugin {
                 id = "org.dddjava.${project.artifactId}"
-                displayName = 'Jig Gradle Plugin'
+                displayName = 'JIG Gradle Plugin'
             }
         }
     }

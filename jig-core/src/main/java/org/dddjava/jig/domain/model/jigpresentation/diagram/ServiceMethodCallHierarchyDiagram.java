@@ -8,10 +8,7 @@ import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.joining;
@@ -70,13 +67,16 @@ public class ServiceMethodCallHierarchyDiagram {
                 .map(entry ->
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
+                                + "style=solid;"
                                 + "label=\"" + aliasLineOf(entry.getKey(), aliasFinder) + entry.getKey().asSimpleText() + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")
-                .collect(joining("\n"));
+                .collect(joining("\n",
+                        "subgraph cluster_usecases {style=invis;",
+                        "}"));
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ServiceMethodCallHierarchyDiagram);
 
@@ -87,7 +87,7 @@ public class ServiceMethodCallHierarchyDiagram {
                 .add(relationText.asText())
                 .add(subgraphText)
                 .add(serviceMethodText)
-                .add(requestHandlerText(angles))
+                .add(requestHandlerText(angles, aliasFinder))
                 .add(repositoryText(angles))
                 .toString();
         return DiagramSource.createDiagramSource(documentName, graphText);
@@ -98,7 +98,8 @@ public class ServiceMethodCallHierarchyDiagram {
      *
      * [RequestHandlerMethod] --> [ServiceMethod]
      */
-    private String requestHandlerText(List<ServiceAngle> angles) {
+    private String requestHandlerText(List<ServiceAngle> angles, AliasFinder aliasFinder) {
+
         Set<MethodDeclaration> handlers = new HashSet<>();
         RelationText handlingRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
@@ -107,13 +108,38 @@ public class ServiceMethodCallHierarchyDiagram {
                 handlers.add(handlerMethod);
             }
         }
-        String requestHandlerMethods = handlers.stream()
-                .map(handler -> Node.of(handler).other().label(handler.asSimpleText()))
-                .map(Node::asText)
-                .collect(joining("\n"));
-        return new StringJoiner("\n")
-                .add("{rank=same;").add(requestHandlerMethods).add("}")
-                .add("{edge [style=dashed];").add(handlingRelation.asText()).add("}")
+
+        StringJoiner dotTextBuilder = new StringJoiner("\n");
+        // Controllerのクラスでグルーピング
+        dotTextBuilder.add("subgraph cluster_controllers{")
+                .add("rank=same;")
+                .add("style=invis;");
+        Map<TypeIdentifier, List<MethodDeclaration>> handlerMap = handlers.stream()
+                .collect(groupingBy(MethodDeclaration::declaringType));
+        handlerMap.forEach((handlerType, v) -> {
+            String requestHandlerMethods = v.stream()
+                    .map(method -> Node.of(method)
+                            .screenNode()
+                            .label(method.methodSignature().methodName()))
+                    .map(Node::asText)
+                    .collect(joining("\n"));
+
+            dotTextBuilder
+                    .add("subgraph \"cluster_" + handlerType.fullQualifiedName() + "\" {")
+                    .add("label=\"" + aliasFinder.find(handlerType).asTextOrDefault(handlerType.asSimpleText()) + "\";")
+                    // 画面の色と合わせる
+                    .add("style=solid;")
+                    .add("bgcolor=lightgrey;")
+                    .add(requestHandlerMethods)
+                    .add("}");
+        });
+        dotTextBuilder.add("}");
+
+        return dotTextBuilder
+                .add("{")
+                .add("edge [style=dashed];")
+                .add(handlingRelation.asText())
+                .add("}")
                 .toString();
     }
 

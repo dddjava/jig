@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,12 +64,27 @@ public class ClassRelations {
         return results;
     }
 
-    public TypeIdentifiers collectTypeIdentifiers() {
+    public TypeIdentifiers allTypeIdentifiers() {
         return list.stream()
                 .flatMap(classRelation -> Stream.of(classRelation.from(), classRelation.to()))
                 .map(TypeIdentifier::normalize)
                 .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
+    }
+
+    public ClassRelations relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
+        HashSet<ClassRelation> set = new HashSet<>();
+
+        int size = set.size();
+        while (true) {
+            ClassRelations temp = filterRelationsTo(toTypeIdentifiers);
+            set.addAll(temp.list());
+
+            if (size == set.size()) break;
+            size = set.size();
+            toTypeIdentifiers = temp.fromTypeIdentifiers();
+        }
+        return new ClassRelations(new ArrayList<>(set));
     }
 }

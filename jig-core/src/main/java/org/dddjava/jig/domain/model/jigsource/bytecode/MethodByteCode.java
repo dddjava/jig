@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodDepend;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
@@ -45,6 +46,13 @@ public class MethodByteCode {
         this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
+    }
+
+    public MethodDepend methodDepend() {
+        return new MethodDepend(
+                useTypes(),
+                usingFields.stream().collect(FieldDeclarations.collector()),
+                usingMethods());
     }
 
     public void registerFieldInstruction(FieldDeclaration field) {
@@ -92,10 +100,6 @@ public class MethodByteCode {
 
     public Set<TypeIdentifier> useTypes() {
         return useTypes;
-    }
-
-    public FieldDeclarations usingFields() {
-        return usingFields.stream().collect(FieldDeclarations.collector());
     }
 
     public MethodDeclarations usingMethods() {

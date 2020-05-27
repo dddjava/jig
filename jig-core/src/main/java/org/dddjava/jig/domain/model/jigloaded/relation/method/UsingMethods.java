@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloaded.richmethod;
+package org.dddjava.jig.domain.model.jigloaded.relation.method;
 
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;

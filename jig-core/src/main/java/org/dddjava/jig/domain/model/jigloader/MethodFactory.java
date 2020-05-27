@@ -8,7 +8,9 @@ import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.*;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigloaded.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigloader.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
@@ -41,8 +43,7 @@ public class MethodFactory {
                 methodByteCode.decisionNumber(),
                 methodByteCode.annotatedMethods(),
                 methodByteCode.accessor(),
-                new UsingFields(methodByteCode.usingFields()),
-                new UsingMethods(methodByteCode.usingMethods()));
+                methodByteCode.methodDepend());
     }
 
     public static RequestHandlerMethod createRequestHandlerMethod(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {

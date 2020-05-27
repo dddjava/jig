@@ -4,6 +4,9 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodDepend;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingMethods;
 
 /**
  * メソッド
@@ -17,18 +20,17 @@ public class Method {
     DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
     Accessor accessor;
-    UsingFields usingFields;
-    UsingMethods usingMethods;
 
-    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, boolean referenceNull, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, UsingFields usingFields, UsingMethods usingMethods) {
+    MethodDepend methodDepend;
+
+    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, boolean referenceNull, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, MethodDepend methodDepend) {
         this.methodDeclaration = methodDeclaration;
         this.nullDecision = nullDecision;
         this.referenceNull = referenceNull;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
         this.accessor = accessor;
-        this.usingFields = usingFields;
-        this.usingMethods = usingMethods;
+        this.methodDepend = methodDepend;
     }
 
     public MethodDeclaration declaration() {
@@ -48,11 +50,11 @@ public class Method {
     }
 
     public UsingFields usingFields() {
-        return usingFields;
+        return methodDepend.usingFields();
     }
 
     public UsingMethods usingMethods() {
-        return usingMethods;
+        return methodDepend.usingMethods();
     }
 
     public MethodWorries methodWorries() {

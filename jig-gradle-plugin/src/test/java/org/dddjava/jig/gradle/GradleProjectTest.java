@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
-import org.gradle.api.internal.project.DefaultProjectAccessListener;
+import org.gradle.api.internal.project.ConfigurationOnDemandProjectAccessListener;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -195,7 +195,7 @@ class GradleProjectTest {
     }
 
     private static DefaultProjectDependency dependencyOf(ProjectInternal nonJavaChild) {
-        return new DefaultProjectDependency(nonJavaChild, new DefaultProjectAccessListener(), true);
+        return new DefaultProjectDependency(nonJavaChild, new ConfigurationOnDemandProjectAccessListener(), true);
     }
 
     private static ProjectInternal projectOf(String name, Path tempDir) {

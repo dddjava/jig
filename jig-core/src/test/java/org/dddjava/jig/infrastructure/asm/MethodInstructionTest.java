@@ -82,7 +82,7 @@ public class MethodInstructionTest {
         assertThat(actual.instanceMethodByteCodes())
                 .extracting(
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
-                        methodByteCode -> methodByteCode.usingMethods().asSimpleText()
+                        methodByteCode -> methodByteCode.methodDepend().usingMethods().methodDeclarations().asSimpleText()
                 )
                 .contains(
                         tuple("method(MethodArgument)", "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]"),

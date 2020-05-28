@@ -39,7 +39,6 @@ public class MethodFactory {
         return new Method(
                 methodByteCode.methodDeclaration(),
                 methodByteCode.judgeNull(),
-                methodByteCode.referenceNull(),
                 methodByteCode.decisionNumber(),
                 methodByteCode.annotatedMethods(),
                 methodByteCode.accessor(),
@@ -96,7 +95,7 @@ public class MethodFactory {
                                 .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
                                         createMethod(interfaceMethodByteCode),
                                         createMethod(concreteMethodByteCode),
-                                        concreteMethodByteCode.usingMethods()))
+                                        concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
                                 );
                     }
                 }

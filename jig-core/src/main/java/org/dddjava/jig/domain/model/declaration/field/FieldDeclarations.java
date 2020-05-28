@@ -56,8 +56,4 @@ public class FieldDeclarations {
         // TODO 0個 or
         return list.get(0);
     }
-
-    public boolean empty() {
-        return list.isEmpty();
-    }
 }

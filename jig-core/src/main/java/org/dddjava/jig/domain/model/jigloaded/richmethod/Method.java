@@ -14,7 +14,6 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingMethods;
 public class Method {
 
     boolean nullDecision;
-    boolean referenceNull;
 
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
@@ -23,10 +22,9 @@ public class Method {
 
     MethodDepend methodDepend;
 
-    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, boolean referenceNull, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, MethodDepend methodDepend) {
+    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, MethodDepend methodDepend) {
         this.methodDeclaration = methodDeclaration;
         this.nullDecision = nullDecision;
-        this.referenceNull = referenceNull;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
         this.accessor = accessor;
@@ -66,10 +64,11 @@ public class Method {
     }
 
     public boolean referenceNull() {
-        return referenceNull;
+        return methodDepend.hasNullReference();
     }
 
     public boolean notUseMember() {
-        return usingFields().empty() && usingMethods().empty();
+        return methodDepend.notUseMember();
     }
+
 }

@@ -17,8 +17,4 @@ public class UsingFields {
     public TypeIdentifiers typeIdentifiers() {
         return fieldDeclarations.toTypeIdentifies();
     }
-
-    public boolean empty() {
-        return fieldDeclarations.empty();
-    }
 }

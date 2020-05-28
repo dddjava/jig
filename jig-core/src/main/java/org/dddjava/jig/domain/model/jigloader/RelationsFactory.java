@@ -35,7 +35,7 @@ public class RelationsFactory {
         for (TypeByteCode typeByteCode : typeByteCodes.list()) {
             for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
                 CallerMethod callerMethod = new CallerMethod(methodByteCode.methodDeclaration);
-                for (MethodDeclaration usingMethod : methodByteCode.usingMethods().list()) {
+                for (MethodDeclaration usingMethod : methodByteCode.methodDepend().usingMethods().methodDeclarations().list()) {
                     list.add(new MethodRelation(callerMethod, new CalleeMethod(usingMethod)));
                 }
             }

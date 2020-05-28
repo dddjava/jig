@@ -3,11 +3,9 @@ package org.dddjava.jig.domain.model.jigsource.bytecode;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodDepend;
 import org.objectweb.asm.Opcodes;
@@ -49,10 +47,7 @@ public class MethodByteCode {
     }
 
     public MethodDepend methodDepend() {
-        return new MethodDepend(
-                useTypes(),
-                usingFields.stream().collect(FieldDeclarations.collector()),
-                usingMethods());
+        return new MethodDepend(useTypes(), usingFields, usingMethods, hasNullReference);
     }
 
     public void registerFieldInstruction(FieldDeclaration field) {
@@ -102,10 +97,6 @@ public class MethodByteCode {
         return useTypes;
     }
 
-    public MethodDeclarations usingMethods() {
-        return usingMethods.stream().collect(MethodDeclarations.collector());
-    }
-
     boolean isStatic() {
         return (access & Opcodes.ACC_STATIC) != 0;
     }
@@ -136,7 +127,7 @@ public class MethodByteCode {
     }
 
     public boolean referenceNull() {
-        return hasNullReference;
+        return methodDepend().hasNullReference();
     }
 
     boolean hasJudgeNull;

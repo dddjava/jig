@@ -1,9 +1,12 @@
 package org.dddjava.jig.domain.model.jigloaded.relation.method;
 
+import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -12,20 +15,31 @@ import java.util.Set;
 public class MethodDepend {
 
     Set<TypeIdentifier> usingTypes;
-    FieldDeclarations usingFields;
-    MethodDeclarations usingMethods;
+    List<FieldDeclaration> usingFields;
+    List<MethodDeclaration> usingMethods;
+    boolean hasNullReference;
 
-    public MethodDepend(Set<TypeIdentifier> usingTypes, FieldDeclarations usingFields, MethodDeclarations usingMethods) {
+    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, List<MethodDeclaration> usingMethods, boolean hasNullReference) {
         this.usingTypes = usingTypes;
         this.usingFields = usingFields;
         this.usingMethods = usingMethods;
+        this.hasNullReference = hasNullReference;
     }
 
     public UsingFields usingFields() {
-        return new UsingFields(usingFields);
+        FieldDeclarations fieldDeclarations = usingFields.stream().collect(FieldDeclarations.collector());
+        return new UsingFields(fieldDeclarations);
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(usingMethods);
+        return new UsingMethods(usingMethods.stream().collect(MethodDeclarations.collector()));
+    }
+
+    public boolean notUseMember() {
+        return usingFields.isEmpty() && usingMethods.isEmpty();
+    }
+
+    public boolean hasNullReference() {
+        return hasNullReference;
     }
 }

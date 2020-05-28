@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.alias.*;
-import org.dddjava.jig.domain.model.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.source.code.AliasSource;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSources;

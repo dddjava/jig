@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;

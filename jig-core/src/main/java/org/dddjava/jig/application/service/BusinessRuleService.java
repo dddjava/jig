@@ -3,11 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigloader.TypeFactory;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
@@ -20,6 +15,11 @@ import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryUsageDiagram
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;

@@ -1,9 +1,9 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -26,7 +26,7 @@ class JigDocumentHandlersTest {
 
         JigDocumentHandlers sut = configuration.documentHandlers();
 
-        AnalyzedImplementation analyzedImplementation = new AnalyzedImplementation(
+        AnalyzedImplementation analyzedImplementation = AnalyzedImplementation.generate(
                 null,
                 new TypeByteCodes(Collections.emptyList()),
                 null

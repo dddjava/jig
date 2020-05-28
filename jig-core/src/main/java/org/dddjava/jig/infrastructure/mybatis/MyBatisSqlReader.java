@@ -9,7 +9,7 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.dddjava.jig.domain.model.jigloaded.datasource.*;
-import org.dddjava.jig.domain.model.jigloader.SqlReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigsource.source.code.sqlcode.SqlSources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -9,7 +9,7 @@ public class HandlerMethodArgumentResolver {
 
     public <T> T resolve(Class<T> clz) {
         for (Object arg : args) {
-            if ((arg.getClass() == clz)) {
+            if ((clz.isInstance(arg))) {
                 return clz.cast(arg);
             }
         }

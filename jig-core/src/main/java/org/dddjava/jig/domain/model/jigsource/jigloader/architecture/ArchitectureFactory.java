@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloader.architecture;
+package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
 public interface ArchitectureFactory {
     Architecture architecture();

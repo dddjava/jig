@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigloader.architecture.ArchitectureFactory;
-import org.dddjava.jig.domain.model.jigloader.architecture.IsBusinessRule;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ArchitectureFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.IsBusinessRule;
 
 import java.util.regex.Pattern;
 

@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigloader.SqlReader;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.source.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.source.Sources;
@@ -38,7 +38,7 @@ public class ImplementationService {
         TypeByteCodes typeByteCodes = readProjectData(source);
         Sqls sqls = readSql(source.sqlSources());
 
-        return new AnalyzedImplementation(source, typeByteCodes, sqls);
+        return AnalyzedImplementation.generate(source, typeByteCodes, sqls);
     }
 
     /**

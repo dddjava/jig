@@ -1,7 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths;

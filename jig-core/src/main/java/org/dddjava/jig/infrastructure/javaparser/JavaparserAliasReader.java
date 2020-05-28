@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.jigloaded.alias.*;
-import org.dddjava.jig.domain.model.jigloader.JavaSourceAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.JavaSourceAliasReader;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSource;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSource;

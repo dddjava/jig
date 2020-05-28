@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloader.architecture;
+package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;

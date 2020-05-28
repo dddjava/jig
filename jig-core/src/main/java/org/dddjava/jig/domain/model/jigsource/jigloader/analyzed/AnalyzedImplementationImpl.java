@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloader.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
@@ -7,29 +7,29 @@ import org.dddjava.jig.domain.model.jigsource.source.Sources;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 解析した実装
- */
-public class AnalyzedImplementation {
+public class AnalyzedImplementationImpl implements AnalyzedImplementation {
 
     Sources sources;
     TypeByteCodes typeByteCodes;
     Sqls sqls;
 
-    public AnalyzedImplementation(Sources sources, TypeByteCodes typeByteCodes, Sqls sqls) {
+    AnalyzedImplementationImpl(Sources sources, TypeByteCodes typeByteCodes, Sqls sqls) {
         this.sources = sources;
         this.typeByteCodes = typeByteCodes;
         this.sqls = sqls;
     }
 
+    @Override
     public TypeByteCodes typeByteCodes() {
         return typeByteCodes;
     }
 
+    @Override
     public Sqls sqls() {
         return sqls;
     }
 
+    @Override
     public AnalyzeStatuses status() {
         List<AnalyzeStatus> list = new ArrayList<>();
 

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigloader.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import java.util.List;
 import java.util.stream.Collectors;

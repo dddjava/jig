@@ -1,8 +1,8 @@
 package testing;
 
 import org.dddjava.jig.application.service.ImplementationService;
-import org.dddjava.jig.domain.model.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.source.Sources;
 import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;

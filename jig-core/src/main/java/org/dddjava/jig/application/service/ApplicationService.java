@@ -3,10 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigdocument.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.Warning;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigloader.RelationsFactory;
-import org.dddjava.jig.domain.model.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
@@ -16,6 +12,10 @@ import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods
 import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 
 /**

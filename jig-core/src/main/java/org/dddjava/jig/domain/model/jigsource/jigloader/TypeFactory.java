@@ -1,10 +1,10 @@
-package org.dddjava.jig.domain.model.jigloader;
+package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigloader.architecture.BuildingBlock;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
 import java.util.ArrayList;
 import java.util.List;

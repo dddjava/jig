@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingMethods;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorries;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +69,7 @@ public class ServiceMethod {
 
     // TODO type
     public Optional<TypeIdentifier> primaryType() {
+        // 戻り値型が主要な関心
         TypeIdentifier typeIdentifier = methodDeclaration().methodReturn().typeIdentifier();
         if (typeIdentifier.isVoid()) return Optional.empty();
         return Optional.of(typeIdentifier);
@@ -84,9 +84,6 @@ public class ServiceMethod {
     }
 
     public TypeIdentifiers usingTypes() {
-        List<TypeIdentifier> list = new ArrayList<>(internalUsingTypes());
-        list.addAll(requireTypes());
-        primaryType().ifPresent(list::add);
-        return new TypeIdentifiers(list);
+        return method().usingTypes();
     }
 }

@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingMethods;
@@ -71,4 +72,7 @@ public class Method {
         return methodDepend.notUseMember();
     }
 
+    public TypeIdentifiers usingTypes() {
+        return methodDepend.usingTypes();
+    }
 }

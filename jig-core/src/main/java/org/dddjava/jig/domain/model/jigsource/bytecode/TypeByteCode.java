@@ -84,7 +84,7 @@ public class TypeByteCode {
 
     public TypeIdentifiers useTypes() {
         for (MethodByteCode methodByteCode : methodByteCodes()) {
-            useTypes.addAll(methodByteCode.methodDepend().useTypes());
+            useTypes.addAll(methodByteCode.methodDepend().collectUsingTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));

@@ -56,13 +56,6 @@ public class MethodByteCode {
 
     public void registerMethodInstruction(MethodDeclaration methodDeclaration) {
         usingMethods.add(methodDeclaration);
-
-        // メソッドやコンストラクタの持ち主
-        // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
-        useTypes.add(methodDeclaration.declaringType());
-
-        // 呼び出したメソッドの戻り値の型
-        useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
     }
 
     public void registerJumpInstruction() {

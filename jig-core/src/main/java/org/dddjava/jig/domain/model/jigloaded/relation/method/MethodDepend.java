@@ -54,6 +54,12 @@ public class MethodDepend {
         }
 
         for (MethodDeclaration usingMethod : usingMethods) {
+            // メソッドやコンストラクタの持ち主
+            // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
+            typeIdentifiers.add(usingMethod.declaringType());
+
+            // 呼び出したメソッドの戻り値の型
+            typeIdentifiers.add(usingMethod.methodReturn().typeIdentifier());
         }
 
         return typeIdentifiers;

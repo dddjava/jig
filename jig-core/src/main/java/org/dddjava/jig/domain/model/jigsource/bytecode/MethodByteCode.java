@@ -47,7 +47,7 @@ public class MethodByteCode {
     }
 
     public MethodDepend methodDepend() {
-        return new MethodDepend(useTypes(), usingFields, usingMethods, hasNullReference);
+        return new MethodDepend(useTypes, usingFields, usingMethods, hasNullReference);
     }
 
     public void registerFieldInstruction(FieldDeclaration field) {
@@ -88,10 +88,6 @@ public class MethodByteCode {
 
     public MethodAnnotations annotatedMethods() {
         return new MethodAnnotations(methodAnnotations);
-    }
-
-    public Set<TypeIdentifier> useTypes() {
-        return useTypes;
     }
 
     boolean isStatic() {

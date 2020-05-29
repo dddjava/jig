@@ -126,10 +126,6 @@ public class MethodByteCode {
         hasNullReference = true;
     }
 
-    public boolean referenceNull() {
-        return methodDepend().hasNullReference();
-    }
-
     boolean hasJudgeNull;
 
     public void markJudgeNull() {

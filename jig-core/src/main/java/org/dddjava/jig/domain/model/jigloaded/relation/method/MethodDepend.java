@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,5 +43,19 @@ public class MethodDepend {
 
     public boolean hasNullReference() {
         return hasNullReference;
+    }
+
+    public Collection<TypeIdentifier> useTypes() {
+        Set<TypeIdentifier> typeIdentifiers = new HashSet<>(usingTypes);
+
+        for (FieldDeclaration usingField : usingFields) {
+            typeIdentifiers.add(usingField.declaringType());
+            typeIdentifiers.add(usingField.typeIdentifier());
+        }
+
+        for (MethodDeclaration usingMethod : usingMethods) {
+        }
+
+        return typeIdentifiers;
     }
 }

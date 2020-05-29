@@ -52,9 +52,6 @@ public class MethodByteCode {
 
     public void registerFieldInstruction(FieldDeclaration field) {
         usingFields.add(field);
-
-        useTypes.add(field.declaringType());
-        useTypes.add(field.typeIdentifier());
     }
 
     public void registerMethodInstruction(MethodDeclaration methodDeclaration) {

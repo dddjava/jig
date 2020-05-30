@@ -43,7 +43,8 @@ public class CategoryUsageDiagram {
             boolean relateService = false;
             TypeIdentifiers serviceUsingTypes = serviceMethod.usingTypes();
             for (TypeIdentifier usingTypeIdentifier : serviceUsingTypes.list()) {
-                if (businessRuleTypeIdentifiers.contains(usingTypeIdentifier)) {
+                if (businessRuleTypeIdentifiers.contains(usingTypeIdentifier)
+                        || categoryTypes.typeIdentifiers().contains(usingTypeIdentifier)) {
                     serviceRelationText.add(serviceMethod.methodDeclaration(), usingTypeIdentifier);
                     relateService = true;
                 }

@@ -10,8 +10,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
-import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;

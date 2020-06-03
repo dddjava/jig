@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;

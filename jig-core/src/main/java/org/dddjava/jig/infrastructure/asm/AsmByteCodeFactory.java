@@ -1,6 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigsource.file.binary.*;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.ByteCodeFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
 import org.objectweb.asm.ClassReader;
 
 import java.util.ArrayList;

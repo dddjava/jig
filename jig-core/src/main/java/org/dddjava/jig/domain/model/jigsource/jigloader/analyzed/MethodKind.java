@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.file.binary;
+package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 /**
  * メソッドの種類

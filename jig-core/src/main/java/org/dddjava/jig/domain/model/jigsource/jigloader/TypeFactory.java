@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 

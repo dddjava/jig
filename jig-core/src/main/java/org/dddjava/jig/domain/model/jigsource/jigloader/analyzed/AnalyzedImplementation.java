@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 
 /**
  * 解析した実装

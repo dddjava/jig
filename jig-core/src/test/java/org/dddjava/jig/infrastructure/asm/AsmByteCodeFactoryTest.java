@@ -11,9 +11,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Parameter
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

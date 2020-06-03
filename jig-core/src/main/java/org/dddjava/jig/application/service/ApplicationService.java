@@ -11,10 +11,10 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 

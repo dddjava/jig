@@ -14,7 +14,7 @@ public class PackageStructure {
     Map<PackageIdentifier, Set<PackageIdentifier>> subPackageMap;
     Map<PackageIdentifier, List<TypeIdentifier>> belongTypeMap;
 
-    public PackageStructure(PackageIdentifier rootPackage, Map<PackageIdentifier, Set<PackageIdentifier>> subPackageMap, Map<PackageIdentifier, List<TypeIdentifier>> belongTypeMap) {
+    PackageStructure(PackageIdentifier rootPackage, Map<PackageIdentifier, Set<PackageIdentifier>> subPackageMap, Map<PackageIdentifier, List<TypeIdentifier>> belongTypeMap) {
         this.rootPackage = rootPackage;
         this.subPackageMap = subPackageMap;
         this.belongTypeMap = belongTypeMap;

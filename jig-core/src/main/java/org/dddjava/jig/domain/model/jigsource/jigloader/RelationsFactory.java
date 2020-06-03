@@ -8,20 +8,20 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RelationsFactory {
 
-    public static ClassRelations createClassRelations(TypeByteCodes typeByteCodes) {
+    public static ClassRelations createClassRelations(TypeFacts typeFacts) {
         List<ClassRelation> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            TypeIdentifier form = typeByteCode.typeIdentifier();
-            for (TypeIdentifier to : typeByteCode.useTypes().list()) {
+        for (TypeFact typeFact : typeFacts.list()) {
+            TypeIdentifier form = typeFact.typeIdentifier();
+            for (TypeIdentifier to : typeFact.useTypes().list()) {
                 ClassRelation classRelation = new ClassRelation(form, to);
                 if (classRelation.selfRelation()) continue;
                 list.add(classRelation);
@@ -30,12 +30,12 @@ public class RelationsFactory {
         return new ClassRelations(list);
     }
 
-    public static MethodRelations createMethodRelations(TypeByteCodes typeByteCodes) {
+    public static MethodRelations createMethodRelations(TypeFacts typeFacts) {
         ArrayList<MethodRelation> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            for (MethodByteCode methodByteCode : typeByteCode.methodByteCodes()) {
-                CallerMethod callerMethod = new CallerMethod(methodByteCode.methodDeclaration);
-                for (MethodDeclaration usingMethod : methodByteCode.methodDepend().usingMethods().methodDeclarations().list()) {
+        for (TypeFact typeFact : typeFacts.list()) {
+            for (MethodFact methodFact : typeFact.allMethodFacts()) {
+                CallerMethod callerMethod = new CallerMethod(methodFact.methodDeclaration);
+                for (MethodDeclaration usingMethod : methodFact.methodDepend().usingMethods().methodDeclarations().list()) {
                     list.add(new MethodRelation(callerMethod, new CalleeMethod(usingMethod)));
                 }
             }

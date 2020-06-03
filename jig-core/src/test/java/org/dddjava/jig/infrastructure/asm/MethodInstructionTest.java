@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +28,7 @@ public class MethodInstructionTest {
     @ParameterizedTest
     @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
-        TypeByteCode actual = exercise(clz);
+        TypeFact actual = exercise(clz);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -77,9 +77,9 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
-        TypeByteCode actual = exercise(MethodInstruction.class);
+        TypeFact actual = exercise(MethodInstruction.class);
 
-        assertThat(actual.instanceMethodByteCodes())
+        assertThat(actual.instanceMethodFacts())
                 .extracting(
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
                         methodByteCode -> methodByteCode.methodDepend().usingMethods().methodDeclarations().asSimpleText()
@@ -90,10 +90,10 @@ public class MethodInstructionTest {
                 );
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
+    private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmByteCodeFactory sut = new AsmByteCodeFactory();
+        AsmFactFactory sut = new AsmFactFactory();
         return sut.typeByteCode(TestSupport.newClassSource(path));
     }
 }

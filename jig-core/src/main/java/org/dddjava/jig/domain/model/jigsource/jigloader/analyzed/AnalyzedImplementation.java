@@ -8,11 +8,11 @@ import org.dddjava.jig.domain.model.jigsource.file.Sources;
  */
 public interface AnalyzedImplementation {
 
-    static AnalyzedImplementation generate(Sources sources, TypeByteCodes typeByteCodes, Sqls sqls) {
-        return new AnalyzedImplementationImpl(sources, typeByteCodes, sqls);
+    static AnalyzedImplementation generate(Sources sources, TypeFacts typeFacts, Sqls sqls) {
+        return new AnalyzedImplementationImpl(sources, typeFacts, sqls);
     }
 
-    TypeByteCodes typeByteCodes();
+    TypeFacts typeByteCodes();
 
     Sqls sqls();
 

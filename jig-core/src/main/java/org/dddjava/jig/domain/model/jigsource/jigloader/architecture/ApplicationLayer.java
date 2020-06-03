@@ -1,11 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
-
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 
 /**
  * 機能のレイヤー。
@@ -14,31 +9,24 @@ import static java.util.stream.Collectors.toList;
 public enum ApplicationLayer {
     PRESENTATION {
         @Override
-        public boolean satisfy(TypeByteCode typeByteCode, Architecture architecture) {
-            return BuildingBlock.PRESENTATION_CONTROLLER.satisfy(typeByteCode, architecture);
+        public boolean satisfy(TypeFact typeFact, Architecture architecture) {
+            return BuildingBlock.PRESENTATION_CONTROLLER.satisfy(typeFact, architecture);
         }
     },
 
     APPLICATION {
         @Override
-        public boolean satisfy(TypeByteCode typeByteCode, Architecture architecture) {
-            return BuildingBlock.SERVICE.satisfy(typeByteCode, architecture);
+        public boolean satisfy(TypeFact typeFact, Architecture architecture) {
+            return BuildingBlock.SERVICE.satisfy(typeFact, architecture);
         }
     },
 
     INFRASTRUCTURE {
         @Override
-        public boolean satisfy(TypeByteCode typeByteCode, Architecture architecture) {
-            return BuildingBlock.DATASOURCE.satisfy(typeByteCode, architecture);
+        public boolean satisfy(TypeFact typeFact, Architecture architecture) {
+            return BuildingBlock.DATASOURCE.satisfy(typeFact, architecture);
         }
     };
 
-    public TypeByteCodes filter(TypeByteCodes typeByteCodes, Architecture architecture) {
-        List<TypeByteCode> list = typeByteCodes.list().stream()
-                .filter(typeByteCode -> satisfy(typeByteCode, architecture))
-                .collect(toList());
-        return new TypeByteCodes(list);
-    }
-
-    public abstract boolean satisfy(TypeByteCode typeByteCode, Architecture architecture);
+    public abstract boolean satisfy(TypeFact typeFact, Architecture architecture);
 }

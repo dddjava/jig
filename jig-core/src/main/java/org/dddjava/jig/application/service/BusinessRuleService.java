@@ -18,7 +18,7 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +40,8 @@ public class BusinessRuleService {
      * ビジネスルール一覧を取得する
      */
     public BusinessRules businessRules(AnalyzedImplementation analyzedImplementation) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        return TypeFactory.from(typeByteCodes, architecture);
+        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        return TypeFactory.from(typeFacts, architecture);
     }
 
     /**
@@ -56,10 +56,10 @@ public class BusinessRuleService {
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ClassRelations classRelations = RelationsFactory.createClassRelations(typeByteCodes);
-        FieldDeclarations fieldDeclarations = typeByteCodes.instanceFields();
-        StaticFieldDeclarations staticFieldDeclarations = typeByteCodes.staticFields();
+        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        ClassRelations classRelations = RelationsFactory.createClassRelations(typeFacts);
+        FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
+        StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
 
         return CategoryDiagram.categoryDiagram(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
     }
@@ -89,13 +89,13 @@ public class BusinessRuleService {
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
-        ClassRelations classRelations = RelationsFactory.createClassRelations(
-                new TypeByteCodes(analyzedImplementation.typeByteCodes().list()
+        ClassRelations businessRuleRelations = RelationsFactory.createClassRelations(
+                new TypeFacts(analyzedImplementation.typeByteCodes().list()
                         .stream()
                         .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
                         .collect(Collectors.toList()))
         );
 
-        return new CategoryUsageDiagram(serviceMethods, categoryTypes, classRelations);
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, businessRuleRelations);
     }
 }

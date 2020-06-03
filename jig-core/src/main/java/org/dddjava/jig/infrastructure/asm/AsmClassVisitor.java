@@ -5,13 +5,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodKind;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 
 class AsmClassVisitor extends ClassVisitor {
 
-    TypeByteCode typeByteCode;
+    TypeFact typeFact;
 
     AsmClassVisitor() {
         super(Opcodes.ASM7);
@@ -39,7 +37,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         ParameterizedTypes parameterizedInterfaceTypes = parameterizedInterfaceTypes(interfaces, signature);
 
-        this.typeByteCode = new TypeByteCode(
+        this.typeFact = new TypeFact(
                 new TypeIdentifier(name),
                 parameterizedSuperType,
                 parameterizedInterfaceTypes,
@@ -52,7 +50,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                typeByteCode.registerTypeAnnotation(new TypeAnnotation(annotation, typeByteCode.typeIdentifier()))
+                typeFact.registerTypeAnnotation(new TypeAnnotation(annotation, typeFact.typeIdentifier()))
         );
 
     }
@@ -60,34 +58,34 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(typeByteCode::registerUseType);
+        genericsTypes.forEach(typeFact::registerUseType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            typeByteCode.registerUseType(toTypeIdentifier(elementType));
+            typeFact.registerUseType(toTypeIdentifier(elementType));
         }
 
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeByteCode.typeIdentifier(), fieldType, new FieldIdentifier(name));
+            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeFact.typeIdentifier(), fieldType, new FieldIdentifier(name));
             // インスタンスフィールドだけ相手にする
-            typeByteCode.registerField(fieldDeclaration);
+            typeFact.registerField(fieldDeclaration);
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    typeByteCode.registerUseType(annotationTypeIdentifier);
+                    typeFact.registerUseType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationTypeIdentifier, annotation ->
-                            typeByteCode.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
+                            typeFact.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }
             };
         }
         if (!name.equals("$VALUES")) {
-            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(typeByteCode.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
+            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(typeFact.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
             // staticフィールドのうち、enumの $VALUES は除く
-            typeByteCode.registerStaticField(fieldDeclaration);
+            typeFact.registerStaticField(fieldDeclaration);
         }
         return super.visitField(access, name, descriptor, signature, value);
     }
@@ -97,7 +95,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
 
-        MethodDeclaration methodDeclaration = new MethodDeclaration(typeByteCode.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
+        MethodDeclaration methodDeclaration = new MethodDeclaration(typeFact.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
 
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
         if (exceptions != null) {
@@ -105,15 +103,26 @@ class AsmClassVisitor extends ClassVisitor {
                 useTypes.add(new TypeIdentifier(exception));
             }
         }
-        MethodByteCode methodByteCode = new MethodByteCode(methodDeclaration, useTypes, access);
-        methodByteCode.bind(typeByteCode);
+
+        // メソッドの種類判定
+        MethodKind methodKind = MethodKind.INSTANCE_METHOD;
+        if (methodDeclaration.isConstructor()) {
+            methodKind = MethodKind.CONSTRUCTOR;
+        } else if ((access & Opcodes.ACC_STATIC) != 0) {
+            methodKind = MethodKind.STATIC_METHOD;
+        }
+        // Accessor判定
+        Visibility visibility = ((access & Opcodes.ACC_PUBLIC) != 0) ? Visibility.PUBLIC : Visibility.NOT_PUBLIC;
+
+        MethodFact methodFact = new MethodFact(methodDeclaration, useTypes, methodKind, visibility);
+        methodFact.bind(typeFact);
 
         return new MethodVisitor(this.api) {
 
             @Override
             public void visitInsn(int opcode) {
                 if (opcode == Opcodes.ACONST_NULL) {
-                    methodByteCode.markReferenceNull();
+                    methodFact.markReferenceNull();
                 }
                 super.visitInsn(opcode);
             }
@@ -121,7 +130,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                        methodByteCode.registerAnnotation(new MethodAnnotation(annotation, methodDeclaration)));
+                        methodFact.registerAnnotation(new MethodAnnotation(annotation, methodDeclaration)));
             }
 
             @Override
@@ -130,14 +139,14 @@ class AsmClassVisitor extends ClassVisitor {
                 FieldType fieldType = typeDescriptorToFieldType(descriptor);
                 FieldIdentifier fieldIdentifier = new FieldIdentifier(name);
                 FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, fieldIdentifier);
-                methodByteCode.registerFieldInstruction(fieldDeclaration);
+                methodFact.registerFieldInstruction(fieldDeclaration);
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                methodByteCode.registerMethodInstruction(
+                methodFact.registerMethodInstruction(
                         new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor))));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -147,7 +156,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    methodByteCode.registerClassReference(toTypeIdentifier((Type) value));
+                    methodFact.registerClassReference(toTypeIdentifier((Type) value));
                 }
 
                 super.visitLdcInsn(value);
@@ -161,9 +170,9 @@ class AsmClassVisitor extends ClassVisitor {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
-                            methodByteCode.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
+                            methodFact.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
-                                methodByteCode.registerInvokeDynamic(toTypeIdentifier(argumentType));
+                                methodFact.registerInvokeDynamic(toTypeIdentifier(argumentType));
                             }
                         }
                     }
@@ -171,7 +180,7 @@ class AsmClassVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
-                        methodByteCode.registerMethodInstruction(
+                        methodFact.registerMethodInstruction(
                                 new MethodDeclaration(new TypeIdentifier(handle.getOwner()), toMethodSignature(handle.getName(), handle.getDesc()), new MethodReturn(methodDescriptorToReturnIdentifier(handle.getDesc())))
                         );
                     }
@@ -183,7 +192,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                methodByteCode.registerLookupSwitchInstruction();
+                methodFact.registerLookupSwitchInstruction();
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
@@ -191,11 +200,11 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitJumpInsn(int opcode, Label label) {
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
-                    methodByteCode.registerJumpInstruction();
+                    methodFact.registerJumpInstruction();
                 }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-                    methodByteCode.markJudgeNull();
+                    methodFact.markJudgeNull();
                 }
                 super.visitJumpInsn(opcode, label);
             }

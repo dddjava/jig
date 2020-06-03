@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
 /**
  * 対象から実装を取得するファクトリ
  */
-public interface ByteCodeFactory {
+public interface FactFactory {
 
-    TypeByteCodes readFrom(ClassSources classSources);
+    TypeFacts readTypeFacts(ClassSources classSources);
 }

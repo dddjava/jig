@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
@@ -19,16 +19,16 @@ public class Method {
     MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
-    Accessor accessor;
+    Visibility visibility;
 
     MethodDepend methodDepend;
 
-    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Accessor accessor, MethodDepend methodDepend) {
+    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
         this.methodDeclaration = methodDeclaration;
         this.nullDecision = nullDecision;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
-        this.accessor = accessor;
+        this.visibility = visibility;
         this.methodDepend = methodDepend;
     }
 
@@ -45,7 +45,7 @@ public class Method {
     }
 
     public boolean isPublic() {
-        return accessor.isPublic();
+        return visibility.isPublic();
     }
 
     public UsingFields usingFields() {

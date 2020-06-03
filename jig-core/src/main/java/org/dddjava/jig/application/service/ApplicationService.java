@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +36,8 @@ public class ApplicationService {
      * コントローラーを分析する
      */
     public ControllerMethods controllerAngles(AnalyzedImplementation analyzedImplementation) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeByteCodes, architecture);
+        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
 
         if (controllerMethods.empty()) {
             jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
@@ -55,19 +55,19 @@ public class ApplicationService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(AnalyzedImplementation analyzedImplementation) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeByteCodes, architecture);
+        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
 
         if (serviceMethods.empty()) {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeByteCodes, architecture);
-        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(typeByteCodes, architecture);
+        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
+        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(typeFacts, architecture);
 
         return new ServiceAngles(
                 serviceMethods,
-                RelationsFactory.createMethodRelations(typeByteCodes),
+                RelationsFactory.createMethodRelations(typeFacts),
                 controllerMethods,
                 datasourceMethods);
     }

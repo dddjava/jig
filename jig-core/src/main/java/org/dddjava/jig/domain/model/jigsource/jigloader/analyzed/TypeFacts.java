@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Type;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,54 +12,46 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * モデルの実装一式
+ * 型の実装から読み取れること一覧
  */
-public class TypeByteCodes {
-    private final List<TypeByteCode> list;
+public class TypeFacts {
+    private final List<TypeFact> list;
 
-    public TypeByteCodes(List<TypeByteCode> list) {
+    public TypeFacts(List<TypeFact> list) {
         this.list = list;
     }
 
-    public List<TypeByteCode> list() {
+    public List<TypeFact> list() {
         return list;
     }
 
-    public List<MethodByteCode> instanceMethodByteCodes() {
+    public List<MethodFact> instanceMethodFacts() {
         return list.stream()
-                .map(TypeByteCode::instanceMethodByteCodes)
+                .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
                 .collect(toList());
     }
 
-    public TypeAnnotations typeAnnotations() {
-        List<TypeAnnotation> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : list()) {
-            list.addAll(typeByteCode.typeAnnotations());
-        }
-        return new TypeAnnotations(list);
-    }
-
     public FieldAnnotations annotatedFields() {
         List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
-        for (TypeByteCode typeByteCode : list()) {
-            fieldAnnotations.addAll(typeByteCode.annotatedFields());
+        for (TypeFact typeFact : list()) {
+            fieldAnnotations.addAll(typeFact.annotatedFields());
         }
         return new FieldAnnotations(fieldAnnotations);
     }
 
     public MethodAnnotations annotatedMethods() {
         List<MethodAnnotation> methodAnnotations = new ArrayList<>();
-        for (MethodByteCode methodByteCode : instanceMethodByteCodes()) {
-            methodAnnotations.addAll(methodByteCode.annotatedMethods().list());
+        for (MethodFact methodFact : instanceMethodFacts()) {
+            methodAnnotations.addAll(methodFact.annotatedMethods().list());
         }
         return new MethodAnnotations(methodAnnotations);
     }
 
     public FieldDeclarations instanceFields() {
         List<FieldDeclaration> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : list()) {
-            FieldDeclarations fieldDeclarations = typeByteCode.fieldDeclarations();
+        for (TypeFact typeFact : list()) {
+            FieldDeclarations fieldDeclarations = typeFact.fieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new FieldDeclarations(list);
@@ -69,19 +59,11 @@ public class TypeByteCodes {
 
     public StaticFieldDeclarations staticFields() {
         List<StaticFieldDeclaration> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : list()) {
-            StaticFieldDeclarations fieldDeclarations = typeByteCode.staticFieldDeclarations();
+        for (TypeFact typeFact : list()) {
+            StaticFieldDeclarations fieldDeclarations = typeFact.staticFieldDeclarations();
             list.addAll(fieldDeclarations.list());
         }
         return new StaticFieldDeclarations(list);
-    }
-
-    public Types types() {
-        List<Type> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : list()) {
-            list.add(typeByteCode.type());
-        }
-        return new Types(list);
     }
 
     public ValidationAnnotatedMembers validationAnnotatedMembers() {

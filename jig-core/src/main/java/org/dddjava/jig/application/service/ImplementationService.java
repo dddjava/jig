@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.ByteCodeFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.FactFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,13 +20,13 @@ public class ImplementationService {
 
     AliasService aliasService;
 
-    ByteCodeFactory byteCodeFactory;
+    FactFactory factFactory;
     SqlReader sqlReader;
 
     SourceReader sourceReader;
 
-    public ImplementationService(ByteCodeFactory byteCodeFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
-        this.byteCodeFactory = byteCodeFactory;
+    public ImplementationService(FactFactory factFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
+        this.factFactory = factFactory;
         this.aliasService = aliasService;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
@@ -35,28 +35,28 @@ public class ImplementationService {
     public AnalyzedImplementation implementations(SourcePaths sourcePaths) {
         Sources source = sourceReader.readSources(sourcePaths);
 
-        TypeByteCodes typeByteCodes = readProjectData(source);
+        TypeFacts typeFacts = readProjectData(source);
         Sqls sqls = readSql(source.sqlSources());
 
-        return AnalyzedImplementation.generate(source, typeByteCodes, sqls);
+        return AnalyzedImplementation.generate(source, typeFacts, sqls);
     }
 
     /**
      * プロジェクト情報を読み取る
      */
-    public TypeByteCodes readProjectData(Sources sources) {
-        TypeByteCodes typeByteCodes = readByteCode(sources.classSources());
+    public TypeFacts readProjectData(Sources sources) {
+        TypeFacts typeFacts = readByteCode(sources.classSources());
 
         aliasService.loadAliases(sources.aliasSource());
 
-        return typeByteCodes;
+        return typeFacts;
     }
 
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeByteCodes readByteCode(ClassSources classSources) {
-        return byteCodeFactory.readFrom(classSources);
+    public TypeFacts readByteCode(ClassSources classSources) {
+        return factFactory.readTypeFacts(classSources);
     }
 
     /**

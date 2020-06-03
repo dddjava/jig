@@ -29,17 +29,17 @@ public class EnumAngleTest {
                 ).contains(
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
-                        "[A, B]", "[]", "[AsmByteCodeFactoryTest, RelationEnum]",
+                        "[A, B]", "[]", "[AsmFactFactoryTest, RelationEnum]",
                         false, true, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
-                        "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
+                        "[A, B]", "[String param]", "[AsmFactFactoryTest, RelationEnum, ValueAngleTest]",
                         true, false, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
-                        "[A, B]", "[]", "[AsmByteCodeFactoryTest, RelationEnum]",
+                        "[A, B]", "[]", "[AsmFactFactoryTest, RelationEnum]",
                         false, false, true
                 ),
                 tuple(
@@ -49,12 +49,12 @@ public class EnumAngleTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.RichEnum"),
-                        "[A, B]", "[String param]", "[AsmByteCodeFactoryTest, RelationEnum]",
+                        "[A, B]", "[String param]", "[AsmFactFactoryTest, RelationEnum]",
                         true, true, true
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
-                        "[A, B, C, D]", "[]", "[AsmByteCodeFactoryTest, RelationEnum, ValueAngleTest]",
+                        "[A, B, C, D]", "[]", "[AsmFactFactoryTest, RelationEnum, ValueAngleTest]",
                         false, false, false
                 ),
                 tuple(

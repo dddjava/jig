@@ -3,12 +3,11 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Accessor;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
-import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,12 +15,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * メソッドの実装
+ * メソッドの実装から読み取れること
  */
-public class MethodByteCode {
+public class MethodFact {
 
     public final MethodDeclaration methodDeclaration;
-    private final int access;
+    private final MethodKind methodKind;
+    private final Visibility visibility;
 
     private final Set<TypeIdentifier> useTypes = new HashSet<>();
     private final List<MethodAnnotation> methodAnnotations = new ArrayList<>();
@@ -37,9 +37,11 @@ public class MethodByteCode {
     /** nullを参照している */
     private boolean hasNullReference = false;
 
-    public MethodByteCode(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, int access) {
+    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes,
+                      MethodKind methodKind, Visibility visibility) {
         this.methodDeclaration = methodDeclaration;
-        this.access = access;
+        this.methodKind = methodKind;
+        this.visibility = visibility;
 
         this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
@@ -83,17 +85,12 @@ public class MethodByteCode {
         return new MethodAnnotations(methodAnnotations);
     }
 
-    boolean isStatic() {
-        return (access & Opcodes.ACC_STATIC) != 0;
+    public void bind(TypeFact typeFact) {
+        methodKind.bind(this, typeFact);
     }
 
-    public void bind(TypeByteCode typeByteCode) {
-        MethodKind.methodKind(this).bind(this, typeByteCode);
-    }
-
-    public Accessor accessor() {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return Accessor.PUBLIC;
-        return Accessor.NOT_PUBLIC;
+    public Visibility visibility() {
+        return visibility;
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -104,7 +101,7 @@ public class MethodByteCode {
         return new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber);
     }
 
-    public boolean sameSignature(MethodByteCode other) {
+    public boolean sameSignature(MethodFact other) {
         return methodDeclaration().methodSignature().isSame(other.methodDeclaration().methodSignature());
     }
 

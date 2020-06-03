@@ -12,8 +12,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,19 +43,19 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-public class AsmByteCodeFactoryTest {
+public class AsmFactFactoryTest {
 
     @Test
     void JDK11でコンパイルされたクラス() throws IOException {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
-        AsmByteCodeFactory sut = new AsmByteCodeFactory();
+        AsmFactFactory sut = new AsmFactFactory();
         sut.typeByteCode(TestSupport.newClassSource(path));
     }
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        TypeByteCode actual = exercise(Annotated.class);
+        TypeFact actual = exercise(Annotated.class);
 
         List<FieldAnnotation> fieldAnnotations = actual.annotatedFields();
         FieldAnnotation fieldAnnotation = fieldAnnotations.stream()
@@ -81,10 +81,10 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        TypeByteCode actual = exercise(Annotated.class);
+        TypeFact actual = exercise(Annotated.class);
 
-        List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
-        MethodAnnotation methodAnnotation = instanceMethodByteCodes.stream()
+        List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
+        MethodAnnotation methodAnnotation = instanceMethodFacts.stream()
                 .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
@@ -105,7 +105,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        TypeByteCode actual = exercise(ClassDefinition.class);
+        TypeFact actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -131,7 +131,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void インタフェース定義に使用している型が取得できる() throws Exception {
-        TypeByteCode actual = exercise(InterfaceDefinition.class);
+        TypeFact actual = exercise(InterfaceDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -156,7 +156,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() throws Exception {
-        TypeByteCode actual = exercise(InterfaceDefinition.class);
+        TypeFact actual = exercise(InterfaceDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -165,11 +165,11 @@ public class AsmByteCodeFactoryTest {
                         new TypeIdentifier(String.class)
                 );
 
-        List<MethodByteCode> instanceMethodByteCodes = actual.instanceMethodByteCodes();
-        MethodByteCode methodByteCode = instanceMethodByteCodes.stream()
+        List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
+        MethodFact methodFact = instanceMethodFacts.stream()
                 .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        Method method = MethodFactory.createMethod(methodByteCode);
+        Method method = MethodFactory.createMethod(methodFact);
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 
@@ -181,7 +181,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        TypeByteCode actual = exercise(FieldDefinition.class);
+        TypeFact actual = exercise(FieldDefinition.class);
 
         FieldDeclarations fieldDeclarations = actual.fieldDeclarations();
         assertThat(fieldDeclarations.list())
@@ -217,11 +217,11 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        TypeByteCode actual = exercise(DecisionClass.class);
+        TypeFact actual = exercise(DecisionClass.class);
 
-        List<MethodByteCode> methodByteCodes = actual.instanceMethodByteCodes();
+        List<MethodFact> methodFacts = actual.instanceMethodFacts();
 
-        assertThat(methodByteCodes)
+        assertThat(methodFacts)
                 .extracting(
                         methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
                         methodByteCode -> methodByteCode.decisionNumber().asText())
@@ -236,7 +236,7 @@ public class AsmByteCodeFactoryTest {
 
     @Test
     void enumで使用している型が取得できる() throws Exception {
-        TypeByteCode actual = exercise(EnumDefinition.class);
+        TypeFact actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -250,14 +250,14 @@ public class AsmByteCodeFactoryTest {
     @ParameterizedTest
     @MethodSource
     void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
-        TypeByteCode actual = exercise(clz);
+        TypeFact actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
-                        TypeByteCode::isEnum,
-                        TypeByteCode::hasInstanceMethod,
-                        TypeByteCode::hasField,
-                        TypeByteCode::canExtend
+                        TypeFact::isEnum,
+                        TypeFact::hasInstanceMethod,
+                        TypeFact::hasField,
+                        TypeFact::canExtend
                 )
                 .containsExactly(
                         true,
@@ -276,10 +276,10 @@ public class AsmByteCodeFactoryTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private TypeByteCode exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
+    private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmByteCodeFactory sut = new AsmByteCodeFactory();
+        AsmFactFactory sut = new AsmFactFactory();
         return sut.typeByteCode(TestSupport.newClassSource(path));
     }
 }

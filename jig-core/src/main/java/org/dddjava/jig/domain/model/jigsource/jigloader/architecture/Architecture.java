@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 
 import java.util.List;
 
@@ -23,10 +23,10 @@ public class Architecture {
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(serviceAnnotation));
     }
 
-    boolean isDataSource(TypeByteCode typeByteCode) {
+    boolean isDataSource(TypeFact typeFact) {
         // TODO インタフェース実装を見てない
         // DataSourceは Repositoryインタフェースが実装され @Repository のついた infrastructure/datasource のクラス
-        List<TypeAnnotation> typeAnnotations = typeByteCode.typeAnnotations();
+        List<TypeAnnotation> typeAnnotations = typeFact.typeAnnotations();
         TypeIdentifier repositoryAnnotation = new TypeIdentifier("org.springframework.stereotype.Repository");
         return typeAnnotations.stream()
                 .anyMatch(typeAnnotation -> typeAnnotation.typeIs(repositoryAnnotation));
@@ -42,7 +42,7 @@ public class Architecture {
                         || typeAnnotation.typeIs(controllerAdvice));
     }
 
-    public boolean isBusinessRule(TypeByteCode typeByteCode) {
-        return isBusinessRule.isBusinessRule(typeByteCode);
+    public boolean isBusinessRule(TypeFact typeFact) {
+        return isBusinessRule.isBusinessRule(typeFact);
     }
 }

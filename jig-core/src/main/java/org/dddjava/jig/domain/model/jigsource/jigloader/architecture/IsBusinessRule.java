@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 
 public interface IsBusinessRule {
 
-    boolean isBusinessRule(TypeByteCode typeByteCode);
+    boolean isBusinessRule(TypeFact typeFact);
 }

@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;
+import org.dddjava.jig.infrastructure.asm.AsmFactFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -83,7 +83,7 @@ public class Configuration {
                 architectureFactory
         );
         this.implementationService = new ImplementationService(
-                new AsmByteCodeFactory(),
+                new AsmFactFactory(),
                 aliasService,
                 new MyBatisSqlReader(),
                 new LocalFileSourceReader()

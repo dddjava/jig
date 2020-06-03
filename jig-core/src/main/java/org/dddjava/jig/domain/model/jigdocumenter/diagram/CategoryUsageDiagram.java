@@ -23,12 +23,12 @@ public class CategoryUsageDiagram {
 
     ServiceMethods serviceMethods;
     CategoryTypes categoryTypes;
-    ClassRelations classRelations;
+    ClassRelations businessRuleRelations;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, ClassRelations classRelations) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, ClassRelations businessRuleRelations) {
         this.serviceMethods = serviceMethods;
         this.categoryTypes = categoryTypes;
-        this.classRelations = classRelations;
+        this.businessRuleRelations = businessRuleRelations;
     }
 
     public DiagramSources diagramSource(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
@@ -36,7 +36,7 @@ public class CategoryUsageDiagram {
             return DiagramSource.empty();
         }
 
-        ClassRelations relations = classRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
+        ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers businessRuleTypeIdentifiers = relations.allTypeIdentifiers();
 
         StringJoiner useCaseText = new StringJoiner("\n");

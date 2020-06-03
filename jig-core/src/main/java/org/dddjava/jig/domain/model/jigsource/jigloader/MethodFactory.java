@@ -19,9 +19,9 @@ import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
@@ -35,34 +35,34 @@ import static java.util.stream.Collectors.toList;
 
 public class MethodFactory {
 
-    public static Method createMethod(MethodByteCode methodByteCode) {
+    public static Method createMethod(MethodFact methodFact) {
         return new Method(
-                methodByteCode.methodDeclaration(),
-                methodByteCode.judgeNull(),
-                methodByteCode.decisionNumber(),
-                methodByteCode.annotatedMethods(),
-                methodByteCode.accessor(),
-                methodByteCode.methodDepend());
+                methodFact.methodDeclaration(),
+                methodFact.judgeNull(),
+                methodFact.decisionNumber(),
+                methodFact.annotatedMethods(),
+                methodFact.visibility(),
+                methodFact.methodDepend());
     }
 
-    public static RequestHandlerMethod createRequestHandlerMethod(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
-        Method method = createMethod(methodByteCode);
-        TypeAnnotations typeAnnotations = new TypeAnnotations(typeByteCode.typeAnnotations());
+    public static RequestHandlerMethod createRequestHandlerMethod(MethodFact methodFact, TypeFact typeFact) {
+        Method method = createMethod(methodFact);
+        TypeAnnotations typeAnnotations = new TypeAnnotations(typeFact.typeAnnotations());
         return new RequestHandlerMethod(method, typeAnnotations);
     }
 
-    public static Methods createMethods(TypeByteCodes typeByteCodes) {
-        return new Methods(typeByteCodes.instanceMethodByteCodes().stream()
+    public static Methods createMethods(TypeFacts typeFacts) {
+        return new Methods(typeFacts.instanceMethodFacts().stream()
                 .map(methodByteCode -> createMethod(methodByteCode))
                 .collect(toList()));
     }
 
-    public static ControllerMethods createControllerMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public static ControllerMethods createControllerMethods(TypeFacts typeFacts, Architecture architecture) {
         List<RequestHandlerMethod> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (ApplicationLayer.PRESENTATION.satisfy(typeByteCode, architecture)) {
-                for (MethodByteCode methodByteCode : typeByteCode.instanceMethodByteCodes()) {
-                    RequestHandlerMethod requestHandlerMethod = createRequestHandlerMethod(methodByteCode, typeByteCode);
+        for (TypeFact typeFact : typeFacts.list()) {
+            if (ApplicationLayer.PRESENTATION.satisfy(typeFact, architecture)) {
+                for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
+                    RequestHandlerMethod requestHandlerMethod = createRequestHandlerMethod(methodFact, typeFact);
                     if (requestHandlerMethod.valid()) {
                         list.add(requestHandlerMethod);
                     }
@@ -72,9 +72,9 @@ public class MethodFactory {
         return new ControllerMethods(list);
     }
 
-    public static DatasourceMethods createDatasourceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public static DatasourceMethods createDatasourceMethods(TypeFacts typeFacts, Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
-        for (TypeByteCode concreteByteCode : typeByteCodes.list()) {
+        for (TypeFact concreteByteCode : typeFacts.list()) {
             if (!BuildingBlock.DATASOURCE.satisfy(concreteByteCode, architecture)) {
                 continue;
             }
@@ -83,17 +83,17 @@ public class MethodFactory {
             for (ParameterizedType parameterizedType : parameterizedTypes.list()) {
                 TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
 
-                for (TypeByteCode interfaceByteCode : typeByteCodes.list()) {
+                for (TypeFact interfaceByteCode : typeFacts.list()) {
                     if (!interfaceTypeIdentifier.equals(interfaceByteCode.typeIdentifier())) {
                         continue;
                     }
 
-                    for (MethodByteCode interfaceMethodByteCode : interfaceByteCode.methodByteCodes()) {
-                        concreteByteCode.methodByteCodes().stream()
-                                .filter(datasourceMethodByteCode -> interfaceMethodByteCode.sameSignature(datasourceMethodByteCode))
+                    for (MethodFact interfaceMethodFact : interfaceByteCode.allMethodFacts()) {
+                        concreteByteCode.allMethodFacts().stream()
+                                .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
                                 // 0 or 1
                                 .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                        createMethod(interfaceMethodByteCode),
+                                        createMethod(interfaceMethodFact),
                                         createMethod(concreteMethodByteCode),
                                         concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
                                 );
@@ -104,11 +104,10 @@ public class MethodFactory {
         return new DatasourceMethods(list);
     }
 
-    public static ServiceMethods createServiceMethods(TypeByteCodes typeByteCodes, Architecture architecture) {
-        TypeByteCodes applications = ApplicationLayer.APPLICATION.filter(typeByteCodes, architecture);
-
-        return new ServiceMethods(applications.list().stream()
-                .map(TypeByteCode::instanceMethodByteCodes)
+    public static ServiceMethods createServiceMethods(TypeFacts typeFacts, Architecture architecture) {
+        return new ServiceMethods(typeFacts.list().stream()
+                .filter(typeFact -> ApplicationLayer.APPLICATION.satisfy(typeFact, architecture))
+                .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
                 .map(methodByteCode -> createMethod(methodByteCode))
                 .collect(toList()));
@@ -122,9 +121,9 @@ public class MethodFactory {
     }
 
     public static StringComparingCallerMethods from(AnalyzedImplementation analyzedImplementation, Architecture architecture) {
-        TypeByteCodes typeByteCodes = analyzedImplementation.typeByteCodes();
-        ControllerMethods controllerMethods = createControllerMethods(typeByteCodes, architecture);
-        ServiceMethods serviceMethods = createServiceMethods(typeByteCodes, architecture);
+        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        ControllerMethods controllerMethods = createControllerMethods(typeFacts, architecture);
+        ServiceMethods serviceMethods = createServiceMethods(typeFacts, architecture);
 
         // String#equals(Object)
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
@@ -20,26 +20,26 @@ public class TypeFactory {
         return new CategoryTypes(list);
     }
 
-    public static BusinessRules from(TypeByteCodes typeByteCodes, Architecture architecture) {
+    public static BusinessRules from(TypeFacts typeFacts, Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();
-        for (TypeByteCode typeByteCode : typeByteCodes.list()) {
-            if (BuildingBlock.BUSINESS_RULE.satisfy(typeByteCode, architecture)) {
-                list.add(createBusinessRule(typeByteCode));
+        for (TypeFact typeFact : typeFacts.list()) {
+            if (BuildingBlock.BUSINESS_RULE.satisfy(typeFact, architecture)) {
+                list.add(createBusinessRule(typeFact));
             }
         }
         return new BusinessRules(list);
     }
 
-    public static BusinessRule createBusinessRule(TypeByteCode typeByteCode) {
-        return new BusinessRule(new BusinessRuleFields(typeByteCode.fieldDeclarations()),
-                typeByteCode.typeIdentifier(),
-                typeByteCode.isEnum(),
-                typeByteCode.type(),
-                typeByteCode.methodDeclarations(),
+    public static BusinessRule createBusinessRule(TypeFact typeFact) {
+        return new BusinessRule(new BusinessRuleFields(typeFact.fieldDeclarations()),
+                typeFact.typeIdentifier(),
+                typeFact.isEnum(),
+                typeFact.type(),
+                typeFact.methodDeclarations(),
                 new CategoryType(
-                        typeByteCode.typeIdentifier(),
-                        typeByteCode.hasField(),
-                        typeByteCode.hasInstanceMethod(),
-                        typeByteCode.canExtend()));
+                        typeFact.typeIdentifier(),
+                        typeFact.hasField(),
+                        typeFact.hasInstanceMethod(),
+                        typeFact.canExtend()));
     }
 }

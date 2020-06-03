@@ -9,18 +9,18 @@ import java.util.List;
 public class AnalyzedImplementationImpl implements AnalyzedImplementation {
 
     Sources sources;
-    TypeByteCodes typeByteCodes;
+    TypeFacts typeFacts;
     Sqls sqls;
 
-    AnalyzedImplementationImpl(Sources sources, TypeByteCodes typeByteCodes, Sqls sqls) {
+    AnalyzedImplementationImpl(Sources sources, TypeFacts typeFacts, Sqls sqls) {
         this.sources = sources;
-        this.typeByteCodes = typeByteCodes;
+        this.typeFacts = typeFacts;
         this.sqls = sqls;
     }
 
     @Override
-    public TypeByteCodes typeByteCodes() {
-        return typeByteCodes;
+    public TypeFacts typeByteCodes() {
+        return typeFacts;
     }
 
     @Override

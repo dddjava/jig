@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.handler;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -28,7 +28,7 @@ class JigDocumentHandlersTest {
 
         AnalyzedImplementation analyzedImplementation = AnalyzedImplementation.generate(
                 null,
-                new TypeByteCodes(Collections.emptyList()),
+                new TypeFacts(Collections.emptyList()),
                 null
         );
         HandlerMethodArgumentResolver argumentResolver = new HandlerMethodArgumentResolver(analyzedImplementation);

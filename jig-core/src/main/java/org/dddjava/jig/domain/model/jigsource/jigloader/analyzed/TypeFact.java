@@ -15,10 +15,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * バイトコード
+ * 型の実装から読み取れること
  */
-public class TypeByteCode {
-
+public class TypeFact {
 
     final TypeIdentifier typeIdentifier;
 
@@ -33,17 +32,17 @@ public class TypeByteCode {
     final List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
     final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 
-    final List<MethodByteCode> instanceMethodByteCodes = new ArrayList<>();
-    final List<MethodByteCode> staticMethodByteCodes = new ArrayList<>();
-    final List<MethodByteCode> constructorByteCodes = new ArrayList<>();
+    final List<MethodFact> instanceMethodFacts = new ArrayList<>();
+    final List<MethodFact> staticMethodFacts = new ArrayList<>();
+    final List<MethodFact> constructorFacts = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public TypeByteCode(TypeIdentifier typeIdentifier,
-                        ParameterizedType parameterizedSuperType,
-                        ParameterizedTypes parameterizedInterfaceTypes,
-                        List<TypeIdentifier> useTypes,
-                        boolean canExtend) {
+    public TypeFact(TypeIdentifier typeIdentifier,
+                    ParameterizedType parameterizedSuperType,
+                    ParameterizedTypes parameterizedInterfaceTypes,
+                    List<TypeIdentifier> useTypes,
+                    boolean canExtend) {
         this.typeIdentifier = typeIdentifier;
         this.parameterizedSuperType = parameterizedSuperType;
         this.parameterizedInterfaceTypes = parameterizedInterfaceTypes;
@@ -67,7 +66,7 @@ public class TypeByteCode {
     }
 
     public boolean hasInstanceMethod() {
-        return !instanceMethodByteCodes().isEmpty();
+        return !instanceMethodFacts().isEmpty();
     }
 
     public boolean hasField() {
@@ -83,15 +82,15 @@ public class TypeByteCode {
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodByteCode methodByteCode : methodByteCodes()) {
-            useTypes.addAll(methodByteCode.methodDepend().collectUsingTypes());
+        for (MethodFact methodFact : allMethodFacts()) {
+            useTypes.addAll(methodFact.methodDepend().collectUsingTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public List<MethodByteCode> instanceMethodByteCodes() {
-        return instanceMethodByteCodes;
+    public List<MethodFact> instanceMethodFacts() {
+        return instanceMethodFacts;
     }
 
     public List<TypeAnnotation> typeAnnotations() {
@@ -125,23 +124,23 @@ public class TypeByteCode {
         fieldAnnotations.add(fieldAnnotation);
     }
 
-    public void registerInstanceMethodByteCodes(MethodByteCode methodByteCode) {
-        instanceMethodByteCodes.add(methodByteCode);
+    public void registerInstanceMethodFacts(MethodFact methodFact) {
+        instanceMethodFacts.add(methodFact);
     }
 
-    public void registerStaticMethodByteCodes(MethodByteCode methodByteCode) {
-        staticMethodByteCodes.add(methodByteCode);
+    public void registerStaticMethodFacts(MethodFact methodFact) {
+        staticMethodFacts.add(methodFact);
     }
 
-    public void registerConstructorByteCodes(MethodByteCode methodByteCode) {
-        constructorByteCodes.add(methodByteCode);
+    public void registerConstructorFacts(MethodFact methodFact) {
+        constructorFacts.add(methodFact);
     }
 
-    public List<MethodByteCode> methodByteCodes() {
-        ArrayList<MethodByteCode> list = new ArrayList<>();
-        list.addAll(instanceMethodByteCodes);
-        list.addAll(staticMethodByteCodes);
-        list.addAll(constructorByteCodes);
+    public List<MethodFact> allMethodFacts() {
+        ArrayList<MethodFact> list = new ArrayList<>();
+        list.addAll(instanceMethodFacts);
+        list.addAll(staticMethodFacts);
+        list.addAll(constructorFacts);
         return list;
     }
 
@@ -158,8 +157,8 @@ public class TypeByteCode {
     }
 
     public MethodDeclarations methodDeclarations() {
-        return methodByteCodes().stream()
-                .map(MethodByteCode::methodDeclaration)
+        return allMethodFacts().stream()
+                .map(MethodFact::methodDeclaration)
                 .collect(MethodDeclarations.collector());
     }
 }

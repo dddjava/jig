@@ -6,32 +6,22 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 public enum MethodKind {
     CONSTRUCTOR {
         @Override
-        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
-            typeByteCode.registerConstructorByteCodes(methodByteCode);
+        public void bind(MethodFact methodFact, TypeFact typeFact) {
+            typeFact.registerConstructorFacts(methodFact);
         }
     },
     STATIC_METHOD {
         @Override
-        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
-            typeByteCode.registerStaticMethodByteCodes(methodByteCode);
+        public void bind(MethodFact methodFact, TypeFact typeFact) {
+            typeFact.registerStaticMethodFacts(methodFact);
         }
     },
     INSTANCE_METHOD {
         @Override
-        public void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode) {
-            typeByteCode.registerInstanceMethodByteCodes(methodByteCode);
+        public void bind(MethodFact methodFact, TypeFact typeFact) {
+            typeFact.registerInstanceMethodFacts(methodFact);
         }
     };
 
-    public static MethodKind methodKind(MethodByteCode methodByteCode) {
-        if (methodByteCode.methodDeclaration.isConstructor()) {
-            return CONSTRUCTOR;
-        }
-        if (methodByteCode.isStatic()) {
-            return STATIC_METHOD;
-        }
-        return INSTANCE_METHOD;
-    }
-
-    public abstract void bind(MethodByteCode methodByteCode, TypeByteCode typeByteCode);
+    public abstract void bind(MethodFact methodFact, TypeFact typeFact);
 }

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigdocumenter.diagram;
+package org.dddjava.jig.domain.model.jigdocumenter.stationery;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;

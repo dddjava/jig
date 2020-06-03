@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.applications.services;
+package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;

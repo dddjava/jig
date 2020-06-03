@@ -1,7 +1,5 @@
-package org.dddjava.jig.domain.model.jigmodel.usecase;
+package org.dddjava.jig.domain.model.jigmodel.services;
 
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;

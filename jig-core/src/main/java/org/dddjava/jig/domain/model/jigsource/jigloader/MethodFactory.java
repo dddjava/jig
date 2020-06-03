@@ -1,10 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethod;
-import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
@@ -16,6 +13,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
+import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;

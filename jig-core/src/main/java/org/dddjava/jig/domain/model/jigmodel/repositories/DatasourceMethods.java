@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
+package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import java.util.List;
 import java.util.stream.Collectors;

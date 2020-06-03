@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.Node;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
+import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 
 public enum Nodes {
     ユースケース_ハンドラ {

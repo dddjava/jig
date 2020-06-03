@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.applications.controllers;
+package org.dddjava.jig.domain.model.jigmodel.controllers;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;

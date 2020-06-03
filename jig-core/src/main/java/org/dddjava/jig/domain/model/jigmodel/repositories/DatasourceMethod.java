@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
+package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;

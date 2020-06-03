@@ -3,12 +3,12 @@ package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
+import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 
 import java.util.*;
 

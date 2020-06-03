@@ -2,7 +2,6 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryUsageDiagram;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
@@ -11,6 +10,7 @@ import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;

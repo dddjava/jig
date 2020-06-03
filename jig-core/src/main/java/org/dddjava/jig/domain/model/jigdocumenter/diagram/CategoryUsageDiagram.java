@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 
 import java.util.StringJoiner;
 import java.util.stream.Collectors;

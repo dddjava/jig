@@ -1,6 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.usecase;
-
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
+package org.dddjava.jig.domain.model.jigmodel.services;
 
 public enum UsecaseCategory {
     ハンドラ,

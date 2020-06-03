@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 
 import java.util.List;
 import java.util.stream.Collectors;

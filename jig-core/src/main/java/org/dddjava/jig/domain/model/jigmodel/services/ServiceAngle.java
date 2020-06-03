@@ -1,8 +1,6 @@
-package org.dddjava.jig.domain.model.jigmodel.applications.services;
+package org.dddjava.jig.domain.model.jigmodel.services;
 
-import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigmodel.applications.repositories.RepositoryMethods;
+import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.*;
@@ -10,6 +8,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorries;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigmodel.repositories.RepositoryMethods;
 
 /**
  * サービスの切り口
@@ -19,12 +19,12 @@ public class ServiceAngle {
     MethodDeclaration methodDeclaration;
 
     ServiceMethods userServiceMethods;
-    ServiceMethods usingServiceMethods;
-
     ControllerMethods userControllerMethods;
 
     UsingFields usingFields;
+    ServiceMethods usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
+
     boolean isPublic;
     MethodWorries methodWorries;
     ServiceMethod serviceMethod;

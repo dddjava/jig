@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

@@ -2,15 +2,10 @@ package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocumenter.DiagramSources;
-import org.dddjava.jig.domain.model.jigdocumenter.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigdocumenter.Subgraph;
-import org.dddjava.jig.domain.model.jigdocumenter.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigdocumenter.categories.PackageStructure;
-import org.dddjava.jig.domain.model.jigmodel.Node;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
+import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;

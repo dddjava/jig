@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocumenter.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocumenter.diagram.*;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;

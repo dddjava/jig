@@ -4,9 +4,9 @@ import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
-import org.dddjava.jig.domain.model.jigdocumenter.AdditionalText;
-import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocumenter.DiagramSources;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.AdditionalText;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSources;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 

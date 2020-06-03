@@ -1,11 +1,11 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocumenter.collections.CollectionAngle;
-import org.dddjava.jig.domain.model.jigdocumenter.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.jigdocumenter.values.ValueAngle;
-import org.dddjava.jig.domain.model.jigdocumenter.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
+import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngle;
+import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.values.ValueAngle;
+import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.category.ParameterizedEnum;

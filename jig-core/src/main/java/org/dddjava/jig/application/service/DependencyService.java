@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocumenter.JigLogger;
-import org.dddjava.jig.domain.model.jigdocumenter.Warning;
 import org.dddjava.jig.domain.model.jigdocumenter.diagram.BusinessRuleRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocumenter.diagram.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.JigLogger;
+import org.dddjava.jig.domain.model.jigdocumenter.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelations;

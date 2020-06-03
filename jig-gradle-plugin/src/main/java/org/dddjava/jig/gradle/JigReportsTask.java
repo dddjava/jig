@@ -2,11 +2,11 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatus;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;

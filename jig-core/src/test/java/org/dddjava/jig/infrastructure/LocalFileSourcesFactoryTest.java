@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.source.Sources;
-import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.junit.jupiter.api.Test;
 

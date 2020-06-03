@@ -4,12 +4,12 @@ import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigloaded.alias.*;
+import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
+import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigsource.source.code.AliasSource;
-import org.dddjava.jig.domain.model.jigsource.source.code.javacode.JavaSources;
-import org.dddjava.jig.domain.model.jigsource.source.code.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.jigsource.source.code.scalacode.ScalaSources;
 import org.springframework.stereotype.Service;
 
 /**

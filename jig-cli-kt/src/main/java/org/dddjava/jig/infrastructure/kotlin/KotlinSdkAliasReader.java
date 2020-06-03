@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAliases;
+import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSource;
+import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.KotlinSourceAliasReader;
-import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSource;
-import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles;

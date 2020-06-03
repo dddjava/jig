@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
 import org.dddjava.jig.domain.model.jigloaded.alias.TypeAliases;
-import org.dddjava.jig.domain.model.jigsource.source.code.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 
 /**
  * KotlinSourceから別名を読み取る

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
 import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.jigsource.source.Sources;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 
 public interface JigLoader {
 

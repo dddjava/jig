@@ -1,10 +1,10 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.source.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.jigsource.source.code.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;

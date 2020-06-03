@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigsource.source.code.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
 
 /**
  * SQL読み取り機

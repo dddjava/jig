@@ -3,12 +3,10 @@ package org.dddjava.jig.gradle;
 import org.assertj.core.api.SoftAssertions;
 import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;

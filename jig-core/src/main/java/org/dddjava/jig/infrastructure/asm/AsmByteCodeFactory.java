@@ -3,8 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.jigsource.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
-import org.dddjava.jig.domain.model.jigsource.source.binary.ClassSource;
-import org.dddjava.jig.domain.model.jigsource.source.binary.ClassSources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
 import org.objectweb.asm.ClassReader;
 
 import java.util.ArrayList;

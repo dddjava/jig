@@ -3,13 +3,13 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
 import org.dddjava.jig.domain.model.jigsource.bytecode.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
+import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.source.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.source.SourceReader;
-import org.dddjava.jig.domain.model.jigsource.source.Sources;
-import org.dddjava.jig.domain.model.jigsource.source.binary.ClassSources;
-import org.dddjava.jig.domain.model.jigsource.source.code.sqlcode.SqlSources;
 import org.springframework.stereotype.Service;
 
 /**

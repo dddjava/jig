@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;

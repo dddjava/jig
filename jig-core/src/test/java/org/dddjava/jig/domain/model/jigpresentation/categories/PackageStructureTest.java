@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigpresentation.categories;
 
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigpresentation.categories.PackageStructure;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

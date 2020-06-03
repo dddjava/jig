@@ -5,12 +5,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 
@@ -39,10 +36,7 @@ public class TypeFacts {
         ArrayList<MethodRelation> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             for (MethodFact methodFact : typeFact.allMethodFacts()) {
-                CallerMethod callerMethod = new CallerMethod(methodFact.methodDeclaration);
-                for (MethodDeclaration usingMethod : methodFact.methodDepend().usingMethods().methodDeclarations().list()) {
-                    list.add(new MethodRelation(callerMethod, new CalleeMethod(usingMethod)));
-                }
+                list.addAll(methodFact.usingMethodRelations());
             }
         }
         methodRelations = new MethodRelations(list);

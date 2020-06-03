@@ -7,7 +7,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Decisio
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 
 import java.util.ArrayList;
@@ -128,5 +131,15 @@ public class MethodFact {
 
     public boolean judgeNull() {
         return hasJudgeNull;
+    }
+
+    List<MethodRelation> usingMethodRelations() {
+        CallerMethod callerMethod = new CallerMethod(methodDeclaration);
+        ArrayList<MethodRelation> list = new ArrayList<>();
+        for (MethodDeclaration usingMethod : usingMethods) {
+            MethodRelation methodRelation = new MethodRelation(callerMethod, new CalleeMethod(usingMethod));
+            list.add(methodRelation);
+        }
+        return list;
     }
 }

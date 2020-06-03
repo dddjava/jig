@@ -40,7 +40,7 @@ public class BusinessRuleService {
      * ビジネスルール一覧を取得する
      */
     public BusinessRules businessRules(AnalyzedImplementation analyzedImplementation) {
-        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
         return TypeFactory.from(typeFacts, architecture);
     }
 
@@ -56,7 +56,7 @@ public class BusinessRuleService {
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ClassRelations classRelations = RelationsFactory.createClassRelations(typeFacts);
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
@@ -70,7 +70,7 @@ public class BusinessRuleService {
     public ValueAngles values(ValueKind valueKind, AnalyzedImplementation analyzedImplementation) {
         ValueTypes valueTypes = new ValueTypes(businessRules(analyzedImplementation), valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
+        return new ValueAngles(valueKind, valueTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeFacts()));
     }
 
     /**
@@ -80,7 +80,7 @@ public class BusinessRuleService {
         BusinessRules businessRules = businessRules(analyzedImplementation);
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
+        return new CollectionAngles(collectionTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeFacts()));
     }
 
     /**
@@ -88,9 +88,9 @@ public class BusinessRuleService {
      */
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeFacts(), architecture);
         ClassRelations businessRuleRelations = RelationsFactory.createClassRelations(
-                new TypeFacts(analyzedImplementation.typeByteCodes().list()
+                new TypeFacts(analyzedImplementation.typeFacts().list()
                         .stream()
                         .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
                         .collect(Collectors.toList()))

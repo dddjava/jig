@@ -36,7 +36,7 @@ public class ApplicationService {
      * コントローラーを分析する
      */
     public ControllerMethods controllerAngles(AnalyzedImplementation analyzedImplementation) {
-        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
 
         if (controllerMethods.empty()) {
@@ -55,7 +55,7 @@ public class ApplicationService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(AnalyzedImplementation analyzedImplementation) {
-        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
 
         if (serviceMethods.empty()) {
@@ -76,7 +76,7 @@ public class ApplicationService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(AnalyzedImplementation analyzedImplementation) {
-        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(analyzedImplementation.typeByteCodes(), architecture);
+        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(analyzedImplementation.typeFacts(), architecture);
 
         if (datasourceMethods.empty()) {
             jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
@@ -93,7 +93,7 @@ public class ApplicationService {
     }
 
     public RoundingPackageRelations buildingBlockRelations(AnalyzedImplementation implementations) {
-        ClassRelations classRelations = RelationsFactory.createClassRelations(implementations.typeByteCodes());
+        ClassRelations classRelations = RelationsFactory.createClassRelations(implementations.typeFacts());
 
         return RoundingPackageRelations.getRoundingPackageRelations(classRelations);
     }

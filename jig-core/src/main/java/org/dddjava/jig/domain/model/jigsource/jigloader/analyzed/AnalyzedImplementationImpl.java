@@ -19,7 +19,7 @@ public class AnalyzedImplementationImpl implements AnalyzedImplementation {
     }
 
     @Override
-    public TypeFacts typeByteCodes() {
+    public TypeFacts typeFacts() {
         return typeFacts;
     }
 

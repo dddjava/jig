@@ -82,7 +82,7 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = implementations.typeByteCodes().validationAnnotatedMembers();
+        ValidationAnnotatedMembers validationAnnotatedMembers = implementations.typeFacts().validationAnnotatedMembers();
 
         ValidationAngles validationAngles = ValidationAngles.validationAngles(validationAnnotatedMembers);
         return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);

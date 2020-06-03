@@ -36,7 +36,7 @@ public class DependencyService {
             return PackageRelationDiagram.empty();
         }
 
-        ClassRelations classRelations = RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes());
+        ClassRelations classRelations = RelationsFactory.createClassRelations(analyzedImplementation.typeFacts());
         PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
 
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
@@ -48,7 +48,7 @@ public class DependencyService {
     public BusinessRuleRelationDiagram businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {
         BusinessRuleRelationDiagram businessRuleRelationDiagram = new BusinessRuleRelationDiagram(
                 businessRuleService.businessRules(analyzedImplementation),
-                RelationsFactory.createClassRelations(analyzedImplementation.typeByteCodes()));
+                RelationsFactory.createClassRelations(analyzedImplementation.typeFacts()));
         return businessRuleRelationDiagram;
     }
 }

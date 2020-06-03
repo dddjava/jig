@@ -12,7 +12,7 @@ public interface AnalyzedImplementation {
         return new AnalyzedImplementationImpl(sources, typeFacts, sqls);
     }
 
-    TypeFacts typeByteCodes();
+    TypeFacts typeFacts();
 
     Sqls sqls();
 

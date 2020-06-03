@@ -95,17 +95,17 @@ public class MethodFactory {
     }
 
     public static MethodSmellAngles createMethodSmellAngles(AnalyzedImplementation analyzedImplementation, BusinessRules businessRules) {
-        Methods methods = new Methods(analyzedImplementation.typeByteCodes().instanceMethodFacts().stream()
+        Methods methods = new Methods(analyzedImplementation.typeFacts().instanceMethodFacts().stream()
                 .map(methodByteCode -> methodByteCode.createMethod())
                 .collect(toList()));
         return new MethodSmellAngles(methods,
-                analyzedImplementation.typeByteCodes().instanceFields(),
-                RelationsFactory.createMethodRelations(analyzedImplementation.typeByteCodes()),
+                analyzedImplementation.typeFacts().instanceFields(),
+                RelationsFactory.createMethodRelations(analyzedImplementation.typeFacts()),
                 businessRules);
     }
 
     public static StringComparingCallerMethods from(AnalyzedImplementation analyzedImplementation, Architecture architecture) {
-        TypeFacts typeFacts = analyzedImplementation.typeByteCodes();
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ControllerMethods controllerMethods = createControllerMethods(typeFacts, architecture);
         ServiceMethods serviceMethods = createServiceMethods(typeFacts, architecture);
 

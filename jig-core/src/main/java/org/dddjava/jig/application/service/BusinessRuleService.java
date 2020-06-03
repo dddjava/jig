@@ -10,9 +10,9 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;

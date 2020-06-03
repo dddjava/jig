@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.StringJoiner;
 

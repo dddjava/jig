@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.jigmodel.smells;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 import java.util.ArrayList;
 import java.util.Comparator;

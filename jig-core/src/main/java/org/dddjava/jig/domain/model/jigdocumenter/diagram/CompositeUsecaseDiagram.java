@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocumenter.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocumenter.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.usecase.CompositeUsecases;
 
 import java.util.List;

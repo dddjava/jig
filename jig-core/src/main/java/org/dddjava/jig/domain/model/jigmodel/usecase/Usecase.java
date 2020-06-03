@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigmodel.usecase;
 
 import org.dddjava.jig.domain.model.jigmodel.Node;
-import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.Optional;

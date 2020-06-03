@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.List;
 
-import static org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers.collector;
+import static org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers.collector;
 
 /**
  * 区分一覧

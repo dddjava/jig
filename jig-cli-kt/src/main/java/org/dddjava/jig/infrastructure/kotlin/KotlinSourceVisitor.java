@@ -1,13 +1,13 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.jigmodel.alias.Alias;
-import org.dddjava.jig.domain.model.jigmodel.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.kdoc.psi.api.KDoc;
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocSection;

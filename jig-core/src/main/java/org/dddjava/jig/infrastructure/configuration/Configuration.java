@@ -1,14 +1,14 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.alias.PackageAlias;
-import org.dddjava.jig.domain.model.jigmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmByteCodeFactory;

@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.jigdocumenter.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;

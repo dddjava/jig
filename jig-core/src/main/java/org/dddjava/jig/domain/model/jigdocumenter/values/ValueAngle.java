@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigdocumenter.values;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 /**
  * 値の切り口

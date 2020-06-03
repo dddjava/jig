@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocumenter.collections;
 
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
-import org.dddjava.jig.domain.model.jigmodel.datasource.SqlReadStatus;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.SqlReadStatus;
 
 /**
  * 解析結果

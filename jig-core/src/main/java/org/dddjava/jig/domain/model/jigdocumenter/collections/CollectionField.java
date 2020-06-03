@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigdocumenter.collections;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleFields;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldType;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
 
 public class CollectionField {
     BusinessRuleFields businessRuleFields;

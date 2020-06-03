@@ -6,11 +6,11 @@ import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocumenter.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocumenter.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.Node;
-import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
 
 import java.util.*;

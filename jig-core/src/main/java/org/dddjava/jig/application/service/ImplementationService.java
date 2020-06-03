@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigmodel.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;

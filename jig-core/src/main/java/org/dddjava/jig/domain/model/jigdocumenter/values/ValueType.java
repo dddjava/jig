@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocumenter.values;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
  * 値の型

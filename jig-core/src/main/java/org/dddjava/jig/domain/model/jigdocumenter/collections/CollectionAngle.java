@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigdocumenter.collections;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 /**
  * コレクションの切り口

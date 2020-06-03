@@ -2,12 +2,12 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.jigmodel.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.Collections;
 import java.util.List;

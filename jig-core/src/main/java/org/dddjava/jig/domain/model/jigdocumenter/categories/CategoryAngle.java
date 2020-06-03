@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigdocumenter.categories;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 /**
  * 区分の切り口

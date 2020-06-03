@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.jigmodel.smells;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.relation.method.CalleeMethod;
-import org.dddjava.jig.domain.model.jigmodel.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 
 /**
  * メソッドの不吉なにおい

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldType;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.Set;

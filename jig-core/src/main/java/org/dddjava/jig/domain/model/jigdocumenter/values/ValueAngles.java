@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigdocumenter.values;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.Comparator;

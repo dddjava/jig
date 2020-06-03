@@ -6,11 +6,11 @@ import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.jigmodel.alias.Alias;
-import org.dddjava.jig.domain.model.jigmodel.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

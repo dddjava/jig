@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.ParameterizedTypes;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedTypes;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;

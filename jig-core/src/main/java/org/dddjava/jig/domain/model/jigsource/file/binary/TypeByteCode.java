@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.jigsource.file.binary;
 
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.TypeAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.declaration.type.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

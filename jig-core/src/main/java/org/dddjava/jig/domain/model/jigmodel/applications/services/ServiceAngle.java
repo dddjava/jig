@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.jigmodel.applications.services;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.RepositoryMethods;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.relation.method.*;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorries;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorry;
-import org.dddjava.jig.domain.model.jigmodel.richmethod.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorries;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 
 /**
  * サービスの切り口

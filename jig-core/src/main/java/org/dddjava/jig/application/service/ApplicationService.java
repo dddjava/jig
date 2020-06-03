@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.repositories.Datasourc
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;

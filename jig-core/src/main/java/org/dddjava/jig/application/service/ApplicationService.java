@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.ServiceMethodCallHierarchyDiagram;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;

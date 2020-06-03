@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigpresentation.values.ValueTypes;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;

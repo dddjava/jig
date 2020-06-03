@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
 import org.dddjava.jig.domain.model.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
 
 import java.util.List;
 

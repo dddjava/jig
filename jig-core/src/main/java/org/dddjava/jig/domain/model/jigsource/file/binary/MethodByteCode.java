@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.bytecode;
+package org.dddjava.jig.domain.model.jigsource.file.binary;
 
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;

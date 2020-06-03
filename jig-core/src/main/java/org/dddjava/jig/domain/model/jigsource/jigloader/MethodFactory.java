@@ -18,9 +18,9 @@ import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;

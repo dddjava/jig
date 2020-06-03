@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 
 import java.util.ArrayList;

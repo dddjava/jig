@@ -8,9 +8,9 @@ import org.dddjava.jig.domain.model.jigloaded.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigsource.bytecode.MethodByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 
 import java.util.ArrayList;
 import java.util.List;

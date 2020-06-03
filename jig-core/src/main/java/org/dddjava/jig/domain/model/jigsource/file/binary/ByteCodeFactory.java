@@ -1,6 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.bytecode;
-
-import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
+package org.dddjava.jig.domain.model.jigsource.file.binary;
 
 /**
  * 対象から実装を取得するファクトリ

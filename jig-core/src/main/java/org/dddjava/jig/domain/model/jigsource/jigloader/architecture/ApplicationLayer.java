@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.architecture;
 
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCode;
-import org.dddjava.jig.domain.model.jigsource.bytecode.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 
 import java.util.List;
 

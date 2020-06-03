@@ -100,7 +100,7 @@ public class MethodFactory {
                 .collect(toList()));
         return new MethodSmellAngles(methods,
                 analyzedImplementation.typeFacts().instanceFields(),
-                RelationsFactory.createMethodRelations(analyzedImplementation.typeFacts()),
+                analyzedImplementation.typeFacts().toMethodRelations(),
                 businessRules);
     }
 

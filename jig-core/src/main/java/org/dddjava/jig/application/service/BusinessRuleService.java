@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
@@ -57,7 +56,7 @@ public class BusinessRuleService {
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         TypeFacts typeFacts = analyzedImplementation.typeFacts();
-        ClassRelations classRelations = RelationsFactory.createClassRelations(typeFacts);
+        ClassRelations classRelations = typeFacts.toClassRelations();
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
 
@@ -70,7 +69,7 @@ public class BusinessRuleService {
     public ValueAngles values(ValueKind valueKind, AnalyzedImplementation analyzedImplementation) {
         ValueTypes valueTypes = new ValueTypes(businessRules(analyzedImplementation), valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeFacts()));
+        return new ValueAngles(valueKind, valueTypes, analyzedImplementation.typeFacts().toClassRelations());
     }
 
     /**
@@ -80,7 +79,7 @@ public class BusinessRuleService {
         BusinessRules businessRules = businessRules(analyzedImplementation);
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, RelationsFactory.createClassRelations(analyzedImplementation.typeFacts()));
+        return new CollectionAngles(collectionTypes, analyzedImplementation.typeFacts().toClassRelations());
     }
 
     /**
@@ -89,11 +88,10 @@ public class BusinessRuleService {
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
         ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeFacts(), architecture);
-        ClassRelations businessRuleRelations = RelationsFactory.createClassRelations(
-                new TypeFacts(analyzedImplementation.typeFacts().list()
-                        .stream()
-                        .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
-                        .collect(Collectors.toList()))
+        ClassRelations businessRuleRelations = new TypeFacts(analyzedImplementation.typeFacts().list()
+                .stream()
+                .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
+                .collect(Collectors.toList())).toClassRelations(
         );
 
         return new CategoryUsageDiagram(serviceMethods, categoryTypes, businessRuleRelations);

@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
@@ -67,7 +66,7 @@ public class ApplicationService {
 
         return new ServiceAngles(
                 serviceMethods,
-                RelationsFactory.createMethodRelations(typeFacts),
+                typeFacts.toMethodRelations(),
                 controllerMethods,
                 datasourceMethods);
     }
@@ -93,7 +92,7 @@ public class ApplicationService {
     }
 
     public RoundingPackageRelations buildingBlockRelations(AnalyzedImplementation implementations) {
-        ClassRelations classRelations = RelationsFactory.createClassRelations(implementations.typeFacts());
+        ClassRelations classRelations = implementations.typeFacts().toClassRelations();
 
         return RoundingPackageRelations.getRoundingPackageRelations(classRelations);
     }

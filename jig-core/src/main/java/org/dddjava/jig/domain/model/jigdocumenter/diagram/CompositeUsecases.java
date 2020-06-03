@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.Node;
-import org.dddjava.jig.domain.model.jigdocumenter.usecase.Usecase;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +32,7 @@ public class CompositeUsecases {
         String usecaseIdentifier = usecase.usecaseIdentifier();
 
         StringBuilder sb = new StringBuilder()
-                .append(usecase.dotText(aliasFinder));
+                .append(Nodes.usecase(aliasFinder, usecase).asText());
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 

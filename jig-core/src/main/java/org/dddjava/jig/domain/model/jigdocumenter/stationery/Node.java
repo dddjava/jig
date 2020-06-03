@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.jigdocumenter.stationery;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.StringJoiner;
@@ -20,16 +18,8 @@ public class Node {
         this.identifier = identifier;
     }
 
-    public static Node of(PackageIdentifier identifier) {
-        return new Node(identifier.asText());
-    }
-
-    public static Node of(TypeIdentifier identifier) {
+    public static Node controllerNodeOf(TypeIdentifier identifier) {
         return new Node(identifier.fullQualifiedName());
-    }
-
-    public static Node of(MethodDeclaration identifier) {
-        return new Node(identifier.asFullNameText());
     }
 
     /**

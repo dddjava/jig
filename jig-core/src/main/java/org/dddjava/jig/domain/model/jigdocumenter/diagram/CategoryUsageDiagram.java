@@ -56,11 +56,7 @@ public class CategoryUsageDiagram {
                 continue;
             }
 
-            Node node = Node.of(serviceMethod.methodDeclaration())
-                    .label(aliasFinder.methodText(serviceMethod.methodDeclaration().identifier()))
-                    .normalColor()
-                    .useCase();
-            useCaseText.add(node.asText());
+            useCaseText.add(Nodes.usecase(aliasFinder, serviceMethod).asText());
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
@@ -87,7 +83,7 @@ public class CategoryUsageDiagram {
         return businessRuleTypeIdentifiers
                 .exclude(categoryTypes.typeIdentifiers())
                 .list().stream()
-                .map(typeIdentifier -> Node.of(typeIdentifier)
+                .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
                         .label(aliasFinder.simpleTypeText(typeIdentifier))
                         .asText())
                 .collect(Collectors.joining("\n"));
@@ -96,7 +92,7 @@ public class CategoryUsageDiagram {
     String categoryNodesText(AliasFinder aliasFinder) {
         return categoryTypes.list().stream()
                 .map(categoryType -> categoryType.typeIdentifier())
-                .map(typeIdentifier -> Node.of(typeIdentifier)
+                .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
                         .normalColor()
                         .label(aliasFinder.typeText(typeIdentifier))
                         .asText())

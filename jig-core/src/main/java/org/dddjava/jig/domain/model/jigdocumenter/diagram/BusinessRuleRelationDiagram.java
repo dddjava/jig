@@ -59,7 +59,7 @@ public class BusinessRuleRelationDiagram {
                 if (typeAlias.exists()) {
                     aliasLine = typeAlias.asText() + "\n";
                 }
-                Node node = Node.of(businessRule.type().identifier())
+                Node node = Node.controllerNodeOf(businessRule.type().identifier())
                         .label(aliasLine + businessRule.type().identifier().asSimpleText());
                 subgraph.add(node.asText());
             }

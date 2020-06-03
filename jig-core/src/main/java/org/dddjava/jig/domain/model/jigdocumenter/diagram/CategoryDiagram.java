@@ -62,7 +62,7 @@ public class CategoryDiagram {
         String structureText = packageStructure.toDotText(
                 packageIdentifier -> new Subgraph(packageIdentifier.asText())
                         .label(packageIdentifier.simpleName()),
-                typeIdentifier -> Node.of(typeIdentifier)
+                typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
         );
 
         StringJoiner categoryText = new StringJoiner("\n");

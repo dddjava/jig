@@ -52,6 +52,10 @@ public class PackageRelationDiagram {
         );
     }
 
+    private static Node nodeOf(PackageIdentifier identifier) {
+        return new Node(identifier.asText());
+    }
+
     public PackageIdentifiers allPackages() {
         return packageIdentifiers;
     }
@@ -149,7 +153,7 @@ public class PackageRelationDiagram {
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
             PackageIdentifier parent = entry.getKey();
             String labelsText = entry.getValue().stream()
-                    .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
+                    .map(packageIdentifier -> nodeOf(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
                     .add(labelsText)
@@ -158,7 +162,7 @@ public class PackageRelationDiagram {
             stringJoiner.add(subgraph.toString());
         }
         String labelsText = standalonePackages.stream()
-                .map(packageIdentifier -> Node.of(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
+                .map(packageIdentifier -> nodeOf(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
                 .collect(joining("\n"));
         stringJoiner.add(labelsText);
 

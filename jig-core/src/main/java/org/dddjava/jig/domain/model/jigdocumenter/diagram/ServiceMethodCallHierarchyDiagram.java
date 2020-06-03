@@ -3,12 +3,12 @@ package org.dddjava.jig.domain.model.jigdocumenter.diagram;
 import org.dddjava.jig.domain.model.jigdocument.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
 import org.dddjava.jig.domain.model.jigdocumenter.stationery.*;
-import org.dddjava.jig.domain.model.jigdocumenter.usecase.Usecase;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.usecase.Usecase;
 
 import java.util.*;
 
@@ -25,7 +25,6 @@ public class ServiceMethodCallHierarchyDiagram {
     public ServiceMethodCallHierarchyDiagram(List<ServiceAngle> list) {
         this.list = list;
     }
-
 
     public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
         if (list.isEmpty()) {
@@ -46,13 +45,12 @@ public class ServiceMethodCallHierarchyDiagram {
         String serviceMethodText = angles.stream()
                 .map(serviceAngle -> {
                     MethodDeclaration method = serviceAngle.method();
-                    Node node = Node.of(method);
                     if (method.isLambda()) {
-                        return node.label("(lambda)").lambda().asText();
+                        return Nodes.lambda(method).asText();
                     }
-                    Usecase useCase = new Usecase(serviceAngle);
+                    Usecase usecase = new Usecase(serviceAngle);
 
-                    Node useCaseNode = useCase.node(aliasFinder);
+                    Node useCaseNode = Nodes.usecase(aliasFinder, usecase);
 
                     // 非publicは色なし
                     if (serviceAngle.isNotPublicMethod()) {
@@ -120,9 +118,7 @@ public class ServiceMethodCallHierarchyDiagram {
                 .collect(groupingBy(MethodDeclaration::declaringType));
         handlerMap.forEach((handlerType, v) -> {
             String requestHandlerMethods = v.stream()
-                    .map(method -> Node.of(method)
-                            .screenNode()
-                            .label(method.methodSignature().methodName()))
+                    .map(method -> controllerNodeOf(method))
                     .map(Node::asText)
                     .collect(joining("\n"));
 
@@ -160,7 +156,7 @@ public class ServiceMethodCallHierarchyDiagram {
             }
         }
         String repositoryTypes = repositories.stream()
-                .map(repository -> Node.of(repository).other().label(repository.asSimpleText()))
+                .map(repository -> Node.controllerNodeOf(repository).other().label(repository.asSimpleText()))
                 .map(Node::asText)
                 .collect(joining("\n"));
 
@@ -173,5 +169,11 @@ public class ServiceMethodCallHierarchyDiagram {
     private String aliasLineOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
         String aliasText = aliasFinder.find(typeIdentifier).asText();
         return aliasText.isEmpty() ? "" : aliasText + "\n";
+    }
+
+    private static Node controllerNodeOf(MethodDeclaration methodDeclaration) {
+        return new Node(methodDeclaration.asFullNameText())
+                .screenNode()
+                .label(methodDeclaration.methodSignature().methodName());
     }
 }

@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.jigdocumenter.usecase;
+package org.dddjava.jig.domain.model.jigmodel.usecase;
 
-import org.dddjava.jig.domain.model.jigdocumenter.stationery.Node;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
@@ -39,21 +38,16 @@ public class Usecase {
         return serviceMethod.methodDeclaration().asFullNameText();
     }
 
-    public String useCaseLabel(AliasFinder aliasFinder) {
+    public String usecaseLabel(AliasFinder aliasFinder) {
         MethodAlias methodAlias = aliasFinder.find(serviceMethod.methodDeclaration().identifier());
         return methodAlias.asTextOrDefault(serviceMethod.methodDeclaration().declaringType().asSimpleText() + "\\n" + serviceMethod.methodDeclaration().methodSignature().methodName());
     }
 
-    public String dotText(AliasFinder aliasFinder) {
-        return node(aliasFinder).asText();
+    public String simpleTextWithDeclaringType() {
+        return serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType();
     }
 
-    public Node node(AliasFinder aliasFinder) {
-        Node node = new Node(usecaseIdentifier())
-                .shape("ellipse")
-                .label(useCaseLabel(aliasFinder))
-                .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
-                .style("filled");
-        return usecaseCategory.handler() ? node.handlerMethod() : node.normalColor();
+    public boolean isHandler() {
+        return usecaseCategory.handler();
     }
 }

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigdocumenter.usecase;
+package org.dddjava.jig.domain.model.jigmodel.usecase;
 
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 

@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Parameter
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.junit.jupiter.api.Test;
@@ -85,7 +84,7 @@ public class AsmFactFactoryTest {
 
         List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
         MethodAnnotation methodAnnotation = instanceMethodFacts.stream()
-                .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("method()"))
+                .filter(e -> e.createMethod().declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
@@ -167,9 +166,9 @@ public class AsmFactFactoryTest {
 
         List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
         MethodFact methodFact = instanceMethodFacts.stream()
-                .filter(e -> MethodFactory.createMethod(e).declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
+                .filter(e -> e.createMethod().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        Method method = MethodFactory.createMethod(methodFact);
+        Method method = methodFact.createMethod();
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 

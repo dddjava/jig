@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +47,16 @@ public class MethodFact {
         this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
+    }
+
+    public Method createMethod() {
+        return new Method(
+                methodDeclaration(),
+                judgeNull(),
+                decisionNumber(),
+                annotatedMethods(),
+                visibility(),
+                methodDepend());
     }
 
     public MethodDepend methodDepend() {

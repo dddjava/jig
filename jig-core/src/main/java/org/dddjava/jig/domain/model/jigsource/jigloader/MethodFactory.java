@@ -35,34 +35,14 @@ import static java.util.stream.Collectors.toList;
 
 public class MethodFactory {
 
-    public static Method createMethod(MethodFact methodFact) {
-        return new Method(
-                methodFact.methodDeclaration(),
-                methodFact.judgeNull(),
-                methodFact.decisionNumber(),
-                methodFact.annotatedMethods(),
-                methodFact.visibility(),
-                methodFact.methodDepend());
-    }
-
-    public static RequestHandlerMethod createRequestHandlerMethod(MethodFact methodFact, TypeFact typeFact) {
-        Method method = createMethod(methodFact);
-        TypeAnnotations typeAnnotations = new TypeAnnotations(typeFact.typeAnnotations());
-        return new RequestHandlerMethod(method, typeAnnotations);
-    }
-
-    public static Methods createMethods(TypeFacts typeFacts) {
-        return new Methods(typeFacts.instanceMethodFacts().stream()
-                .map(methodByteCode -> createMethod(methodByteCode))
-                .collect(toList()));
-    }
-
     public static ControllerMethods createControllerMethods(TypeFacts typeFacts, Architecture architecture) {
         List<RequestHandlerMethod> list = new ArrayList<>();
         for (TypeFact typeFact : typeFacts.list()) {
             if (ApplicationLayer.PRESENTATION.satisfy(typeFact, architecture)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
-                    RequestHandlerMethod requestHandlerMethod = createRequestHandlerMethod(methodFact, typeFact);
+                    Method method = methodFact.createMethod();
+                    TypeAnnotations typeAnnotations = new TypeAnnotations(typeFact.typeAnnotations());
+                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, typeAnnotations);
                     if (requestHandlerMethod.valid()) {
                         list.add(requestHandlerMethod);
                     }
@@ -74,27 +54,28 @@ public class MethodFactory {
 
     public static DatasourceMethods createDatasourceMethods(TypeFacts typeFacts, Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
-        for (TypeFact concreteByteCode : typeFacts.list()) {
-            if (!BuildingBlock.DATASOURCE.satisfy(concreteByteCode, architecture)) {
+        for (TypeFact typeFact : typeFacts.list()) {
+            if (!BuildingBlock.DATASOURCE.satisfy(typeFact, architecture)) {
                 continue;
             }
 
-            ParameterizedTypes parameterizedTypes = concreteByteCode.parameterizedInterfaceTypes();
+            ParameterizedTypes parameterizedTypes = typeFact.parameterizedInterfaceTypes();
             for (ParameterizedType parameterizedType : parameterizedTypes.list()) {
                 TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
 
-                for (TypeFact interfaceByteCode : typeFacts.list()) {
-                    if (!interfaceTypeIdentifier.equals(interfaceByteCode.typeIdentifier())) {
+                for (TypeFact interfaceTypeFact : typeFacts.list()) {
+                    if (!interfaceTypeIdentifier.equals(interfaceTypeFact.typeIdentifier())) {
                         continue;
                     }
 
-                    for (MethodFact interfaceMethodFact : interfaceByteCode.allMethodFacts()) {
-                        concreteByteCode.allMethodFacts().stream()
+                    // TODO allじゃなくinstanceでよさそう
+                    for (MethodFact interfaceMethodFact : interfaceTypeFact.allMethodFacts()) {
+                        typeFact.allMethodFacts().stream()
                                 .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
                                 // 0 or 1
                                 .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                        createMethod(interfaceMethodFact),
-                                        createMethod(concreteMethodByteCode),
+                                        interfaceMethodFact.createMethod(),
+                                        concreteMethodByteCode.createMethod(),
                                         concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
                                 );
                     }
@@ -109,12 +90,15 @@ public class MethodFactory {
                 .filter(typeFact -> ApplicationLayer.APPLICATION.satisfy(typeFact, architecture))
                 .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
-                .map(methodByteCode -> createMethod(methodByteCode))
+                .map(methodFact -> methodFact.createMethod())
                 .collect(toList()));
     }
 
     public static MethodSmellAngles createMethodSmellAngles(AnalyzedImplementation analyzedImplementation, BusinessRules businessRules) {
-        return new MethodSmellAngles(createMethods(analyzedImplementation.typeByteCodes()),
+        Methods methods = new Methods(analyzedImplementation.typeByteCodes().instanceMethodFacts().stream()
+                .map(methodByteCode -> methodByteCode.createMethod())
+                .collect(toList()));
+        return new MethodSmellAngles(methods,
                 analyzedImplementation.typeByteCodes().instanceFields(),
                 RelationsFactory.createMethodRelations(analyzedImplementation.typeByteCodes()),
                 businessRules);

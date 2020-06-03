@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorry;
 import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 import org.dddjava.jig.presentation.view.report.*;
 

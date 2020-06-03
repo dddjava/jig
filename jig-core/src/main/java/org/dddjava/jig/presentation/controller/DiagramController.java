@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.jigdocument.JigDocument;
-import org.dddjava.jig.domain.model.jigpresentation.diagram.*;
+import org.dddjava.jig.domain.model.jigdocumenter.diagram.*;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ArchitectureFactory;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;

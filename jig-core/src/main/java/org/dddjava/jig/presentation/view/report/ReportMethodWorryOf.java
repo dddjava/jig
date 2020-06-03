@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report;
 
-import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorry;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

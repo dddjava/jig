@@ -1,9 +1,9 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.Type;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 
 /**
  * ビジネスルール

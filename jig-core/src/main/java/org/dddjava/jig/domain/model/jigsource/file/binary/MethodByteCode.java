@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.jigsource.file.binary;
 
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.Accessor;
-import org.dddjava.jig.domain.model.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodDepend;
+import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.Accessor;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodDepend;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.poi.report.formatter;
 
+import org.dddjava.jig.domain.model.jigdocumenter.collections.CollectionField;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionField;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 

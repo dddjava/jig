@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigloaded.alias.Alias;
-import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 
 public interface JigLoader {
 

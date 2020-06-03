@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
 
-import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.datasource.Sqls;
 
 import java.util.ArrayList;
 import java.util.Comparator;

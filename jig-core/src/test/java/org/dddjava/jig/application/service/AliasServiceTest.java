@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
 import org.junit.jupiter.api.Test;
@@ -66,13 +66,13 @@ class AliasServiceTest {
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",
-                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.emptyList())));
+                new org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments(Collections.emptyList())));
         Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
                 .isEqualTo("メソッドのJavadoc");
 
         MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "overloadMethod",
-                new org.dddjava.jig.domain.model.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
+                new org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
         Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier).asText())
                 // オーバーロードは一意にならないのでどちらか
                 .matches("引数(なし|あり)のメソッド");

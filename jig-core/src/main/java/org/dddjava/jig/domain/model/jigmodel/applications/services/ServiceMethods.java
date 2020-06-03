@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.services;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
 
 import java.util.List;
 

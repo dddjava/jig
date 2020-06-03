@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigloaded.alias.PackageAliases;
-import org.dddjava.jig.domain.model.jigloaded.alias.TypeAliases;
+import org.dddjava.jig.domain.model.jigmodel.alias.PackageAliases;
+import org.dddjava.jig.domain.model.jigmodel.alias.TypeAliases;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
 

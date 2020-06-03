@@ -1,16 +1,16 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocument.JigLogger;
-import org.dddjava.jig.domain.model.jigdocument.Warning;
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigdocumenter.JigLogger;
+import org.dddjava.jig.domain.model.jigdocumenter.Warning;
+import org.dddjava.jig.domain.model.jigdocumenter.architectures.RoundingPackageRelations;
+import org.dddjava.jig.domain.model.jigdocumenter.diagram.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigmodel.applications.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigpresentation.architectures.RoundingPackageRelations;
-import org.dddjava.jig.domain.model.jigpresentation.diagram.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.RelationsFactory;

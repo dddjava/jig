@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.Type;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.Type;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;

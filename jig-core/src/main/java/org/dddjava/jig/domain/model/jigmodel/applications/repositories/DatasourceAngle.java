@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.repositories;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.datasource.SqlType;
-import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.datasource.SqlType;
+import org.dddjava.jig.domain.model.jigmodel.datasource.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
 
 /**
  * データソースの切り口

@@ -1,14 +1,14 @@
 package org.dddjava.jig.infrastructure.logger;
 
-import org.dddjava.jig.domain.model.jigdocument.JigLogger;
-import org.dddjava.jig.domain.model.jigdocument.Warning;
+import org.dddjava.jig.domain.model.jigdocumenter.JigLogger;
+import org.dddjava.jig.domain.model.jigdocumenter.Warning;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ResourceBundle;
 
-public class MessageLogger implements org.dddjava.jig.domain.model.jigdocument.JigLogger {
+public class MessageLogger implements JigLogger {
 
     private final Class<?> clz;
     private final Logger logger;

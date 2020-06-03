@@ -1,10 +1,10 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;

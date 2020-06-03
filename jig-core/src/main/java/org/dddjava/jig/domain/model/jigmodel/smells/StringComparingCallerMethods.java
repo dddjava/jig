@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.smells;
 
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
 
 import java.util.List;
 

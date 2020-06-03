@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.jigloaded.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CalleeMethod;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethod;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelation;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.CalleeMethod;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.CallerMethod;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodRelation;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;

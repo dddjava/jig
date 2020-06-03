@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.services;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 
 import java.util.function.Function;
 

@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.jigmodel.applications.services;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.UsingMethods;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.Method;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorries;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.UsingMethods;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorries;
 
 import java.util.List;
 import java.util.Optional;

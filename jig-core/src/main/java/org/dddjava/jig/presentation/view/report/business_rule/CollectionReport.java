@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionAngle;
-import org.dddjava.jig.domain.model.jigpresentation.collections.CollectionField;
+import org.dddjava.jig.domain.model.jigdocumenter.collections.CollectionAngle;
+import org.dddjava.jig.domain.model.jigdocumenter.collections.CollectionField;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

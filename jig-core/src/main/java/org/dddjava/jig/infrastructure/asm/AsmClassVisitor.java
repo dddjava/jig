@@ -1,15 +1,15 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.declaration.annotation.*;
-import org.dddjava.jig.domain.model.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.field.FieldIdentifier;
-import org.dddjava.jig.domain.model.declaration.field.FieldType;
-import org.dddjava.jig.domain.model.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.declaration.type.*;
+import org.dddjava.jig.domain.model.jigmodel.declaration.annotation.*;
+import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.field.FieldType;
+import org.dddjava.jig.domain.model.jigmodel.declaration.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigsource.file.binary.MethodByteCode;
 import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCode;
 import org.objectweb.asm.Type;

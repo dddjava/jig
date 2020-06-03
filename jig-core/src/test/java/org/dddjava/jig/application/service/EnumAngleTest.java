@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigpresentation.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigpresentation.diagram.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocumenter.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

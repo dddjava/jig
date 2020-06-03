@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigloaded.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigloaded.richmethod.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.richmethod.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;

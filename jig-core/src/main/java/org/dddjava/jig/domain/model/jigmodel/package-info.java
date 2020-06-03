@@ -1,4 +1,4 @@
 /**
- * JIGの解釈
+ * JIGモデル
  */
 package org.dddjava.jig.domain.model.jigmodel;

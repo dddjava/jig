@@ -1,12 +1,12 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.declaration.package_.PackageDepth;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.jigdocument.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocument.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigloaded.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigdocumenter.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocumenter.JigDocumentContext;
+import org.dddjava.jig.domain.model.jigdocumenter.diagram.*;
+import org.dddjava.jig.domain.model.jigmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.applications.services.MethodNodeLabelStyle;
-import org.dddjava.jig.domain.model.jigpresentation.diagram.*;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageDepth;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
 import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;

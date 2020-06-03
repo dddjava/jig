@@ -1,12 +1,12 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigloaded.datasource.Sqls;
-import org.dddjava.jig.domain.model.jigsource.file.binary.ByteCodeFactory;
-import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
+import org.dddjava.jig.domain.model.jigmodel.datasource.Sqls;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ByteCodeFactory;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
+import org.dddjava.jig.domain.model.jigsource.file.binary.TypeByteCodes;
 import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;

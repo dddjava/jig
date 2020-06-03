@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.alias.AliasRepository;
-import org.dddjava.jig.domain.model.jigloaded.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
-import org.dddjava.jig.domain.model.jigloaded.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.alias.AliasRepository;
+import org.dddjava.jig.domain.model.jigmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

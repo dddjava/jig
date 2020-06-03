@@ -6,10 +6,10 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.alias.Alias;
-import org.dddjava.jig.domain.model.jigloaded.alias.JavadocAliasSource;
-import org.dddjava.jig.domain.model.jigloaded.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.alias.JavadocAliasSource;
+import org.dddjava.jig.domain.model.jigmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
 
 import java.util.Optional;

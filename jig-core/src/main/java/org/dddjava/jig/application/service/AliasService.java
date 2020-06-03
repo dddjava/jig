@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigloaded.alias.*;
+import org.dddjava.jig.domain.model.jigmodel.alias.*;
+import org.dddjava.jig.domain.model.jigmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;

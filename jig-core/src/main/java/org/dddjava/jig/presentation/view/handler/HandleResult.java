@@ -28,7 +28,10 @@ public class HandleResult {
     }
 
     public List<Path> outputFilePaths() {
-        return outputFilePaths.stream().map(Path::toAbsolutePath).collect(Collectors.toList());
+        return outputFilePaths.stream()
+                .map(Path::toAbsolutePath)
+                .map(Path::normalize)
+                .collect(Collectors.toList());
     }
 
     public boolean success() {

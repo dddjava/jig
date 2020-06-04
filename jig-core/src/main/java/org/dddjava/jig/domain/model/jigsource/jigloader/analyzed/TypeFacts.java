@@ -38,8 +38,7 @@ public class TypeFacts {
                 methodFact.collectUsingMethodRelations(collector);
             }
         }
-        methodRelations = new MethodRelations(collector);
-        return methodRelations;
+        return methodRelations = new MethodRelations(collector);
     }
 
     public synchronized ClassRelations toClassRelations() {
@@ -50,8 +49,7 @@ public class TypeFacts {
         for (TypeFact typeFact : list()) {
             typeFact.collectClassRelations(collector);
         }
-        classRelations = new ClassRelations(collector);
-        return classRelations;
+        return classRelations = new ClassRelations(collector);
     }
 
     public List<TypeFact> list() {

@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleFields;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
@@ -10,15 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeFactory {
-
-    public static CategoryTypes createCategoryTypes(BusinessRules businessRules) {
-        List<CategoryType> list = new ArrayList<>();
-        for (BusinessRule businessRule : businessRules.listCategory()) {
-            list.add(businessRule.categoryType());
-
-        }
-        return new CategoryTypes(list);
-    }
 
     public static BusinessRules from(TypeFacts typeFacts, Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();

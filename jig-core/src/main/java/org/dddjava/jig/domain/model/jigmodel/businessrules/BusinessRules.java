@@ -72,9 +72,11 @@ public class BusinessRules {
                 .collect(Collectors.toList());
     }
 
-    public List<BusinessRule> listCategory() {
-        return list.stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
+    public CategoryTypes createCategoryTypes() {
+        List<CategoryType> list = this.list.stream()
+                .filter(businessRule1 -> businessRule1.businessRuleCategory() == BusinessRuleCategory.区分)
+                .map(businessRule -> businessRule.categoryType())
                 .collect(Collectors.toList());
+        return new CategoryTypes(list);
     }
 }

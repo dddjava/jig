@@ -54,7 +54,7 @@ public class BusinessRuleService {
      * 区分一覧を取得する
      */
     public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
+        CategoryTypes categoryTypes = businessRules(analyzedImplementation).createCategoryTypes();
         TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ClassRelations classRelations = typeFacts.toClassRelations();
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
@@ -86,7 +86,7 @@ public class BusinessRuleService {
      * 区分使用図
      */
     public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = TypeFactory.createCategoryTypes(businessRules(analyzedImplementation));
+        CategoryTypes categoryTypes = businessRules(analyzedImplementation).createCategoryTypes();
         ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeFacts(), architecture);
         ClassRelations businessRuleRelations = new TypeFacts(analyzedImplementation.typeFacts().list()
                 .stream()

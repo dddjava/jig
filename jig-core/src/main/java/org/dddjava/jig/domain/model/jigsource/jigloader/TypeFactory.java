@@ -34,7 +34,7 @@ public class TypeFactory {
         return new BusinessRule(new BusinessRuleFields(typeFact.fieldDeclarations()),
                 typeFact.typeIdentifier(),
                 typeFact.isEnum(),
-                typeFact.type(),
+                typeFact.typeDeclaration(),
                 typeFact.methodDeclarations(),
                 new CategoryType(
                         typeFact.typeIdentifier(),

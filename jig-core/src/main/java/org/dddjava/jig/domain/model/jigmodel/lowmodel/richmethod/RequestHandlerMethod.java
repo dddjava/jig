@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
@@ -25,10 +24,10 @@ public class RequestHandlerMethod {
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    public RequestHandlerMethod(Method method, TypeAnnotations typeAnnotations) {
+    public RequestHandlerMethod(Method method, Annotations annotations) {
         this.method = method;
 
-        this.requestMappingForClass = typeAnnotations.annotations().filterAny(
+        this.requestMappingForClass = annotations.filterAny(
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
 
         this.requestMappingsForMethod = method.methodAnnotations().annotations().filterAny(

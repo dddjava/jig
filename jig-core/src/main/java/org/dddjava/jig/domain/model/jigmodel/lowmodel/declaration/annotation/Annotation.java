@@ -7,11 +7,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class Annotation {
 
-    final TypeIdentifier annotationType;
+    final TypeIdentifier typeIdentifier;
     final AnnotationDescription description;
 
-    public Annotation(TypeIdentifier annotationType, AnnotationDescription description) {
-        this.annotationType = annotationType;
+    public Annotation(TypeIdentifier typeIdentifier, AnnotationDescription description) {
+        this.typeIdentifier = typeIdentifier;
         this.description = description;
     }
 
@@ -19,7 +19,11 @@ public class Annotation {
         return description.textOf(name);
     }
 
-    public TypeIdentifier identifier() {
-        return annotationType;
+    public TypeIdentifier typeIdentifier() {
+        return typeIdentifier;
+    }
+
+    public boolean is(TypeIdentifier typeIdentifier) {
+        return this.typeIdentifier.equals(typeIdentifier);
     }
 }

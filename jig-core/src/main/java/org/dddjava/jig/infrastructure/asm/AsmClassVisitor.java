@@ -1,6 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
@@ -47,7 +50,7 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                typeFact.registerTypeAnnotation(new TypeAnnotation(annotation, typeFact.typeIdentifier()))
+                typeFact.registerAnnotation(annotation)
         );
 
     }

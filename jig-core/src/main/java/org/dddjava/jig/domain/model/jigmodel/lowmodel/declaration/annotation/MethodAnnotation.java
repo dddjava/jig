@@ -17,7 +17,7 @@ public class MethodAnnotation {
     }
 
     public TypeIdentifier annotationType() {
-        return annotation.annotationType;
+        return annotation.typeIdentifier;
     }
 
     public MethodDeclaration methodDeclaration() {

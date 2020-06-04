@@ -9,7 +9,7 @@ public enum BuildingBlock {
     PRESENTATION_CONTROLLER {
         @Override
         public boolean satisfy(TypeFact typeFact, Architecture architecture) {
-            return architecture.isController(typeFact.typeAnnotations());
+            return architecture.isController(typeFact);
         }
     },
     API_CONTROLLER {
@@ -29,7 +29,7 @@ public enum BuildingBlock {
     SERVICE {
         @Override
         public boolean satisfy(TypeFact typeFact, Architecture architecture) {
-            return architecture.isService(typeFact.typeAnnotations());
+            return architecture.isService(typeFact);
         }
     },
     DATASOURCE {

@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigsource.jigloader;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
@@ -40,8 +40,7 @@ public class MethodFactory {
             if (ApplicationLayer.PRESENTATION.satisfy(typeFact, architecture)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
                     Method method = methodFact.createMethod();
-                    TypeAnnotations typeAnnotations = new TypeAnnotations(typeFact.typeAnnotations());
-                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, typeAnnotations);
+                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, new Annotations(typeFact.listAnnotations()));
                     if (requestHandlerMethod.valid()) {
                         list.add(requestHandlerMethod);
                     }

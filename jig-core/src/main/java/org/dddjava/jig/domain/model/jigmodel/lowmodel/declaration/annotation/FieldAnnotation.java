@@ -21,7 +21,7 @@ public class FieldAnnotation {
     }
 
     public TypeIdentifier annotationType() {
-        return annotation.annotationType;
+        return annotation.typeIdentifier;
     }
 
     public AnnotationDescription description() {

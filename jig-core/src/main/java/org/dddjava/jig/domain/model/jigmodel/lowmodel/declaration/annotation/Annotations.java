@@ -13,7 +13,7 @@ import static java.util.stream.Collectors.toList;
 public class Annotations {
     List<Annotation> list;
 
-    Annotations(List<Annotation> list) {
+    public Annotations(List<Annotation> list) {
         this.list = list;
     }
 
@@ -21,7 +21,7 @@ public class Annotations {
         Collection<TypeIdentifier> annotations = Arrays.asList(typeIdentifiers);
 
         List<Annotation> list = this.list.stream()
-                .filter(e -> annotations.contains(e.annotationType))
+                .filter(e -> annotations.contains(e.typeIdentifier))
                 .collect(toList());
         return new Annotations(list);
     }
@@ -34,7 +34,7 @@ public class Annotations {
     }
 
     public Annotation get(TypeIdentifier typeIdentifier) {
-        return list.stream().filter(e -> e.annotationType.equals(typeIdentifier))
+        return list.stream().filter(e -> e.typeIdentifier.equals(typeIdentifier))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(typeIdentifier.fullQualifiedName()));
     }

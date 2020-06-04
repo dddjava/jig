@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.TypeAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
@@ -27,7 +27,7 @@ public class TypeFact {
     final ParameterizedType superType;
     final List<ParameterizedType> interfaceTypes;
 
-    final List<TypeAnnotation> typeAnnotations = new ArrayList<>();
+    final List<Annotation> annotations = new ArrayList<>();
     final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
     final List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
@@ -97,17 +97,17 @@ public class TypeFact {
         return instanceMethodFacts;
     }
 
-    public List<TypeAnnotation> typeAnnotations() {
-        return typeAnnotations;
+    public List<Annotation> listAnnotations() {
+        return annotations;
     }
 
     public List<FieldAnnotation> annotatedFields() {
         return fieldAnnotations;
     }
 
-    public void registerTypeAnnotation(TypeAnnotation typeAnnotation) {
-        typeAnnotations.add(typeAnnotation);
-        useTypes.add(typeAnnotation.type());
+    public void registerAnnotation(Annotation annotation) {
+        annotations.add(annotation);
+        useTypes.add(annotation.typeIdentifier());
     }
 
     public void registerField(FieldDeclaration field) {
@@ -152,7 +152,7 @@ public class TypeFact {
         return superType;
     }
 
-    public TypeDeclaration type() {
+    public TypeDeclaration typeDeclaration() {
         return new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
     }
 

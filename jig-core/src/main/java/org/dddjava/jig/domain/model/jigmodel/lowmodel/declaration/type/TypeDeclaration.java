@@ -1,22 +1,22 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type;
 
 /**
- * 型
+ * 型宣言
  */
-public class Type {
+public class TypeDeclaration {
 
-    TypeIdentifier typeIdentifier;
+    ParameterizedType parameterizedType;
     ParameterizedType superType;
     ParameterizedTypes interfaceTypes;
 
-    public Type(TypeIdentifier typeIdentifier, ParameterizedType superType, ParameterizedTypes interfaceTypes) {
-        this.typeIdentifier = typeIdentifier;
+    public TypeDeclaration(ParameterizedType parameterizedType, ParameterizedType superType, ParameterizedTypes interfaceTypes) {
+        this.parameterizedType = parameterizedType;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
     }
 
     public TypeIdentifier identifier() {
-        return typeIdentifier;
+        return parameterizedType.typeIdentifier();
     }
 
     public ParameterizedType superType() {

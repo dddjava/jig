@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Type;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
@@ -12,21 +12,21 @@ public class BusinessRule {
     BusinessRuleFields businessRuleFields;
     private TypeIdentifier typeIdentifier;
     private boolean anEnum;
-    private Type type;
+    private TypeDeclaration typeDeclaration;
     private MethodDeclarations methodDeclarations;
     private CategoryType categoryType;
 
-    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, boolean anEnum, Type type, MethodDeclarations methodDeclarations, CategoryType categoryType) {
+    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, boolean anEnum, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType) {
         this.businessRuleFields = businessRuleFields;
         this.typeIdentifier = typeIdentifier;
         this.anEnum = anEnum;
-        this.type = type;
+        this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
         this.categoryType = categoryType;
     }
 
-    public Type type() {
-        return type;
+    public TypeDeclaration type() {
+        return typeDeclaration;
     }
 
     boolean satisfyCollection() {

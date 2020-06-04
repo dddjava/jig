@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.Type;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
@@ -43,7 +43,7 @@ public class BusinessRules {
     public TypeIdentifiers identifiers() {
         return list.stream()
                 .map(BusinessRule::type)
-                .map(Type::identifier)
+                .map(TypeDeclaration::identifier)
                 .collect(TypeIdentifiers.collector());
     }
 

@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * パラメータ化された型
@@ -10,11 +12,11 @@ import java.util.Collections;
 public class ParameterizedType {
 
     TypeIdentifier typeIdentifier;
-    TypeParameters typeParameters;
+    TypeParameters actualTypeParameters;
 
-    public ParameterizedType(TypeIdentifier typeIdentifier, TypeParameters typeParameters) {
+    public ParameterizedType(TypeIdentifier typeIdentifier, TypeParameters actualTypeParameters) {
         this.typeIdentifier = typeIdentifier;
-        this.typeParameters = typeParameters;
+        this.actualTypeParameters = actualTypeParameters;
     }
 
     public ParameterizedType(TypeIdentifier typeIdentifier) {
@@ -26,11 +28,19 @@ public class ParameterizedType {
         this(typeIdentifier, new TypeParameters(Collections.singletonList(typeParameter)));
     }
 
+    public ParameterizedType(TypeIdentifier typeIdentifier, List<TypeIdentifier> actualTypeParameters) {
+        this(typeIdentifier, new TypeParameters(actualTypeParameters.stream().map(TypeParameter::new).collect(Collectors.toList())));
+    }
+
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
     }
 
     public String asSimpleText() {
-        return typeIdentifier.asSimpleText() + typeParameters.asSimpleText();
+        return typeIdentifier.asSimpleText() + actualTypeParameters.asSimpleText();
+    }
+
+    public TypeParameters typeParameters() {
+        return actualTypeParameters;
     }
 }

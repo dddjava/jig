@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
@@ -59,8 +58,8 @@ public class MethodFactory {
                 continue;
             }
 
-            ParameterizedTypes parameterizedTypes = typeFact.parameterizedInterfaceTypes();
-            for (ParameterizedType parameterizedType : parameterizedTypes.list()) {
+            List<ParameterizedType> parameterizedTypes = typeFact.interfaceTypes();
+            for (ParameterizedType parameterizedType : parameterizedTypes) {
                 TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
 
                 for (TypeFact interfaceTypeFact : typeFacts.list()) {

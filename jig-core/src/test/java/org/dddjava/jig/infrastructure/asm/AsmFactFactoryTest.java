@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
@@ -116,7 +115,7 @@ public class AsmFactFactoryTest {
                         new TypeIdentifier(GenericsParameter.class)
                 );
 
-        ParameterizedType parameterizedSuperType = actual.parameterizedSuperType();
+        ParameterizedType parameterizedSuperType = actual.superType();
         assertThat(parameterizedSuperType)
                 .extracting(
                         ParameterizedType::asSimpleText,
@@ -140,8 +139,7 @@ public class AsmFactFactoryTest {
                         new TypeIdentifier(GenericsParameter.class)
                 );
 
-        ParameterizedTypes parameterizedInterfaceTypes = actual.parameterizedInterfaceTypes();
-        ParameterizedType parameterizedType = parameterizedInterfaceTypes.list().get(0);
+        ParameterizedType parameterizedType = actual.interfaceTypes().get(0);
         assertThat(parameterizedType)
                 .extracting(
                         ParameterizedType::asSimpleText,

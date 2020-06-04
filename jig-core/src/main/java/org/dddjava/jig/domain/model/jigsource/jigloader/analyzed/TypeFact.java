@@ -19,12 +19,12 @@ import java.util.Set;
  */
 public class TypeFact {
 
-    final TypeIdentifier typeIdentifier;
+    final ParameterizedType type;
 
     final boolean canExtend;
 
-    final ParameterizedType parameterizedSuperType;
-    final ParameterizedTypes parameterizedInterfaceTypes;
+    final ParameterizedType superType;
+    final List<ParameterizedType> interfaceTypes;
 
     final List<TypeAnnotation> typeAnnotations = new ArrayList<>();
     final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
@@ -38,23 +38,26 @@ public class TypeFact {
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
 
-    public TypeFact(TypeIdentifier typeIdentifier,
-                    ParameterizedType parameterizedSuperType,
-                    ParameterizedTypes parameterizedInterfaceTypes,
-                    List<TypeIdentifier> useTypes,
+    public TypeFact(ParameterizedType type,
+                    ParameterizedType superType,
+                    List<ParameterizedType> interfaceTypes,
                     boolean canExtend) {
-        this.typeIdentifier = typeIdentifier;
-        this.parameterizedSuperType = parameterizedSuperType;
-        this.parameterizedInterfaceTypes = parameterizedInterfaceTypes;
+        this.type = type;
+        this.superType = superType;
+        this.interfaceTypes = interfaceTypes;
         this.canExtend = canExtend;
 
-        this.useTypes.addAll(useTypes);
-        this.useTypes.add(parameterizedSuperType.typeIdentifier());
-        this.useTypes.addAll(parameterizedInterfaceTypes.identifiers().list());
+        for (TypeParameter typeParameter : type.typeParameters().list()) {
+            this.useTypes.add(typeParameter.typeIdentifier());
+        }
+        this.useTypes.add(superType.typeIdentifier());
+        for (ParameterizedType interfaceType : interfaceTypes) {
+            this.useTypes.add(interfaceType.typeIdentifier());
+        }
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return type.typeIdentifier();
     }
 
     public boolean canExtend() {
@@ -62,7 +65,7 @@ public class TypeFact {
     }
 
     public boolean isEnum() {
-        return parameterizedSuperType.typeIdentifier().equals(new TypeIdentifier(Enum.class));
+        return superType.typeIdentifier().equals(new TypeIdentifier(Enum.class));
     }
 
     public boolean hasInstanceMethod() {
@@ -144,16 +147,16 @@ public class TypeFact {
         return list;
     }
 
-    public ParameterizedType parameterizedSuperType() {
-        return parameterizedSuperType;
+    public ParameterizedType superType() {
+        return superType;
     }
 
-    public Type type() {
-        return new Type(typeIdentifier, parameterizedSuperType, parameterizedInterfaceTypes);
+    public TypeDeclaration type() {
+        return new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
     }
 
-    public ParameterizedTypes parameterizedInterfaceTypes() {
-        return parameterizedInterfaceTypes;
+    public List<ParameterizedType> interfaceTypes() {
+        return interfaceTypes;
     }
 
     public MethodDeclarations methodDeclarations() {

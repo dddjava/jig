@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodKind;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -31,17 +30,15 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
+        List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
-        ParameterizedType parameterizedSuperType = parameterizedSuperType(superName, signature);
-
-        ParameterizedTypes parameterizedInterfaceTypes = parameterizedInterfaceTypes(interfaces, signature);
+        ParameterizedType superType = parameterizedSuperType(superName, signature);
+        List<ParameterizedType> interfaceTypes = parameterizedInterfaceTypes(interfaces, signature);
 
         this.typeFact = new TypeFact(
-                new TypeIdentifier(name),
-                parameterizedSuperType,
-                parameterizedInterfaceTypes,
-                useTypes,
+                new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
+                superType,
+                interfaceTypes,
                 (access & Opcodes.ACC_FINAL) == 0);
 
         super.visit(version, access, name, signature, superName, interfaces);
@@ -370,7 +367,7 @@ class AsmClassVisitor extends ClassVisitor {
         return new ParameterizedType(new TypeIdentifier(superName), new TypeParameters(typeParameters));
     }
 
-    private ParameterizedTypes parameterizedInterfaceTypes(String[] interfaces, String signature) {
+    private List<ParameterizedType> parameterizedInterfaceTypes(String[] interfaces, String signature) {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {
             // 非総称型で作成
@@ -378,7 +375,7 @@ class AsmClassVisitor extends ClassVisitor {
                     .map(TypeIdentifier::new)
                     .map(ParameterizedType::new)
                     .collect(Collectors.toList());
-            return new ParameterizedTypes(list);
+            return list;
         }
 
         SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
@@ -428,7 +425,7 @@ class AsmClassVisitor extends ClassVisitor {
                 }
         );
 
-        return new ParameterizedTypes(parameterizedTypes);
+        return parameterizedTypes;
     }
 
     private static class MyAnnotationVisitor extends AnnotationVisitor {

@@ -35,8 +35,6 @@ public class ClassRelations {
     public ClassRelations filterRelationsTo(TypeIdentifiers toTypeIdentifiers) {
         List<ClassRelation> collect = list.stream()
                 .filter(classRelation -> toTypeIdentifiers.contains(classRelation.to()))
-                // TODO ここでnormalizeしたくない
-                .map(classRelation -> new ClassRelation(classRelation.from().normalize(), classRelation.to()))
                 .filter(classRelation -> !classRelation.selfRelation())
                 .collect(Collectors.toList());
         return new ClassRelations(collect);

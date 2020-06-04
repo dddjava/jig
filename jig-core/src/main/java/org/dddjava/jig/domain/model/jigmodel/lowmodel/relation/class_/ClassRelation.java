@@ -13,8 +13,8 @@ public class ClassRelation {
     final TypeIdentifier to;
 
     public ClassRelation(TypeIdentifier from, TypeIdentifier to) {
-        this.from = from;
-        this.to = to;
+        this.from = from.normalize();
+        this.to = to.normalize();
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {

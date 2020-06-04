@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
@@ -12,6 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRela
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -99,5 +101,11 @@ public class TypeFacts {
 
     public ValidationAnnotatedMembers validationAnnotatedMembers() {
         return new ValidationAnnotatedMembers(annotatedFields(), annotatedMethods());
+    }
+
+    public Optional<TypeFact> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
+                .findAny();
     }
 }

@@ -57,15 +57,9 @@ public class MethodFactory {
                 continue;
             }
 
-            List<ParameterizedType> parameterizedTypes = typeFact.interfaceTypes();
-            for (ParameterizedType parameterizedType : parameterizedTypes) {
-                TypeIdentifier interfaceTypeIdentifier = parameterizedType.typeIdentifier();
-
-                for (TypeFact interfaceTypeFact : typeFacts.list()) {
-                    if (!interfaceTypeIdentifier.equals(interfaceTypeFact.typeIdentifier())) {
-                        continue;
-                    }
-
+            for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
+                TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
+                typeFacts.selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {
                     for (MethodFact interfaceMethodFact : interfaceTypeFact.instanceMethodFacts()) {
                         typeFact.instanceMethodFacts().stream()
                                 .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
@@ -76,7 +70,7 @@ public class MethodFactory {
                                         concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
                                 );
                     }
-                }
+                });
             }
         }
         return new DatasourceMethods(list);

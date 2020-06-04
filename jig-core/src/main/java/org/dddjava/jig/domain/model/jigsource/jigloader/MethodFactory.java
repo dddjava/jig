@@ -66,9 +66,8 @@ public class MethodFactory {
                         continue;
                     }
 
-                    // TODO allじゃなくinstanceでよさそう
-                    for (MethodFact interfaceMethodFact : interfaceTypeFact.allMethodFacts()) {
-                        typeFact.allMethodFacts().stream()
+                    for (MethodFact interfaceMethodFact : interfaceTypeFact.instanceMethodFacts()) {
+                        typeFact.instanceMethodFacts().stream()
                                 .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
                                 // 0 or 1
                                 .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(

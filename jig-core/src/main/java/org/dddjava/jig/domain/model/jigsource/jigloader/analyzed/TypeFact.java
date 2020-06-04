@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -163,5 +164,14 @@ public class TypeFact {
         return allMethodFacts().stream()
                 .map(MethodFact::methodDeclaration)
                 .collect(MethodDeclarations.collector());
+    }
+
+    void collectClassRelations(List<ClassRelation> collector) {
+        TypeIdentifier form = typeIdentifier();
+        for (TypeIdentifier to : useTypes().list()) {
+            ClassRelation classRelation = new ClassRelation(form, to);
+            if (classRelation.selfRelation()) continue;
+            collector.add(classRelation);
+        }
     }
 }

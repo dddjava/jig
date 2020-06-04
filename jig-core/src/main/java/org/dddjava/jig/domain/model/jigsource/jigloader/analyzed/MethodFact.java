@@ -133,13 +133,11 @@ public class MethodFact {
         return hasJudgeNull;
     }
 
-    List<MethodRelation> usingMethodRelations() {
+    void collectUsingMethodRelations(List<MethodRelation> collector) {
         CallerMethod callerMethod = new CallerMethod(methodDeclaration);
-        ArrayList<MethodRelation> list = new ArrayList<>();
         for (MethodDeclaration usingMethod : usingMethods) {
             MethodRelation methodRelation = new MethodRelation(callerMethod, new CalleeMethod(usingMethod));
-            list.add(methodRelation);
+            collector.add(methodRelation);
         }
-        return list;
     }
 }

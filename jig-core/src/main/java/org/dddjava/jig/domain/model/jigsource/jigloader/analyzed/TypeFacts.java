@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
@@ -33,13 +32,13 @@ public class TypeFacts {
         if (methodRelations != null) {
             return methodRelations;
         }
-        ArrayList<MethodRelation> list = new ArrayList<>();
+        List<MethodRelation> collector = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             for (MethodFact methodFact : typeFact.allMethodFacts()) {
-                list.addAll(methodFact.usingMethodRelations());
+                methodFact.collectUsingMethodRelations(collector);
             }
         }
-        methodRelations = new MethodRelations(list);
+        methodRelations = new MethodRelations(collector);
         return methodRelations;
     }
 
@@ -47,16 +46,11 @@ public class TypeFacts {
         if (classRelations != null) {
             return classRelations;
         }
-        List<ClassRelation> list = new ArrayList<>();
+        List<ClassRelation> collector = new ArrayList<>();
         for (TypeFact typeFact : list()) {
-            TypeIdentifier form = typeFact.typeIdentifier();
-            for (TypeIdentifier to : typeFact.useTypes().list()) {
-                ClassRelation classRelation = new ClassRelation(form, to);
-                if (classRelation.selfRelation()) continue;
-                list.add(classRelation);
-            }
+            typeFact.collectClassRelations(collector);
         }
-        classRelations = new ClassRelations(list);
+        classRelations = new ClassRelations(collector);
         return classRelations;
     }
 

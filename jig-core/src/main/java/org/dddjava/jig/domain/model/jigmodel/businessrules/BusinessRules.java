@@ -74,7 +74,7 @@ public class BusinessRules {
 
     public CategoryTypes createCategoryTypes() {
         List<CategoryType> list = this.list.stream()
-                .filter(businessRule1 -> businessRule1.businessRuleCategory() == BusinessRuleCategory.区分)
+                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
                 .map(businessRule -> businessRule.categoryType())
                 .collect(Collectors.toList());
         return new CategoryTypes(list);

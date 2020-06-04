@@ -10,13 +10,13 @@ import java.time.LocalDate;
  * 値の種類
  */
 public enum ValueKind {
-    IDENTIFIER {
+    IDENTIFIER(BusinessRuleCategory.文字列) {
         @Override
         public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(String.class));
         }
     },
-    NUMBER {
+    NUMBER(BusinessRuleCategory.数値) {
         @Override
         public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(BigDecimal.class))
@@ -26,18 +26,24 @@ public enum ValueKind {
                     || fieldDeclarations.matches(new TypeIdentifier(int.class));
         }
     },
-    DATE {
+    DATE(BusinessRuleCategory.日付) {
         @Override
         public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(LocalDate.class));
         }
     },
-    TERM {
+    TERM(BusinessRuleCategory.期間) {
         @Override
         public boolean matches(FieldDeclarations fieldDeclarations) {
             return fieldDeclarations.matches(new TypeIdentifier(LocalDate.class), new TypeIdentifier(LocalDate.class));
         }
     };
+
+    BusinessRuleCategory businessRuleCategory;
+
+    ValueKind(BusinessRuleCategory businessRuleCategory) {
+        this.businessRuleCategory = businessRuleCategory;
+    }
 
     abstract boolean matches(FieldDeclarations fieldDeclarations);
 }

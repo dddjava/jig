@@ -31,7 +31,8 @@ public class TypeFactory {
     }
 
     public static BusinessRule createBusinessRule(TypeFact typeFact) {
-        return new BusinessRule(new BusinessRuleFields(typeFact.fieldDeclarations()),
+        return new BusinessRule(
+                new BusinessRuleFields(typeFact.fieldDeclarations()),
                 typeFact.typeIdentifier(),
                 typeFact.isEnum(),
                 typeFact.typeDeclaration(),

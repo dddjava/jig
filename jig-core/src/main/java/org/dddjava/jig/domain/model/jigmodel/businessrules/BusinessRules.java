@@ -62,19 +62,19 @@ public class BusinessRules {
 
     public List<BusinessRule> listCollection() {
         return list.stream()
-                .filter(BusinessRule::satisfyCollection)
+                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.コレクション)
                 .collect(Collectors.toList());
     }
 
     public List<BusinessRule> listValue(ValueKind valueKind) {
         return list.stream()
-                .filter(businessRule -> !businessRule.satisfyCategory() && businessRule.satisfyValue(valueKind))
+                .filter(businessRule -> businessRule.businessRuleCategory() == valueKind.businessRuleCategory)
                 .collect(Collectors.toList());
     }
 
     public List<BusinessRule> listCategory() {
         return list.stream()
-                .filter(businessRule -> businessRule.satisfyCategory())
+                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
                 .collect(Collectors.toList());
     }
 }

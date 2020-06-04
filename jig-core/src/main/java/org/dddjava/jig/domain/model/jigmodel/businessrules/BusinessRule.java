@@ -9,36 +9,27 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class BusinessRule {
 
-    BusinessRuleFields businessRuleFields;
-    private TypeIdentifier typeIdentifier;
-    private boolean anEnum;
-    private TypeDeclaration typeDeclaration;
-    private MethodDeclarations methodDeclarations;
-    private CategoryType categoryType;
+    BusinessRuleCategory businessRuleCategory;
+    TypeDeclaration typeDeclaration;
 
-    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, boolean anEnum, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType) {
+    BusinessRuleFields businessRuleFields;
+    TypeIdentifier typeIdentifier;
+    MethodDeclarations methodDeclarations;
+
+    CategoryType categoryType;
+
+    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, boolean isEnum, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType) {
         this.businessRuleFields = businessRuleFields;
         this.typeIdentifier = typeIdentifier;
-        this.anEnum = anEnum;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
         this.categoryType = categoryType;
+
+        this.businessRuleCategory = BusinessRuleCategory.choice(businessRuleFields, isEnum);
     }
 
     public TypeDeclaration type() {
         return typeDeclaration;
-    }
-
-    boolean satisfyCollection() {
-        return businessRuleFields.satisfyCollection();
-    }
-
-    boolean satisfyValue(ValueKind valueKind) {
-        return businessRuleFields.satisfyValue(valueKind);
-    }
-
-    boolean satisfyCategory() {
-        return anEnum;
     }
 
     public BusinessRuleFields fields() {
@@ -55,5 +46,9 @@ public class BusinessRule {
 
     public CategoryType categoryType() {
         return categoryType;
+    }
+
+    public BusinessRuleCategory businessRuleCategory() {
+        return businessRuleCategory;
     }
 }

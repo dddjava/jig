@@ -41,7 +41,10 @@ public class MethodFactory {
 
     public static DatasourceMethods createDatasourceMethods(TypeFacts typeFacts, Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
-        for (TypeFact typeFact : typeFacts.listOnly(BuildingBlock.DATASOURCE, architecture)) {
+        List<TypeFact> datasourceFacts = typeFacts.list().stream()
+                .filter(typeFact1 -> BuildingBlock.DATASOURCE.satisfy(typeFact1, architecture))
+                .collect(toList());
+        for (TypeFact typeFact : datasourceFacts) {
             for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
                 TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
                 typeFacts.selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {

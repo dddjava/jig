@@ -10,8 +10,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,11 +107,5 @@ public class TypeFacts {
         return list.stream()
                 .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
                 .findAny();
-    }
-
-    public List<TypeFact> listOnly(BuildingBlock buildingBlock, Architecture architecture) {
-        return list.stream()
-                .filter(typeFact -> buildingBlock.satisfy(typeFact, architecture))
-                .collect(toList());
     }
 }

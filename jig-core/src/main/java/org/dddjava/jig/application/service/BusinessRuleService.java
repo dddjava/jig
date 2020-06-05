@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
@@ -10,8 +11,8 @@ import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
@@ -22,6 +23,8 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architectur
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * ビジネスルールの分析サービス
@@ -46,8 +49,14 @@ public class BusinessRuleService {
     /**
      * メソッドの不吉なにおい一覧を取得する
      */
-    public MethodSmellAngles methodSmells(AnalyzedImplementation analyzedImplementation) {
-        return MethodFactory.createMethodSmellAngles(analyzedImplementation, businessRules(analyzedImplementation));
+    public MethodSmellList methodSmells(AnalyzedImplementation analyzedImplementation) {
+        Methods methods = new Methods(analyzedImplementation.typeFacts().instanceMethodFacts().stream()
+                .map(methodByteCode -> methodByteCode.createMethod())
+                .collect(toList()));
+        return new MethodSmellList(methods,
+                analyzedImplementation.typeFacts().instanceFields(),
+                analyzedImplementation.typeFacts().toMethodRelations(),
+                businessRules(analyzedImplementation));
     }
 
     /**

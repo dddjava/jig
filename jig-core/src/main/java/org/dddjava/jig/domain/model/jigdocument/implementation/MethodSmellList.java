@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.smells;
+package org.dddjava.jig.domain.model.jigdocument.implementation;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
@@ -14,28 +14,28 @@ import java.util.stream.Collectors;
 /**
  * メソッドの不吉なにおい一覧
  */
-public class MethodSmellAngles {
-    List<MethodSmellAngle> list;
+public class MethodSmellList {
+    List<MethodSmell> list;
 
-    public MethodSmellAngles(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
+    public MethodSmellList(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
         this.list = new ArrayList<>();
         for (Method method : methods.list()) {
             if (businessRules.contains(method.declaration().declaringType())) {
-                MethodSmellAngle methodSmellAngle = new MethodSmellAngle(
+                MethodSmell methodSmell = new MethodSmell(
                         method,
                         fieldDeclarations.filterDeclareTypeIs(method.declaration().declaringType()),
                         methodRelations
                 );
-                if (methodSmellAngle.hasSmell()) {
-                    list.add(methodSmellAngle);
+                if (methodSmell.hasSmell()) {
+                    list.add(methodSmell);
                 }
             }
         }
     }
 
-    public List<MethodSmellAngle> list() {
+    public List<MethodSmell> list() {
         return list.stream()
-                .sorted(Comparator.comparing(methodSmellAngle -> methodSmellAngle.methodDeclaration().asFullNameText()))
+                .sorted(Comparator.comparing(methodSmell -> methodSmell.methodDeclaration().asFullNameText()))
                 .collect(Collectors.toList());
     }
 }

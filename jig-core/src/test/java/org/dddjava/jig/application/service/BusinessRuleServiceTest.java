@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
+import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
@@ -12,9 +12,9 @@ class BusinessRuleServiceTest {
 
     @Test
     void 注意メソッドの抽出(BusinessRuleService businessRuleService, AnalyzedImplementation analyzedImplementation) {
-        MethodSmellAngles methodSmellAngles = businessRuleService.methodSmells(analyzedImplementation);
+        MethodSmellList methodSmellList = businessRuleService.methodSmells(analyzedImplementation);
 
-        assertThat(methodSmellAngles.list())
+        assertThat(methodSmellList.list())
                 .filteredOn(methodSmellAngle -> methodSmellAngle.methodDeclaration().declaringType()
                         .fullQualifiedName().equals("stub.domain.model.smell.SmellMethods"))
                 .extracting(methodSmellAngle -> methodSmellAngle.methodDeclaration().identifier().methodSignature().methodName())

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.smells;
+package org.dddjava.jig.domain.model.jigdocument.implementation;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
@@ -11,13 +11,13 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 /**
  * メソッドの不吉なにおい
  */
-public class MethodSmellAngle {
+public class MethodSmell {
 
     Method method;
     FieldDeclarations fieldDeclarations;
     CallerMethods callerMethods;
 
-    public MethodSmellAngle(Method method, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
+    public MethodSmell(Method method, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
         this.callerMethods = toMeRelation.callerMethodsOf(new CalleeMethod(method.declaration()));

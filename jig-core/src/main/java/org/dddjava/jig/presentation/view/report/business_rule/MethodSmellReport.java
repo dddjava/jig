@@ -1,9 +1,9 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
+import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmell;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
-import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportMethodWorryOf;
@@ -12,9 +12,9 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("注意メソッド")
 public class MethodSmellReport {
 
-    MethodSmellAngle angle;
+    MethodSmell angle;
 
-    public MethodSmellReport(MethodSmellAngle angle) {
+    public MethodSmellReport(MethodSmell angle) {
         this.angle = angle;
     }
 

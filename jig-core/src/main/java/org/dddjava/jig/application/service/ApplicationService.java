@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
+import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
 import org.dddjava.jig.domain.model.jigdocument.specification.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
@@ -10,7 +11,6 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
@@ -87,8 +87,12 @@ public class ApplicationService {
     /**
      * 文字列比較を分析する
      */
-    public StringComparingCallerMethods stringComparing(AnalyzedImplementation analyzedImplementation) {
-        return MethodFactory.from(analyzedImplementation, architecture);
+    public StringComparingMethodList stringComparing(AnalyzedImplementation analyzedImplementation) {
+        TypeFacts typeFacts = analyzedImplementation.typeFacts();
+        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
+
+        return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
     }
 
     public RoundingPackageRelations buildingBlockRelations(AnalyzedImplementation implementations) {

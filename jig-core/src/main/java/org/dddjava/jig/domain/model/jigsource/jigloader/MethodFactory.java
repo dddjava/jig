@@ -1,23 +1,14 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigmodel.smells.MethodSmellAngles;
-import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
@@ -26,9 +17,7 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architectur
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -85,39 +74,4 @@ public class MethodFactory {
                 .collect(toList()));
     }
 
-    public static MethodSmellAngles createMethodSmellAngles(AnalyzedImplementation analyzedImplementation, BusinessRules businessRules) {
-        Methods methods = new Methods(analyzedImplementation.typeFacts().instanceMethodFacts().stream()
-                .map(methodByteCode -> methodByteCode.createMethod())
-                .collect(toList()));
-        return new MethodSmellAngles(methods,
-                analyzedImplementation.typeFacts().instanceFields(),
-                analyzedImplementation.typeFacts().toMethodRelations(),
-                businessRules);
-    }
-
-    public static StringComparingCallerMethods from(AnalyzedImplementation analyzedImplementation, Architecture architecture) {
-        TypeFacts typeFacts = analyzedImplementation.typeFacts();
-        ControllerMethods controllerMethods = createControllerMethods(typeFacts, architecture);
-        ServiceMethods serviceMethods = createServiceMethods(typeFacts, architecture);
-
-        // String#equals(Object)
-        MethodDeclaration stringEqualsMethod = new MethodDeclaration(
-                new TypeIdentifier(String.class),
-                new MethodSignature(
-                        "equals",
-                        new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))),
-                new MethodReturn(new TypeIdentifier(boolean.class))
-        );
-
-        List<Method> methods = Stream.concat(
-                controllerMethods.list().stream()
-                        .filter(controllerMethod -> controllerMethod.isCall(stringEqualsMethod))
-                        .map(controllerMethod -> controllerMethod.method()),
-                serviceMethods.list().stream()
-                        .filter(serviceMethod -> serviceMethod.isCall(stringEqualsMethod))
-                        .map(controllerMethod -> controllerMethod.method())
-        ).collect(toList());
-
-        return new StringComparingCallerMethods(methods);
-    }
 }

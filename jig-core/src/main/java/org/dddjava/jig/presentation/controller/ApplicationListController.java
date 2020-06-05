@@ -4,10 +4,10 @@ import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigmodel.smells.StringComparingCallerMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
@@ -70,7 +70,7 @@ public class ApplicationListController {
     }
 
     ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
-        StringComparingCallerMethods stringComparingCallerMethods = applicationService.stringComparing(implementations);
-        return new ModelReport<>(stringComparingCallerMethods.list(), StringComparingReport::new, StringComparingReport.class);
+        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing(implementations);
+        return new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class);
     }
 }

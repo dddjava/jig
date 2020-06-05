@@ -25,16 +25,15 @@ import static java.util.stream.Collectors.toList;
 /**
  * 区分の切り口一覧
  */
-// TODO Diagram以外にも使われている。。。
 public class Categories {
 
     List<CategoryAngle> list;
 
-    public Categories(List<CategoryAngle> list) {
+    Categories(List<CategoryAngle> list) {
         this.list = list;
     }
 
-    public static Categories categoryDiagram(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public static Categories create(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
             list.add(new CategoryAngle(categoryType, classRelations, fieldDeclarations, staticFieldDeclarations));

@@ -69,7 +69,7 @@ public class BusinessRuleService {
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
 
-        return Categories.categoryDiagram(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
+        return Categories.create(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
     }
 
     /**

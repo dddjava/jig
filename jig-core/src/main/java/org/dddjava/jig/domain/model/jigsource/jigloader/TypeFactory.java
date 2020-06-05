@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleFields;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.*;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
@@ -25,16 +22,18 @@ public class TypeFactory {
     }
 
     public static BusinessRule createBusinessRule(TypeFact typeFact) {
+        BusinessRuleFields businessRuleFields = new BusinessRuleFields(typeFact.fieldDeclarations());
+        BusinessRuleCategory businessRuleCategory = BusinessRuleCategory.choice(businessRuleFields, typeFact.isEnum());
         return new BusinessRule(
-                new BusinessRuleFields(typeFact.fieldDeclarations()),
+                businessRuleFields,
                 typeFact.typeIdentifier(),
-                typeFact.isEnum(),
                 typeFact.typeDeclaration(),
                 typeFact.methodDeclarations(),
                 new CategoryType(
                         typeFact.typeIdentifier(),
                         typeFact.hasField(),
                         typeFact.hasInstanceMethod(),
-                        typeFact.canExtend()));
+                        typeFact.canExtend()),
+                businessRuleCategory);
     }
 }

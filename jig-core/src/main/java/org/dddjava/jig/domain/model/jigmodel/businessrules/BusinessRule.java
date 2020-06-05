@@ -18,14 +18,14 @@ public class BusinessRule {
 
     CategoryType categoryType;
 
-    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, boolean isEnum, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType) {
+    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType, BusinessRuleCategory businessRuleCategory) {
         this.businessRuleFields = businessRuleFields;
         this.typeIdentifier = typeIdentifier;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
         this.categoryType = categoryType;
 
-        this.businessRuleCategory = BusinessRuleCategory.choice(businessRuleFields, isEnum);
+        this.businessRuleCategory = businessRuleCategory;
     }
 
     public TypeDeclaration type() {

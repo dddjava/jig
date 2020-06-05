@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
@@ -11,13 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 @JigServiceTest
-public class EnumAngleTest {
+public class BusinessRuleServiceCategoriesTest {
 
     @Test
     void readProjectData(BusinessRuleService businessRuleService, AnalyzedImplementation analyzedImplementation) {
-        CategoryDiagram categoryDiagram = businessRuleService.categories(analyzedImplementation);
+        Categories categories = businessRuleService.categories(analyzedImplementation);
 
-        assertThat(categoryDiagram.list())
+        assertThat(categories.list())
                 .extracting(
                         CategoryAngle::typeIdentifier,
                         categoryAngle -> categoryAngle.constantsDeclarationsName(),

@@ -26,20 +26,20 @@ import static java.util.stream.Collectors.toList;
  * 区分の切り口一覧
  */
 // TODO Diagram以外にも使われている。。。
-public class CategoryDiagram {
+public class Categories {
 
     List<CategoryAngle> list;
 
-    public CategoryDiagram(List<CategoryAngle> list) {
+    public Categories(List<CategoryAngle> list) {
         this.list = list;
     }
 
-    public static CategoryDiagram categoryDiagram(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public static Categories categoryDiagram(CategoryTypes categoryTypes, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
         List<CategoryAngle> list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
             list.add(new CategoryAngle(categoryType, classRelations, fieldDeclarations, staticFieldDeclarations));
         }
-        return new CategoryDiagram(list);
+        return new Categories(list);
     }
 
     public List<CategoryAngle> list() {

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelat
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
@@ -74,7 +74,7 @@ public class ViewResolver {
                 model.relationDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder));
     }
 
-    public JigView<CategoryDiagram> categories() {
+    public JigView<Categories> categories() {
         return newGraphvizjView(model ->
                 model.valuesDotText(jigDocumentContext, aliasFinder));
     }

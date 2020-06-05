@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
-import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
@@ -62,14 +62,14 @@ public class BusinessRuleService {
     /**
      * 区分一覧を取得する
      */
-    public CategoryDiagram categories(AnalyzedImplementation analyzedImplementation) {
+    public Categories categories(AnalyzedImplementation analyzedImplementation) {
         CategoryTypes categoryTypes = businessRules(analyzedImplementation).createCategoryTypes();
         TypeFacts typeFacts = analyzedImplementation.typeFacts();
         ClassRelations classRelations = typeFacts.toClassRelations();
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
 
-        return CategoryDiagram.categoryDiagram(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
+        return Categories.categoryDiagram(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
     }
 
     /**

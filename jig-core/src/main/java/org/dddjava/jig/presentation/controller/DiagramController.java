@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelat
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
@@ -47,7 +47,7 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)
-    public CategoryDiagram categories(AnalyzedImplementation implementations) {
+    public Categories categories(AnalyzedImplementation implementations) {
         return businessRuleService.categories(implementations);
     }
 

@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
-import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
@@ -77,8 +77,8 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> categoriesReport(AnalyzedImplementation implementations) {
-        CategoryDiagram categoryDiagram = businessRuleService.categories(implementations);
-        return new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class);
+        Categories categories = businessRuleService.categories(implementations);
+        return new ModelReport<>(categories.list(), CategoryReport::new, CategoryReport.class);
     }
 
     ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {

@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -9,23 +11,20 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class BusinessRule {
 
-    BusinessRuleCategory businessRuleCategory;
+    TypeKind typeKind;
     TypeDeclaration typeDeclaration;
 
-    BusinessRuleFields businessRuleFields;
-    TypeIdentifier typeIdentifier;
+    FieldDeclarations fieldDeclarations;
     MethodDeclarations methodDeclarations;
 
-    CategoryType categoryType;
+    private boolean hasInstanceMethod;
 
-    public BusinessRule(BusinessRuleFields businessRuleFields, TypeIdentifier typeIdentifier, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, CategoryType categoryType, BusinessRuleCategory businessRuleCategory) {
-        this.businessRuleFields = businessRuleFields;
-        this.typeIdentifier = typeIdentifier;
+    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod) {
+        this.typeKind = typeKind;
+        this.fieldDeclarations = fieldDeclarations;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
-        this.categoryType = categoryType;
-
-        this.businessRuleCategory = businessRuleCategory;
+        this.hasInstanceMethod = hasInstanceMethod;
     }
 
     public TypeDeclaration type() {
@@ -33,22 +32,26 @@ public class BusinessRule {
     }
 
     public BusinessRuleFields fields() {
-        return businessRuleFields;
+        return new BusinessRuleFields(fieldDeclarations);
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return type().identifier();
     }
 
     public MethodDeclarations methodDeclarations() {
         return methodDeclarations;
     }
 
-    public CategoryType categoryType() {
-        return categoryType;
+    public boolean hasInstanceMethod() {
+        return hasInstanceMethod;
+    }
+
+    public TypeKind typeKind() {
+        return typeKind;
     }
 
     public BusinessRuleCategory businessRuleCategory() {
-        return businessRuleCategory;
+        return BusinessRuleCategory.choice(fields(), typeKind);
     }
 }

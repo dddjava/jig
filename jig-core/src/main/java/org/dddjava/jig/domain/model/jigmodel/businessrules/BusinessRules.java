@@ -75,7 +75,12 @@ public class BusinessRules {
     public CategoryTypes createCategoryTypes() {
         List<CategoryType> list = this.list.stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
-                .map(businessRule -> businessRule.categoryType())
+                .map(businessRule -> new CategoryType(
+                        businessRule.typeKind(),
+                        businessRule.typeIdentifier(),
+                        !businessRule.fields().fieldDeclarations().list().isEmpty(),
+                        businessRule.hasInstanceMethod()
+                ))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);
     }

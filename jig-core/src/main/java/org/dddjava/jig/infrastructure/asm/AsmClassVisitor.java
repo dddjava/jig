@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
@@ -42,9 +43,20 @@ class AsmClassVisitor extends ClassVisitor {
                 new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
                 superType,
                 interfaceTypes,
-                (access & Opcodes.ACC_FINAL) == 0);
+                typeKind(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    private TypeKind typeKind(int access) {
+        if ((access & Opcodes.ACC_ENUM) != 0) {
+            if ((access & Opcodes.ACC_FINAL) == 0) {
+                return TypeKind.抽象列挙型;
+            }
+            return TypeKind.列挙型;
+        }
+
+        return TypeKind.通常型;
     }
 
     @Override

@@ -246,31 +246,29 @@ public class AsmFactFactoryTest {
 
     @ParameterizedTest
     @MethodSource
-    void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField, boolean canExtend) throws Exception {
+    void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField) throws Exception {
         TypeFact actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
-                        TypeFact::isEnum,
+                        typeFact -> typeFact.typeKind().isCategory(),
                         TypeFact::hasInstanceMethod,
-                        TypeFact::hasField,
-                        TypeFact::canExtend
+                        TypeFact::hasField
                 )
                 .containsExactly(
                         true,
                         hasMethod,
-                        hasField,
-                        canExtend
+                        hasField
                 );
     }
 
     static Stream<Arguments> enumの特徴づけに必要な情報が取得できる() {
         return Stream.of(
-                Arguments.of(SimpleEnum.class, false, false, false),
-                Arguments.of(BehaviourEnum.class, true, false, false),
-                Arguments.of(ParameterizedEnum.class, false, true, false),
-                Arguments.of(PolymorphismEnum.class, false, false, true),
-                Arguments.of(RichEnum.class, true, true, true));
+                Arguments.of(SimpleEnum.class, false, false),
+                Arguments.of(BehaviourEnum.class, true, false),
+                Arguments.of(ParameterizedEnum.class, false, true),
+                Arguments.of(PolymorphismEnum.class, false, false),
+                Arguments.of(RichEnum.class, true, true));
     }
 
     private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {

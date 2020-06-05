@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+
 /**
  * ビジネスルールの種類
  */
@@ -12,8 +14,8 @@ public enum BusinessRuleCategory {
     コレクション,
     不明;
 
-    public static BusinessRuleCategory choice(BusinessRuleFields businessRuleFields, boolean isEnum) {
-        if (isEnum) {
+    public static BusinessRuleCategory choice(BusinessRuleFields businessRuleFields, TypeKind typeKind) {
+        if (typeKind.isCategory()) {
             return 区分;
         }
         if (businessRuleFields.satisfyCollection()) {

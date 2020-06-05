@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
@@ -22,8 +23,6 @@ public class TypeFact {
 
     final ParameterizedType type;
 
-    final boolean canExtend;
-
     final ParameterizedType superType;
     final List<ParameterizedType> interfaceTypes;
 
@@ -38,15 +37,16 @@ public class TypeFact {
     final List<MethodFact> constructorFacts = new ArrayList<>();
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
+    final TypeKind typeKind;
 
     public TypeFact(ParameterizedType type,
                     ParameterizedType superType,
                     List<ParameterizedType> interfaceTypes,
-                    boolean canExtend) {
+                    TypeKind typeKind) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
-        this.canExtend = canExtend;
+        this.typeKind = typeKind;
 
         for (TypeParameter typeParameter : type.typeParameters().list()) {
             this.useTypes.add(typeParameter.typeIdentifier());
@@ -59,14 +59,6 @@ public class TypeFact {
 
     public TypeIdentifier typeIdentifier() {
         return type.typeIdentifier();
-    }
-
-    public boolean canExtend() {
-        return canExtend;
-    }
-
-    public boolean isEnum() {
-        return superType.typeIdentifier().equals(new TypeIdentifier(Enum.class));
     }
 
     public boolean hasInstanceMethod() {
@@ -173,5 +165,9 @@ public class TypeFact {
             if (classRelation.selfRelation()) continue;
             collector.add(classRelation);
         }
+    }
+
+    public TypeKind typeKind() {
+        return typeKind;
     }
 }

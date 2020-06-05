@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
@@ -11,11 +12,11 @@ public class CategoryType {
     boolean polymorphism;
     boolean parameterized;
 
-    public CategoryType(TypeIdentifier typeIdentifier, boolean parameterized, boolean behaviour, boolean polymorphism) {
+    public CategoryType(TypeKind typeKind, TypeIdentifier typeIdentifier, boolean parameterized, boolean behaviour) {
         this.typeIdentifier = typeIdentifier;
         this.parameterized = parameterized;
         this.behaviour = behaviour;
-        this.polymorphism = polymorphism;
+        this.polymorphism = typeKind == TypeKind.抽象列挙型;
     }
 
     public boolean hasParameter() {

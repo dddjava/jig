@@ -23,17 +23,17 @@ public class TypeFactory {
 
     public static BusinessRule createBusinessRule(TypeFact typeFact) {
         BusinessRuleFields businessRuleFields = new BusinessRuleFields(typeFact.fieldDeclarations());
-        BusinessRuleCategory businessRuleCategory = BusinessRuleCategory.choice(businessRuleFields, typeFact.isEnum());
+        BusinessRuleCategory businessRuleCategory = BusinessRuleCategory.choice(businessRuleFields, typeFact.typeKind());
         return new BusinessRule(
                 businessRuleFields,
                 typeFact.typeIdentifier(),
                 typeFact.typeDeclaration(),
                 typeFact.methodDeclarations(),
                 new CategoryType(
+                        typeFact.typeKind(),
                         typeFact.typeIdentifier(),
                         typeFact.hasField(),
-                        typeFact.hasInstanceMethod(),
-                        typeFact.canExtend()),
+                        typeFact.hasInstanceMethod()),
                 businessRuleCategory);
     }
 }

@@ -1,8 +1,14 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.jigdocumenter.diagram.*;
-import org.dddjava.jig.domain.model.jigdocumenter.stationery.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocumenter.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
+import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;

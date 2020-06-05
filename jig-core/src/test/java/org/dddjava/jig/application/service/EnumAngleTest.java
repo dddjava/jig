@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;

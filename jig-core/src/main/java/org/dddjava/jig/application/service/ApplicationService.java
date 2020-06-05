@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocumenter.diagram.ServiceMethodCallHierarchyDiagram;
-import org.dddjava.jig.domain.model.jigdocumenter.stationery.JigLogger;
-import org.dddjava.jig.domain.model.jigdocumenter.stationery.Warning;
-import org.dddjava.jig.domain.model.jigmodel.architectures.RoundingPackageRelations;
+import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.RoundingPackageRelations;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
+import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;

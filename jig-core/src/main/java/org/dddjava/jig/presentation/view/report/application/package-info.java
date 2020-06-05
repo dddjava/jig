@@ -1,6 +1,6 @@
 /**
  * 機能一覧の出力定義
  *
- * @see org.dddjava.jig.domain.model.jigdocument.JigDocument#ApplicationList
+ * @see org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument#ApplicationList
  */
 package org.dddjava.jig.presentation.view.report.application;

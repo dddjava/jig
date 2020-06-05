@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.domain.model.jigdocument.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;

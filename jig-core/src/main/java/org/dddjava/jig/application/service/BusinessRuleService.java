@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryDiagram;
-import org.dddjava.jig.domain.model.jigdocumenter.diagram.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.jigdocument.specification.CategoryDiagram;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;

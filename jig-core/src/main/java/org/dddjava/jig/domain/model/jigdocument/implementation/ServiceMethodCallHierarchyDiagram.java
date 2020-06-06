@@ -162,7 +162,7 @@ public class ServiceMethodCallHierarchyDiagram {
 
         return new StringJoiner("\n")
                 .add("{rank=same;").add(repositoryTypes).add("}")
-                .add("{edge [style=dashed];").add(repositoryRelation.asText()).add("}")
+                .add("{edge [style=dashed];").add(repositoryRelation.asUniqueText()).add("}")
                 .toString();
     }
 

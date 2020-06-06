@@ -8,22 +8,24 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelations;
 
-import java.util.StringJoiner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 関連
  */
 public class RelationText {
 
-    StringJoiner stringJoiner;
+    List<String> list;
 
     public RelationText() {
         this("");
     }
 
     public RelationText(String attribute) {
-        this.stringJoiner = new StringJoiner("\n");
-        stringJoiner.add(attribute);
+        list = new ArrayList<>();
+        list.add(attribute);
     }
 
     public static RelationText fromClassRelation(ClassRelations relations) {
@@ -45,11 +47,15 @@ public class RelationText {
     private void add(String from, String to) {
         // "hoge" -> "fuga";
         String line = '"' + from + '"' + " -> " + '"' + to + '"' + ';';
-        stringJoiner.add(line);
+        list.add(line);
     }
 
     public String asText() {
-        return stringJoiner.toString();
+        return String.join("\n", list);
+    }
+
+    public String asUniqueText() {
+        return list.stream().sorted().distinct().collect(Collectors.joining("\n"));
     }
 
     public void add(PackageIdentifier from, PackageIdentifier to) {

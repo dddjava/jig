@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
- * 型の識別子
+ * *型の識別子
  */
 public class TypeIdentifier implements Comparable<TypeIdentifier> {
 

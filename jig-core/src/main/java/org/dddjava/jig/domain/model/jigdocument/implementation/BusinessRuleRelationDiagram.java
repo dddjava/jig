@@ -61,6 +61,9 @@ public class BusinessRuleRelationDiagram {
                 }
                 Node node = Node.controllerNodeOf(businessRule.type().identifier())
                         .label(aliasLine + businessRule.type().identifier().asSimpleText());
+
+                node = (aliasLine.startsWith("*")) ? node.highlightColor() : node;
+
                 subgraph.add(node.asText());
             }
 

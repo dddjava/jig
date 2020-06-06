@@ -89,4 +89,8 @@ public class Node {
     public Node useCase() {
         return shape("ellipse");
     }
+
+    public Node highlightColor() {
+        return color("greenyellow");
+    }
 }

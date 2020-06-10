@@ -1,7 +1,18 @@
 digraph {
     layout = fdp;
-    label = "凡例 [2020.5.1]";
+    label = "凡例 [2020.6.1]";
+    style = dotted
     node [shape = box,style = filled,fillcolor = lightgoldenrod];
+
+    subgraph cluster_models {
+    edge [color = none,arrowhead = none];
+    label = "全般"
+
+    highlightModel [label = "特に注目のモデル", fillcolor = greenyellow];
+    model [label = "主なモデル"];
+    other1 [label = "主でないモデル", style = solid, fillcolor = whitesmoke];
+    other2 [label = "もっと主要でないモデル", style = dashed, fillcolor = whitesmoke];
+    }
 
     subgraph cluster1 {
     label = "サービスメソッド呼び出し図"
@@ -33,16 +44,4 @@ digraph {
     otherUsecase -> usingModel [style = dotted];
     }
 
-    model [label = "一般的なモデル"];
-    other1 [label = "主要でないモデル", style = solid, fillcolor = whitesmoke];
-    other2 [label = "もっと主要でないモデル", style = dashed, fillcolor = whitesmoke];
-
-    {
-    # 出力上近くに置くための関連
-    edge [color = none,arrowhead = none];
-
-    model -> other1;
-    model -> other2;
-    other1 -> other2;
-    }
 }

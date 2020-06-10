@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
@@ -7,7 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,26 +17,29 @@ import org.springframework.stereotype.Service;
 @Service
 public class DependencyService {
 
-    JigLogger jigLogger;
-    BusinessRuleService businessRuleService;
+    final JigLogger jigLogger;
+    final BusinessRuleService businessRuleService;
+    final JigSourceRepository jigSourceRepository;
 
-    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger) {
+    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger, JigSourceRepository jigSourceRepository) {
         this.businessRuleService = businessRuleService;
         this.jigLogger = jigLogger;
+        this.jigSourceRepository = jigSourceRepository;
     }
 
     /**
      * パッケージの関連を取得する
      */
-    public PackageRelationDiagram packageDependencies(AnalyzedImplementation analyzedImplementation) {
-        BusinessRules businessRules = businessRuleService.businessRules(analyzedImplementation);
+    public PackageRelationDiagram packageDependencies() {
+        BusinessRules businessRules = businessRuleService.businessRules();
 
         if (businessRules.empty()) {
             jigLogger.warn(Warning.ビジネスルールが見つからないので出力されない通知);
             return PackageRelationDiagram.empty();
         }
 
-        ClassRelations classRelations = analyzedImplementation.typeFacts().toClassRelations();
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        ClassRelations classRelations = typeFacts.toClassRelations();
         PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
 
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
@@ -44,10 +48,11 @@ public class DependencyService {
     /**
      * ビジネスルールの関連を取得する
      */
-    public BusinessRuleRelationDiagram businessRuleNetwork(AnalyzedImplementation analyzedImplementation) {
+    public BusinessRuleRelationDiagram businessRuleNetwork() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         BusinessRuleRelationDiagram businessRuleRelationDiagram = new BusinessRuleRelationDiagram(
-                businessRuleService.businessRules(analyzedImplementation),
-                analyzedImplementation.typeFacts().toClassRelations());
+                businessRuleService.businessRules(),
+                typeFacts.toClassRelations());
         return businessRuleRelationDiagram;
     }
 }

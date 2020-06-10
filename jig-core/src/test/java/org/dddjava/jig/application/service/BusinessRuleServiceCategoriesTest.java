@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 
@@ -14,8 +14,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class BusinessRuleServiceCategoriesTest {
 
     @Test
-    void readProjectData(BusinessRuleService businessRuleService, AnalyzedImplementation analyzedImplementation) {
-        Categories categories = businessRuleService.categories(analyzedImplementation);
+    void readProjectData(BusinessRuleService businessRuleService, Sources sources, ImplementationService implementationService) {
+        implementationService.readProjectData(sources);
+        Categories categories = businessRuleService.categories();
 
         assertThat(categories.list())
                 .extracting(

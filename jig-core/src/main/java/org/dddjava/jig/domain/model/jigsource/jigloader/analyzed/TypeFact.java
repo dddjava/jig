@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
@@ -39,6 +41,8 @@ public class TypeFact {
     final Set<TypeIdentifier> useTypes = new HashSet<>();
     final TypeKind typeKind;
 
+    TypeAlias typeAlias;
+
     public TypeFact(ParameterizedType type,
                     ParameterizedType superType,
                     List<ParameterizedType> interfaceTypes,
@@ -55,6 +59,8 @@ public class TypeFact {
         for (ParameterizedType interfaceType : interfaceTypes) {
             this.useTypes.add(interfaceType.typeIdentifier());
         }
+
+        this.typeAlias = TypeAlias.empty(type.typeIdentifier());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -169,5 +175,17 @@ public class TypeFact {
 
     public TypeKind typeKind() {
         return typeKind;
+    }
+
+    public void registerTypeAlias(TypeAlias typeAlias) {
+        this.typeAlias = typeAlias;
+    }
+
+    public void registerMethodAlias(MethodAlias methodAlias) {
+        for (MethodFact methodFact : allMethodFacts()) {
+            if (methodFact.methodIdentifier().equals(methodAlias.methodIdentifier())) {
+                methodFact.registerMethodAlias(methodAlias);
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ public class PackageAliases {
         this.list = list;
     }
 
-    public void register(AliasRepository aliasRepository) {
-        list.forEach(aliasRepository::register);
+    public List<PackageAlias> list() {
+        return list;
     }
 }

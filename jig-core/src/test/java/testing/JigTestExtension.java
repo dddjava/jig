@@ -1,6 +1,5 @@
 package testing;
 
-import org.dddjava.jig.application.service.ImplementationService;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
@@ -52,8 +51,7 @@ public class JigTestExtension implements ParameterResolver {
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
         if (parameterContext.getParameter().getType() == Sources.class) return getTestRawSource();
-        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class)
-            return getAnalyzedImplementation();
+
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 try {
@@ -67,11 +65,6 @@ public class JigTestExtension implements ParameterResolver {
 
         // 実装ミスでもなければここには来ない
         throw new AssertionError();
-    }
-
-    private AnalyzedImplementation getAnalyzedImplementation() {
-        ImplementationService implementationService = configuration.implementationService();
-        return implementationService.implementations(getRawSourceLocations());
     }
 
     public Sources getTestRawSource() {

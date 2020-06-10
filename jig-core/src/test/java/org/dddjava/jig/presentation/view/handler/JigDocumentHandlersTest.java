@@ -2,8 +2,6 @@ package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -13,7 +11,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,15 +22,7 @@ class JigDocumentHandlersTest {
         Configuration configuration = new Configuration(new JigProperties("", new OutputOmitPrefix("")), new SourceCodeAliasReader(null));
 
         JigDocumentHandlers sut = configuration.documentHandlers();
-
-        AnalyzedImplementation analyzedImplementation = AnalyzedImplementation.generate(
-                null,
-                new TypeFacts(Collections.emptyList()),
-                null
-        );
-        HandlerMethodArgumentResolver argumentResolver = new HandlerMethodArgumentResolver(analyzedImplementation);
-
-        HandleResult handle = sut.handle(jigDocument, argumentResolver, temp);
+        HandleResult handle = sut.handle(jigDocument, temp);
 
         assertEquals("skip", handle.failureMessage);
     }

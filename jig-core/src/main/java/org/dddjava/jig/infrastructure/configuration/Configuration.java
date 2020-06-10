@@ -1,10 +1,8 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -16,6 +14,7 @@ import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
@@ -33,32 +32,39 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
+        // AliasFinderが無くなったらなくせる
+        AliasRepository aliasRepository = new OnMemoryAliasRepository();
+
+        JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(aliasRepository);
+        this.aliasService = new AliasService(sourceCodeAliasReader, jigSourceRepository, aliasRepository);
 
         PropertyArchitectureFactory architectureFactory = new PropertyArchitectureFactory(properties);
 
-        this.businessRuleService = new BusinessRuleService(architectureFactory.architecture());
-        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class));
-        this.aliasService = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
-        this.applicationService = new ApplicationService(architectureFactory.architecture(), new MessageLogger(ApplicationService.class));
+        this.businessRuleService = new BusinessRuleService(architectureFactory.architecture(), jigSourceRepository);
+        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class), jigSourceRepository);
+        this.applicationService = new ApplicationService(architectureFactory.architecture(), new MessageLogger(ApplicationService.class), jigSourceRepository);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
+
+        // TypeやMethodにAliasを持たせて無くす
         AliasFinder aliasFinder = new AliasFinder() {
             @Override
             public PackageAlias find(PackageIdentifier packageIdentifier) {
-                return aliasService.packageAliasOf(packageIdentifier);
+                return aliasRepository.get(packageIdentifier);
             }
 
             @Override
             public TypeAlias find(TypeIdentifier typeIdentifier) {
-                return aliasService.typeAliasOf(typeIdentifier);
+                return aliasRepository.get(typeIdentifier);
             }
 
             @Override
             public MethodAlias find(MethodIdentifier methodIdentifier) {
-                return aliasService.methodAliasOf(methodIdentifier);
+                return aliasRepository.get(methodIdentifier);
             }
         };
+
         ViewResolver viewResolver = new ViewResolver(
                 aliasFinder,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
@@ -83,6 +89,7 @@ public class Configuration {
                 architectureFactory
         );
         this.implementationService = new ImplementationService(
+                jigSourceRepository,
                 new AsmFactFactory(),
                 aliasService,
                 new MyBatisSqlReader(),

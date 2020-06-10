@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;
@@ -15,8 +15,11 @@ import static org.assertj.core.api.Assertions.tuple;
 public class DatasourceAngleTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, AnalyzedImplementation analyzedImplementation) {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(analyzedImplementation);
+    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
+        implementationService.readProjectData(sources);
+        implementationService.readSql(sources.sqlSources());
+
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
 
         assertThat(datasourceAngles.list())
                 .extracting(

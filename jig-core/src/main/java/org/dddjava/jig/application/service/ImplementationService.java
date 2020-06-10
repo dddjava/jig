@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
@@ -20,12 +21,15 @@ public class ImplementationService {
 
     AliasService aliasService;
 
+    final JigSourceRepository jigSourceRepository;
+
     FactFactory factFactory;
     SqlReader sqlReader;
 
     SourceReader sourceReader;
 
-    public ImplementationService(FactFactory factFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
+    public ImplementationService(JigSourceRepository jigSourceRepository, FactFactory factFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
+        this.jigSourceRepository = jigSourceRepository;
         this.factFactory = factFactory;
         this.aliasService = aliasService;
         this.sqlReader = sqlReader;
@@ -56,13 +60,17 @@ public class ImplementationService {
      * ソースからバイトコードを読み取る
      */
     public TypeFacts readByteCode(ClassSources classSources) {
-        return factFactory.readTypeFacts(classSources);
+        TypeFacts typeFacts = factFactory.readTypeFacts(classSources);
+        jigSourceRepository.registerTypeFact(typeFacts);
+        return typeFacts;
     }
 
     /**
      * ソースからSQLを読み取る
      */
     public Sqls readSql(SqlSources sqlSources) {
-        return sqlReader.readFrom(sqlSources);
+        Sqls sqls = sqlReader.readFrom(sqlSources);
+        jigSourceRepository.registerSqls(sqls);
+        return sqls;
     }
 }

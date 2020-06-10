@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMe
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -37,40 +36,40 @@ public class ApplicationListController {
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
-    public JigModelAndView<ModelReports> applicationList(AnalyzedImplementation implementations) {
+    public JigModelAndView<ModelReports> applicationList() {
         ModelReports modelReports = new ModelReports(
-                controllerReport(implementations),
-                serviceReport(implementations),
-                datasourceReport(implementations),
-                stringComparingReport(implementations)
+                controllerReport(),
+                serviceReport(),
+                datasourceReport(),
+                stringComparingReport()
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
-    ModelReport<?> controllerReport(AnalyzedImplementation implementations) {
-        ControllerMethods controllerMethods = applicationService.controllerAngles(implementations);
+    ModelReport<?> controllerReport() {
+        ControllerMethods controllerMethods = applicationService.controllerAngles();
 
         return new ModelReport<>(controllerMethods.list(),
                 requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
                 ControllerReport.class);
     }
 
-    ModelReport<?> serviceReport(AnalyzedImplementation implementations) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(implementations);
+    ModelReport<?> serviceReport() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
 
         return new ModelReport<>(serviceAngles.list(),
                 serviceAngle -> new ServiceReport(serviceAngle),
                 ServiceReport.class);
     }
 
-    ModelReport<?> datasourceReport(AnalyzedImplementation implementations) {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles(implementations);
+    ModelReport<?> datasourceReport() {
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
         return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
     }
 
-    ModelReport<?> stringComparingReport(AnalyzedImplementation implementations) {
-        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing(implementations);
+    ModelReport<?> stringComparingReport() {
+        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing();
         return new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class);
     }
 }

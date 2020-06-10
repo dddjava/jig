@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImpleme
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
-import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class CommandLineApplication implements CommandLineRunner {
         List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = cliConfig.outputDirectory();
         for (JigDocument jigDocument : jigDocuments) {
-            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, outputDirectory);
             handleResultList.add(result);
         }
 

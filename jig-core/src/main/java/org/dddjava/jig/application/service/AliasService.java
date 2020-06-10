@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -19,32 +20,34 @@ import org.springframework.stereotype.Service;
 public class AliasService {
 
     final SourceCodeAliasReader reader;
-    final AliasRepository repository;
+    final JigSourceRepository jigSourceRepository;
+    final AliasRepository aliasRepository;
 
-    public AliasService(SourceCodeAliasReader reader, AliasRepository repository) {
+    public AliasService(SourceCodeAliasReader reader, JigSourceRepository jigSourceRepository, AliasRepository aliasRepository) {
         this.reader = reader;
-        this.repository = repository;
+        this.jigSourceRepository = jigSourceRepository;
+        this.aliasRepository = aliasRepository;
     }
 
     /**
      * パッケージ別名を取得する
      */
     public PackageAlias packageAliasOf(PackageIdentifier packageIdentifier) {
-        return repository.get(packageIdentifier);
+        return aliasRepository.get(packageIdentifier);
     }
 
     /**
      * 型別名を取得する
      */
     public TypeAlias typeAliasOf(TypeIdentifier typeIdentifier) {
-        return repository.get(typeIdentifier);
+        return aliasRepository.get(typeIdentifier);
     }
 
     /**
      * メソッド別名を取得する
      */
     public MethodAlias methodAliasOf(MethodIdentifier methodIdentifier) {
-        return repository.get(methodIdentifier);
+        return aliasRepository.get(methodIdentifier);
     }
 
     /**
@@ -52,7 +55,9 @@ public class AliasService {
      */
     void loadPackageAliases(PackageInfoSources packageInfoSources) {
         PackageAliases packageAliases = reader.readPackages(packageInfoSources);
-        packageAliases.register(repository);
+        for (PackageAlias packageAlias : packageAliases.list()) {
+            jigSourceRepository.registerPackageAlias(packageAlias);
+        }
     }
 
     /**
@@ -81,11 +86,11 @@ public class AliasService {
 
     private void loadAliases(TypeAliases typeAliases) {
         for (TypeAlias typeAlias : typeAliases.list()) {
-            repository.register(typeAlias);
+            jigSourceRepository.registerTypeAlias(typeAlias);
         }
 
         for (MethodAlias methodAlias : typeAliases.methodList()) {
-            repository.register(methodAlias);
+            jigSourceRepository.registerMethodAlias(methodAlias);
         }
     }
 

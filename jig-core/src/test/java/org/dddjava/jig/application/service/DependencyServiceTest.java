@@ -2,7 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
@@ -16,8 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存(DependencyService dependencyService, AnalyzedImplementation analyzedImplementation) {
-        PackageRelationDiagram packageRelationDiagram = dependencyService.packageDependencies(analyzedImplementation);
+    void パッケージ依存(DependencyService dependencyService, Sources sources, ImplementationService implementationService) {
+        implementationService.readProjectData(sources);
+        PackageRelationDiagram packageRelationDiagram = dependencyService.packageDependencies();
 
         // パッケージのリストアップ
         List<String> packageNames = packageRelationDiagram.allPackages().list().stream()

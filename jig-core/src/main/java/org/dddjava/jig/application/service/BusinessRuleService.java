@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
@@ -8,6 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -17,7 +19,6 @@ import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
@@ -32,39 +33,42 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class BusinessRuleService {
 
-    Architecture architecture;
+    final Architecture architecture;
+    final JigSourceRepository jigSourceRepository;
 
-    public BusinessRuleService(Architecture architecture) {
+    public BusinessRuleService(Architecture architecture, JigSourceRepository jigSourceRepository) {
         this.architecture = architecture;
+        this.jigSourceRepository = jigSourceRepository;
     }
 
     /**
      * ビジネスルール一覧を取得する
      */
-    public BusinessRules businessRules(AnalyzedImplementation analyzedImplementation) {
-        TypeFacts typeFacts = analyzedImplementation.typeFacts();
+    public BusinessRules businessRules() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return TypeFactory.from(typeFacts, architecture);
     }
 
     /**
      * メソッドの不吉なにおい一覧を取得する
      */
-    public MethodSmellList methodSmells(AnalyzedImplementation analyzedImplementation) {
-        Methods methods = new Methods(analyzedImplementation.typeFacts().instanceMethodFacts().stream()
+    public MethodSmellList methodSmells() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        Methods methods = new Methods(typeFacts.instanceMethodFacts().stream()
                 .map(methodByteCode -> methodByteCode.createMethod())
                 .collect(toList()));
         return new MethodSmellList(methods,
-                analyzedImplementation.typeFacts().instanceFields(),
-                analyzedImplementation.typeFacts().toMethodRelations(),
-                businessRules(analyzedImplementation));
+                typeFacts.instanceFields(),
+                typeFacts.toMethodRelations(),
+                businessRules());
     }
 
     /**
      * 区分一覧を取得する
      */
-    public Categories categories(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = businessRules(analyzedImplementation).createCategoryTypes();
-        TypeFacts typeFacts = analyzedImplementation.typeFacts();
+    public Categories categories() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        CategoryTypes categoryTypes = businessRules().createCategoryTypes();
         ClassRelations classRelations = typeFacts.toClassRelations();
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
@@ -75,34 +79,42 @@ public class BusinessRuleService {
     /**
      * 値一覧を取得する
      */
-    public ValueAngles values(ValueKind valueKind, AnalyzedImplementation analyzedImplementation) {
-        ValueTypes valueTypes = new ValueTypes(businessRules(analyzedImplementation), valueKind);
+    public ValueAngles values(ValueKind valueKind) {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        ValueTypes valueTypes = new ValueTypes(businessRules(), valueKind);
 
-        return new ValueAngles(valueKind, valueTypes, analyzedImplementation.typeFacts().toClassRelations());
+        return new ValueAngles(valueKind, valueTypes, typeFacts.toClassRelations());
     }
 
     /**
      * コレクションを分析する
      */
-    public CollectionAngles collections(AnalyzedImplementation analyzedImplementation) {
-        BusinessRules businessRules = businessRules(analyzedImplementation);
+    public CollectionAngles collections() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        BusinessRules businessRules = businessRules();
         CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, analyzedImplementation.typeFacts().toClassRelations());
+        return new CollectionAngles(collectionTypes, typeFacts.toClassRelations());
     }
 
     /**
      * 区分使用図
      */
-    public CategoryUsageDiagram categoryUsages(AnalyzedImplementation analyzedImplementation) {
-        CategoryTypes categoryTypes = businessRules(analyzedImplementation).createCategoryTypes();
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(analyzedImplementation.typeFacts(), architecture);
-        ClassRelations businessRuleRelations = new TypeFacts(analyzedImplementation.typeFacts().list()
+    public CategoryUsageDiagram categoryUsages() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        CategoryTypes categoryTypes = businessRules().createCategoryTypes();
+        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
+        ClassRelations businessRuleRelations = new TypeFacts(typeFacts.list()
                 .stream()
                 .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
                 .collect(Collectors.toList())).toClassRelations(
         );
 
         return new CategoryUsageDiagram(serviceMethods, categoryTypes, businessRuleRelations);
+    }
+
+    public ValidationAnnotatedMembers validationAnnotatedMembers() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return typeFacts.validationAnnotatedMembers();
     }
 }

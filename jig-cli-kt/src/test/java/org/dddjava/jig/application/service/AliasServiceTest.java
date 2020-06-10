@@ -15,6 +15,7 @@ import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.KotlinMethodJavadocStub;
 import stub.domain.model.KotlinStub;
@@ -33,7 +34,8 @@ public class AliasServiceTest {
 
     AliasServiceTest() {
         SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
-        sut = new AliasService(sourceCodeAliasReader, new OnMemoryAliasRepository());
+        OnMemoryAliasRepository onMemoryAliasRepository = new OnMemoryAliasRepository();
+        sut = new AliasService(sourceCodeAliasReader, new OnMemoryJigSourceRepository(onMemoryAliasRepository), onMemoryAliasRepository);
     }
 
     @Test

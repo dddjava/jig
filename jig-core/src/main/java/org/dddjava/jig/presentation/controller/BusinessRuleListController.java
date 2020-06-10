@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -26,9 +25,9 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class BusinessRuleListController {
 
-    ConvertContext convertContext;
-    ApplicationService applicationService;
-    BusinessRuleService businessRuleService;
+    final ConvertContext convertContext;
+    final ApplicationService applicationService;
+    final BusinessRuleService businessRuleService;
 
     public BusinessRuleListController(AliasService aliasService,
                                       ApplicationService applicationService,
@@ -39,57 +38,57 @@ public class BusinessRuleListController {
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)
-    public JigModelAndView<ModelReports> domainList(AnalyzedImplementation implementations) {
+    public JigModelAndView<ModelReports> domainList() {
         ModelReports modelReports = new ModelReports(
-                packageReport(implementations),
-                businessRulesReport(implementations),
-                valuesReport(ValueKind.IDENTIFIER, implementations),
-                categoriesReport(implementations),
-                valuesReport(ValueKind.NUMBER, implementations),
-                collectionsReport(implementations),
-                valuesReport(ValueKind.DATE, implementations),
-                valuesReport(ValueKind.TERM, implementations),
-                validateAnnotationReport(implementations),
-                smellReport(implementations)
+                packageReport(),
+                businessRulesReport(),
+                valuesReport(ValueKind.IDENTIFIER),
+                categoriesReport(),
+                valuesReport(ValueKind.NUMBER),
+                collectionsReport(),
+                valuesReport(ValueKind.DATE),
+                valuesReport(ValueKind.TERM),
+                validateAnnotationReport(),
+                smellReport()
         );
 
         return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
-    ModelReport<?> packageReport(AnalyzedImplementation implementations) {
-        BusinessRulePackages businessRulePackages = businessRuleService.businessRules(implementations).businessRulePackages();
+    ModelReport<?> packageReport() {
+        BusinessRulePackages businessRulePackages = businessRuleService.businessRules().businessRulePackages();
         return new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class);
     }
 
-    ModelReport<?> businessRulesReport(AnalyzedImplementation implementations) {
-        BusinessRules businessRules = businessRuleService.businessRules(implementations);
+    ModelReport<?> businessRulesReport() {
+        BusinessRules businessRules = businessRuleService.businessRules();
         return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
     }
 
-    ModelReport<?> valuesReport(ValueKind valueKind, AnalyzedImplementation implementations) {
-        ValueAngles valueAngles = businessRuleService.values(valueKind, implementations);
+    ModelReport<?> valuesReport(ValueKind valueKind) {
+        ValueAngles valueAngles = businessRuleService.values(valueKind);
         return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
-    ModelReport<?> collectionsReport(AnalyzedImplementation implementations) {
-        CollectionAngles collectionAngles = businessRuleService.collections(implementations);
+    ModelReport<?> collectionsReport() {
+        CollectionAngles collectionAngles = businessRuleService.collections();
         return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
     }
 
-    ModelReport<?> categoriesReport(AnalyzedImplementation implementations) {
-        Categories categories = businessRuleService.categories(implementations);
+    ModelReport<?> categoriesReport() {
+        Categories categories = businessRuleService.categories();
         return new ModelReport<>(categories.list(), CategoryReport::new, CategoryReport.class);
     }
 
-    ModelReport<?> validateAnnotationReport(AnalyzedImplementation implementations) {
-        ValidationAnnotatedMembers validationAnnotatedMembers = implementations.typeFacts().validationAnnotatedMembers();
+    ModelReport<?> validateAnnotationReport() {
+        ValidationAnnotatedMembers validationAnnotatedMembers = businessRuleService.validationAnnotatedMembers();
 
         ValidationAngles validationAngles = ValidationAngles.validationAngles(validationAnnotatedMembers);
         return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);
     }
 
-    ModelReport<?> smellReport(AnalyzedImplementation implementations) {
-        MethodSmellList angles = businessRuleService.methodSmells(implementations);
+    ModelReport<?> smellReport() {
+        MethodSmellList angles = businessRuleService.methodSmells();
         return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
     }
 }

@@ -1,10 +1,14 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -107,5 +111,32 @@ public class TypeFacts {
         return list.stream()
                 .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
                 .findAny();
+    }
+
+    public void registerPackageAlias(PackageAlias packageAlias) {
+        // TODO Packageを取得した際にくっつけて返せるようにする
+    }
+
+    public void registerTypeAlias(TypeAlias typeAlias) {
+        for (TypeFact typeFact : list) {
+            if (typeFact.typeIdentifier().equals(typeAlias.typeIdentifier())) {
+                typeFact.registerTypeAlias(typeAlias);
+                return;
+            }
+        }
+
+        // TODO: WARN 予期しない型のAliasが登録されました。このAliasは使用されません。
+    }
+
+    public void registerMethodAlias(MethodAlias methodAlias) {
+        // TODO Methodを取得した際にくっつけて返せるようにする
+        for (TypeFact typeFact : list) {
+            MethodIdentifier methodIdentifier = methodAlias.methodIdentifier();
+            if (typeFact.typeIdentifier().equals(methodIdentifier.declaringType())) {
+                typeFact.registerMethodAlias(methodAlias);
+                return;
+            }
+        }
+        // TODO: WARN 予期しない型のAliasが登録されました。このAliasは使用されません。
     }
 }

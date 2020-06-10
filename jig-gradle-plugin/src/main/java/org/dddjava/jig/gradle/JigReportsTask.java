@@ -11,7 +11,6 @@ import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
-import org.dddjava.jig.presentation.view.handler.HandlerMethodArgumentResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -62,7 +61,7 @@ public class JigReportsTask extends DefaultTask {
         List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = outputDirectory(config);
         for (JigDocument jigDocument : jigDocuments) {
-            HandleResult result = jigDocumentHandlers.handle(jigDocument, new HandlerMethodArgumentResolver(implementations), outputDirectory);
+            HandleResult result = jigDocumentHandlers.handle(jigDocument, outputDirectory);
             handleResultList.add(result);
         }
 

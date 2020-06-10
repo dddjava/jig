@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;
@@ -18,8 +18,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ServiceAngleTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, AnalyzedImplementation analyzedImplementation) {
-        ServiceAngles serviceAngles = applicationService.serviceAngles(analyzedImplementation);
+    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
+        implementationService.readProjectData(sources);
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
 
         assertThat(serviceAngles.list())
                 .extracting(

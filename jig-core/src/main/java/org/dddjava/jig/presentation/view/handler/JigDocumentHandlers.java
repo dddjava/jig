@@ -37,7 +37,7 @@ public class JigDocumentHandlers {
         };
     }
 
-    JigModelAndView<?> invokeHandlerMethod(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver) {
+    JigModelAndView<?> invokeHandlerMethod(JigDocument jigDocument) {
         try {
             for (Object handler : handlers) {
                 Optional<Method> mayBeHandlerMethod = Arrays.stream(handler.getClass().getMethods())
@@ -46,10 +46,7 @@ public class JigDocumentHandlers {
                         .findFirst();
                 if (mayBeHandlerMethod.isPresent()) {
                     Method method = mayBeHandlerMethod.get();
-                    Object[] args = Arrays.stream(method.getParameterTypes())
-                            .map(clz -> argumentResolver.resolve(clz))
-                            .toArray();
-                    Object result = method.invoke(handler, args);
+                    Object result = method.invoke(handler);
 
                     if (result instanceof JigModelAndView) {
                         return (JigModelAndView<?>) result;
@@ -65,9 +62,9 @@ public class JigDocumentHandlers {
         throw new IllegalStateException();
     }
 
-    public HandleResult handle(JigDocument jigDocument, HandlerMethodArgumentResolver argumentResolver, Path outputDirectory) {
+    public HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
-            JigModelAndView<?> jigModelAndView = invokeHandlerMethod(jigDocument, argumentResolver);
+            JigModelAndView<?> jigModelAndView = invokeHandlerMethod(jigDocument);
 
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);

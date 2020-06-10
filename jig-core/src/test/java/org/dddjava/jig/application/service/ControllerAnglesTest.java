@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
+import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
@@ -13,8 +13,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ControllerAnglesTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, AnalyzedImplementation analyzedImplementation) {
-        ControllerMethods controllerMethods = applicationService.controllerAngles(analyzedImplementation);
+    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
+        implementationService.readProjectData(sources);
+        ControllerMethods controllerMethods = applicationService.controllerAngles();
 
         assertThat(controllerMethods.list())
                 .extracting(

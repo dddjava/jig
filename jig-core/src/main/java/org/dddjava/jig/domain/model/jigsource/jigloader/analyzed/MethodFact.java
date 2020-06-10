@@ -1,10 +1,12 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
@@ -41,6 +43,8 @@ public class MethodFact {
     /** nullを参照している */
     private boolean hasNullReference = false;
 
+    private MethodAlias methodAlias;
+
     public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes,
                       MethodKind methodKind, Visibility visibility) {
         this.methodDeclaration = methodDeclaration;
@@ -50,6 +54,8 @@ public class MethodFact {
         this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
+
+        this.methodAlias = MethodAlias.empty(methodDeclaration.identifier());
     }
 
     public Method createMethod() {
@@ -139,5 +145,13 @@ public class MethodFact {
             MethodRelation methodRelation = new MethodRelation(callerMethod, new CalleeMethod(usingMethod));
             collector.add(methodRelation);
         }
+    }
+
+    public MethodIdentifier methodIdentifier() {
+        return methodDeclaration().identifier();
+    }
+
+    public void registerMethodAlias(MethodAlias methodAlias) {
+        this.methodAlias = methodAlias;
     }
 }

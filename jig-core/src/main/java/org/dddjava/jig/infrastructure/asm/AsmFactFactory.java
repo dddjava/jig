@@ -6,10 +6,17 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.FactFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.objectweb.asm.ClassReader;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ASMを使用したFactFactoryの実装
+ *
+ * ClassSourceを読み取るので、JVM言語なら使用できると思います。
+ */
+@Repository
 public class AsmFactFactory implements FactFactory {
 
     @Override

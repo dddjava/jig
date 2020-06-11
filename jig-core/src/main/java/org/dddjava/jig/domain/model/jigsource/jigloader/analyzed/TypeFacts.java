@@ -22,7 +22,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ApplicationLayer;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
@@ -58,7 +57,7 @@ public class TypeFacts {
     public ControllerMethods createControllerMethods(Architecture architecture) {
         List<RequestHandlerMethod> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
-            if (ApplicationLayer.PRESENTATION.satisfy(typeFact, architecture)) {
+            if (BuildingBlock.PRESENTATION_CONTROLLER.satisfy(typeFact, architecture)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
                     Method method = methodFact.createMethod();
                     RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, new Annotations(typeFact.listAnnotations()));
@@ -98,7 +97,7 @@ public class TypeFacts {
 
     public List<Method> applicationMethodsOf(Architecture architecture) {
         return list().stream()
-                .filter(typeFact -> ApplicationLayer.APPLICATION.satisfy(typeFact, architecture))
+                .filter(typeFact -> BuildingBlock.SERVICE.satisfy(typeFact, architecture))
                 .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
                 .map(methodFact -> methodFact.createMethod())

@@ -19,13 +19,6 @@ public enum BuildingBlock {
             return PRESENTATION_CONTROLLER.satisfy(typeFact, architecture);
         }
     },
-    COORDINATOR {
-        @Override
-        public boolean satisfy(TypeFact typeFact, Architecture architecture) {
-            // 現状 SERVICE と同義
-            return SERVICE.satisfy(typeFact, architecture);
-        }
-    },
     SERVICE {
         @Override
         public boolean satisfy(TypeFact typeFact, Architecture architecture) {

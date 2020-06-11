@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class ApplicationService {
      */
     public ControllerMethods controllerAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
+        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
 
         if (controllerMethods.empty()) {
             jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
@@ -63,8 +62,8 @@ public class ApplicationService {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
-        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(typeFacts, architecture);
+        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
+        DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
 
         return new ServiceAngles(
                 serviceMethods,
@@ -78,7 +77,7 @@ public class ApplicationService {
      */
     public DatasourceAngles datasourceAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        DatasourceMethods datasourceMethods = MethodFactory.createDatasourceMethods(typeFacts, architecture);
+        DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
 
         if (datasourceMethods.empty()) {
             jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
@@ -92,7 +91,7 @@ public class ApplicationService {
      */
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
+        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
         ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
 
         return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);

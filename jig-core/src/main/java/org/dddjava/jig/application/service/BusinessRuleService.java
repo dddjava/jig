@@ -17,7 +17,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
-import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class BusinessRuleService {
      */
     public BusinessRules businessRules() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return TypeFactory.from(typeFacts, architecture);
+        return typeFacts.from(architecture);
     }
 
     /**

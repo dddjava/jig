@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
@@ -61,6 +62,16 @@ public class TypeFact {
         }
 
         this.typeAlias = TypeAlias.empty(type.typeIdentifier());
+    }
+
+    public BusinessRule createBusinessRule() {
+        return new BusinessRule(
+                typeKind(),
+                fieldDeclarations(),
+                typeDeclaration(),
+                methodDeclarations(),
+                hasInstanceMethod()
+        );
     }
 
     public TypeIdentifier typeIdentifier() {

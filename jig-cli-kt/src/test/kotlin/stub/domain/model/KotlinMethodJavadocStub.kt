@@ -25,10 +25,3 @@ class KotlinMethodJavadocStub {
         return null
     }
 }
-
-/**
- * トップレベルのメソッド
- */
-fun topLevel() {
-
-}

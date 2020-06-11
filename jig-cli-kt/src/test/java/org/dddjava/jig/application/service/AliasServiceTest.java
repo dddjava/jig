@@ -87,7 +87,7 @@ public class AliasServiceTest {
     public SourcePaths getRawSourceLocations() {
         return new SourcePaths(
                 new BinarySourcePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()))),
-                new CodeSourcePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("java")))
+                new CodeSourcePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("kotlin")))
         );
     }
 

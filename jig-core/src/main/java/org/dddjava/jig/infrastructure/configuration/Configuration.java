@@ -25,7 +25,7 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 public class Configuration {
 
-    ImplementationService implementationService;
+    JigSourceReadService jigSourceReadService;
     JigDocumentHandlers documentHandlers;
     ApplicationService applicationService;
     DependencyService dependencyService;
@@ -88,7 +88,7 @@ public class Configuration {
                 businessRuleService,
                 applicationService
         );
-        this.implementationService = new ImplementationService(
+        this.jigSourceReadService = new JigSourceReadService(
                 jigSourceRepository,
                 new AsmFactFactory(),
                 aliasService,
@@ -103,8 +103,8 @@ public class Configuration {
         );
     }
 
-    public ImplementationService implementationService() {
-        return implementationService;
+    public JigSourceReadService implementationService() {
+        return jigSourceReadService;
     }
 
     public JigDocumentHandlers documentHandlers() {

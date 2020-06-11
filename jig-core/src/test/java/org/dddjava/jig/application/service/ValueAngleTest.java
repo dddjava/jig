@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ValueAngleTest {
 
     @Test
-    void readProjectData(BusinessRuleService service, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
+    void readProjectData(BusinessRuleService service, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
         ValueAngles identifiers = service.values(ValueKind.IDENTIFIER);
         assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier)
                 .contains(

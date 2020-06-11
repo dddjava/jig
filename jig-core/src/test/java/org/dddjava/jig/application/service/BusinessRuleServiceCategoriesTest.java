@@ -14,8 +14,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class BusinessRuleServiceCategoriesTest {
 
     @Test
-    void readProjectData(BusinessRuleService businessRuleService, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
+    void readProjectData(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
         Categories categories = businessRuleService.categories();
 
         assertThat(categories.list())

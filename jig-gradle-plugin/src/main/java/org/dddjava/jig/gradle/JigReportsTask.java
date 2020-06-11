@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
@@ -37,11 +37,11 @@ public class JigReportsTask extends DefaultTask {
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 
         long startTime = System.currentTimeMillis();
-        ImplementationService implementationService = configuration.implementationService();
+        JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
-        AnalyzedImplementation implementations = implementationService.implementations(sourcePaths);
+        AnalyzedImplementation implementations = jigSourceReadService.readSourceFromPaths(sourcePaths);
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {

@@ -1,6 +1,6 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.application.service.ImplementationService;
+import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatus;
@@ -44,11 +44,11 @@ public class CommandLineApplication implements CommandLineRunner {
         LOGGER.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
 
         long startTime = System.currentTimeMillis();
-        ImplementationService implementationService = configuration.implementationService();
+        JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
         SourcePaths sourcePaths = cliConfig.rawSourceLocations();
-        AnalyzedImplementation implementations = implementationService.implementations(sourcePaths);
+        AnalyzedImplementation implementations = jigSourceReadService.readSourceFromPaths(sourcePaths);
 
         AnalyzeStatuses status = implementations.status();
         if (status.hasError()) {

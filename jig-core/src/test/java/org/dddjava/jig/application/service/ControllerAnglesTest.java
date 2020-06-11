@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ControllerAnglesTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
+    void readProjectData(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
         ControllerMethods controllerMethods = applicationService.controllerAngles();
 
         assertThat(controllerMethods.list())

@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ServiceAngleTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
+    void readProjectData(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
         ServiceAngles serviceAngles = applicationService.serviceAngles();
 
         assertThat(serviceAngles.list())

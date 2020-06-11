@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class DatasourceAngleTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
-        implementationService.readSql(sources.sqlSources());
+    void readProjectData(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
+        jigSourceReadService.readSqlSource(sources.sqlSources());
 
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
 

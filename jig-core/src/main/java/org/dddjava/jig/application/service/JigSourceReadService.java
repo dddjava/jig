@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  * 取り込みサービス
  */
 @Service
-public class ImplementationService {
+public class JigSourceReadService {
 
     AliasService aliasService;
 
@@ -28,7 +28,7 @@ public class ImplementationService {
 
     SourceReader sourceReader;
 
-    public ImplementationService(JigSourceRepository jigSourceRepository, FactFactory factFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactFactory factFactory, AliasService aliasService, SqlReader sqlReader, SourceReader sourceReader) {
         this.jigSourceRepository = jigSourceRepository;
         this.factFactory = factFactory;
         this.aliasService = aliasService;
@@ -36,20 +36,23 @@ public class ImplementationService {
         this.sourceReader = sourceReader;
     }
 
-    public AnalyzedImplementation implementations(SourcePaths sourcePaths) {
+    /**
+     * パスからソースを読み取る
+     */
+    public AnalyzedImplementation readSourceFromPaths(SourcePaths sourcePaths) {
         Sources source = sourceReader.readSources(sourcePaths);
 
         TypeFacts typeFacts = readProjectData(source);
-        Sqls sqls = readSql(source.sqlSources());
+        Sqls sqls = readSqlSource(source.sqlSources());
 
-        return AnalyzedImplementation.generate(source, typeFacts, sqls);
+        return new AnalyzedImplementation(source, typeFacts, sqls);
     }
 
     /**
      * プロジェクト情報を読み取る
      */
     public TypeFacts readProjectData(Sources sources) {
-        TypeFacts typeFacts = readByteCode(sources.classSources());
+        TypeFacts typeFacts = readClassSource(sources.classSources());
 
         aliasService.loadAlias(sources.aliasSource());
 
@@ -59,7 +62,7 @@ public class ImplementationService {
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeFacts readByteCode(ClassSources classSources) {
+    public TypeFacts readClassSource(ClassSources classSources) {
         TypeFacts typeFacts = factFactory.readTypeFacts(classSources);
         jigSourceRepository.registerTypeFact(typeFacts);
         return typeFacts;
@@ -68,7 +71,7 @@ public class ImplementationService {
     /**
      * ソースからSQLを読み取る
      */
-    public Sqls readSql(SqlSources sqlSources) {
+    public Sqls readSqlSource(SqlSources sqlSources) {
         Sqls sqls = sqlReader.readFrom(sqlSources);
         jigSourceRepository.registerSqls(sqls);
         return sqls;

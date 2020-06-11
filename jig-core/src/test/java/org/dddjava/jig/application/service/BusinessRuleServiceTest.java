@@ -11,8 +11,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BusinessRuleServiceTest {
 
     @Test
-    void 注意メソッドの抽出(BusinessRuleService businessRuleService, Sources sources, ImplementationService implementationService) {
-        implementationService.readProjectData(sources);
+    void 注意メソッドの抽出(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
         MethodSmellList methodSmellList = businessRuleService.methodSmells();
 
         assertThat(methodSmellList.list())

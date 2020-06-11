@@ -51,7 +51,7 @@ public class ImplementationService {
     public TypeFacts readProjectData(Sources sources) {
         TypeFacts typeFacts = readByteCode(sources.classSources());
 
-        aliasService.loadAliases(sources.aliasSource());
+        aliasService.loadAlias(sources.aliasSource());
 
         return typeFacts;
     }

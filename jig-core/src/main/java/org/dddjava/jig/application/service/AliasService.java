@@ -51,7 +51,7 @@ public class AliasService {
     }
 
     /**
-     * Javadocから別名を取り込む
+     * Javadocからパッケージ別名を取り込む
      */
     void loadPackageAliases(PackageInfoSources packageInfoSources) {
         PackageAliases packageAliases = reader.readPackages(packageInfoSources);
@@ -63,28 +63,31 @@ public class AliasService {
     /**
      * Javadocから別名を取り込む
      */
-    void loadAliases(JavaSources javaSources) {
+    void loadJavaAlias(JavaSources javaSources) {
         TypeAliases typeAliases = reader.readJavaSources(javaSources);
-        loadAliases(typeAliases);
+        loadTypeAlias(typeAliases);
     }
 
     /**
      * KtDocから別名を取り込む
      */
-    void loadAliases(KotlinSources kotlinSources) {
+    void loadKotlinAlias(KotlinSources kotlinSources) {
         TypeAliases typeAliases = reader.readKotlinSources(kotlinSources);
-        loadAliases(typeAliases);
+        loadTypeAlias(typeAliases);
     }
 
     /**
      * ScalaDocから別名を取り込む
      */
-    void loadAliases(ScalaSources scalaSources) {
+    void loadScalaAlias(ScalaSources scalaSources) {
         TypeAliases typeAliases = reader.readScalaSources(scalaSources);
-        loadAliases(typeAliases);
+        loadTypeAlias(typeAliases);
     }
 
-    private void loadAliases(TypeAliases typeAliases) {
+    /**
+     * 型別名を取り込む
+     */
+    private void loadTypeAlias(TypeAliases typeAliases) {
         for (TypeAlias typeAlias : typeAliases.list()) {
             jigSourceRepository.registerTypeAlias(typeAlias);
         }
@@ -94,10 +97,13 @@ public class AliasService {
         }
     }
 
-    public void loadAliases(AliasSource aliasSource) {
-        loadAliases(aliasSource.javaSources());
-        loadAliases(aliasSource.kotlinSources());
-        loadAliases(aliasSource.scalaSources());
+    /**
+     * 別名を取り込む
+     */
+    public void loadAlias(AliasSource aliasSource) {
+        loadJavaAlias(aliasSource.javaSources());
+        loadKotlinAlias(aliasSource.kotlinSources());
+        loadScalaAlias(aliasSource.scalaSources());
         loadPackageAliases(aliasSource.packageInfoSources());
     }
 }

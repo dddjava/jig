@@ -43,7 +43,7 @@ public class AliasServiceTest {
         Sources source = getTestRawSource();
         AliasSource aliasSource = source.aliasSource();
 
-        sut.loadAliases(aliasSource);
+        sut.loadAlias(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(new TypeIdentifier(KotlinStub.class)).asText())
                 .isEqualTo("KotlinのクラスのDoc");
@@ -55,7 +55,7 @@ public class AliasServiceTest {
         Sources source = getTestRawSource();
         AliasSource aliasSource = source.aliasSource();
 
-        sut.loadAliases(aliasSource);
+        sut.loadAlias(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",

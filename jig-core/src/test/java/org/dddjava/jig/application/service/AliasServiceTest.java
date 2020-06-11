@@ -32,7 +32,7 @@ class AliasServiceTest {
     void パッケージ別名取得(Sources source) {
         AliasSource aliasSource = source.aliasSource();
 
-        sut.loadAliases(aliasSource);
+        sut.loadAlias(aliasSource);
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -43,7 +43,7 @@ class AliasServiceTest {
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         AliasSource aliasSource = source.aliasSource();
 
-        sut.loadAliases(aliasSource);
+        sut.loadAlias(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
@@ -62,7 +62,7 @@ class AliasServiceTest {
     void メソッド別名取得(Sources source) {
         AliasSource aliasSource = source.aliasSource();
 
-        sut.loadAliases(aliasSource);
+        sut.loadAlias(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

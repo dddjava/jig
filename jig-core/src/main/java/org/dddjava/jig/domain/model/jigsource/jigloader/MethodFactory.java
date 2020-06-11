@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
@@ -63,14 +62,4 @@ public class MethodFactory {
         }
         return new DatasourceMethods(list);
     }
-
-    public static ServiceMethods createServiceMethods(TypeFacts typeFacts, Architecture architecture) {
-        return new ServiceMethods(typeFacts.list().stream()
-                .filter(typeFact -> ApplicationLayer.APPLICATION.satisfy(typeFact, architecture))
-                .map(TypeFact::instanceMethodFacts)
-                .flatMap(List::stream)
-                .map(methodFact -> methodFact.createMethod())
-                .collect(toList()));
-    }
-
 }

@@ -17,7 +17,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
-import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.TypeFactory;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
@@ -103,7 +102,7 @@ public class BusinessRuleService {
     public CategoryUsageDiagram categoryUsages() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         CategoryTypes categoryTypes = businessRules().createCategoryTypes();
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
+        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
         ClassRelations businessRuleRelations = new TypeFacts(typeFacts.list()
                 .stream()
                 .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))

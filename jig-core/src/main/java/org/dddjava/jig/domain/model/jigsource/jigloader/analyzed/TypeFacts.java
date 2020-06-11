@@ -14,6 +14,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ApplicationLayer;
+import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +36,15 @@ public class TypeFacts {
 
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
+
+    public List<Method> applicationMethodsOf(Architecture architecture) {
+        return list().stream()
+                .filter(typeFact -> ApplicationLayer.APPLICATION.satisfy(typeFact, architecture))
+                .map(TypeFact::instanceMethodFacts)
+                .flatMap(List::stream)
+                .map(methodFact -> methodFact.createMethod())
+                .collect(toList());
+    }
 
     public synchronized MethodRelations toMethodRelations() {
         if (methodRelations != null) {

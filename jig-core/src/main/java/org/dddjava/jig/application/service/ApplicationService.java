@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.MethodFactory;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,7 @@ public class ApplicationService {
      */
     public ServiceAngles serviceAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
+        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
 
         if (serviceMethods.empty()) {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
@@ -94,7 +93,7 @@ public class ApplicationService {
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         ControllerMethods controllerMethods = MethodFactory.createControllerMethods(typeFacts, architecture);
-        ServiceMethods serviceMethods = MethodFactory.createServiceMethods(typeFacts, architecture);
+        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
 
         return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
     }

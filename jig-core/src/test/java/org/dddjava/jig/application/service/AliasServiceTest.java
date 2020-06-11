@@ -23,16 +23,17 @@ import java.util.stream.Stream;
 class AliasServiceTest {
 
     AliasService sut;
+    JigSourceReadService jigSourceReadService;
 
-    public AliasServiceTest(AliasService aliasService) {
+    public AliasServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
         sut = aliasService;
+        this.jigSourceReadService = jigSourceReadService;
     }
 
     @Test
     void パッケージ別名取得(Sources source) {
         AliasSource aliasSource = source.aliasSource();
-
-        sut.loadAlias(aliasSource);
+        jigSourceReadService.readAliases(aliasSource);
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -42,8 +43,7 @@ class AliasServiceTest {
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         AliasSource aliasSource = source.aliasSource();
-
-        sut.loadAlias(aliasSource);
+        jigSourceReadService.readAliases(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
@@ -61,8 +61,7 @@ class AliasServiceTest {
     @Test
     void メソッド別名取得(Sources source) {
         AliasSource aliasSource = source.aliasSource();
-
-        sut.loadAlias(aliasSource);
+        jigSourceReadService.readAliases(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

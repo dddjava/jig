@@ -30,20 +30,22 @@ import java.util.Collections;
 
 public class AliasServiceTest {
 
+    JigSourceReadService jigSourceReadService;
     AliasService sut;
 
     AliasServiceTest() {
         SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
         OnMemoryAliasRepository onMemoryAliasRepository = new OnMemoryAliasRepository();
-        sut = new AliasService(sourceCodeAliasReader, new OnMemoryJigSourceRepository(onMemoryAliasRepository), onMemoryAliasRepository);
+        OnMemoryJigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(onMemoryAliasRepository);
+        jigSourceReadService = new JigSourceReadService(jigSourceRepository, null, sourceCodeAliasReader, null, null);
+        sut = new AliasService(onMemoryAliasRepository);
     }
 
     @Test
     void クラス別名取得() {
         Sources source = getTestRawSource();
         AliasSource aliasSource = source.aliasSource();
-
-        sut.loadAlias(aliasSource);
+        jigSourceReadService.readAliases(aliasSource);
 
         Assertions.assertThat(sut.typeAliasOf(new TypeIdentifier(KotlinStub.class)).asText())
                 .isEqualTo("KotlinのクラスのDoc");
@@ -54,8 +56,7 @@ public class AliasServiceTest {
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
         AliasSource aliasSource = source.aliasSource();
-
-        sut.loadAlias(aliasSource);
+        jigSourceReadService.readAliases(aliasSource);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
                 "simpleMethod",

@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
-import org.dddjava.jig.infrastructure.asm.AsmFactFactory;
+import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
@@ -37,7 +37,7 @@ public class Configuration {
         AliasRepository aliasRepository = new OnMemoryAliasRepository();
 
         JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(aliasRepository);
-        this.aliasService = new AliasService(sourceCodeAliasReader, jigSourceRepository, aliasRepository);
+        this.aliasService = new AliasService(aliasRepository);
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
@@ -90,8 +90,8 @@ public class Configuration {
         );
         this.jigSourceReadService = new JigSourceReadService(
                 jigSourceRepository,
-                new AsmFactFactory(),
-                aliasService,
+                new AsmFactReader(),
+                sourceCodeAliasReader,
                 new MyBatisSqlReader(),
                 new LocalFileSourceReader()
         );

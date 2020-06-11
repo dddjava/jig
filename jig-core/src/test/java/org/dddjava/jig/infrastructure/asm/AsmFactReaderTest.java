@@ -41,13 +41,13 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-public class AsmFactFactoryTest {
+public class AsmFactReaderTest {
 
     @Test
     void JDK11でコンパイルされたクラス() throws IOException {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
 
-        AsmFactFactory sut = new AsmFactFactory();
+        AsmFactReader sut = new AsmFactReader();
         sut.typeByteCode(TestSupport.newClassSource(path));
     }
 
@@ -274,7 +274,7 @@ public class AsmFactFactoryTest {
     private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmFactFactory sut = new AsmFactFactory();
+        AsmFactReader sut = new AsmFactReader();
         return sut.typeByteCode(TestSupport.newClassSource(path));
     }
 }

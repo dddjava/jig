@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.FactFactory;
+import org.dddjava.jig.domain.model.jigsource.jigloader.FactReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.objectweb.asm.ClassReader;
@@ -17,7 +17,7 @@ import java.util.List;
  * ClassSourceを読み取るので、JVM言語なら使用できると思います。
  */
 @Repository
-public class AsmFactFactory implements FactFactory {
+public class AsmFactReader implements FactReader {
 
     @Override
     public TypeFacts readTypeFacts(ClassSources classSources) {

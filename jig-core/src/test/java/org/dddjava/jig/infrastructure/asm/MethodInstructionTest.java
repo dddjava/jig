@@ -93,7 +93,7 @@ public class MethodInstructionTest {
     private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmFactFactory sut = new AsmFactFactory();
+        AsmFactReader sut = new AsmFactReader();
         return sut.typeByteCode(TestSupport.newClassSource(path));
     }
 }

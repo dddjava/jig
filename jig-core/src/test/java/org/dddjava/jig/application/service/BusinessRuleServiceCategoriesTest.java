@@ -30,7 +30,7 @@ public class BusinessRuleServiceCategoriesTest {
                 ).contains(
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
-                        "[A, B, C, D]", "[]", "[AsmFactFactoryTest, RelationEnum, ValueAngleTest]",
+                        "[A, B, C, D]", "[]", "[AsmFactReaderTest, RelationEnum, ValueAngleTest]",
                         false, false, false
                 ),
                 tuple(
@@ -40,17 +40,17 @@ public class BusinessRuleServiceCategoriesTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
-                        "[A, B]", "[String param]", "[AsmFactFactoryTest, RelationEnum, ValueAngleTest]",
+                        "[A, B]", "[String param]", "[AsmFactReaderTest, RelationEnum, ValueAngleTest]",
                         true, false, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
-                        "[A, B]", "[]", "[AsmFactFactoryTest, RelationEnum]",
+                        "[A, B]", "[]", "[AsmFactReaderTest, RelationEnum]",
                         false, true, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
-                        "[A, B]", "[]", "[AsmFactFactoryTest, RelationEnum]",
+                        "[A, B]", "[]", "[AsmFactReaderTest, RelationEnum]",
                         false, false, true
                 ),
                 tuple(
@@ -60,7 +60,7 @@ public class BusinessRuleServiceCategoriesTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.RichEnum"),
-                        "[A, B]", "[String param]", "[AsmFactFactoryTest, RelationEnum]",
+                        "[A, B]", "[String param]", "[AsmFactReaderTest, RelationEnum]",
                         true, true, true
                 )
         );

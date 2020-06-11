@@ -22,8 +22,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.BuildingBlock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +45,7 @@ public class TypeFacts {
     public BusinessRules from(Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
-            if (BuildingBlock.BUSINESS_RULE.satisfy(typeFact, architecture)) {
+            if (architecture.isBusinessRule(typeFact)) {
                 list.add(typeFact.createBusinessRule());
             }
         }
@@ -57,7 +55,7 @@ public class TypeFacts {
     public ControllerMethods createControllerMethods(Architecture architecture) {
         List<RequestHandlerMethod> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
-            if (BuildingBlock.PRESENTATION_CONTROLLER.satisfy(typeFact, architecture)) {
+            if (architecture.isController(typeFact)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
                     Method method = methodFact.createMethod();
                     RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, new Annotations(typeFact.listAnnotations()));
@@ -72,24 +70,23 @@ public class TypeFacts {
 
     public DatasourceMethods createDatasourceMethods(Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
-        List<TypeFact> datasourceFacts = list().stream()
-                .filter(typeFact1 -> BuildingBlock.DATASOURCE.satisfy(typeFact1, architecture))
-                .collect(toList());
-        for (TypeFact typeFact : datasourceFacts) {
-            for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
-                TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
-                selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {
-                    for (MethodFact interfaceMethodFact : interfaceTypeFact.instanceMethodFacts()) {
-                        typeFact.instanceMethodFacts().stream()
-                                .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
-                                // 0 or 1
-                                .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                        interfaceMethodFact.createMethod(),
-                                        concreteMethodByteCode.createMethod(),
-                                        concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
-                                );
-                    }
-                });
+        for (TypeFact typeFact : list()) {
+            if (architecture.isDataSource(typeFact)) {
+                for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
+                    TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
+                    selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {
+                        for (MethodFact interfaceMethodFact : interfaceTypeFact.instanceMethodFacts()) {
+                            typeFact.instanceMethodFacts().stream()
+                                    .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
+                                    // 0 or 1
+                                    .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
+                                            interfaceMethodFact.createMethod(),
+                                            concreteMethodByteCode.createMethod(),
+                                            concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
+                                    );
+                        }
+                    });
+                }
             }
         }
         return new DatasourceMethods(list);
@@ -97,7 +94,7 @@ public class TypeFacts {
 
     public List<Method> applicationMethodsOf(Architecture architecture) {
         return list().stream()
-                .filter(typeFact -> BuildingBlock.SERVICE.satisfy(typeFact, architecture))
+                .filter(typeFact -> architecture.isService(typeFact))
                 .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
                 .map(methodFact -> methodFact.createMethod())

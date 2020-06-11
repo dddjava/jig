@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagra
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.ArchitectureFactory;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
 
@@ -21,13 +20,11 @@ public class DiagramController {
     DependencyService dependencyService;
     BusinessRuleService businessRuleService;
     ApplicationService applicationService;
-    ArchitectureFactory architectureFactory;
 
-    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, ArchitectureFactory architectureFactory) {
+    public DiagramController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService) {
         this.dependencyService = dependencyService;
         this.businessRuleService = businessRuleService;
         this.applicationService = applicationService;
-        this.architectureFactory = architectureFactory;
     }
 
     @DocumentMapping(JigDocument.PackageRelationDiagram)

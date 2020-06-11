@@ -12,8 +12,8 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
-import org.dddjava.jig.domain.model.jigsource.jigloader.architecture.Architecture;
 import org.springframework.stereotype.Service;
 
 /**

@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactFactory;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -38,11 +39,11 @@ public class Configuration {
         JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(aliasRepository);
         this.aliasService = new AliasService(sourceCodeAliasReader, jigSourceRepository, aliasRepository);
 
-        PropertyArchitectureFactory architectureFactory = new PropertyArchitectureFactory(properties);
+        Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        this.businessRuleService = new BusinessRuleService(architectureFactory.architecture(), jigSourceRepository);
+        this.businessRuleService = new BusinessRuleService(architecture, jigSourceRepository);
         this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class), jigSourceRepository);
-        this.applicationService = new ApplicationService(architectureFactory.architecture(), new MessageLogger(ApplicationService.class), jigSourceRepository);
+        this.applicationService = new ApplicationService(architecture, new MessageLogger(ApplicationService.class), jigSourceRepository);
         PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
                 properties.getOutputOmitPrefix()
         );
@@ -85,8 +86,7 @@ public class Configuration {
         DiagramController diagramController = new DiagramController(
                 dependencyService,
                 businessRuleService,
-                applicationService,
-                architectureFactory
+                applicationService
         );
         this.implementationService = new ImplementationService(
                 jigSourceRepository,

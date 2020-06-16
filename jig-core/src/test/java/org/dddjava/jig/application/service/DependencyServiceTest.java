@@ -39,7 +39,8 @@ public class DependencyServiceTest {
                         "stub.domain.model.type",
                         "stub.domain.model.type.fuga",
                         "stub.domain.model.relation.constant.to_primitive_constant",
-                        "stub.domain.model.relation.constant.to_primitive_wrapper_constant"
+                        "stub.domain.model.relation.constant.to_primitive_wrapper_constant",
+                        "stub.domain.model.visibility"
                 );
 
         // パッケージの関連

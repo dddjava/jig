@@ -30,7 +30,7 @@ public class BusinessRuleServiceCategoriesTest {
                 ).contains(
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
-                        "[A, B, C, D]", "[]", "[AsmFactReaderTest, RelationEnum, ValueAngleTest]",
+                        "[A, B, C, D]", "[]", "[RelationEnum]",
                         false, false, false
                 ),
                 tuple(
@@ -40,17 +40,17 @@ public class BusinessRuleServiceCategoriesTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
-                        "[A, B]", "[String param]", "[AsmFactReaderTest, RelationEnum, ValueAngleTest]",
+                        "[A, B]", "[String param]", "[RelationEnum]",
                         true, false, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
-                        "[A, B]", "[]", "[AsmFactReaderTest, RelationEnum]",
+                        "[A, B]", "[]", "[RelationEnum]",
                         false, true, false
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
-                        "[A, B]", "[]", "[AsmFactReaderTest, RelationEnum]",
+                        "[A, B]", "[]", "[RelationEnum]",
                         false, false, true
                 ),
                 tuple(
@@ -60,7 +60,7 @@ public class BusinessRuleServiceCategoriesTest {
                 ),
                 tuple(
                         new TypeIdentifier("stub.domain.model.category.RichEnum"),
-                        "[A, B]", "[String param]", "[AsmFactReaderTest, RelationEnum]",
+                        "[A, B]", "[String param]", "[RelationEnum]",
                         true, true, true
                 )
         );

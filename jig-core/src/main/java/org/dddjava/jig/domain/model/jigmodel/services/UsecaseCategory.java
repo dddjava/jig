@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.jigmodel.services;
 
-public enum UsecaseCategory {
+/**
+ * ユースケースの種類
+ */
+enum UsecaseCategory {
     ハンドラ,
     その他;
 

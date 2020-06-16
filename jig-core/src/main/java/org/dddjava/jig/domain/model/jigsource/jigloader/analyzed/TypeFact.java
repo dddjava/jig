@@ -11,6 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -43,16 +44,20 @@ public class TypeFact {
     final Set<TypeIdentifier> useTypes = new HashSet<>();
     final TypeKind typeKind;
 
+    final Visibility visibility;
+
     TypeAlias typeAlias;
 
     public TypeFact(ParameterizedType type,
                     ParameterizedType superType,
                     List<ParameterizedType> interfaceTypes,
-                    TypeKind typeKind) {
+                    TypeKind typeKind,
+                    Visibility visibility) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
         this.typeKind = typeKind;
+        this.visibility = visibility;
 
         for (TypeParameter typeParameter : type.typeParameters().list()) {
             this.useTypes.add(typeParameter.typeIdentifier());
@@ -72,7 +77,8 @@ public class TypeFact {
                 typeDeclaration(),
                 methodDeclarations(),
                 hasInstanceMethod(),
-                classRelations.collectTypeIdentifierWhichRelationTo(typeDeclaration().identifier())
+                classRelations.collectTypeIdentifierWhichRelationTo(typeDeclaration().identifier()),
+                visibility
         );
     }
 

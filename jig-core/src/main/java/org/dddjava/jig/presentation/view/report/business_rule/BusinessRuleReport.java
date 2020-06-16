@@ -27,4 +27,9 @@ public class BusinessRuleReport {
     public TypeIdentifiers userTypeIdentifiers() {
         return businessRule.userTypes();
     }
+
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "public?")
+    public boolean isPublic() {
+        return businessRule.visibility().isPublic();
+    }
 }

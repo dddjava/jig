@@ -39,11 +39,14 @@ class AsmClassVisitor extends ClassVisitor {
         ParameterizedType superType = parameterizedSuperType(superName, signature);
         List<ParameterizedType> interfaceTypes = parameterizedInterfaceTypes(interfaces, signature);
 
+        Visibility visibility = resolveVisibility(access);
+
         this.typeFact = new TypeFact(
                 new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
                 superType,
                 interfaceTypes,
-                typeKind(access));
+                typeKind(access),
+                visibility);
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -124,7 +127,7 @@ class AsmClassVisitor extends ClassVisitor {
             methodKind = MethodKind.STATIC_METHOD;
         }
         // Accessor判定
-        Visibility visibility = ((access & Opcodes.ACC_PUBLIC) != 0) ? Visibility.PUBLIC : Visibility.NOT_PUBLIC;
+        Visibility visibility = resolveVisibility(access);
 
         MethodFact methodFact = new MethodFact(methodDeclaration, useTypes, methodKind, visibility);
         methodFact.bind(typeFact);
@@ -221,6 +224,23 @@ class AsmClassVisitor extends ClassVisitor {
                 super.visitJumpInsn(opcode, label);
             }
         };
+    }
+
+    /**
+     * Visibilityに持っていきたいが、accessの定数はasmが持っているのでここに置いておく。
+     * 実際はバイトコードの固定値。
+     *
+     * class
+     * ソースコードではpublic,protected,default,privateは定義できるが、
+     * バイトコードではpublicか否かしか識別できない。
+     * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
+     */
+    private Visibility resolveVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) {
+            return Visibility.PUBLIC;
+        }
+
+        return Visibility.NOT_PUBLIC;
     }
 
     private MethodSignature toMethodSignature(String name, String descriptor) {

@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.businessrules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -20,14 +21,16 @@ public class BusinessRule {
 
     boolean hasInstanceMethod;
     TypeIdentifiers userTypes;
+    Visibility visibility;
 
-    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod, TypeIdentifiers userTypes) {
+    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod, TypeIdentifiers userTypes, Visibility visibility) {
         this.typeKind = typeKind;
         this.fieldDeclarations = fieldDeclarations;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
         this.hasInstanceMethod = hasInstanceMethod;
         this.userTypes = userTypes;
+        this.visibility = visibility;
     }
 
     public TypeDeclaration type() {
@@ -60,5 +63,13 @@ public class BusinessRule {
 
     public TypeIdentifiers userTypes() {
         return userTypes;
+    }
+
+    public Visibility visibility() {
+        return visibility;
+    }
+
+    public String fullName() {
+        return typeIdentifier().fullQualifiedName();
     }
 }

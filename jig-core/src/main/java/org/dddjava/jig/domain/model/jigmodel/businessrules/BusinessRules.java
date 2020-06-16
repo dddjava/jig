@@ -4,10 +4,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -16,9 +16,24 @@ import java.util.stream.Collectors;
 public class BusinessRules {
 
     List<BusinessRule> list;
+    ClassRelations businessRuleRelations;
+    ClassRelations classRelations;
 
-    public BusinessRules(List<BusinessRule> list) {
+    public BusinessRules(List<BusinessRule> list, ClassRelations classRelations) {
         this.list = list;
+        this.classRelations = classRelations;
+
+        Set<TypeIdentifier> businessRuleTypeSet = list.stream()
+                .map(businessRule -> businessRule.typeIdentifier())
+                .collect(Collectors.toSet());
+        List<ClassRelation> businessRuleRelationList = new ArrayList<>();
+        for (ClassRelation classRelation : classRelations.distinctList()) {
+            if (businessRuleTypeSet.contains(classRelation.from())
+                    && businessRuleTypeSet.contains(classRelation.to())) {
+                businessRuleRelationList.add(classRelation);
+            }
+        }
+        this.businessRuleRelations = new ClassRelations(businessRuleRelationList);
     }
 
     public List<BusinessRule> list() {
@@ -55,7 +70,7 @@ public class BusinessRules {
         List<BusinessRulePackage> list = map.entrySet().stream()
                 .map(entity -> new BusinessRulePackage(
                         entity.getKey(),
-                        new BusinessRules(entity.getValue())
+                        new BusinessRules(entity.getValue(), this.businessRuleRelations)
                 )).collect(Collectors.toList());
         return new BusinessRulePackages(list);
     }
@@ -83,5 +98,17 @@ public class BusinessRules {
                 ))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);
+    }
+
+    public ClassRelations businessRuleRelations() {
+        return businessRuleRelations;
+    }
+
+    public ClassRelations classRelations() {
+        return classRelations;
+    }
+
+    public TypeIdentifiers allTypesRelatedTo(BusinessRule businessRule) {
+        return classRelations().collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
     }
 }

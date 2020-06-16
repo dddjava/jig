@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * ユースケースと愉快な仲間たち
  */
-public class CompositeUsecases {
+class CompositeUsecases {
     Usecase usecase;
     List<TypeIdentifier> controllerTypes;
 

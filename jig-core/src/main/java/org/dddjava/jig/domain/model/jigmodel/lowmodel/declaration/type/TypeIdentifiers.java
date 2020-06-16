@@ -60,4 +60,8 @@ public class TypeIdentifiers {
                 .filter(typeIdentifier -> !excludeTypeIdentifiers.contains(typeIdentifier))
                 .collect(collector());
     }
+
+    public String countAsText() {
+        return Integer.toString(identifiers.size());
+    }
 }

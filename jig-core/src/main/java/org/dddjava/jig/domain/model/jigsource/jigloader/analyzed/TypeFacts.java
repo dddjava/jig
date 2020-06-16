@@ -46,10 +46,10 @@ public class TypeFacts {
         List<BusinessRule> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             if (architecture.isBusinessRule(typeFact)) {
-                list.add(typeFact.createBusinessRule(toClassRelations()));
+                list.add(typeFact.createBusinessRule());
             }
         }
-        return new BusinessRules(list);
+        return new BusinessRules(list, toClassRelations());
     }
 
     public ControllerMethods createControllerMethods(Architecture architecture) {

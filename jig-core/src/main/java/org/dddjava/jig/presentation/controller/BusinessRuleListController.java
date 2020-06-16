@@ -62,7 +62,7 @@ public class BusinessRuleListController {
 
     ModelReport<?> businessRulesReport() {
         BusinessRules businessRules = businessRuleService.businessRules();
-        return new ModelReport<>(businessRules.list(), BusinessRuleReport::new, BusinessRuleReport.class);
+        return new ModelReport<>(businessRules.list(), businessRule -> new BusinessRuleReport(businessRule, businessRules), BusinessRuleReport.class);
     }
 
     ModelReport<?> valuesReport(ValueKind valueKind) {

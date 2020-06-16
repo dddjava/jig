@@ -40,14 +40,6 @@ public class ClassRelations {
         return new ClassRelations(collect);
     }
 
-    public TypeIdentifiers fromTypeIdentifiers() {
-        return list.stream()
-                .map(classRelation -> classRelation.from())
-                .sorted()
-                .distinct()
-                .collect(TypeIdentifiers.collector());
-    }
-
     public List<ClassRelation> distinctList() {
         List<ClassRelation> results = new ArrayList<>();
         ADD:
@@ -84,5 +76,35 @@ public class ClassRelations {
             toTypeIdentifiers = temp.fromTypeIdentifiers();
         }
         return new ClassRelations(new ArrayList<>(set));
+    }
+
+    public ClassRelations filterFrom(TypeIdentifier typeIdentifier) {
+        List<ClassRelation> collect = list.stream()
+                .filter(classRelation -> classRelation.from().equals(typeIdentifier))
+                .collect(Collectors.toList());
+        return new ClassRelations(collect);
+    }
+
+    public ClassRelations filterTo(TypeIdentifier typeIdentifier) {
+        List<ClassRelation> collect = list.stream()
+                .filter(classRelation -> classRelation.to().equals(typeIdentifier))
+                .collect(Collectors.toList());
+        return new ClassRelations(collect);
+    }
+
+    public TypeIdentifiers fromTypeIdentifiers() {
+        return list.stream()
+                .map(classRelation -> classRelation.from())
+                .sorted()
+                .distinct()
+                .collect(TypeIdentifiers.collector());
+    }
+
+    public TypeIdentifiers toTypeIdentifiers() {
+        return list.stream()
+                .map(classRelation -> classRelation.to())
+                .sorted()
+                .distinct()
+                .collect(TypeIdentifiers.collector());
     }
 }

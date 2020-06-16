@@ -46,7 +46,7 @@ public class TypeFacts {
         List<BusinessRule> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             if (architecture.isBusinessRule(typeFact)) {
-                list.add(typeFact.createBusinessRule());
+                list.add(typeFact.createBusinessRule(toClassRelations()));
             }
         }
         return new BusinessRules(list);

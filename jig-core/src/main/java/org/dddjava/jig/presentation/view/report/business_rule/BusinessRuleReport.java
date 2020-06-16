@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -20,5 +21,10 @@ public class BusinessRuleReport {
     @ReportItemFor(ReportItem.クラス別名)
     public TypeDeclaration typeIdentifier() {
         return businessRule.type();
+    }
+
+    @ReportItemFor(ReportItem.使用箇所数)
+    public TypeIdentifiers userTypeIdentifiers() {
+        return businessRule.userTypes();
     }
 }

@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,13 +65,14 @@ public class TypeFact {
         this.typeAlias = TypeAlias.empty(type.typeIdentifier());
     }
 
-    public BusinessRule createBusinessRule() {
+    public BusinessRule createBusinessRule(ClassRelations classRelations) {
         return new BusinessRule(
                 typeKind(),
                 fieldDeclarations(),
                 typeDeclaration(),
                 methodDeclarations(),
-                hasInstanceMethod()
+                hasInstanceMethod(),
+                classRelations.collectTypeIdentifierWhichRelationTo(typeDeclaration().identifier())
         );
     }
 

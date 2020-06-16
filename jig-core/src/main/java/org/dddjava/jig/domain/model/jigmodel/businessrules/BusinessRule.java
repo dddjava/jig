@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 /**
  * ビジネスルール
@@ -17,14 +18,16 @@ public class BusinessRule {
     FieldDeclarations fieldDeclarations;
     MethodDeclarations methodDeclarations;
 
-    private boolean hasInstanceMethod;
+    boolean hasInstanceMethod;
+    TypeIdentifiers userTypes;
 
-    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod) {
+    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod, TypeIdentifiers userTypes) {
         this.typeKind = typeKind;
         this.fieldDeclarations = fieldDeclarations;
         this.typeDeclaration = typeDeclaration;
         this.methodDeclarations = methodDeclarations;
         this.hasInstanceMethod = hasInstanceMethod;
+        this.userTypes = userTypes;
     }
 
     public TypeDeclaration type() {
@@ -53,5 +56,9 @@ public class BusinessRule {
 
     public BusinessRuleCategory businessRuleCategory() {
         return BusinessRuleCategory.choice(fields(), typeKind);
+    }
+
+    public TypeIdentifiers userTypes() {
+        return userTypes;
     }
 }

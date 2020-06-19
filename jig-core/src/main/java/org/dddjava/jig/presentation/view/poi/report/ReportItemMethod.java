@@ -1,11 +1,12 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
 import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
+import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 
 import java.lang.reflect.InvocationTargetException;
 
-class ReportItemMethod implements Comparable<ReportItemMethod> {
+public class ReportItemMethod implements Comparable<ReportItemMethod> {
     java.lang.reflect.Method method;
     ReportItemFor reportItemFor;
 
@@ -39,5 +40,9 @@ class ReportItemMethod implements Comparable<ReportItemMethod> {
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("実装ミス", e);
         }
+    }
+
+    public ReportItem value() {
+        return reportItemFor.value();
     }
 }

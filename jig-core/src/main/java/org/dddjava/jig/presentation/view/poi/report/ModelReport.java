@@ -121,18 +121,7 @@ public class ModelReport<MODEL> {
 
             for (ReportItemMethod reportItemMethod : reportItemMethods) {
                 Object methodReturnValue = reportItemMethod.invoke(report);
-                String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), methodReturnValue);
-
-                short lastCellNum = row.getLastCellNum();
-                Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
-
-                if (result.length() > 10000) {
-                    logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",
-                            cell.getRowIndex(), cell.getColumnIndex());
-                    cell.setCellValue(result.substring(0, 10000) + "...(省略されました）");
-                } else {
-                    cell.setCellValue(result);
-                }
+                reportItemFormatters.apply(row, reportItemMethod, methodReturnValue);
             }
         }
     }

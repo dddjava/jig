@@ -62,10 +62,10 @@ public class ReportItemFormatters {
     }
 
     public void apply(Row row, ReportItemMethod reportItemMethod, Object methodReturnValue) {
-        String result = format(reportItemMethod.value(), methodReturnValue);
-
         short lastCellNum = row.getLastCellNum();
         Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
+
+        String result = format(reportItemMethod.value(), methodReturnValue);
 
         if (result.length() > 10000) {
             logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",

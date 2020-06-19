@@ -106,9 +106,10 @@ public class ModelReport<MODEL> {
 
     void writeHeader(Sheet sheet) {
         Header header = header();
+        Row row = sheet.createRow(0);
         for (int i = 0; i < header.size(); i++) {
             // headerは全てSTRINGで作る
-            Cell cell = sheet.createRow(0).createCell(i, CellType.STRING);
+            Cell cell = row.createCell(i, CellType.STRING);
             cell.setCellValue(header.textOf(i));
         }
     }

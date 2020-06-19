@@ -1,18 +1,16 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 import org.dddjava.jig.presentation.view.report.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,6 +18,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 public class ModelReport<MODEL> {
+
+    static Logger logger = LoggerFactory.getLogger(ModelReport.class);
 
     String title;
     List<MODEL> pivotModels;
@@ -116,20 +116,29 @@ public class ModelReport<MODEL> {
     }
 
     void writeBody(Sheet sheet, ReportItemFormatters reportItemFormatters) {
-        for (MODEL pivotModel : pivotModels) {
-            List<String> convertedRow = new ArrayList<>();
-            for (ReportItemMethod reportItemMethod : reportItemMethods) {
-                try {
+        try {
+            for (MODEL pivotModel : pivotModels) {
+                Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+
+                for (ReportItemMethod reportItemMethod : reportItemMethods) {
                     Object report = modelReporter.report(pivotModel);
                     Object item = reportItemMethod.method.invoke(report);
                     String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
-                    convertedRow.add(result);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException("実装ミス", e);
+
+                    short lastCellNum = row.getLastCellNum();
+                    Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
+
+                    if (result.length() > 10000) {
+                        logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",
+                                cell.getRowIndex(), cell.getColumnIndex());
+                        cell.setCellValue(result.substring(0, 10000) + "...(省略されました）");
+                    } else {
+                        cell.setCellValue(result);
+                    }
                 }
             }
-            ReportRow row = new ReportRow(convertedRow);
-            row.writeRow(sheet.createRow(sheet.getLastRowNum() + 1));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("実装ミス", e);
         }
     }
 

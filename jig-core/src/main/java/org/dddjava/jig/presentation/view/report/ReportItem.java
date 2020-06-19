@@ -37,7 +37,8 @@ public enum ReportItem {
 
     // なるべく使わない
     汎用文字列("string"),
-    汎用真偽値("boolean");
+    汎用真偽値("boolean"),
+    汎用数値("number");
 
     public final String key;
 

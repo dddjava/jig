@@ -109,6 +109,9 @@ public class ReportItemFormatters {
             case 汎用真偽値:
                 cell.setCellValue(((Boolean) item) ? "◯" : "");
                 return;
+            case 汎用数値:
+                cell.setCellValue((int) item);
+                return;
         }
 
         throw new IllegalArgumentException(reportItem.name());

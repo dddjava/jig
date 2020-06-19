@@ -35,18 +35,18 @@ public class BusinessRuleReport {
         return businessRules.allTypesRelatedTo(businessRule);
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルール使用箇所数")
-    public String ビジネスルール使用箇所数() {
+    @ReportItemFor(value = ReportItem.汎用数値, label = "ビジネスルール使用箇所数")
+    public int ビジネスルール使用箇所数() {
         ClassRelations classRelations = businessRules.businessRuleRelations().filterTo(businessRule.typeIdentifier());
         TypeIdentifiers typeIdentifiers = classRelations.fromTypeIdentifiers();
-        return typeIdentifiers.countAsText();
+        return typeIdentifiers.size();
     }
 
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "参照ビジネスルール数")
-    public String 参照ビジネスルール数() {
+    @ReportItemFor(value = ReportItem.汎用数値, label = "参照ビジネスルール数")
+    public int 参照ビジネスルール数() {
         ClassRelations classRelations = businessRules.businessRuleRelations().filterFrom(businessRule.typeIdentifier());
         TypeIdentifiers typeIdentifiers = classRelations.toTypeIdentifiers();
-        return typeIdentifiers.countAsText();
+        return typeIdentifiers.size();
     }
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "非PUBLIC")

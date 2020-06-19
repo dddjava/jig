@@ -34,8 +34,8 @@ $ gradle clean build jig
 以下の例ようにプロパティを指定してください。例の値はデフォルトです。
 ```
 jig {
-    modelPattern = '.+\\.domain\\.model\\..+'
-    documentTypes = ['ServiceMethodCallHierarchy','PackageDependency','ApplicationList','DomainList','BranchList','EnumUsage','BooleanService']
+    modelPattern = '.+\\.domain\\.(model|type)\\..+'
+    documentTypes = []
     outputDirectory = '' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
 }

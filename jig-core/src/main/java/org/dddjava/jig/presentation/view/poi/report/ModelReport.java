@@ -107,8 +107,7 @@ public class ModelReport<MODEL> {
         }
     }
 
-    public void apply(ConvertContext convertContext, Sheet sheet) {
-        ReportItemFormatters reportItemFormatters = new ReportItemFormatters(convertContext);
+    public void apply(Sheet sheet, ReportItemFormatters reportItemFormatters) {
         List<ReportRow> rows = pivotModels.stream()
                 .map(row1 -> {
                     List<String> convertedRow = reportItemMethods.stream()

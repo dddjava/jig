@@ -9,6 +9,7 @@ import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.Header;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
+import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,21 +19,22 @@ import java.util.List;
  */
 public class ModelReportsPoiView implements JigView<ModelReports> {
 
-    private final ConvertContext convertContext;
+    private ReportItemFormatters reportItemFormatters;
 
     public ModelReportsPoiView(ConvertContext convertContext) {
-        this.convertContext = convertContext;
+        this.reportItemFormatters = new ReportItemFormatters(convertContext);
     }
 
     @Override
     public void render(ModelReports modelReports, JigDocumentWriter jigDocumentWriter) throws IOException {
+
         try (Workbook book = new XSSFWorkbook()) {
             List<ModelReport<?>> list = modelReports.list();
             for (ModelReport<?> modelReport : list) {
                 Sheet sheet = book.createSheet(modelReport.title());
                 writeHeader(modelReport.header(), sheet.createRow(0));
 
-                modelReport.apply(convertContext, sheet);
+                modelReport.apply(sheet, reportItemFormatters);
 
                 int columns = modelReport.header().size();
                 for (int i = 0; i < columns; i++) {

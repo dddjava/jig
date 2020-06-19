@@ -1,6 +1,10 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 import org.dddjava.jig.presentation.view.report.*;
@@ -8,6 +12,7 @@ import org.dddjava.jig.presentation.view.report.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -87,38 +92,54 @@ public class ModelReport<MODEL> {
         this.reportItemMethods = reportItemMethods;
     }
 
-    public String title() {
-        return title;
-    }
-
-    public Header header() {
+    Header header() {
         return new Header(reportItemMethods);
     }
 
-    private String convert(ReportItemMethod reportItemMethod, MODEL angle, ReportItemFormatters reportItemFormatters) {
-        try {
-            Object report = modelReporter.report(angle);
+    public void writeSheet(Workbook book, ReportItemFormatters reportItemFormatters) {
+        Sheet sheet = book.createSheet(title);
+        writeHeader(sheet);
+        writeBody(sheet, reportItemFormatters);
+        updateSheetAttribute(sheet);
+    }
 
-            Object item = reportItemMethod.method.invoke(report);
-            return reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
-
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("実装ミス", e);
+    void writeHeader(Sheet sheet) {
+        Header header = header();
+        for (int i = 0; i < header.size(); i++) {
+            // headerは全てSTRINGで作る
+            Cell cell = sheet.createRow(0).createCell(i, CellType.STRING);
+            cell.setCellValue(header.textOf(i));
         }
     }
 
-    public void apply(Sheet sheet, ReportItemFormatters reportItemFormatters) {
-        List<ReportRow> rows = pivotModels.stream()
-                .map(row1 -> {
-                    List<String> convertedRow = reportItemMethods.stream()
-                            .map(reportItemMethod -> convert(reportItemMethod, row1, reportItemFormatters))
-                            .collect(toList());
-                    return new ReportRow(convertedRow);
-                })
-                .collect(toList());
-
-        for (ReportRow row : rows) {
+    void writeBody(Sheet sheet, ReportItemFormatters reportItemFormatters) {
+        for (MODEL pivotModel : pivotModels) {
+            List<String> convertedRow = new ArrayList<>();
+            for (ReportItemMethod reportItemMethod : reportItemMethods) {
+                try {
+                    Object report = modelReporter.report(pivotModel);
+                    Object item = reportItemMethod.method.invoke(report);
+                    String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
+                    convertedRow.add(result);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException("実装ミス", e);
+                }
+            }
+            ReportRow row = new ReportRow(convertedRow);
             row.writeRow(sheet.createRow(sheet.getLastRowNum() + 1));
         }
+    }
+
+    void updateSheetAttribute(Sheet sheet) {
+        int columns = header().size();
+        for (int i = 0; i < columns; i++) {
+            // 列幅を自動調整する
+            sheet.autoSizeColumn(i);
+        }
+        // オートフィルターを有効にする
+        sheet.setAutoFilter(new CellRangeAddress(
+                0, sheet.getLastRowNum(),
+                0, columns - 1
+        ));
     }
 }

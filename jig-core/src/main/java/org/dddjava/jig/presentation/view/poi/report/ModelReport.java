@@ -31,8 +31,7 @@ public class ModelReport<MODEL> {
     }
 
     public <REPORT> ModelReport(String title, List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
-        this(title, pivotModels, modelReporter, collectReportItemMethods(reportClass)
-        );
+        this(title, pivotModels, modelReporter, collectReportItemMethods(reportClass));
     }
 
     private static <REPORT> List<ReportItemMethod> collectReportItemMethods(Class<REPORT> reportClass) {

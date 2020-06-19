@@ -53,7 +53,7 @@ class CompositeUsecases {
 
         // 内部使用クラスへのEdge
         for (TypeIdentifier usingType : usecase.internalUsingTypes()) {
-            sb.append(String.format("\"%s\" -> \"%s\"[style=dashed];\n", usecaseIdentifier, usingType.fullQualifiedName()));
+            sb.append(String.format("\"%s\" -> \"%s\"[style=dotted];\n", usecaseIdentifier, usingType.fullQualifiedName()));
             otherTypes.add(usingType);
         }
 

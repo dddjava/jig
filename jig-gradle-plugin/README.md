@@ -6,7 +6,7 @@ GradleプロジェクトでJIGドキュメントを出力するプラグイン�
 
 ```build.gradle
 plugins {
-  id "org.dddjava.jig-gradle-plugin" version "2019.7.2"
+  id "org.dddjava.jig-gradle-plugin" version "2020.6.2"
 }
 ```
 

@@ -26,4 +26,8 @@ public class TypeParameters {
     public TypeParameter get(int i) {
         return list.get(i);
     }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
 }

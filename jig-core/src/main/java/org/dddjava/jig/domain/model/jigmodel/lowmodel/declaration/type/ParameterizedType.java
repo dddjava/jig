@@ -37,6 +37,9 @@ public class ParameterizedType {
     }
 
     public String asSimpleText() {
+        if (actualTypeParameters.empty()) {
+            return typeIdentifier.asSimpleText();
+        }
         return typeIdentifier.asSimpleText() + actualTypeParameters.asSimpleText();
     }
 

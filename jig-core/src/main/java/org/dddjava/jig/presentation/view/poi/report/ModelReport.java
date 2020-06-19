@@ -120,8 +120,8 @@ public class ModelReport<MODEL> {
 
             for (ReportItemMethod reportItemMethod : reportItemMethods) {
                 Object report = modelReporter.report(pivotModel);
-                Object item = reportItemMethod.invoke(report);
-                String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
+                Object methodReturnValue = reportItemMethod.invoke(report);
+                String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), methodReturnValue);
 
                 short lastCellNum = row.getLastCellNum();
                 Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);

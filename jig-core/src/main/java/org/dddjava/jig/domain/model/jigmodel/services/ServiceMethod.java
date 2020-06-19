@@ -58,8 +58,7 @@ public class ServiceMethod {
     public List<TypeIdentifier> internalUsingTypes() {
         List<TypeIdentifier> list = usingMethods().methodDeclarations().list().stream()
                 .flatMap(methodDeclaration -> methodDeclaration.relateTypes().list().stream())
-                .filter(typeIdentifier -> !typeIdentifier.isPrimitive())
-                .filter(typeIdentifier -> !typeIdentifier.isVoid())
+                .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
                 .filter(typeIdentifier -> !primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isPresent())
                 .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
                 .distinct()

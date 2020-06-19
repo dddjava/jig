@@ -22,7 +22,10 @@ public class CollectionType {
     }
 
     public MethodDeclarations methods() {
-        return businessRule.methodDeclarations();
+        MethodDeclarations methodDeclarations = businessRule.methodDeclarations();
+        return methodDeclarations.list().stream()
+                .filter(methodDeclaration -> !methodDeclaration.isConstructor())
+                .collect(MethodDeclarations.collector());
     }
 
     public CollectionField field() {

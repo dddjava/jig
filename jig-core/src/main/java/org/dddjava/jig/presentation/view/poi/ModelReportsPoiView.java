@@ -65,7 +65,7 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
             Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
 
             if (item.length() > 10000) {
-                LOGGER.info("10,000文字を超えたので切り詰めます。");
+                LOGGER.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。", cell.getRowIndex(), cell.getColumnIndex());
                 cell.setCellValue(item.substring(0, 10000) + "...(省略されました）");
             } else {
                 cell.setCellValue(item);

@@ -117,9 +117,9 @@ public class ModelReport<MODEL> {
     void writeBody(Sheet sheet, ReportItemFormatters reportItemFormatters) {
         for (MODEL pivotModel : pivotModels) {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+            Object report = modelReporter.report(pivotModel);
 
             for (ReportItemMethod reportItemMethod : reportItemMethods) {
-                Object report = modelReporter.report(pivotModel);
                 Object methodReturnValue = reportItemMethod.invoke(report);
                 String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), methodReturnValue);
 

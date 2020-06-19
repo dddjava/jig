@@ -35,6 +35,7 @@ public class ModelReport<MODEL> {
     }
 
     private static <REPORT> List<ReportItemMethod> collectReportItemMethods(Class<REPORT> reportClass) {
+        // @ReportItemForを収集
         Stream<ReportItemMethod> items = Arrays.stream(reportClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(ReportItemFor.class) || method.isAnnotationPresent(ReportItemsFor.class))
                 .flatMap(method -> {
@@ -48,9 +49,12 @@ public class ModelReport<MODEL> {
                     ReportItemFor reportItemFor = method.getAnnotation(ReportItemFor.class);
                     return Stream.of(new ReportItemMethod(method, reportItemFor));
                 });
+
+        // @ReportMethodWorryOfを追加
         Stream<ReportItemMethod> methodWorries = Arrays.stream(reportClass.getMethods())
                 .filter(method -> method.isAnnotationPresent(ReportMethodWorryOf.class))
                 .map(method -> new ReportItemMethod(method, generateReportItemForInstance(method)));
+
         return Stream.concat(items, methodWorries)
                 .sorted()
                 .collect(toList());

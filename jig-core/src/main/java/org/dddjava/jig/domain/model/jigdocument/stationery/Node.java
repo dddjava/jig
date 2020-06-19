@@ -93,4 +93,9 @@ public class Node {
     public Node highlightColor() {
         return color("greenyellow");
     }
+
+    public Node moderately() {
+        attribute.add("fontsize=8");
+        return this;
+    }
 }

@@ -7,7 +7,7 @@ import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
-import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
+import org.dddjava.jig.presentation.view.poi.report.ReportItemFormatters;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.poi.report.formatter;
+package org.dddjava.jig.presentation.view.poi.report;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,8 +17,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
-import org.dddjava.jig.presentation.view.poi.report.ReportItemMethod;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

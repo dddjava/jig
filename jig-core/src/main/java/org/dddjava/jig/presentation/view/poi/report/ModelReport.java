@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -116,29 +115,25 @@ public class ModelReport<MODEL> {
     }
 
     void writeBody(Sheet sheet, ReportItemFormatters reportItemFormatters) {
-        try {
-            for (MODEL pivotModel : pivotModels) {
-                Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+        for (MODEL pivotModel : pivotModels) {
+            Row row = sheet.createRow(sheet.getLastRowNum() + 1);
 
-                for (ReportItemMethod reportItemMethod : reportItemMethods) {
-                    Object report = modelReporter.report(pivotModel);
-                    Object item = reportItemMethod.method.invoke(report);
-                    String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
+            for (ReportItemMethod reportItemMethod : reportItemMethods) {
+                Object report = modelReporter.report(pivotModel);
+                Object item = reportItemMethod.invoke(report);
+                String result = reportItemFormatters.format(reportItemMethod.reportItemFor.value(), item);
 
-                    short lastCellNum = row.getLastCellNum();
-                    Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
+                short lastCellNum = row.getLastCellNum();
+                Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
 
-                    if (result.length() > 10000) {
-                        logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",
-                                cell.getRowIndex(), cell.getColumnIndex());
-                        cell.setCellValue(result.substring(0, 10000) + "...(省略されました）");
-                    } else {
-                        cell.setCellValue(result);
-                    }
+                if (result.length() > 10000) {
+                    logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",
+                            cell.getRowIndex(), cell.getColumnIndex());
+                    cell.setCellValue(result.substring(0, 10000) + "...(省略されました）");
+                } else {
+                    cell.setCellValue(result);
                 }
             }
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("実装ミス", e);
         }
     }
 

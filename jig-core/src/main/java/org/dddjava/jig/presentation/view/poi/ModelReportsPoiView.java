@@ -7,8 +7,6 @@ import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.Header;
 import org.dddjava.jig.presentation.view.poi.report.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
  */
 public class ModelReportsPoiView implements JigView<ModelReports> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelReportsPoiView.class);
     private final ConvertContext convertContext;
 
     public ModelReportsPoiView(ConvertContext convertContext) {
@@ -34,7 +31,7 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
                 writeHeader(modelReport.header(), sheet.createRow(0));
 
                 for (ReportRow row : modelReport.rows(convertContext)) {
-                    writeRow(row, sheet.createRow(sheet.getLastRowNum() + 1));
+                    row.writeRow(sheet.createRow(sheet.getLastRowNum() + 1));
                 }
 
                 int columns = modelReport.header().size();
@@ -57,19 +54,5 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
             Cell cell = row.createCell(i, CellType.STRING);
             cell.setCellValue(header.textOf(i));
         }
-    }
-
-    private void writeRow(ReportRow reportRow, Row row) {
-        reportRow.list().forEach(item -> {
-            short lastCellNum = row.getLastCellNum();
-            Cell cell = row.createCell(lastCellNum == -1 ? 0 : lastCellNum);
-
-            if (item.length() > 10000) {
-                LOGGER.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。", cell.getRowIndex(), cell.getColumnIndex());
-                cell.setCellValue(item.substring(0, 10000) + "...(省略されました）");
-            } else {
-                cell.setCellValue(item);
-            }
-        });
     }
 }

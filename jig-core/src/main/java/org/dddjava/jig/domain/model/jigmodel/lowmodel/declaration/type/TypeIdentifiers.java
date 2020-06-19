@@ -64,4 +64,8 @@ public class TypeIdentifiers {
     public String countAsText() {
         return Integer.toString(identifiers.size());
     }
+
+    public int size() {
+        return identifiers.size();
+    }
 }

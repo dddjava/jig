@@ -13,4 +13,8 @@ public class MethodNumber {
     public String asText() {
         return Integer.toString(value);
     }
+
+    public int intValue() {
+        return value;
+    }
 }

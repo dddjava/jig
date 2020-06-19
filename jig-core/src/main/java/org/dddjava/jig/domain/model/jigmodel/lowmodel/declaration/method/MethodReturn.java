@@ -41,4 +41,8 @@ public class MethodReturn {
     public boolean isVoid() {
         return typeIdentifier().isVoid();
     }
+
+    public String asSimpleText() {
+        return parameterizedType.asSimpleText();
+    }
 }

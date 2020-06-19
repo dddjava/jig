@@ -56,4 +56,10 @@ public class ServiceMethods {
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }
+
+    public MethodDeclarations toMethodDeclarations() {
+        return methods.stream()
+                .map(Method::declaration)
+                .collect(MethodDeclarations.collector());
+    }
 }

@@ -17,4 +17,8 @@ public class DecisionNumber {
     public boolean notZero() {
         return value > 0;
     }
+
+    public double intValue() {
+        return value;
+    }
 }

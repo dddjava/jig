@@ -14,6 +14,7 @@ public class CallerMethods {
         this.list = list;
     }
 
+    // TODO delete
     public UserNumber toUserNumber() {
         return new UserNumber(list.size());
     }
@@ -25,5 +26,9 @@ public class CallerMethods {
 
     public List<CallerMethod> list() {
         return list;
+    }
+
+    public int size() {
+        return list.size();
     }
 }

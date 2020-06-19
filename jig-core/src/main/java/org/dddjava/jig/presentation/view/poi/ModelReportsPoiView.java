@@ -5,8 +5,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.Header;
-import org.dddjava.jig.presentation.view.poi.report.*;
+import org.dddjava.jig.presentation.view.poi.report.ModelReport;
+import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,9 +32,7 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
                 Sheet sheet = book.createSheet(modelReport.title());
                 writeHeader(modelReport.header(), sheet.createRow(0));
 
-                for (ReportRow row : modelReport.rows(convertContext)) {
-                    row.writeRow(sheet.createRow(sheet.getLastRowNum() + 1));
-                }
+                modelReport.apply(convertContext, sheet);
 
                 int columns = modelReport.header().size();
                 for (int i = 0; i < columns; i++) {

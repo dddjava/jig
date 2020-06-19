@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view.poi.report;
 
+import org.apache.poi.ss.usermodel.Sheet;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 import org.dddjava.jig.presentation.view.poi.report.formatter.ReportItemFormatters;
 import org.dddjava.jig.presentation.view.report.*;
@@ -94,18 +95,6 @@ public class ModelReport<MODEL> {
         return new Header(reportItemMethods);
     }
 
-    public List<ReportRow> rows(ConvertContext convertContext) {
-        ReportItemFormatters reportItemFormatters = new ReportItemFormatters(convertContext);
-        return pivotModels.stream()
-                .map(row -> {
-                    List<String> convertedRow = reportItemMethods.stream()
-                            .map(reportItemMethod -> convert(reportItemMethod, row, reportItemFormatters))
-                            .collect(toList());
-                    return new ReportRow(convertedRow);
-                })
-                .collect(toList());
-    }
-
     private String convert(ReportItemMethod reportItemMethod, MODEL angle, ReportItemFormatters reportItemFormatters) {
         try {
             Object report = modelReporter.report(angle);
@@ -115,6 +104,22 @@ public class ModelReport<MODEL> {
 
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("実装ミス", e);
+        }
+    }
+
+    public void apply(ConvertContext convertContext, Sheet sheet) {
+        ReportItemFormatters reportItemFormatters = new ReportItemFormatters(convertContext);
+        List<ReportRow> rows = pivotModels.stream()
+                .map(row1 -> {
+                    List<String> convertedRow = reportItemMethods.stream()
+                            .map(reportItemMethod -> convert(reportItemMethod, row1, reportItemFormatters))
+                            .collect(toList());
+                    return new ReportRow(convertedRow);
+                })
+                .collect(toList());
+
+        for (ReportRow row : rows) {
+            row.writeRow(sheet.createRow(sheet.getLastRowNum() + 1));
         }
     }
 }

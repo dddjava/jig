@@ -348,8 +348,10 @@ class AsmClassVisitor extends ClassVisitor {
             );
         }
 
-        // ジェネリクスを使用しているが戻り値型が解決できないときの対応
-        if (collector[0] == null) {
+        boolean 戻り値型が解決できない = collector[0] == null;
+        boolean 型引数がバインドされていない = collector[1] == null;
+        if (戻り値型が解決できない || 型引数がバインドされていない) {
+            // signatureではなくdescriptorから取得する
             TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
             return new MethodReturn(returnTypeIdentifier);
         }

@@ -1,6 +1,6 @@
 # JIG
 
-[![CircleCI](https://circleci.com/gh/dddjava/jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/jig/tree/master)
+[![CircleCI](https://circleci.com/gh/dddjava/jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/jig)
 [![Build status](https://ci.appveyor.com/api/projects/status/yklsnjlvds0l3ka5/branch/master?svg=true)](https://ci.appveyor.com/project/irof/jig/branch/master)
 
 ## 紹介

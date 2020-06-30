@@ -13,10 +13,10 @@ public enum BusinessRuleTendency {
     ドメイン特化型(TypeIs.ビジネスルールのみ, TypeIs.ビジネスルールのみ, TypeIs.ビジネスルールのみ),
     混合型A(TypeIs.ビジネスルールのみ, TypeIs.ビジネスルールのみ, TypeIs.基本型のみ),
     混合型B(TypeIs.ビジネスルールのみ, TypeIs.基本型のみ, TypeIs.ビジネスルールのみ),
+    汎用部品(TypeIs.基本型のみ, TypeIs.基本型のみ, TypeIs.基本型のみ),
     混合型C(TypeIs.基本型のみ, TypeIs.ビジネスルールのみ, TypeIs.基本型のみ),
     混合型D(TypeIs.基本型のみ, TypeIs.基本型のみ, TypeIs.ビジネスルールのみ),
     自立型(TypeIs.基本型のみ, TypeIs.自分の型または基本型, TypeIs.自分の型または基本型),
-    汎用部品(TypeIs.基本型のみ, TypeIs.基本型のみ, TypeIs.基本型のみ),
     該当なし(TypeIs.不明, TypeIs.不明, TypeIs.不明);
 
     TypeIs field;

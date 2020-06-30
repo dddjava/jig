@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleTendency;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
@@ -58,5 +59,10 @@ public class BusinessRuleReport {
     public boolean useFromSamePackage() {
         List<PackageIdentifier> list = userTypeIdentifiers().packageIdentifiers().list();
         return list.size() == 1 && list.get(0).equals(businessRule.typeIdentifier().packageIdentifier());
+    }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向")
+    public String tendency() {
+        return BusinessRuleTendency.from(businessRule, businessRules).toString();
     }
 }

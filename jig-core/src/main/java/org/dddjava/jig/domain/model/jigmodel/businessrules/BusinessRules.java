@@ -43,20 +43,20 @@ public class BusinessRules {
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {
-        for (BusinessRule businessRule : list) {
-            if (businessRule.type().identifier().equals(typeIdentifier)) {
-                return true;
-            }
-        }
-        return false;
+        return identifiers().contains(typeIdentifier);
     }
 
     public boolean empty() {
         return list.isEmpty();
     }
 
+    transient TypeIdentifiers cache;
+
     public TypeIdentifiers identifiers() {
-        return list.stream()
+        if (cache != null) {
+            return cache;
+        }
+        return cache = list.stream()
                 .map(BusinessRule::type)
                 .map(TypeDeclaration::identifier)
                 .collect(TypeIdentifiers.collector());

@@ -22,11 +22,7 @@ public class CollectionType {
     }
 
     public MethodDeclarations methods() {
-        MethodDeclarations methodDeclarations = businessRule.methodDeclarations();
-        // TODO businessRule側でメソッドをまとめてしまっているのを分けておけばinstanceメソッドだけ取得すればよくなる。
-        return methodDeclarations.list().stream()
-                .filter(methodDeclaration -> !methodDeclaration.isConstructor())
-                .collect(MethodDeclarations.collector());
+        return businessRule.instanceMethodDeclarations();
     }
 
     public CollectionField field() {

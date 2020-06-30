@@ -74,18 +74,15 @@ public class TypeFact {
                 typeKind(),
                 fieldDeclarations(),
                 typeDeclaration(),
-                methodDeclarations(),
-                hasInstanceMethod(),
+                constructorDeclarations(),
+                instanceMethodDeclarations(),
+                staticMethodDeclarations(),
                 visibility
         );
     }
 
     public TypeIdentifier typeIdentifier() {
         return type.typeIdentifier();
-    }
-
-    public boolean hasInstanceMethod() {
-        return !instanceMethodFacts().isEmpty();
     }
 
     public boolean hasField() {
@@ -175,8 +172,20 @@ public class TypeFact {
         return interfaceTypes;
     }
 
-    public MethodDeclarations methodDeclarations() {
-        return allMethodFacts().stream()
+    public MethodDeclarations constructorDeclarations() {
+        return constructorFacts.stream()
+                .map(MethodFact::methodDeclaration)
+                .collect(MethodDeclarations.collector());
+    }
+
+    public MethodDeclarations instanceMethodDeclarations() {
+        return instanceMethodFacts.stream()
+                .map(MethodFact::methodDeclaration)
+                .collect(MethodDeclarations.collector());
+    }
+
+    public MethodDeclarations staticMethodDeclarations() {
+        return staticMethodFacts.stream()
                 .map(MethodFact::methodDeclaration)
                 .collect(MethodDeclarations.collector());
     }

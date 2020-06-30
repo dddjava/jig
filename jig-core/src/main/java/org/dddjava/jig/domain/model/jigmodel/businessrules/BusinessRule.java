@@ -16,17 +16,24 @@ public class BusinessRule {
     TypeDeclaration typeDeclaration;
 
     FieldDeclarations fieldDeclarations;
-    MethodDeclarations methodDeclarations;
 
-    boolean hasInstanceMethod;
+    MethodDeclarations constructorDeclarations;
+    MethodDeclarations instanceMethodDeclarations;
+    MethodDeclarations staticMethodDeclarations;
+
     Visibility visibility;
 
-    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration, MethodDeclarations methodDeclarations, boolean hasInstanceMethod, Visibility visibility) {
+    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration,
+                        MethodDeclarations constructorDeclarations,
+                        MethodDeclarations instanceMethodDeclarations,
+                        MethodDeclarations staticMethodDeclarations,
+                        Visibility visibility) {
         this.typeKind = typeKind;
         this.fieldDeclarations = fieldDeclarations;
         this.typeDeclaration = typeDeclaration;
-        this.methodDeclarations = methodDeclarations;
-        this.hasInstanceMethod = hasInstanceMethod;
+        this.constructorDeclarations = constructorDeclarations;
+        this.instanceMethodDeclarations = instanceMethodDeclarations;
+        this.staticMethodDeclarations = staticMethodDeclarations;
         this.visibility = visibility;
     }
 
@@ -42,12 +49,8 @@ public class BusinessRule {
         return type().identifier();
     }
 
-    public MethodDeclarations methodDeclarations() {
-        return methodDeclarations;
-    }
-
     public boolean hasInstanceMethod() {
-        return hasInstanceMethod;
+        return !instanceMethodDeclarations.empty();
     }
 
     public TypeKind typeKind() {
@@ -64,5 +67,9 @@ public class BusinessRule {
 
     public String fullName() {
         return typeIdentifier().fullQualifiedName();
+    }
+
+    public MethodDeclarations instanceMethodDeclarations() {
+        return instanceMethodDeclarations;
     }
 }

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.text.Text;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;
@@ -46,5 +47,21 @@ public class MethodDeclarations {
 
     public String asSignatureAndReturnTypeSimpleText() {
         return Text.sortedOf(list, MethodDeclaration::asSignatureAndReturnTypeSimpleText);
+    }
+
+    public TypeIdentifiers returnTypeIdentifiers() {
+        return list.stream()
+                .map(MethodDeclaration::methodReturn)
+                .map(MethodReturn::typeIdentifier)
+                // voidは除く
+                .filter(typeIdentifier -> !typeIdentifier.isVoid())
+                .collect(TypeIdentifiers.collector());
+    }
+
+    public TypeIdentifiers argumentsTypeIdentifiers() {
+        return list.stream()
+                .map(MethodDeclaration::argumentsTypeIdentifiers)
+                .flatMap(List::stream)
+                .collect(TypeIdentifiers.collector());
     }
 }

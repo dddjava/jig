@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * メソッド定義
@@ -77,5 +78,9 @@ public class MethodDeclaration {
         types.add(methodReturn().typeIdentifier());
         types.addAll(methodSignature().arguments());
         return new TypeIdentifiers(types);
+    }
+
+    List<TypeIdentifier> argumentsTypeIdentifiers() {
+        return methodSignature().arguments();
     }
 }

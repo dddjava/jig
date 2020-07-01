@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.StringJoiner;
@@ -96,6 +97,18 @@ public class Node {
 
     public Node moderately() {
         attribute.add("fontsize=8");
+        return this;
+    }
+
+    public Node url(PackageIdentifier packageIdentifier) {
+        // e.g. https://github.com/dddjava/jig/tree/master/jig-core/src/main/java/
+        String repositoryUrl = System.getProperty("experimental.repoUrl");
+        if (repositoryUrl == null) {
+            return this;
+        }
+        attribute.add("URL=\"" + repositoryUrl + '/' +
+                packageIdentifier.asText().replaceAll("\\.", "/") +
+                "\"");
         return this;
     }
 }

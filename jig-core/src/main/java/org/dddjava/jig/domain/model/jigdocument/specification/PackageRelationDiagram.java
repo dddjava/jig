@@ -91,29 +91,6 @@ public class PackageRelationDiagram {
         return bidirectionalRelations;
     }
 
-    private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent, AliasFinder aliasFinder, PackageIdentifierFormatter formatter) {
-        if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
-            // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
-            return label(packageIdentifier, formatter, aliasFinder);
-        }
-        // parentでくくる場合にパッケージ名をの重複を省く
-        String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
-        return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
-    }
-
-    private String label(PackageIdentifier packageIdentifier, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
-        String labelText = packageIdentifier.format(formatter);
-        return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
-    }
-
-    private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasFinder aliasFinder) {
-        PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
-        if (packageAlias.exists()) {
-            return packageAlias.asText() + "\\n" + labelText;
-        }
-        return labelText;
-    }
-
     public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
         if (!available()) {
             return DiagramSource.emptyUnit();
@@ -151,20 +128,22 @@ public class PackageRelationDiagram {
             groupingPackages.clear();
         }
 
+        Labeler labeler = new Labeler(aliasFinder, formatter);
+
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
             PackageIdentifier parent = entry.getKey();
             String labelsText = entry.getValue().stream()
-                    .map(packageIdentifier -> nodeOf(packageIdentifier).label(label(packageIdentifier, parent, aliasFinder, formatter)).asText())
+                    .map(packageIdentifier -> nodeOf(packageIdentifier).label(labeler.label(packageIdentifier, parent)).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
                     .add(labelsText)
-                    .label(label(parent, formatter, aliasFinder))
+                    .label(labeler.label(parent))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
             stringJoiner.add(subgraph.toString());
         }
         String labelsText = standalonePackages.stream()
-                .map(packageIdentifier -> nodeOf(packageIdentifier).label(label(packageIdentifier, formatter, aliasFinder)).asText())
+                .map(packageIdentifier -> nodeOf(packageIdentifier).label(labeler.label(packageIdentifier)).asText())
                 .collect(joining("\n"));
         stringJoiner.add(labelsText);
 
@@ -211,5 +190,38 @@ public class PackageRelationDiagram {
             }
         }
         return sj.toString();
+    }
+
+    static class Labeler {
+        AliasFinder aliasFinder;
+        PackageIdentifierFormatter packageIdentifierFormatter;
+
+        Labeler(AliasFinder aliasFinder, PackageIdentifierFormatter packageIdentifierFormatter) {
+            this.aliasFinder = aliasFinder;
+            this.packageIdentifierFormatter = packageIdentifierFormatter;
+        }
+
+        private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
+            if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
+                // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
+                return label(packageIdentifier);
+            }
+            // parentでくくる場合にパッケージ名をの重複を省く
+            String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
+            return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+        }
+
+        private String label(PackageIdentifier packageIdentifier) {
+            String labelText = packageIdentifier.format(packageIdentifierFormatter);
+            return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+        }
+
+        private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasFinder aliasFinder) {
+            PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
+            if (packageAlias.exists()) {
+                return packageAlias.asText() + "\\n" + labelText;
+            }
+            return labelText;
+        }
     }
 }

@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.List;
@@ -47,5 +48,9 @@ public class Usecase {
 
     public boolean isHandler() {
         return usecaseCategory.handler();
+    }
+
+    public TypeIdentifier declaringType() {
+        return serviceMethod.declaringType();
     }
 }

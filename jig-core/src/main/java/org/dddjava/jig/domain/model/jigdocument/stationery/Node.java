@@ -111,4 +111,16 @@ public class Node {
                 "\"");
         return this;
     }
+
+    public Node url(TypeIdentifier typeIdentifier) {
+        // e.g. https://github.com/dddjava/jig/tree/master/jig-core/src/main/java/
+        String repositoryUrl = System.getProperty("experimental.repoUrl");
+        if (repositoryUrl == null) {
+            return this;
+        }
+        attribute.add("URL=\"" + repositoryUrl + '/' +
+                typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java" +
+                "\"");
+        return this;
+    }
 }

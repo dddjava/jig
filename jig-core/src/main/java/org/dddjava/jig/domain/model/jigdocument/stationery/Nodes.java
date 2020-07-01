@@ -42,7 +42,7 @@ public enum Nodes {
                 usecase.usecaseIdentifier(),
                 usecase.usecaseLabel(aliasFinder),
                 usecase.simpleTextWithDeclaringType()
-        );
+        ).url(usecase.declaringType());
     }
 
     public static Node usecase(AliasFinder aliasFinder, ServiceMethod serviceMethod) {
@@ -50,7 +50,7 @@ public enum Nodes {
                 serviceMethod.methodDeclaration().asFullNameText(),
                 aliasFinder.methodText(serviceMethod.methodDeclaration().identifier()),
                 serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType()
-        );
+        ).url(serviceMethod.methodDeclaration().declaringType());
     }
 
     public static Node lambda(MethodDeclaration method) {

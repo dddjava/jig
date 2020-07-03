@@ -54,10 +54,6 @@ public class PackageRelationDiagram {
         );
     }
 
-    private static Node nodeOf(PackageIdentifier identifier) {
-        return new Node(identifier.asText());
-    }
-
     public PackageIdentifiers allPackages() {
         return packageIdentifiers;
     }
@@ -91,7 +87,7 @@ public class PackageRelationDiagram {
         return bidirectionalRelations;
     }
 
-    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter, AliasFinder aliasFinder) {
+    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter) {
         if (!available()) {
             return DiagramSource.emptyUnit();
         }
@@ -128,13 +124,15 @@ public class PackageRelationDiagram {
             groupingPackages.clear();
         }
 
-        Labeler labeler = new Labeler(aliasFinder, formatter);
+        Labeler labeler = new Labeler(jigDocumentContext, formatter);
 
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
             PackageIdentifier parent = entry.getKey();
             String labelsText = entry.getValue().stream()
-                    .map(packageIdentifier -> nodeOf(packageIdentifier).label(labeler.label(packageIdentifier, parent)).url(packageIdentifier).asText())
+                    .map(packageIdentifier -> Node.packageOf(packageIdentifier)
+                            .label(labeler.label(packageIdentifier, parent))
+                            .url(packageIdentifier, jigDocumentContext).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
                     .add(labelsText)
@@ -143,7 +141,9 @@ public class PackageRelationDiagram {
             stringJoiner.add(subgraph.toString());
         }
         String labelsText = standalonePackages.stream()
-                .map(packageIdentifier -> nodeOf(packageIdentifier).label(labeler.label(packageIdentifier)).url(packageIdentifier).asText())
+                .map(packageIdentifier -> Node.packageOf(packageIdentifier)
+                        .label(labeler.label(packageIdentifier))
+                        .url(packageIdentifier, jigDocumentContext).asText())
                 .collect(joining("\n"));
         stringJoiner.add(labelsText);
 
@@ -196,8 +196,8 @@ public class PackageRelationDiagram {
         AliasFinder aliasFinder;
         PackageIdentifierFormatter packageIdentifierFormatter;
 
-        Labeler(AliasFinder aliasFinder, PackageIdentifierFormatter packageIdentifierFormatter) {
-            this.aliasFinder = aliasFinder;
+        Labeler(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
+            this.aliasFinder = jigDocumentContext.aliasFinder();
             this.packageIdentifierFormatter = packageIdentifierFormatter;
         }
 

@@ -47,7 +47,7 @@ public class Categories {
                 .collect(toList());
     }
 
-    public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+    public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }
@@ -71,7 +71,7 @@ public class Categories {
                     .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
             TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
             String nodeText = new Node(typeIdentifier.fullQualifiedName())
-                    .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(aliasFinder, typeIdentifier) + "</td></tr>" + values + "</table>")
+                    .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(jigDocumentContext, typeIdentifier) + "</td></tr>" + values + "</table>")
                     .asText();
 
             categoryText.add(nodeText);
@@ -89,8 +89,8 @@ public class Categories {
                         .toString());
     }
 
-    private String typeNameOf(AliasFinder aliasFinder, TypeIdentifier typeIdentifier) {
-        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+    private String typeNameOf(JigDocumentContext jigDocumentContext, TypeIdentifier typeIdentifier) {
+        TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(typeIdentifier);
         if (typeAlias.exists()) {
             return typeAlias.asText() + "<br/>" + typeIdentifier.asSimpleText();
         }

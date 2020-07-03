@@ -24,14 +24,14 @@ public class CompositeUsecaseDiagram {
                 .collect(Collectors.toList());
     }
 
-    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSources.empty();
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CompositeUsecaseDiagram);
         String text = list.stream()
-                .map(compositeUsecases -> compositeUsecases.dotText(aliasFinder))
+                .map(compositeUsecases -> compositeUsecases.dotText(jigDocumentContext))
                 .collect(Collectors.joining("\n", "digraph \"" + documentName.label() + "\" {\n" +
                         "layout=fdp;\n" +
                         "label=\"" + documentName.label() + "\";\n" +

@@ -31,7 +31,7 @@ public class BusinessRuleRelationDiagram {
         this.classRelations = classRelations;
     }
 
-    public DiagramSources relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter, AliasFinder aliasFinder) {
+    public DiagramSources relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
 
         if (businessRules.empty()) {
             return DiagramSource.empty();
@@ -54,7 +54,7 @@ public class BusinessRuleRelationDiagram {
 
             List<BusinessRule> businessRules = businessRulePackage.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
-                TypeAlias typeAlias = aliasFinder.find(businessRule.type().identifier());
+                TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(businessRule.type().identifier());
                 String aliasLine = "";
                 if (typeAlias.exists()) {
                     aliasLine = typeAlias.asText() + "\n";

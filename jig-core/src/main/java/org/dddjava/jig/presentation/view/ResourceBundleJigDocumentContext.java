@@ -3,12 +3,15 @@ package org.dddjava.jig.presentation.view;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -18,10 +21,19 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
     Properties jigProperties;
     ResourceBundle jigDocumentResource;
+    AliasFinder aliasFinder;
+    LinkPrefix linkPrefix;
 
     ResourceBundleJigDocumentContext() {
         init();
     }
+
+    ResourceBundleJigDocumentContext(AliasFinder aliasFinder, LinkPrefix linkPrefix) {
+        init();
+        this.aliasFinder = aliasFinder;
+        this.linkPrefix = linkPrefix;
+    }
+
 
     private void init() {
         try {
@@ -51,6 +63,10 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
         return new ResourceBundleJigDocumentContext();
     }
 
+    public static JigDocumentContext getInstanceWithAliasFinder(AliasFinder aliasFinder, LinkPrefix linkPrefix) {
+        return new ResourceBundleJigDocumentContext(aliasFinder, linkPrefix);
+    }
+
     @Override
     public String label(String key) {
         if (jigDocumentResource.containsKey(key)) {
@@ -68,5 +84,16 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     @Override
     public DocumentName documentName(JigDocument jigDocument) {
         return DocumentName.of(jigDocument, diagramLabel(jigDocument));
+    }
+
+    @Override
+    public AliasFinder aliasFinder() {
+        Objects.requireNonNull(aliasFinder);
+        return aliasFinder;
+    }
+
+    @Override
+    public LinkPrefix linkPrefix() {
+        return linkPrefix;
     }
 }

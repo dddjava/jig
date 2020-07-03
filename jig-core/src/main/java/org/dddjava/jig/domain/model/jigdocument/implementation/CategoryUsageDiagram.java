@@ -31,7 +31,7 @@ public class CategoryUsageDiagram {
         this.businessRuleRelations = businessRuleRelations;
     }
 
-    public DiagramSources diagramSource(AliasFinder aliasFinder, JigDocumentContext jigDocumentContext) {
+    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {
         if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }
@@ -56,7 +56,7 @@ public class CategoryUsageDiagram {
                 continue;
             }
 
-            useCaseText.add(Nodes.usecase(aliasFinder, serviceMethod).asText());
+            useCaseText.add(Nodes.usecase(jigDocumentContext, serviceMethod).asText());
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
@@ -67,34 +67,34 @@ public class CategoryUsageDiagram {
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
                 .add("rank=sink;")
-                .add(categoryNodesText(aliasFinder))
+                .add(categoryNodesText(jigDocumentContext))
                 .add("}")
                 .add("{")
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(exceptCategoryNodesText(aliasFinder, businessRuleTypeIdentifiers))
+                .add(exceptCategoryNodesText(jigDocumentContext, businessRuleTypeIdentifiers))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String exceptCategoryNodesText(AliasFinder aliasFinder, TypeIdentifiers businessRuleTypeIdentifiers) {
+    private String exceptCategoryNodesText(JigDocumentContext jigDocumentContext, TypeIdentifiers businessRuleTypeIdentifiers) {
         return businessRuleTypeIdentifiers
                 .exclude(categoryTypes.typeIdentifiers())
                 .list().stream()
                 .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
-                        .label(aliasFinder.simpleTypeText(typeIdentifier))
+                        .label(jigDocumentContext.aliasFinder().simpleTypeText(typeIdentifier))
                         .asText())
                 .collect(Collectors.joining("\n"));
     }
 
-    String categoryNodesText(AliasFinder aliasFinder) {
+    String categoryNodesText(JigDocumentContext jigDocumentContext) {
         return categoryTypes.list().stream()
                 .map(categoryType -> categoryType.typeIdentifier())
                 .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
                         .normalColor()
-                        .label(aliasFinder.typeText(typeIdentifier))
+                        .label(jigDocumentContext.aliasFinder().typeText(typeIdentifier))
                         .asText())
                 .collect(joining("\n"));
     }

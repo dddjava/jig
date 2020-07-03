@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -19,6 +20,7 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceReposi
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
+import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
@@ -66,12 +68,16 @@ public class Configuration {
             }
         };
 
+        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext
+                .getInstanceWithAliasFinder(aliasFinder, properties.linkPrefix());
         ViewResolver viewResolver = new ViewResolver(
-                aliasFinder,
+                prefixRemoveIdentifierFormatter,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
-                prefixRemoveIdentifierFormatter, MethodNodeLabelStyle.SIMPLE, DiagramFormat.SVG
+                MethodNodeLabelStyle.SIMPLE,
+                DiagramFormat.SVG,
+                jigDocumentContext
         );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(
                 aliasService,

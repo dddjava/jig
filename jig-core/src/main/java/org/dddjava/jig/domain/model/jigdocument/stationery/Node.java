@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.file.text.CodeSource;
 
 import java.util.StringJoiner;
 
@@ -21,6 +23,10 @@ public class Node {
 
     public static Node controllerNodeOf(TypeIdentifier identifier) {
         return new Node(identifier.fullQualifiedName());
+    }
+
+    public static Node packageOf(PackageIdentifier identifier) {
+        return new Node(identifier.asText());
     }
 
     /**
@@ -100,25 +106,22 @@ public class Node {
         return this;
     }
 
-    public Node url(PackageIdentifier packageIdentifier) {
-        // e.g. https://github.com/dddjava/jig/tree/master/jig-core/src/main/java/
-        String repositoryUrl = System.getProperty("experimental.repoUrl");
-        if (repositoryUrl == null) {
+    public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext) {
+        if (jigDocumentContext.linkPrefix().disabled()) {
             return this;
         }
-        attribute.add("URL=\"" + repositoryUrl + '/' +
+        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue() + '/' +
                 packageIdentifier.asText().replaceAll("\\.", "/") +
                 "\"");
         return this;
     }
 
-    public Node url(TypeIdentifier typeIdentifier) {
-        // e.g. https://github.com/dddjava/jig/tree/master/jig-core/src/main/java/
-        String repositoryUrl = System.getProperty("experimental.repoUrl");
-        if (repositoryUrl == null) {
+    public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
+        if (jigDocumentContext.linkPrefix().disabled()) {
             return this;
         }
-        attribute.add("URL=\"" + repositoryUrl + '/' +
+        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue()  + '/' +
+                // TODO CodeSourceから解決できるようにしたい。
                 typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java" +
                 "\"");
         return this;

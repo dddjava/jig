@@ -1,6 +1,7 @@
 package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
@@ -42,6 +43,9 @@ class KotlinCliConfig {
     @Value("${directory.sources}")
     String directorySources;
 
+    @Value("${linkPrefix:" + LinkPrefix.DISABLE + "}")
+    String linkPrefix;
+
     public String propertiesText() {
         return new StringJoiner("\n")
                 .add("documentType=" + documentTypeText)
@@ -52,6 +56,7 @@ class KotlinCliConfig {
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
                 .add("directory.sources=" + directorySources)
+                .add("linkPrefix=" + linkPrefix)
                 .toString();
     }
 
@@ -70,7 +75,8 @@ class KotlinCliConfig {
         return new Configuration(
                 new JigProperties(
                         modelPattern,
-                        new OutputOmitPrefix(outputOmitPrefix)
+                        new OutputOmitPrefix(outputOmitPrefix),
+                        new LinkPrefix(linkPrefix)
                 ),
                 new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader())
         );

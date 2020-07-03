@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Node;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Nodes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
@@ -29,11 +30,11 @@ class CompositeUsecases {
                 .collect(Collectors.toList());
     }
 
-    public String dotText(AliasFinder aliasFinder) {
+    public String dotText(JigDocumentContext jigDocumentContext) {
         String usecaseIdentifier = usecase.usecaseIdentifier();
 
         StringBuilder sb = new StringBuilder()
-                .append(Nodes.usecase(aliasFinder, usecase).asText());
+                .append(Nodes.usecase(jigDocumentContext, usecase).asText());
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 
@@ -59,7 +60,7 @@ class CompositeUsecases {
 
         // Usecaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
-            TypeAlias typeAlias = aliasFinder.find(otherType);
+            TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
                             .label(typeAlias.asTextOrDefault(otherType.asSimpleText()))
@@ -70,7 +71,7 @@ class CompositeUsecases {
 
         // controllerのNodeおよびedge
         for (TypeIdentifier controllerType : controllerTypes) {
-            TypeAlias typeAlias = aliasFinder.find(controllerType);
+            TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(controllerType);
             sb.append(
                     new Node(controllerType.fullQualifiedName())
                             .label(typeAlias.asTextOrDefault(controllerType.asSimpleText()))

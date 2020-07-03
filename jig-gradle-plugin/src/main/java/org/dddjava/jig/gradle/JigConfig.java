@@ -1,6 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 
@@ -22,6 +23,8 @@ public class JigConfig {
 
     boolean enableDebugDocument = false;
 
+    String linkPrefix = LinkPrefix.disable().textValue();
+
     List<JigDocument> documentTypes() {
         if (documentTypes.isEmpty()) return JigDocument.canonical();
         return documentTypes.stream()
@@ -32,7 +35,8 @@ public class JigConfig {
     public JigProperties asProperties() {
         return new JigProperties(
                 modelPattern,
-                new OutputOmitPrefix(outputOmitPrefix)
+                new OutputOmitPrefix(outputOmitPrefix),
+                new LinkPrefix(linkPrefix)
         );
     }
 
@@ -79,6 +83,14 @@ public class JigConfig {
         this.enableDebugDocument = enableDebugDocument;
     }
 
+    public String getLinkPrefix() {
+        return linkPrefix;
+    }
+
+    public void setLinkPrefix(String linkPrefix) {
+        this.linkPrefix = linkPrefix;
+    }
+
     public String propertiesText() {
         return new StringJoiner("\n\t", "jig {\n\t", "\n}")
                 .add("modelPattern = '" + modelPattern + '\'')
@@ -86,6 +98,7 @@ public class JigConfig {
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
                 .add("enableDebugDocument = " + enableDebugDocument)
+                .add("linkPrefix = '" + linkPrefix + '\'')
                 .toString();
     }
 }

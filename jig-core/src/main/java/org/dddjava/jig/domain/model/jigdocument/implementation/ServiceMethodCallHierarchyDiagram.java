@@ -26,7 +26,7 @@ public class ServiceMethodCallHierarchyDiagram {
         this.list = list;
     }
 
-    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext, AliasFinder aliasFinder) {
+    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }
@@ -50,7 +50,7 @@ public class ServiceMethodCallHierarchyDiagram {
                     }
                     Usecase usecase = new Usecase(serviceAngle);
 
-                    Node useCaseNode = Nodes.usecase(aliasFinder, usecase);
+                    Node useCaseNode = Nodes.usecase(jigDocumentContext, usecase);
 
                     // 非publicは色なし
                     if (serviceAngle.isNotPublicMethod()) {
@@ -68,7 +68,7 @@ public class ServiceMethodCallHierarchyDiagram {
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
                                 + "style=solid;"
-                                + "label=\"" + aliasLineOf(entry.getKey(), aliasFinder) + entry.getKey().asSimpleText() + "\";"
+                                + "label=\"" + aliasLineOf(entry.getKey(), jigDocumentContext) + entry.getKey().asSimpleText() + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
@@ -87,7 +87,7 @@ public class ServiceMethodCallHierarchyDiagram {
                 .add(relationText.asText())
                 .add(subgraphText)
                 .add(serviceMethodText)
-                .add(requestHandlerText(angles, aliasFinder))
+                .add(requestHandlerText(angles, jigDocumentContext))
                 .add(repositoryText(angles))
                 .toString();
         return DiagramSource.createDiagramSource(documentName, graphText);
@@ -98,7 +98,7 @@ public class ServiceMethodCallHierarchyDiagram {
      *
      * [RequestHandlerMethod] --> [ServiceMethod]
      */
-    private String requestHandlerText(List<ServiceAngle> angles, AliasFinder aliasFinder) {
+    private String requestHandlerText(List<ServiceAngle> angles, JigDocumentContext jigDocumentContext) {
 
         Set<MethodDeclaration> handlers = new HashSet<>();
         RelationText handlingRelation = new RelationText();
@@ -124,7 +124,7 @@ public class ServiceMethodCallHierarchyDiagram {
 
             dotTextBuilder
                     .add("subgraph \"cluster_" + handlerType.fullQualifiedName() + "\" {")
-                    .add("label=\"" + aliasFinder.find(handlerType).asTextOrDefault(handlerType.asSimpleText()) + "\";")
+                    .add("label=\"" + jigDocumentContext.aliasTextOrDefault(handlerType, handlerType.asSimpleText()) + "\";")
                     // 画面の色と合わせる
                     .add("style=solid;")
                     .add("bgcolor=lightgrey;")
@@ -166,8 +166,8 @@ public class ServiceMethodCallHierarchyDiagram {
                 .toString();
     }
 
-    private String aliasLineOf(TypeIdentifier typeIdentifier, AliasFinder aliasFinder) {
-        String aliasText = aliasFinder.find(typeIdentifier).asText();
+    private String aliasLineOf(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
+        String aliasText = jigDocumentContext.aliasTextOrDefault(typeIdentifier, "");
         return aliasText.isEmpty() ? "" : aliasText + "\n";
     }
 

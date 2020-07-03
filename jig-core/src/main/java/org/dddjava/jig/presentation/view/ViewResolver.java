@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDi
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
@@ -23,15 +22,14 @@ import static java.util.stream.Collectors.toList;
 
 public class ViewResolver {
 
-    AliasFinder aliasFinder;
     PackageIdentifierFormatter packageIdentifierFormatter;
     MethodNodeLabelStyle methodNodeLabelStyle;
     DiagramFormat diagramFormat;
 
-    JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstance();
+    JigDocumentContext jigDocumentContext;
 
-    public ViewResolver(AliasFinder aliasFinder, PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, DiagramFormat diagramFormat) {
-        this.aliasFinder = aliasFinder;
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, DiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
+        this.jigDocumentContext = jigDocumentContext;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
         this.diagramFormat = diagramFormat;
@@ -43,7 +41,7 @@ public class ViewResolver {
 
             List<DiagramSource> diagramSources = depths.stream()
                     .map(model::applyDepth)
-                    .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder))
+                    .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, packageIdentifierFormatter))
                     .filter(diagramSource -> !diagramSource.noValue())
                     .collect(toList());
             return DiagramSource.createDiagramSource(diagramSources);
@@ -52,17 +50,17 @@ public class ViewResolver {
 
     public JigView<ServiceMethodCallHierarchyDiagram> serviceMethodCallHierarchy() {
         return newGraphvizjView(model ->
-                model.methodCallDotText(jigDocumentContext, aliasFinder));
+                model.methodCallDotText(jigDocumentContext));
     }
 
     public JigView<CategoryUsageDiagram> enumUsage() {
         return newGraphvizjView(model ->
-                model.diagramSource(aliasFinder, jigDocumentContext));
+                model.diagramSource(jigDocumentContext));
     }
 
     public JigView<CompositeUsecaseDiagram> compositeUsecaseDiagram() {
         return newGraphvizjView(model ->
-                model.diagramSource(jigDocumentContext, aliasFinder));
+                model.diagramSource(jigDocumentContext));
     }
 
     private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {
@@ -71,15 +69,15 @@ public class ViewResolver {
 
     public JigView<BusinessRuleRelationDiagram> businessRuleRelationWriter() {
         return newGraphvizjView(model ->
-                model.relationDotText(jigDocumentContext, packageIdentifierFormatter, aliasFinder));
+                model.relationDotText(jigDocumentContext, packageIdentifierFormatter));
     }
 
     public JigView<Categories> categories() {
         return newGraphvizjView(model ->
-                model.valuesDotText(jigDocumentContext, aliasFinder));
+                model.valuesDotText(jigDocumentContext));
     }
 
     public JigView<ArchitectureDiagram> architecture() {
-        return newGraphvizjView(model -> model.dotText(ResourceBundleJigDocumentContext.getInstance()));
+        return newGraphvizjView(model -> model.dotText(jigDocumentContext));
     }
 }

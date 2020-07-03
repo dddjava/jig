@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
@@ -37,20 +36,20 @@ public enum Nodes {
         }
     };
 
-    public static Node usecase(AliasFinder aliasFinder, Usecase usecase) {
+    public static Node usecase(JigDocumentContext jigDocumentContext, Usecase usecase) {
         return (usecase.isHandler() ? ユースケース_ハンドラ : ユースケース_その他).node(
                 usecase.usecaseIdentifier(),
-                usecase.usecaseLabel(aliasFinder),
+                usecase.usecaseLabel(jigDocumentContext.aliasFinder()),
                 usecase.simpleTextWithDeclaringType()
-        ).url(usecase.declaringType());
+        ).url(usecase.declaringType(), jigDocumentContext);
     }
 
-    public static Node usecase(AliasFinder aliasFinder, ServiceMethod serviceMethod) {
+    public static Node usecase(JigDocumentContext jigDocumentContext, ServiceMethod serviceMethod) {
         return ユースケース_その他.node(
                 serviceMethod.methodDeclaration().asFullNameText(),
-                aliasFinder.methodText(serviceMethod.methodDeclaration().identifier()),
+                jigDocumentContext.aliasFinder().methodText(serviceMethod.methodDeclaration().identifier()),
                 serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType()
-        ).url(serviceMethod.methodDeclaration().declaringType());
+        ).url(serviceMethod.methodDeclaration().declaringType(), jigDocumentContext);
     }
 
     public static Node lambda(MethodDeclaration method) {

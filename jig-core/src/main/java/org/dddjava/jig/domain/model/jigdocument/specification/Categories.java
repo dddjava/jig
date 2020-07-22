@@ -13,13 +13,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.function.Function;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * 区分の切り口一覧
@@ -51,30 +48,23 @@ public class Categories {
             return DiagramSource.empty();
         }
 
-        List<TypeIdentifier> categoryTypeIdentifiers = list.stream()
-                .map(categoryAngle -> categoryAngle.typeIdentifier())
-                .collect(toList());
+        Map<TypeIdentifier, CategoryAngle> map = list.stream()
+                .collect(toMap(CategoryAngle::typeIdentifier, Function.identity()));
 
-        PackageStructure packageStructure = PackageStructure.from(categoryTypeIdentifiers);
+        PackageStructure packageStructure = PackageStructure.from(new ArrayList<>(map.keySet()));
 
         String structureText = packageStructure.toDotText(
                 packageIdentifier -> new Subgraph(packageIdentifier.asText())
                         .label(packageIdentifier.simpleName()),
-                typeIdentifier -> Node.typeOf(typeIdentifier)
+                typeIdentifier -> {
+                    CategoryAngle categoryAngle = map.get(typeIdentifier);
+                    String values = categoryAngle.constantsDeclarations().list().stream()
+                            .map(StaticFieldDeclaration::nameText)
+                            .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+                    return Node.typeOf(typeIdentifier)
+                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(jigDocumentContext, typeIdentifier) + "</td></tr>" + values + "</table>");
+                }
         );
-
-        StringJoiner categoryText = new StringJoiner("\n");
-        for (CategoryAngle categoryAngle : list) {
-            String values = categoryAngle.constantsDeclarations().list().stream()
-                    .map(StaticFieldDeclaration::nameText)
-                    .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
-            TypeIdentifier typeIdentifier = categoryAngle.typeIdentifier();
-            String nodeText = new Node(typeIdentifier.fullQualifiedName())
-                    .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(jigDocumentContext, typeIdentifier) + "</td></tr>" + values + "</table>")
-                    .asText();
-
-            categoryText.add(nodeText);
-        }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
         return DiagramSource.createDiagramSource(
@@ -84,7 +74,6 @@ public class Categories {
                         .add("rankdir=LR;")
                         .add(Node.DEFAULT)
                         .add(structureText)
-                        .add(categoryText.toString())
                         .toString());
     }
 

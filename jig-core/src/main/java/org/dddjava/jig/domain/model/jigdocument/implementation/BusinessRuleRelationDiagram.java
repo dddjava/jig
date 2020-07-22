@@ -7,12 +7,10 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 
-import java.util.List;
 import java.util.StringJoiner;
 
 /**
@@ -45,13 +43,12 @@ public class BusinessRuleRelationDiagram {
                     .label(packageIdentifier.format(packageIdentifierFormatter))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
-            List<BusinessRule> businessRules = businessRulePackage.businessRules().list();
-            for (BusinessRule businessRule : businessRules) {
-                TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(businessRule.type().identifier());
+            BusinessRules businessRules = businessRulePackage.businessRules();
+            for (BusinessRule businessRule : businessRules.list()) {
 
                 Node node = Node.controllerNodeOf(businessRule.type().identifier())
-                        .label(typeAlias.nodeLabel())
-                        .highlightColorIf(typeAlias.markedCore());
+                        .label(businessRule.nodeLabel())
+                        .highlightColorIf(businessRule.markedCore());
 
                 subgraph.add(node.asText());
             }

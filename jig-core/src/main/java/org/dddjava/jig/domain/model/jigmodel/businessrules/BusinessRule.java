@@ -81,4 +81,12 @@ public class BusinessRule {
     public MethodDeclarations instanceMethodDeclarations() {
         return instanceMethodDeclarations;
     }
+
+    public String nodeLabel() {
+        return typeAlias.nodeLabel();
+    }
+
+    public boolean markedCore() {
+        return typeAlias.markedCore();
+    }
 }

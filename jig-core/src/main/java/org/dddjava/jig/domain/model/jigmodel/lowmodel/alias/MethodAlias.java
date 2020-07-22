@@ -32,4 +32,11 @@ public class MethodAlias {
         }
         return defaultText;
     }
+
+    public boolean isAliasFor(MethodIdentifier methodIdentifier) {
+        // TODO オーバーロードに対応するときはここでやる。
+        // MethodAliasのフィールドを硬いmethodIdentifierを持つのではなく、引数も含めてある程度マッチする感じのやつを作る。
+        // ここを対応したら matchesIgnoreOverloadメソッドはいらなくなる
+        return methodIdentifier.matchesIgnoreOverload(this.methodIdentifier);
+    }
 }

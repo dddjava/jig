@@ -1,14 +1,18 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.ClassJavadocStub;
 import stub.domain.model.MethodJavadocStub;
@@ -17,6 +21,9 @@ import testing.JigServiceTest;
 
 import java.util.Collections;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigServiceTest
 class AliasServiceTest {
@@ -40,35 +47,47 @@ class AliasServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
 
-        Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
-                .isEqualTo(comment);
+        TypeFact typeFact = typeFacts.list().stream()
+                .filter(e -> e.typeIdentifier().equals(typeIdentifier))
+                .findAny().orElseThrow(AssertionError::new);
+        assertEquals(comment, typeFact.aliasText());
     }
 
-    static Stream<Arguments> クラス別名取得() {
+    static Stream<org.junit.jupiter.params.provider.Arguments> クラス別名取得() {
         return Stream.of(
-                Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
-                Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier(NotJavadocStub.class), "")
+                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
+                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
+                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(NotJavadocStub.class), "")
         );
     }
 
     @Test
     void メソッド別名取得(Sources source) {
-        jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        Method method = typeFacts.instanceMethodFacts().stream()
+                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(MethodJavadocStub.class),
+                        new MethodSignature("method", new Arguments(Collections.emptyList())))))
+                .map(MethodFact::createMethod)
+                .findAny().orElseThrow(AssertionError::new);
+        assertEquals("メソッドのJavadoc", method.aliasText());
 
-        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
-                "method",
-                new org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
-                .isEqualTo("メソッドのJavadoc");
+        Method overloadedMethod = typeFacts.instanceMethodFacts().stream()
+                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(MethodJavadocStub.class),
+                        new MethodSignature("overloadMethod", new Arguments(Collections.singletonList(new TypeIdentifier(String.class)))))))
+                .map(MethodFact::createMethod)
+                .findAny().orElseThrow(AssertionError::new);
+        assertTrue(overloadedMethod.aliasText().matches("引数(なし|あり)のメソッド"));
 
-        MethodIdentifier overloadMethodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
-                "overloadMethod",
-                new org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments(Collections.singletonList(new TypeIdentifier(String.class)))));
-        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier).asText())
-                // オーバーロードは一意にならないのでどちらか
-                .matches("引数(なし|あり)のメソッド");
+        Method overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
+                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(MethodJavadocStub.class),
+                        new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
+                .map(MethodFact::createMethod)
+                .findAny().orElseThrow(AssertionError::new);
+        assertTrue(overloadedMethod2.aliasText().matches("引数(なし|あり)のメソッド"));
     }
 }

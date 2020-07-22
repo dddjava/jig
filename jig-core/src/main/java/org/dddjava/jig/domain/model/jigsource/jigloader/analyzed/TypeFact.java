@@ -206,12 +206,17 @@ public class TypeFact {
     }
 
     public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
+        boolean registered = false;
         for (MethodFact methodFact : allMethodFacts()) {
-            if (methodFact.methodIdentifier().equals(methodAlias.methodIdentifier())) {
+            if (methodAlias.isAliasFor(methodFact.methodIdentifier())) {
                 methodFact.registerMethodAlias(methodAlias);
-                return AliasRegisterResult.成功;
+                registered = true;
             }
         }
-        return AliasRegisterResult.紐付け対象なし;
+        return registered ? AliasRegisterResult.成功 : AliasRegisterResult.紐付け対象なし;
+    }
+
+    public String aliasText() {
+        return typeAlias.asText();
     }
 }

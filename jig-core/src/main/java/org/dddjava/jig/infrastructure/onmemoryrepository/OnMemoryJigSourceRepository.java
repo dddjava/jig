@@ -48,7 +48,7 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
         // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
         aliasRepository.register(typeAlias);
 
-        if (aliasRegisterResult != AliasRegisterResult.新規登録) {
+        if (aliasRegisterResult != AliasRegisterResult.成功) {
             logger.warn("{} のTypeAlias登録結果が {} です。処理は続行します。",
                     typeAlias.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
         }
@@ -57,8 +57,14 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
 
     @Override
     public void registerMethodAlias(MethodAlias methodAlias) {
-        typeFacts.registerMethodAlias(methodAlias);
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodAlias);
+        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
         aliasRepository.register(methodAlias);
+
+        if (aliasRegisterResult != AliasRegisterResult.成功) {
+            logger.warn("{} のMethodAlias登録結果が {} です。処理は続行します。",
+                    methodAlias.methodIdentifier().asText(), aliasRegisterResult);
+        }
     }
 
     @Override

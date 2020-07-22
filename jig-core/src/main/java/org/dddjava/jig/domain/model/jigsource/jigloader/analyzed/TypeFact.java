@@ -205,11 +205,13 @@ public class TypeFact {
         this.typeAlias = typeAlias;
     }
 
-    public void registerMethodAlias(MethodAlias methodAlias) {
+    public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
         for (MethodFact methodFact : allMethodFacts()) {
             if (methodFact.methodIdentifier().equals(methodAlias.methodIdentifier())) {
                 methodFact.registerMethodAlias(methodAlias);
+                return AliasRegisterResult.成功;
             }
         }
+        return AliasRegisterResult.紐付け対象なし;
     }
 }

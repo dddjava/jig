@@ -188,22 +188,21 @@ public class TypeFacts {
         for (TypeFact typeFact : list) {
             if (typeFact.typeIdentifier().equals(typeAlias.typeIdentifier())) {
                 typeFact.registerTypeAlias(typeAlias);
-                return AliasRegisterResult.新規登録;
+                return AliasRegisterResult.成功;
             }
         }
 
         return AliasRegisterResult.紐付け対象なし;
     }
 
-    public void registerMethodAlias(MethodAlias methodAlias) {
-        // TODO Methodを取得した際にくっつけて返せるようにする
+    public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
         for (TypeFact typeFact : list) {
             MethodIdentifier methodIdentifier = methodAlias.methodIdentifier();
             if (typeFact.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                typeFact.registerMethodAlias(methodAlias);
-                return;
+                return typeFact.registerMethodAlias(methodAlias);
             }
         }
-        // TODO: WARN 予期しない型のAliasが登録されました。このAliasは使用されません。
+
+        return AliasRegisterResult.紐付け対象なし;
     }
 }

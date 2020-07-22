@@ -11,6 +11,9 @@ import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
+import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;
@@ -28,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class AliasServiceTest {
 
     JigSourceReadService jigSourceReadService;
@@ -37,18 +42,19 @@ public class AliasServiceTest {
         SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
         OnMemoryAliasRepository onMemoryAliasRepository = new OnMemoryAliasRepository();
         OnMemoryJigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(onMemoryAliasRepository);
-        jigSourceReadService = new JigSourceReadService(jigSourceRepository, null, sourceCodeAliasReader, null, null);
+        jigSourceReadService = new JigSourceReadService(jigSourceRepository, new AsmFactReader(), sourceCodeAliasReader, null, new LocalFileSourceReader());
         sut = new AliasService(onMemoryAliasRepository);
     }
 
     @Test
     void クラス別名取得() {
         Sources source = getTestRawSource();
-        AliasSource aliasSource = source.aliasSource();
-        jigSourceReadService.readAliases(aliasSource);
+        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
 
-        Assertions.assertThat(sut.typeAliasOf(new TypeIdentifier(KotlinStub.class)).asText())
-                .isEqualTo("KotlinのクラスのDoc");
+        TypeFact typeFact = typeFacts.list().stream()
+                .filter(e -> e.typeIdentifier().equals(new TypeIdentifier(KotlinStub.class)))
+                .findAny().orElseThrow(AssertionError::new);
+        assertEquals("KotlinのクラスのDoc", typeFact.aliasText());
     }
 
 
@@ -87,13 +93,16 @@ public class AliasServiceTest {
 
     public SourcePaths getRawSourceLocations() {
         return new SourcePaths(
-                new BinarySourcePaths(Collections.singletonList(Paths.get(defaultPackageClassURI()))),
+                new BinarySourcePaths(Arrays.asList(
+                        Paths.get(defaultPackageClassURI("DefaultPackageKtClass")),
+                        Paths.get(defaultPackageClassURI("DefaultPackageClass"))
+                )),
                 new CodeSourcePaths(Collections.singletonList(getModuleRootPath().resolve("src").resolve("test").resolve("kotlin")))
         );
     }
 
     static Path getModuleRootPath() {
-        URI uri = defaultPackageClassURI();
+        URI uri = defaultPackageClassURI("DefaultPackageClass");
         Path path = Paths.get(uri).toAbsolutePath();
 
         while (!path.endsWith("jig-cli-kt")) {
@@ -105,9 +114,9 @@ public class AliasServiceTest {
         return path;
     }
 
-    static URI defaultPackageClassURI() {
+    static URI defaultPackageClassURI(String defaultPackageClass) {
         try {
-            return AliasServiceTest.class.getResource("/DefaultPackageClass.class").toURI().resolve("./");
+            return AliasServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

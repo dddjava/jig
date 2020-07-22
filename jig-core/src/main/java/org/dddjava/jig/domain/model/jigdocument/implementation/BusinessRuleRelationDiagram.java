@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleRelation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -13,7 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -69,16 +67,10 @@ public class BusinessRuleRelationDiagram {
             graph.add(subgraph.toString());
         }
 
-        // relations
-        List<BusinessRuleRelation> businessRuleRelations = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.list()) {
             if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
-                businessRuleRelations.add(new BusinessRuleRelation(classRelation));
+                graph.add(classRelation.dotText());
             }
-        }
-
-        for (BusinessRuleRelation relation : businessRuleRelations) {
-            graph.add(relation.dotText());
         }
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());

@@ -76,13 +76,13 @@ public class CategoryUsageDiagram {
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(nonCategoryBusinessRuleNodeTexts(jigDocumentContext, categoryRelatedTypes))
+                .add(nonCategoryBusinessRuleNodeTexts(categoryRelatedTypes))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String nonCategoryBusinessRuleNodeTexts(JigDocumentContext jigDocumentContext, TypeIdentifiers categoryRelatedTypes) {
+    private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes) {
         return businessRules.list().stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() != BusinessRuleCategory.区分)
                 .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))

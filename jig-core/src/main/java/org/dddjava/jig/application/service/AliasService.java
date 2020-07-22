@@ -1,10 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasRepository;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.springframework.stereotype.Service;
@@ -33,12 +31,5 @@ public class AliasService {
      */
     public TypeAlias typeAliasOf(TypeIdentifier typeIdentifier) {
         return aliasRepository.get(typeIdentifier);
-    }
-
-    /**
-     * メソッド別名を取得する
-     */
-    public MethodAlias methodAliasOf(MethodIdentifier methodIdentifier) {
-        return aliasRepository.get(methodIdentifier);
     }
 }

@@ -1,16 +1,16 @@
 package org.dddjava.jig.application.service;
 
-import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
@@ -30,8 +30,11 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AliasServiceTest {
 
@@ -61,28 +64,29 @@ public class AliasServiceTest {
     @Test
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
-        AliasSource aliasSource = source.aliasSource();
-        jigSourceReadService.readAliases(aliasSource);
+        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        List<Method> methods = typeFacts.instanceMethodFacts().stream().map(MethodFact::createMethod).collect(Collectors.toList());
 
-        MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
-                "simpleMethod",
-                new Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.methodAliasOf(methodIdentifier).asText())
-                .isEqualTo("メソッドのドキュメント");
+        Method simpleMethod = methods.stream()
+                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(KotlinMethodJavadocStub.class),
+                        new MethodSignature("simpleMethod", new Arguments(Collections.emptyList())))))
+                .findAny().orElseThrow(AssertionError::new);
+        assertEquals("メソッドのドキュメント", simpleMethod.aliasText());
 
-        MethodIdentifier overloadMethodIdentifier1 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
-                "overloadMethod",
-                new Arguments(Collections.emptyList())));
-        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier1).asText())
-                // オーバーロードは一意にならないのでどちらか
-                .matches("引数(なし|あり)のメソッド");
+        Method overloadMethod1 = methods.stream()
+                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(KotlinMethodJavadocStub.class),
+                        new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
+                .findAny().orElseThrow(AssertionError::new);
+        assertTrue(overloadMethod1.aliasText().matches("引数(なし|あり)のメソッド"));
 
-        MethodIdentifier overloadMethodIdentifier2 = new MethodIdentifier(new TypeIdentifier(KotlinMethodJavadocStub.class), new MethodSignature(
-                "overloadMethod",
-                new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
-        Assertions.assertThat(sut.methodAliasOf(overloadMethodIdentifier2).asText())
-                // オーバーロードは一意にならないのでどちらか
-                .matches("引数(なし|あり)のメソッド");
+        Method overloadMethod2 = methods.stream()
+                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
+                        new TypeIdentifier(KotlinMethodJavadocStub.class),
+                        new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))))))
+                .findAny().orElseThrow(AssertionError::new);
+        assertTrue(overloadMethod2.aliasText().matches("引数(なし|あり)のメソッド"));
     }
 
     public Sources getTestRawSource() {

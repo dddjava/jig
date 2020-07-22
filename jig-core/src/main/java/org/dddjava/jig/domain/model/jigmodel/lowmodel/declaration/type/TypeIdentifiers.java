@@ -55,12 +55,6 @@ public class TypeIdentifiers {
         return identifiers.stream().map(TypeIdentifier::normalize).distinct().collect(collector());
     }
 
-    public TypeIdentifiers exclude(TypeIdentifiers excludeTypeIdentifiers) {
-        return identifiers.stream()
-                .filter(typeIdentifier -> !excludeTypeIdentifiers.contains(typeIdentifier))
-                .collect(collector());
-    }
-
     public int size() {
         return identifiers.size();
     }

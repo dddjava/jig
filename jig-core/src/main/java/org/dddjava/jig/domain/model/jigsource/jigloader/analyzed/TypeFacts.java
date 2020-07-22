@@ -184,15 +184,15 @@ public class TypeFacts {
         // TODO Packageを取得した際にくっつけて返せるようにする
     }
 
-    public void registerTypeAlias(TypeAlias typeAlias) {
+    public AliasRegisterResult registerTypeAlias(TypeAlias typeAlias) {
         for (TypeFact typeFact : list) {
             if (typeFact.typeIdentifier().equals(typeAlias.typeIdentifier())) {
                 typeFact.registerTypeAlias(typeAlias);
-                return;
+                return AliasRegisterResult.新規登録;
             }
         }
 
-        // TODO: WARN 予期しない型のAliasが登録されました。このAliasは使用されません。
+        return AliasRegisterResult.紐付け対象なし;
     }
 
     public void registerMethodAlias(MethodAlias methodAlias) {

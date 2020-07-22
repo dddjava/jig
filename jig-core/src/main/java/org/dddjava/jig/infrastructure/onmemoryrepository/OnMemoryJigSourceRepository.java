@@ -6,13 +6,17 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AliasRegisterResult;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
 
 @Repository
 public class OnMemoryJigSourceRepository implements JigSourceRepository {
+    static Logger logger = LoggerFactory.getLogger(OnMemoryJigSourceRepository.class);
 
     AliasRepository aliasRepository;
     TypeFacts typeFacts = new TypeFacts(Collections.emptyList());
@@ -39,9 +43,16 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     }
 
     @Override
-    public void registerTypeAlias(TypeAlias typeAlias) {
-        typeFacts.registerTypeAlias(typeAlias);
+    public AliasRegisterResult registerTypeAlias(TypeAlias typeAlias) {
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(typeAlias);
+        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
         aliasRepository.register(typeAlias);
+
+        if (aliasRegisterResult != AliasRegisterResult.新規登録) {
+            logger.warn("{} のTypeAlias登録結果が {} です。処理は続行します。",
+                    typeAlias.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
+        }
+        return aliasRegisterResult;
     }
 
     @Override

@@ -48,14 +48,10 @@ public class BusinessRuleRelationDiagram {
             List<BusinessRule> businessRules = businessRulePackage.businessRules().list();
             for (BusinessRule businessRule : businessRules) {
                 TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(businessRule.type().identifier());
-                String aliasLine = "";
-                if (typeAlias.exists()) {
-                    aliasLine = typeAlias.asText() + "\n";
-                }
-                Node node = Node.controllerNodeOf(businessRule.type().identifier())
-                        .label(aliasLine + businessRule.type().identifier().asSimpleText());
 
-                node = (aliasLine.startsWith("*")) ? node.highlightColor() : node;
+                Node node = Node.controllerNodeOf(businessRule.type().identifier())
+                        .label(typeAlias.nodeLabel())
+                        .highlightColorIf(typeAlias.markedCore());
 
                 subgraph.add(node.asText());
             }

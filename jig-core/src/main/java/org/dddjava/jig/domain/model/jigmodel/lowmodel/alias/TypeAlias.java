@@ -36,4 +36,16 @@ public class TypeAlias {
         }
         return defaultText;
     }
+
+    public boolean markedCore() {
+        return alias.toString().startsWith("*");
+    }
+
+    public String nodeLabel() {
+        String aliasLine = "";
+        if (exists()) {
+            aliasLine = asText() + "\n";
+        }
+        return aliasLine + typeIdentifier().asSimpleText();
+    }
 }

@@ -2,8 +2,6 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.file.text.CodeSource;
 
 import java.util.StringJoiner;
 
@@ -120,10 +118,14 @@ public class Node {
         if (jigDocumentContext.linkPrefix().disabled()) {
             return this;
         }
-        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue()  + '/' +
+        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue() + '/' +
                 // TODO CodeSourceから解決できるようにしたい。
                 typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java" +
                 "\"");
         return this;
+    }
+
+    public Node highlightColorIf(boolean markedCore) {
+        return markedCore ? this.highlightColor() : this;
     }
 }

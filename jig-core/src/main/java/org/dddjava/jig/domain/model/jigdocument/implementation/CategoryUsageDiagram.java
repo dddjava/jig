@@ -38,26 +38,28 @@ public class CategoryUsageDiagram {
 
         ClassRelations businessRuleRelations = businessRules.businessRuleRelations();
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
-        TypeIdentifiers businessRuleTypeIdentifiers = relations.allTypeIdentifiers();
+        TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 
         StringJoiner useCaseText = new StringJoiner("\n");
         RelationText serviceRelationText = new RelationText();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
-            boolean relateService = false;
-            TypeIdentifiers serviceUsingTypes = serviceMethod.usingTypes();
-            for (TypeIdentifier usingTypeIdentifier : serviceUsingTypes.list()) {
-                if (businessRuleTypeIdentifiers.contains(usingTypeIdentifier)
+            boolean related = false;
+            TypeIdentifiers serviceMethodUsingTypes = serviceMethod.usingTypes();
+            for (TypeIdentifier usingTypeIdentifier : serviceMethodUsingTypes.list()) {
+                if (categoryRelatedTypes.contains(usingTypeIdentifier)
+                        // ビジネスルールとの関連を持たないCategoryも対象にするためのor条件
                         || categoryTypes.typeIdentifiers().contains(usingTypeIdentifier)) {
+                    // サービスメソッドからBusinessRule（Category含む）への関連を追加する
+                    // この関連は[クラス->クラス]でなく[メソッド -> クラス]の関連になる
                     serviceRelationText.add(serviceMethod.methodDeclaration(), usingTypeIdentifier);
-                    relateService = true;
+                    related = true;
                 }
             }
-            if (!relateService) {
-                // enumから関連していないのは出力しない
-                continue;
-            }
 
-            useCaseText.add(Nodes.usecase(jigDocumentContext, serviceMethod).asText());
+            if (related) {
+                // enumに関連しているサービスメソッドだけ出力する
+                useCaseText.add(Nodes.usecase(jigDocumentContext, serviceMethod).asText());
+            }
         }
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
@@ -74,7 +76,7 @@ public class CategoryUsageDiagram {
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(exceptCategoryNodesText(jigDocumentContext, businessRuleTypeIdentifiers))
+                .add(exceptCategoryNodesText(jigDocumentContext, categoryRelatedTypes))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());

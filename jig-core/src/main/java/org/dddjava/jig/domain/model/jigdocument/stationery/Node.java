@@ -21,7 +21,7 @@ public class Node {
         this.identifier = identifier;
     }
 
-    public static Node controllerNodeOf(TypeIdentifier identifier) {
+    public static Node typeOf(TypeIdentifier identifier) {
         return new Node(identifier.fullQualifiedName());
     }
 

@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
@@ -61,7 +60,7 @@ public class Categories {
         String structureText = packageStructure.toDotText(
                 packageIdentifier -> new Subgraph(packageIdentifier.asText())
                         .label(packageIdentifier.simpleName()),
-                typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
+                typeIdentifier -> Node.typeOf(typeIdentifier)
         );
 
         StringJoiner categoryText = new StringJoiner("\n");

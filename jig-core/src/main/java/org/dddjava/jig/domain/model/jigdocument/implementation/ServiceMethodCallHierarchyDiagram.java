@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
@@ -156,7 +155,7 @@ public class ServiceMethodCallHierarchyDiagram {
             }
         }
         String repositoryTypes = repositories.stream()
-                .map(repository -> Node.controllerNodeOf(repository).other().label(repository.asSimpleText()))
+                .map(repository -> Node.typeOf(repository).other().label(repository.asSimpleText()))
                 .map(Node::asText)
                 .collect(joining("\n"));
 

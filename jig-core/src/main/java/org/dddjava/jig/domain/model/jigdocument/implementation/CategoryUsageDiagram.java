@@ -83,7 +83,7 @@ public class CategoryUsageDiagram {
                 .exclude(categoryTypes.typeIdentifiers())
                 .list()
                 .stream()
-                .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
+                .map(typeIdentifier -> Node.typeOf(typeIdentifier)
                         .label(jigDocumentContext.aliasFinder().simpleTypeText(typeIdentifier))
                         .asText())
                 .collect(Collectors.joining("\n"));

@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -39,10 +40,8 @@ public class BusinessRuleRelationDiagram {
                 .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
-        // nodes
-        List<BusinessRulePackage> list = businessRules.businessRulePackages().list();
-
-        for (BusinessRulePackage businessRulePackage : list) {
+        BusinessRulePackages businessRulePackages = businessRules.businessRulePackages();
+        for (BusinessRulePackage businessRulePackage : businessRulePackages.list()) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
             Subgraph subgraph = new Subgraph(packageIdentifier.asText())

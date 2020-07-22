@@ -71,13 +71,11 @@ public class TypeFact {
 
     public BusinessRule createBusinessRule() {
         return new BusinessRule(
-                typeKind(),
-                fieldDeclarations(),
-                typeDeclaration(),
+                typeDeclaration(), typeAlias, typeKind(),
+                visibility, fieldDeclarations(),
                 constructorDeclarations(),
                 instanceMethodDeclarations(),
-                staticMethodDeclarations(),
-                visibility
+                staticMethodDeclarations()
         );
     }
 

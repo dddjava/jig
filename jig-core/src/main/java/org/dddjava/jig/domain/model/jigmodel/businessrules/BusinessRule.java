@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
@@ -12,8 +13,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class BusinessRule {
 
-    TypeKind typeKind;
+    TypeAlias typeAlias;
     TypeDeclaration typeDeclaration;
+    TypeKind typeKind;
+    Visibility visibility;
 
     FieldDeclarations fieldDeclarations;
 
@@ -21,13 +24,19 @@ public class BusinessRule {
     MethodDeclarations instanceMethodDeclarations;
     MethodDeclarations staticMethodDeclarations;
 
-    Visibility visibility;
-
-    public BusinessRule(TypeKind typeKind, FieldDeclarations fieldDeclarations, TypeDeclaration typeDeclaration,
-                        MethodDeclarations constructorDeclarations,
-                        MethodDeclarations instanceMethodDeclarations,
-                        MethodDeclarations staticMethodDeclarations,
-                        Visibility visibility) {
+    public BusinessRule(
+            // TODO オブジェクト化して引数を減らす
+            // 型自身のもの
+            TypeDeclaration typeDeclaration,
+            TypeAlias typeAlias,
+            TypeKind typeKind,
+            Visibility visibility,
+            // メンバに関するもの
+            FieldDeclarations fieldDeclarations,
+            MethodDeclarations constructorDeclarations,
+            MethodDeclarations instanceMethodDeclarations,
+            MethodDeclarations staticMethodDeclarations) {
+        this.typeAlias = typeAlias;
         this.typeKind = typeKind;
         this.fieldDeclarations = fieldDeclarations;
         this.typeDeclaration = typeDeclaration;

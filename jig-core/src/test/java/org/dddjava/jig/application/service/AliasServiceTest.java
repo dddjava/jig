@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodS
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
-import org.dddjava.jig.domain.model.jigsource.file.text.AliasSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,8 +31,7 @@ class AliasServiceTest {
 
     @Test
     void パッケージ別名取得(Sources source) {
-        AliasSource aliasSource = source.aliasSource();
-        jigSourceReadService.readAliases(aliasSource);
+        jigSourceReadService.readProjectData(source);
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -42,8 +40,7 @@ class AliasServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        AliasSource aliasSource = source.aliasSource();
-        jigSourceReadService.readAliases(aliasSource);
+        jigSourceReadService.readProjectData(source);
 
         Assertions.assertThat(sut.typeAliasOf(typeIdentifier).asText())
                 .isEqualTo(comment);
@@ -53,15 +50,13 @@ class AliasServiceTest {
         return Stream.of(
                 Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
                 Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier(NotJavadocStub.class), ""),
-                Arguments.of(new TypeIdentifier("DefaultPackageClass"), "デフォルトパッケージにあるクラス")
+                Arguments.of(new TypeIdentifier(NotJavadocStub.class), "")
         );
     }
 
     @Test
     void メソッド別名取得(Sources source) {
-        AliasSource aliasSource = source.aliasSource();
-        jigSourceReadService.readAliases(aliasSource);
+        jigSourceReadService.readProjectData(source);
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(new TypeIdentifier(MethodJavadocStub.class), new MethodSignature(
                 "method",

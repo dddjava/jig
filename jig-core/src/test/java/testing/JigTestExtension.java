@@ -76,7 +76,7 @@ public class JigTestExtension implements ParameterResolver {
     public SourcePaths getRawSourceLocations() {
         return new SourcePaths(
                 new BinarySourcePaths(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()).resolve("stub"))),
-                new CodeSourcePaths(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java")))
+                new CodeSourcePaths(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
         );
     }
 }

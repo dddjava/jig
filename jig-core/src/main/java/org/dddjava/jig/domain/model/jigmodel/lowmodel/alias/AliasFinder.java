@@ -20,15 +20,6 @@ public interface AliasFinder {
         return find(typeIdentifier).asTextOrDefault(typeIdentifier.asSimpleText());
     }
 
-    default String typeText(TypeIdentifier typeIdentifier) {
-        // 和名+クラス名 or クラス名
-        TypeAlias typeAlias = find(typeIdentifier);
-        if (typeAlias.exists()) {
-            return typeAlias.asText() + "\\n" + typeIdentifier.asSimpleText();
-        }
-        return typeIdentifier.asSimpleText();
-    }
-
     default String methodText(MethodIdentifier identifier) {
         // 和名 or クラス名+メソッド名
         return find(identifier)

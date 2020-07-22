@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
@@ -8,12 +9,15 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class CategoryType {
     TypeIdentifier typeIdentifier;
+    TypeAlias typeAlias;
+
     boolean behaviour;
     boolean polymorphism;
     boolean parameterized;
 
-    public CategoryType(TypeKind typeKind, TypeIdentifier typeIdentifier, boolean parameterized, boolean behaviour) {
+    public CategoryType(TypeKind typeKind, TypeIdentifier typeIdentifier, TypeAlias typeAlias, boolean parameterized, boolean behaviour) {
         this.typeIdentifier = typeIdentifier;
+        this.typeAlias = typeAlias;
         this.parameterized = parameterized;
         this.behaviour = behaviour;
         this.polymorphism = typeKind == TypeKind.抽象列挙型;
@@ -33,5 +37,9 @@ public class CategoryType {
 
     public TypeIdentifier typeIdentifier() {
         return typeIdentifier;
+    }
+
+    public String nodeLabel() {
+        return typeAlias.nodeLabel();
     }
 }

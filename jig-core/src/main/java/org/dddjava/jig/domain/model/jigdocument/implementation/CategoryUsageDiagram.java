@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -67,7 +66,7 @@ public class CategoryUsageDiagram {
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
                 .add("rank=sink;")
-                .add(categoryNodesText(jigDocumentContext))
+                .add(categoryNodesText())
                 .add("}")
                 .add("{")
                 .add("rank=source;")
@@ -82,20 +81,18 @@ public class CategoryUsageDiagram {
     private String exceptCategoryNodesText(JigDocumentContext jigDocumentContext, TypeIdentifiers businessRuleTypeIdentifiers) {
         return businessRuleTypeIdentifiers
                 .exclude(categoryTypes.typeIdentifiers())
-                .list().stream()
+                .list()
+                .stream()
                 .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
                         .label(jigDocumentContext.aliasFinder().simpleTypeText(typeIdentifier))
                         .asText())
                 .collect(Collectors.joining("\n"));
     }
 
-    String categoryNodesText(JigDocumentContext jigDocumentContext) {
+    String categoryNodesText() {
         return categoryTypes.list().stream()
-                .map(categoryType -> categoryType.typeIdentifier())
-                .map(typeIdentifier -> Node.controllerNodeOf(typeIdentifier)
-                        .normalColor()
-                        .label(jigDocumentContext.aliasFinder().typeText(typeIdentifier))
-                        .asText())
+                .map(Node::categoryNodeOf)
+                .map(Node::asText)
                 .collect(joining("\n"));
     }
 }

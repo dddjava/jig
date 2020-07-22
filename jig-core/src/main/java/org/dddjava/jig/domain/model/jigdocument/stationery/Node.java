@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
@@ -25,6 +27,18 @@ public class Node {
 
     public static Node packageOf(PackageIdentifier identifier) {
         return new Node(identifier.asText());
+    }
+
+    public static Node businessRuleNodeOf(BusinessRule businessRule) {
+        return new Node(businessRule.type().identifier().fullQualifiedName())
+                .label(businessRule.nodeLabel())
+                .highlightColorIf(businessRule.markedCore());
+    }
+
+    public static Node categoryNodeOf(CategoryType categoryType) {
+        return new Node(categoryType.typeIdentifier().fullQualifiedName())
+                .normalColor()
+                .label(categoryType.nodeLabel());
     }
 
     /**

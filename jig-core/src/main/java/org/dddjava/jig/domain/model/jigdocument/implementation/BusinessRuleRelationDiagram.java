@@ -45,11 +45,7 @@ public class BusinessRuleRelationDiagram {
 
             BusinessRules businessRules = businessRulePackage.businessRules();
             for (BusinessRule businessRule : businessRules.list()) {
-
-                Node node = Node.controllerNodeOf(businessRule.type().identifier())
-                        .label(businessRule.nodeLabel())
-                        .highlightColorIf(businessRule.markedCore());
-
+                Node node = Node.businessRuleNodeOf(businessRule);
                 subgraph.add(node.asText());
             }
 

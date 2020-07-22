@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -22,11 +21,9 @@ import java.util.StringJoiner;
 public class BusinessRuleRelationDiagram {
 
     BusinessRules businessRules;
-    ClassRelations classRelations;
 
-    public BusinessRuleRelationDiagram(BusinessRules businessRules, ClassRelations classRelations) {
+    public BusinessRuleRelationDiagram(BusinessRules businessRules) {
         this.businessRules = businessRules;
-        this.classRelations = classRelations;
     }
 
     public DiagramSources relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
@@ -66,7 +63,7 @@ public class BusinessRuleRelationDiagram {
             graph.add(subgraph.toString());
         }
 
-        for (ClassRelation classRelation : classRelations.list()) {
+        for (ClassRelation classRelation : businessRules.classRelations().list()) {
             if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
                 graph.add(classRelation.dotText());
             }

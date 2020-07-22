@@ -49,10 +49,6 @@ public class DependencyService {
      * ビジネスルールの関連を取得する
      */
     public BusinessRuleRelationDiagram businessRuleNetwork() {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        BusinessRuleRelationDiagram businessRuleRelationDiagram = new BusinessRuleRelationDiagram(
-                businessRuleService.businessRules(),
-                typeFacts.toClassRelations());
-        return businessRuleRelationDiagram;
+        return new BusinessRuleRelationDiagram(businessRuleService.businessRules());
     }
 }

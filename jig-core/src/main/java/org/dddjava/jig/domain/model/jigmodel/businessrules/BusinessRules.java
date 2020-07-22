@@ -111,4 +111,11 @@ public class BusinessRules {
     public TypeIdentifiers allTypesRelatedTo(BusinessRule businessRule) {
         return classRelations().collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
     }
+
+    public ClassRelations internalClassRelations() {
+        List<ClassRelation> internalList = classRelations.list().stream()
+                .filter(classRelation -> classRelation.within(identifiers()))
+                .collect(Collectors.toList());
+        return new ClassRelations(internalList);
+    }
 }

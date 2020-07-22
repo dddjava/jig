@@ -63,10 +63,8 @@ public class BusinessRuleRelationDiagram {
             graph.add(subgraph.toString());
         }
 
-        for (ClassRelation classRelation : businessRules.classRelations().list()) {
-            if (businessRules.contains(classRelation.from()) && businessRules.contains(classRelation.to())) {
-                graph.add(classRelation.dotText());
-            }
+        for (ClassRelation classRelation : businessRules.internalClassRelations().list()) {
+            graph.add(classRelation.dotText());
         }
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.Objects;
 
@@ -25,12 +26,20 @@ public class ClassRelation {
         return from;
     }
 
+    public TypeIdentifier to() {
+        return to;
+    }
+
     public boolean selfRelation() {
         return from.normalize().equals(to.normalize());
     }
 
-    public TypeIdentifier to() {
-        return to;
+    public boolean sameRelation(ClassRelation other) {
+        return from.equals(other.from) && to.equals(other.to);
+    }
+
+    public boolean within(TypeIdentifiers typeIdentifiers) {
+        return typeIdentifiers.contains(from()) && typeIdentifiers.contains(to());
     }
 
     public String dotText() {
@@ -40,10 +49,6 @@ public class ClassRelation {
     @Override
     public String toString() {
         return from.fullQualifiedName() + " -> " + to.fullQualifiedName();
-    }
-
-    public boolean sameRelation(ClassRelation other) {
-        return from.equals(other.from) && to.equals(other.to);
     }
 
     @Override

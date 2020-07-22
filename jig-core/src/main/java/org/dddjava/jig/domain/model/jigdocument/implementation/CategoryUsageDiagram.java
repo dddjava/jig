@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleCategory;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -12,7 +13,6 @@ import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -82,15 +82,13 @@ public class CategoryUsageDiagram {
                 .toString());
     }
 
-    private String nonCategoryBusinessRuleNodeTexts(JigDocumentContext jigDocumentContext, TypeIdentifiers businessRuleTypeIdentifiers) {
-        return businessRuleTypeIdentifiers
-                .exclude(categoryTypes.typeIdentifiers())
-                .list()
-                .stream()
-                .map(typeIdentifier -> Node.typeOf(typeIdentifier)
-                        .label(jigDocumentContext.aliasFinder().simpleTypeText(typeIdentifier))
-                        .asText())
-                .collect(Collectors.joining("\n"));
+    private String nonCategoryBusinessRuleNodeTexts(JigDocumentContext jigDocumentContext, TypeIdentifiers categoryRelatedTypes) {
+        return businessRules.list().stream()
+                .filter(businessRule -> businessRule.businessRuleCategory() != BusinessRuleCategory.区分)
+                .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
+                .map(businessRule -> Node.businessRuleNodeOf(businessRule))
+                .map(Node::asText)
+                .collect(joining("\n"));
     }
 
     String categoryNodeTexts() {

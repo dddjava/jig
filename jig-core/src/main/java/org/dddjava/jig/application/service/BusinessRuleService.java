@@ -44,7 +44,7 @@ public class BusinessRuleService {
      */
     public BusinessRules businessRules() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return typeFacts.from(architecture);
+        return typeFacts.toBusinessRule(architecture);
     }
 
     /**

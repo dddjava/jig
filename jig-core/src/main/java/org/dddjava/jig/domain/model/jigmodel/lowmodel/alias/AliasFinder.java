@@ -15,11 +15,6 @@ public interface AliasFinder {
 
     MethodAlias find(MethodIdentifier methodIdentifier);
 
-    default String simpleTypeText(TypeIdentifier typeIdentifier) {
-        // 和名 or クラス名
-        return find(typeIdentifier).asTextOrDefault(typeIdentifier.asSimpleText());
-    }
-
     default String methodText(MethodIdentifier identifier) {
         // 和名 or クラス名+メソッド名
         return find(identifier)

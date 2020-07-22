@@ -55,4 +55,8 @@ public class CategoryAngle {
     public boolean isPolymorphism() {
         return categoryType.isPolymorphism();
     }
+
+    public String nodeLabel(String delimiter) {
+        return categoryType.nodeLabel(delimiter);
+    }
 }

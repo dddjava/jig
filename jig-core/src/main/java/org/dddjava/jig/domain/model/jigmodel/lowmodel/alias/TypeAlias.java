@@ -42,9 +42,13 @@ public class TypeAlias {
     }
 
     public String nodeLabel() {
+        return nodeLabel("\n");
+    }
+
+    public String nodeLabel(String delimiter) {
         String aliasLine = "";
         if (exists()) {
-            aliasLine = asText() + "\n";
+            aliasLine = asText() + delimiter;
         }
         return aliasLine + typeIdentifier().asSimpleText();
     }

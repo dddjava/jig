@@ -42,4 +42,8 @@ public class CategoryType {
     public String nodeLabel() {
         return typeAlias.nodeLabel();
     }
+
+    public String nodeLabel(String delimiter) {
+        return typeAlias.nodeLabel(delimiter);
+    }
 }

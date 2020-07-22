@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
@@ -61,8 +60,9 @@ public class Categories {
                     String values = categoryAngle.constantsDeclarations().list().stream()
                             .map(StaticFieldDeclaration::nameText)
                             .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+                    String categoryName = categoryAngle.nodeLabel("<br/>");
                     return Node.typeOf(typeIdentifier)
-                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + typeNameOf(jigDocumentContext, typeIdentifier) + "</td></tr>" + values + "</table>");
+                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
                 }
         );
 
@@ -75,13 +75,5 @@ public class Categories {
                         .add(Node.DEFAULT)
                         .add(structureText)
                         .toString());
-    }
-
-    private String typeNameOf(JigDocumentContext jigDocumentContext, TypeIdentifier typeIdentifier) {
-        TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(typeIdentifier);
-        if (typeAlias.exists()) {
-            return typeAlias.asText() + "<br/>" + typeIdentifier.asSimpleText();
-        }
-        return typeIdentifier.asSimpleText();
     }
 }

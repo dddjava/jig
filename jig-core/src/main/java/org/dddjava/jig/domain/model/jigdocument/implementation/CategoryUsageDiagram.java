@@ -70,19 +70,19 @@ public class CategoryUsageDiagram {
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
                 .add("rank=sink;")
-                .add(categoryNodesText())
+                .add(categoryNodeTexts())
                 .add("}")
                 .add("{")
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(exceptCategoryNodesText(jigDocumentContext, categoryRelatedTypes))
+                .add(nonCategoryBusinessRuleNodeTexts(jigDocumentContext, categoryRelatedTypes))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String exceptCategoryNodesText(JigDocumentContext jigDocumentContext, TypeIdentifiers businessRuleTypeIdentifiers) {
+    private String nonCategoryBusinessRuleNodeTexts(JigDocumentContext jigDocumentContext, TypeIdentifiers businessRuleTypeIdentifiers) {
         return businessRuleTypeIdentifiers
                 .exclude(categoryTypes.typeIdentifiers())
                 .list()
@@ -93,7 +93,7 @@ public class CategoryUsageDiagram {
                 .collect(Collectors.joining("\n"));
     }
 
-    String categoryNodesText() {
+    String categoryNodeTexts() {
         return categoryTypes.list().stream()
                 .map(Node::categoryNodeOf)
                 .map(Node::asText)

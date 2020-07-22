@@ -21,8 +21,6 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
-
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -44,7 +42,7 @@ public class BusinessRuleService {
      */
     public BusinessRules businessRules() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return typeFacts.toBusinessRule(architecture);
+        return typeFacts.toBusinessRules(architecture);
     }
 
     /**
@@ -100,15 +98,9 @@ public class BusinessRuleService {
      */
     public CategoryUsageDiagram categoryUsages() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        CategoryTypes categoryTypes = businessRules().createCategoryTypes();
         ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
-        ClassRelations businessRuleRelations = new TypeFacts(typeFacts.list()
-                .stream()
-                .filter(typeByteCode -> architecture.isBusinessRule(typeByteCode))
-                .collect(Collectors.toList())).toClassRelations(
-        );
 
-        return new CategoryUsageDiagram(serviceMethods, categoryTypes, businessRuleRelations);
+        return new CategoryUsageDiagram(serviceMethods, typeFacts.toBusinessRules(architecture));
     }
 
     public ValidationAnnotatedMembers validationAnnotatedMembers() {

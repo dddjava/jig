@@ -42,7 +42,7 @@ public class TypeFacts {
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
 
-    public BusinessRules toBusinessRule(Architecture architecture) {
+    public BusinessRules toBusinessRules(Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             if (architecture.isBusinessRule(typeFact)) {

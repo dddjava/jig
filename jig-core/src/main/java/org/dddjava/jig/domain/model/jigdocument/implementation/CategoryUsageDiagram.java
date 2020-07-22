@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -21,13 +22,13 @@ import static java.util.stream.Collectors.joining;
 public class CategoryUsageDiagram {
 
     ServiceMethods serviceMethods;
+    BusinessRules businessRules;
     CategoryTypes categoryTypes;
-    ClassRelations businessRuleRelations;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, ClassRelations businessRuleRelations) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules) {
         this.serviceMethods = serviceMethods;
-        this.categoryTypes = categoryTypes;
-        this.businessRuleRelations = businessRuleRelations;
+        this.businessRules = businessRules;
+        this.categoryTypes = businessRules.createCategoryTypes();
     }
 
     public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {
@@ -35,6 +36,7 @@ public class CategoryUsageDiagram {
             return DiagramSource.empty();
         }
 
+        ClassRelations businessRuleRelations = businessRules.businessRuleRelations();
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers businessRuleTypeIdentifiers = relations.allTypeIdentifiers();
 

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
@@ -14,17 +15,20 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMetho
  */
 public class Method {
 
+    MethodDeclaration methodDeclaration;
+    MethodAlias methodAlias;
+
     boolean nullDecision;
 
-    MethodDeclaration methodDeclaration;
     DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
     Visibility visibility;
 
     MethodDepend methodDepend;
 
-    public Method(MethodDeclaration methodDeclaration, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
+    public Method(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
         this.methodDeclaration = methodDeclaration;
+        this.methodAlias = methodAlias;
         this.nullDecision = nullDecision;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
@@ -74,5 +78,9 @@ public class Method {
 
     public TypeIdentifiers usingTypes() {
         return methodDepend.usingTypes();
+    }
+
+    public String aliasText() {
+        return methodAlias.asText();
     }
 }

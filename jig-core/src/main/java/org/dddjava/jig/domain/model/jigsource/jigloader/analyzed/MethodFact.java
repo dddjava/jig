@@ -61,6 +61,7 @@ public class MethodFact {
     public Method createMethod() {
         return new Method(
                 methodDeclaration(),
+                methodAlias,
                 judgeNull(),
                 decisionNumber(),
                 annotatedMethods(),

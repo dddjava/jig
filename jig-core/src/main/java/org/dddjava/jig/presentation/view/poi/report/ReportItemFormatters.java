@@ -55,7 +55,7 @@ public class ReportItemFormatters {
             case メソッドシグネチャ:
                 cell.setCellValue(toMethodDeclaration(item).asSignatureSimpleText());
             case メソッド別名:
-                cell.setCellValue(convertContext.aliasService.methodAliasOf(toMethodIdentifier(item)).asText());
+                cell.setCellValue(toMethod(item).aliasText());
                 return;
             case メソッド戻り値の型:
                 cell.setCellValue(toMethodDeclaration(item).methodReturn().asSimpleText());
@@ -115,6 +115,10 @@ public class ReportItemFormatters {
         }
 
         throw new IllegalArgumentException(reportItem.name());
+    }
+
+    private Method toMethod(Object item) {
+        return (Method) item;
     }
 
     private MethodDeclarations toMethodDeclarations(Object item) {

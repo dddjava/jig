@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleRelation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
@@ -78,11 +77,9 @@ public class BusinessRuleRelationDiagram {
             }
         }
 
-        RelationText relationText = new RelationText();
         for (BusinessRuleRelation relation : businessRuleRelations) {
-            relationText.add(relation.from(), relation.to());
+            graph.add(relation.dotText());
         }
-        graph.add(relationText.asText());
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }

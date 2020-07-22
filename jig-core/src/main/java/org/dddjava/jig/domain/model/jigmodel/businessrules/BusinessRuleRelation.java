@@ -23,4 +23,8 @@ public class BusinessRuleRelation {
     public TypeIdentifier to() {
         return to;
     }
+
+    public String dotText() {
+        return String.format("\"%s\" -> \"%s\";", from.fullQualifiedName(), to.fullQualifiedName());
+    }
 }

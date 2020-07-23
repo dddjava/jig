@@ -72,21 +72,21 @@ public class AliasServiceTest {
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("simpleMethod", new Arguments(Collections.emptyList())))))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals("メソッドのドキュメント", simpleMethod.aliasText());
+        assertEquals("メソッドのドキュメント", simpleMethod.aliasTextOrBlank());
 
         Method overloadMethod1 = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
                 .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadMethod1.aliasText().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadMethod1.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
         Method overloadMethod2 = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))))))
                 .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadMethod2.aliasText().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
     }
 
     public Sources getTestRawSource() {

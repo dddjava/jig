@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Node;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Nodes;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;

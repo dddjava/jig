@@ -55,7 +55,7 @@ public class ReportItemFormatter {
                 cell.setCellValue(toMethodDeclaration(item).asSignatureSimpleText());
                 return;
             case メソッド別名:
-                cell.setCellValue(toMethod(item).aliasText());
+                cell.setCellValue(toMethod(item).aliasTextOrBlank());
                 return;
             case メソッド戻り値の型:
                 cell.setCellValue(toMethodDeclaration(item).methodReturn().asSimpleText());

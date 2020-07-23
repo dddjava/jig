@@ -39,7 +39,7 @@ public enum Nodes {
     public static Node usecase(JigDocumentContext jigDocumentContext, Usecase usecase) {
         return (usecase.isHandler() ? ユースケース_ハンドラ : ユースケース_その他).node(
                 usecase.usecaseIdentifier(),
-                usecase.usecaseLabel(jigDocumentContext.aliasFinder()),
+                usecase.usecaseLabel(),
                 usecase.simpleTextWithDeclaringType()
         ).url(usecase.declaringType(), jigDocumentContext);
     }
@@ -47,7 +47,7 @@ public enum Nodes {
     public static Node usecase(JigDocumentContext jigDocumentContext, ServiceMethod serviceMethod) {
         return ユースケース_その他.node(
                 serviceMethod.methodDeclaration().asFullNameText(),
-                jigDocumentContext.aliasFinder().methodText(serviceMethod.methodDeclaration().identifier()),
+                serviceMethod.method().aliasText(),
                 serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType()
         ).url(serviceMethod.methodDeclaration().declaringType(), jigDocumentContext);
     }

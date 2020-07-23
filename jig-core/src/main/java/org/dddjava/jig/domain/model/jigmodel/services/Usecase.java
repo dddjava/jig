@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.services;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.List;
@@ -37,9 +34,8 @@ public class Usecase {
         return serviceMethod.methodDeclaration().asFullNameText();
     }
 
-    public String usecaseLabel(AliasFinder aliasFinder) {
-        MethodAlias methodAlias = aliasFinder.find(serviceMethod.methodDeclaration().identifier());
-        return methodAlias.asTextOrDefault(serviceMethod.methodDeclaration().declaringType().asSimpleText() + "\\n" + serviceMethod.methodDeclaration().methodSignature().methodName());
+    public String usecaseLabel() {
+        return serviceMethod.method().aliasText();
     }
 
     public String simpleTextWithDeclaringType() {

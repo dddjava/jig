@@ -72,7 +72,7 @@ class AliasServiceTest {
                         new MethodSignature("method", new Arguments(Collections.emptyList())))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals("メソッドのJavadoc", method.aliasText());
+        assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
         Method overloadedMethod = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
@@ -80,7 +80,7 @@ class AliasServiceTest {
                         new MethodSignature("overloadMethod", new Arguments(Collections.singletonList(new TypeIdentifier(String.class)))))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadedMethod.aliasText().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
         Method overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
@@ -88,6 +88,6 @@ class AliasServiceTest {
                         new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadedMethod2.aliasText().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
     }
 }

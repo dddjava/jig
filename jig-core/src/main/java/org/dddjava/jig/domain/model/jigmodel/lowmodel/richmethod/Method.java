@@ -80,7 +80,13 @@ public class Method {
         return methodDepend.usingTypes();
     }
 
-    public String aliasText() {
+    public String aliasTextOrBlank() {
         return methodAlias.asText();
+    }
+
+    public String aliasText() {
+        return methodAlias
+                .asTextOrDefault(declaration().declaringType().asSimpleText() + "\\n"
+                        + declaration().methodSignature().methodName());
     }
 }

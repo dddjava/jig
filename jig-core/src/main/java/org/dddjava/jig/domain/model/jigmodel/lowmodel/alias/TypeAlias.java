@@ -52,4 +52,8 @@ public class TypeAlias {
         }
         return aliasLine + typeIdentifier().asSimpleText();
     }
+
+    public String asTextOrIdentifierSimpleText() {
+        return asTextOrDefault(typeIdentifier.asSimpleText());
+    }
 }

@@ -62,7 +62,7 @@ class CompositeUsecases {
             TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
-                            .label(typeAlias.asTextOrDefault(otherType.asSimpleText()))
+                            .label(typeAlias.asTextOrIdentifierSimpleText())
                             .tooltip(otherType.asSimpleText())
                             .asText()
             );
@@ -73,7 +73,7 @@ class CompositeUsecases {
             TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(controllerType);
             sb.append(
                     new Node(controllerType.fullQualifiedName())
-                            .label(typeAlias.asTextOrDefault(controllerType.asSimpleText()))
+                            .label(typeAlias.asTextOrIdentifierSimpleText())
                             .tooltip(controllerType.asSimpleText())
                             .screenNode()
                             .asText()

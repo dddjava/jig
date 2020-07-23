@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigmodel.collections.CollectionField;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.text.Text;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
@@ -126,10 +125,6 @@ public class ReportItemFormatter {
             return ((ServiceMethods) item).toMethodDeclarations();
         }
         return (MethodDeclarations) item;
-    }
-
-    private MethodIdentifier toMethodIdentifier(Object item) {
-        return toMethodDeclaration(item).identifier();
     }
 
     private PackageIdentifier toPackageIdentifier(Object item) {

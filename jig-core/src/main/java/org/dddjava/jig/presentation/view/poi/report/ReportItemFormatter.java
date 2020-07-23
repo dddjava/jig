@@ -28,12 +28,12 @@ import static java.util.stream.Collectors.toList;
 /**
  * 一覧出力項目のフォーマッター
  */
-public class ReportItemFormatters {
-    static Logger logger = LoggerFactory.getLogger(ReportItemFormatters.class);
+public class ReportItemFormatter {
+    static Logger logger = LoggerFactory.getLogger(ReportItemFormatter.class);
 
     private ConvertContext convertContext;
 
-    public ReportItemFormatters(ConvertContext convertContext) {
+    public ReportItemFormatter(ConvertContext convertContext) {
         this.convertContext = convertContext;
     }
 

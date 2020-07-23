@@ -7,7 +7,7 @@ import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
-import org.dddjava.jig.presentation.view.poi.report.ReportItemFormatters;
+import org.dddjava.jig.presentation.view.poi.report.ReportItemFormatter;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,10 +17,10 @@ import java.util.List;
  */
 public class ModelReportsPoiView implements JigView<ModelReports> {
 
-    private ReportItemFormatters reportItemFormatters;
+    private ReportItemFormatter reportItemFormatter;
 
     public ModelReportsPoiView(ConvertContext convertContext) {
-        this.reportItemFormatters = new ReportItemFormatters(convertContext);
+        this.reportItemFormatter = new ReportItemFormatter(convertContext);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
         try (Workbook book = new XSSFWorkbook()) {
             List<ModelReport<?>> list = modelReports.list();
             for (ModelReport<?> modelReport : list) {
-                modelReport.writeSheet(book, reportItemFormatters);
+                modelReport.writeSheet(book, reportItemFormatter);
             }
 
             jigDocumentWriter.writeXlsx(book::write);

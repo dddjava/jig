@@ -97,10 +97,10 @@ public class ModelReport<MODEL> {
         return new Header(reportItemMethods);
     }
 
-    public void writeSheet(Workbook book, ReportItemFormatters reportItemFormatters) {
+    public void writeSheet(Workbook book, ReportItemFormatter reportItemFormatter) {
         Sheet sheet = book.createSheet(title);
         writeHeader(sheet);
-        writeBody(sheet, reportItemFormatters);
+        writeBody(sheet, reportItemFormatter);
         updateSheetAttribute(sheet);
     }
 
@@ -114,14 +114,14 @@ public class ModelReport<MODEL> {
         }
     }
 
-    void writeBody(Sheet sheet, ReportItemFormatters reportItemFormatters) {
+    void writeBody(Sheet sheet, ReportItemFormatter reportItemFormatter) {
         for (MODEL pivotModel : pivotModels) {
             Row row = sheet.createRow(sheet.getLastRowNum() + 1);
             Object report = modelReporter.report(pivotModel);
 
             for (ReportItemMethod reportItemMethod : reportItemMethods) {
                 Object methodReturnValue = reportItemMethod.invoke(report);
-                reportItemFormatters.apply(row, reportItemMethod, methodReturnValue);
+                reportItemFormatter.apply(row, reportItemMethod, methodReturnValue);
             }
         }
     }

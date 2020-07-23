@@ -51,7 +51,7 @@ public class BusinessRuleService {
     public MethodSmellList methodSmells() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         Methods methods = new Methods(typeFacts.instanceMethodFacts().stream()
-                .map(methodByteCode -> methodByteCode.createMethod())
+                .map(methodFact -> methodFact.createMethod())
                 .collect(toList()));
         return new MethodSmellList(methods,
                 typeFacts.instanceFields(),

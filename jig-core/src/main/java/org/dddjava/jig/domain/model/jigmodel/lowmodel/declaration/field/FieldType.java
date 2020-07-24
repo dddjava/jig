@@ -9,7 +9,7 @@ public class FieldType {
 
     ParameterizedType parameterizedType;
 
-    public FieldType(ParameterizedType parameterizedType) {
+    private FieldType(ParameterizedType parameterizedType) {
         this.parameterizedType = parameterizedType;
     }
 

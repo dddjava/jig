@@ -15,7 +15,10 @@ import java.util.*;
 public class MethodDepend {
 
     Set<TypeIdentifier> usingTypes;
+
+    // FIXME 取扱注意。AsmClassVisitorのvisitFieldInsnを参照。
     List<FieldDeclaration> usingFields;
+
     List<MethodDeclaration> usingMethods;
     boolean hasNullReference;
 

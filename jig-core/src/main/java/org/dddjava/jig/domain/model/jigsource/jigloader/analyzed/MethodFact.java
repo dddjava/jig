@@ -60,12 +60,12 @@ public class MethodFact {
 
     public Method createMethod() {
         return new Method(
-                methodDeclaration(),
+                methodDeclaration,
                 methodAlias,
                 judgeNull(),
                 decisionNumber(),
                 annotatedMethods(),
-                visibility(),
+                visibility,
                 methodDepend());
     }
 
@@ -110,20 +110,12 @@ public class MethodFact {
         methodKind.bind(this, typeFact);
     }
 
-    public Visibility visibility() {
-        return visibility;
-    }
-
-    public MethodDeclaration methodDeclaration() {
-        return methodDeclaration;
-    }
-
     public DecisionNumber decisionNumber() {
         return new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber);
     }
 
     public boolean sameSignature(MethodFact other) {
-        return methodDeclaration().methodSignature().isSame(other.methodDeclaration().methodSignature());
+        return methodDeclaration.methodSignature().isSame(other.methodDeclaration.methodSignature());
     }
 
     public void markReferenceNull() {
@@ -149,7 +141,7 @@ public class MethodFact {
     }
 
     public MethodIdentifier methodIdentifier() {
-        return methodDeclaration().identifier();
+        return methodDeclaration.identifier();
     }
 
     public void registerMethodAlias(MethodAlias methodAlias) {

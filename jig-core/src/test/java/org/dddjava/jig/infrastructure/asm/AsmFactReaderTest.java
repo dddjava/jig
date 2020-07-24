@@ -40,7 +40,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.assertj.core.api.InstanceOfAssertFactories.type;
 
 public class AsmFactReaderTest {
 
@@ -252,12 +251,10 @@ public class AsmFactReaderTest {
 
         assertThat(actual)
                 .extracting(
-                        typeFact -> typeFact.typeKind().isCategory(),
-                        typeFact -> !typeFact.instanceMethodDeclarations().empty(),
-                        TypeFact::hasField
+                        typeFact -> !typeFact.instanceMethodFacts().isEmpty(),
+                        typeFact -> !typeFact.fieldDeclarations().empty()
                 )
                 .containsExactly(
-                        true,
                         hasMethod,
                         hasField
                 );

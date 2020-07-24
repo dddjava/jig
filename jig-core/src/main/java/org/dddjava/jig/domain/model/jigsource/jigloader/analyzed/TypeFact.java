@@ -13,7 +13,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
@@ -77,10 +76,6 @@ public class TypeFact {
 
     public TypeIdentifier typeIdentifier() {
         return type.typeIdentifier();
-    }
-
-    public boolean hasField() {
-        return !fieldDeclarations.isEmpty();
     }
 
     public FieldDeclarations fieldDeclarations() {
@@ -158,30 +153,8 @@ public class TypeFact {
         return superType;
     }
 
-    public TypeDeclaration typeDeclaration() {
-        return new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
-    }
-
     public List<ParameterizedType> interfaceTypes() {
         return interfaceTypes;
-    }
-
-    public MethodDeclarations constructorDeclarations() {
-        return constructorFacts.stream()
-                .map(MethodFact::methodDeclaration)
-                .collect(MethodDeclarations.collector());
-    }
-
-    public MethodDeclarations instanceMethodDeclarations() {
-        return instanceMethodFacts.stream()
-                .map(MethodFact::methodDeclaration)
-                .collect(MethodDeclarations.collector());
-    }
-
-    public MethodDeclarations staticMethodDeclarations() {
-        return staticMethodFacts.stream()
-                .map(MethodFact::methodDeclaration)
-                .collect(MethodDeclarations.collector());
     }
 
     void collectClassRelations(List<ClassRelation> collector) {
@@ -191,10 +164,6 @@ public class TypeFact {
             if (classRelation.selfRelation()) continue;
             collector.add(classRelation);
         }
-    }
-
-    public TypeKind typeKind() {
-        return typeKind;
     }
 
     public void registerTypeAlias(TypeAlias typeAlias) {
@@ -235,6 +204,7 @@ public class TypeFact {
     }
 
     private JigType jigType() {
-        return new JigType(typeDeclaration(), typeAlias, typeKind(), visibility);
+        TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
+        return new JigType(typeDeclaration, typeAlias, typeKind, visibility);
     }
 }

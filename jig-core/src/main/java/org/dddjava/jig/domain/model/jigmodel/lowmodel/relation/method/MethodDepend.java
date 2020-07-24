@@ -27,8 +27,7 @@ public class MethodDepend {
     }
 
     public UsingFields usingFields() {
-        FieldDeclarations fieldDeclarations = usingFields.stream().collect(FieldDeclarations.collector());
-        return new UsingFields(fieldDeclarations);
+        return new UsingFields(new FieldDeclarations(usingFields));
     }
 
     public UsingMethods usingMethods() {

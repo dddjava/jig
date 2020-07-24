@@ -6,8 +6,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * フィールド定義一覧
@@ -18,10 +16,6 @@ public class FieldDeclarations {
 
     public FieldDeclarations(List<FieldDeclaration> list) {
         this.list = list;
-    }
-
-    public static Collector<FieldDeclaration, ?, FieldDeclarations> collector() {
-        return Collectors.collectingAndThen(Collectors.toList(), FieldDeclarations::new);
     }
 
     @Deprecated
@@ -44,12 +38,6 @@ public class FieldDeclarations {
         if (list.size() != typeIdentifiers.length) return false;
         return Arrays.equals(typeIdentifiers,
                 list.stream().map(FieldDeclaration::typeIdentifier).toArray(TypeIdentifier[]::new));
-    }
-
-    public FieldDeclarations filterDeclareTypeIs(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .filter(fieldDeclaration -> fieldDeclaration.declaringType().equals(typeIdentifier))
-                .collect(FieldDeclarations.collector());
     }
 
     public FieldDeclaration onlyOneField() {

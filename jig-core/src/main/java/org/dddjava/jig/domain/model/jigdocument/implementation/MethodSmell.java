@@ -29,7 +29,7 @@ public class MethodSmell {
 
     public boolean notUseMember() {
         // フィールド無しはクラスのスメル？
-        if (!fieldDeclarations.list().isEmpty()) {
+        if (!fieldDeclarations.empty()) {
             return false;
         }
         return method.methodWorries().contains(MethodWorry.メンバを使用していない);

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -12,15 +11,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 public class CategoryAngle {
 
     CategoryType categoryType;
-    TypeIdentifiers userTypeIdentifiers;
-    StaticFieldDeclarations constantsDeclarations;
-    FieldDeclarations fieldDeclarations;
+    ClassRelations classRelations;
 
     public CategoryAngle(CategoryType categoryType, ClassRelations classRelations) {
         this.categoryType = categoryType;
-        this.userTypeIdentifiers = classRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier());
-        this.constantsDeclarations = categoryType.constantsDeclarations();
-        this.fieldDeclarations = categoryType.fieldDeclarations();
+        this.classRelations = classRelations;
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -32,15 +27,15 @@ public class CategoryAngle {
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return constantsDeclarations.filterTypeSafeConstants();
+        return categoryType.constantsDeclarations().filterTypeSafeConstants();
     }
 
     public String fieldDeclarations() {
-        return fieldDeclarations.toSignatureText();
+        return categoryType.fieldDeclarations().toSignatureText();
     }
 
     public TypeIdentifiers userTypeIdentifiers() {
-        return userTypeIdentifiers;
+        return classRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier());
     }
 
     public boolean hasParameter() {

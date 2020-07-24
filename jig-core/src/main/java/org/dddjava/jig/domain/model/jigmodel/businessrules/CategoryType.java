@@ -10,9 +10,13 @@ public class CategoryType {
     JigType jigType;
     JigInstanceMember jigInstanceMember;
 
-    public CategoryType(JigType jigType, JigInstanceMember jigInstanceMember) {
+    private CategoryType(JigType jigType, JigInstanceMember jigInstanceMember) {
         this.jigType = jigType;
         this.jigInstanceMember = jigInstanceMember;
+    }
+
+    public CategoryType(BusinessRule businessRule) {
+        this(businessRule.jigType, businessRule.jigInstanceMember);
     }
 
     public boolean hasParameter() {

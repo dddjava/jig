@@ -90,7 +90,7 @@ public class BusinessRules {
     public CategoryTypes toCategoryTypes() {
         List<CategoryType> list = this.list.stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
-                .map(businessRule -> new CategoryType(businessRule.jigType, businessRule.jigInstanceMember))
+                .map(businessRule -> new CategoryType(businessRule))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);
     }

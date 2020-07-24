@@ -23,10 +23,6 @@ public class TypeParameters {
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 
-    public TypeParameter get(int i) {
-        return list.get(i);
-    }
-
     public boolean empty() {
         return list.isEmpty();
     }

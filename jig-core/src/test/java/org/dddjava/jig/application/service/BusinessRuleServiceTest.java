@@ -20,22 +20,22 @@ class BusinessRuleServiceTest {
         BusinessRules businessRules = businessRuleService.businessRules();
 
         BusinessRule publicType = businessRules.list().stream()
-                .filter(businessRule -> businessRule.fullName().endsWith("PublicType"))
+                .filter(businessRule -> businessRule.typeIdentifier().fullQualifiedName().endsWith("PublicType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.PUBLIC, publicType.visibility());
 
         BusinessRule protectedType = businessRules.list().stream()
-                .filter(businessRule -> businessRule.fullName().endsWith("ProtectedType"))
+                .filter(businessRule -> businessRule.typeIdentifier().fullQualifiedName().endsWith("ProtectedType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.PUBLIC, protectedType.visibility());
 
         BusinessRule defaultType = businessRules.list().stream()
-                .filter(businessRule -> businessRule.fullName().endsWith("DefaultType"))
+                .filter(businessRule -> businessRule.typeIdentifier().fullQualifiedName().endsWith("DefaultType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.NOT_PUBLIC, defaultType.visibility());
 
         BusinessRule privateType = businessRules.list().stream()
-                .filter(businessRule -> businessRule.fullName().endsWith("PrivateType"))
+                .filter(businessRule -> businessRule.typeIdentifier().fullQualifiedName().endsWith("PrivateType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.NOT_PUBLIC, privateType.visibility());
     }

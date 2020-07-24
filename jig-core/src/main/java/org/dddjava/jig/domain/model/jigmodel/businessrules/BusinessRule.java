@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.jigmodel.businessrules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigInstanceMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigTypeMember;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
@@ -37,24 +36,12 @@ public class BusinessRule {
         return type().identifier();
     }
 
-    public boolean hasInstanceMethod() {
-        return !jigInstanceMember.getInstanceMethodDeclarations().empty();
-    }
-
-    public TypeKind typeKind() {
-        return jigType.getTypeKind();
-    }
-
     public BusinessRuleCategory businessRuleCategory() {
-        return BusinessRuleCategory.choice(fields(), typeKind());
+        return BusinessRuleCategory.choice(fields(), jigType.getTypeKind());
     }
 
     public Visibility visibility() {
         return jigType.getVisibility();
-    }
-
-    public String fullName() {
-        return typeIdentifier().fullQualifiedName();
     }
 
     public MethodDeclarations instanceMethodDeclarations() {

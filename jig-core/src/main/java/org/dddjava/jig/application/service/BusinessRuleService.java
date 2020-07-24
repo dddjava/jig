@@ -49,7 +49,7 @@ public class BusinessRuleService {
     public MethodSmellList methodSmells() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         MethodRelations methodRelations = typeFacts.toMethodRelations();
-        return new MethodSmellList(methodRelations, businessRules());
+        return new MethodSmellList(businessRules(), methodRelations);
     }
 
     /**

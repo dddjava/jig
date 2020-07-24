@@ -17,10 +17,10 @@ public class MethodSmell {
     FieldDeclarations fieldDeclarations;
     CallerMethods callerMethods;
 
-    public MethodSmell(Method method, FieldDeclarations fieldDeclarations, MethodRelations toMeRelation) {
+    public MethodSmell(Method method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
-        this.callerMethods = toMeRelation.callerMethodsOf(new CalleeMethod(method.declaration()));
+        this.callerMethods = methodRelations.callerMethodsOf(new CalleeMethod(method.declaration()));
     }
 
     public MethodDeclaration methodDeclaration() {

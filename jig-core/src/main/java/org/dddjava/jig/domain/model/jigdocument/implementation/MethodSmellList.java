@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class MethodSmellList {
     List<MethodSmell> list;
 
-    public MethodSmellList(MethodRelations methodRelations, BusinessRules businessRules) {
+    public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
         for (BusinessRule businessRule : businessRules.list()) {
             for (Method method : businessRule.instanceMethods().list()) {

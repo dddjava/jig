@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleCategory;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
+import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -28,7 +28,7 @@ public class CategoryUsageDiagram {
     public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules) {
         this.serviceMethods = serviceMethods;
         this.businessRules = businessRules;
-        this.categoryTypes = businessRules.toCategoryTypes();
+        this.categoryTypes = CategoryTypes.from(businessRules);
     }
 
     public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {

@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiag
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
+import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
@@ -55,7 +55,7 @@ public class BusinessRuleService {
      */
     public Categories categories() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        CategoryTypes categoryTypes = businessRules().toCategoryTypes();
+        CategoryTypes categoryTypes = CategoryTypes.from(businessRules());
         ClassRelations classRelations = typeFacts.toClassRelations();
 
         return Categories.create(categoryTypes, classRelations);

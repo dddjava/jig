@@ -72,4 +72,16 @@ public class BusinessRule {
     public Methods instanceMethods() {
         return jigInstanceMember.instanceMethods();
     }
+
+    public JigInstanceMember jigInstanceMember() {
+        return jigInstanceMember;
+    }
+
+    public JigTypeMember jigTypeMember() {
+        return jigTypeMember;
+    }
+
+    public JigType jigType() {
+        return jigType;
+    }
 }

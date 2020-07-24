@@ -87,14 +87,6 @@ public class BusinessRules {
                 .collect(Collectors.toList());
     }
 
-    public CategoryTypes toCategoryTypes() {
-        List<CategoryType> list = this.list.stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
-                .map(businessRule -> new CategoryType(businessRule))
-                .collect(Collectors.toList());
-        return new CategoryTypes(list);
-    }
-
     public ClassRelations businessRuleRelations() {
         return businessRuleRelations;
     }

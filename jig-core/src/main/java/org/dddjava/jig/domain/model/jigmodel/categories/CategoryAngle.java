@@ -27,7 +27,7 @@ public class CategoryAngle {
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return categoryType.constantsDeclarations().filterTypeSafeConstants();
+        return categoryType.constantsDeclarations().selfDefineOnly();
     }
 
     public String fieldDeclarations() {

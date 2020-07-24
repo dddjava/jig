@@ -24,9 +24,9 @@ public class StaticFieldDeclarations {
         return Text.of(list, StaticFieldDeclaration::nameText);
     }
 
-    public StaticFieldDeclarations filterTypeSafeConstants() {
+    public StaticFieldDeclarations selfDefineOnly() {
         return list.stream()
-                .filter(StaticFieldDeclaration::isTypeSafe)
+                .filter(StaticFieldDeclaration::isSelfDefine)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), StaticFieldDeclarations::new));
     }
 }

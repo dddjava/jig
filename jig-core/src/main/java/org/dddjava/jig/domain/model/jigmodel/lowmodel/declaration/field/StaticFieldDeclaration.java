@@ -25,11 +25,9 @@ public class StaticFieldDeclaration {
         return name;
     }
 
-    public TypeIdentifier declaringType() {
-        return declaringType;
-    }
-
-    public boolean isTypeSafe() {
+    public boolean isSelfDefine() {
+        // 定数の型と定義クラスの型が一致するもの
+        // enumの列挙、TypeSafe enumパターンを想定
         return typeIdentifier.equals(declaringType);
     }
 }

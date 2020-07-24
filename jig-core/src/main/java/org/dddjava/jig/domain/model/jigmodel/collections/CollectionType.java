@@ -18,7 +18,7 @@ public class CollectionType {
     }
 
     public TypeIdentifier typeIdentifier() {
-        return businessRule.type().identifier();
+        return businessRule.typeIdentifier();
     }
 
     public MethodDeclarations methods() {

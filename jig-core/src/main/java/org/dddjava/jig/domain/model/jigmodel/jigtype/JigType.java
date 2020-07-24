@@ -7,10 +7,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDecla
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 public class JigType {
-    private final TypeDeclaration typeDeclaration;
-    private final TypeAlias typeAlias;
-    private final TypeKind typeKind;
-    private final Visibility visibility;
+    TypeDeclaration typeDeclaration;
+    TypeAlias typeAlias;
+    TypeKind typeKind;
+    Visibility visibility;
 
     public JigType(TypeDeclaration typeDeclaration, TypeAlias typeAlias, TypeKind typeKind, Visibility visibility) {
         this.typeDeclaration = typeDeclaration;
@@ -19,23 +19,23 @@ public class JigType {
         this.visibility = visibility;
     }
 
-    public TypeDeclaration getTypeDeclaration() {
+    public TypeDeclaration typeDeclaration() {
         return typeDeclaration;
     }
 
-    public TypeAlias getTypeAlias() {
+    public TypeAlias typeAlias() {
         return typeAlias;
     }
 
-    public TypeKind getTypeKind() {
+    public TypeKind typeKind() {
         return typeKind;
     }
 
-    public Visibility getVisibility() {
+    public Visibility visibility() {
         return visibility;
     }
 
     public TypeIdentifier identifier() {
-        return getTypeDeclaration().identifier();
+        return typeDeclaration().identifier();
     }
 }

@@ -24,36 +24,36 @@ public class BusinessRule {
         this.jigTypeMember = jigTypeMember;
     }
 
-    public TypeDeclaration type() {
-        return jigType.getTypeDeclaration();
+    public TypeDeclaration typeDeclaration() {
+        return jigType.typeDeclaration();
     }
 
     public BusinessRuleFields fields() {
-        return new BusinessRuleFields(jigInstanceMember.getFieldDeclarations());
+        return new BusinessRuleFields(jigInstanceMember.fieldDeclarations());
     }
 
     public TypeIdentifier typeIdentifier() {
-        return type().identifier();
+        return typeDeclaration().identifier();
     }
 
     public BusinessRuleCategory businessRuleCategory() {
-        return BusinessRuleCategory.choice(fields(), jigType.getTypeKind());
+        return BusinessRuleCategory.choice(fields(), jigType.typeKind());
     }
 
     public Visibility visibility() {
-        return jigType.getVisibility();
+        return jigType.visibility();
     }
 
     public MethodDeclarations instanceMethodDeclarations() {
-        return jigInstanceMember.getInstanceMethodDeclarations();
+        return jigInstanceMember.instanceMethods().declarations();
     }
 
     public String nodeLabel() {
-        return jigType.getTypeAlias().nodeLabel();
+        return jigType.typeAlias().nodeLabel();
     }
 
     public boolean markedCore() {
-        return jigType.getTypeAlias().markedCore();
+        return jigType.typeAlias().markedCore();
     }
 
     public Methods instanceMethods() {

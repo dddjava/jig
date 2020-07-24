@@ -30,7 +30,7 @@ public class Node {
     }
 
     public static Node businessRuleNodeOf(BusinessRule businessRule) {
-        return new Node(businessRule.type().identifier().fullQualifiedName())
+        return new Node(businessRule.typeIdentifier().fullQualifiedName())
                 .label(businessRule.nodeLabel())
                 .highlightColorIf(businessRule.markedCore());
     }

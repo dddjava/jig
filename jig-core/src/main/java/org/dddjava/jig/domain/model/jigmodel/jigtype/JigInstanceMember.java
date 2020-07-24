@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 public class JigInstanceMember {
@@ -13,16 +12,12 @@ public class JigInstanceMember {
         this.instanceMethods = instanceMethods;
     }
 
-    public FieldDeclarations getFieldDeclarations() {
-        return fieldDeclarations;
-    }
-
-    public MethodDeclarations getInstanceMethodDeclarations() {
-        return instanceMethods.declarations();
-    }
-
     public boolean hasField() {
         return !fieldDeclarations.empty();
+    }
+
+    public FieldDeclarations fieldDeclarations() {
+        return fieldDeclarations;
     }
 
     public boolean hasMethod() {

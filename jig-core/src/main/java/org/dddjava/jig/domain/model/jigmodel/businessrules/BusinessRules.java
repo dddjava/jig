@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
@@ -57,15 +56,14 @@ public class BusinessRules {
             return cache;
         }
         return cache = list.stream()
-                .map(BusinessRule::type)
-                .map(TypeDeclaration::identifier)
+                .map(BusinessRule::typeIdentifier)
                 .collect(TypeIdentifiers.collector());
     }
 
     public BusinessRulePackages businessRulePackages() {
         Map<PackageIdentifier, List<BusinessRule>> map = list().stream()
                 .collect(Collectors.groupingBy(
-                        businessRule -> businessRule.type().identifier().packageIdentifier()
+                        businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));
         List<BusinessRulePackage> list = map.entrySet().stream()
                 .map(entity -> new BusinessRulePackage(

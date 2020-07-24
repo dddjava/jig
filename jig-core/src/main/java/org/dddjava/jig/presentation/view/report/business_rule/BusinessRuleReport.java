@@ -28,7 +28,7 @@ public class BusinessRuleReport {
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     public TypeDeclaration type() {
-        return businessRule.type();
+        return businessRule.typeDeclaration();
     }
 
     @ReportItemFor(ReportItem.使用箇所数)

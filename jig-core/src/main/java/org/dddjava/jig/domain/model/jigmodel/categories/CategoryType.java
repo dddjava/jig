@@ -27,19 +27,19 @@ public class CategoryType {
 
     public boolean isPolymorphism() {
         // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
-        return businessRule.jigType().getTypeKind() == TypeKind.抽象列挙型;
+        return businessRule.jigType().typeKind() == TypeKind.抽象列挙型;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return businessRule.jigType().identifier();
+        return businessRule.typeIdentifier();
     }
 
     public String nodeLabel() {
-        return businessRule.jigType().getTypeAlias().nodeLabel();
+        return businessRule.jigType().typeAlias().nodeLabel();
     }
 
     public String nodeLabel(String delimiter) {
-        return businessRule.jigType().getTypeAlias().nodeLabel(delimiter);
+        return businessRule.jigType().typeAlias().nodeLabel(delimiter);
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
@@ -47,6 +47,6 @@ public class CategoryType {
     }
 
     public FieldDeclarations fieldDeclarations() {
-        return businessRule.jigInstanceMember().getFieldDeclarations();
+        return businessRule.jigInstanceMember().fieldDeclarations();
     }
 }

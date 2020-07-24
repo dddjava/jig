@@ -28,7 +28,7 @@ public class CategoryUsageDiagram {
     public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules) {
         this.serviceMethods = serviceMethods;
         this.businessRules = businessRules;
-        this.categoryTypes = businessRules.createCategoryTypes();
+        this.categoryTypes = businessRules.toCategoryTypes();
     }
 
     public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {

@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 public class JigType {
     private final TypeDeclaration typeDeclaration;
@@ -32,5 +33,9 @@ public class JigType {
 
     public Visibility getVisibility() {
         return visibility;
+    }
+
+    public TypeIdentifier identifier() {
+        return getTypeDeclaration().identifier();
     }
 }

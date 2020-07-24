@@ -60,7 +60,7 @@ public class BusinessRuleService {
      */
     public Categories categories() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        CategoryTypes categoryTypes = businessRules().createCategoryTypes();
+        CategoryTypes categoryTypes = businessRules().toCategoryTypes();
         ClassRelations classRelations = typeFacts.toClassRelations();
         FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
         StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();

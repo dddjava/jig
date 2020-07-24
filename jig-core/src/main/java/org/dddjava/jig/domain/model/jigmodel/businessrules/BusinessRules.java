@@ -87,16 +87,10 @@ public class BusinessRules {
                 .collect(Collectors.toList());
     }
 
-    public CategoryTypes createCategoryTypes() {
+    public CategoryTypes toCategoryTypes() {
         List<CategoryType> list = this.list.stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
-                .map(businessRule -> new CategoryType(
-                        businessRule.typeKind(),
-                        businessRule.typeIdentifier(),
-                        businessRule.jigType.getTypeAlias(),
-                        !businessRule.fields().fieldDeclarations().list().isEmpty(),
-                        businessRule.hasInstanceMethod()
-                ))
+                .map(businessRule -> new CategoryType(businessRule.jigType, businessRule.jigInstanceMember))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);
     }

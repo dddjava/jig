@@ -6,8 +6,9 @@ package org.dddjava.jig.domain.model.jigmodel.lowmodel;
 public enum TypeKind {
     通常型,
 
+    // finalな型
     列挙型,
-    // 抽象列挙型＝継承される列挙型。継承クラスが生成され、多態である。
+    // abstractな型
     抽象列挙型,
     アノテーション,
     インタフェース,

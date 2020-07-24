@@ -19,4 +19,12 @@ public class JigInstanceMember {
     public MethodDeclarations getInstanceMethodDeclarations() {
         return instanceMethodDeclarations;
     }
+
+    public boolean hasField() {
+        return !fieldDeclarations.empty();
+    }
+
+    public boolean hasMethod() {
+        return !instanceMethodDeclarations.empty();
+    }
 }

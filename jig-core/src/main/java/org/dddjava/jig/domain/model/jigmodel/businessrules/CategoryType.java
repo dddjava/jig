@@ -1,49 +1,43 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
  * 区分
  */
 public class CategoryType {
-    TypeIdentifier typeIdentifier;
-    TypeAlias typeAlias;
+    JigType jigType;
+    JigInstanceMember jigInstanceMember;
 
-    boolean behaviour;
-    boolean polymorphism;
-    boolean parameterized;
-
-    public CategoryType(TypeKind typeKind, TypeIdentifier typeIdentifier, TypeAlias typeAlias, boolean parameterized, boolean behaviour) {
-        this.typeIdentifier = typeIdentifier;
-        this.typeAlias = typeAlias;
-        this.parameterized = parameterized;
-        this.behaviour = behaviour;
-        this.polymorphism = typeKind == TypeKind.抽象列挙型;
+    public CategoryType(JigType jigType, JigInstanceMember jigInstanceMember) {
+        this.jigType = jigType;
+        this.jigInstanceMember = jigInstanceMember;
     }
 
     public boolean hasParameter() {
-        return parameterized;
+        return jigInstanceMember.hasField();
     }
 
     public boolean hasBehaviour() {
-        return behaviour;
+        // インスタンスメソッドがあるものを振る舞いありとする
+        return jigInstanceMember.hasMethod();
     }
 
     public boolean isPolymorphism() {
-        return polymorphism;
+        // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
+        return jigType.getTypeKind() == TypeKind.抽象列挙型;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return typeIdentifier;
+        return jigType.identifier();
     }
 
     public String nodeLabel() {
-        return typeAlias.nodeLabel();
+        return jigType.getTypeAlias().nodeLabel();
     }
 
     public String nodeLabel(String delimiter) {
-        return typeAlias.nodeLabel(delimiter);
+        return jigType.getTypeAlias().nodeLabel(delimiter);
     }
 }

@@ -63,9 +63,7 @@ public class TypeFact {
         this.typeKind = typeKind;
         this.visibility = visibility;
 
-        for (TypeParameter typeParameter : type.typeParameters().list()) {
-            this.useTypes.add(typeParameter.typeIdentifier());
-        }
+        this.useTypes.addAll(type.typeParameters().list());
         this.useTypes.add(superType.typeIdentifier());
         for (ParameterizedType interfaceType : interfaceTypes) {
             this.useTypes.add(interfaceType.typeIdentifier());

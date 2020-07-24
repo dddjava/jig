@@ -7,19 +7,20 @@ import java.util.stream.Collectors;
  * 型パラメーター一覧
  */
 public class TypeParameters {
-    List<TypeParameter> list;
+    List<TypeIdentifier> list;
 
-    public TypeParameters(List<TypeParameter> list) {
+    public TypeParameters(List<TypeIdentifier> list) {
         this.list = list;
     }
 
-    public List<TypeParameter> list() {
+    public List<TypeIdentifier> list() {
         return list;
     }
 
     public String asSimpleText() {
+        // <Hoge, Fuga> の形
         return list.stream()
-                .map(e -> e.typeIdentifier.asSimpleText())
+                .map(e -> e.asSimpleText())
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 

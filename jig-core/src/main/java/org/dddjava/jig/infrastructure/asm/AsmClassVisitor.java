@@ -10,7 +10,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldIde
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeParameters;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodKind;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
@@ -356,7 +359,7 @@ class AsmClassVisitor extends ClassVisitor {
             return new MethodReturn(returnTypeIdentifier);
         }
 
-        return new MethodReturn(new ParameterizedType(collector[0], new TypeParameter(collector[1])));
+        return new MethodReturn(new ParameterizedType(collector[0], collector[1]));
     }
 
     private ParameterizedType parameterizedSuperType(String superName, String signature) {
@@ -368,7 +371,7 @@ class AsmClassVisitor extends ClassVisitor {
         SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
         };
 
-        List<TypeParameter> typeParameters = new ArrayList<>();
+        List<TypeIdentifier> typeParameters = new ArrayList<>();
 
         new SignatureReader(signature).accept(
                 new SignatureVisitor(this.api) {
@@ -383,7 +386,7 @@ class AsmClassVisitor extends ClassVisitor {
                                     return new SignatureVisitor(this.api) {
                                         @Override
                                         public void visitClassType(String name) {
-                                            typeParameters.add(new TypeParameter(new TypeIdentifier(name)));
+                                            typeParameters.add(new TypeIdentifier(name));
                                         }
 
                                         @Override
@@ -425,7 +428,7 @@ class AsmClassVisitor extends ClassVisitor {
                     public SignatureVisitor visitInterface() {
 
                         return new SignatureVisitor(this.api) {
-                            List<TypeParameter> typeParameters = new ArrayList<>();
+                            List<TypeIdentifier> typeParameters = new ArrayList<>();
                             String interfaceName;
 
                             @Override
@@ -439,7 +442,7 @@ class AsmClassVisitor extends ClassVisitor {
                                     return new SignatureVisitor(this.api) {
                                         @Override
                                         public void visitClassType(String name) {
-                                            typeParameters.add(new TypeParameter(new TypeIdentifier(name)));
+                                            typeParameters.add(new TypeIdentifier(name));
                                         }
 
                                         @Override

@@ -24,7 +24,8 @@ public class ValueAngleTest {
     void readProjectData(BusinessRuleService service, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
         ValueAngles identifiers = service.values(ValueKind.IDENTIFIER);
-        assertThat(identifiers.list()).extracting(ValueAngle::typeIdentifier)
+        assertThat(identifiers.list())
+                .extracting(ValueAngle::typeIdentifier)
                 .contains(
                         new TypeIdentifier(SimpleIdentifier.class),
                         new TypeIdentifier(FugaIdentifier.class),
@@ -36,28 +37,36 @@ public class ValueAngleTest {
                 );
 
         ValueAngles numbers = service.values(ValueKind.NUMBER);
-        assertThat(numbers.list()).extracting(ValueAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleNumber.class),
-                new TypeIdentifier(IntegerNumber.class),
-                new TypeIdentifier(LongNumber.class),
-                new TypeIdentifier(PrimitiveIntNumber.class),
-                new TypeIdentifier(PrimitiveLongNumber.class)
-        );
+        assertThat(numbers.list())
+                .extracting(ValueAngle::typeIdentifier)
+                .contains(
+                        new TypeIdentifier(SimpleNumber.class),
+                        new TypeIdentifier(IntegerNumber.class),
+                        new TypeIdentifier(LongNumber.class),
+                        new TypeIdentifier(PrimitiveIntNumber.class),
+                        new TypeIdentifier(PrimitiveLongNumber.class)
+                );
 
         ValueAngles dates = service.values(ValueKind.DATE);
-        assertThat(dates.list()).extracting(ValueAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleDate.class)
-        );
+        assertThat(dates.list())
+                .extracting(ValueAngle::typeIdentifier)
+                .contains(
+                        new TypeIdentifier(SimpleDate.class)
+                );
 
         ValueAngles terms = service.values(ValueKind.TERM);
-        assertThat(terms.list()).extracting(ValueAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleTerm.class)
-        );
+        assertThat(terms.list())
+                .extracting(ValueAngle::typeIdentifier)
+                .contains(
+                        new TypeIdentifier(SimpleTerm.class)
+                );
 
         CollectionAngles collections = service.collections();
-        assertThat(collections.list()).extracting(CollectionAngle::typeIdentifier).contains(
-                new TypeIdentifier(SimpleCollection.class),
-                new TypeIdentifier(SetCollection.class)
-        );
+        assertThat(collections.list())
+                .extracting(CollectionAngle::typeIdentifier)
+                .contains(
+                        new TypeIdentifier(SimpleCollection.class),
+                        new TypeIdentifier(SetCollection.class)
+                );
     }
 }

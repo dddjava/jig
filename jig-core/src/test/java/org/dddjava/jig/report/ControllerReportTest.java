@@ -1,5 +1,7 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.report;
 
+import org.dddjava.jig.application.service.ApplicationService;
+import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
@@ -10,17 +12,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 @JigServiceTest
-public class ControllerAnglesTest {
+public class ControllerReportTest {
 
     @Test
-    void readProjectData(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
+    void test(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
         ControllerMethods controllerMethods = applicationService.controllerAngles();
 
-        assertThat(controllerMethods.list())
+        assertThat(controllerMethods.list().stream().map(ControllerReport::new))
                 .extracting(
-                        controllerMethod -> controllerMethod.method().declaration().asFullNameText(),
-                        controllerMethod -> new ControllerReport(controllerMethod).path()
+                        controllerReport -> controllerReport.method().declaration().asFullNameText(),
+                        controllerReport -> controllerReport.path()
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController.getService()", "simple-class/simple-method"),

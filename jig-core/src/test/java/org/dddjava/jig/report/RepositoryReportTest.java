@@ -1,8 +1,11 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.report;
 
+import org.dddjava.jig.application.service.ApplicationService;
+import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;
@@ -12,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 @JigServiceTest
-public class DatasourceAngleTest {
+public class RepositoryReportTest {
 
     @Test
     void readProjectData(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
@@ -21,7 +24,7 @@ public class DatasourceAngleTest {
 
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
 
-        assertThat(datasourceAngles.list())
+        assertThat(datasourceAngles.list().stream().map(RepositoryReport::new))
                 .extracting(
                         datasourceAngle -> datasourceAngle.method().declaringType(),
                         datasourceAngle -> datasourceAngle.method().asSignatureSimpleText(),

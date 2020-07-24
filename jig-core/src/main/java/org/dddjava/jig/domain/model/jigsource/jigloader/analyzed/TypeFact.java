@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.JigInstanceMember;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.JigType;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.JigTypeMember;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.JigInstanceMember;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.JigTypeMember;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
@@ -221,7 +221,7 @@ public class TypeFact {
     }
 
     private JigTypeMember jigTypeMember() {
-        return new JigTypeMember(constructorDeclarations(), staticMethodDeclarations());
+        return new JigTypeMember(constructorDeclarations(), staticMethodDeclarations(), staticFieldDeclarations());
     }
 
     private JigInstanceMember jigInstanceMember() {

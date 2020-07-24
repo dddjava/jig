@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.businessrules;
+package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;

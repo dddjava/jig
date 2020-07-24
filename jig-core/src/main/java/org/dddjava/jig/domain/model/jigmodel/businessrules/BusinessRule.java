@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 /**
  * ビジネスルール
@@ -66,5 +67,9 @@ public class BusinessRule {
 
     public boolean markedCore() {
         return jigType.getTypeAlias().markedCore();
+    }
+
+    public Methods instanceMethods() {
+        return jigInstanceMember.instanceMethods();
     }
 }

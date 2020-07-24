@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Val
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
@@ -48,11 +48,8 @@ public class BusinessRuleService {
      */
     public MethodSmellList methodSmells() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        Methods methods = typeFacts.methods();
-        return new MethodSmellList(methods,
-                typeFacts.instanceFields(),
-                typeFacts.toMethodRelations(),
-                businessRules());
+        MethodRelations methodRelations = typeFacts.toMethodRelations();
+        return new MethodSmellList(methodRelations, businessRules());
     }
 
     /**

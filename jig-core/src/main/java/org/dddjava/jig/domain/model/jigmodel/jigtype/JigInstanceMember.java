@@ -28,4 +28,8 @@ public class JigInstanceMember {
     public boolean hasMethod() {
         return !instanceMethods.empty();
     }
+
+    public Methods instanceMethods() {
+        return instanceMethods;
+    }
 }

@@ -1,10 +1,9 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
+import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,13 +16,13 @@ import java.util.stream.Collectors;
 public class MethodSmellList {
     List<MethodSmell> list;
 
-    public MethodSmellList(Methods methods, FieldDeclarations fieldDeclarations, MethodRelations methodRelations, BusinessRules businessRules) {
+    public MethodSmellList(MethodRelations methodRelations, BusinessRules businessRules) {
         this.list = new ArrayList<>();
-        for (Method method : methods.list()) {
-            if (businessRules.contains(method.declaration().declaringType())) {
+        for (BusinessRule businessRule : businessRules.list()) {
+            for (Method method : businessRule.instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
-                        fieldDeclarations.filterDeclareTypeIs(method.declaration().declaringType()),
+                        businessRule.fields().fieldDeclarations(),
                         methodRelations
                 );
                 if (methodSmell.hasSmell()) {

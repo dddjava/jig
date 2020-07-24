@@ -7,10 +7,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -151,24 +147,6 @@ public class TypeFacts {
             methodAnnotations.addAll(methodFact.annotatedMethods().list());
         }
         return new MethodAnnotations(methodAnnotations);
-    }
-
-    public FieldDeclarations instanceFields() {
-        List<FieldDeclaration> list = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            FieldDeclarations fieldDeclarations = typeFact.fieldDeclarations();
-            list.addAll(fieldDeclarations.list());
-        }
-        return new FieldDeclarations(list);
-    }
-
-    public StaticFieldDeclarations staticFields() {
-        List<StaticFieldDeclaration> list = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            StaticFieldDeclarations fieldDeclarations = typeFact.staticFieldDeclarations();
-            list.addAll(fieldDeclarations.list());
-        }
-        return new StaticFieldDeclarations(list);
     }
 
     public ValidationAnnotatedMembers validationAnnotatedMembers() {

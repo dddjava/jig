@@ -18,4 +18,8 @@ public class JigTypeMember {
         this.staticMethods = staticMethods;
         this.staticFieldDeclarations = staticFieldDeclarations;
     }
+
+    public StaticFieldDeclarations staticFieldDeclarations() {
+        return staticFieldDeclarations;
+    }
 }

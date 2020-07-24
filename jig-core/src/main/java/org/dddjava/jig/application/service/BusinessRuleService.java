@@ -10,8 +10,6 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
@@ -59,10 +57,8 @@ public class BusinessRuleService {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         CategoryTypes categoryTypes = businessRules().toCategoryTypes();
         ClassRelations classRelations = typeFacts.toClassRelations();
-        FieldDeclarations fieldDeclarations = typeFacts.instanceFields();
-        StaticFieldDeclarations staticFieldDeclarations = typeFacts.staticFields();
 
-        return Categories.create(categoryTypes, classRelations, fieldDeclarations, staticFieldDeclarations);
+        return Categories.create(categoryTypes, classRelations);
     }
 
     /**

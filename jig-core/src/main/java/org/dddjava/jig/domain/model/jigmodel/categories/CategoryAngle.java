@@ -17,11 +17,11 @@ public class CategoryAngle {
     StaticFieldDeclarations constantsDeclarations;
     FieldDeclarations fieldDeclarations;
 
-    public CategoryAngle(CategoryType categoryType, ClassRelations classRelations, FieldDeclarations fieldDeclarations, StaticFieldDeclarations staticFieldDeclarations) {
+    public CategoryAngle(CategoryType categoryType, ClassRelations classRelations) {
         this.categoryType = categoryType;
         this.userTypeIdentifiers = classRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier());
-        this.constantsDeclarations = staticFieldDeclarations.filterDeclareTypeIs(categoryType.typeIdentifier());
-        this.fieldDeclarations = fieldDeclarations.filterDeclareTypeIs(categoryType.typeIdentifier());
+        this.constantsDeclarations = categoryType.constantsDeclarations();
+        this.fieldDeclarations = categoryType.fieldDeclarations();
     }
 
     public TypeIdentifier typeIdentifier() {

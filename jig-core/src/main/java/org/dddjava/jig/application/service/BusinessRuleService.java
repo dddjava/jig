@@ -21,8 +21,6 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * ビジネスルールの分析サービス
  */
@@ -50,9 +48,7 @@ public class BusinessRuleService {
      */
     public MethodSmellList methodSmells() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        Methods methods = new Methods(typeFacts.instanceMethodFacts().stream()
-                .map(methodFact -> methodFact.createMethod())
-                .collect(toList()));
+        Methods methods = typeFacts.methods();
         return new MethodSmellList(methods,
                 typeFacts.instanceFields(),
                 typeFacts.toMethodRelations(),

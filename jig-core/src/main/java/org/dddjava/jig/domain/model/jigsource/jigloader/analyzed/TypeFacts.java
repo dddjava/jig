@@ -19,6 +19,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
@@ -204,5 +205,11 @@ public class TypeFacts {
         }
 
         return AliasRegisterResult.紐付け対象なし;
+    }
+
+    public Methods methods() {
+        return new Methods(instanceMethodFacts().stream()
+                .map(methodFact -> methodFact.createMethod())
+                .collect(toList()));
     }
 }

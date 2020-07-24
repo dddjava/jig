@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.JigInstanceMember;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.JigType;
+import org.dddjava.jig.domain.model.jigmodel.businessrules.JigTypeMember;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
@@ -67,16 +70,6 @@ public class TypeFact {
         }
 
         this.typeAlias = TypeAlias.empty(type.typeIdentifier());
-    }
-
-    public BusinessRule createBusinessRule() {
-        return new BusinessRule(
-                typeDeclaration(), typeAlias, typeKind(),
-                visibility, fieldDeclarations(),
-                constructorDeclarations(),
-                instanceMethodDeclarations(),
-                staticMethodDeclarations()
-        );
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -218,5 +211,24 @@ public class TypeFact {
 
     public String aliasText() {
         return typeAlias.asText();
+    }
+
+    public BusinessRule createBusinessRule() {
+        return new BusinessRule(
+                jigType(),
+                jigInstanceMember(),
+                jigTypeMember());
+    }
+
+    private JigTypeMember jigTypeMember() {
+        return new JigTypeMember(constructorDeclarations(), staticMethodDeclarations());
+    }
+
+    private JigInstanceMember jigInstanceMember() {
+        return new JigInstanceMember(fieldDeclarations(), instanceMethodDeclarations());
+    }
+
+    private JigType jigType() {
+        return new JigType(typeDeclaration(), typeAlias, typeKind(), visibility);
     }
 }

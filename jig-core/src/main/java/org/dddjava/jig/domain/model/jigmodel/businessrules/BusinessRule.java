@@ -25,25 +25,17 @@ public class BusinessRule {
     MethodDeclarations staticMethodDeclarations;
 
     public BusinessRule(
-            // TODO オブジェクト化して引数を減らす
-            // 型自身のもの
-            TypeDeclaration typeDeclaration,
-            TypeAlias typeAlias,
-            TypeKind typeKind,
-            Visibility visibility,
-            // メンバに関するもの
-            FieldDeclarations fieldDeclarations,
-            MethodDeclarations constructorDeclarations,
-            MethodDeclarations instanceMethodDeclarations,
-            MethodDeclarations staticMethodDeclarations) {
-        this.typeAlias = typeAlias;
-        this.typeKind = typeKind;
-        this.fieldDeclarations = fieldDeclarations;
-        this.typeDeclaration = typeDeclaration;
-        this.constructorDeclarations = constructorDeclarations;
-        this.instanceMethodDeclarations = instanceMethodDeclarations;
-        this.staticMethodDeclarations = staticMethodDeclarations;
-        this.visibility = visibility;
+            JigType jigType,
+            JigInstanceMember jigInstanceMember,
+            JigTypeMember jigTypeMember) {
+        this.typeAlias = jigType.getTypeAlias();
+        this.typeKind = jigType.getTypeKind();
+        this.fieldDeclarations = jigInstanceMember.getFieldDeclarations();
+        this.typeDeclaration = jigType.getTypeDeclaration();
+        this.constructorDeclarations = jigTypeMember.getConstructorDeclarations();
+        this.instanceMethodDeclarations = jigInstanceMember.getInstanceMethodDeclarations();
+        this.staticMethodDeclarations = jigTypeMember.getStaticMethodDeclarations();
+        this.visibility = jigType.getVisibility();
     }
 
     public TypeDeclaration type() {

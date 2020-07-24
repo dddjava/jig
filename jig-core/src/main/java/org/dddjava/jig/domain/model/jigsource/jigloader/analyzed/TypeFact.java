@@ -17,11 +17,14 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * 型の実装から読み取れること
@@ -221,11 +224,14 @@ public class TypeFact {
     }
 
     private JigTypeMember jigTypeMember() {
-        return new JigTypeMember(constructorDeclarations(), staticMethodDeclarations(), staticFieldDeclarations());
+        Methods constructors = new Methods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        Methods staticMethods = new Methods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        return new JigTypeMember(constructors, staticMethods, staticFieldDeclarations());
     }
 
     private JigInstanceMember jigInstanceMember() {
-        return new JigInstanceMember(fieldDeclarations(), instanceMethodDeclarations());
+        Methods instanceMethods = new Methods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        return new JigInstanceMember(fieldDeclarations(), instanceMethods);
     }
 
     private JigType jigType() {

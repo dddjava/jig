@@ -34,4 +34,8 @@ public class Methods {
         }
         throw new NoSuchElementException(methodDeclaration.asFullNameText());
     }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
 }

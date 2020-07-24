@@ -93,7 +93,7 @@ public class BusinessRules {
                 .map(businessRule -> new CategoryType(
                         businessRule.typeKind(),
                         businessRule.typeIdentifier(),
-                        businessRule.typeAlias,
+                        businessRule.jigType.getTypeAlias(),
                         !businessRule.fields().fieldDeclarations().list().isEmpty(),
                         businessRule.hasInstanceMethod()
                 ))

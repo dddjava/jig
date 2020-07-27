@@ -37,6 +37,10 @@ public class DiagramSource {
         return new DiagramSource(null, null, AdditionalText.empty());
     }
 
+    public static DiagramSource createDiagramSourceUnit(DocumentName documentName, String text) {
+        return new DiagramSource(documentName, text, AdditionalText.empty());
+    }
+
     public String text() {
         if (noValue()) throw new NullPointerException();
         return text;

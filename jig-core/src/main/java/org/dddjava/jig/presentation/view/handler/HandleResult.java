@@ -5,7 +5,8 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class HandleResult {
 
@@ -27,11 +28,12 @@ public class HandleResult {
         this(jigDocument, Collections.emptyList(), failureMessage);
     }
 
-    public List<Path> outputFilePaths() {
+    public String outputFilePathsText() {
         return outputFilePaths.stream()
                 .map(Path::toAbsolutePath)
                 .map(Path::normalize)
-                .collect(Collectors.toList());
+                .map(Path::toString)
+                .collect(joining(", ", "[ ", " ]"));
     }
 
     public boolean success() {

@@ -67,7 +67,7 @@ public class JigReportsTask extends DefaultTask {
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
-                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePaths())
+                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         getLogger().info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
         getLogger().info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);

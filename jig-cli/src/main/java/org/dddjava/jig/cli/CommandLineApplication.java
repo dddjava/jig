@@ -74,7 +74,7 @@ public class CommandLineApplication implements CommandLineRunner {
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)
-                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePaths())
+                .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
         LOGGER.info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);

@@ -59,8 +59,15 @@ public class Categories {
                             .map(StaticFieldDeclaration::nameText)
                             .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
                     String categoryName = categoryAngle.nodeLabel("<br/>");
-                    return Node.typeOf(typeIdentifier)
-                            .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
+
+                    if (categoryAngle.hasBehaviour()) {
+                        return Node.typeOf(typeIdentifier)
+                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
+                    } else {
+                        return Node.typeOf(typeIdentifier)
+                                .weakColor()
+                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
+                    }
                 }
         );
 

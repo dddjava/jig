@@ -36,9 +36,15 @@ public class Node {
     }
 
     public static Node categoryNodeOf(CategoryType categoryType) {
-        return new Node(categoryType.typeIdentifier().fullQualifiedName())
-                .normalColor()
-                .label(categoryType.nodeLabel());
+        if (categoryType.hasBehaviour()) {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName())
+                    .weakColor()
+                    .label(categoryType.nodeLabel());
+        } else {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName())
+                    .normalColor()
+                    .label(categoryType.nodeLabel());
+        }
     }
 
     /**
@@ -94,6 +100,11 @@ public class Node {
     public Node normalColor() {
         return color("lightgoldenrod");
     }
+
+    public Node weakColor() {
+        return color("lemonchiffon");
+    }
+
 
     public Node tooltip(String tooltip) {
         attribute.add("tooltip=\"" + tooltip + "\"");

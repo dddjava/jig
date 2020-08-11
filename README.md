@@ -36,7 +36,7 @@ JIGはバイトコードおよびソースコードから、一覧（Excel形式
 
 JIGの生成する分析・設計情報をJIGドキュメントと呼びます。
 
-種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/jigdocument/JigDocument.java) を参照してください。
+種類は [JigDocument](./jig-core/src/main/java/org/dddjava/jig/domain/model/jigdocument/documentformat/JigDocument.java) を参照してください。
 
 ## LICENSE
 

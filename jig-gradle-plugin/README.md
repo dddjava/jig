@@ -38,6 +38,7 @@ jig {
     documentTypes = []
     outputDirectory = '' //出力ディレクトリ
     outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
+    linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java" //リンク先の接頭辞パターン（設定すると一部の要素にソースコードへのリンクが出力されます。）
 }
 ```
 

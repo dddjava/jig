@@ -42,12 +42,8 @@ public class BusinessRuleListController {
         ModelReports modelReports = new ModelReports(
                 packageReport(),
                 businessRulesReport(),
-                valuesReport(ValueKind.IDENTIFIER),
                 categoriesReport(),
-                valuesReport(ValueKind.NUMBER),
                 collectionsReport(),
-                valuesReport(ValueKind.DATE),
-                valuesReport(ValueKind.TERM),
                 validateAnnotationReport(),
                 smellReport()
         );

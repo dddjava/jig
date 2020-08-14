@@ -31,16 +31,19 @@ $ gradle clean build jig
 
 ## 設定
 
-以下の例ようにプロパティを指定してください。例の値はデフォルトです。
+`build.gradle` で指定できます。以下は例です。
 ```
 jig {
-    modelPattern = '.+\\.domain\\.(model|type)\\..+'
-    documentTypes = []
-    outputDirectory = '' //出力ディレクトリ
-    outputOmitPrefix= '.+\\.(service|domain\\.(model|basic))\\.' //出力時に省略する接頭辞パターン
-    linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java" //リンク先の接頭辞パターン（設定すると一部の要素にソースコードへのリンクが出力されます。）
+    // パッケージにかかわらず全ての要素を出力する
+    modelPattern = '.+'
+    // パッケージ関連図とビジネスルール一覧のみ出力する
+    documentTypes = ['PackageRelationDiagram', 'BusinessRuleList']
+    // ダイアグラムのリンクのprefix: ダイアグラムのクラスなどからソースコードにリンクする（SVG限定）
+    linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java"
 }
 ```
+
+設定できる項目は [JigConfig.java](./src/main/java/org/dddjava/jig/gradle/JigConfig.java) を参照してください。
 
 ## プラグイン開発者向け
 

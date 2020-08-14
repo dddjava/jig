@@ -61,6 +61,11 @@ public class BusinessRuleReport {
         return list.size() == 1 && list.get(0).equals(businessRule.typeIdentifier().packageIdentifier());
     }
 
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類")
+    public String valueKind() {
+        return businessRule.businessRuleCategory().toString();
+    }
+
     @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向")
     public String tendency() {
         return BusinessRuleTendency.from(businessRule, businessRules).toString();

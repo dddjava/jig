@@ -31,43 +31,44 @@ public class BusinessRuleReport {
         return businessRule.typeDeclaration();
     }
 
-    @ReportItemFor(ReportItem.使用箇所数)
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類", order = 11)
+    public String valueKind() {
+        return businessRule.businessRuleCategory().toString();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向", order = 12)
+    public String tendency() {
+        return BusinessRuleTendency.from(businessRule, businessRules).toString();
+    }
+
+    @ReportItemFor(value = ReportItem.使用箇所数, label = "関連元クラス数", order = 23)
+    @ReportItemFor(value = ReportItem.使用箇所, label = "関連元クラス", order = 100)
     public TypeIdentifiers userTypeIdentifiers() {
         return businessRules.allTypesRelatedTo(businessRule);
     }
 
-    @ReportItemFor(value = ReportItem.汎用数値, label = "ビジネスルール使用箇所数")
+    @ReportItemFor(value = ReportItem.汎用数値, label = "関連元ビジネスルール数", order = 21)
     public int ビジネスルール使用箇所数() {
         ClassRelations classRelations = businessRules.businessRuleRelations().filterTo(businessRule.typeIdentifier());
         TypeIdentifiers typeIdentifiers = classRelations.fromTypeIdentifiers();
         return typeIdentifiers.size();
     }
 
-    @ReportItemFor(value = ReportItem.汎用数値, label = "参照ビジネスルール数")
+    @ReportItemFor(value = ReportItem.汎用数値, label = "関連先ビジネスルール数", order = 22)
     public int 参照ビジネスルール数() {
         ClassRelations classRelations = businessRules.businessRuleRelations().filterFrom(businessRule.typeIdentifier());
         TypeIdentifiers typeIdentifiers = classRelations.toTypeIdentifiers();
         return typeIdentifiers.size();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "非PUBLIC")
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "非PUBLIC", order = 31)
     public boolean isNotPublic() {
         return !businessRule.visibility().isPublic();
     }
 
-    @ReportItemFor(value = ReportItem.汎用真偽値, label = "同パッケージからのみ参照")
+    @ReportItemFor(value = ReportItem.汎用真偽値, label = "同パッケージからのみ参照", order = 32)
     public boolean useFromSamePackage() {
         List<PackageIdentifier> list = userTypeIdentifiers().packageIdentifiers().list();
         return list.size() == 1 && list.get(0).equals(businessRule.typeIdentifier().packageIdentifier());
-    }
-
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類")
-    public String valueKind() {
-        return businessRule.businessRuleCategory().toString();
-    }
-
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向")
-    public String tendency() {
-        return BusinessRuleTendency.from(businessRule, businessRules).toString();
     }
 }

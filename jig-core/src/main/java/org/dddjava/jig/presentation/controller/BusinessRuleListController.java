@@ -8,11 +8,9 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
-import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
@@ -59,11 +57,6 @@ public class BusinessRuleListController {
     ModelReport<?> businessRulesReport() {
         BusinessRules businessRules = businessRuleService.businessRules();
         return new ModelReport<>(businessRules.list(), businessRule -> new BusinessRuleReport(businessRule, businessRules), BusinessRuleReport.class);
-    }
-
-    ModelReport<?> valuesReport(ValueKind valueKind) {
-        ValueAngles valueAngles = businessRuleService.values(valueKind);
-        return new ModelReport<>(valueKind.name(), valueAngles.list(), ValueReport::new, ValueReport.class);
     }
 
     ModelReport<?> collectionsReport() {

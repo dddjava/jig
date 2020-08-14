@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiag
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.ValueKind;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
@@ -13,8 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Val
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.jigmodel.values.ValueAngles;
-import org.dddjava.jig.domain.model.jigmodel.values.ValueTypes;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
@@ -59,16 +56,6 @@ public class BusinessRuleService {
         ClassRelations classRelations = typeFacts.toClassRelations();
 
         return Categories.create(categoryTypes, classRelations);
-    }
-
-    /**
-     * 値一覧を取得する
-     */
-    public ValueAngles values(ValueKind valueKind) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ValueTypes valueTypes = new ValueTypes(businessRules(), valueKind);
-
-        return new ValueAngles(valueKind, valueTypes, typeFacts.toClassRelations());
     }
 
     /**

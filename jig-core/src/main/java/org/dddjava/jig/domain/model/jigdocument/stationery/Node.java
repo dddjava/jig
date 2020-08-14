@@ -36,7 +36,11 @@ public class Node {
     }
 
     public static Node categoryNodeOf(CategoryType categoryType) {
-        if (categoryType.hasBehaviour()) {
+        if (categoryType.markedCore()) {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName())
+                    .highlightColor()
+                    .label(categoryType.nodeLabel());
+        } else if (categoryType.hasBehaviour()) {
             return new Node(categoryType.typeIdentifier().fullQualifiedName())
                     .weakColor()
                     .label(categoryType.nodeLabel());

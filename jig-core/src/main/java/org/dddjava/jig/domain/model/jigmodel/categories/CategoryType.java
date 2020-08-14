@@ -49,4 +49,8 @@ public class CategoryType {
     public FieldDeclarations fieldDeclarations() {
         return businessRule.jigInstanceMember().fieldDeclarations();
     }
+
+    public boolean markedCore() {
+        return businessRule.jigType().typeAlias().markedCore();
+    }
 }

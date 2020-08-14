@@ -70,6 +70,7 @@ public class CategoryUsageDiagram {
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
                 .add("rank=sink;")
+                .add("node [shape=box3d];")
                 .add(categoryNodeTexts())
                 .add("}")
                 .add("{")

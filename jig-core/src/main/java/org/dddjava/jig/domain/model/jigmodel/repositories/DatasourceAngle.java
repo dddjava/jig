@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 
 /**
@@ -15,8 +16,11 @@ public class DatasourceAngle {
     Sqls sqls;
     Method concreteMethod;
 
-    public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls) {
+    CallerMethods callerMethods;
+
+    public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls, CallerMethods callerMethods) {
         this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
+        this.callerMethods = callerMethods;
         this.sqls = allSqls.filterRelationOn(datasourceMethod.usingMethods());
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
@@ -47,5 +51,9 @@ public class DatasourceAngle {
 
     public Method concreteMethod() {
         return concreteMethod;
+    }
+
+    public CallerMethods callerMethods() {
+        return callerMethods;
     }
 }

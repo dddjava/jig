@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.List;
 
@@ -30,5 +31,13 @@ public class CallerMethods {
 
     public int size() {
         return list.size();
+    }
+
+    public TypeIdentifiers toDeclareTypes() {
+        return list.stream()
+                .map(callerMethod -> callerMethod.methodDeclaration().declaringType())
+                .sorted()
+                .distinct()
+                .collect(TypeIdentifiers.collector());
     }
 }

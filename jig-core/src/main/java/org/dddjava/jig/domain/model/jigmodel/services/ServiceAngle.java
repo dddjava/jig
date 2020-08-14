@@ -3,7 +3,10 @@ package org.dddjava.jig.domain.model.jigmodel.services;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.*;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorries;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
@@ -41,7 +44,7 @@ public class ServiceAngle {
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
         this.usingServiceMethods = serviceMethods.intersect(usingMethods.methodDeclarations());
 
-        CallerMethods callerMethods = methodRelations.callerMethodsOf(new CalleeMethod(serviceMethod.methodDeclaration()));
+        CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
         this.userControllerMethods = controllerMethods.filter(callerMethods);
         this.userServiceMethods = serviceMethods.filter(callerMethods);
     }

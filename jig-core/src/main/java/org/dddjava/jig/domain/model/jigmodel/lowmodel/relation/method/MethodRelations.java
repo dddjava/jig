@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -15,7 +17,8 @@ public class MethodRelations {
         this.list = list;
     }
 
-    public CallerMethods callerMethodsOf(CalleeMethod calleeMethod) {
+    public CallerMethods callerMethodsOf(MethodDeclaration method) {
+        CalleeMethod calleeMethod = new CalleeMethod(method);
         List<CallerMethod> callers = list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(calleeMethod))
                 .map(MethodRelation::from)

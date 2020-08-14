@@ -51,4 +51,14 @@ public class RepositoryReport {
     public String deleteTables() {
         return angle.deleteTables();
     }
+
+    @ReportItemFor(value = ReportItem.汎用数値, label = "関連元クラス数", order = 11)
+    public int classNumber() {
+        return angle.callerMethods().toDeclareTypes().size();
+    }
+
+    @ReportItemFor(value = ReportItem.汎用数値, label = "関連元メソッド数", order = 12)
+    public int methodNumber() {
+        return angle.callerMethods().size();
+    }
 }

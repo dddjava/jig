@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,10 +16,11 @@ public class DatasourceAngles {
 
     List<DatasourceAngle> list;
 
-    public DatasourceAngles(DatasourceMethods datasourceMethods, Sqls sqls) {
+    public DatasourceAngles(DatasourceMethods datasourceMethods, Sqls sqls, MethodRelations methodRelations) {
         List<DatasourceAngle> list = new ArrayList<>();
         for (DatasourceMethod datasourceMethod : datasourceMethods.list()) {
-            list.add(new DatasourceAngle(datasourceMethod, sqls));
+            CallerMethods callerMethods = methodRelations.callerMethodsOf(datasourceMethod.repositoryMethod().declaration());
+            list.add(new DatasourceAngle(datasourceMethod, sqls, callerMethods));
         }
         this.list = list;
     }

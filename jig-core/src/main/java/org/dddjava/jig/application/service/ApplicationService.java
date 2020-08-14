@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
@@ -83,7 +84,8 @@ public class ApplicationService {
             jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
         }
 
-        return new DatasourceAngles(datasourceMethods, jigSourceRepository.sqls());
+        MethodRelations methodRelations = typeFacts.toMethodRelations();
+        return new DatasourceAngles(datasourceMethods, jigSourceRepository.sqls(), methodRelations);
     }
 
     /**

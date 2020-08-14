@@ -33,8 +33,8 @@ public class PackageRelationDiagram {
     PackageDepth appliedDepth;
     BidirectionalRelations bidirectionalRelations;
 
-    public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations) {
-        this(packageIdentifiers, packageRelations, classRelations, new PackageDepth(-1));
+    public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
+        this(packageIdentifiers, PackageRelations.fromClassRelations(classRelations), classRelations, new PackageDepth(-1));
     }
 
     private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {

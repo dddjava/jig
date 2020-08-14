@@ -6,9 +6,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDia
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelations;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,11 +35,7 @@ public class DependencyService {
             return PackageRelationDiagram.empty();
         }
 
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ClassRelations classRelations = typeFacts.toClassRelations();
-        PackageRelations packageRelations = PackageRelations.fromClassRelations(classRelations);
-
-        return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), packageRelations, classRelations);
+        return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
     }
 
     /**

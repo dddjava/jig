@@ -33,6 +33,13 @@ class CliConfig {
     @Value("${jig.model.pattern}")
     String modelPattern;
 
+    @Value("${jig.application.pattern}")
+    String applicationPattern;
+    @Value("${jig.infrastructure.pattern}")
+    String infrastructurePattern;
+    @Value("${jig.presentation.pattern}")
+    String presentationPattern;
+
     @Value("${project.path}")
     String projectPath;
     @Value("${directory.classes}")
@@ -51,6 +58,7 @@ class CliConfig {
                 .add("outputDirectory=" + outputDirectory)
                 .add("output.omit.prefix=" + outputOmitPrefix)
                 .add("jig.model.pattern=" + modelPattern)
+                .add("jig.infrastructure.pattern=" + infrastructurePattern)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
@@ -74,6 +82,9 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         modelPattern,
+                        applicationPattern,
+                        infrastructurePattern,
+                        presentationPattern,
                         new OutputOmitPrefix(outputOmitPrefix),
                         new LinkPrefix(linkPrefix)
                 ),

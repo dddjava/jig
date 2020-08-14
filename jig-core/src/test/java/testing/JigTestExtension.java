@@ -1,5 +1,6 @@
 package testing;
 
+import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
@@ -26,10 +27,7 @@ public class JigTestExtension implements ParameterResolver {
 
     public JigTestExtension() {
         configuration = new Configuration(
-                new JigProperties(
-                        "stub.domain.model.+",
-                        new OutputOmitPrefix()
-                ),
+                new JigProperties("stub.domain.model.+", "", "stub.infrastructure.+", "", new OutputOmitPrefix(), LinkPrefix.disable()),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

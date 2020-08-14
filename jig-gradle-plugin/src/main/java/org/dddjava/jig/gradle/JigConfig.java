@@ -15,6 +15,10 @@ public class JigConfig {
 
     String modelPattern = ".+\\.domain\\.(model|type)\\..+";
 
+    String infrastructurePattern = ".+\\.infrastructure\\..+";
+    String presentationPattern = ".+\\.presentation\\..+";
+    String applicationPattern = ".+\\.application\\..+";
+
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "";
@@ -33,9 +37,13 @@ public class JigConfig {
     }
 
     public JigProperties asProperties() {
+        presentationPattern = "";
+        applicationPattern = "";
         return new JigProperties(
                 modelPattern,
-                new OutputOmitPrefix(outputOmitPrefix),
+                applicationPattern,
+                infrastructurePattern,
+                presentationPattern, new OutputOmitPrefix(outputOmitPrefix),
                 new LinkPrefix(linkPrefix)
         );
     }
@@ -91,9 +99,36 @@ public class JigConfig {
         this.linkPrefix = linkPrefix;
     }
 
+    public String getInfrastructurePattern() {
+        return infrastructurePattern;
+    }
+
+    public void setInfrastructurePattern(String infrastructurePattern) {
+        this.infrastructurePattern = infrastructurePattern;
+    }
+
+    public String getPresentationPattern() {
+        return presentationPattern;
+    }
+
+    public void setPresentationPattern(String presentationPattern) {
+        this.presentationPattern = presentationPattern;
+    }
+
+    public String getApplicationPattern() {
+        return applicationPattern;
+    }
+
+    public void setApplicationPattern(String applicationPattern) {
+        this.applicationPattern = applicationPattern;
+    }
+
     public String propertiesText() {
         return new StringJoiner("\n\t", "jig {\n\t", "\n}")
                 .add("modelPattern = '" + modelPattern + '\'')
+                .add("applicationPattern = '" + applicationPattern + '\'')
+                .add("infrastructurePattern = '" + infrastructurePattern + '\'')
+                .add("presentationPattern = '" + presentationPattern + '\'')
                 .add("documentTypes = '" + documentTypes + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')

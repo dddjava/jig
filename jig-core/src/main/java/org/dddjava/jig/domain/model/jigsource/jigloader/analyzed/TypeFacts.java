@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
@@ -20,9 +22,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerM
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,6 +38,20 @@ public class TypeFacts {
 
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
+
+    ArchitectureComponents architectureComponents;
+
+    public synchronized ArchitectureComponents toArchitectureComponents(Architecture architecture) {
+        if (architectureComponents != null) {
+            return architectureComponents;
+        }
+        Map<ArchitectureComponent, Set<TypeIdentifier>> map = new HashMap<>();
+        for (TypeFact typeFact : list()) {
+            ArchitectureComponent architectureComponent = architecture.architectureComponent(typeFact);
+            map.computeIfAbsent(architectureComponent, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
+        }
+        return architectureComponents = new ArchitectureComponents(map);
+    }
 
     public BusinessRules toBusinessRules(Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();
@@ -68,7 +82,7 @@ public class TypeFacts {
     public DatasourceMethods createDatasourceMethods(Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
-            if (architecture.isDataSource(typeFact)) {
+            if (architecture.isRepositoryImplementation(typeFact)) {
                 for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
                     TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
                     selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {

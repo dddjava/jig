@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
@@ -19,6 +20,9 @@ public class PropertyArchitectureFactory {
     public Architecture architecture() {
         Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
         Pattern businessRulePattern = Pattern.compile(jigProperties.getBusinessRulePattern());
+        Pattern infrastructurePattern = Pattern.compile(jigProperties.infrastructurePattern);
+        Pattern presentationPattern = Pattern.compile(jigProperties.presentationPattern);
+        Pattern applicationPattern = Pattern.compile(jigProperties.applicationPattern);
 
         return new Architecture() {
 
@@ -30,7 +34,7 @@ public class PropertyArchitectureFactory {
             }
 
             @Override
-            public boolean isDataSource(TypeFact typeFact) {
+            public boolean isRepositoryImplementation(TypeFact typeFact) {
                 // TODO インタフェース実装を見てない
                 // DataSourceは Repositoryインタフェースが実装され @Repository のついた infrastructure/datasource のクラス
                 List<Annotation> typeAnnotations = typeFact.listAnnotations();
@@ -55,6 +59,26 @@ public class PropertyArchitectureFactory {
                 String fqn = typeFact.typeIdentifier().fullQualifiedName();
                 return businessRulePattern.matcher(fqn).matches()
                         && !compilerGeneratedClassPattern.matcher(fqn).matches();
+            }
+
+            @Override
+            public ArchitectureComponent architectureComponent(TypeFact typeFact) {
+                String fqn = typeFact.typeIdentifier().fullQualifiedName();
+                if (businessRulePattern.matcher(fqn).matches()) {
+                    return ArchitectureComponent.BUSINESS_RULE;
+                }
+                // isRepositoryImplementationは見てもあまり意味がないので使用しない。
+                if (infrastructurePattern.matcher(fqn).matches()) {
+                    return ArchitectureComponent.INFRASTRUCTURE;
+                }
+                if (presentationPattern.matcher(fqn).matches()) {
+                    return ArchitectureComponent.PRESENTATION;
+                }
+                if (applicationPattern.matcher(fqn).matches()) {
+                    return ArchitectureComponent.APPLICATION;
+                }
+
+                return ArchitectureComponent.OTHERS;
             }
         };
     }

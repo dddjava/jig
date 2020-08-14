@@ -99,4 +99,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public int compareTo(TypeIdentifier others) {
         return value.compareTo(others.value);
     }
+
+    public TypeIdentifier unarray() {
+        return new TypeIdentifier(value.replace("[L", "").replace(";", "").replace("[]", ""));
+    }
 }

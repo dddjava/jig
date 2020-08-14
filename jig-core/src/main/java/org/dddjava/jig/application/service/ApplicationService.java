@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMe
 import org.dddjava.jig.domain.model.jigdocument.specification.RoundingPackageRelations;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
@@ -101,8 +102,9 @@ public class ApplicationService {
 
     public RoundingPackageRelations buildingBlockRelations() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        ArchitectureComponents architectureComponents = typeFacts.toArchitectureComponents(architecture);
         ClassRelations classRelations = typeFacts.toClassRelations();
 
-        return RoundingPackageRelations.getRoundingPackageRelations(classRelations);
+        return RoundingPackageRelations.getRoundingPackageRelations(architectureComponents, classRelations);
     }
 }

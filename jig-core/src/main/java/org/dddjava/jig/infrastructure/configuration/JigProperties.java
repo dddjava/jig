@@ -4,18 +4,22 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 
 public class JigProperties {
 
-    OutputOmitPrefix outputOmitPrefix;
-    String businessRulePattern;
-    LinkPrefix linkPrefix;
+    final OutputOmitPrefix outputOmitPrefix;
+    final String businessRulePattern;
 
-    public JigProperties(String businessRulePattern, OutputOmitPrefix outputOmitPrefix) {
-        this(businessRulePattern, outputOmitPrefix, LinkPrefix.disable());
-    }
+    final String applicationPattern;
+    final String infrastructurePattern;
+    final String presentationPattern;
 
-    public JigProperties(String businessRulePattern, OutputOmitPrefix outputOmitPrefix, LinkPrefix linkPrefix) {
+    final LinkPrefix linkPrefix;
+
+    public JigProperties(String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, OutputOmitPrefix outputOmitPrefix, LinkPrefix linkPrefix) {
         this.businessRulePattern = businessRulePattern;
+        this.infrastructurePattern = infrastructurePattern;
         this.outputOmitPrefix = outputOmitPrefix;
         this.linkPrefix = linkPrefix;
+        this.applicationPattern = applicationPattern;
+        this.presentationPattern = presentationPattern;
     }
 
     public OutputOmitPrefix getOutputOmitPrefix() {
@@ -30,4 +34,7 @@ public class JigProperties {
         return linkPrefix;
     }
 
+    public String getInfrastructurePattern() {
+        return infrastructurePattern;
+    }
 }

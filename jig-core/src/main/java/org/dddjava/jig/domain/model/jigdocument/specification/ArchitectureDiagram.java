@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
 
 import java.util.StringJoiner;
 
@@ -27,10 +28,10 @@ public class ArchitectureDiagram {
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("subgraph clusterArchitecture {")
                 .add(Node.DEFAULT)
-                .add(new Node("domain").asText())
-                .add(new Node("presentation").asText())
-                .add(new Node("application").asText())
-                .add(new Node("infrastructure").asText())
+                .add(new Node(ArchitectureComponent.APPLICATION.toString()).asText())
+                .add(new Node(ArchitectureComponent.BUSINESS_RULE.toString()).asText())
+                .add(new Node(ArchitectureComponent.PRESENTATION.toString()).asText())
+                .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
                 .add("}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=box,style=filled,fillcolor=whitesmoke];");

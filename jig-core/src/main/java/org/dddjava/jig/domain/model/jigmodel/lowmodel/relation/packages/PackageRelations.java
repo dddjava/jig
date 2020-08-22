@@ -4,43 +4,46 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * パッケージの依存関係一覧
  */
 public class PackageRelations {
 
-    List<PackageRelation> dependencies;
+    Map<PackageRelation, List<PackageRelation>> map;
 
-    public PackageRelations(List<PackageRelation> dependencies) {
-        this.dependencies = dependencies;
+    public PackageRelations(List<PackageRelation> list) {
+        this(list.stream().collect(groupingBy(Function.identity())));
+    }
+
+    public PackageRelations(Map<PackageRelation, List<PackageRelation>> map) {
+        this.map = map;
     }
 
     public static PackageRelations fromClassRelations(ClassRelations classRelations) {
-        List<PackageRelation> packageRelationList = classRelations.list().stream()
+        Map<PackageRelation, List<PackageRelation>> map = classRelations.list().stream()
                 .map(PackageRelation::fromClassRelation)
                 .filter(PackageRelation::notSelfRelation)
-                .distinct()
-                .collect(Collectors.toList());
-
-        return new PackageRelations(packageRelationList);
+                .collect(groupingBy(Function.identity()));
+        return new PackageRelations(map);
     }
 
     public List<PackageRelation> list() {
-        return dependencies;
+        return new ArrayList<>(map.keySet());
     }
 
     public PackageRelations applyDepth(PackageDepth packageDepth) {
-        List<PackageRelation> list = this.dependencies.stream()
+        Map<PackageRelation, List<PackageRelation>> map = this.list().stream()
                 .map(relation -> relation.applyDepth(packageDepth))
-                .distinct()
                 .filter(PackageRelation::notSelfRelation)
-                .collect(toList());
-        return new PackageRelations(list);
+                .collect(groupingBy(Function.identity()));
+        return new PackageRelations(map);
     }
 
     public RelationNumber number() {
@@ -48,13 +51,13 @@ public class PackageRelations {
     }
 
     public PackageRelations filterBothMatch(PackageIdentifiers packageIdentifiers) {
-        List<PackageRelation> list = dependencies.stream()
+        Map<PackageRelation, List<PackageRelation>> map = this.map.keySet().stream()
                 .filter(packageDependency -> packageDependency.bothMatch(packageIdentifiers))
-                .collect(Collectors.toList());
-        return new PackageRelations(list);
+                .collect(groupingBy(Function.identity()));
+        return new PackageRelations(map);
     }
 
     public boolean available() {
-        return !dependencies.isEmpty();
+        return !map.isEmpty();
     }
 }

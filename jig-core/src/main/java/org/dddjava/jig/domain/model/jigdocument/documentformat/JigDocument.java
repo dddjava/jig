@@ -12,6 +12,8 @@ public enum JigDocument {
     BusinessRuleList(BusinessRuleDocument.BusinessRuleList, "business-rule"),
     PackageRelationDiagram(BusinessRuleDocument.PackageRelationDiagram, "package-relation"),
     BusinessRuleRelationDiagram(BusinessRuleDocument.BusinessRuleRelationDiagram, "business-rule-relation"),
+    OverconcentrationBusinessRuleDiagram(BusinessRuleDocument.OverconcentrationBusinessRuleDiagram, "overconcentration-business-rule"),
+
     CategoryDiagram(BusinessRuleDocument.CategoryDiagram, "category"),
     CategoryUsageDiagram(BusinessRuleDocument.CategoryUsageDiagram, "category-usage"),
 

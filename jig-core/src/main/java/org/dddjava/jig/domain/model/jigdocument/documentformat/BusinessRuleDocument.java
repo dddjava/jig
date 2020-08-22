@@ -44,5 +44,7 @@ public enum BusinessRuleDocument {
      *
      * 区分を使用しているクラスを可視化する。
      */
-    CategoryUsageDiagram;
+    CategoryUsageDiagram,
+
+    OverconcentrationBusinessRuleDiagram;
 }

@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;
 
 public enum DiagramView {
 
@@ -20,6 +21,14 @@ public enum DiagramView {
         @Override
         JigView<?> create(ViewResolver viewResolver) {
             return viewResolver.businessRuleRelationWriter();
+        }
+    },
+    OverconcentrationBusinessRuleDiagram(JigDocument.OverconcentrationBusinessRuleDiagram) {
+        @Override
+        JigView<?> create(ViewResolver viewResolver) {
+            return new GraphvizjView<org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram>(
+                    model -> model.overconcentrationRelationDotText(viewResolver.jigDocumentContext),
+                    viewResolver.diagramFormat);
         }
     },
     CategoryUsageDiagram(JigDocument.CategoryUsageDiagram) {

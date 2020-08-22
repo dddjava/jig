@@ -103,4 +103,16 @@ public class BusinessRules {
                 .collect(Collectors.toList());
         return new ClassRelations(internalList);
     }
+
+    public Map<BusinessRule, TypeIdentifiers> overconcentrationMap() {
+        int threshold = list.size() / 10;
+        Map<BusinessRule, TypeIdentifiers> overconcentrationBusinessRule = new HashMap<>();
+        for (BusinessRule businessRule : list) {
+            TypeIdentifiers typeIdentifiers = businessRuleRelations.collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
+            if (typeIdentifiers.size() > threshold) {
+                overconcentrationBusinessRule.put(businessRule, typeIdentifiers);
+            }
+        }
+        return overconcentrationBusinessRule;
+    }
 }

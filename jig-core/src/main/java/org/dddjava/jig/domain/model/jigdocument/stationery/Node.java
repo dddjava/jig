@@ -157,4 +157,9 @@ public class Node {
     public Node highlightColorIf(boolean markedCore) {
         return markedCore ? this.highlightColor() : this;
     }
+
+    public Node big() {
+        attribute.add("fontsize=30");
+        return this;
+    }
 }

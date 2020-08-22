@@ -105,10 +105,11 @@ public class BusinessRules {
     }
 
     public Map<BusinessRule, TypeIdentifiers> overconcentrationMap() {
+        int threshold = list.size() / 10;
         Map<BusinessRule, TypeIdentifiers> overconcentrationBusinessRule = new HashMap<>();
         for (BusinessRule businessRule : list) {
             TypeIdentifiers typeIdentifiers = businessRuleRelations.collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
-            if (typeIdentifiers.size() > 10) {
+            if (typeIdentifiers.size() > threshold) {
                 overconcentrationBusinessRule.put(businessRule, typeIdentifiers);
             }
         }

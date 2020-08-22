@@ -9,9 +9,16 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 
+import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * ビジネスルールの関連
@@ -54,6 +61,42 @@ public class BusinessRuleRelationDiagram {
 
         for (ClassRelation classRelation : businessRules.internalClassRelations().list()) {
             graph.add(classRelation.dotText());
+        }
+
+        return DiagramSource.createDiagramSource(documentName, graph.toString());
+    }
+
+    public DiagramSources overconcentrationRelationDotText(JigDocumentContext jigDocumentContext) {
+        if (businessRules.empty()) return DiagramSource.empty();
+        Map<BusinessRule, TypeIdentifiers> map = businessRules.overconcentrationMap();
+        if (map.isEmpty()) return DiagramSource.empty();
+
+        DocumentName documentName = jigDocumentContext.documentName(JigDocument.OverconcentrationBusinessRuleDiagram);
+        StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+                .add("label=\"" + documentName.label() + "\";")
+                .add("rankdir=LR;")
+                //.add("layout=\"circo\";")
+                .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
+
+        List<TypeIdentifier> targetTypeIdentifiers = map.entrySet().stream()
+                .flatMap(entry -> Stream.concat(Stream.of(entry.getKey().typeIdentifier()), entry.getValue().list().stream()))
+                .collect(toList());
+        for (BusinessRule businessRule : businessRules.list()) {
+            if (targetTypeIdentifiers.contains(businessRule.typeIdentifier())) {
+                Node node = Node.businessRuleNodeOf(businessRule);
+                if (map.containsKey(businessRule)) {
+                    node.big();
+                } else {
+                    node.weakColor();
+                }
+                graph.add(node.asText());
+            }
+        }
+
+        for (Map.Entry<BusinessRule, TypeIdentifiers> entry : map.entrySet()) {
+            for (TypeIdentifier fromTypeIdentifier : entry.getValue().list()) {
+                graph.add(new ClassRelation(fromTypeIdentifier, entry.getKey().typeIdentifier()).dotText());
+            }
         }
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());

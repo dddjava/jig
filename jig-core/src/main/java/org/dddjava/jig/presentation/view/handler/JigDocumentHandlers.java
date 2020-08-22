@@ -59,7 +59,7 @@ public class JigDocumentHandlers {
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException(e);
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException("cannot find handler method for " + jigDocument);
     }
 
     public HandleResult handle(JigDocument jigDocument, Path outputDirectory) {

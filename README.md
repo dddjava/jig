@@ -5,19 +5,20 @@
 
 ![banner](./docs/banner.png)
 
-## 紹介
+JIGはコードでの設計を支援するツールです。思い浮かんだ設計をコーディングすればいい感じに可視化される世界を目指しています。
 
-JIGはコードでの設計を支援するツールです。
-バイトコードおよびソースコードから、一覧（Excel形式）やダイアグラム（SVG形式）を出力します。
-実行には Java8以降 と [Graphviz](https://www.graphviz.org/) が必要です。
+主にバイトコード（classファイル）から一覧やダイアグラムを出力します。バイトコードが対象なので、JVM言語であれば主要機能は動作します。
 
 ## 使い方
 
+実行方法はコマンドラインとGradleプラグインがあります。それぞれのREADMEを参照してください。
+
 - [コマンドラインでの使い方](./jig-cli)
-  - [Kotlin用](./jig-cli-kt)
+  - [Kotlin向け拡張版](./jig-cli-kt)
 - [Gradleプラグインでの使い方](./jig-gradle-plugin)
 - [ユーザーガイド](https://scrapbox.io/jig)
 
+実行には Java8以降 と [Graphviz](https://www.graphviz.org/) が必要です。
 うまく動かない場合などは [issue](https://github.com/dddjava/jig/issues/new/choose) でお問い合わせください。
 
 ## コンセプト

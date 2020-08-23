@@ -16,9 +16,9 @@ JIGはコードでの設計を支援するツールです。思い浮かんだ�
 - [コマンドラインでの使い方](./jig-cli)
   - [Kotlin向け拡張版](./jig-cli-kt)
 - [Gradleプラグインでの使い方](./jig-gradle-plugin)
-- [ユーザーガイド](https://scrapbox.io/jig)
 
 実行には Java8以降 と [Graphviz](https://www.graphviz.org/) が必要です。
+より詳しい情報は[ScrapBoxのユーザーガイド](https://scrapbox.io/jig)を参照してください。
 うまく動かない場合などは [issue](https://github.com/dddjava/jig/issues/new/choose) でお問い合わせください。
 
 ## コンセプト

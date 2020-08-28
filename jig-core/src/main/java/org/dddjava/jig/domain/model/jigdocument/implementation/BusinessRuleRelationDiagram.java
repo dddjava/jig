@@ -36,6 +36,7 @@ public class BusinessRuleRelationDiagram {
         if (businessRules.empty()) {
             return DiagramSource.empty();
         }
+        TypeIdentifiers isolatedTypes = businessRules.isolatedTypes();
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.BusinessRuleRelationDiagram);
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
@@ -53,6 +54,9 @@ public class BusinessRuleRelationDiagram {
             BusinessRules businessRules = businessRulePackage.businessRules();
             for (BusinessRule businessRule : businessRules.list()) {
                 Node node = Node.businessRuleNodeOf(businessRule);
+                if (isolatedTypes.contains(businessRule.typeIdentifier())) {
+                    node.warning();
+                }
                 subgraph.add(node.asText());
             }
 

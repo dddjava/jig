@@ -55,7 +55,7 @@ public class Node {
      * 主要でない
      */
     public Node other() {
-        return color("whitesmoke")
+        return fillColor("whitesmoke")
                 .style("dashed");
     }
 
@@ -64,7 +64,7 @@ public class Node {
         return this;
     }
 
-    Node color(String value) {
+    Node fillColor(String value) {
         attribute.add("fillcolor=\"" + value + "\"");
         return this;
     }
@@ -85,15 +85,15 @@ public class Node {
     }
 
     public Node notPublicMethod() {
-        return style("solid").color("black");
+        return style("solid").fillColor("black");
     }
 
     public Node lambda() {
-        return shape("ellipse").color("gray");
+        return shape("ellipse").fillColor("gray");
     }
 
     public Node handlerMethod() {
-        return color("greenyellow");
+        return fillColor("greenyellow");
     }
 
     public Node html(String html) {
@@ -102,11 +102,11 @@ public class Node {
     }
 
     public Node normalColor() {
-        return color("lightgoldenrod");
+        return fillColor("lightgoldenrod");
     }
 
     public Node weakColor() {
-        return color("lemonchiffon");
+        return fillColor("lemonchiffon");
     }
 
 
@@ -117,7 +117,7 @@ public class Node {
 
     public Node screenNode() {
         // 画面
-        return style("filled").color("lightgray").shape("box");
+        return style("filled").fillColor("lightgray").shape("box");
     }
 
     public Node useCase() {
@@ -125,7 +125,7 @@ public class Node {
     }
 
     public Node highlightColor() {
-        return color("greenyellow");
+        return fillColor("greenyellow");
     }
 
     public Node moderately() {
@@ -161,5 +161,9 @@ public class Node {
     public Node big() {
         attribute.add("fontsize=30");
         return this;
+    }
+
+    public void warning() {
+        attribute.add("color=red");
     }
 }

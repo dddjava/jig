@@ -9,6 +9,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 /**
  * ビジネスルール一覧
  */
@@ -38,7 +41,7 @@ public class BusinessRules {
     public List<BusinessRule> list() {
         return list.stream()
                 .sorted(Comparator.comparing(BusinessRule::typeIdentifier))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {
@@ -69,20 +72,20 @@ public class BusinessRules {
                 .map(entity -> new BusinessRulePackage(
                         entity.getKey(),
                         new BusinessRules(entity.getValue(), this.businessRuleRelations)
-                )).collect(Collectors.toList());
+                )).collect(toList());
         return new BusinessRulePackages(list);
     }
 
     public List<BusinessRule> listCollection() {
         return list.stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.コレクション)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public List<BusinessRule> listValue(ValueKind valueKind) {
         return list.stream()
                 .filter(businessRule -> businessRule.businessRuleCategory() == valueKind.businessRuleCategory)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public ClassRelations businessRuleRelations() {
@@ -100,7 +103,7 @@ public class BusinessRules {
     public ClassRelations internalClassRelations() {
         List<ClassRelation> internalList = classRelations.list().stream()
                 .filter(classRelation -> classRelation.within(identifiers()))
-                .collect(Collectors.toList());
+                .collect(toList());
         return new ClassRelations(internalList);
     }
 
@@ -114,5 +117,12 @@ public class BusinessRules {
             }
         }
         return overconcentrationBusinessRule;
+    }
+
+    public TypeIdentifiers isolatedTypes() {
+        return list.stream()
+                .map(businessRule -> businessRule.typeIdentifier())
+                .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
+                .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }
 }

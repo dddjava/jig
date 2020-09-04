@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PackageStructureTest {
 
@@ -16,7 +17,8 @@ class PackageStructureTest {
         typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
-        assertEquals("a.b.c", packageStructure.rootPackage.toString());
+        String dotText = packageStructure.toDotText(Node::typeOf);
+        //assertTrue(dotText.contains("\"a.b.c.X\""));
     }
 
     @Test
@@ -26,7 +28,10 @@ class PackageStructureTest {
         typeIdentifiers.add(new TypeIdentifier("a.b.c.Y"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
-        assertEquals("a.b.c", packageStructure.rootPackage.toString());
+        String dotText = packageStructure.toDotText(Node::typeOf);
+        assertFalse(dotText.contains("\"cluster_a.b.c\""));
+        //assertTrue(dotText.contains("\"a.b.c.X\""));
+        //assertTrue(dotText.contains("\"a.b.c.Y\""));
     }
 
     @Test
@@ -36,7 +41,11 @@ class PackageStructureTest {
         typeIdentifiers.add(new TypeIdentifier("a.b.c.d.Y"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
-        assertEquals("a.b.c", packageStructure.rootPackage.toString());
+        String dotText = packageStructure.toDotText(Node::typeOf);
+        assertFalse(dotText.contains("\"cluster_a.b.c\""));
+        assertTrue(dotText.contains("\"cluster_a.b.c.d\""));
+        //assertTrue(dotText.contains("\"a.b.c.X\""));
+        assertTrue(dotText.contains("\"a.b.c.d.Y\""));
     }
 
     @Test
@@ -46,6 +55,11 @@ class PackageStructureTest {
         typeIdentifiers.add(new TypeIdentifier("a.b.d.Y"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
-        assertEquals("a.b", packageStructure.rootPackage.toString());
+        String dotText = packageStructure.toDotText(Node::typeOf);
+        assertFalse(dotText.contains("\"cluster_a.b\""));
+        assertTrue(dotText.contains("\"cluster_a.b.c\""));
+        assertTrue(dotText.contains("\"cluster_a.b.d\""));
+        assertTrue(dotText.contains("\"a.b.c.X\""));
+        assertTrue(dotText.contains("\"a.b.d.Y\""));
     }
 }

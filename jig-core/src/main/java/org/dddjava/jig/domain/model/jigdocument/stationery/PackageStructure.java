@@ -54,20 +54,24 @@ public class PackageStructure {
                 typeWriter);
     }
 
-    private String toDotTextInternal(PackageIdentifier basePackage, Function<PackageIdentifier, Subgraph> packageWriter, Function<TypeIdentifier, Node> typeWriter) {
-        StringJoiner stringJoiner = new StringJoiner("\n");
+    private String toDotTextInternal(PackageIdentifier basePackage, Function<PackageIdentifier, Subgraph> packageToSubgraph, Function<TypeIdentifier, Node> typeToNode) {
+        StringJoiner stringJoiner = new StringJoiner("\n")
+                .add(typesDotText(basePackage, typeToNode));
         for (PackageIdentifier packageIdentifier : subPackageMap.getOrDefault(basePackage, Collections.emptySet())) {
-            Subgraph subgraph = packageWriter.apply(packageIdentifier);
-            StringJoiner types = new StringJoiner("\n");
-            for (TypeIdentifier typeIdentifier : belongTypeMap.getOrDefault(packageIdentifier, Collections.emptyList())) {
-                types.add(typeWriter.apply(typeIdentifier).asText());
-            }
-
-            subgraph.color("lightgray")
-                    .add(toDotTextInternal(packageIdentifier, packageWriter, typeWriter))
-                    .add(types.toString());
-            stringJoiner.add(subgraph.toString());
+            Subgraph subgraph = packageToSubgraph.apply(packageIdentifier)
+                    .color("lightgray")
+                    .add(toDotTextInternal(packageIdentifier, packageToSubgraph, typeToNode));
+            stringJoiner.add("").add(subgraph.toString());
         }
         return stringJoiner.toString();
+    }
+
+    private String typesDotText(PackageIdentifier packageIdentifier, Function<TypeIdentifier, Node> typeToNode) {
+        StringJoiner types = new StringJoiner("\n");
+        for (TypeIdentifier typeIdentifier : belongTypeMap.getOrDefault(packageIdentifier, Collections.emptyList())) {
+            types.add(typeToNode.apply(typeIdentifier).asText());
+        }
+        String typesText = types.toString();
+        return typesText;
     }
 }

@@ -18,7 +18,7 @@ class PackageStructureTest {
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);
-        //assertTrue(dotText.contains("\"a.b.c.X\""));
+        assertTrue(dotText.contains("\"a.b.c.X\""));
     }
 
     @Test
@@ -30,8 +30,8 @@ class PackageStructureTest {
 
         String dotText = packageStructure.toDotText(Node::typeOf);
         assertFalse(dotText.contains("\"cluster_a.b.c\""));
-        //assertTrue(dotText.contains("\"a.b.c.X\""));
-        //assertTrue(dotText.contains("\"a.b.c.Y\""));
+        assertTrue(dotText.contains("\"a.b.c.X\""));
+        assertTrue(dotText.contains("\"a.b.c.Y\""));
     }
 
     @Test
@@ -44,8 +44,9 @@ class PackageStructureTest {
         String dotText = packageStructure.toDotText(Node::typeOf);
         assertFalse(dotText.contains("\"cluster_a.b.c\""));
         assertTrue(dotText.contains("\"cluster_a.b.c.d\""));
-        //assertTrue(dotText.contains("\"a.b.c.X\""));
+        assertTrue(dotText.contains("\"a.b.c.X\""));
         assertTrue(dotText.contains("\"a.b.c.d.Y\""));
+        System.out.println(dotText);
     }
 
     @Test
@@ -53,6 +54,8 @@ class PackageStructureTest {
         List<TypeIdentifier> typeIdentifiers = new ArrayList<>();
         typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
         typeIdentifiers.add(new TypeIdentifier("a.b.d.Y"));
+        typeIdentifiers.add(new TypeIdentifier("a.b.d.Z"));
+        typeIdentifiers.add(new TypeIdentifier("a.b.d.f.L"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);
@@ -61,5 +64,7 @@ class PackageStructureTest {
         assertTrue(dotText.contains("\"cluster_a.b.d\""));
         assertTrue(dotText.contains("\"a.b.c.X\""));
         assertTrue(dotText.contains("\"a.b.d.Y\""));
+        assertTrue(dotText.contains("\"a.b.d.Z\""));
+        System.out.println(dotText);
     }
 }

@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import java.util.*;
 import java.util.function.Function;
 
+import static java.util.stream.Collectors.groupingBy;
+
 public class PackageStructure {
 
     PackageIdentifier rootPackage;
@@ -19,40 +21,29 @@ public class PackageStructure {
     }
 
     public static PackageStructure from(List<TypeIdentifier> typeIdentifiers) {
-        Map<PackageIdentifier, Set<PackageIdentifier>> subPackageMap = new HashMap<>();
-        Map<PackageIdentifier, List<TypeIdentifier>> belongTypeMap = new HashMap<>();
-        for (TypeIdentifier typeIdentifier : typeIdentifiers) {
-            PackageIdentifier packageIdentifier = typeIdentifier.packageIdentifier();
-            belongTypeMap
-                    .computeIfAbsent(packageIdentifier, k -> new ArrayList<>())
-                    .add(typeIdentifier);
 
-            PackageIdentifier parent = packageIdentifier.parent();
-            while (!parent.equals(packageIdentifier)) {
-                subPackageMap
-                        .computeIfAbsent(parent, k -> new HashSet<>())
-                        .add(packageIdentifier);
+        Map<PackageIdentifier, List<TypeIdentifier>> belongTypeMap = typeIdentifiers.stream()
+                .collect(groupingBy(TypeIdentifier::packageIdentifier));
 
-                // defaultまで繰り返す
-                packageIdentifier = parent;
-                parent = packageIdentifier.parent();
+        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = new HashMap<>();
+        for (PackageIdentifier packageIdentifier : belongTypeMap.keySet()) {
+            PackageIdentifier current = packageIdentifier;
+            while (current.hasName()) {
+                PackageIdentifier parent = current.parent();
+                packageMap.computeIfAbsent(parent, key -> new HashSet<>()).add(current);
+                current = parent;
             }
         }
-
-        // defaultパッケージからsubpackageが1つの間、子パッケージを探す
         PackageIdentifier rootPackage = PackageIdentifier.defaultPackage();
-        Set<PackageIdentifier> packageIdentifiers = subPackageMap.get(PackageIdentifier.defaultPackage());
-        while (packageIdentifiers.size() == 1) {
-            PackageIdentifier onlyOnePackage = packageIdentifiers.iterator().next();
-            rootPackage = onlyOnePackage;
-            packageIdentifiers = subPackageMap.get(onlyOnePackage);
-            // 所属するクラスがあったら終了
-            if (belongTypeMap.containsKey(onlyOnePackage)) {
-                break;
-            }
+        while (!belongTypeMap.containsKey(rootPackage)
+                && packageMap.containsKey(rootPackage)
+                && packageMap.get(rootPackage).size() == 1) {
+            PackageIdentifier nextRootPackage = packageMap.get(rootPackage).iterator().next();
+            packageMap.remove(rootPackage);
+            rootPackage = nextRootPackage;
         }
 
-        return new PackageStructure(rootPackage, subPackageMap, belongTypeMap);
+        return new PackageStructure(rootPackage, packageMap, belongTypeMap);
     }
 
     public String toDotText(Function<TypeIdentifier, Node> typeWriter) {

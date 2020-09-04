@@ -55,8 +55,12 @@ public class PackageStructure {
         return new PackageStructure(rootPackage, subPackageMap, belongTypeMap);
     }
 
-    public String toDotText(Function<PackageIdentifier, Subgraph> packageWriter, Function<TypeIdentifier, Node> typeWriter) {
-        return toDotTextInternal(rootPackage, packageWriter, typeWriter);
+    public String toDotText(Function<TypeIdentifier, Node> typeWriter) {
+        return toDotTextInternal(
+                rootPackage,
+                packageIdentifier -> new Subgraph(packageIdentifier.asText())
+                        .label(packageIdentifier.simpleName()),
+                typeWriter);
     }
 
     private String toDotTextInternal(PackageIdentifier basePackage, Function<PackageIdentifier, Subgraph> packageWriter, Function<TypeIdentifier, Node> typeWriter) {

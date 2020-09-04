@@ -6,7 +6,7 @@ public class Subgraph {
     StringJoiner stringJoiner;
 
     public Subgraph(String name) {
-        stringJoiner = new StringJoiner("\n", "subgraph \"cluster_" + name + "\"{", "}");
+        stringJoiner = new StringJoiner("\n", "subgraph \"cluster_" + name + "\" {\n", "\n}");
     }
 
     public Subgraph label(String label) {

@@ -51,8 +51,6 @@ public class Categories {
         PackageStructure packageStructure = PackageStructure.from(new ArrayList<>(map.keySet()));
 
         String structureText = packageStructure.toDotText(
-                packageIdentifier -> new Subgraph(packageIdentifier.asText())
-                        .label(packageIdentifier.simpleName()),
                 typeIdentifier -> {
                     CategoryAngle categoryAngle = map.get(typeIdentifier);
                     String values = categoryAngle.constantsDeclarations().list().stream()

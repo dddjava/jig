@@ -34,7 +34,8 @@ public enum JigDocument {
      * パッケージ関連ダイアグラムで把握できない場合の補助に使用する。
      */
     BusinessRuleRelationDiagram("business-rule-relation"),
-    OverconcentrationBusinessRuleDiagram("overconcentration-business-rule"),
+    OverconcentrationBusinessRuleDiagram("business-rule-overconcentration"),
+    CoreBusinessRuleRelationDiagram("business-rule-core"),
 
     /**
      * 区分ダイアグラム

@@ -125,4 +125,19 @@ public class BusinessRules {
                 .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }
+
+    public BusinessRules filterCore() {
+        TypeIdentifiers coreList = list.stream()
+                .filter(businessRule -> businessRule.markedCore())
+                .map(businessRule -> businessRule.typeIdentifier())
+                .collect(collectingAndThen(toList(), TypeIdentifiers::new));
+
+        ClassRelations coreRelations = classRelations.filterRelations(coreList);
+        // TODO classRelations作る段階でnormalizeしておきたい
+        TypeIdentifiers coreAndRelatedTypeIdentifiers = coreRelations.allTypeIdentifiers().normalize();
+
+        return list.stream()
+                .filter(businessRule -> coreAndRelatedTypeIdentifiers.contains(businessRule.typeIdentifier()))
+                .collect(collectingAndThen(toList(), businessRules -> new BusinessRules(businessRules, coreRelations)));
+    }
 }

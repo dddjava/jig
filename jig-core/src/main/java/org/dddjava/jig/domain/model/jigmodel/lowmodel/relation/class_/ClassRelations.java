@@ -78,6 +78,13 @@ public class ClassRelations {
         return new ClassRelations(new ArrayList<>(set));
     }
 
+    public ClassRelations filterRelations(TypeIdentifiers typeIdentifiers) {
+        List<ClassRelation> collect = list.stream()
+                .filter(classRelation -> classRelation.or(typeIdentifiers))
+                .collect(Collectors.toList());
+        return new ClassRelations(collect);
+    }
+
     public ClassRelations filterFrom(TypeIdentifier typeIdentifier) {
         List<ClassRelation> collect = list.stream()
                 .filter(classRelation -> classRelation.from().equals(typeIdentifier))

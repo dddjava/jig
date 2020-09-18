@@ -37,6 +37,11 @@ public class DiagramController {
         return dependencyService.businessRuleNetwork();
     }
 
+    @DocumentMapping(JigDocument.CoreBusinessRuleRelationDiagram)
+    public BusinessRuleRelationDiagram coreBusinessRuleRelation() {
+        return dependencyService.businessRuleNetwork();
+    }
+
     @DocumentMapping(JigDocument.OverconcentrationBusinessRuleDiagram)
     public BusinessRuleRelationDiagram overconcentrationBusinessRuleRelation() {
         return dependencyService.businessRuleNetwork();

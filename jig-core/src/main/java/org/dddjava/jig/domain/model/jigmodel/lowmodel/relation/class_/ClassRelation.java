@@ -42,6 +42,10 @@ public class ClassRelation {
         return typeIdentifiers.contains(from()) && typeIdentifiers.contains(to());
     }
 
+    public boolean or(TypeIdentifiers typeIdentifiers) {
+        return typeIdentifiers.contains(from()) || typeIdentifiers.contains(to());
+    }
+
     public String dotText() {
         return String.format("\"%s\" -> \"%s\";", from.fullQualifiedName(), to.fullQualifiedName());
     }

@@ -93,6 +93,9 @@ public class ViewResolver {
             case OverconcentrationBusinessRuleDiagram:
                 return new GraphvizjView<BusinessRuleRelationDiagram>(
                         model -> model.overconcentrationRelationDotText(jigDocumentContext), diagramFormat);
+            case CoreBusinessRuleRelationDiagram:
+                return new GraphvizjView<BusinessRuleRelationDiagram>(
+                        model -> model.coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat);
             case CategoryUsageDiagram:
                 return enumUsage();
             case CategoryDiagram:

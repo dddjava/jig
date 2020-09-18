@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
-import org.dddjava.jig.presentation.view.DiagramView;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigModelAndView;
+import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +52,8 @@ public class JigDocumentHandlers {
                         return (JigModelAndView<?>) result;
                     }
 
-                    DiagramView diagramView = DiagramView.of(jigDocument);
-                    return diagramView.createModelAndView(result, viewResolver);
+                    JigView<?> jigView = viewResolver.toDiagramView(jigDocument);
+                    return new JigModelAndView(result, jigView);
                 }
             }
         } catch (ReflectiveOperationException e) {
@@ -64,7 +64,7 @@ public class JigDocumentHandlers {
 
     public HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
-            JigModelAndView<?> jigModelAndView = invokeHandlerMethod(jigDocument);
+            JigModelAndView jigModelAndView = invokeHandlerMethod(jigDocument);
 
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);

@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
@@ -80,4 +81,29 @@ public class ViewResolver {
     public JigView<ArchitectureDiagram> architecture() {
         return newGraphvizjView(model -> model.dotText(jigDocumentContext));
     }
+
+    public JigView<?> toDiagramView(JigDocument jigDocument) {
+        switch (jigDocument) {
+            case ServiceMethodCallHierarchyDiagram:
+                return serviceMethodCallHierarchy();
+            case PackageRelationDiagram:
+                return dependencyWriter();
+            case BusinessRuleRelationDiagram:
+                return businessRuleRelationWriter();
+            case OverconcentrationBusinessRuleDiagram:
+                return new GraphvizjView<BusinessRuleRelationDiagram>(
+                        model -> model.overconcentrationRelationDotText(jigDocumentContext), diagramFormat);
+            case CategoryUsageDiagram:
+                return enumUsage();
+            case CategoryDiagram:
+                return categories();
+            case ArchitectureDiagram:
+                return architecture();
+            case CompositeUsecaseDiagram:
+                return compositeUsecaseDiagram();
+        }
+
+        throw new IllegalArgumentException("Diagram以外が指定された？: " + jigDocument);
+    }
 }
+

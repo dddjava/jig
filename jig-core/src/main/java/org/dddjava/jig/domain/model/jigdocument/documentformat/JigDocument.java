@@ -9,34 +9,78 @@ import java.util.stream.Collectors;
  */
 public enum JigDocument {
 
-    BusinessRuleList(BusinessRuleDocument.BusinessRuleList, "business-rule"),
-    PackageRelationDiagram(BusinessRuleDocument.PackageRelationDiagram, "package-relation"),
-    BusinessRuleRelationDiagram(BusinessRuleDocument.BusinessRuleRelationDiagram, "business-rule-relation"),
-    OverconcentrationBusinessRuleDiagram(BusinessRuleDocument.OverconcentrationBusinessRuleDiagram, "overconcentration-business-rule"),
+    /**
+     * ビジネスルール一覧
+     *
+     * ビジネスルールを表すクラスの一覧。
+     * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
+     */
+    BusinessRuleList("business-rule"),
 
-    CategoryDiagram(BusinessRuleDocument.CategoryDiagram, "category"),
-    CategoryUsageDiagram(BusinessRuleDocument.CategoryUsageDiagram, "category-usage"),
+    /**
+     * パッケージ関連ダイアグラム
+     *
+     * ビジネスルールのパッケージ関連を可視化する。
+     * トップレベルからの階層(depth)で丸めて複数出力される。
+     * パッケージの関連有無や方向からドメインを語れるかのウォークスルーに使用する。
+     */
+    PackageRelationDiagram("package-relation"),
 
-    ApplicationList(ApplicationDocument.ApplicationList, "application"),
-    ServiceMethodCallHierarchyDiagram(ApplicationDocument.ServiceMethodCallHierarchyDiagram, "service-method-call-hierarchy"),
-    CompositeUsecaseDiagram(ApplicationDocument.CompositeUsecaseDiagram, "composite-usecase"),
+    /**
+     * ビジネスルール関連ダイアグラム
+     *
+     * ビジネスルール間の関連を可視化する。
+     * クラス名と依存線のみのクラス図。ある程度以上の規模になると大きくなりすぎて使いづらくなる。
+     * パッケージ関連ダイアグラムで把握できない場合の補助に使用する。
+     */
+    BusinessRuleRelationDiagram("business-rule-relation"),
+    OverconcentrationBusinessRuleDiagram("overconcentration-business-rule"),
 
-    ArchitectureDiagram(ArchitectureDocument.ArchitectureDiagram, "architecture"),
+    /**
+     * 区分ダイアグラム
+     *
+     * 区分と区分値を可視化する。
+     * 区分の充実はドメインの把握具合と密接に関わる。
+     */
+    CategoryDiagram("category"),
+
+    /**
+     * 区分使用ダイアグラム
+     *
+     * 区分を使用しているクラスを可視化する。
+     */
+    CategoryUsageDiagram("category-usage"),
+
+    /**
+     * 機能一覧
+     *
+     * 機能を提供するメソッドの一覧。
+     * 三層（プレゼンテーション層、アプリケーション層、データソース層）の情報を提供する。
+     * アプリケーションの状況把握に使用できる。
+     *
+     * 制限事項: {@link org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader}
+     */
+    ApplicationList("application"),
+
+    /**
+     * サービスメソッド呼び出しダイアグラム
+     *
+     * サービスクラスのメソッド呼び出しを可視化する。
+     */
+    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy"),
+
+    /**
+     * ユースケース複合図
+     */
+    CompositeUsecaseDiagram("composite-usecase"),
+
+    /**
+     * アーキテクチャダイアグラム
+     */
+    ArchitectureDiagram("architecture"),
     ;
 
     private final String documentFileName;
-
-    JigDocument(ApplicationDocument document, String fileName) {
-        this(fileName);
-    }
-
-    JigDocument(BusinessRuleDocument document, String fileName) {
-        this(fileName);
-    }
-
-    JigDocument(ArchitectureDocument document, String fileName) {
-        this(fileName);
-    }
 
     JigDocument(String documentFileName) {
         this.documentFileName = documentFileName;

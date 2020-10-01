@@ -159,7 +159,7 @@ project(':jig-core') {
         api 'ch.qos.logback:logback-classic'
 
         // バイトコードの読み取り: infrastructure/asm
-        api 'org.ow2.asm:asm:8.0.1'
+        api 'org.ow2.asm:asm:9.0'
         // SQLの取得: infrastructure/mybatis
         api 'org.mybatis:mybatis:3.5.5'
         // javadocコメントの取得: infrastructure/javaparser

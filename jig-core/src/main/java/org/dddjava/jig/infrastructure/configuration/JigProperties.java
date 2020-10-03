@@ -1,25 +1,50 @@
 package org.dddjava.jig.infrastructure.configuration;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class JigProperties {
 
-    final OutputOmitPrefix outputOmitPrefix;
-    final String businessRulePattern;
+    OutputOmitPrefix outputOmitPrefix;
+    String businessRulePattern;
 
-    final String applicationPattern;
-    final String infrastructurePattern;
-    final String presentationPattern;
+    String applicationPattern;
+    String infrastructurePattern;
+    String presentationPattern;
 
-    final LinkPrefix linkPrefix;
+    LinkPrefix linkPrefix;
+
+    Path outputDirectory;
+    JigDiagramFormat outputDiagramFormat;
 
     public JigProperties(String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, OutputOmitPrefix outputOmitPrefix, LinkPrefix linkPrefix) {
-        this.businessRulePattern = businessRulePattern;
-        this.infrastructurePattern = infrastructurePattern;
         this.outputOmitPrefix = outputOmitPrefix;
         this.linkPrefix = linkPrefix;
-        this.applicationPattern = applicationPattern;
+
+        this.businessRulePattern = businessRulePattern;
         this.presentationPattern = presentationPattern;
+        this.applicationPattern = applicationPattern;
+        this.infrastructurePattern = infrastructurePattern;
+    }
+
+    public static JigProperties defaultInstance() {
+        JigProperties jigProperties = new JigProperties(
+                JigProperty.PATTERN_DOMAIN.defaultValue(),
+                JigProperty.PATTERN_APPLICATION.defaultValue(),
+                JigProperty.PATTERN_INFRASTRUCTURE.defaultValue(),
+                JigProperty.PATTERN_PRESENTATION.defaultValue(),
+                null, null);
+        jigProperties.outputDirectory = Paths.get(JigProperty.OUTPUT_DIRECTORY.defaultValue());
+        jigProperties.outputDiagramFormat = JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue());
+        return jigProperties;
     }
 
     public OutputOmitPrefix getOutputOmitPrefix() {
@@ -36,5 +61,36 @@ public class JigProperties {
 
     public String getInfrastructurePattern() {
         return infrastructurePattern;
+    }
+
+
+    public Path resolveOutputPath(DocumentName documentName) {
+        return outputDirectory.resolve(outputPath(documentName, outputDiagramFormat)).toAbsolutePath();
+    }
+
+    private String outputPath(DocumentName documentName, JigDiagramFormat JigDiagramFormat) {
+        return documentName.fileName() + '.' + JigDiagramFormat.extension();
+    }
+
+    void prepareOutputDirectory() {
+        File file = outputDirectory.toFile();
+        if (file.exists()) {
+            if (file.isDirectory() && file.canWrite()) {
+                // ディレクトリかつ書き込み可能なので対応不要
+                return;
+            }
+            if (!file.isDirectory()) {
+                throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
+            }
+            if (file.isDirectory() && !file.canWrite()) {
+                throw new IllegalStateException(file.getAbsolutePath() + " can not writable. Please specify another directory.");
+            }
+        }
+
+        try {
+            Files.createDirectories(outputDirectory);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

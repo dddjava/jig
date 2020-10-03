@@ -24,6 +24,10 @@ public class DocumentName {
         return fileName + "." + extension;
     }
 
+    public String fileName() {
+        return fileName;
+    }
+
     public String label() {
         return label;
     }

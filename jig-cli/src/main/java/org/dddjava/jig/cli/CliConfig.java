@@ -1,5 +1,6 @@
 package org.dddjava.jig.cli;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
@@ -8,6 +9,7 @@ import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.dddjava.jig.infrastructure.configuration.JigPropertyLoader;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,14 +32,15 @@ class CliConfig {
 
     @Value("${output.omit.prefix}")
     String outputOmitPrefix;
-    @Value("${jig.model.pattern}")
+
+    @Value("${jig.model.pattern:}")
     String modelPattern;
 
-    @Value("${jig.application.pattern}")
+    @Value("${jig.application.pattern:}")
     String applicationPattern;
-    @Value("${jig.infrastructure.pattern}")
+    @Value("${jig.infrastructure.pattern:}")
     String infrastructurePattern;
-    @Value("${jig.presentation.pattern}")
+    @Value("${jig.presentation.pattern:}")
     String presentationPattern;
 
     @Value("${project.path}")
@@ -73,21 +76,19 @@ class CliConfig {
                 : JigDocument.resolve(documentTypeText);
     }
 
-
-    Path outputDirectory() {
-        return Paths.get(this.outputDirectory);
-    }
-
     Configuration configuration() {
+        JigProperties properties = new JigProperties(
+                new OutputOmitPrefix(outputOmitPrefix),
+                modelPattern,
+                applicationPattern,
+                infrastructurePattern,
+                presentationPattern,
+                new LinkPrefix(linkPrefix),
+                Paths.get(this.outputDirectory),
+                JigDiagramFormat.SVG
+        );
         return new Configuration(
-                new JigProperties(
-                        modelPattern,
-                        applicationPattern,
-                        infrastructurePattern,
-                        presentationPattern,
-                        new OutputOmitPrefix(outputOmitPrefix),
-                        new LinkPrefix(linkPrefix)
-                ),
+                JigPropertyLoader.loadJigProperties(properties),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

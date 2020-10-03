@@ -66,7 +66,7 @@ public class CommandLineApplication implements CommandLineRunner {
         }
 
         List<HandleResult> handleResultList = new ArrayList<>();
-        Path outputDirectory = cliConfig.outputDirectory();
+        Path outputDirectory = configuration.outputDirectory();
         for (JigDocument jigDocument : jigDocuments) {
             HandleResult result = jigDocumentHandlers.handle(jigDocument, outputDirectory);
             handleResultList.add(result);

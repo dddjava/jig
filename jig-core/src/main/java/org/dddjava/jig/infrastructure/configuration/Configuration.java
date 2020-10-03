@@ -25,7 +25,10 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
+import java.nio.file.Path;
+
 public class Configuration {
+    JigProperties properties;
 
     JigSourceReadService jigSourceReadService;
     JigDocumentHandlers documentHandlers;
@@ -35,6 +38,7 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties properties, SourceCodeAliasReader sourceCodeAliasReader) {
+        this.properties = properties;
         // AliasFinderが無くなったらなくせる
         AliasRepository aliasRepository = new OnMemoryAliasRepository();
 
@@ -115,5 +119,9 @@ public class Configuration {
 
     public JigDocumentHandlers documentHandlers() {
         return documentHandlers;
+    }
+
+    public Path outputDirectory() {
+        return properties.outputDirectory;
     }
 }

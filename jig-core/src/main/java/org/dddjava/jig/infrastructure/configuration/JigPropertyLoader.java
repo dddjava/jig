@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -26,7 +27,20 @@ public class JigPropertyLoader {
 
     private JigProperties jigProperties;
 
-    public void load() {
+    public static JigProperties loadJigProperties(JigProperties primaryProperty) {
+        JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
+        jigPropertyLoader.load();
+        logger.info(jigPropertyLoader.jigProperties.toString());
+        jigPropertyLoader.override(primaryProperty);
+        logger.info(jigPropertyLoader.jigProperties.toString());
+        return jigPropertyLoader.jigProperties;
+    }
+
+    private void override(JigProperties primaryProperty) {
+        jigProperties.override(primaryProperty);
+    }
+
+    private void load() {
         jigProperties = JigProperties.defaultInstance();
 
         Path homeConfigDirectoryPath = Paths.get(System.getProperty("user.home")).resolve(".jig");
@@ -40,8 +54,9 @@ public class JigPropertyLoader {
 
     private void loadConfigFromPath(Path configDirectoryPath) {
         Path jigPropertiesPath = configDirectoryPath.resolve("jig.properties");
+        logger.info("try to load " + jigPropertiesPath.toAbsolutePath() + " ...");
         if (jigPropertiesPath.toFile().exists()) {
-            logger.warning(jigPropertiesPath.toAbsolutePath() + "をロードします。");
+            logger.info("loading " + jigPropertiesPath.toAbsolutePath());
             try (InputStream is = Files.newInputStream(jigPropertiesPath)) {
                 Properties properties = new Properties();
                 properties.load(is);
@@ -67,7 +82,7 @@ public class JigPropertyLoader {
                 jigProperties.outputDirectory = Paths.get(value);
                 break;
             case OUTPUT_DIAGRAM_FORMAT:
-                jigProperties.outputDiagramFormat = JigDiagramFormat.valueOf(value);
+                jigProperties.outputDiagramFormat = JigDiagramFormat.valueOf(value.toUpperCase(Locale.ENGLISH));
                 break;
             case PATTERN_DOMAIN:
                 jigProperties.businessRulePattern = value;

@@ -2,6 +2,8 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * JIGの設定を読み込みます。
@@ -23,17 +24,24 @@ import java.util.logging.Logger;
  * 4. デフォルト値（JigPropertyで定義）
  */
 public class JigPropertyLoader {
-    static Logger logger = Logger.getLogger(JigProperties.class.getName());
+    static Logger logger = LoggerFactory.getLogger(JigPropertyLoader.class);
 
     private JigProperties jigProperties;
 
     public static JigProperties loadJigProperties(JigProperties primaryProperty) {
-        JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
-        jigPropertyLoader.load();
-        logger.info(jigPropertyLoader.jigProperties.toString());
-        jigPropertyLoader.override(primaryProperty);
-        logger.info(jigPropertyLoader.jigProperties.toString());
-        return jigPropertyLoader.jigProperties;
+        try {
+            JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
+            jigPropertyLoader.load();
+            logger.info(jigPropertyLoader.jigProperties.toString());
+            jigPropertyLoader.override(primaryProperty);
+            logger.info(jigPropertyLoader.jigProperties.toString());
+            return jigPropertyLoader.jigProperties;
+        } catch (Exception e) {
+            // 2020.10.2 設定の読み込みを変更
+            // 失敗した場合は既存を維持しておく
+            logger.error("設定ファイルの読み込みに失敗しました。例外情報を添えて不具合を報告してください。処理は続行します。", e);
+            return primaryProperty;
+        }
     }
 
     private void override(JigProperties primaryProperty) {
@@ -62,7 +70,7 @@ public class JigPropertyLoader {
                 properties.load(is);
                 apply(properties);
             } catch (IOException e) {
-                logger.warning("JIG設定ファイルのロードに失敗しました。" + e.toString());
+                logger.warn("JIG設定ファイルのロードに失敗しました。", e);
             }
         }
     }

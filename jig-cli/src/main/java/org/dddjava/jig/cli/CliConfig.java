@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.JigPropertyLoader;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,10 +86,7 @@ class CliConfig {
                 Paths.get(this.outputDirectory),
                 JigDiagramFormat.SVG
         );
-        return new Configuration(
-                JigPropertyLoader.loadJigProperties(properties),
-                new SourceCodeAliasReader(new JavaparserAliasReader())
-        );
+        return new Configuration(properties, new SourceCodeAliasReader(new JavaparserAliasReader()));
     }
 
     SourcePaths rawSourceLocations() {

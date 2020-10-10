@@ -32,15 +32,15 @@ public class JigPropertyLoader {
         try {
             JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
             jigPropertyLoader.load();
-            logger.info(jigPropertyLoader.jigProperties.toString());
             jigPropertyLoader.override(primaryProperty);
-            logger.info(jigPropertyLoader.jigProperties.toString());
             return jigPropertyLoader.jigProperties;
         } catch (Exception e) {
             // 2020.10.2 設定の読み込みを変更
             // 失敗した場合は既存を維持しておく
             logger.error("設定ファイルの読み込みに失敗しました。例外情報を添えて不具合を報告してください。処理は続行します。", e);
-            return primaryProperty;
+            JigProperties jigProperties = JigProperties.defaultInstance();
+            jigProperties.override(primaryProperty);
+            return jigProperties;
         }
     }
 

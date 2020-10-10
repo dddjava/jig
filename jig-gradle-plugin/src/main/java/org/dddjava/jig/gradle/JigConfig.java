@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
 
 public class JigConfig {
 
-    String modelPattern = ".+\\.domain\\.(model|type)\\..+";
+    String modelPattern = "";
 
-    String infrastructurePattern = ".+\\.infrastructure\\..+";
-    String presentationPattern = ".+\\.presentation\\..+";
-    String applicationPattern = ".+\\.application\\..+";
+    String infrastructurePattern = "";
+    String presentationPattern = "";
+    String applicationPattern = "";
 
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "";
 
-    String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
+    String outputOmitPrefix = "";
 
     boolean enableDebugDocument = false;
 
@@ -37,13 +37,12 @@ public class JigConfig {
     }
 
     public JigProperties asProperties() {
-        presentationPattern = "";
-        applicationPattern = "";
         return new JigProperties(
                 modelPattern,
                 applicationPattern,
                 infrastructurePattern,
-                presentationPattern, new OutputOmitPrefix(outputOmitPrefix),
+                presentationPattern,
+                new OutputOmitPrefix(outputOmitPrefix),
                 new LinkPrefix(linkPrefix)
         );
     }

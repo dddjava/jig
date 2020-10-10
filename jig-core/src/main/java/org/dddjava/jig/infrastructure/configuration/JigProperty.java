@@ -19,8 +19,9 @@ public enum JigProperty {
     PATTERN_APPLICATION(".+\\.application\\..+"),
     PATTERN_INFRASTRUCTURE(".+\\.infrastructure\\..+"),
 
-    LINK_PREFIX(LinkPrefix.DISABLE);
+    LINK_PREFIX(LinkPrefix.DISABLE),
 
+    OMIT_PREFIX(".+\\.(service|domain\\.(model|type))\\.");
     private String defaultValue;
 
     JigProperty(String defaultValue) {

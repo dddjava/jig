@@ -23,7 +23,7 @@ public class JigConfig {
 
     String outputDirectory = "";
 
-    String outputOmitPrefix = "";
+    String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
     boolean enableDebugDocument = false;
 

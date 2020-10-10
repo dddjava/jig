@@ -54,7 +54,7 @@ public class JigProperties {
 
     public static JigProperties defaultInstance() {
         JigProperties jigProperties = new JigProperties(
-                null,
+                new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),
                 JigProperty.PATTERN_DOMAIN.defaultValue(),
                 JigProperty.PATTERN_APPLICATION.defaultValue(),
                 JigProperty.PATTERN_INFRASTRUCTURE.defaultValue(),

@@ -107,6 +107,9 @@ public class JigPropertyLoader {
             case LINK_PREFIX:
                 jigProperties.linkPrefix = new LinkPrefix(value);
                 break;
+            case OMIT_PREFIX:
+                jigProperties.outputOmitPrefix = new OutputOmitPrefix(value);
+                break;
         }
     }
 }

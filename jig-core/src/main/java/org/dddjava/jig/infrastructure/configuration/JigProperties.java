@@ -28,21 +28,26 @@ public class JigProperties {
 
     public JigProperties(String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, OutputOmitPrefix outputOmitPrefix, LinkPrefix linkPrefix) {
         this.outputOmitPrefix = outputOmitPrefix;
-        this.linkPrefix = linkPrefix;
 
         this.businessRulePattern = businessRulePattern;
         this.presentationPattern = presentationPattern;
         this.applicationPattern = applicationPattern;
         this.infrastructurePattern = infrastructurePattern;
+
+        this.linkPrefix = linkPrefix;
+
     }
 
     public JigProperties(OutputOmitPrefix outputOmitPrefix, String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
         this.outputOmitPrefix = outputOmitPrefix;
+
         this.businessRulePattern = businessRulePattern;
         this.applicationPattern = applicationPattern;
         this.infrastructurePattern = infrastructurePattern;
         this.presentationPattern = presentationPattern;
+
         this.linkPrefix = linkPrefix;
+
         this.outputDirectory = outputDirectory;
         this.outputDiagramFormat = outputDiagramFormat;
     }

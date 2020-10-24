@@ -33,6 +33,7 @@ public class JigPropertyLoader {
             JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
             jigPropertyLoader.load();
             jigPropertyLoader.override(primaryProperty);
+            jigPropertyLoader.prepareOutputDirectory();
             return jigPropertyLoader.jigProperties;
         } catch (Exception e) {
             // 2020.10.2 設定の読み込みを変更
@@ -42,6 +43,10 @@ public class JigPropertyLoader {
             jigProperties.override(primaryProperty);
             return jigProperties;
         }
+    }
+
+    private void prepareOutputDirectory() {
+        jigProperties.prepareOutputDirectory();
     }
 
     private void override(JigProperties primaryProperty) {
@@ -56,8 +61,6 @@ public class JigPropertyLoader {
 
         Path currentDirectoryPath = Paths.get(System.getProperty("user.dir"));
         loadConfigFromPath(currentDirectoryPath);
-
-        jigProperties.prepareOutputDirectory();
     }
 
     private void loadConfigFromPath(Path configDirectoryPath) {

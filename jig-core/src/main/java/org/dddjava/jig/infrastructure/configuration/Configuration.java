@@ -38,7 +38,8 @@ public class Configuration {
     AliasService aliasService;
 
     public Configuration(JigProperties originalProperties, SourceCodeAliasReader sourceCodeAliasReader) {
-        this.properties = JigPropertyLoader.loadJigProperties(originalProperties);
+        this.properties = new JigPropertyLoader(originalProperties).load();
+        properties.prepareOutputDirectory();
 
         // AliasFinderが無くなったらなくせる
         AliasRepository aliasRepository = new OnMemoryAliasRepository();

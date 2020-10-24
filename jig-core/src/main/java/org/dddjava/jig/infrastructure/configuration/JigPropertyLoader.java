@@ -26,41 +26,38 @@ import java.util.Properties;
 public class JigPropertyLoader {
     static Logger logger = LoggerFactory.getLogger(JigPropertyLoader.class);
 
+    private final JigProperties primaryProperty;
     private JigProperties jigProperties;
 
-    public static JigProperties loadJigProperties(JigProperties primaryProperty) {
+    public JigPropertyLoader(JigProperties primaryProperty) {
+        this.primaryProperty = primaryProperty;
+        this.jigProperties = JigProperties.defaultInstance();
+    }
+
+    public JigProperties load() {
+        loadEnvironmentProperty();
+        applySpecifyProperty();
+        return jigProperties;
+    }
+
+    private void applySpecifyProperty() {
+        jigProperties.override(primaryProperty);
+    }
+
+    private void loadEnvironmentProperty() {
         try {
-            JigPropertyLoader jigPropertyLoader = new JigPropertyLoader();
-            jigPropertyLoader.load();
-            jigPropertyLoader.override(primaryProperty);
-            jigPropertyLoader.prepareOutputDirectory();
-            return jigPropertyLoader.jigProperties;
+            Path homeConfigDirectoryPath = Paths.get(System.getProperty("user.home")).resolve(".jig");
+            loadConfigFromPath(homeConfigDirectoryPath);
+
+            Path currentDirectoryPath = Paths.get(System.getProperty("user.dir"));
+            loadConfigFromPath(currentDirectoryPath);
         } catch (Exception e) {
             // 2020.10.2 設定の読み込みを変更
             // 失敗した場合は既存を維持しておく
             logger.error("設定ファイルの読み込みに失敗しました。例外情報を添えて不具合を報告してください。処理は続行します。", e);
-            JigProperties jigProperties = JigProperties.defaultInstance();
-            jigProperties.override(primaryProperty);
-            return jigProperties;
+            // 初期値に戻す
+            jigProperties = JigProperties.defaultInstance();
         }
-    }
-
-    private void prepareOutputDirectory() {
-        jigProperties.prepareOutputDirectory();
-    }
-
-    private void override(JigProperties primaryProperty) {
-        jigProperties.override(primaryProperty);
-    }
-
-    private void load() {
-        jigProperties = JigProperties.defaultInstance();
-
-        Path homeConfigDirectoryPath = Paths.get(System.getProperty("user.home")).resolve(".jig");
-        loadConfigFromPath(homeConfigDirectoryPath);
-
-        Path currentDirectoryPath = Paths.get(System.getProperty("user.dir"));
-        loadConfigFromPath(currentDirectoryPath);
     }
 
     private void loadConfigFromPath(Path configDirectoryPath) {

@@ -169,7 +169,7 @@ project(':jig-core') {
         api 'org.apache.poi:poi:4.1.2'
         api 'org.apache.poi:poi-ooxml:4.1.2'
         // ダイアグラム出力: presentation/graphvizj
-        api 'guru.nidi:graphviz-java:0.17.0'
+        api 'guru.nidi:graphviz-java:0.17.1'
 
         testImplementation 'org.springframework:spring-web'
     }

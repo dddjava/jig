@@ -1,11 +1,13 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
+/**
+ * JIGが識別する型
+ */
 public class JigType {
     TypeDeclaration typeDeclaration;
     TypeAlias typeAlias;

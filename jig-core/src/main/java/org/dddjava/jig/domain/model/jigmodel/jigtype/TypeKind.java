@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.lowmodel;
+package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
 /**
  * 型の種類

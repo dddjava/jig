@@ -3,6 +3,9 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
+/**
+ * インスタンスに属するもの
+ */
 public class JigInstanceMember {
     FieldDeclarations fieldDeclarations;
     Methods instanceMethods;

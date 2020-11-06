@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
 
 /**
- * クラスメンバ
+ * クラスに静的に属するもの
  *
  * コンストラクタはメンバではないが、実装上はstaticファクトリメソッドと同等の役割を担うのでここで扱う。
  */

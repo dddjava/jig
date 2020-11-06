@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigInstanceMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.JigTypeMember;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;

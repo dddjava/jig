@@ -13,9 +13,9 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
-import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
-import org.dddjava.jig.presentation.view.graphvizj.DiagramSourceEditor;
-import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;
+import org.dddjava.jig.presentation.view.graphviz.DiagramFormat;
+import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
+import org.dddjava.jig.presentation.view.graphviz.graphvizj.GraphvizjView;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.presentation.view.graphviz.graphvizj;
 
+import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
 import guru.nidi.graphviz.engine.GraphvizException;
@@ -9,6 +10,8 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.graphviz.DiagramFormat;
+import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
 
 import java.io.OutputStreamWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -48,7 +51,7 @@ public class GraphvizjView<T> implements JigView<T> {
         jigDocumentWriter.write(
                 outputStream ->
                         Graphviz.fromString(diagramSource.text())
-                                .render(diagramFormat.graphvizjFormat())
+                                .render(Format.valueOf(diagramFormat.name()))
                                 .toOutputStream(outputStream),
                 documentName.withExtension(diagramFormat.extension()));
 

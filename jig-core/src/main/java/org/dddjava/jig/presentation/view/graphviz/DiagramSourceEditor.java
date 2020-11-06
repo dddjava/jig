@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.graphvizj;
+package org.dddjava.jig.presentation.view.graphviz;
 
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 

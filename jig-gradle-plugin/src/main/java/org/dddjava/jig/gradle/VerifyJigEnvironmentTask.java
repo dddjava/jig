@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import guru.nidi.graphviz.engine.GraphvizCmdLineEngine;
-import org.dddjava.jig.presentation.view.graphvizj.GraphvizjView;
+import org.dddjava.jig.presentation.view.graphviz.graphvizj.GraphvizjView;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.TaskAction;

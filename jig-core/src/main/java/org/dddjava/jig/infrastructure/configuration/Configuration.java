@@ -22,7 +22,7 @@ import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.graphvizj.DiagramFormat;
+import org.dddjava.jig.presentation.view.graphviz.DiagramFormat;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 import java.nio.file.Path;

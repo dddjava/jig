@@ -3,7 +3,7 @@ version: 2.1
 executors:
   circleci-openjdk-8-executor:
     docker:
-      - image: circleci/openjdk:8u272-jdk
+      - image: circleci/openjdk:8u265-jdk
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m

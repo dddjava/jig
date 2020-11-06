@@ -26,15 +26,16 @@ public class ArchitectureDiagram {
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+                .add("node [shape=component,style=filled];")
                 .add("subgraph clusterArchitecture {")
-                .add(Node.DEFAULT)
+                .add("node [fillcolor=lightgoldenrod];")
                 .add(new Node(ArchitectureComponent.APPLICATION.toString()).asText())
                 .add(new Node(ArchitectureComponent.BUSINESS_RULE.toString()).asText())
                 .add(new Node(ArchitectureComponent.PRESENTATION.toString()).asText())
                 .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
                 .add("}")
                 .add("label=\"" + documentName.label() + "\";")
-                .add("node [shape=box,style=filled,fillcolor=whitesmoke];");
+                .add("node [fillcolor=whitesmoke];");
         RelationText relationText = RelationText.fromPackageRelations(architectureRelation.packageRelations());
         graph.add(relationText.asText());
         return DiagramSource.createDiagramSource(documentName, graph.toString());

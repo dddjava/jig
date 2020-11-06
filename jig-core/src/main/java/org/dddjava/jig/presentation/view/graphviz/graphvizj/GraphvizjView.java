@@ -51,7 +51,7 @@ public class GraphvizjView<T> implements JigView<T> {
         jigDocumentWriter.write(
                 outputStream ->
                         Graphviz.fromString(diagramSource.text())
-                                .render(Format.valueOf(diagramFormat.name()))
+                                .render(toFormat())
                                 .toOutputStream(outputStream),
                 documentName.withExtension(diagramFormat.extension()));
 
@@ -66,6 +66,11 @@ public class GraphvizjView<T> implements JigView<T> {
                     documentName.withExtension("additional.txt")
             );
         }
+    }
+
+    private Format toFormat() {
+        // 対応しないフォーマットがあるとここで例外が発生する
+        return Format.valueOf(diagramFormat.name());
     }
 
     public static void confirmInstalledGraphviz(GraphvizCmdLineEngine graphvizCmdLineEngine) {

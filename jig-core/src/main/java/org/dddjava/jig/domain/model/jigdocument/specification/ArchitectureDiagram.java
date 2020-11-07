@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;
 
@@ -12,14 +14,21 @@ import java.util.StringJoiner;
  */
 public class ArchitectureDiagram {
 
-    private final ArchitectureRelations architectureRelation;
+    ArchitectureComponents architectureComponents;
+    ClassRelations classRelations;
 
-    public ArchitectureDiagram(ArchitectureRelations architectureRelation) {
-        this.architectureRelation = architectureRelation;
+    public ArchitectureDiagram(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
+        this.architectureComponents = architectureComponents;
+        this.classRelations = classRelations;
+    }
+
+    public static ArchitectureDiagram from(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
+        return new ArchitectureDiagram(architectureComponents, classRelations);
     }
 
     public DiagramSources dotText(JigDocumentContext jigDocumentContext) {
-        if (architectureRelation.worthless()) {
+        ArchitectureRelations architectureRelations = ArchitectureRelations.from(architectureComponents, classRelations);
+        if (architectureRelations.worthless()) {
             return DiagramSource.empty();
         }
 
@@ -39,7 +48,7 @@ public class ArchitectureDiagram {
                 .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
                 .add("}")
                 // 関連
-                .add(RelationText.fromPackageRelations(architectureRelation.packageRelations()).asText());
+                .add(RelationText.fromPackageRelations(architectureRelations.packageRelations()).asText());
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }

@@ -4,7 +4,6 @@ import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureRelations;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
@@ -106,7 +105,6 @@ public class ApplicationService {
         ArchitectureComponents architectureComponents = typeFacts.toArchitectureComponents(architecture);
         ClassRelations classRelations = typeFacts.toClassRelations();
 
-        ArchitectureRelations architectureRelations = ArchitectureRelations.from(architectureComponents, classRelations);
-        return new ArchitectureDiagram(architectureRelations);
+        return ArchitectureDiagram.from(architectureComponents, classRelations);
     }
 }

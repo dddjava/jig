@@ -10,6 +10,7 @@ public enum TypeKind {
     列挙型,
     // abstractな型
     抽象列挙型,
+
     アノテーション,
     インタフェース,
     抽象型;

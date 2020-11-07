@@ -4,18 +4,15 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeParameters;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodKind;
+import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -24,32 +21,47 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class AsmClassVisitor extends ClassVisitor {
 
+    final PlainClassBuilder plainClassBuilder;
+    final ClassSource classSource;
+
+    AsmClassVisitor(ClassSource classSource) {
+        super(Opcodes.ASM7);
+        this.plainClassBuilder = new PlainClassBuilder(classSource);
+        this.classSource = classSource;
+    }
+
+    public PlainClassBuilder pureClassBuilder() {
+        return plainClassBuilder;
+    }
+
     TypeFact typeFact;
 
-    AsmClassVisitor() {
-        super(Opcodes.ASM7);
+    @Override
+    public void visitEnd() {
+        typeFact = plainClassBuilder.build();
+        super.visitEnd();
+    }
+
+    public TypeFact typeFact() {
+        // visitEnd後にしか呼んではいけない
+        return Objects.requireNonNull(typeFact);
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
-        ParameterizedType superType = parameterizedSuperType(superName, signature);
-        List<ParameterizedType> interfaceTypes = parameterizedInterfaceTypes(interfaces, signature);
-
-        Visibility visibility = resolveVisibility(access);
-
-        this.typeFact = new TypeFact(
-                new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
-                superType,
-                interfaceTypes,
-                typeKind(access),
-                visibility);
+        plainClassBuilder
+                .withType(new ParameterizedType(new TypeIdentifier(name), actualTypeParameters))
+                .withParents(superType(superName, signature), interfaceTypes(interfaces, signature))
+                .withVisibility(resolveVisibility(access))
+                .withTypeKind(typeKind(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -62,49 +74,47 @@ class AsmClassVisitor extends ClassVisitor {
             return TypeKind.列挙型;
         }
 
+        // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
+
         return TypeKind.通常型;
     }
 
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                typeFact.registerAnnotation(annotation)
+                plainClassBuilder.addAnnotation(annotation)
         );
-
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(typeFact::registerUseType);
+        genericsTypes.forEach(plainClassBuilder::addUsingType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            typeFact.registerUseType(toTypeIdentifier(elementType));
+            plainClassBuilder.addUsingType(toTypeIdentifier(elementType));
         }
 
-
         if ((access & Opcodes.ACC_STATIC) == 0) {
+            // インスタンスフィールド
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
-            FieldDeclaration fieldDeclaration = new FieldDeclaration(typeFact.typeIdentifier(), fieldType, new FieldIdentifier(name));
-            // インスタンスフィールドだけ相手にする
-            typeFact.registerField(fieldDeclaration);
+            FieldDeclaration fieldDeclaration = plainClassBuilder.addInstanceField(fieldType, new FieldIdentifier(name));
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    typeFact.registerUseType(annotationTypeIdentifier);
-                    return new MyAnnotationVisitor(this.api, annotationTypeIdentifier, annotation ->
-                            typeFact.registerFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
+                    plainClassBuilder.addUsingType(annotationTypeIdentifier);
+                    return new MyAnnotationVisitor(this.api, annotationTypeIdentifier,
+                            annotation -> plainClassBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }
             };
+        } else if (!name.equals("$VALUES")) {
+            // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
+            plainClassBuilder.addStaticField(name, typeDescriptorToIdentifier(descriptor));
         }
-        if (!name.equals("$VALUES")) {
-            StaticFieldDeclaration fieldDeclaration = new StaticFieldDeclaration(typeFact.typeIdentifier(), name, typeDescriptorToIdentifier(descriptor));
-            // staticフィールドのうち、enumの $VALUES は除く
-            typeFact.registerStaticField(fieldDeclaration);
-        }
+
         return super.visitField(access, name, descriptor, signature, value);
     }
 
@@ -112,43 +122,37 @@ class AsmClassVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
 
         MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
-
-        MethodDeclaration methodDeclaration = new MethodDeclaration(typeFact.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
-
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
+
+        List<TypeIdentifier> throwsTypes = new ArrayList<>();
         if (exceptions != null) {
             for (String exception : exceptions) {
-                useTypes.add(new TypeIdentifier(exception));
+                throwsTypes.add(new TypeIdentifier(exception));
             }
         }
 
-        // メソッドの種類判定
-        MethodKind methodKind = MethodKind.INSTANCE_METHOD;
-        if (methodDeclaration.isConstructor()) {
-            methodKind = MethodKind.CONSTRUCTOR;
-        } else if ((access & Opcodes.ACC_STATIC) != 0) {
-            methodKind = MethodKind.STATIC_METHOD;
-        }
-        // Accessor判定
-        Visibility visibility = resolveVisibility(access);
-
-        MethodFact methodFact = new MethodFact(methodDeclaration, useTypes, methodKind, visibility);
-        methodFact.bind(typeFact);
+        PlainMethodBuilder plainMethodBuilder = plainClassBuilder.createPlainMethodBuilder(
+                toMethodSignature(name, descriptor),
+                methodReturn,
+                access,
+                resolveVisibility(access),
+                useTypes,
+                throwsTypes);
 
         return new MethodVisitor(this.api) {
 
             @Override
             public void visitInsn(int opcode) {
                 if (opcode == Opcodes.ACONST_NULL) {
-                    methodFact.markReferenceNull();
+                    plainMethodBuilder.markReferenceNull();
                 }
                 super.visitInsn(opcode);
             }
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-                return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                        methodFact.registerAnnotation(new MethodAnnotation(annotation, methodDeclaration)));
+                return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor),
+                        annotation -> plainMethodBuilder.addAnnotation(annotation));
             }
 
             @Override
@@ -161,14 +165,14 @@ class AsmClassVisitor extends ClassVisitor {
                 // FIXME: これをFieldDeclarationで扱うとFieldTypeに総称型が入っているのを期待しかねない
                 // このメソッドのdescriptorではフィールドの型パラメタが解決できないため、完全なFieldTypeを作成できない。
                 // UsingFieldでではFieldDeclarationと異なる形式で扱わなければならない。
-                methodFact.registerFieldInstruction(fieldDeclaration);
+                plainMethodBuilder.addFieldInstruction(fieldDeclaration);
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                methodFact.registerMethodInstruction(
+                plainMethodBuilder.addMethodInstruction(
                         new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor))));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -178,7 +182,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    methodFact.registerClassReference(toTypeIdentifier((Type) value));
+                    plainMethodBuilder.addClassReferenceCall(toTypeIdentifier((Type) value));
                 }
 
                 super.visitLdcInsn(value);
@@ -192,9 +196,9 @@ class AsmClassVisitor extends ClassVisitor {
                         Type type = (Type) bootstrapMethodArgument;
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
-                            methodFact.registerInvokeDynamic(toTypeIdentifier(type.getReturnType()));
+                            plainMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
-                                methodFact.registerInvokeDynamic(toTypeIdentifier(argumentType));
+                                plainMethodBuilder.addInvokeDynamicType(toTypeIdentifier(argumentType));
                             }
                         }
                     }
@@ -202,7 +206,7 @@ class AsmClassVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
-                        methodFact.registerMethodInstruction(
+                        plainMethodBuilder.addMethodInstruction(
                                 new MethodDeclaration(new TypeIdentifier(handle.getOwner()), toMethodSignature(handle.getName(), handle.getDesc()), new MethodReturn(methodDescriptorToReturnIdentifier(handle.getDesc())))
                         );
                     }
@@ -214,7 +218,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                methodFact.registerLookupSwitchInstruction();
+                plainMethodBuilder.addLookupSwitch();
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
@@ -222,13 +226,18 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitJumpInsn(int opcode, Label label) {
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
-                    methodFact.registerJumpInstruction();
+                    plainMethodBuilder.addJump();
                 }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-                    methodFact.markJudgeNull();
+                    plainMethodBuilder.markJudgeNull();
                 }
                 super.visitJumpInsn(opcode, label);
+            }
+
+            @Override
+            public void visitEnd() {
+                plainMethodBuilder.buildAndCollect();
             }
         };
     }
@@ -366,7 +375,7 @@ class AsmClassVisitor extends ClassVisitor {
         return new MethodReturn(new ParameterizedType(collector[0], collector[1]));
     }
 
-    private ParameterizedType parameterizedSuperType(String superName, String signature) {
+    private ParameterizedType superType(String superName, String signature) {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {
             return new ParameterizedType(new TypeIdentifier(superName));
@@ -411,7 +420,7 @@ class AsmClassVisitor extends ClassVisitor {
         return new ParameterizedType(new TypeIdentifier(superName), new TypeParameters(typeParameters));
     }
 
-    private List<ParameterizedType> parameterizedInterfaceTypes(String[] interfaces, String signature) {
+    private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {
             // 非総称型で作成

@@ -81,7 +81,7 @@ public class MethodInstructionTest {
 
         assertThat(actual.instanceMethodFacts())
                 .extracting(
-                        methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
+                        methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
                         methodByteCode -> methodByteCode.methodDepend().usingMethods().methodDeclarations().asSimpleText()
                 )
                 .contains(

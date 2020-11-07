@@ -220,7 +220,7 @@ public class AsmFactReaderTest {
 
         assertThat(methodFacts)
                 .extracting(
-                        methodByteCode -> methodByteCode.methodDeclaration.asSignatureSimpleText(),
+                        methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
                         methodByteCode -> methodByteCode.decisionNumber().asText())
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", "0"),

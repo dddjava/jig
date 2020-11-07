@@ -30,9 +30,11 @@ public class AsmFactReader implements FactReader {
     }
 
     TypeFact typeByteCode(ClassSource classSource) {
-        AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
+        AsmClassVisitor asmClassVisitor = new AsmClassVisitor(classSource);
+
         ClassReader classReader = new ClassReader(classSource.value());
         classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
-        return asmClassVisitor.typeFact;
+
+        return asmClassVisitor.typeFact();
     }
 }

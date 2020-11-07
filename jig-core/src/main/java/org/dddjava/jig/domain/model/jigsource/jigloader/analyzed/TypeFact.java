@@ -35,15 +35,15 @@ public class TypeFact {
     final ParameterizedType superType;
     final List<ParameterizedType> interfaceTypes;
 
-    final List<Annotation> annotations = new ArrayList<>();
-    final List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
+    final List<Annotation> annotations;
+    final List<StaticFieldDeclaration> staticFieldDeclarations;
 
-    final List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
-    final List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
+    final List<FieldAnnotation> fieldAnnotations;
+    final List<FieldDeclaration> fieldDeclarations;
 
-    final List<MethodFact> instanceMethodFacts = new ArrayList<>();
-    final List<MethodFact> staticMethodFacts = new ArrayList<>();
-    final List<MethodFact> constructorFacts = new ArrayList<>();
+    final List<MethodFact> instanceMethodFacts;
+    final List<MethodFact> staticMethodFacts;
+    final List<MethodFact> constructorFacts;
 
     final Set<TypeIdentifier> useTypes = new HashSet<>();
     final TypeKind typeKind;
@@ -52,22 +52,38 @@ public class TypeFact {
 
     TypeAlias typeAlias;
 
-    public TypeFact(ParameterizedType type,
-                    ParameterizedType superType,
-                    List<ParameterizedType> interfaceTypes,
-                    TypeKind typeKind,
-                    Visibility visibility) {
+    public TypeFact(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes,
+                    TypeKind typeKind, Visibility visibility,
+                    List<Annotation> annotations,
+                    List<MethodFact> instanceMethodFacts,
+                    List<MethodFact> staticMethodFacts,
+                    List<MethodFact> constructorFacts,
+                    List<FieldDeclaration> fieldDeclarations,
+                    List<FieldAnnotation> fieldAnnotations,
+                    List<StaticFieldDeclaration> staticFieldDeclarations,
+                    List<TypeIdentifier> useTypes) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
         this.typeKind = typeKind;
         this.visibility = visibility;
+        this.annotations = annotations;
+        this.instanceMethodFacts = instanceMethodFacts;
+        this.staticMethodFacts = staticMethodFacts;
+        this.constructorFacts = constructorFacts;
+        this.fieldDeclarations = fieldDeclarations;
+        this.fieldAnnotations = fieldAnnotations;
+        this.staticFieldDeclarations = staticFieldDeclarations;
 
+        this.useTypes.addAll(useTypes);
         this.useTypes.addAll(type.typeParameters().list());
         this.useTypes.add(superType.typeIdentifier());
         for (ParameterizedType interfaceType : interfaceTypes) {
             this.useTypes.add(interfaceType.typeIdentifier());
         }
+        this.annotations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
+        this.fieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
+        this.staticFieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
 
         this.typeAlias = TypeAlias.empty(type.typeIdentifier());
     }
@@ -102,41 +118,6 @@ public class TypeFact {
 
     public List<FieldAnnotation> annotatedFields() {
         return fieldAnnotations;
-    }
-
-    public void registerAnnotation(Annotation annotation) {
-        annotations.add(annotation);
-        useTypes.add(annotation.typeIdentifier());
-    }
-
-    public void registerField(FieldDeclaration field) {
-        fieldDeclarations.add(field);
-        useTypes.add(field.typeIdentifier());
-    }
-
-    public void registerStaticField(StaticFieldDeclaration field) {
-        staticFieldDeclarations.add(field);
-        useTypes.add(field.typeIdentifier());
-    }
-
-    public void registerUseType(TypeIdentifier typeIdentifier) {
-        useTypes.add(typeIdentifier);
-    }
-
-    public void registerFieldAnnotation(FieldAnnotation fieldAnnotation) {
-        fieldAnnotations.add(fieldAnnotation);
-    }
-
-    public void registerInstanceMethodFacts(MethodFact methodFact) {
-        instanceMethodFacts.add(methodFact);
-    }
-
-    public void registerStaticMethodFacts(MethodFact methodFact) {
-        staticMethodFacts.add(methodFact);
-    }
-
-    public void registerConstructorFacts(MethodFact methodFact) {
-        constructorFacts.add(methodFact);
     }
 
     public List<MethodFact> allMethodFacts() {

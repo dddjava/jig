@@ -100,7 +100,7 @@ public class ApplicationService {
         return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
     }
 
-    public ArchitectureRelations buildingBlockRelations() {
+    public ArchitectureRelations architectureRelations() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         ArchitectureComponents architectureComponents = typeFacts.toArchitectureComponents(architecture);
         ClassRelations classRelations = typeFacts.toClassRelations();

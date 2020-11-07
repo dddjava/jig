@@ -38,8 +38,7 @@ public class ArchitectureDiagram {
                 .add(new Node(ArchitectureComponent.PRESENTATION.toString()).asText())
                 .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
                 .add("}")
-                // 周辺
-                .add("node [fillcolor=whitesmoke];")
+                // 関連
                 .add(RelationText.fromPackageRelations(architectureRelation.packageRelations()).asText());
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());

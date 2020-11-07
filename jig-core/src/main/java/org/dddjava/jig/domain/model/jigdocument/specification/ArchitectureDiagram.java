@@ -26,18 +26,22 @@ public class ArchitectureDiagram {
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
+                .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=component,style=filled];")
+                .add("graph[splines=ortho];") // 線を直角にしておく
+                // プロダクト
                 .add("subgraph clusterArchitecture {")
+                .add("graph[style=filled,color=lightgoldenrod,fillcolor=lightyellow];")
                 .add("node [fillcolor=lightgoldenrod];")
                 .add(new Node(ArchitectureComponent.APPLICATION.toString()).asText())
                 .add(new Node(ArchitectureComponent.BUSINESS_RULE.toString()).asText())
                 .add(new Node(ArchitectureComponent.PRESENTATION.toString()).asText())
                 .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
                 .add("}")
-                .add("label=\"" + documentName.label() + "\";")
-                .add("node [fillcolor=whitesmoke];");
-        RelationText relationText = RelationText.fromPackageRelations(architectureRelation.packageRelations());
-        graph.add(relationText.asText());
+                // 周辺
+                .add("node [fillcolor=whitesmoke];")
+                .add(RelationText.fromPackageRelations(architectureRelation.packageRelations()).asText());
+
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }
 }

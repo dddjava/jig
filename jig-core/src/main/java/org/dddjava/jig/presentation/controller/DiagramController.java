@@ -64,7 +64,7 @@ public class DiagramController {
 
     @DocumentMapping(JigDocument.ArchitectureDiagram)
     public ArchitectureDiagram architecture() {
-        return new ArchitectureDiagram(applicationService.architectureRelations());
+        return applicationService.architectureDiagram();
     }
 
     @DocumentMapping(JigDocument.CompositeUsecaseDiagram)

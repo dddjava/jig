@@ -22,7 +22,7 @@ public class ArchitectureRelations {
         this.list = list;
     }
 
-    public static ArchitectureRelations getRoundingPackageRelations(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
+    public static ArchitectureRelations from(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
         ArrayList<PackageRelation> list = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.list()) {
             TypeIdentifier from = classRelation.from();

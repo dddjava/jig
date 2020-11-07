@@ -3,6 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
+import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureRelations;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
@@ -100,11 +101,12 @@ public class ApplicationService {
         return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
     }
 
-    public ArchitectureRelations architectureRelations() {
+    public ArchitectureDiagram architectureDiagram() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         ArchitectureComponents architectureComponents = typeFacts.toArchitectureComponents(architecture);
         ClassRelations classRelations = typeFacts.toClassRelations();
 
-        return ArchitectureRelations.getRoundingPackageRelations(architectureComponents, classRelations);
+        ArchitectureRelations architectureRelations = ArchitectureRelations.from(architectureComponents, classRelations);
+        return new ArchitectureDiagram(architectureRelations);
     }
 }

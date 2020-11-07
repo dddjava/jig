@@ -39,18 +39,13 @@ public class TypeFacts {
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
 
-    ArchitectureComponents architectureComponents;
-
-    public synchronized ArchitectureComponents toArchitectureComponents(Architecture architecture) {
-        if (architectureComponents != null) {
-            return architectureComponents;
-        }
+    public ArchitectureComponents toArchitectureComponents(Architecture architecture) {
         Map<ArchitectureComponent, Set<TypeIdentifier>> map = new HashMap<>();
         for (TypeFact typeFact : list()) {
             ArchitectureComponent architectureComponent = architecture.architectureComponent(typeFact);
             map.computeIfAbsent(architectureComponent, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
         }
-        return architectureComponents = new ArchitectureComponents(map);
+        return new ArchitectureComponents(map);
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

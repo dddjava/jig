@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
-import org.dddjava.jig.domain.model.jigdocument.specification.RoundingPackageRelations;
+import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureRelations;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
@@ -100,11 +100,11 @@ public class ApplicationService {
         return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
     }
 
-    public RoundingPackageRelations buildingBlockRelations() {
+    public ArchitectureRelations buildingBlockRelations() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         ArchitectureComponents architectureComponents = typeFacts.toArchitectureComponents(architecture);
         ClassRelations classRelations = typeFacts.toClassRelations();
 
-        return RoundingPackageRelations.getRoundingPackageRelations(architectureComponents, classRelations);
+        return ArchitectureRelations.getRoundingPackageRelations(architectureComponents, classRelations);
     }
 }

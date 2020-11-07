@@ -14,15 +14,15 @@ import java.util.List;
 /**
  * アーキテクチャー単位に丸めたパッケージ関連
  */
-public class RoundingPackageRelations {
+public class ArchitectureRelations {
 
     List<PackageRelation> list;
 
-    public RoundingPackageRelations(List<PackageRelation> list) {
+    public ArchitectureRelations(List<PackageRelation> list) {
         this.list = list;
     }
 
-    public static RoundingPackageRelations getRoundingPackageRelations(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
+    public static ArchitectureRelations getRoundingPackageRelations(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
         ArrayList<PackageRelation> list = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.list()) {
             TypeIdentifier from = classRelation.from();
@@ -46,7 +46,7 @@ public class RoundingPackageRelations {
             }
         }
 
-        return new RoundingPackageRelations(list);
+        return new ArchitectureRelations(list);
     }
 
     public boolean worthless() {

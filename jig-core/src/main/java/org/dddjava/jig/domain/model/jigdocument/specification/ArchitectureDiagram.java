@@ -12,9 +12,9 @@ import java.util.StringJoiner;
  */
 public class ArchitectureDiagram {
 
-    private final RoundingPackageRelations architectureRelation;
+    private final ArchitectureRelations architectureRelation;
 
-    public ArchitectureDiagram(RoundingPackageRelations architectureRelation) {
+    public ArchitectureDiagram(ArchitectureRelations architectureRelation) {
         this.architectureRelation = architectureRelation;
     }
 

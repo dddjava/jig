@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
@@ -40,10 +40,10 @@ public class TypeFacts {
     private MethodRelations methodRelations;
 
     public ArchitectureComponents toArchitectureComponents(Architecture architecture) {
-        Map<ArchitectureComponent, Set<TypeIdentifier>> map = new HashMap<>();
+        Map<ArchitectureModule, Set<TypeIdentifier>> map = new HashMap<>();
         for (TypeFact typeFact : list()) {
-            ArchitectureComponent architectureComponent = architecture.architectureComponent(typeFact);
-            map.computeIfAbsent(architectureComponent, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
+            ArchitectureModule key = architecture.architectureComponent(typeFact);
+            map.computeIfAbsent(key, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
         }
         return new ArchitectureComponents(map);
     }

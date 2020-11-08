@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;
@@ -37,18 +37,19 @@ public class ArchitectureDiagram {
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("node [shape=component,style=filled];")
-                .add("graph[splines=ortho];") // 線を直角にしておく
-                // プロダクト
-                .add("subgraph clusterArchitecture {")
+                .add("graph[splines=ortho];"); // 線を直角にしておく
+
+        // プロダクト
+        graph.add("subgraph clusterArchitecture {")
                 .add("graph[style=filled,color=lightgoldenrod,fillcolor=lightyellow];")
-                .add("node [fillcolor=lightgoldenrod];")
-                .add(new Node(ArchitectureComponent.APPLICATION.toString()).asText())
-                .add(new Node(ArchitectureComponent.BUSINESS_RULE.toString()).asText())
-                .add(new Node(ArchitectureComponent.PRESENTATION.toString()).asText())
-                .add(new Node(ArchitectureComponent.INFRASTRUCTURE.toString()).asText())
-                .add("}")
-                // 関連
-                .add(RelationText.fromPackageRelations(architectureRelations.packageRelations()).asText());
+                .add("node [fillcolor=lightgoldenrod];");
+        for (ArchitectureModule module : architectureComponents.listModules()) {
+            graph.add(Node.architectureModuleOf(module).asText());
+        }
+        graph.add("}");
+
+        // 関連
+        graph.add(RelationText.fromPackageRelations(architectureRelations.packageRelations()).asText());
 
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }

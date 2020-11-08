@@ -32,6 +32,9 @@ public class ArchitectureDiagram {
             return DiagramSource.empty();
         }
 
+        // packageのaliasを使う
+        //jigDocumentContext.aliasFinder().find(PackageIdentifier)
+
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")

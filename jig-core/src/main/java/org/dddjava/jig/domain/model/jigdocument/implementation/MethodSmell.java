@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 
 /**
@@ -12,11 +12,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
  */
 public class MethodSmell {
 
-    Method method;
+    JigMethod method;
     FieldDeclarations fieldDeclarations;
     CallerMethods callerMethods;
 
-    public MethodSmell(Method method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
+    public MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
         this.callerMethods = methodRelations.callerMethodsOf(method.declaration());

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorries;
 
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.stream.Collectors;
  * サービスメソッド
  */
 public class ServiceMethod {
-    private final Method method;
+    private final JigMethod method;
 
-    public ServiceMethod(Method method) {
+    public ServiceMethod(JigMethod method) {
         this.method = method;
     }
 
@@ -42,7 +42,7 @@ public class ServiceMethod {
         return method.methodWorries();
     }
 
-    public Method method() {
+    public JigMethod method() {
         return method;
     }
 

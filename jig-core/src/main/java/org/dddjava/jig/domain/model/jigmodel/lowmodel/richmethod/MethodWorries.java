@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class MethodWorries {
     List<MethodWorry> list;
 
-    public MethodWorries(Method method) {
+    public MethodWorries(JigMethod method) {
         this.list = Arrays.stream(MethodWorry.values())
                 .filter(methodWorry -> methodWorry.judge(method))
                 .collect(Collectors.toList());

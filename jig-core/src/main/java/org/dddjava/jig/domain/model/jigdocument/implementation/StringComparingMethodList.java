@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 
 import java.util.Collections;
@@ -23,9 +23,9 @@ import static java.util.stream.Collectors.toList;
  */
 public class StringComparingMethodList {
 
-    List<Method> methods;
+    List<JigMethod> methods;
 
-    StringComparingMethodList(List<Method> methods) {
+    StringComparingMethodList(List<JigMethod> methods) {
         this.methods = methods;
     }
 
@@ -39,7 +39,7 @@ public class StringComparingMethodList {
                 new MethodReturn(new TypeIdentifier(boolean.class))
         );
 
-        List<Method> methods = Stream.concat(
+        List<JigMethod> methods = Stream.concat(
                 controllerMethods.list().stream()
                         .filter(controllerMethod -> controllerMethod.isCall(stringEqualsMethod))
                         .map(controllerMethod -> controllerMethod.method()),
@@ -51,7 +51,7 @@ public class StringComparingMethodList {
         return new StringComparingMethodList(methods);
     }
 
-    public List<Method> list() {
+    public List<JigMethod> list() {
         return methods;
     }
 }

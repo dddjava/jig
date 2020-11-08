@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 
@@ -149,7 +149,7 @@ public class ServiceMethodCallHierarchyDiagram {
         Set<TypeIdentifier> repositories = new HashSet<>();
         RelationText repositoryRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
-            for (Method repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
+            for (JigMethod repositoryMethod : serviceAngle.usingRepositoryMethods().list()) {
                 repositoryRelation.add(serviceAngle.method(), repositoryMethod.declaration().declaringType());
                 repositories.add(repositoryMethod.declaration().declaringType());
             }

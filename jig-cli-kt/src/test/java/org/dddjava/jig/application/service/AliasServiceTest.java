@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Argumen
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
@@ -65,23 +65,23 @@ public class AliasServiceTest {
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        List<Method> methods = typeFacts.instanceMethodFacts().stream().map(MethodFact::createMethod).collect(Collectors.toList());
+        List<JigMethod> methods = typeFacts.instanceMethodFacts().stream().map(MethodFact::createMethod).collect(Collectors.toList());
 
-        Method simpleMethod = methods.stream()
+        JigMethod simpleMethod = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("simpleMethod", new Arguments(Collections.emptyList())))))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals("メソッドのドキュメント", simpleMethod.aliasTextOrBlank());
 
-        Method overloadMethod1 = methods.stream()
+        JigMethod overloadMethod1 = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadMethod1.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
-        Method overloadMethod2 = methods.stream()
+        JigMethod overloadMethod2 = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))))))

@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 /**
  * ビジネスルール
@@ -56,7 +56,7 @@ public class BusinessRule {
         return jigType.typeAlias().markedCore();
     }
 
-    public Methods instanceMethods() {
+    public JigMethods instanceMethods() {
         return jigInstanceMember.instanceMethods();
     }
 

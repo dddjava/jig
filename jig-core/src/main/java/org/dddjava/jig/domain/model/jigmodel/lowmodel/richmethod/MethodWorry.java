@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 public enum MethodWorry {
     メンバを使用していない {
         @Override
-        boolean judge(Method method) {
+        boolean judge(JigMethod method) {
             return method.notUseMember();
         }
     },
@@ -23,13 +23,13 @@ public enum MethodWorry {
     },
     NULLリテラルを使用している {
         @Override
-        boolean judge(Method method) {
+        boolean judge(JigMethod method) {
             return method.referenceNull();
         }
     },
     NULL判定をしている {
         @Override
-        boolean judge(Method method) {
+        boolean judge(JigMethod method) {
             return method.conditionalNull();
         }
     },
@@ -41,7 +41,7 @@ public enum MethodWorry {
     },
     StreamAPIを使用している {
         @Override
-        boolean judge(Method method) {
+        boolean judge(JigMethod method) {
             return method.usingMethods().containsStream();
         }
     },
@@ -52,7 +52,7 @@ public enum MethodWorry {
         }
     };
 
-    boolean judge(Method method) {
+    boolean judge(JigMethod method) {
         return judgeDeclaration(method.declaration());
     }
 

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.services;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 import java.util.List;
 
@@ -14,9 +14,9 @@ import static java.util.stream.Collectors.toList;
  * サービスメソッド一覧
  */
 public class ServiceMethods {
-    private final List<Method> methods;
+    private final List<JigMethod> methods;
 
-    public ServiceMethods(List<Method> list) {
+    public ServiceMethods(List<JigMethod> list) {
         this.methods = list;
     }
 
@@ -44,7 +44,7 @@ public class ServiceMethods {
 
     public String reportText() {
         return methods.stream()
-                .map(Method::declaration)
+                .map(JigMethod::declaration)
                 .collect(MethodDeclarations.collector())
                 .asSimpleText();
     }
@@ -59,7 +59,7 @@ public class ServiceMethods {
 
     public MethodDeclarations toMethodDeclarations() {
         return methods.stream()
-                .map(Method::declaration)
+                .map(JigMethod::declaration)
                 .collect(MethodDeclarations.collector());
     }
 }

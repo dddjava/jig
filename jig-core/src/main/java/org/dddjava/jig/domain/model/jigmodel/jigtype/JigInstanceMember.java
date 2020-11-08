@@ -1,16 +1,16 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 /**
  * インスタンスに属するもの
  */
 public class JigInstanceMember {
     FieldDeclarations fieldDeclarations;
-    Methods instanceMethods;
+    JigMethods instanceMethods;
 
-    public JigInstanceMember(FieldDeclarations fieldDeclarations, Methods instanceMethods) {
+    public JigInstanceMember(FieldDeclarations fieldDeclarations, JigMethods instanceMethods) {
         this.fieldDeclarations = fieldDeclarations;
         this.instanceMethods = instanceMethods;
     }
@@ -27,7 +27,7 @@ public class JigInstanceMember {
         return !instanceMethods.empty();
     }
 
-    public Methods instanceMethods() {
+    public JigMethods instanceMethods() {
         return instanceMethods;
     }
 }

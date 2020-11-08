@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 import java.util.List;
 
@@ -13,14 +13,14 @@ import static java.util.stream.Collectors.toList;
  */
 public class RepositoryMethods {
 
-    List<Method> list;
+    List<JigMethod> list;
 
-    RepositoryMethods(List<Method> list) {
+    RepositoryMethods(List<JigMethod> list) {
         this.list = list;
     }
 
     public String asSimpleText() {
-        return list.stream().map(Method::declaration)
+        return list.stream().map(JigMethod::declaration)
                 .collect(MethodDeclarations.collector())
                 .asSimpleText();
     }
@@ -31,7 +31,7 @@ public class RepositoryMethods {
                 .collect(collectingAndThen(toList(), RepositoryMethods::new));
     }
 
-    public List<Method> list() {
+    public List<JigMethod> list() {
         return list;
     }
 }

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,7 +19,7 @@ public class MethodSmellList {
     public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
         for (BusinessRule businessRule : businessRules.list()) {
-            for (Method method : businessRule.instanceMethods().list()) {
+            for (JigMethod method : businessRule.instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
                         businessRule.fields().fieldDeclarations(),

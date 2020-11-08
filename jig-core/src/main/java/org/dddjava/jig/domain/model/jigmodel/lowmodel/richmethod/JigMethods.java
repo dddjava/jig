@@ -10,24 +10,24 @@ import java.util.NoSuchElementException;
 /**
  * メソッド一覧
  */
-public class Methods {
-    List<Method> list;
+public class JigMethods {
+    List<JigMethod> list;
 
-    public Methods(List<Method> list) {
+    public JigMethods(List<JigMethod> list) {
         this.list = list;
     }
 
     public MethodDeclarations declarations() {
-        return list.stream().map(Method::declaration).collect(MethodDeclarations.collector());
+        return list.stream().map(JigMethod::declaration).collect(MethodDeclarations.collector());
     }
 
-    public List<Method> list() {
+    public List<JigMethod> list() {
         list.sort(Comparator.comparing(method -> method.declaration().asFullNameText()));
         return list;
     }
 
-    public Method get(MethodDeclaration methodDeclaration) {
-        for (Method method : list) {
+    public JigMethod get(MethodDeclaration methodDeclaration) {
+        for (JigMethod method : list) {
             if (method.declaration().sameIdentifier(methodDeclaration)) {
                 return method;
             }

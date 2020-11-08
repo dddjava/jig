@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
@@ -100,7 +100,7 @@ public class ReportItemFormatter {
             }
             return;
             case 分岐数:
-                cell.setCellValue(((Method) item).decisionNumber().intValue());
+                cell.setCellValue(((JigMethod) item).decisionNumber().intValue());
                 return;
             case 汎用文字列:
                 cell.setCellValue((String) item);
@@ -117,8 +117,8 @@ public class ReportItemFormatter {
         throw new IllegalArgumentException(reportItem.name());
     }
 
-    private Method toMethod(Object item) {
-        return (Method) item;
+    private JigMethod toMethod(Object item) {
+        return (JigMethod) item;
     }
 
     private MethodDeclarations toMethodDeclarations(Object item) {
@@ -148,8 +148,8 @@ public class ReportItemFormatter {
     }
 
     private MethodDeclaration toMethodDeclaration(Object item) {
-        if (item instanceof Method) {
-            return ((Method) item).declaration();
+        if (item instanceof JigMethod) {
+            return ((JigMethod) item).declaration();
         }
         return (MethodDeclaration) item;
     }

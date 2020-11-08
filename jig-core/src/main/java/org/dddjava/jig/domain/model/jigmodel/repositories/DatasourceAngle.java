@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 /**
  * データソースの切り口
@@ -14,7 +14,7 @@ public class DatasourceAngle {
 
     MethodDeclaration methodDeclaration;
     Sqls sqls;
-    Method concreteMethod;
+    JigMethod concreteMethod;
 
     CallerMethods callerMethods;
 
@@ -49,7 +49,7 @@ public class DatasourceAngle {
         return sqls.tables(SqlType.DELETE).asText();
     }
 
-    public Method concreteMethod() {
+    public JigMethod concreteMethod() {
         return concreteMethod;
     }
 

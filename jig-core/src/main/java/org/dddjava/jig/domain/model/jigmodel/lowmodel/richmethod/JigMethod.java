@@ -13,7 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMetho
 /**
  * メソッド
  */
-public class Method {
+public class JigMethod {
 
     MethodDeclaration methodDeclaration;
     MethodAlias methodAlias;
@@ -26,7 +26,7 @@ public class Method {
 
     MethodDepend methodDepend;
 
-    public Method(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
         this.methodDeclaration = methodDeclaration;
         this.methodAlias = methodAlias;
         this.nullDecision = nullDecision;

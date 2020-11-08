@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 import java.util.HashSet;
 import java.util.List;
@@ -82,8 +82,8 @@ public class MethodFact {
         this.methodAlias = MethodAlias.empty(methodDeclaration.identifier());
     }
 
-    public Method createMethod() {
-        return new Method(
+    public JigMethod createMethod() {
+        return new JigMethod(
                 methodDeclaration,
                 methodAlias,
                 judgeNull(),

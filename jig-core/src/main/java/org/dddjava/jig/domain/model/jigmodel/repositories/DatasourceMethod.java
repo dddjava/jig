@@ -1,27 +1,27 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 /**
  * データソースの構造
  */
 public class DatasourceMethod {
-    Method repositoryMethod;
-    Method concreteMethod;
+    JigMethod repositoryMethod;
+    JigMethod concreteMethod;
     MethodDeclarations usingMethods;
 
-    public DatasourceMethod(Method repositoryMethod, Method concreteMethod, MethodDeclarations usingMethods) {
+    public DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod, MethodDeclarations usingMethods) {
         this.repositoryMethod = repositoryMethod;
         this.concreteMethod = concreteMethod;
         this.usingMethods = usingMethods;
     }
 
-    public Method repositoryMethod() {
+    public JigMethod repositoryMethod() {
         return repositoryMethod;
     }
 
-    public Method concreteMethod() {
+    public JigMethod concreteMethod() {
         return concreteMethod;
     }
 

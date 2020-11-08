@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -22,7 +22,7 @@ public class ControllerReport {
     @ReportItemFor(ReportItem.メソッドシグネチャ)
     @ReportItemFor(ReportItem.メソッド戻り値の型)
     @ReportItemFor(ReportItem.分岐数)
-    public Method method() {
+    public JigMethod method() {
         return requestHandlerMethod.method();
     }
 

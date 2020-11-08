@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorries;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
@@ -86,7 +86,7 @@ public class ServiceAngle {
         // TODO requestHandlerMethodsのようなのを返す。MethodDeclarationsは汎用的すぎる。
         return userControllerMethods.list().stream()
                 .map(RequestHandlerMethod::method)
-                .map(Method::declaration)
+                .map(JigMethod::declaration)
                 .collect(MethodDeclarations.collector());
     }
 

@@ -20,11 +20,11 @@ public class RequestHandlerMethod {
 
     static Logger LOGGER = LoggerFactory.getLogger(RequestHandlerMethod.class);
 
-    private final Method method;
+    private final JigMethod method;
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    public RequestHandlerMethod(Method method, Annotations annotations) {
+    public RequestHandlerMethod(JigMethod method, Annotations annotations) {
         this.method = method;
 
         this.requestMappingForClass = annotations.filterAny(
@@ -39,7 +39,7 @@ public class RequestHandlerMethod {
                 new TypeIdentifier("org.springframework.web.bind.annotation.PatchMapping"));
     }
 
-    public Method method() {
+    public JigMethod method() {
         return method;
     }
 

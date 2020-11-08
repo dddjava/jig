@@ -17,8 +17,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
@@ -67,7 +67,7 @@ public class TypeFacts {
         for (TypeFact typeFact : list()) {
             if (architecture.isController(typeFact)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
-                    Method method = methodFact.createMethod();
+                    JigMethod method = methodFact.createMethod();
                     RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, new Annotations(typeFact.listAnnotations()));
                     if (requestHandlerMethod.valid()) {
                         list.add(requestHandlerMethod);
@@ -102,7 +102,7 @@ public class TypeFacts {
         return new DatasourceMethods(list);
     }
 
-    public List<Method> applicationMethodsOf(Architecture architecture) {
+    public List<JigMethod> applicationMethodsOf(Architecture architecture) {
         return list().stream()
                 .filter(typeFact -> architecture.isService(typeFact))
                 .map(TypeFact::instanceMethodFacts)
@@ -198,8 +198,8 @@ public class TypeFacts {
         return AliasRegisterResult.紐付け対象なし;
     }
 
-    public Methods methods() {
-        return new Methods(instanceMethodFacts().stream()
+    public JigMethods methods() {
+        return new JigMethods(instanceMethodFacts().stream()
                 .map(methodFact -> methodFact.createMethod())
                 .collect(toList()));
     }

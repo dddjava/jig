@@ -16,7 +16,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -172,13 +172,13 @@ public class TypeFact {
     }
 
     private JigTypeMember jigTypeMember() {
-        Methods constructors = new Methods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        Methods staticMethods = new Methods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
         return new JigTypeMember(constructors, staticMethods, staticFieldDeclarations());
     }
 
     private JigInstanceMember jigInstanceMember() {
-        Methods instanceMethods = new Methods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
         return new JigInstanceMember(fieldDeclarations(), instanceMethods);
     }
 

@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodI
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
@@ -66,7 +66,7 @@ class AliasServiceTest {
     @Test
     void メソッド別名取得(Sources source) {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        Method method = typeFacts.instanceMethodFacts().stream()
+        JigMethod method = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("method", new Arguments(Collections.emptyList())))))
@@ -74,7 +74,7 @@ class AliasServiceTest {
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
-        Method overloadedMethod = typeFacts.instanceMethodFacts().stream()
+        JigMethod overloadedMethod = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Collections.singletonList(new TypeIdentifier(String.class)))))))
@@ -82,7 +82,7 @@ class AliasServiceTest {
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
-        Method overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
+        JigMethod overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))

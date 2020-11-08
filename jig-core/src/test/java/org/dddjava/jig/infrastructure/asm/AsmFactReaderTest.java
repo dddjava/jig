@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodR
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Method;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.junit.jupiter.api.Test;
@@ -166,7 +166,7 @@ public class AsmFactReaderTest {
         MethodFact methodFact = instanceMethodFacts.stream()
                 .filter(e -> e.createMethod().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        Method method = methodFact.createMethod();
+        JigMethod method = methodFact.createMethod();
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 

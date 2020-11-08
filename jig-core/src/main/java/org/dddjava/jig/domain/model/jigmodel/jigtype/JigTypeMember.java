@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 /**
  * クラスに静的に属するもの
@@ -9,11 +9,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.Methods;
  * コンストラクタはメンバではないが、実装上はstaticファクトリメソッドと同等の役割を担うのでここで扱う。
  */
 public class JigTypeMember {
-    Methods constructors;
-    Methods staticMethods;
+    JigMethods constructors;
+    JigMethods staticMethods;
     StaticFieldDeclarations staticFieldDeclarations;
 
-    public JigTypeMember(Methods constructors, Methods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
+    public JigTypeMember(JigMethods constructors, JigMethods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
         this.constructors = constructors;
         this.staticMethods = staticMethods;
         this.staticFieldDeclarations = staticFieldDeclarations;

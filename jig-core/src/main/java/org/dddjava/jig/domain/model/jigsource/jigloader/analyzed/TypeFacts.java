@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
@@ -39,13 +40,16 @@ public class TypeFacts {
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
 
-    public ArchitectureComponents toArchitectureComponents(Architecture architecture) {
+    public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
         Map<ArchitectureModule, Set<TypeIdentifier>> map = new HashMap<>();
         for (TypeFact typeFact : list()) {
             ArchitectureModule key = architecture.architectureComponent(typeFact);
             map.computeIfAbsent(key, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
         }
-        return new ArchitectureComponents(map);
+        ArchitectureComponents architectureComponents = new ArchitectureComponents(map);
+        ClassRelations classRelations = toClassRelations();
+
+        return ArchitectureDiagram.from(architectureComponents, classRelations);
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

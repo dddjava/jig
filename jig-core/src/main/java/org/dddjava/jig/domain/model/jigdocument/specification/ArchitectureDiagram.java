@@ -43,7 +43,7 @@ public class ArchitectureDiagram {
         graph.add("subgraph clusterArchitecture {")
                 .add("graph[style=filled,color=lightgoldenrod,fillcolor=lightyellow];")
                 .add("node [fillcolor=lightgoldenrod];");
-        for (ArchitectureModule module : architectureComponents.listModules()) {
+        for (ArchitectureModule module : architectureComponents.listOwnModules()) {
             graph.add(Node.architectureModuleOf(module).asText());
         }
         graph.add("}");

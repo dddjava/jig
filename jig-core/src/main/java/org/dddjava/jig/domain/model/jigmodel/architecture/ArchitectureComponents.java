@@ -37,7 +37,7 @@ public class ArchitectureComponents {
         return new PackageIdentifier(name);
     }
 
-    public List<ArchitectureModule> listModules() {
+    public List<ArchitectureModule> listOwnModules() {
         return new ArrayList<>(map.keySet());
     }
 }

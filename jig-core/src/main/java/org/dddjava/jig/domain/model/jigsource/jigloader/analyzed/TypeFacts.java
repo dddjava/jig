@@ -49,7 +49,7 @@ public class TypeFacts {
         ArchitectureComponents architectureComponents = new ArchitectureComponents(map);
         ClassRelations classRelations = toClassRelations();
 
-        return ArchitectureDiagram.from(architectureComponents, classRelations);
+        return new ArchitectureDiagram(architectureComponents, classRelations);
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

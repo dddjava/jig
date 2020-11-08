@@ -22,10 +22,6 @@ public class ArchitectureDiagram {
         this.classRelations = classRelations;
     }
 
-    public static ArchitectureDiagram from(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
-        return new ArchitectureDiagram(architectureComponents, classRelations);
-    }
-
     public DiagramSources dotText(JigDocumentContext jigDocumentContext) {
         ArchitectureRelations architectureRelations = ArchitectureRelations.from(architectureComponents, classRelations);
         if (architectureRelations.worthless()) {

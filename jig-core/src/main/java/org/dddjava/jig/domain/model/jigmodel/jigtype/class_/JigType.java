@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.jigtype;
+package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;

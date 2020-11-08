@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
 
 /**
  * ビジネスルールの種類

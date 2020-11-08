@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.JigInstanceMember;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.JigTypeMember;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigInstanceMember;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeMember;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;

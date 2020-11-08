@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.jigtype;
+package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;

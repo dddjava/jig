@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod;
+package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotations;

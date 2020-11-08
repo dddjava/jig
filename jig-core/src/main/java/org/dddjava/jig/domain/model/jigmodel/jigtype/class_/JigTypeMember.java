@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 /**
  * クラスに静的に属するもの

@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 /**
  * データソースの切り口

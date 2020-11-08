@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
@@ -14,7 +15,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMeth
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
 
 import java.util.HashSet;
 import java.util.List;

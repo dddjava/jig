@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigInstanceMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
@@ -16,7 +17,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethods;
 
 import java.util.ArrayList;
 import java.util.HashSet;

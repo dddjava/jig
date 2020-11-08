@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod.MethodWorry;
 
 /**
  * メソッドの不吉なにおい

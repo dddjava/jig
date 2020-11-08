@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.lowmodel.richmethod;
+package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
 import java.util.Arrays;
 import java.util.List;

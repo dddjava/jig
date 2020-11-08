@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigInstanceMember;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigStaticMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
@@ -15,21 +15,21 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 public class BusinessRule {
 
     JigType jigType;
-    JigTypeMember jigTypeMember;
-    JigInstanceMember jigInstanceMember;
 
-    public BusinessRule(JigType jigType, JigInstanceMember jigInstanceMember, JigTypeMember jigTypeMember) {
+    public BusinessRule(JigType jigType) {
         this.jigType = jigType;
-        this.jigInstanceMember = jigInstanceMember;
-        this.jigTypeMember = jigTypeMember;
     }
 
     public TypeDeclaration typeDeclaration() {
         return jigType.typeDeclaration();
     }
 
+    private JigInstanceMember instanceMember() {
+        return jigType.instanceMember();
+    }
+
     public BusinessRuleFields fields() {
-        return new BusinessRuleFields(jigInstanceMember.fieldDeclarations());
+        return new BusinessRuleFields(instanceMember().fieldDeclarations());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -45,7 +45,7 @@ public class BusinessRule {
     }
 
     public MethodDeclarations instanceMethodDeclarations() {
-        return jigInstanceMember.instanceMethods().declarations();
+        return instanceMember().instanceMethods().declarations();
     }
 
     public String nodeLabel() {
@@ -57,15 +57,15 @@ public class BusinessRule {
     }
 
     public JigMethods instanceMethods() {
-        return jigInstanceMember.instanceMethods();
+        return instanceMember().instanceMethods();
     }
 
     public JigInstanceMember jigInstanceMember() {
-        return jigInstanceMember;
+        return instanceMember();
     }
 
-    public JigTypeMember jigTypeMember() {
-        return jigTypeMember;
+    public JigStaticMember jigStaticMember() {
+        return jigType.staticMember();
     }
 
     public JigType jigType() {

@@ -1,10 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigInstanceMember;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeMember;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.*;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
@@ -96,10 +93,6 @@ public class TypeFact {
         return new FieldDeclarations(fieldDeclarations);
     }
 
-    public StaticFieldDeclarations staticFieldDeclarations() {
-        return new StaticFieldDeclarations(staticFieldDeclarations);
-    }
-
     public TypeIdentifiers useTypes() {
         for (MethodFact methodFact : allMethodFacts()) {
             useTypes.addAll(methodFact.methodDepend().collectUsingTypes());
@@ -165,25 +158,23 @@ public class TypeFact {
     }
 
     public BusinessRule createBusinessRule() {
-        return new BusinessRule(
-                jigType(),
-                jigInstanceMember(),
-                jigTypeMember());
-    }
-
-    private JigTypeMember jigTypeMember() {
-        JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        return new JigTypeMember(constructors, staticMethods, staticFieldDeclarations());
-    }
-
-    private JigInstanceMember jigInstanceMember() {
-        JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        return new JigInstanceMember(fieldDeclarations(), instanceMethods);
+        return new BusinessRule(jigType());
     }
 
     private JigType jigType() {
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
-        return new JigType(typeDeclaration, typeAlias, typeKind, visibility);
+
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(typeAlias, typeKind, visibility);
+
+        JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        StaticFieldDeclarations staticFieldDeclarations = new StaticFieldDeclarations(this.staticFieldDeclarations);
+        JigStaticMember jigStaticMember = new JigStaticMember(constructors, staticMethods, staticFieldDeclarations);
+
+        FieldDeclarations fieldDeclarations = fieldDeclarations();
+        JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigInstanceMember jigInstanceMember = new JigInstanceMember(fieldDeclarations, instanceMethods);
+
+        return new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 }

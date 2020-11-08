@@ -43,7 +43,7 @@ public class CategoryType {
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return businessRule.jigTypeMember().staticFieldDeclarations();
+        return businessRule.jigStaticMember().staticFieldDeclarations();
     }
 
     public FieldDeclarations fieldDeclarations() {

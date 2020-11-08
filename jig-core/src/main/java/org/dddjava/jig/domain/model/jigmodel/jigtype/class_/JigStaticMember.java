@@ -8,12 +8,12 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFi
  *
  * コンストラクタはメンバではないが、実装上はstaticファクトリメソッドと同等の役割を担うのでここで扱う。
  */
-public class JigTypeMember {
+public class JigStaticMember {
     JigMethods constructors;
     JigMethods staticMethods;
     StaticFieldDeclarations staticFieldDeclarations;
 
-    public JigTypeMember(JigMethods constructors, JigMethods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
+    public JigStaticMember(JigMethods constructors, JigMethods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
         this.constructors = constructors;
         this.staticMethods = staticMethods;
         this.staticFieldDeclarations = staticFieldDeclarations;

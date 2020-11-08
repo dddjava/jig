@@ -10,15 +10,17 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class JigType {
     TypeDeclaration typeDeclaration;
-    TypeAlias typeAlias;
-    TypeKind typeKind;
-    Visibility visibility;
 
-    public JigType(TypeDeclaration typeDeclaration, TypeAlias typeAlias, TypeKind typeKind, Visibility visibility) {
+    JigTypeAttribute jigTypeAttribute;
+
+    JigStaticMember jigStaticMember;
+    JigInstanceMember jigInstanceMember;
+
+    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.typeDeclaration = typeDeclaration;
-        this.typeAlias = typeAlias;
-        this.typeKind = typeKind;
-        this.visibility = visibility;
+        this.jigTypeAttribute = jigTypeAttribute;
+        this.jigStaticMember = jigStaticMember;
+        this.jigInstanceMember = jigInstanceMember;
     }
 
     public TypeDeclaration typeDeclaration() {
@@ -26,18 +28,26 @@ public class JigType {
     }
 
     public TypeAlias typeAlias() {
-        return typeAlias;
+        return jigTypeAttribute.alias();
     }
 
     public TypeKind typeKind() {
-        return typeKind;
+        return jigTypeAttribute.kind();
     }
 
     public Visibility visibility() {
-        return visibility;
+        return jigTypeAttribute.visibility();
     }
 
     public TypeIdentifier identifier() {
         return typeDeclaration().identifier();
+    }
+
+    public JigInstanceMember instanceMember() {
+        return jigInstanceMember;
+    }
+
+    public JigStaticMember staticMember() {
+        return jigStaticMember;
     }
 }

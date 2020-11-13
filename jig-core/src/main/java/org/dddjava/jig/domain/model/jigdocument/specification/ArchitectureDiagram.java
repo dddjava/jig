@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;
@@ -40,10 +40,14 @@ public class ArchitectureDiagram {
 
         // プロダクト
         graph.add("subgraph clusterArchitecture {")
+                .add("label=\"\";")
                 .add("graph[style=filled,color=lightgoldenrod,fillcolor=lightyellow];")
-                .add("node [fillcolor=lightgoldenrod];");
-        for (ArchitectureModule module : architectureComponents.listOwnModules()) {
-            graph.add(Node.architectureModuleOf(module).asText());
+                .add("node [fillcolor=lightgoldenrod,fontsize=20];");
+        for (PackageIdentifier packageIdentifier : architectureComponents.architecturePackages()) {
+            graph.add(Node
+                    .packageOf(packageIdentifier)
+                    .label(packageIdentifier.simpleName())
+                    .asText());
         }
         graph.add("}");
 

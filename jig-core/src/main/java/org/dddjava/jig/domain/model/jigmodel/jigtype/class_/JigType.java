@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -66,5 +67,9 @@ public class JigType {
         list.addAll(jigInstanceMember.listUsingTypes());
         list.addAll(usingTypes);
         return new TypeIdentifiers(list);
+    }
+
+    public PackageIdentifier packageIdentifier() {
+        return identifier().packageIdentifier();
     }
 }

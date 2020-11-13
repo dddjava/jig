@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
@@ -14,6 +13,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
@@ -25,6 +25,7 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 
 import java.util.*;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -41,15 +42,36 @@ public class TypeFacts {
     private MethodRelations methodRelations;
 
     public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
-        Map<ArchitectureModule, Set<TypeIdentifier>> map = new HashMap<>();
+
+        Set<PackageIdentifier> packageIdentifiers = new HashSet<>();
         for (TypeFact typeFact : list()) {
-            ArchitectureModule key = architecture.architectureComponent(typeFact);
-            map.computeIfAbsent(key, v -> new HashSet<>()).add(typeFact.typeIdentifier().normalize());
+            PackageIdentifier packageIdentifier = typeFact.jigType().packageIdentifier();
+            packageIdentifiers.add(packageIdentifier);
         }
-        ArchitectureComponents architectureComponents = new ArchitectureComponents(map);
+        List<PackageIdentifier> architecturePackages = findArchitecturePackages(packageIdentifiers);
+
+        ArchitectureComponents architectureComponents = new ArchitectureComponents(architecturePackages);
         ClassRelations classRelations = toClassRelations();
 
         return new ArchitectureDiagram(architectureComponents, classRelations);
+    }
+
+    private List<PackageIdentifier> findArchitecturePackages(Set<PackageIdentifier> packageIdentifiers) {
+        // depth単位にリストにする
+        Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifiers.stream()
+                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
+                .sorted(Comparator.comparing(PackageIdentifier::asText))
+                .distinct()
+                .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
+
+        // 最初に同じ深さに2件以上入っているものが出てきたらアーキテクチャパッケージとして扱う
+        List<PackageIdentifier> list = depthMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .filter(entry -> entry.getValue().size() > 1)
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElse(Collections.emptyList());
+        return list;
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_;
 
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * パッケージ識別子
@@ -66,6 +65,22 @@ public class PackageIdentifier {
             sj.add(split[i]);
         }
         return new PackageIdentifier(sj.toString());
+    }
+
+    public List<PackageIdentifier> genealogical() {
+        if (!hasName()) {
+            return Collections.emptyList();
+        }
+
+        // 最上位パッケージから全てのリスト
+        String[] split = value.split("\\.");
+        ArrayList<PackageIdentifier> list = new ArrayList<>();
+        StringJoiner currentPackageName = new StringJoiner(".");
+        for (String packageParts : split) {
+            currentPackageName.add(packageParts);
+            list.add(new PackageIdentifier(currentPackageName.toString()));
+        }
+        return list;
     }
 
     public boolean hasName() {

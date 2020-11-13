@@ -3,7 +3,8 @@ package org.dddjava.jig.domain.model.jigmodel.architecture;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -11,19 +12,17 @@ import java.util.stream.Collectors;
  */
 public class ArchitectureComponents {
 
-    Map<ArchitectureModule, Set<TypeIdentifier>> map;
+    List<PackageIdentifier> architecturePackages;
 
-    public ArchitectureComponents(Map<ArchitectureModule, Set<TypeIdentifier>> map) {
-        map.remove(ArchitectureComponent.OTHERS);
-        this.map = map;
+    public ArchitectureComponents(List<PackageIdentifier> architecturePackages) {
+        this.architecturePackages = architecturePackages;
     }
 
     public PackageIdentifier packageIdentifier(TypeIdentifier arg) {
         TypeIdentifier typeIdentifier = arg.normalize().unarray();
-        for (Map.Entry<ArchitectureModule, Set<TypeIdentifier>> entry : map.entrySet()) {
-            // Architectureとして識別されているものはそのArchitectureComponentとして扱う
-            if (entry.getValue().contains(typeIdentifier)) {
-                return new PackageIdentifier(entry.getKey().toString());
+        for (PackageIdentifier architecturePackage : architecturePackages) {
+            if (typeIdentifier.fullQualifiedName().startsWith(architecturePackage.asText())) {
+                return architecturePackage;
             }
         }
 
@@ -37,7 +36,7 @@ public class ArchitectureComponents {
         return new PackageIdentifier(name);
     }
 
-    public List<ArchitectureModule> listOwnModules() {
-        return new ArrayList<>(map.keySet());
+    public List<PackageIdentifier> architecturePackages() {
+        return architecturePackages;
     }
 }

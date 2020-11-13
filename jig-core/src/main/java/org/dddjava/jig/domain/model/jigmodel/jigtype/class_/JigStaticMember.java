@@ -2,6 +2,10 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * クラスに静的に属するもの
@@ -21,5 +25,13 @@ public class JigStaticMember {
 
     public StaticFieldDeclarations staticFieldDeclarations() {
         return staticFieldDeclarations;
+    }
+
+    List<TypeIdentifier> listUsingTypes() {
+        List<TypeIdentifier> list = new ArrayList<>();
+        list.addAll(constructors.listUsingTypes());
+        list.addAll(staticMethods.listUsingTypes());
+        list.addAll(staticFieldDeclarations.listTypeIdentifiers());
+        return list;
     }
 }

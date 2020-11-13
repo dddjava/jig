@@ -2,6 +2,10 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * インスタンスに属するもの
@@ -29,5 +33,12 @@ public class JigInstanceMember {
 
     public JigMethods instanceMethods() {
         return instanceMethods;
+    }
+
+    List<TypeIdentifier> listUsingTypes() {
+        List<TypeIdentifier> list = new ArrayList<>();
+        list.addAll(fieldDeclarations.toTypeIdentifies().list());
+        list.addAll(instanceMethods.listUsingTypes());
+        return list;
     }
 }

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * パラメータ化された型一覧
@@ -12,11 +13,9 @@ public class ParameterizedTypes {
         this.list = list;
     }
 
-    public List<ParameterizedType> list() {
-        return list;
-    }
-
-    public TypeIdentifiers identifiers() {
-        return list.stream().map(ParameterizedType::typeIdentifier).collect(TypeIdentifiers.collector());
+    List<TypeIdentifier> listTypeIdentifiers() {
+        return list.stream()
+                .flatMap(parameterizedType -> parameterizedType.listTypeIdentifiers().stream())
+                .collect(Collectors.toList());
     }
 }

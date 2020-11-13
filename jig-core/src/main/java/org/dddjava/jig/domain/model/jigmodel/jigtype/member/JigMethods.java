@@ -2,10 +2,12 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 /**
  * メソッド一覧
@@ -37,5 +39,11 @@ public class JigMethods {
 
     public boolean empty() {
         return list.isEmpty();
+    }
+
+    public List<TypeIdentifier> listUsingTypes() {
+        return list.stream()
+                .flatMap(jigMethod -> jigMethod.usingTypes().list().stream())
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.text.Text;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,5 +29,11 @@ public class StaticFieldDeclarations {
         return list.stream()
                 .filter(StaticFieldDeclaration::isSelfDefine)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), StaticFieldDeclarations::new));
+    }
+
+    public List<TypeIdentifier> listTypeIdentifiers() {
+        return list.stream()
+                .map(staticFieldDeclaration -> staticFieldDeclaration.typeIdentifier())
+                .collect(Collectors.toList());
     }
 }

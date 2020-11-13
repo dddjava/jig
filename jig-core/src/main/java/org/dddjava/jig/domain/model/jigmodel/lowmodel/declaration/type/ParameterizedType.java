@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,5 +45,12 @@ public class ParameterizedType {
 
     public TypeParameters typeParameters() {
         return actualTypeParameters;
+    }
+
+    List<TypeIdentifier> listTypeIdentifiers() {
+        List<TypeIdentifier> list = new ArrayList<>();
+        list.add(typeIdentifier);
+        list.addAll(typeParameters().list());
+        return list;
     }
 }

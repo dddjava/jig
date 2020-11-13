@@ -4,6 +4,10 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JIGが識別する型
@@ -16,11 +20,14 @@ public class JigType {
     JigStaticMember jigStaticMember;
     JigInstanceMember jigInstanceMember;
 
-    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    List<TypeIdentifier> usingTypes;
+
+    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, List<TypeIdentifier> usingTypes) {
         this.typeDeclaration = typeDeclaration;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;
+        this.usingTypes = usingTypes;
     }
 
     public TypeDeclaration typeDeclaration() {
@@ -49,5 +56,15 @@ public class JigType {
 
     public JigStaticMember staticMember() {
         return jigStaticMember;
+    }
+
+    public TypeIdentifiers usingTypes() {
+        List<TypeIdentifier> list = new ArrayList<>();
+        list.addAll(typeDeclaration.listTypeIdentifiers());
+        list.addAll(jigTypeAttribute.listUsingTypes());
+        list.addAll(jigStaticMember.listUsingTypes());
+        list.addAll(jigInstanceMember.listUsingTypes());
+        list.addAll(usingTypes);
+        return new TypeIdentifiers(list);
     }
 }

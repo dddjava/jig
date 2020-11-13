@@ -42,6 +42,8 @@ public class TypeFact {
     final List<MethodFact> staticMethodFacts;
     final List<MethodFact> constructorFacts;
 
+    final List<TypeIdentifier> usingTypes;
+
     final Set<TypeIdentifier> useTypes = new HashSet<>();
     final TypeKind typeKind;
 
@@ -58,7 +60,7 @@ public class TypeFact {
                     List<FieldDeclaration> fieldDeclarations,
                     List<FieldAnnotation> fieldAnnotations,
                     List<StaticFieldDeclaration> staticFieldDeclarations,
-                    List<TypeIdentifier> useTypes) {
+                    List<TypeIdentifier> usingTypes) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
@@ -72,7 +74,9 @@ public class TypeFact {
         this.fieldAnnotations = fieldAnnotations;
         this.staticFieldDeclarations = staticFieldDeclarations;
 
-        this.useTypes.addAll(useTypes);
+        this.usingTypes = usingTypes;
+        // TODO useTypes廃止したい。JigType.usingTypes()でいけるはず。
+        this.useTypes.addAll(usingTypes);
         this.useTypes.addAll(type.typeParameters().list());
         this.useTypes.add(superType.typeIdentifier());
         for (ParameterizedType interfaceType : interfaceTypes) {
@@ -140,6 +144,7 @@ public class TypeFact {
 
     public void registerTypeAlias(TypeAlias typeAlias) {
         this.typeAlias = typeAlias;
+        this.jigType = null;
     }
 
     public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
@@ -161,20 +166,25 @@ public class TypeFact {
         return new BusinessRule(jigType());
     }
 
-    private JigType jigType() {
+    JigType jigType;
+
+    JigType jigType() {
+        if (jigType != null) return jigType;
+
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
 
-        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(typeAlias, typeKind, visibility);
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(typeAlias, typeKind, visibility, annotations);
 
         JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
         JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
         StaticFieldDeclarations staticFieldDeclarations = new StaticFieldDeclarations(this.staticFieldDeclarations);
         JigStaticMember jigStaticMember = new JigStaticMember(constructors, staticMethods, staticFieldDeclarations);
 
-        FieldDeclarations fieldDeclarations = fieldDeclarations();
+        FieldDeclarations fieldDeclarations = new FieldDeclarations(this.fieldDeclarations);
         JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
         JigInstanceMember jigInstanceMember = new JigInstanceMember(fieldDeclarations, instanceMethods);
 
-        return new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
+        jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember, usingTypes);
+        return jigType;
     }
 }

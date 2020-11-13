@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 型宣言
  */
@@ -19,11 +22,10 @@ public class TypeDeclaration {
         return parameterizedType.typeIdentifier();
     }
 
-    public ParameterizedType superType() {
-        return superType;
-    }
-
-    public ParameterizedTypes interfaceTypes() {
-        return interfaceTypes;
+    public List<TypeIdentifier> listTypeIdentifiers() {
+        List<TypeIdentifier> list = new ArrayList<>(parameterizedType.listTypeIdentifiers());
+        list.addAll(superType.listTypeIdentifiers());
+        list.addAll(interfaceTypes.listTypeIdentifiers());
+        return list;
     }
 }

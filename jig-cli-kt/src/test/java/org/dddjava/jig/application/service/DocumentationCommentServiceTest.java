@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AliasServiceTest {
+public class DocumentationCommentServiceTest {
 
     JigSourceReadService jigSourceReadService;
     AliasService sut;
 
-    AliasServiceTest() {
+    DocumentationCommentServiceTest() {
         SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
         OnMemoryAliasRepository onMemoryAliasRepository = new OnMemoryAliasRepository();
         OnMemoryJigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(onMemoryAliasRepository);
@@ -120,7 +120,7 @@ public class AliasServiceTest {
 
     static URI defaultPackageClassURI(String defaultPackageClass) {
         try {
-            return AliasServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
+            return DocumentationCommentServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

@@ -7,15 +7,15 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
  */
 public class PackageAlias {
     PackageIdentifier packageIdentifier;
-    Alias alias;
+    DocumentationComment documentationComment;
 
-    public PackageAlias(PackageIdentifier packageIdentifier, Alias alias) {
+    public PackageAlias(PackageIdentifier packageIdentifier, DocumentationComment documentationComment) {
         this.packageIdentifier = packageIdentifier;
-        this.alias = alias;
+        this.documentationComment = documentationComment;
     }
 
     public static PackageAlias empty(PackageIdentifier packageIdentifier) {
-        return new PackageAlias(packageIdentifier, Alias.empty());
+        return new PackageAlias(packageIdentifier, DocumentationComment.empty());
     }
 
     public PackageIdentifier packageIdentifier() {
@@ -23,10 +23,10 @@ public class PackageAlias {
     }
 
     public boolean exists() {
-        return alias.exists();
+        return documentationComment.exists();
     }
 
     public String asText() {
-        return alias.toString();
+        return documentationComment.toString();
     }
 }

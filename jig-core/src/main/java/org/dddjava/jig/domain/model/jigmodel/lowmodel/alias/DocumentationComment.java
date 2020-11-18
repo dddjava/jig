@@ -7,16 +7,16 @@ import java.util.stream.Stream;
  *
  * TODO rename。これ自体はコメントから取得した追加情報的なものとする。
  */
-public class Alias {
+public class DocumentationComment {
 
     String value;
 
-    private Alias(String value) {
+    private DocumentationComment(String value) {
         this.value = value;
     }
 
-    public static Alias empty() {
-        return new Alias("");
+    public static DocumentationComment empty() {
+        return new DocumentationComment("");
     }
 
     @Override
@@ -28,10 +28,10 @@ public class Alias {
         return value.length() > 0;
     }
 
-    public static Alias fromText(String sourceText) {
+    public static DocumentationComment fromText(String sourceText) {
         int end = Stream.of(sourceText.indexOf("\n"), sourceText.indexOf("。"), sourceText.length())
                 .filter(length -> length >= 0)
                 .min(Integer::compareTo).orElseThrow(IllegalStateException::new);
-        return new Alias(sourceText.substring(0, end));
+        return new DocumentationComment(sourceText.substring(0, end));
     }
 }

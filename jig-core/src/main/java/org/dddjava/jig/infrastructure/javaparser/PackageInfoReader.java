@@ -6,7 +6,7 @@ import com.github.javaparser.ast.comments.JavadocComment;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
@@ -22,10 +22,10 @@ class PackageInfoReader {
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::new);
 
-        Optional<Alias> optAlias = getJavadoc(cu)
+        Optional<DocumentationComment> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
-                .map(Alias::fromText);
+                .map(DocumentationComment::fromText);
 
         return optPackageIdentifier.flatMap(packageIdentifier -> optAlias.map(alias ->
                 new PackageAlias(packageIdentifier, alias)));

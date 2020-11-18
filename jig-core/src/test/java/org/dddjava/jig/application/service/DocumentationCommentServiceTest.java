@@ -26,12 +26,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigServiceTest
-class AliasServiceTest {
+class DocumentationCommentServiceTest {
 
     AliasService sut;
     JigSourceReadService jigSourceReadService;
 
-    public AliasServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
+    public DocumentationCommentServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
         sut = aliasService;
         this.jigSourceReadService = jigSourceReadService;
     }

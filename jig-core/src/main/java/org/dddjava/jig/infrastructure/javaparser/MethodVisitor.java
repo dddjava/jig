@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
@@ -34,7 +34,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
                                     // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
                                     new Arguments(Collections.emptyList())
                             )),
-                    Alias.fromText(javadocText)
+                    DocumentationComment.fromText(javadocText)
             );
             methodAliases.add(methodAlias);
         });

@@ -6,7 +6,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.Alias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -39,7 +39,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            typeAlias = new TypeAlias(typeIdentifier, Alias.fromText(javadocText));
+            typeAlias = new TypeAlias(typeIdentifier, DocumentationComment.fromText(javadocText));
         });
         node.accept(new MethodVisitor(typeIdentifier), methodAliases);
     }

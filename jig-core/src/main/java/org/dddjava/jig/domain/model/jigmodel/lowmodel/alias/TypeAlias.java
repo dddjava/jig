@@ -7,15 +7,15 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class TypeAlias {
     TypeIdentifier typeIdentifier;
-    Alias alias;
+    DocumentationComment documentationComment;
 
-    public TypeAlias(TypeIdentifier typeIdentifier, Alias alias) {
+    public TypeAlias(TypeIdentifier typeIdentifier, DocumentationComment documentationComment) {
         this.typeIdentifier = typeIdentifier;
-        this.alias = alias;
+        this.documentationComment = documentationComment;
     }
 
     public static TypeAlias empty(TypeIdentifier typeIdentifier) {
-        return new TypeAlias(typeIdentifier, Alias.empty());
+        return new TypeAlias(typeIdentifier, DocumentationComment.empty());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -23,11 +23,11 @@ public class TypeAlias {
     }
 
     public boolean exists() {
-        return alias.exists();
+        return documentationComment.exists();
     }
 
     public String asText() {
-        return alias.toString();
+        return documentationComment.toString();
     }
 
     public String asTextOrDefault(String defaultText) {
@@ -38,7 +38,7 @@ public class TypeAlias {
     }
 
     public boolean markedCore() {
-        return alias.toString().startsWith("*");
+        return documentationComment.toString().startsWith("*");
     }
 
     public String nodeLabel() {

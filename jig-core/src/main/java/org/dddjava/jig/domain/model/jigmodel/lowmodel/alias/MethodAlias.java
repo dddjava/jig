@@ -7,15 +7,15 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodI
  */
 public class MethodAlias {
     MethodIdentifier methodIdentifier;
-    Alias alias;
+    DocumentationComment documentationComment;
 
-    public MethodAlias(MethodIdentifier methodIdentifier, Alias alias) {
+    public MethodAlias(MethodIdentifier methodIdentifier, DocumentationComment documentationComment) {
         this.methodIdentifier = methodIdentifier;
-        this.alias = alias;
+        this.documentationComment = documentationComment;
     }
 
     public static MethodAlias empty(MethodIdentifier methodIdentifier) {
-        return new MethodAlias(methodIdentifier, Alias.empty());
+        return new MethodAlias(methodIdentifier, DocumentationComment.empty());
     }
 
     public MethodIdentifier methodIdentifier() {
@@ -23,11 +23,11 @@ public class MethodAlias {
     }
 
     public String asText() {
-        return alias.toString();
+        return documentationComment.toString();
     }
 
     public String asTextOrDefault(String defaultText) {
-        if (alias.exists()) {
+        if (documentationComment.exists()) {
             return asText();
         }
         return defaultText;

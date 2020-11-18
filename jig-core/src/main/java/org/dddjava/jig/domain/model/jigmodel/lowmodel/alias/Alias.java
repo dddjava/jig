@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 
 /**
  * 別名
- * <p>
+ *
  * TODO rename。これ自体はコメントから取得した追加情報的なものとする。
  */
 public class Alias {

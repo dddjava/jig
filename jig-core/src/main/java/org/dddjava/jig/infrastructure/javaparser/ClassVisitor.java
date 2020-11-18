@@ -34,7 +34,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
         visitClassDeclaration(node);
     }
 
-    private <T extends NodeWithSimpleName & NodeWithJavadoc<?> & Visitable> void visitClassDeclaration(T node) {
+    private <T extends NodeWithSimpleName<?> & NodeWithJavadoc<?> & Visitable> void visitClassDeclaration(T node) {
         TypeIdentifier typeIdentifier = new TypeIdentifier(packageName + node.getNameAsString());
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {

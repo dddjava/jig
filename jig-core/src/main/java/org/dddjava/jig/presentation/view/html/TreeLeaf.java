@@ -1,0 +1,27 @@
+package org.dddjava.jig.presentation.view.html;
+
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+
+public class TreeLeaf implements TreeComponent {
+
+    JigType jigType;
+
+    public TreeLeaf(JigType jigType) {
+        this.jigType = jigType;
+    }
+
+    @Override
+    public String name() {
+        return jigType.typeAlias().asTextOrIdentifierSimpleText();
+    }
+
+    @Override
+    public String href() {
+        return "#" + jigType.typeDeclaration().identifier().fullQualifiedName();
+    }
+
+    @Override
+    public String descriptionText() {
+        return jigType.descriptionText();
+    }
+}

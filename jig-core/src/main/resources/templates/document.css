@@ -1,0 +1,42 @@
+.menu {
+    /* box-sizing: border-box; */
+    position: fixed;
+    overflow: auto;
+    height: 100%;
+    width: 300px;
+    font-size: 0.8em;
+
+    border-right: dashed 1px;
+}
+.menu li {
+    word-break: keep-all;
+}
+.menu li.package {
+    list-style-type: '\1F4E6';
+}
+.menu li.type {
+    list-style-type: '\1F4C4';
+}
+.menu ol {
+    border-left: dashed 1px;
+    border-bottom: dashed 1px;
+    margin-bottom: 10px;
+}
+
+main {
+    margin-left: 300px;
+}
+
+main table {
+    border-collapse: collapse;
+    width: 80%;
+}
+main table tr > * {
+    border: #000 solid 1px;
+    padding: 0em 1em;
+    text-align: left;
+}
+main table thead {
+    color: #FFF;
+    background-color: #465DAA;
+}

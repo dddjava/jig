@@ -9,10 +9,19 @@ import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
+import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
+import org.dddjava.jig.presentation.view.html.HtmlView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
@@ -33,6 +42,27 @@ public class BusinessRuleListController {
         this.convertContext = new ConvertContext(aliasService);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
+    }
+
+    @DocumentMapping(JigDocument.SinglePageHtml)
+    public JigModelAndView<BusinessRules> singlePageHtml() {
+        BusinessRules businessRules = businessRuleService.businessRules();
+        return new JigModelAndView<>(businessRules, new HtmlView(new AliasFinder() {
+            @Override
+            public PackageAlias find(PackageIdentifier packageIdentifier) {
+                return convertContext.aliasService.packageAliasOf(packageIdentifier);
+            }
+
+            @Override
+            public TypeAlias find(TypeIdentifier typeIdentifier) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public MethodAlias find(MethodIdentifier methodIdentifier) {
+                throw new UnsupportedOperationException();
+            }
+        }));
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)

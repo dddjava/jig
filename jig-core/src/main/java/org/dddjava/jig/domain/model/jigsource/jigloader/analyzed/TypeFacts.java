@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
@@ -41,13 +42,17 @@ public class TypeFacts {
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
 
-    public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
+    public List<JigType> listJigTypes() {
+        return list.stream().map(TypeFact::jigType).collect(toList());
+    }
 
-        Set<PackageIdentifier> packageIdentifiers = new HashSet<>();
-        for (TypeFact typeFact : list()) {
-            PackageIdentifier packageIdentifier = typeFact.jigType().packageIdentifier();
-            packageIdentifiers.add(packageIdentifier);
-        }
+    public Map<PackageIdentifier, List<JigType>> mapJigTypesByPackage() {
+        return listJigTypes().stream()
+                .collect(groupingBy(JigType::packageIdentifier));
+    }
+
+    public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
+        Set<PackageIdentifier> packageIdentifiers = mapJigTypesByPackage().keySet();
         List<PackageIdentifier> architecturePackages = findArchitecturePackages(packageIdentifiers);
 
         ArchitectureComponents architectureComponents = new ArchitectureComponents(architecturePackages);

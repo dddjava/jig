@@ -79,7 +79,11 @@ public enum JigDocument {
      * アーキテクチャダイアグラム
      */
     ArchitectureDiagram("architecture"),
-    ;
+
+    /**
+     * HTML
+     */
+    SinglePageHtml("index");
 
     private final String documentFileName;
 
@@ -101,5 +105,4 @@ public enum JigDocument {
                 .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
     }
-
 }

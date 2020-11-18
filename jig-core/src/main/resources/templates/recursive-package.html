@@ -1,0 +1,19 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./document.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="menu">
+    <ol>
+        <li th:fragment="item" class="package" th:class="${node.isPackage()} ? 'package' : 'type'">
+            <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
+            <ol th:if="${node.isPackage()}">
+                <th:block th:each="node : ${node.children()}"><li th:replace="recursive-package :: item">replace</li></th:block>
+            </ol>
+        </li>
+    </ol>
+</nav>
+</body>
+</html>

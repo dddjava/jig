@@ -43,4 +43,8 @@ public class JigTypeAttribute {
                 .map(annotation -> annotation.typeIdentifier())
                 .collect(Collectors.toList());
     }
+
+    public String descriptionText() {
+        return typeAlias.descriptionText();
+    }
 }

@@ -56,4 +56,8 @@ public class TypeAlias {
     public String asTextOrIdentifierSimpleText() {
         return asTextOrDefault(typeIdentifier.asSimpleText());
     }
+
+    public String descriptionText() {
+        return documentationComment.fullText();
+    }
 }

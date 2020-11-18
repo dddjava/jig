@@ -39,4 +39,8 @@ public class MethodAlias {
         // ここを対応したら matchesIgnoreOverloadメソッドはいらなくなる
         return methodIdentifier.matchesIgnoreOverload(this.methodIdentifier);
     }
+
+    public String descriptionText() {
+        return documentationComment.fullText();
+    }
 }

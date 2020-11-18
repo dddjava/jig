@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -71,5 +72,21 @@ public class JigType {
 
     public PackageIdentifier packageIdentifier() {
         return identifier().packageIdentifier();
+    }
+
+    public String simpleName() {
+        return typeDeclaration.identifier().asSimpleText();
+    }
+
+    public String fqn() {
+        return typeDeclaration.identifier().fullQualifiedName();
+    }
+
+    public String descriptionText() {
+        return jigTypeAttribute.descriptionText();
+    }
+
+    public List<JigMethod> listInstanceMethod() {
+        return instanceMember().instanceMethods().list();
     }
 }

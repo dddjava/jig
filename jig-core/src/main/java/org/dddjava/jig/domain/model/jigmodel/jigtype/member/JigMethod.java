@@ -89,4 +89,11 @@ public class JigMethod {
                 .asTextOrDefault(declaration().declaringType().asSimpleText() + "\\n"
                         + declaration().methodSignature().methodName());
     }
+
+    public String simpleName() {
+        return declaration().asSignatureSimpleText();
+    }
+    public String descriptionText() {
+        return methodAlias.descriptionText();
+    }
 }

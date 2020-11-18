@@ -1,0 +1,106 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <style type="text/css">
+.menu {
+    /* box-sizing: border-box; */
+    position: fixed;
+    overflow: auto;
+    height: 100%;
+    width: 300px;
+    font-size: 0.8em;
+
+    border-right: dashed 1px;
+}
+.menu li {
+    word-break: keep-all;
+}
+.menu li.package {
+    list-style-type: '\1F4E6';
+}
+.menu li.type {
+    list-style-type: '\1F4C4';
+}
+.menu ol {
+    border-left: dashed 1px;
+    border-bottom: dashed 1px;
+    margin-bottom: 10px;
+}
+
+main {
+    margin-left: 300px;
+}
+
+main table {
+    border-collapse: collapse;
+    width: 80%;
+}
+main table tr > * {
+    border: #000 solid 1px;
+    padding: 0em 1em;
+    text-align: left;
+}
+main table thead {
+    color: #FFF;
+    background-color: #465DAA;
+}
+
+main > section {
+    margin-left: 10px;
+    border-bottom: #000 solid 1px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+main > section > section {
+    margin-left: 10px;
+}
+    </style>
+</head>
+<body>
+
+<nav class="menu">
+    <ol>
+        <li th:replace="recursive-package :: item">パッケージツリーに置換</li>
+    </ol>
+</nav>
+
+<main>
+    <section class="package" th:each="item : ${jigPackage}">
+        <h1><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXパッケージ</a></h1>
+
+        <section>
+            <h2>説明</h2>
+            <p th:utext="${item.descriptionText()}">XXX</p>
+        </section>
+    </section>
+
+    <section class="type" th:each="item : ${jigTypes}">
+        <h1><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXクラス</a></h1>
+
+        <section>
+            <h2>説明</h2>
+            <p th:utext="${item.descriptionText()}">XXX</p>
+        </section>
+
+        <section>
+            <h2>メソッド一覧</h2>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>メソッド名</th>
+                    <th>説明</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="method : ${item.listInstanceMethod()}">
+                    <td th:text="${method.simpleName()}">xxx</td>
+                    <td th:utext="${method.descriptionText()}">yyy</td>
+                </tr>
+            </table>
+        </section>
+    </section>
+</main>
+
+</body>
+</html>

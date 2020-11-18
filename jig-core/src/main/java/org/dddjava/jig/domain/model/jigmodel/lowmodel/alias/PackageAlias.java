@@ -29,4 +29,15 @@ public class PackageAlias {
     public String asText() {
         return documentationComment.summaryText();
     }
+
+    public String summaryOrSimpleName() {
+        if (documentationComment.exists()) {
+            return documentationComment.summaryText();
+        }
+        return packageIdentifier.simpleName();
+    }
+
+    public String descriptionText() {
+        return documentationComment.fullText();
+    }
 }

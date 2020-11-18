@@ -42,4 +42,8 @@ public class DocumentationComment {
     public boolean markedCore() {
         return value.startsWith("*");
     }
+
+    public String fullText() {
+        return value;
+    }
 }

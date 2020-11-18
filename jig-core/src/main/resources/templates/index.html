@@ -14,6 +14,7 @@
 }
 .menu li {
     word-break: keep-all;
+    white-space: nowrap;
 }
 .menu li.package {
     list-style-type: '\1F4E6';
@@ -82,7 +83,7 @@ main > section > section {
             <p th:utext="${item.descriptionText()}">XXX</p>
         </section>
 
-        <section>
+        <section th:unless="${item.listInstanceMethod().isEmpty()}">
             <h2>メソッド一覧</h2>
 
             <table>

@@ -17,9 +17,7 @@ public class JigPackage {
     }
 
     /**
-     * FullQualifiedNameです。
-     * <br>
-     * ハイパーリンクとかに使います。
+     * FullQualifiedName
      */
     public String fqn() {
         return packageIdentifier.asText();

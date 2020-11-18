@@ -45,7 +45,8 @@ public class HtmlView implements JigView<BusinessRules> {
 
         createTree(jigTypeMap, packageMap, baseComposite);
 
-        List<JigPackage> jigPackages = jigTypeMap.keySet().stream()
+        List<JigPackage> jigPackages = packageMap.values().stream()
+                .flatMap(Set::stream)
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
                 .collect(toList());
         List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream).collect(toList());

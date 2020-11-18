@@ -10,11 +10,14 @@
     width: 300px;
     font-size: 0.8em;
 
-    border-right: dashed 1px;
+    border-right: double 5px;
 }
 .menu li {
     word-break: keep-all;
     white-space: nowrap;
+}
+.menu li a {
+    color: #000;
 }
 .menu li.package {
     list-style-type: '\1F4E6';
@@ -38,7 +41,7 @@ main table {
 }
 main table tr > * {
     border: #000 solid 1px;
-    padding: 0em 1em;
+    padding-left: 1em;
     text-align: left;
 }
 main table thead {
@@ -53,7 +56,10 @@ main > section {
     padding-bottom: 10px;
 }
 main > section > section {
-    margin-left: 10px;
+    margin-left: 1em;
+}
+main > section > section > p {
+    margin-left: 1em;
 }
     </style>
 </head>
@@ -66,20 +72,24 @@ main > section > section {
 </nav>
 
 <main>
+    <section>
+        <h1>パッケージ／クラス一覧</h1>
+    </section>
+
     <section class="package" th:each="item : ${jigPackages}">
-        <h1><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXパッケージ</a></h1>
+        <h2><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXパッケージ</a></h2>
 
         <section>
-            <h2>説明</h2>
+            <h3>説明</h3>
             <p th:utext="${item.descriptionText()}">XXX</p>
         </section>
     </section>
 
     <section class="type" th:each="item : ${jigTypes}">
-        <h1><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXクラス</a></h1>
+        <h2><a th:name="${item.fqn()}" th:text="${item.simpleName()}">XXXクラス</a></h2>
 
         <section>
-            <h2>説明</h2>
+            <h3>説明</h3>
             <p th:utext="${item.descriptionText()}">XXX</p>
         </section>
 
@@ -89,7 +99,7 @@ main > section > section {
             <table>
                 <thead>
                 <tr>
-                    <th>メソッド名</th>
+                    <th width="30%">メソッド名</th>
                     <th>説明</th>
                 </tr>
                 </thead>

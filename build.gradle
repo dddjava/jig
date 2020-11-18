@@ -177,11 +177,6 @@ project(':jig-core') {
     }
 
     build.dependsOn(publishToMavenLocal)
-    processResources {
-        filesMatching("jig.properties") {
-            expand(version: version)
-        }
-    }
 
     [compileJava, processResources]*.mustRunAfter(clean)
     jigReports.dependsOn(clean, classes)

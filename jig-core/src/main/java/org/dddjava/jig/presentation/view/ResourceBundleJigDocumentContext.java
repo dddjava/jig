@@ -19,7 +19,6 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceBundleJigDocumentContext.class);
 
-    Properties jigProperties;
     ResourceBundle jigDocumentResource;
     AliasFinder aliasFinder;
     LinkPrefix linkPrefix;
@@ -37,18 +36,10 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
     private void init() {
         try {
-            jigProperties = new Properties();
-            try (InputStream is = ResourceBundleJigDocumentContext.class.getClassLoader().getResourceAsStream("jig.properties")) {
-                jigProperties.load(is);
-            }
             jigDocumentResource = Utf8ResourceBundle.documentBundle();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String version() {
-        return jigProperties.getProperty("version");
     }
 
     public String jigDocumentLabel(JigDocument jigDocument) {

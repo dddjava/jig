@@ -27,7 +27,7 @@ public class TypeAlias {
     }
 
     public String asText() {
-        return documentationComment.toString();
+        return documentationComment.summaryText();
     }
 
     public String asTextOrDefault(String defaultText) {
@@ -38,7 +38,7 @@ public class TypeAlias {
     }
 
     public boolean markedCore() {
-        return documentationComment.toString().startsWith("*");
+        return documentationComment.markedCore();
     }
 
     public String nodeLabel() {

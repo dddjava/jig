@@ -3,9 +3,9 @@ package org.dddjava.jig.domain.model.jigmodel.lowmodel.alias;
 import java.util.stream.Stream;
 
 /**
- * 別名
+ * ドキュメントコメント
  *
- * TODO rename。これ自体はコメントから取得した追加情報的なものとする。
+ * 通常はソースコードから読み取るJavadoc
  */
 public class DocumentationComment {
 
@@ -19,19 +19,27 @@ public class DocumentationComment {
         return new DocumentationComment("");
     }
 
-    @Override
-    public String toString() {
-        return value;
-    }
-
     public boolean exists() {
         return value.length() > 0;
     }
 
-    public static DocumentationComment fromText(String sourceText) {
-        int end = Stream.of(sourceText.indexOf("\n"), sourceText.indexOf("。"), sourceText.length())
+    public String summaryText() {
+        if (value.isEmpty()) {
+            return "";
+        }
+
+        return Stream.of(value.indexOf("\n"), value.indexOf("。"))
                 .filter(length -> length >= 0)
-                .min(Integer::compareTo).orElseThrow(IllegalStateException::new);
-        return new DocumentationComment(sourceText.substring(0, end));
+                .min(Integer::compareTo)
+                .map(end -> value.substring(0, end))
+                .orElse(value); // 改行も句点も無い場合はそのまま返す
+    }
+
+    public static DocumentationComment fromText(String sourceText) {
+        return new DocumentationComment(sourceText);
+    }
+
+    public boolean markedCore() {
+        return value.startsWith("*");
     }
 }

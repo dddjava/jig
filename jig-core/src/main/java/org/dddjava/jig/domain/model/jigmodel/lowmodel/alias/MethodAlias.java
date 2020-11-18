@@ -23,7 +23,7 @@ public class MethodAlias {
     }
 
     public String asText() {
-        return documentationComment.toString();
+        return documentationComment.summaryText();
     }
 
     public String asTextOrDefault(String defaultText) {

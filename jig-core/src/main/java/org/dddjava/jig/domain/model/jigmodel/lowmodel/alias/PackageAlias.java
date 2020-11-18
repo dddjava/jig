@@ -27,6 +27,6 @@ public class PackageAlias {
     }
 
     public String asText() {
-        return documentationComment.toString();
+        return documentationComment.summaryText();
     }
 }

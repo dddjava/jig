@@ -106,7 +106,9 @@ XXX2</p>
                     </thead>
                     <tbody>
                     <tr th:each="child : ${composite.children()}">
-                        <td class="package"><a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a></td>
+                        <td class="package" th:class="${child.isPackage() ? 'package' : 'type'}">
+                            <a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a>
+                        </td>
                     </tr>
                 </table>
             </section>

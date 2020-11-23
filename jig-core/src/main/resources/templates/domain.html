@@ -77,7 +77,7 @@ main > section > section > p {
     </section>
 
     <section class="package" th:each="item : ${jigPackages}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}" th:title="${item.fqn()}">XXXパッケージ</a></h2>
 
         <section>
             <h3>説明</h3>
@@ -86,7 +86,7 @@ main > section > section > p {
     </section>
 
     <section class="type" th:each="item : ${jigTypes}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}" th:title="${item.fqn()}">XXXクラス</a></h2>
 
         <section>
             <h3>説明</h3>

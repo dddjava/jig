@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.html;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackageChildren;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
@@ -14,6 +15,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
@@ -44,17 +46,29 @@ public class HtmlListView implements JigView<BusinessRules> {
 
         createTree(jigTypeMap, packageMap, baseComposite);
 
+        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream).collect(toList());
+
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
                 .collect(toList());
-        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream).collect(toList());
+        Map<PackageIdentifier, JigPackage> jigPackageMap = jigPackages.stream()
+                .collect(toMap(JigPackage::packageIdentifier, Function.identity()));
+        Map<PackageIdentifier, JigPackageChildren> jigPackageChildrenMap = jigPackages.stream()
+                .collect(toMap(JigPackage::packageIdentifier, jigPackage -> {
+                    PackageIdentifier key = jigPackage.packageIdentifier();
+                    List<JigPackage> childPackages = packageMap.getOrDefault(key, Collections.emptySet()).stream()
+                            .map(jigPackageMap::get)
+                            .collect(toList());
+                    return new JigPackageChildren(jigPackage, childPackages, jigTypeMap.getOrDefault(key, Collections.emptyList()));
+                }));
 
         // ThymeleafのContextに設定
         Map<String, Object> contextMap = new HashMap<>();
         contextMap.put("node", baseComposite.resolveRootComposite());
         contextMap.put("jigPackages", jigPackages);
         contextMap.put("jigTypes", jigTypes);
+        contextMap.put("jigPackageChildrenMap", jigPackageChildrenMap);
 
         Context context = new Context(Locale.ROOT, contextMap);
         String htmlText = templateEngine.process(

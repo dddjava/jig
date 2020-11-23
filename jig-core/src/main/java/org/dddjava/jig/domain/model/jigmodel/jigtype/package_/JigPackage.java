@@ -12,6 +12,10 @@ public class JigPackage {
         this.packageAlias = packageAlias;
     }
 
+    public PackageIdentifier packageIdentifier() {
+        return packageIdentifier;
+    }
+
     public String simpleName() {
         return packageIdentifier.simpleName();
     }

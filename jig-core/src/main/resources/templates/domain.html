@@ -16,15 +16,22 @@
     word-break: keep-all;
     white-space: nowrap;
 }
-.menu li a {
+a {
     color: #000;
 }
 .menu li.package {
     list-style-type: '\1F4E6';
 }
+td.package::before {
+    content: '\1F4E6';
+}
 .menu li.type {
     list-style-type: '\1F4C4';
 }
+td.type::before {
+    content: '\1F4C4';
+}
+
 .menu ol {
     border-left: dashed 1px;
     border-bottom: dashed 1px;
@@ -88,6 +95,25 @@ main > section > section > p {
             <p class="pre-like" th:utext="${item.descriptionText()}">XXX1
 XXX2</p>
         </section>
+
+        <th:block th:object="${jigPackageChildrenMap.get(item.packageIdentifier())}">
+            <section th:if="*{hasChild()}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>名前</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="package : *{packages()}">
+                        <td class="package"><a href="#" th:href="${'#' + package.fqn()}" th:text="${package.label()}">xxx</a></td>
+                    </tr>
+                    <tr th:each="type: *{types()}">
+                        <td class="type"><a href="#" th:href="${'#' + type.fqn()}" th:text="${type.label()}">xxx</a></td>
+                    </tr>
+                </table>
+            </section>
+        </th:block>
     </section>
 
     <section class="type" th:each="item : ${jigTypes}">

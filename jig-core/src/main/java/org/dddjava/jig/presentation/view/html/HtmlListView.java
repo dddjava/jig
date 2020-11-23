@@ -12,22 +12,21 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static java.util.stream.Collectors.*;
 
-public class HtmlView implements JigView<BusinessRules> {
+public class HtmlListView implements JigView<BusinessRules> {
 
     AliasFinder aliasFinder;
 
-    public HtmlView(AliasFinder aliasFinder) {
+    public HtmlListView(AliasFinder aliasFinder) {
         this.aliasFinder = aliasFinder;
     }
 
     @Override
-    public void render(BusinessRules businessRules, JigDocumentWriter jigDocumentWriter) throws IOException {
+    public void render(BusinessRules businessRules, JigDocumentWriter jigDocumentWriter) {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setSuffix(".html");

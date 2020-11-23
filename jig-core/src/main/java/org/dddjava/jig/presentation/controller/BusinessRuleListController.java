@@ -20,7 +20,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.html.HtmlView;
+import org.dddjava.jig.presentation.view.html.HtmlListView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
@@ -46,7 +46,7 @@ public class BusinessRuleListController {
     @DocumentMapping(JigDocument.DomainListHtml)
     public JigModelAndView<BusinessRules> singlePageHtml() {
         BusinessRules businessRules = businessRuleService.businessRules();
-        return new JigModelAndView<>(businessRules, new HtmlView(new AliasFinder() {
+        return new JigModelAndView<>(businessRules, new HtmlListView(new AliasFinder() {
             @Override
             public PackageAlias find(PackageIdentifier packageIdentifier) {
                 return convertContext.aliasService.packageAliasOf(packageIdentifier);

@@ -18,7 +18,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodI
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.html.HtmlView;
@@ -44,7 +43,7 @@ public class BusinessRuleListController {
         this.businessRuleService = businessRuleService;
     }
 
-    @DocumentMapping(JigDocument.SinglePageHtml)
+    @DocumentMapping(JigDocument.DomainListHtml)
     public JigModelAndView<BusinessRules> singlePageHtml() {
         BusinessRules businessRules = businessRuleService.businessRules();
         return new JigModelAndView<>(businessRules, new HtmlView(new AliasFinder() {

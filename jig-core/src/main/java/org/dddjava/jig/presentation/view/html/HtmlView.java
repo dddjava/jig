@@ -58,16 +58,12 @@ public class HtmlView implements JigView<BusinessRules> {
         contextMap.put("jigTypes", jigTypes);
 
         Context context = new Context(Locale.ROOT, contextMap);
-        String htmlText = templateEngine.process("index", context);
+        String htmlText = templateEngine.process(
+                jigDocumentWriter.jigDocument().fileName(), context);
 
-        jigDocumentWriter.write(outputStream -> {
+        jigDocumentWriter.writeHtml(outputStream -> {
             outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));
-        }, "index.html");
-        /*
-        try (InputStream cssResource = this.getClass().getResourceAsStream("/templates/document.css")) {
-            Files.copy(cssResource, dist.resolve("document.css"), StandardCopyOption.REPLACE_EXISTING);
-        }
-        */
+        });
     }
 
     private void createTree(Map<PackageIdentifier, List<JigType>> jigTypeMap,

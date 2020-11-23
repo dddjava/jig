@@ -83,7 +83,8 @@ public enum JigDocument {
     /**
      * HTML
      */
-    SinglePageHtml("index");
+    DomainListHtml("domain"),
+    ;
 
     private final String documentFileName;
 

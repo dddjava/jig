@@ -96,8 +96,8 @@ main > section > section > p {
 XXX2</p>
         </section>
 
-        <th:block th:object="${baseComposite.findComposite(item.packageIdentifier())}">
-            <section th:if="*{hasChild()}">
+        <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
+            <section th:if="${composite.hasChild()}">
                 <table>
                     <thead>
                     <tr>
@@ -105,7 +105,7 @@ XXX2</p>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="child : *{children()}">
+                    <tr th:each="child : ${composite.children()}">
                         <td class="package"><a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a></td>
                     </tr>
                 </table>

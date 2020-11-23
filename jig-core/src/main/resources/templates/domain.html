@@ -77,7 +77,7 @@ main > section > section > p {
 <body>
 
 <nav class="menu">
-    <ol>
+    <ol th:with="node=${baseComposite.resolveRootComposite()}">
         <li th:replace="recursive-package :: item">パッケージツリーに置換</li>
     </ol>
 </nav>
@@ -96,7 +96,7 @@ main > section > section > p {
 XXX2</p>
         </section>
 
-        <th:block th:object="${jigPackageChildrenMap.get(item.packageIdentifier())}">
+        <th:block th:object="${baseComposite.findComposite(item.packageIdentifier())}">
             <section th:if="*{hasChild()}">
                 <table>
                     <thead>
@@ -105,11 +105,8 @@ XXX2</p>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="package : *{packages()}">
-                        <td class="package"><a href="#" th:href="${'#' + package.fqn()}" th:text="${package.label()}">xxx</a></td>
-                    </tr>
-                    <tr th:each="type: *{types()}">
-                        <td class="type"><a href="#" th:href="${'#' + type.fqn()}" th:text="${type.label()}">xxx</a></td>
+                    <tr th:each="child : *{children()}">
+                        <td class="package"><a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a></td>
                     </tr>
                 </table>
             </section>

@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TreeComposite implements TreeComponent {
 
@@ -37,6 +38,10 @@ public class TreeComposite implements TreeComponent {
         return packageIdentifier;
     }
 
+    public boolean hasChild() {
+        return !list.isEmpty();
+    }
+
     public List<TreeComponent> children() {
         if (list.size() == 1) {
             TreeComponent onlyOneChild = list.get(0);
@@ -58,5 +63,25 @@ public class TreeComposite implements TreeComponent {
             root = (TreeComposite) root.list.get(0);
         }
         return root;
+    }
+
+    public TreeComposite findComposite(PackageIdentifier packageIdentifier) {
+        return findCompositeInternal(packageIdentifier)
+                // 通常は見つかる
+                // これが発生するのはこのインスタンスの子階層にないパッケージを引数にした場合
+                .orElseThrow(() -> new IllegalStateException(packageIdentifier.asText() + " is not found in " + this.packageIdentifier.asText()));
+    }
+
+    private Optional<TreeComposite> findCompositeInternal(PackageIdentifier packageIdentifier) {
+        if (packageIdentifier.equals(this.packageIdentifier)) {
+            return Optional.of(this);
+        }
+        for (TreeComponent child : list) {
+            if (child instanceof TreeComposite) {
+                Optional<TreeComposite> composite = ((TreeComposite) child).findCompositeInternal(packageIdentifier);
+                if (composite.isPresent()) return composite;
+            }
+        }
+        return Optional.empty();
     }
 }

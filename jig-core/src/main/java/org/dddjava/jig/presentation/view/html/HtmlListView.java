@@ -52,23 +52,12 @@ public class HtmlListView implements JigView<BusinessRules> {
                 .flatMap(Set::stream)
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
                 .collect(toList());
-        Map<PackageIdentifier, JigPackage> jigPackageMap = jigPackages.stream()
-                .collect(toMap(JigPackage::packageIdentifier, Function.identity()));
-        Map<PackageIdentifier, JigPackageChildren> jigPackageChildrenMap = jigPackages.stream()
-                .collect(toMap(JigPackage::packageIdentifier, jigPackage -> {
-                    PackageIdentifier key = jigPackage.packageIdentifier();
-                    List<JigPackage> childPackages = packageMap.getOrDefault(key, Collections.emptySet()).stream()
-                            .map(jigPackageMap::get)
-                            .collect(toList());
-                    return new JigPackageChildren(jigPackage, childPackages, jigTypeMap.getOrDefault(key, Collections.emptyList()));
-                }));
 
         // ThymeleafのContextに設定
         Map<String, Object> contextMap = new HashMap<>();
-        contextMap.put("node", baseComposite.resolveRootComposite());
+        contextMap.put("baseComposite", baseComposite);
         contextMap.put("jigPackages", jigPackages);
         contextMap.put("jigTypes", jigTypes);
-        contextMap.put("jigPackageChildrenMap", jigPackageChildrenMap);
 
         Context context = new Context(Locale.ROOT, contextMap);
         String htmlText = templateEngine.process(

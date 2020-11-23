@@ -61,6 +61,10 @@ main > section > section {
 main > section > section > p {
     margin-left: 1em;
 }
+
+.pre-like {
+    white-space: pre;
+}
     </style>
 </head>
 <body>
@@ -81,7 +85,8 @@ main > section > section > p {
 
         <section>
             <h3>説明</h3>
-            <p th:utext="${item.descriptionText()}">XXX</p>
+            <p class="pre-like" th:utext="${item.descriptionText()}">XXX1
+XXX2</p>
         </section>
     </section>
 
@@ -90,7 +95,9 @@ main > section > section > p {
 
         <section>
             <h3>説明</h3>
-            <p th:utext="${item.descriptionText()}">XXX</p>
+            <p class="pre-like" th:utext="${item.descriptionText()}">description1
+description2
+<b>description3</b></p>
         </section>
 
         <section th:unless="${item.listInstanceMethod().isEmpty()}">
@@ -106,7 +113,8 @@ main > section > section > p {
                 <tbody>
                 <tr th:each="method : ${item.listInstanceMethod()}">
                     <td th:text="${method.simpleName()}">xxx</td>
-                    <td th:utext="${method.descriptionText()}">yyy</td>
+                    <td class="pre-like" th:utext="${method.descriptionText()}">yyy1
+yyy2</td>
                 </tr>
             </table>
         </section>

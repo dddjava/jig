@@ -82,6 +82,10 @@ public class JigType {
         return typeDeclaration.identifier().fullQualifiedName();
     }
 
+    public String label() {
+        return typeAlias().asTextOrIdentifierSimpleText();
+    }
+
     public String descriptionText() {
         return jigTypeAttribute.descriptionText();
     }

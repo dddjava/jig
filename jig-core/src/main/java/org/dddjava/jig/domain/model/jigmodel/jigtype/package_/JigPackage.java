@@ -23,6 +23,10 @@ public class JigPackage {
         return packageIdentifier.asText();
     }
 
+    public String label() {
+        return packageAlias.summaryOrSimpleName();
+    }
+
     public String descriptionText() {
         return packageAlias.descriptionText();
     }

@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigInstanceMember;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigStaticMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
@@ -22,12 +19,8 @@ public class BusinessRule {
         return jigType.identifier();
     }
 
-    private JigInstanceMember instanceMember() {
-        return jigType.instanceMember();
-    }
-
     public BusinessRuleFields fields() {
-        return new BusinessRuleFields(instanceMember().fieldDeclarations());
+        return new BusinessRuleFields(jigType.instanceMember().fieldDeclarations());
     }
 
     public BusinessRuleCategory businessRuleCategory() {
@@ -35,7 +28,7 @@ public class BusinessRule {
     }
 
     public MethodDeclarations instanceMethodDeclarations() {
-        return instanceMember().instanceMethods().declarations();
+        return jigType.instanceMember().instanceMethods().declarations();
     }
 
     public String nodeLabel() {
@@ -44,14 +37,6 @@ public class BusinessRule {
 
     public boolean markedCore() {
         return jigType.typeAlias().markedCore();
-    }
-
-    public JigInstanceMember jigInstanceMember() {
-        return instanceMember();
-    }
-
-    public JigStaticMember jigStaticMember() {
-        return jigType.staticMember();
     }
 
     public JigType jigType() {

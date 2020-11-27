@@ -17,12 +17,12 @@ public class CategoryType {
     }
 
     public boolean hasParameter() {
-        return businessRule.jigInstanceMember().hasField();
+        return businessRule.jigType().instanceMember().hasField();
     }
 
     public boolean hasBehaviour() {
         // インスタンスメソッドがあるものを振る舞いありとする
-        return businessRule.jigInstanceMember().hasMethod();
+        return businessRule.jigType().instanceMember().hasMethod();
     }
 
     public boolean isPolymorphism() {
@@ -43,11 +43,11 @@ public class CategoryType {
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return businessRule.jigStaticMember().staticFieldDeclarations();
+        return businessRule.jigType().staticMember().staticFieldDeclarations();
     }
 
     public FieldDeclarations fieldDeclarations() {
-        return businessRule.jigInstanceMember().fieldDeclarations();
+        return businessRule.jigType().instanceMember().fieldDeclarations();
     }
 
     public boolean markedCore() {

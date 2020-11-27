@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
@@ -10,47 +10,48 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  * 区分
  */
 public class CategoryType {
-    BusinessRule businessRule;
 
-    public CategoryType(BusinessRule businessRule) {
-        this.businessRule = businessRule;
+    JigType jigType;
+
+    public CategoryType(JigType jigType) {
+        this.jigType = jigType;
     }
 
     public boolean hasParameter() {
-        return businessRule.jigType().instanceMember().hasField();
+        return jigType.instanceMember().hasField();
     }
 
     public boolean hasBehaviour() {
         // インスタンスメソッドがあるものを振る舞いありとする
-        return businessRule.jigType().instanceMember().hasMethod();
+        return jigType.instanceMember().hasMethod();
     }
 
     public boolean isPolymorphism() {
         // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
-        return businessRule.jigType().typeKind() == TypeKind.抽象列挙型;
+        return jigType.typeKind() == TypeKind.抽象列挙型;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return businessRule.typeIdentifier();
+        return jigType.identifier();
     }
 
     public String nodeLabel() {
-        return businessRule.jigType().typeAlias().nodeLabel();
+        return jigType.typeAlias().nodeLabel();
     }
 
     public String nodeLabel(String delimiter) {
-        return businessRule.jigType().typeAlias().nodeLabel(delimiter);
+        return jigType.typeAlias().nodeLabel(delimiter);
     }
 
     public StaticFieldDeclarations constantsDeclarations() {
-        return businessRule.jigType().staticMember().staticFieldDeclarations();
+        return jigType.staticMember().staticFieldDeclarations();
     }
 
     public FieldDeclarations fieldDeclarations() {
-        return businessRule.jigType().instanceMember().fieldDeclarations();
+        return jigType.instanceMember().fieldDeclarations();
     }
 
     public boolean markedCore() {
-        return businessRule.jigType().typeAlias().markedCore();
+        return jigType.typeAlias().markedCore();
     }
 }

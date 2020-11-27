@@ -1,13 +1,12 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.collectingAndThen;
 import static org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers.collector;
 
 /**
@@ -21,17 +20,10 @@ public class CategoryTypes {
         this.list = list;
     }
 
-    public static CategoryTypes from(BusinessRules businessRules) {
-        List<CategoryType> list = businessRules.list().stream()
-                .filter(businessRule -> businessRule.toValueKind() == JigTypeValueKind.区分)
-                .map(businessRule -> new CategoryType(businessRule))
-                .collect(Collectors.toList());
-        return new CategoryTypes(list);
-    }
-
-    public boolean contains(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .anyMatch(categoryType -> categoryType.typeIdentifier().equals(typeIdentifier));
+    public static CategoryTypes from(JigTypes jigTypes) {
+        return jigTypes.listCategoryType().stream()
+                .map(CategoryType::new)
+                .collect(collectingAndThen(Collectors.toList(), CategoryTypes::new));
     }
 
     public List<CategoryType> list() {

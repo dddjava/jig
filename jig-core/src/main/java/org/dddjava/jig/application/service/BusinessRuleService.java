@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
@@ -51,10 +50,8 @@ public class BusinessRuleService {
      */
     public Categories categories() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        CategoryTypes categoryTypes = CategoryTypes.from(businessRules());
-        ClassRelations classRelations = typeFacts.toClassRelations();
 
-        return Categories.create(categoryTypes, classRelations);
+        return Categories.create(CategoryTypes.from(businessRules().jigTypes()), typeFacts.toClassRelations());
     }
 
     /**
@@ -62,9 +59,8 @@ public class BusinessRuleService {
      */
     public JigCollectionTypes collections() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        BusinessRules businessRules = businessRules();
 
-        return new JigCollectionTypes(businessRules.jigTypes(), typeFacts.toClassRelations());
+        return new JigCollectionTypes(businessRules().jigTypes(), typeFacts.toClassRelations());
     }
 
     /**

@@ -85,7 +85,7 @@ public class CategoryUsageDiagram {
 
     private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes) {
         return businessRules.list().stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() != JigTypeValueKind.区分)
+                .filter(businessRule -> businessRule.toValueKind() != JigTypeValueKind.区分)
                 .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
                 .map(businessRule -> Node.businessRuleNodeOf(businessRule))
                 .map(Node::asText)

@@ -24,7 +24,7 @@ public class BusinessRule {
         return new BusinessRuleFields(jigType.instanceMember().fieldDeclarations());
     }
 
-    public JigTypeValueKind businessRuleCategory() {
+    public JigTypeValueKind toValueKind() {
         return jigType.toValueKind();
     }
 

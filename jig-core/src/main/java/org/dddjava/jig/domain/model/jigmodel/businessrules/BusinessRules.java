@@ -79,7 +79,7 @@ public class BusinessRules {
 
     public List<BusinessRule> listCollection() {
         return list.stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == JigTypeValueKind.コレクション)
+                .filter(businessRule -> businessRule.toValueKind() == JigTypeValueKind.コレクション)
                 .collect(toList());
     }
 

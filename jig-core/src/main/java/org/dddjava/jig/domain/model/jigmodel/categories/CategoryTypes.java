@@ -23,7 +23,7 @@ public class CategoryTypes {
 
     public static CategoryTypes from(BusinessRules businessRules) {
         List<CategoryType> list = businessRules.list().stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == JigTypeValueKind.区分)
+                .filter(businessRule -> businessRule.toValueKind() == JigTypeValueKind.区分)
                 .map(businessRule -> new CategoryType(businessRule))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);

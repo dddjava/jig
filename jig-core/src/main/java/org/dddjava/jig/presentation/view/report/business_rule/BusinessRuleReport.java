@@ -34,7 +34,7 @@ public class BusinessRuleReport {
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類", order = 11)
     public String valueKind() {
-        return businessRule.businessRuleCategory().toString();
+        return businessRule.toValueKind().toString();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向", order = 12)

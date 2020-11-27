@@ -1,6 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
@@ -53,11 +54,12 @@ public class DocumentationCommentServiceTest {
     void クラス別名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-
-        TypeFact typeFact = typeFacts.list().stream()
-                .filter(e -> e.typeIdentifier().equals(new TypeIdentifier(KotlinStub.class)))
+        TypeAlias typeAlias = typeFacts.listJigTypes()
+                .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
+                .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals("KotlinのクラスのDoc", typeFact.aliasText());
+
+        assertEquals("KotlinのクラスのDoc", typeAlias.asText());
     }
 
 

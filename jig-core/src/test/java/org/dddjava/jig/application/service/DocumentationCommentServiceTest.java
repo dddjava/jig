@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
@@ -9,7 +10,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -48,11 +48,12 @@ class DocumentationCommentServiceTest {
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-
-        TypeFact typeFact = typeFacts.list().stream()
-                .filter(e -> e.typeIdentifier().equals(typeIdentifier))
+        TypeAlias typeAlias = typeFacts.listJigTypes()
+                .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
+                .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(comment, typeFact.aliasText());
+
+        assertEquals(comment, typeAlias.asText());
     }
 
     static Stream<org.junit.jupiter.params.provider.Arguments> クラス別名取得() {

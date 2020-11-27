@@ -158,10 +158,6 @@ public class TypeFact {
         return registered ? AliasRegisterResult.成功 : AliasRegisterResult.紐付け対象なし;
     }
 
-    public String aliasText() {
-        return typeAlias.asText();
-    }
-
     public BusinessRule createBusinessRule() {
         return new BusinessRule(jigType());
     }

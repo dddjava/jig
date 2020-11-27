@@ -15,16 +15,16 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
  */
 public class CollectionAngle {
 
-    CollectionType collectionType;
+    JigType jigType;
     ClassRelations classRelations;
 
-    public CollectionAngle(CollectionType collectionType, ClassRelations classRelations) {
-        this.collectionType = collectionType;
+    public CollectionAngle(JigType jigType, ClassRelations classRelations) {
+        this.jigType = jigType;
         this.classRelations = classRelations;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return collectionType.typeIdentifier();
+        return jigType.identifier();
     }
 
     public TypeIdentifiers userTypeIdentifiers() {
@@ -32,10 +32,10 @@ public class CollectionAngle {
     }
 
     public MethodDeclarations methods() {
-        return collectionType.methods();
+        return jigType.instanceMember().instanceMethods().declarations();
     }
 
     public JigType jigType() {
-        return collectionType.jigType();
+        return jigType;
     }
 }

@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
@@ -64,9 +63,8 @@ public class BusinessRuleService {
     public CollectionAngles collections() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         BusinessRules businessRules = businessRules();
-        CollectionTypes collectionTypes = new CollectionTypes(businessRules);
 
-        return new CollectionAngles(collectionTypes, typeFacts.toClassRelations());
+        return new CollectionAngles(businessRules, typeFacts.toClassRelations());
     }
 
     /**

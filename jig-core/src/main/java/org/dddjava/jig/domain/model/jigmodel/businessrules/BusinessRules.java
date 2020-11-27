@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -134,5 +135,9 @@ public class BusinessRules {
         return list().stream()
                 .map(BusinessRule::jigType)
                 .collect(groupingBy(JigType::packageIdentifier));
+    }
+
+    public JigTypes jigTypes() {
+        return list.stream().map(BusinessRule::jigType).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

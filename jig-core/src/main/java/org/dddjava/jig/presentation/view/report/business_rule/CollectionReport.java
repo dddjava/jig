@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;
@@ -10,10 +10,12 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("COLLECTION")
 public class CollectionReport {
 
-    CollectionAngle angle;
+    private final JigType jigType;
+    private final ClassRelations classRelations;
 
-    public CollectionReport(CollectionAngle angle) {
-        this.angle = angle;
+    public CollectionReport(JigType jigType, ClassRelations classRelations) {
+        this.jigType = jigType;
+        this.classRelations = classRelations;
     }
 
     @ReportItemFor(ReportItem.パッケージ名)
@@ -23,12 +25,12 @@ public class CollectionReport {
     @ReportItemFor(ReportItem.メソッド数)
     @ReportItemFor(ReportItem.メソッド一覧)
     public JigType jigType() {
-        return angle.jigType();
+        return jigType;
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
-        return angle.userTypeIdentifiers();
+        return classRelations.collectTypeIdentifierWhichRelationTo(jigType().identifier());
     }
 }

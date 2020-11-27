@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
@@ -89,8 +89,10 @@ public class BusinessRuleListController {
     }
 
     ModelReport<?> collectionsReport() {
-        CollectionAngles collectionAngles = businessRuleService.collections();
-        return new ModelReport<>(collectionAngles.list(), CollectionReport::new, CollectionReport.class);
+        JigCollectionTypes jigCollectionTypes = businessRuleService.collections();
+        return new ModelReport<>(jigCollectionTypes.listJigType(),
+                jigType -> new CollectionReport(jigType, jigCollectionTypes.classRelations()),
+                CollectionReport.class);
     }
 
     ModelReport<?> categoriesReport() {

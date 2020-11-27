@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngles;
+import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
@@ -60,11 +60,11 @@ public class BusinessRuleService {
     /**
      * コレクションを分析する
      */
-    public CollectionAngles collections() {
+    public JigCollectionTypes collections() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         BusinessRules businessRules = businessRules();
 
-        return new CollectionAngles(businessRules, typeFacts.toClassRelations());
+        return new JigCollectionTypes(businessRules.jigTypes(), typeFacts.toClassRelations());
     }
 
     /**

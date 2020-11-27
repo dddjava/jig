@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.jigmodel.collections;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
@@ -19,7 +21,10 @@ public class CollectionAngles {
     public CollectionAngles(BusinessRules businessRules, ClassRelations classRelations) {
         this.list = new ArrayList<>();
         for (BusinessRule businessRule : businessRules.list()) {
-            list.add(new CollectionAngle(businessRule.jigType(), classRelations));
+            JigType jigType = businessRule.jigType();
+            if (jigType.toValueKind() == JigTypeValueKind.コレクション) {
+                list.add(new CollectionAngle(jigType, classRelations));
+            }
         }
     }
 

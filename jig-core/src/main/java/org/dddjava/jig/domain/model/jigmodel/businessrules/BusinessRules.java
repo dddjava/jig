@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -75,12 +74,6 @@ public class BusinessRules {
                         new BusinessRules(entity.getValue(), this.businessRuleRelations)
                 )).collect(toList());
         return new BusinessRulePackages(list);
-    }
-
-    public List<BusinessRule> listCollection() {
-        return list.stream()
-                .filter(businessRule -> businessRule.toValueKind() == JigTypeValueKind.コレクション)
-                .collect(toList());
     }
 
     public ClassRelations businessRuleRelations() {

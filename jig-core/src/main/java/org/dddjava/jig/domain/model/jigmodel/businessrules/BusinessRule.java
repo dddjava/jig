@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -23,8 +24,8 @@ public class BusinessRule {
         return new BusinessRuleFields(jigType.instanceMember().fieldDeclarations());
     }
 
-    public BusinessRuleCategory businessRuleCategory() {
-        return BusinessRuleCategory.choice(jigType);
+    public JigTypeValueKind businessRuleCategory() {
+        return jigType.toValueKind();
     }
 
     public MethodDeclarations instanceMethodDeclarations() {

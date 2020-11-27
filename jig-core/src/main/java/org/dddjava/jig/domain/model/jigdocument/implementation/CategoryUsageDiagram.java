@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleCategory;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -85,7 +85,7 @@ public class CategoryUsageDiagram {
 
     private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes) {
         return businessRules.list().stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() != BusinessRuleCategory.区分)
+                .filter(businessRule -> businessRule.businessRuleCategory() != JigTypeValueKind.区分)
                 .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
                 .map(businessRule -> Node.businessRuleNodeOf(businessRule))
                 .map(Node::asText)

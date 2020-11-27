@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleCategory;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -23,7 +23,7 @@ public class CategoryTypes {
 
     public static CategoryTypes from(BusinessRules businessRules) {
         List<CategoryType> list = businessRules.list().stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.区分)
+                .filter(businessRule -> businessRule.businessRuleCategory() == JigTypeValueKind.区分)
                 .map(businessRule -> new CategoryType(businessRule))
                 .collect(Collectors.toList());
         return new CategoryTypes(list);

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -78,13 +79,7 @@ public class BusinessRules {
 
     public List<BusinessRule> listCollection() {
         return list.stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == BusinessRuleCategory.コレクション)
-                .collect(toList());
-    }
-
-    public List<BusinessRule> listValue(ValueKind valueKind) {
-        return list.stream()
-                .filter(businessRule -> businessRule.businessRuleCategory() == valueKind.businessRuleCategory)
+                .filter(businessRule -> businessRule.businessRuleCategory() == JigTypeValueKind.コレクション)
                 .collect(toList());
     }
 

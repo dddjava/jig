@@ -93,4 +93,8 @@ public class JigType {
     public List<JigMethod> listInstanceMethod() {
         return instanceMember().instanceMethods().list();
     }
+
+    public JigTypeValueKind toValueKind() {
+        return JigTypeValueKind.from(this);
+    }
 }

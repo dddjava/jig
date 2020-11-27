@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.report.business_rule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleTendency;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -28,7 +29,7 @@ public class BusinessRuleReport {
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     public TypeDeclaration type() {
-        return businessRule.typeDeclaration();
+        return businessRule.jigType().typeDeclaration();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類", order = 11)
@@ -63,7 +64,7 @@ public class BusinessRuleReport {
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "非PUBLIC", order = 31)
     public boolean isNotPublic() {
-        return !businessRule.visibility().isPublic();
+        return businessRule.jigType().visibility() != Visibility.PUBLIC;
     }
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "同パッケージからのみ参照", order = 32)

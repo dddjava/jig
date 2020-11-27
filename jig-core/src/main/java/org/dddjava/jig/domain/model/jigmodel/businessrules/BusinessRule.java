@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigStaticMember;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 /**
@@ -20,8 +18,8 @@ public class BusinessRule {
         this.jigType = jigType;
     }
 
-    public TypeDeclaration typeDeclaration() {
-        return jigType.typeDeclaration();
+    public TypeIdentifier typeIdentifier() {
+        return jigType.identifier();
     }
 
     private JigInstanceMember instanceMember() {
@@ -32,16 +30,8 @@ public class BusinessRule {
         return new BusinessRuleFields(instanceMember().fieldDeclarations());
     }
 
-    public TypeIdentifier typeIdentifier() {
-        return typeDeclaration().identifier();
-    }
-
     public BusinessRuleCategory businessRuleCategory() {
         return BusinessRuleCategory.choice(fields(), jigType.typeKind());
-    }
-
-    public Visibility visibility() {
-        return jigType.visibility();
     }
 
     public MethodDeclarations instanceMethodDeclarations() {

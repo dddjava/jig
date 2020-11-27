@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 
 /**
@@ -12,10 +11,6 @@ public class BusinessRuleFields {
 
     public BusinessRuleFields(FieldDeclarations fieldDeclarations) {
         this.fieldDeclarations = fieldDeclarations;
-    }
-
-    public FieldType onlyOneFieldType() {
-        return fieldDeclarations.onlyOneField().fieldType();
     }
 
     public FieldDeclarations fieldDeclarations() {

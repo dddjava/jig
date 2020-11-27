@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -75,7 +76,9 @@ public class ReportItemFormatter {
                 writeLongString(cell, ((UsingFields) item).typeIdentifiers().asSimpleText());
                 return;
             case フィールドの型: {
-                String result = ((JigType) item).instanceMember().fieldDeclarations().toTypeIdentifies().asSimpleText();
+                // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
+                FieldDeclarations fieldDeclarations = ((JigType) item).instanceMember().fieldDeclarations();
+                String result = fieldDeclarations.onlyOneField().fieldType().asSimpleText();
                 writeLongString(cell, result);
             }
             return;

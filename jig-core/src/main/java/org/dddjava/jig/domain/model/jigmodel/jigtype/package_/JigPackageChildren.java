@@ -7,17 +7,17 @@ import java.util.List;
 public class JigPackageChildren {
 
     JigPackage jigPackage;
-    List<JigPackage> jigPackages;
+    List<JigPackage> subPackages;
     List<JigType> jigTypes;
 
-    public JigPackageChildren(JigPackage jigPackage, List<JigPackage> jigPackages, List<JigType> jigTypes) {
+    public JigPackageChildren(JigPackage jigPackage, List<JigPackage> subPackages, List<JigType> jigTypes) {
         this.jigPackage = jigPackage;
-        this.jigPackages = jigPackages;
+        this.subPackages = subPackages;
         this.jigTypes = jigTypes;
     }
 
     public List<JigPackage> packages() {
-        return jigPackages;
+        return subPackages;
     }
 
     public List<JigType> types() {
@@ -25,6 +25,6 @@ public class JigPackageChildren {
     }
 
     public boolean hasChild() {
-        return !jigPackages.isEmpty() || !jigTypes.isEmpty();
+        return !subPackages.isEmpty() || !jigTypes.isEmpty();
     }
 }

@@ -3,7 +3,6 @@ package org.dddjava.jig.presentation.view.html;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackageChildren;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
@@ -15,7 +14,6 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 

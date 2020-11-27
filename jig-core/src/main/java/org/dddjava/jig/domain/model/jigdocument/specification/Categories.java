@@ -13,7 +13,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import java.util.*;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * 区分の切り口一覧
@@ -53,18 +54,27 @@ public class Categories {
         String structureText = packageStructure.toDotText(
                 typeIdentifier -> {
                     CategoryAngle categoryAngle = map.get(typeIdentifier);
-                    String values = categoryAngle.constantsDeclarations().list().stream()
-                            .map(StaticFieldDeclaration::nameText)
-                            .collect(joining("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>"));
+
+                    StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
+
+                    List<StaticFieldDeclaration> list = categoryAngle.constantsDeclarations().list();
+                    for (int i = 0; i < list.size(); i++) {
+                        if (i > 20) {
+                            categoryValues.add("... more");
+                            break;
+                        }
+                        String nameText = list.get(i).nameText();
+                        categoryValues.add(nameText);
+                    }
                     String categoryName = categoryAngle.nodeLabel("<br/>");
 
                     if (categoryAngle.hasBehaviour()) {
                         return Node.typeOf(typeIdentifier)
-                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
+                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     } else {
                         return Node.typeOf(typeIdentifier)
                                 .weakColor()
-                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + values + "</table>");
+                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     }
                 }
         );

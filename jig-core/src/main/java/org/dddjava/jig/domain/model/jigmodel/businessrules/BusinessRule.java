@@ -24,7 +24,7 @@ public class BusinessRule {
     }
 
     public BusinessRuleCategory businessRuleCategory() {
-        return BusinessRuleCategory.choice(fields(), jigType.typeKind());
+        return BusinessRuleCategory.choice(jigType);
     }
 
     public MethodDeclarations instanceMethodDeclarations() {

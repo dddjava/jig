@@ -30,8 +30,8 @@ public enum BusinessRuleTendency {
     }
 
     public static BusinessRuleTendency from(BusinessRule businessRule, BusinessRules businessRules) {
-        BusinessRuleFields fields = businessRule.fields();
-        TypeIs フィールドの型 = TypeIs.from(businessRule, fields.typeIdentifiers(), businessRules);
+        TypeIdentifiers typeIdentifiers = businessRule.jigType().instanceMember().fieldDeclarations().toTypeIdentifies();
+        TypeIs フィールドの型 = TypeIs.from(businessRule, typeIdentifiers, businessRules);
 
         MethodDeclarations methodDeclarations = businessRule.instanceMethodDeclarations();
         TypeIs メソッドの返す型 = TypeIs.from(businessRule, methodDeclarations.returnTypeIdentifiers(), businessRules);

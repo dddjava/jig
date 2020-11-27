@@ -22,7 +22,7 @@ public class MethodSmellList {
             for (JigMethod method : businessRule.jigType().instanceMember().instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
-                        businessRule.fields().fieldDeclarations(),
+                        businessRule.jigType().instanceMember().fieldDeclarations(),
                         methodRelations
                 );
                 if (methodSmell.hasSmell()) {

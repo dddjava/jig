@@ -46,10 +46,6 @@ public class BusinessRule {
         return jigType.typeAlias().markedCore();
     }
 
-    public JigMethods instanceMethods() {
-        return instanceMember().instanceMethods();
-    }
-
     public JigInstanceMember jigInstanceMember() {
         return instanceMember();
     }

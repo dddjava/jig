@@ -19,7 +19,7 @@ public class MethodSmellList {
     public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
         for (BusinessRule businessRule : businessRules.list()) {
-            for (JigMethod method : businessRule.instanceMethods().list()) {
+            for (JigMethod method : businessRule.jigType().instanceMember().instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
                         businessRule.fields().fieldDeclarations(),

@@ -125,6 +125,9 @@ public class ReportItemFormatter {
     }
 
     private MethodDeclarations toMethodDeclarations(Object item) {
+        if (item instanceof JigType) {
+            return ((JigType) item).instanceMember().instanceMethods().declarations();
+        }
         if (item instanceof ServiceMethods) {
             return ((ServiceMethods) item).toMethodDeclarations();
         }
@@ -144,6 +147,9 @@ public class ReportItemFormatter {
         }
         if (item instanceof TypeDeclaration) {
             return ((TypeDeclaration) item).identifier();
+        }
+        if (item instanceof JigType) {
+            return ((JigType) item).identifier();
         }
 
         MethodDeclaration methodDeclaration = toMethodDeclaration(item);

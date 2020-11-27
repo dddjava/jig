@@ -2,8 +2,6 @@ package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngle;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -21,24 +19,16 @@ public class CollectionReport {
     @ReportItemFor(ReportItem.パッケージ名)
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
-    public TypeIdentifier typeIdentifier() {
-        return angle.typeIdentifier();
+    @ReportItemFor(ReportItem.フィールドの型)
+    @ReportItemFor(ReportItem.メソッド数)
+    @ReportItemFor(ReportItem.メソッド一覧)
+    public JigType jigType() {
+        return angle.jigType();
     }
 
     @ReportItemFor(ReportItem.使用箇所数)
     @ReportItemFor(ReportItem.使用箇所)
     public TypeIdentifiers userTypeIdentifiers() {
         return angle.userTypeIdentifiers();
-    }
-
-    @ReportItemFor(ReportItem.フィールドの型)
-    public JigType jigType() {
-        return angle.jigType();
-    }
-
-    @ReportItemFor(ReportItem.メソッド数)
-    @ReportItemFor(ReportItem.メソッド一覧)
-    public MethodDeclarations methods() {
-        return angle.methods();
     }
 }

@@ -30,7 +30,7 @@ public class CollectionAngles {
 
     public List<CollectionAngle> list() {
         return list.stream()
-                .sorted(Comparator.comparing(collectionAngle -> collectionAngle.typeIdentifier()))
+                .sorted(Comparator.comparing(collectionAngle -> collectionAngle.jigType().identifier()))
                 .collect(Collectors.toList());
     }
 }

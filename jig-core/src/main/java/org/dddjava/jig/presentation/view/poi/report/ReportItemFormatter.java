@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionField;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
@@ -75,7 +75,7 @@ public class ReportItemFormatter {
                 writeLongString(cell, ((UsingFields) item).typeIdentifiers().asSimpleText());
                 return;
             case フィールドの型: {
-                String result = ((CollectionField) item).fieldType().asSimpleText();
+                String result = ((JigType) item).instanceMember().fieldDeclarations().toTypeIdentifies().asSimpleText();
                 writeLongString(cell, result);
             }
             return;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigmodel.collections.CollectionAngle;
-import org.dddjava.jig.domain.model.jigmodel.collections.CollectionField;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -32,8 +32,8 @@ public class CollectionReport {
     }
 
     @ReportItemFor(ReportItem.フィールドの型)
-    public CollectionField field() {
-        return angle.field();
+    public JigType jigType() {
+        return angle.jigType();
     }
 
     @ReportItemFor(ReportItem.メソッド数)

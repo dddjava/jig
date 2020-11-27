@@ -16,7 +16,7 @@ public class CollectionTypes {
     public CollectionTypes(BusinessRules businessRules) {
         list = new ArrayList<>();
         for (BusinessRule businessRule : businessRules.listCollection()) {
-            list.add(new CollectionType(businessRule, new CollectionField(businessRule.fields())));
+            list.add(new CollectionType(businessRule.jigType()));
         }
     }
 

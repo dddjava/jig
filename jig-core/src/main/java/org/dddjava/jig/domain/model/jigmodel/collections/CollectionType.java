@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.collections;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
@@ -9,23 +9,21 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
  */
 public class CollectionType {
 
-    BusinessRule businessRule;
-    CollectionField collectionField;
+    JigType jigType;
 
-    public CollectionType(BusinessRule businessRule, CollectionField collectionField) {
-        this.businessRule = businessRule;
-        this.collectionField = collectionField;
+    public CollectionType(JigType jigType) {
+        this.jigType = jigType;
     }
 
     public TypeIdentifier typeIdentifier() {
-        return businessRule.typeIdentifier();
+        return jigType.identifier();
     }
 
     public MethodDeclarations methods() {
-        return businessRule.instanceMethodDeclarations();
+        return jigType.instanceMember().instanceMethods().declarations();
     }
 
-    public CollectionField field() {
-        return collectionField;
+    public JigType jigType() {
+        return jigType;
     }
 }

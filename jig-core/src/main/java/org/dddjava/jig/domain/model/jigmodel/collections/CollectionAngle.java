@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.collections;
 
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -34,7 +35,7 @@ public class CollectionAngle {
         return collectionType.methods();
     }
 
-    public CollectionField field() {
-        return collectionType.field();
+    public JigType jigType() {
+        return collectionType.jigType();
     }
 }

@@ -11,17 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: 日付からタグ名を作成
+      - name: 日付からタグを作成
         run: |
           week_of_year=$(date "+%-U")
           base_week_of_year=$(date "+%-U" --date $(date "+%Y-%m-01"))
           week_of_month=$[ week_of_year - base_week_of_year + 1 ]
           tag_name=$(date "+%Y.%-m.")${week_of_month}
           echo new tag ${tag_name}
-          echo "::set-env name=tag_name::${tag_name}"
-      - name: タグを作成
-        run: |
           git tag ${tag_name}
           push_url="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}"
           git push ${push_url} ${tag_name}
-

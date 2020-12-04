@@ -131,13 +131,28 @@ description2
             <table>
                 <thead>
                 <tr>
-                    <th width="30%">メソッド名</th>
+                    <th width="20%">メソッド名</th>
+                    <th>引数</th>
+                    <th>戻り値型</th>
                     <th>説明</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="method : ${item.listInstanceMethod()}">
-                    <td th:text="${method.simpleName()}">xxx</td>
+                    <td th:text="${method.labelText()}">xxx</td>
+                    <td>
+                        <th:block th:each="arg : ${method.listArguments()}">
+                            <a th:href="${'#' + arg.fullQualifiedName()}"
+                               th:text="${arg.asSimpleText()}">
+                                xxx
+                            </a><br>
+                        </th:block>
+                    </td>
+                    <td>
+                        <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
+                           th:text="${method.declaration().methodReturn().typeIdentifier().asSimpleText()}">
+                        </a>
+                    </td>
                     <td class="pre-like" th:utext="${method.descriptionText()}">yyy1
 yyy2</td>
                 </tr>

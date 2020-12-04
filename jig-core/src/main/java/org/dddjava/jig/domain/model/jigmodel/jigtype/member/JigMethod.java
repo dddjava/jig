@@ -5,10 +5,13 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Met
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMethods;
+
+import java.util.List;
 
 /**
  * メソッド
@@ -90,10 +93,15 @@ public class JigMethod {
                         + declaration().methodSignature().methodName());
     }
 
-    public String simpleName() {
-        return declaration().asSignatureSimpleText();
-    }
     public String descriptionText() {
         return methodAlias.descriptionText();
+    }
+
+    public String labelText() {
+        return methodAlias.asTextOrDefault(declaration().methodSignature().methodName());
+    }
+
+    public List<TypeIdentifier> listArguments() {
+        return declaration().methodSignature().arguments();
     }
 }

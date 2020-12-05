@@ -57,7 +57,7 @@ public class Categories {
 
                     StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
 
-                    List<StaticFieldDeclaration> list = categoryAngle.constantsDeclarations().list();
+                    List<StaticFieldDeclaration> list = categoryAngle.categoryType.values().list();
                     for (int i = 0; i < list.size(); i++) {
                         if (i > 20) {
                             categoryValues.add("... more");

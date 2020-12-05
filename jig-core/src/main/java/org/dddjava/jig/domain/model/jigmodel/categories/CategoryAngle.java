@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
@@ -10,7 +9,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
  */
 public class CategoryAngle {
 
-    CategoryType categoryType;
+    public CategoryType categoryType;
     ClassRelations classRelations;
 
     public CategoryAngle(CategoryType categoryType, ClassRelations classRelations) {
@@ -23,11 +22,7 @@ public class CategoryAngle {
     }
 
     public String constantsDeclarationsName() {
-        return constantsDeclarations().toNameText();
-    }
-
-    public StaticFieldDeclarations constantsDeclarations() {
-        return categoryType.constantsDeclarations().selfDefineOnly();
+        return categoryType.values().toNameText();
     }
 
     public String fieldDeclarations() {

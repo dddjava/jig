@@ -125,6 +125,13 @@ description2
 <b>description3</b></p>
         </section>
 
+        <section th:if="${categoriesMap.containsKey(item.identifier())}" th:with="category=${categoriesMap.get(item.identifier())}">
+            <h3>列挙値</h3>
+            <ul>
+                <li th:each="value : ${category.values().list()}" th:text="${value.nameText()}">xx</li>
+            </ul>
+        </section>
+
         <section th:unless="${item.listInstanceMethod().isEmpty()}">
             <h2>メソッド一覧</h2>
 

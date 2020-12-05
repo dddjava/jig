@@ -1,10 +1,13 @@
 package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.thymeleaf.TemplateEngine;
@@ -14,6 +17,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
@@ -51,11 +55,17 @@ public class HtmlListView implements JigView<BusinessRules> {
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
                 .collect(toList());
 
+        Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
+                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
+                .map(CategoryType::new)
+                .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
+
         // ThymeleafのContextに設定
         Map<String, Object> contextMap = new HashMap<>();
         contextMap.put("baseComposite", baseComposite);
         contextMap.put("jigPackages", jigPackages);
         contextMap.put("jigTypes", jigTypes);
+        contextMap.put("categoriesMap", categoriesMap);
 
         Context context = new Context(Locale.ROOT, contextMap);
         String htmlText = templateEngine.process(

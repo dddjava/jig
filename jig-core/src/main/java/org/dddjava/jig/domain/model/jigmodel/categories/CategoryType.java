@@ -54,4 +54,8 @@ public class CategoryType {
     public boolean markedCore() {
         return jigType.typeAlias().markedCore();
     }
+
+    public StaticFieldDeclarations values() {
+        return constantsDeclarations().selfDefineOnly();
+    }
 }

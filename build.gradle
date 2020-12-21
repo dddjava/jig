@@ -3,12 +3,12 @@
 //    dependencies { classpath 'org.dddjava.jig:jig-gradle-plugin:+' }
 //}
 plugins {
-    id 'org.springframework.boot' version '2.4.0' apply false
+    id 'org.springframework.boot' version '2.4.1' apply false
     id 'com.gradle.plugin-publish' version '0.12.0' apply false
     id 'com.jfrog.bintray' version '1.8.5' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2020.11.2' apply false
     id "com.github.hierynomus.license" version "0.15.0"
-    id "org.jetbrains.kotlin.jvm" version "1.4.20" apply false
+    id "org.jetbrains.kotlin.jvm" version "1.4.21" apply false
 }
 
 repositories {
@@ -38,7 +38,7 @@ subprojects {
     }
 
     dependencies {
-        implementation platform('org.springframework.boot:spring-boot-dependencies:2.4.0')
+        implementation platform('org.springframework.boot:spring-boot-dependencies:2.4.1')
         testImplementation platform('org.junit:junit-bom:5.7.0')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api'
@@ -207,8 +207,8 @@ project(':jig-cli-kt') {
         implementation project(':jig-core')
         implementation 'org.springframework.boot:spring-boot-starter'
         // kotlinのコメント取得: infrastructure/kotlin
-        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.20'
-        api 'org.jetbrains.kotlin:kotlin-stdlib:1.4.20'
+        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.21'
+        api 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
     }
 
     bootJar {

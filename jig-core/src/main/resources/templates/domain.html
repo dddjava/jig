@@ -28,6 +28,10 @@ main {
     margin-left: 300px;
 }
 
+main > section > h2 {
+    margin-bottom: 0px;
+}
+
 main table {
     border-collapse: collapse;
     width: 80%;
@@ -72,7 +76,8 @@ main > section > section > p {
     </section>
 
     <section class="package" th:each="item : ${jigPackages}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}" th:title="${item.fqn()}">XXXパッケージ</a></h2>
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
+        <div th:text="${item.fqn()}">org.dddjava.jig.package</div>
 
         <section>
             <h3>説明</h3>
@@ -100,7 +105,8 @@ XXX2</p>
     </section>
 
     <section class="type" th:each="item : ${jigTypes}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}" th:title="${item.fqn()}">XXXクラス</a></h2>
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+        <div th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
         <section>
             <h3>説明</h3>

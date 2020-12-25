@@ -111,17 +111,13 @@ class PlainClassBuilder {
         staticFieldDeclarations.add(new StaticFieldDeclaration(type.typeIdentifier(), name, typeIdentifier));
     }
 
-    public MethodDeclaration createMethodDeclaration(MethodSignature methodSignature, MethodReturn methodReturn) {
-        return new MethodDeclaration(type.typeIdentifier(), methodSignature, methodReturn);
-    }
-
     public PlainMethodBuilder createPlainMethodBuilder(MethodSignature methodSignature,
                                                        MethodReturn methodReturn,
                                                        int access,
                                                        Visibility visibility,
                                                        List<TypeIdentifier> useTypes,
                                                        List<TypeIdentifier> throwsTypes) {
-        MethodDeclaration methodDeclaration = createMethodDeclaration(methodSignature, methodReturn);
+        MethodDeclaration methodDeclaration = new MethodDeclaration(type.typeIdentifier(), methodSignature, methodReturn);
 
         // 追加先のコレクションを判別
         List<MethodFact> methodFactCollector = instanceMethodFacts;

@@ -6,14 +6,19 @@
 <body>
 
 <nav class="menu">
-    <ol>
-        <li th:fragment="item" class="package" th:class="${node.isPackage()} ? 'package' : 'type'">
-            <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
-            <ol th:if="${node.isPackage()}">
-                <th:block th:each="node : ${node.children()}"><li th:replace="recursive-package :: item">replace</li></th:block>
-            </ol>
-        </li>
-    </ol>
+    <th:block th:fragment="item">
+        <details th:if="${node.isPackage()}" open>
+            <summary class="package">
+                <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
+            </summary>
+            <div>
+                <th:block th:each="node : ${node.children()}"><b th:replace="recursive-package :: item">replace</b></th:block>
+            </div>
+        </details>
+        <th:block th:unless="${node.isPackage()}">
+            <a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a><br>
+        </th:block>
+    </th:block>
 </nav>
 </body>
 </html>

@@ -1,3 +1,7 @@
+a {
+    color: #000;
+}
+
 .menu {
     /* box-sizing: border-box; */
     position: fixed;
@@ -8,35 +12,13 @@
 
     border-right: dashed 1px;
 }
-.menu li {
+.menu a {
     word-break: keep-all;
+    white-space: nowrap;
 }
-.menu li.package {
-    list-style-type: '\1F4E6';
-}
-.menu li.type {
-    list-style-type: '\1F4C4';
-}
-.menu ol {
-    border-left: dashed 1px;
-    border-bottom: dashed 1px;
+.menu details {
     margin-bottom: 10px;
 }
-
-main {
-    margin-left: 300px;
-}
-
-main table {
-    border-collapse: collapse;
-    width: 80%;
-}
-main table tr > * {
-    border: #000 solid 1px;
-    padding: 0em 1em;
-    text-align: left;
-}
-main table thead {
-    color: #FFF;
-    background-color: #465DAA;
+.menu details > div {
+    margin-left: 30px;
 }

@@ -38,7 +38,7 @@ public class PlainMethodBuilder {
         this.throwsTypes = throwsTypes;
     }
 
-    public MethodFact build() {
+    public void buildAndCollect() {
         MethodFact methodFact = new MethodFact(
                 methodDeclaration, useTypes, visibility,
                 annotations,
@@ -53,11 +53,7 @@ public class PlainMethodBuilder {
                 hasReferenceNull
         );
 
-        return methodFact;
-    }
-
-    public void buildAndCollect() {
-        methodFactCollector.add(build());
+        methodFactCollector.add(methodFact);
     }
 
     public void addAnnotation(Annotation annotation) {

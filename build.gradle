@@ -166,7 +166,7 @@ project(':jig-core') {
         api 'com.github.javaparser:javaparser-core:3.15.0'
         api 'com.github.javaparser:java-symbol-solver-core:0.6.3'
         // excel出力: presentation/poi
-        api 'org.apache.poi:poi:4.1.2'
+        api 'org.apache.poi:poi:5.0.0'
         api 'org.apache.poi:poi-ooxml:4.1.2'
         // ダイアグラム出力: presentation/graphvizj
         api 'guru.nidi:graphviz-java:0.18.0'

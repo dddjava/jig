@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.GeneratedBy;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -15,6 +16,7 @@ public class PlainMethodBuilder {
     List<TypeIdentifier> useTypes;
     Visibility visibility;
     List<TypeIdentifier> throwsTypes;
+    GeneratedBy generatedBy;
 
     List<MethodFact> methodFactCollector;
 
@@ -30,12 +32,13 @@ public class PlainMethodBuilder {
     boolean hasJudgeNull = false;
     boolean hasReferenceNull = false;
 
-    public PlainMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<MethodFact> methodFactCollector, List<TypeIdentifier> throwsTypes) {
+    public PlainMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<MethodFact> methodFactCollector, List<TypeIdentifier> throwsTypes, GeneratedBy generatedBy) {
         this.methodDeclaration = methodDeclaration;
         this.useTypes = useTypes;
         this.visibility = visibility;
         this.methodFactCollector = methodFactCollector;
         this.throwsTypes = throwsTypes;
+        this.generatedBy = generatedBy;
     }
 
     public void buildAndCollect() {

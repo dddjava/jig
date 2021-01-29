@@ -7,10 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDec
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
@@ -127,6 +124,11 @@ class PlainClassBuilder {
             methodFactCollector = staticMethodFacts;
         }
 
-        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes);
+        GeneratedBy generatedBy = GeneratedBy.PROGRAMMER;
+        if ((access & Opcodes.ACC_SYNTHETIC) != 0) {
+            generatedBy = GeneratedBy.COMPILER;
+        }
+
+        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes, generatedBy);
     }
 }

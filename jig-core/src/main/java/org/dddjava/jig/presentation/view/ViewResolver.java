@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
@@ -13,9 +14,9 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
-import org.dddjava.jig.presentation.view.graphviz.DiagramFormat;
 import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
-import org.dddjava.jig.presentation.view.graphviz.graphvizj.GraphvizjView;
+import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
+import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 
 import java.util.List;
 
@@ -25,15 +26,17 @@ public class ViewResolver {
 
     PackageIdentifierFormatter packageIdentifierFormatter;
     MethodNodeLabelStyle methodNodeLabelStyle;
-    DiagramFormat diagramFormat;
+    JigDiagramFormat diagramFormat;
 
     JigDocumentContext jigDocumentContext;
+    DotCommandRunner dotCommandRunner;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, DiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
         this.diagramFormat = diagramFormat;
+        this.dotCommandRunner = new DotCommandRunner();
     }
 
     public JigView<PackageRelationDiagram> dependencyWriter() {
@@ -65,7 +68,7 @@ public class ViewResolver {
     }
 
     private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {
-        return new GraphvizjView<>(diagram, diagramFormat);
+        return new DotView<>(diagram, diagramFormat, dotCommandRunner);
     }
 
     public JigView<BusinessRuleRelationDiagram> businessRuleRelationWriter() {
@@ -91,11 +94,11 @@ public class ViewResolver {
             case BusinessRuleRelationDiagram:
                 return businessRuleRelationWriter();
             case OverconcentrationBusinessRuleDiagram:
-                return new GraphvizjView<BusinessRuleRelationDiagram>(
-                        model -> model.overconcentrationRelationDotText(jigDocumentContext), diagramFormat);
+                return new DotView<BusinessRuleRelationDiagram>(
+                        model -> model.overconcentrationRelationDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CoreBusinessRuleRelationDiagram:
-                return new GraphvizjView<BusinessRuleRelationDiagram>(
-                        model -> model.coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat);
+                return new DotView<BusinessRuleRelationDiagram>(
+                        model -> model.coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
             case CategoryUsageDiagram:
                 return enumUsage();
             case CategoryDiagram:

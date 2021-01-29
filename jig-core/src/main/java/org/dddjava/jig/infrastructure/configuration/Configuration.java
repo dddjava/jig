@@ -22,7 +22,6 @@ import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
 import org.dddjava.jig.presentation.view.ViewResolver;
-import org.dddjava.jig.presentation.view.graphviz.DiagramFormat;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 import java.nio.file.Path;
@@ -82,7 +81,7 @@ public class Configuration {
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 MethodNodeLabelStyle.SIMPLE,
-                DiagramFormat.SVG,
+                properties.outputDiagramFormat,
                 jigDocumentContext
         );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(

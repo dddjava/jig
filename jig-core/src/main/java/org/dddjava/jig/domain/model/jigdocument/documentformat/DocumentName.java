@@ -20,8 +20,8 @@ public class DocumentName {
         return new DocumentName(this.jigDocument, this.fileName + suffix, this.label);
     }
 
-    public String withExtension(String extension) {
-        return fileName + "." + extension;
+    public String withExtension(JigDiagramFormat jigDiagramFormat) {
+        return fileName + jigDiagramFormat.extension();
     }
 
     public String fileName() {

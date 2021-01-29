@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class JigDocumentWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);
@@ -39,10 +40,16 @@ public class JigDocumentWriter {
         Path outputFilePath = directory.resolve(fileName);
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
             writer.writeTo(outputStream);
-            outputFilePaths.add(outputFilePath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+        outputFilePaths.add(outputFilePath);
+    }
+
+    public void writePath(Consumer<Path> consumer, String fileName) {
+        Path outputFilePath = directory.resolve(fileName);
+        consumer.accept(outputFilePath);
+        outputFilePaths.add(outputFilePath);
     }
 
     public void skip() {

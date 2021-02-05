@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * パッケージ関連図
  *
- * 浅い階層は仕様化、深い階層は実装に使用します。
+ * 浅い階層は仕様記述、深い階層は実装に使用します。
  */
 public class PackageRelationDiagram {
 

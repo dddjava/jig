@@ -42,7 +42,7 @@ public class TypeAlias {
     }
 
     public String nodeLabel() {
-        return nodeLabel("\n");
+        return nodeLabel("\\n");
     }
 
     public String nodeLabel(String delimiter) {

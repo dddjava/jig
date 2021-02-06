@@ -31,7 +31,7 @@ public class DotCommandRunner {
         try {
             if (documentFormat == JigDiagramFormat.DOT) {
                 Files.move(inputPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
-                logger.info("dot text file: " + outputPath);
+                logger.fine("dot text file: " + outputPath);
                 Files.deleteIfExists(inputPath);
                 return DotCommandResult.success();
             }
@@ -40,8 +40,11 @@ public class DotCommandRunner {
             DotCommandResult result = dotProcessExecutor.execute(options);
 
             if (result.succeed()) {
-                logger.info("diagram path: " + outputPath.toAbsolutePath());
+                logger.fine("diagram path: " + outputPath.toAbsolutePath());
                 Files.deleteIfExists(inputPath);
+            } else {
+                logger.warning("Cannot run dot. write DOT file.");
+                Files.copy(inputPath, outputPath.getParent().resolve(inputPath.getFileName()));
             }
 
             return result;

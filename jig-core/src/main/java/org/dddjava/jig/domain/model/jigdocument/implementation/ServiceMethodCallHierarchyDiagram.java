@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
@@ -67,7 +69,7 @@ public class ServiceMethodCallHierarchyDiagram {
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
                                 + "style=solid;"
-                                + "label=\"" + aliasLineOf(entry.getKey(), jigDocumentContext) + entry.getKey().asSimpleText() + "\";"
+                                + "label=\"" + aliasLineOf(entry.getKey(), jigDocumentContext) + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
@@ -166,8 +168,10 @@ public class ServiceMethodCallHierarchyDiagram {
     }
 
     private String aliasLineOf(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
-        String aliasText = jigDocumentContext.aliasTextOrDefault(typeIdentifier, "");
-        return aliasText.isEmpty() ? "" : aliasText + "\n";
+        // TODO jigDocumentContextからではなくJigTypeやJigMethodを使うようにしたい
+        AliasFinder aliasFinder = jigDocumentContext.aliasFinder();
+        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+        return typeAlias.nodeLabel();
     }
 
     private static Node controllerNodeOf(MethodDeclaration methodDeclaration) {

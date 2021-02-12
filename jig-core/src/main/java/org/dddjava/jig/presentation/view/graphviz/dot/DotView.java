@@ -40,6 +40,7 @@ public class DotView<T> implements JigView<T> {
             Path sourcePath = dotCommandRunner.writeSource(element);
 
             jigDocumentWriter.writePath(outputPath -> {
+                        // TODO result使用して結果を返す
                         dotCommandRunner.run(diagramFormat, sourcePath, outputPath);
                     },
                     documentName.withExtension(diagramFormat));

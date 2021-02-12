@@ -2,7 +2,8 @@ package org.dddjava.jig.presentation.view.graphviz.dot;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
-import org.dddjava.jig.presentation.view.graphviz.process.DotProcessExecutor;
+import org.dddjava.jig.presentation.view.graphviz.process.ProcessExecutor;
+import org.dddjava.jig.presentation.view.graphviz.process.ProcessResult;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 public class DotCommandRunner {
     Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
 
-    DotProcessExecutor dotProcessExecutor = new DotProcessExecutor();
+    ProcessExecutor processExecutor = new ProcessExecutor();
     Path workDirectory;
 
     public DotCommandRunner() {
@@ -27,24 +28,26 @@ public class DotCommandRunner {
         }
     }
 
-    public DotCommandResult run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
+    public ProcessResult run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
         try {
             if (documentFormat == JigDiagramFormat.DOT) {
                 Files.move(inputPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
                 logger.fine("dot text file: " + outputPath);
                 Files.deleteIfExists(inputPath);
-                return DotCommandResult.success();
+                return ProcessResult.success();
             }
 
-            String[] options = {documentFormat.dotOption(), "-o" + outputPath, inputPath.toString()};
-            DotCommandResult result = dotProcessExecutor.execute(options);
+            ProcessResult result = processExecutor.execute(dotCommand(processExecutor),
+                    documentFormat.dotOption(),
+                    "-o" + outputPath,
+                    inputPath.toString());
 
             if (result.succeed()) {
                 logger.fine("diagram path: " + outputPath.toAbsolutePath());
                 Files.deleteIfExists(inputPath);
             } else {
                 logger.warning("Cannot run dot. write DOT file.");
-                Files.copy(inputPath, outputPath.getParent().resolve(inputPath.getFileName()));
+                Files.copy(inputPath, outputPath.getParent().resolve(inputPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
             }
 
             return result;
@@ -53,18 +56,22 @@ public class DotCommandRunner {
         }
     }
 
-    public DotCommandResult runVersion() {
-        DotCommandResult result = dotProcessExecutor.execute("-V");
+    public ProcessResult runVersion() {
+        ProcessResult result = processExecutor.execute(dotCommand(processExecutor), "-V");
         if (result.failed()) {
-            return result.withMessage("Graphvizのバージョン取得に失敗しました。インストール状況を確認してください。");
+            return result.withMessage("Graphvizのバージョン取得に失敗しました。Graphvizがインストールできていない可能性があります。");
         }
         return result;
     }
 
+    private String dotCommand(ProcessExecutor processExecutor) {
+        return processExecutor.isWin() ? "dot.exe" : "dot";
+    }
+
     public void verify() {
-        DotCommandResult dotCommandResult = runVersion();
-        if (dotCommandResult.failed()) {
-            throw new IllegalStateException(dotCommandResult.message());
+        ProcessResult processResult = runVersion();
+        if (processResult.failed()) {
+            throw new IllegalStateException(processResult.message());
         }
     }
 
@@ -73,7 +80,7 @@ public class DotCommandRunner {
             String fileName = element.documentName().withExtension(JigDiagramFormat.DOT);
             Path sourcePath = workDirectory.resolve(fileName);
             Files.write(sourcePath, element.text().getBytes(StandardCharsets.UTF_8));
-            logger.info("temporary DOT file: " + sourcePath.toAbsolutePath());
+            logger.fine("temporary DOT file: " + sourcePath.toAbsolutePath());
             return sourcePath;
         } catch (IOException e) {
             throw new UncheckedIOException("テンポラリファイルの出力に失敗しました。", e);

@@ -65,6 +65,10 @@ public class DotCommandRunner {
     }
 
     private String dotCommand(ProcessExecutor processExecutor) {
+        // TODO DOTコマンドを設定可能にする（暫定対応）
+        if (System.getenv().containsKey("JIG_DOT_COMMAND")) {
+            return System.getenv("JIG_DOT_COMMAND");
+        }
         return processExecutor.isWin() ? "dot.exe" : "dot";
     }
 

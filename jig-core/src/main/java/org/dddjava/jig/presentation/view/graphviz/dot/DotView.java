@@ -7,14 +7,11 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 
 public class DotView<T> implements JigView<T> {
-    static Logger logger = LoggerFactory.getLogger(DotView.class);
 
     DiagramSourceEditor<T> editor;
     JigDiagramFormat diagramFormat;
@@ -39,11 +36,11 @@ public class DotView<T> implements JigView<T> {
             DocumentName documentName = element.documentName();
             Path sourcePath = dotCommandRunner.writeSource(element);
 
-            jigDocumentWriter.writePath(outputPath -> {
-                        // TODO result使用して結果を返す
-                        dotCommandRunner.run(diagramFormat, sourcePath, outputPath);
-                    },
-                    documentName.withExtension(diagramFormat));
+            jigDocumentWriter.writePath((directory, outputPaths) -> {
+                String fileName = documentName.withExtension(diagramFormat);
+                Path resultPath = dotCommandRunner.run(diagramFormat, sourcePath, directory.resolve(fileName));
+                outputPaths.add(resultPath);
+            });
 
             // 追加のテキストファイル
             AdditionalText additionalText = element.additionalText();

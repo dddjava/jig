@@ -28,13 +28,13 @@ public class DotCommandRunner {
         }
     }
 
-    public ProcessResult run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
+    public Path run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
         try {
             if (documentFormat == JigDiagramFormat.DOT) {
                 Files.move(inputPath, outputPath, StandardCopyOption.REPLACE_EXISTING);
                 logger.fine("dot text file: " + outputPath);
                 Files.deleteIfExists(inputPath);
-                return ProcessResult.success();
+                return outputPath;
             }
 
             ProcessResult result = processExecutor.execute(dotCommand(processExecutor),
@@ -42,15 +42,16 @@ public class DotCommandRunner {
                     "-o" + outputPath,
                     inputPath.toString());
 
-            if (result.succeed()) {
-                logger.fine("diagram path: " + outputPath.toAbsolutePath());
-                Files.deleteIfExists(inputPath);
-            } else {
-                logger.warning("Cannot run dot. write DOT file.");
-                Files.copy(inputPath, outputPath.getParent().resolve(inputPath.getFileName()), StandardCopyOption.REPLACE_EXISTING);
+            if (result.failed()) {
+                logger.warning("dot command failed. write DOT file.");
+                Path dotFilePath = outputPath.getParent().resolve(inputPath.getFileName());
+                Files.copy(inputPath, dotFilePath, StandardCopyOption.REPLACE_EXISTING);
+                return dotFilePath;
             }
 
-            return result;
+            logger.fine("diagram path: " + outputPath.toAbsolutePath());
+            Files.deleteIfExists(inputPath);
+            return outputPath;
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

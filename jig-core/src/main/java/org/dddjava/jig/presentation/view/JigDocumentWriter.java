@@ -12,14 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class JigDocumentWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     JigDocument jigDocument;
     Path directory;
-    List<Path> outputFilePaths = new ArrayList<>();
+    List<Path> documentPaths = new ArrayList<>();
 
     public JigDocumentWriter(JigDocument jigDocument, Path directory) {
         this.jigDocument = jigDocument;
@@ -43,13 +43,11 @@ public class JigDocumentWriter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        outputFilePaths.add(outputFilePath);
+        documentPaths.add(outputFilePath);
     }
 
-    public void writePath(Consumer<Path> consumer, String fileName) {
-        Path outputFilePath = directory.resolve(fileName);
-        consumer.accept(outputFilePath);
-        outputFilePaths.add(outputFilePath);
+    public void writePath(BiConsumer<Path, List<Path>> biConsumer) {
+        biConsumer.accept(directory, documentPaths);
     }
 
     public void skip() {
@@ -57,7 +55,7 @@ public class JigDocumentWriter {
     }
 
     public List<Path> outputFilePaths() {
-        return outputFilePaths;
+        return documentPaths;
     }
 
     public interface OutputStreamWriter {

@@ -17,16 +17,15 @@ public class DotCommandRunner {
     Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
 
     ProcessExecutor processExecutor = new ProcessExecutor();
-    Path workDirectory;
-
-    public DotCommandRunner() {
+    ThreadLocal<Path> workDirectory = ThreadLocal.withInitial(() -> {
         try {
-            workDirectory = Files.createTempDirectory("jig");
-            workDirectory.toFile().deleteOnExit();
+            Path tempDirectory = Files.createTempDirectory("jig");
+            tempDirectory.toFile().deleteOnExit();
+            return tempDirectory;
         } catch (IOException e) {
             throw new UncheckedIOException("テンポラリディレクトリの作成に失敗しました。", e);
         }
-    }
+    });
 
     public Path run(JigDiagramFormat documentFormat, Path inputPath, Path outputPath) {
         try {
@@ -83,7 +82,7 @@ public class DotCommandRunner {
     public Path writeSource(DiagramSource element) {
         try {
             String fileName = element.documentName().withExtension(JigDiagramFormat.DOT);
-            Path sourcePath = workDirectory.resolve(fileName);
+            Path sourcePath = workDirectory.get().resolve(fileName);
             Files.write(sourcePath, element.text().getBytes(StandardCharsets.UTF_8));
             logger.fine("temporary DOT file: " + sourcePath.toAbsolutePath());
             return sourcePath;

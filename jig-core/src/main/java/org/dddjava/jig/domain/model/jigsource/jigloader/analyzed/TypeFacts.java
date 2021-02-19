@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
@@ -223,11 +222,5 @@ public class TypeFacts {
         }
 
         return AliasRegisterResult.紐付け対象なし;
-    }
-
-    public JigMethods methods() {
-        return new JigMethods(instanceMethodFacts().stream()
-                .map(methodFact -> methodFact.createMethod())
-                .collect(toList()));
     }
 }

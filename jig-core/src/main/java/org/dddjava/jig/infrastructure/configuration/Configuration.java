@@ -3,8 +3,10 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasRepository;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
@@ -65,11 +67,6 @@ public class Configuration {
             @Override
             public TypeAlias find(TypeIdentifier typeIdentifier) {
                 return aliasRepository.get(typeIdentifier);
-            }
-
-            @Override
-            public MethodAlias find(MethodIdentifier methodIdentifier) {
-                return aliasRepository.get(methodIdentifier);
             }
         };
 

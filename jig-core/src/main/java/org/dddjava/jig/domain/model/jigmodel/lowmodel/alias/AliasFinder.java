@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.alias;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
@@ -12,6 +11,4 @@ public interface AliasFinder {
     PackageAlias find(PackageIdentifier packageIdentifier);
 
     TypeAlias find(TypeIdentifier typeIdentifier);
-
-    MethodAlias find(MethodIdentifier methodIdentifier);
 }

@@ -1,5 +1,6 @@
 package org.dddjava.jig.cli;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
@@ -82,10 +83,14 @@ class KotlinCliConfig {
     Configuration configuration() {
         return new Configuration(
                 new JigProperties(
-                        modelPattern,
-                        applicationPattern, infrastructurePattern, presentationPattern,
                         new OutputOmitPrefix(outputOmitPrefix),
-                        new LinkPrefix(linkPrefix)
+                        modelPattern,
+                        applicationPattern,
+                        infrastructurePattern,
+                        presentationPattern,
+                        new LinkPrefix(linkPrefix),
+                        Paths.get(this.outputDirectory),
+                        JigDiagramFormat.SVG
                 ),
                 new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader())
         );

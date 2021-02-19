@@ -1,5 +1,6 @@
 package org.dddjava.jig.gradle;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -38,12 +39,14 @@ public class JigConfig {
 
     public JigProperties asProperties() {
         return new JigProperties(
+                new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
                 applicationPattern,
                 infrastructurePattern,
                 presentationPattern,
-                new OutputOmitPrefix(outputOmitPrefix),
-                new LinkPrefix(linkPrefix)
+                new LinkPrefix(linkPrefix),
+                Paths.get(this.outputDirectory),
+                JigDiagramFormat.SVG
         );
     }
 

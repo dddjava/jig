@@ -27,7 +27,7 @@ public class JigTestExtension implements ParameterResolver {
 
     public JigTestExtension() {
         configuration = new Configuration(
-                new JigProperties("stub.domain.model.+", "", "stub.infrastructure.+", "", new OutputOmitPrefix(), LinkPrefix.disable()),
+                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", "", "stub.infrastructure.+", "", LinkPrefix.disable(), null, null),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

@@ -26,18 +26,6 @@ public class JigProperties {
     Path outputDirectory;
     JigDiagramFormat outputDiagramFormat;
 
-    public JigProperties(String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, OutputOmitPrefix outputOmitPrefix, LinkPrefix linkPrefix) {
-        this.outputOmitPrefix = outputOmitPrefix;
-
-        this.businessRulePattern = businessRulePattern;
-        this.presentationPattern = presentationPattern;
-        this.applicationPattern = applicationPattern;
-        this.infrastructurePattern = infrastructurePattern;
-
-        this.linkPrefix = linkPrefix;
-
-    }
-
     public JigProperties(OutputOmitPrefix outputOmitPrefix, String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
         this.outputOmitPrefix = outputOmitPrefix;
 

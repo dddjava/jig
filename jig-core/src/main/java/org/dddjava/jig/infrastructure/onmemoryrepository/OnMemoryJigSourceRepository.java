@@ -58,8 +58,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     @Override
     public void registerMethodAlias(MethodAlias methodAlias) {
         AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodAlias);
-        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
-        aliasRepository.register(methodAlias);
 
         if (aliasRegisterResult != AliasRegisterResult.成功) {
             logger.warn("{} のMethodAlias登録結果が {} です。処理は続行します。",

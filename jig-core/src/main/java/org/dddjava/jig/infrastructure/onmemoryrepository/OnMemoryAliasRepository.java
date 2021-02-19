@@ -1,17 +1,13 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasRepository;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -19,7 +15,6 @@ public class OnMemoryAliasRepository implements AliasRepository {
 
     final Map<TypeIdentifier, TypeAlias> map = new HashMap<>();
     final Map<PackageIdentifier, PackageAlias> packageMap = new HashMap<>();
-    final List<MethodAlias> methodList = new ArrayList<>();
 
     @Override
     public TypeAlias get(TypeIdentifier typeIdentifier) {
@@ -44,20 +39,5 @@ public class OnMemoryAliasRepository implements AliasRepository {
     @Override
     public void register(PackageAlias packageAlias) {
         packageMap.put(packageAlias.packageIdentifier(), packageAlias);
-    }
-
-    @Override
-    public MethodAlias get(MethodIdentifier methodIdentifier) {
-        for (MethodAlias methodAlias : methodList) {
-            if (methodAlias.methodIdentifier().matchesIgnoreOverload(methodIdentifier)) {
-                return methodAlias;
-            }
-        }
-        return MethodAlias.empty(methodIdentifier);
-    }
-
-    @Override
-    public void register(MethodAlias methodAlias) {
-        methodList.add(methodAlias);
     }
 }

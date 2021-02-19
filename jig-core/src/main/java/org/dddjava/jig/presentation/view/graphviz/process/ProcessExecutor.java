@@ -1,7 +1,5 @@
 package org.dddjava.jig.presentation.view.graphviz.process;
 
-import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
-
 import java.io.*;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -12,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ProcessExecutor {
-    Logger logger = Logger.getLogger(DotCommandRunner.class.getName());
+    Logger logger = Logger.getLogger(ProcessExecutor.class.getName());
 
     public boolean isWin() {
         String osName = System.getProperty("os.name");

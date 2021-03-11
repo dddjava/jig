@@ -51,11 +51,7 @@ public class JigDocumentHandlers {
                     Method method = mayBeHandlerMethod.get();
                     Object result = method.invoke(handler);
 
-                    if (result instanceof JigModelAndView) {
-                        return (JigModelAndView<?>) result;
-                    }
-
-                    JigView<?> jigView = viewResolver.toDiagramView(jigDocument);
+                    JigView<?> jigView = viewResolver.resolve(jigDocument);
                     return new JigModelAndView(result, jigView);
                 }
             }

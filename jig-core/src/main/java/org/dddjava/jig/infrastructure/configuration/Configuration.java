@@ -79,7 +79,8 @@ public class Configuration {
                 // @Value("${diagram.format:SVG}") String diagramFormat
                 MethodNodeLabelStyle.SIMPLE,
                 properties.outputDiagramFormat,
-                jigDocumentContext
+                jigDocumentContext,
+                aliasService
         );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(
                 aliasService,

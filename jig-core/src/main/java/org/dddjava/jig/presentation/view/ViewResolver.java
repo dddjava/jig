@@ -1,5 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
@@ -15,8 +16,11 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.Packa
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
-import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
+import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
+import org.dddjava.jig.presentation.view.html.HtmlListView;
+import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
+import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 import java.util.List;
 
@@ -27,15 +31,17 @@ public class ViewResolver {
     PackageIdentifierFormatter packageIdentifierFormatter;
     MethodNodeLabelStyle methodNodeLabelStyle;
     JigDiagramFormat diagramFormat;
+    AliasService aliasService;
 
     JigDocumentContext jigDocumentContext;
     DotCommandRunner dotCommandRunner;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext, AliasService aliasService) {
         this.jigDocumentContext = jigDocumentContext;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.methodNodeLabelStyle = methodNodeLabelStyle;
         this.diagramFormat = diagramFormat;
+        this.aliasService = aliasService;
         this.dotCommandRunner = new DotCommandRunner();
     }
 
@@ -85,7 +91,7 @@ public class ViewResolver {
         return newGraphvizjView(model -> model.dotText(jigDocumentContext));
     }
 
-    public JigView<?> toDiagramView(JigDocument jigDocument) {
+    public JigView<?> resolve(JigDocument jigDocument) {
         switch (jigDocument) {
             case ServiceMethodCallHierarchyDiagram:
                 return serviceMethodCallHierarchy();
@@ -107,9 +113,14 @@ public class ViewResolver {
                 return architecture();
             case CompositeUsecaseDiagram:
                 return compositeUsecaseDiagram();
+            case BusinessRuleList:
+            case ApplicationList:
+                return new ModelReportsPoiView(new ConvertContext(aliasService));
+            case DomainSummary:
+                return new HtmlListView(jigDocumentContext.aliasFinder());
         }
 
-        throw new IllegalArgumentException("Diagram以外が指定された？: " + jigDocument);
+        throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);
     }
 }
 

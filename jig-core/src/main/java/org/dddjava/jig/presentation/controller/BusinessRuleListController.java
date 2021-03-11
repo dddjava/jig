@@ -9,17 +9,9 @@ import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
-import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.html.HtmlListView;
-import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
@@ -42,24 +34,13 @@ public class BusinessRuleListController {
     }
 
     @DocumentMapping(JigDocument.DomainSummary)
-    public JigModelAndView<BusinessRules> domainListHtml() {
-        BusinessRules businessRules = businessRuleService.businessRules();
-        return new JigModelAndView<>(businessRules, new HtmlListView(new AliasFinder() {
-            @Override
-            public PackageAlias find(PackageIdentifier packageIdentifier) {
-                return convertContext.aliasService.packageAliasOf(packageIdentifier);
-            }
-
-            @Override
-            public TypeAlias find(TypeIdentifier typeIdentifier) {
-                throw new UnsupportedOperationException();
-            }
-        }));
+    public BusinessRules domainListHtml() {
+        return businessRuleService.businessRules();
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)
-    public JigModelAndView<ModelReports> domainList() {
-        ModelReports modelReports = new ModelReports(
+    public ModelReports domainList() {
+        return new ModelReports(
                 packageReport(),
                 businessRulesReport(),
                 categoriesReport(),
@@ -67,8 +48,6 @@ public class BusinessRuleListController {
                 validateAnnotationReport(),
                 smellReport()
         );
-
-        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
     ModelReport<?> packageReport() {

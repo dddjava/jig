@@ -8,9 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMe
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
-import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
@@ -36,15 +34,13 @@ public class ApplicationListController {
     }
 
     @DocumentMapping(JigDocument.ApplicationList)
-    public JigModelAndView<ModelReports> applicationList() {
-        ModelReports modelReports = new ModelReports(
+    public ModelReports applicationList() {
+        return new ModelReports(
                 controllerReport(),
                 serviceReport(),
                 datasourceReport(),
                 stringComparingReport()
         );
-
-        return new JigModelAndView<>(modelReports, new ModelReportsPoiView(convertContext));
     }
 
     ModelReport<?> controllerReport() {

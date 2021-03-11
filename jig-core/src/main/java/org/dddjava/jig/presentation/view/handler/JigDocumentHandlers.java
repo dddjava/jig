@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class JigDocumentHandlers {
@@ -84,7 +85,7 @@ public class JigDocumentHandlers {
             String cssFile = "style.css";
             ClassLoader classLoader = this.getClass().getClassLoader();
             try (InputStream is = classLoader.getResourceAsStream("templates/" + cssFile)) {
-                Files.copy(is, outputDirectory.resolve(cssFile), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Objects.requireNonNull(is), outputDirectory.resolve(cssFile), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new IllegalStateException(e);
             }

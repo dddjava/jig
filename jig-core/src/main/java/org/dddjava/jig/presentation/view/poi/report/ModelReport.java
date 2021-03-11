@@ -98,6 +98,10 @@ public class ModelReport<MODEL> {
     }
 
     public void writeSheet(Workbook book, ReportItemFormatter reportItemFormatter) {
+        if (pivotModels.isEmpty()) {
+            logger.info("出力対象がないため {} シートをスキップしました。", title);
+            return;
+        }
         Sheet sheet = book.createSheet(title);
         writeHeader(sheet);
         writeBody(sheet, reportItemFormatter);

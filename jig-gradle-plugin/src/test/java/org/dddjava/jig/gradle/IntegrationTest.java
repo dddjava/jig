@@ -32,14 +32,14 @@ public class IntegrationTest {
 
     @ParameterizedTest
     @EnumSource(GradleVersions.class)
-    void スタブプロジェクトへの適用でパッケージ図と機能一覧が出力されること(GradleVersions version) throws IOException, URISyntaxException {
+    void スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること(GradleVersions version) throws IOException, URISyntaxException {
         BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
         softly.assertThat(outputDir.resolve("package-relation-depth4.svg")).exists();
-        softly.assertThat(outputDir.resolve("application.xlsx")).exists();
+        softly.assertThat(outputDir.resolve("business-rule.xlsx")).exists();
         softly.assertAll();
     }
 

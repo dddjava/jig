@@ -19,6 +19,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class JigDocumentHandlers {
 
@@ -80,15 +81,22 @@ public class JigDocumentHandlers {
         }
     }
 
+    boolean copied = false;
+
     private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
         if (jigDocument == JigDocument.DomainSummary || jigDocument == JigDocument.ApplicationSummary) {
-            String cssFile = "style.css";
-            ClassLoader classLoader = this.getClass().getClassLoader();
-            try (InputStream is = classLoader.getResourceAsStream("templates/" + cssFile)) {
-                Files.copy(Objects.requireNonNull(is), outputDirectory.resolve(cssFile), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new IllegalStateException(e);
-            }
+            if (copied) return;
+
+            Stream.of("style.css", "marked.2.0.1.min.js")
+                    .forEach(resource -> {
+                        ClassLoader classLoader = this.getClass().getClassLoader();
+                        try (InputStream is = classLoader.getResourceAsStream("templates/" + resource)) {
+                            Files.copy(Objects.requireNonNull(is), outputDirectory.resolve(resource), StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException e) {
+                            throw new IllegalStateException(e);
+                        }
+                    });
+            copied = true;
         }
     }
 }

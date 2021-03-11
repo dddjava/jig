@@ -55,10 +55,6 @@ main > section > section > p {
     margin-left: 1em;
 }
 
-.pre-like {
-    white-space: pre;
-}
-
 .fully-qualified-name {
     font-size: 0.8em;
     color: silver;

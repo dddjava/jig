@@ -2,6 +2,7 @@
 <head>
     <meta charset="UTF-8"/>
     <link href="./style.css" rel="stylesheet">
+    <script src="./marked.2.0.1.min.js"></script>
 </head>
 <body>
 
@@ -20,7 +21,7 @@
 
         <section>
             <h3>説明</h3>
-            <p class="pre-like" th:utext="${item.descriptionText()}">XXX1
+            <p class="markdown" th:utext="${item.descriptionText()}">XXX1
 XXX2</p>
         </section>
 
@@ -49,7 +50,7 @@ XXX2</p>
 
         <section>
             <h3>説明</h3>
-            <p class="pre-like" th:utext="${item.descriptionText()}">description1
+            <p class="markdown" th:utext="${item.descriptionText()}">description1
 description2
 <b>description3</b></p>
         </section>
@@ -89,7 +90,7 @@ description2
                            th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
                         </a>
                     </td>
-                    <td class="pre-like" th:utext="${method.descriptionText()}">yyy1
+                    <td class="markdown" th:utext="${method.descriptionText()}">yyy1
 yyy2</td>
                 </tr>
             </table>
@@ -97,5 +98,8 @@ yyy2</td>
     </section>
 </main>
 
+<script>
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+</script>
 </body>
 </html>

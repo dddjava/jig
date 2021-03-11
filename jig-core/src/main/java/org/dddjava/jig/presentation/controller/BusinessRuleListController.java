@@ -41,7 +41,7 @@ public class BusinessRuleListController {
         this.businessRuleService = businessRuleService;
     }
 
-    @DocumentMapping(JigDocument.DomainListHtml)
+    @DocumentMapping(JigDocument.DomainSummary)
     public JigModelAndView<BusinessRules> domainListHtml() {
         BusinessRules businessRules = businessRuleService.businessRules();
         return new JigModelAndView<>(businessRules, new HtmlListView(new AliasFinder() {

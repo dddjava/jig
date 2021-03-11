@@ -81,9 +81,9 @@ public enum JigDocument {
     ArchitectureDiagram("architecture"),
 
     /**
-     * HTML
+     * ドメイン概要
      */
-    DomainListHtml("domain"),
+    DomainSummary("domain"),
     ;
 
     private final String documentFileName;

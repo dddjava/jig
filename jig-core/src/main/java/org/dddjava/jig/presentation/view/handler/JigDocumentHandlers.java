@@ -11,9 +11,12 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -74,10 +77,24 @@ public class JigDocumentHandlers {
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             jigModelAndView.render(jigDocumentWriter);
 
+            copyStaticResourcesForHtml(jigDocument, outputDirectory);
+
             return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());
         } catch (Exception e) {
             LOGGER.warn("{} の出力に失敗しました。", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
+        }
+    }
+
+    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
+        if (jigDocument == JigDocument.DomainSummary) {
+            String cssFile = "style.css";
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            try (InputStream is = classLoader.getResourceAsStream("templates/" + cssFile)) {
+                Files.copy(is, outputDirectory.resolve(cssFile), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 }

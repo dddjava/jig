@@ -79,14 +79,14 @@ description2
                     <td>
                         <th:block th:each="arg : ${method.listArguments()}">
                             <a th:href="${'#' + arg.fullQualifiedName()}"
-                               th:text="${arg.asSimpleText()}">
+                               th:text="${#jig.labelText(arg)}">
                                 xxx
                             </a><br>
                         </th:block>
                     </td>
                     <td>
                         <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                           th:text="${method.declaration().methodReturn().typeIdentifier().asSimpleText()}">
+                           th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
                         </a>
                     </td>
                     <td class="pre-like" th:utext="${method.descriptionText()}">yyy1

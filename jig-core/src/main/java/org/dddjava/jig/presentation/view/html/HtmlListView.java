@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
@@ -12,6 +13,10 @@ import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.context.IExpressionContext;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.dialect.IExpressionObjectDialect;
+import org.thymeleaf.expression.IExpressionObjectFactory;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
@@ -45,6 +50,7 @@ public class HtmlListView implements JigView {
 
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.addDialect(jigDialect());
 
         Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
@@ -80,6 +86,42 @@ public class HtmlListView implements JigView {
         jigDocumentWriter.writeHtml(outputStream -> {
             outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));
         });
+    }
+
+    class JigDialectObject {
+        public String labelText(TypeIdentifier typeIdentifier) {
+            TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
+            return typeAlias.asTextOrIdentifierSimpleText();
+        }
+    }
+
+    private IDialect jigDialect() {
+        return new IExpressionObjectDialect() {
+            @Override
+            public String getName() {
+                return "jig-dialect";
+            }
+
+            @Override
+            public IExpressionObjectFactory getExpressionObjectFactory() {
+                return new IExpressionObjectFactory() {
+                    @Override
+                    public Set<String> getAllExpressionObjectNames() {
+                        return Collections.singleton("jig");
+                    }
+
+                    @Override
+                    public Object buildObject(IExpressionContext context, String expressionObjectName) {
+                        return new JigDialectObject();
+                    }
+
+                    @Override
+                    public boolean isCacheable(String expressionObjectName) {
+                        return true;
+                    }
+                };
+            }
+        };
     }
 
     private void createTree(Map<PackageIdentifier, List<JigType>> jigTypeMap,

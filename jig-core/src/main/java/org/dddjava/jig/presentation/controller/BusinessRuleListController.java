@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
@@ -34,8 +35,8 @@ public class BusinessRuleListController {
     }
 
     @DocumentMapping(JigDocument.DomainSummary)
-    public BusinessRules domainListHtml() {
-        return businessRuleService.businessRules();
+    public SummaryModel domainListHtml() {
+        return SummaryModel.from(businessRuleService.businessRules());
     }
 
     @DocumentMapping(JigDocument.BusinessRuleList)

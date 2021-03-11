@@ -7,6 +7,8 @@ import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagra
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
@@ -15,6 +17,9 @@ import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 機能の分析サービス
@@ -101,5 +106,9 @@ public class ApplicationService {
     public ArchitectureDiagram architectureDiagram() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return typeFacts.toArchitectureDiagram(architecture);
+    }
+
+    public Map<PackageIdentifier, List<JigType>> serviceTypes() {
+        return jigSourceRepository.allTypeFacts().applicationTypes(architecture);
     }
 }

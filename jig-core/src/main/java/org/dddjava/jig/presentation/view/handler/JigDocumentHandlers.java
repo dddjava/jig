@@ -81,7 +81,7 @@ public class JigDocumentHandlers {
     }
 
     private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
-        if (jigDocument == JigDocument.DomainSummary) {
+        if (jigDocument == JigDocument.DomainSummary || jigDocument == JigDocument.ApplicationSummary) {
             String cssFile = "style.css";
             ClassLoader classLoader = this.getClass().getClassLoader();
             try (InputStream is = classLoader.getResourceAsStream("templates/" + cssFile)) {

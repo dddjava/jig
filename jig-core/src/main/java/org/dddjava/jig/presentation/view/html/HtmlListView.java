@@ -1,6 +1,5 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
@@ -8,6 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.thymeleaf.TemplateEngine;
@@ -31,11 +31,12 @@ public class HtmlListView implements JigView {
 
     @Override
     public void render(Object model, JigDocumentWriter jigDocumentWriter) {
-        BusinessRules businessRules = (BusinessRules) model;
-        if (businessRules.empty()) {
+        SummaryModel summaryModel = (SummaryModel) model;
+        if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
             return;
         }
+        Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
@@ -45,7 +46,6 @@ public class HtmlListView implements JigView {
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
 
-        Map<PackageIdentifier, List<JigType>> jigTypeMap = businessRules.mapByPackage();
         Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));

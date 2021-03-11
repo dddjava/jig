@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigmodel.businessrules;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypes;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -11,7 +10,8 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelat
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * ビジネスルール一覧
@@ -128,13 +128,6 @@ public class BusinessRules {
         return list.stream()
                 .filter(businessRule -> coreAndRelatedTypeIdentifiers.contains(businessRule.typeIdentifier()))
                 .collect(collectingAndThen(toList(), businessRules -> new BusinessRules(businessRules, coreRelations)));
-    }
-
-    // TODO: 置き場所を考え直す。。。
-    public Map<PackageIdentifier, List<JigType>> mapByPackage() {
-        return list().stream()
-                .map(BusinessRule::jigType)
-                .collect(groupingBy(JigType::packageIdentifier));
     }
 
     public JigTypes jigTypes() {

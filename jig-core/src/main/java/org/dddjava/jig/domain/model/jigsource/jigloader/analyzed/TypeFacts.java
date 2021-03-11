@@ -25,8 +25,7 @@ import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 /**
  * 型の実装から読み取れること一覧
@@ -40,14 +39,17 @@ public class TypeFacts {
 
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
+    private Map<PackageIdentifier, List<JigType>> packageMap;
 
     public List<JigType> listJigTypes() {
         return list.stream().map(TypeFact::jigType).collect(toList());
     }
 
     public Map<PackageIdentifier, List<JigType>> mapJigTypesByPackage() {
-        return listJigTypes().stream()
+        if (packageMap != null) return packageMap;
+        packageMap = listJigTypes().stream()
                 .collect(groupingBy(JigType::packageIdentifier));
+        return packageMap;
     }
 
     public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
@@ -135,6 +137,21 @@ public class TypeFacts {
                 .flatMap(List::stream)
                 .map(methodFact -> methodFact.createMethod())
                 .collect(toList());
+    }
+
+    public Map<PackageIdentifier, List<JigType>> applicationTypes(Architecture architecture) {
+        Set<PackageIdentifier> servicePackages = list().stream()
+                .filter(typeFact -> architecture.isService(typeFact))
+                .map(TypeFact::typeIdentifier)
+                .map(TypeIdentifier::packageIdentifier)
+                .collect(toSet());
+        HashMap<PackageIdentifier, List<JigType>> packageMap = new HashMap<>();
+        for (Map.Entry<PackageIdentifier, List<JigType>> entry : mapJigTypesByPackage().entrySet()) {
+            if (servicePackages.contains(entry.getKey())) {
+                packageMap.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return packageMap;
     }
 
     public synchronized MethodRelations toMethodRelations() {

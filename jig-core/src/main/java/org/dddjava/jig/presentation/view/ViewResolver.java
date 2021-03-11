@@ -117,6 +117,7 @@ public class ViewResolver {
             case BusinessRuleList:
             case ApplicationList:
                 return new ModelReportsPoiView(new ConvertContext(aliasService));
+            case ApplicationSummary:
             case DomainSummary:
                 return new HtmlListView(jigDocumentContext.aliasFinder());
         }

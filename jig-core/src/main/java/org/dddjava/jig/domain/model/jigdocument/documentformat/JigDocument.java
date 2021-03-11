@@ -84,6 +84,11 @@ public enum JigDocument {
      * ドメイン概要
      */
     DomainSummary("domain"),
+
+    /**
+     * アプリケーション概要
+     */
+    ApplicationSummary("application"),
     ;
 
     private final String documentFileName;

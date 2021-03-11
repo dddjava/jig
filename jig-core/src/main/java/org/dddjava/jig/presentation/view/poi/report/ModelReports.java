@@ -14,4 +14,9 @@ public class ModelReports {
     public List<ModelReport<?>> list() {
         return list;
     }
+
+    public boolean empty() {
+        return list.stream()
+                .allMatch(modelReport -> modelReport.pivotModels.isEmpty());
+    }
 }

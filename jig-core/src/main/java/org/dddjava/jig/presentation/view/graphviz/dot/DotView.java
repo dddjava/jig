@@ -28,7 +28,7 @@ public class DotView<T> implements JigView<T> {
         DiagramSources diagramSources = editor.edit(model);
 
         if (diagramSources.noEntity()) {
-            jigDocumentWriter.skip();
+            jigDocumentWriter.markSkip();
             return;
         }
 

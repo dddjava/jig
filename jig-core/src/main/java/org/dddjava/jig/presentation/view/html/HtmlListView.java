@@ -31,6 +31,11 @@ public class HtmlListView implements JigView<BusinessRules> {
 
     @Override
     public void render(BusinessRules businessRules, JigDocumentWriter jigDocumentWriter) {
+        if (businessRules.empty()) {
+            jigDocumentWriter.markSkip();
+            return;
+        }
+
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setSuffix(".html");

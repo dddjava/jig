@@ -25,6 +25,10 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
 
     @Override
     public void render(ModelReports modelReports, JigDocumentWriter jigDocumentWriter) throws IOException {
+        if (modelReports.empty()) {
+            jigDocumentWriter.markSkip();
+            return;
+        }
 
         try (Workbook book = new XSSFWorkbook()) {
             List<ModelReport<?>> list = modelReports.list();

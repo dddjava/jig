@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JigDocumentHandlersTest {
 
     @ParameterizedTest
-    @EnumSource(value = JigDocument.class, mode = EnumSource.Mode.MATCH_ALL, names = ".*Diagram")
+    @EnumSource(value = JigDocument.class)
     void diagrams(JigDocument jigDocument, @TempDir Path temp) throws IOException {
         Configuration configuration = new Configuration(new JigProperties(new OutputOmitPrefix(""), "", "", "", "", LinkPrefix.disable(), null, null), new SourceCodeAliasReader(null));
 

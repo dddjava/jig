@@ -50,7 +50,7 @@ public class JigDocumentWriter {
         biConsumer.accept(directory, documentPaths);
     }
 
-    public void skip() {
+    public void markSkip() {
         LOGGER.info("出力対象がないため {} をスキップしました。", jigDocument);
     }
 

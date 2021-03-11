@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view;
 
 import java.io.IOException;
 
-public interface JigView<T> {
+public interface JigView {
 
-    void render(T model, JigDocumentWriter jigDocumentWriter) throws IOException;
+    void render(Object model, JigDocumentWriter jigDocumentWriter) throws IOException;
 }

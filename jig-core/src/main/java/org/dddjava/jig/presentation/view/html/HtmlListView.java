@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
-public class HtmlListView implements JigView<BusinessRules> {
+public class HtmlListView implements JigView {
 
     AliasFinder aliasFinder;
 
@@ -30,7 +30,8 @@ public class HtmlListView implements JigView<BusinessRules> {
     }
 
     @Override
-    public void render(BusinessRules businessRules, JigDocumentWriter jigDocumentWriter) {
+    public void render(Object model, JigDocumentWriter jigDocumentWriter) {
+        BusinessRules businessRules = (BusinessRules) model;
         if (businessRules.empty()) {
             jigDocumentWriter.markSkip();
             return;

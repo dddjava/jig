@@ -11,20 +11,20 @@ import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 
-public class DotView<T> implements JigView<T> {
+public class DotView implements JigView {
 
-    DiagramSourceEditor<T> editor;
+    DiagramSourceEditor editor;
     JigDiagramFormat diagramFormat;
     DotCommandRunner dotCommandRunner;
 
-    public DotView(DiagramSourceEditor<T> editor, JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner) {
+    public DotView(DiagramSourceEditor editor, JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner) {
         this.editor = editor;
         this.diagramFormat = diagramFormat;
         this.dotCommandRunner = dotCommandRunner;
     }
 
     @Override
-    public void render(T model, JigDocumentWriter jigDocumentWriter) {
+    public void render(Object model, JigDocumentWriter jigDocumentWriter) {
         DiagramSources diagramSources = editor.edit(model);
 
         if (diagramSources.noEntity()) {

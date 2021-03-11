@@ -45,8 +45,9 @@ public class ViewResolver {
         this.dotCommandRunner = new DotCommandRunner();
     }
 
-    public JigView<PackageRelationDiagram> dependencyWriter() {
-        return newGraphvizjView(model -> {
+    public JigView dependencyWriter() {
+        return newGraphvizjView(e -> {
+            PackageRelationDiagram model = (PackageRelationDiagram) e;
             List<PackageDepth> depths = model.maxDepth().surfaceList();
 
             List<DiagramSource> diagramSources = depths.stream()
@@ -58,40 +59,40 @@ public class ViewResolver {
         });
     }
 
-    public JigView<ServiceMethodCallHierarchyDiagram> serviceMethodCallHierarchy() {
+    public JigView serviceMethodCallHierarchy() {
         return newGraphvizjView(model ->
-                model.methodCallDotText(jigDocumentContext));
+                ((ServiceMethodCallHierarchyDiagram) model).methodCallDotText(jigDocumentContext));
     }
 
-    public JigView<CategoryUsageDiagram> enumUsage() {
+    public JigView enumUsage() {
         return newGraphvizjView(model ->
-                model.diagramSource(jigDocumentContext));
+                ((CategoryUsageDiagram) model).diagramSource(jigDocumentContext));
     }
 
-    public JigView<CompositeUsecaseDiagram> compositeUsecaseDiagram() {
+    public JigView compositeUsecaseDiagram() {
         return newGraphvizjView(model ->
-                model.diagramSource(jigDocumentContext));
+                ((CompositeUsecaseDiagram) model).diagramSource(jigDocumentContext));
     }
 
-    private <T> JigView<T> newGraphvizjView(DiagramSourceEditor<T> diagram) {
-        return new DotView<>(diagram, diagramFormat, dotCommandRunner);
+    private JigView newGraphvizjView(DiagramSourceEditor diagram) {
+        return new DotView(diagram, diagramFormat, dotCommandRunner);
     }
 
-    public JigView<BusinessRuleRelationDiagram> businessRuleRelationWriter() {
+    public JigView businessRuleRelationWriter() {
         return newGraphvizjView(model ->
-                model.relationDotText(jigDocumentContext, packageIdentifierFormatter));
+                ((BusinessRuleRelationDiagram) model).relationDotText(jigDocumentContext, packageIdentifierFormatter));
     }
 
-    public JigView<Categories> categories() {
+    public JigView categories() {
         return newGraphvizjView(model ->
-                model.valuesDotText(jigDocumentContext));
+                ((Categories) model).valuesDotText(jigDocumentContext));
     }
 
-    public JigView<ArchitectureDiagram> architecture() {
-        return newGraphvizjView(model -> model.dotText(jigDocumentContext));
+    public JigView architecture() {
+        return newGraphvizjView(model -> ((ArchitectureDiagram) model).dotText(jigDocumentContext));
     }
 
-    public JigView<?> resolve(JigDocument jigDocument) {
+    public JigView resolve(JigDocument jigDocument) {
         switch (jigDocument) {
             case ServiceMethodCallHierarchyDiagram:
                 return serviceMethodCallHierarchy();
@@ -100,11 +101,11 @@ public class ViewResolver {
             case BusinessRuleRelationDiagram:
                 return businessRuleRelationWriter();
             case OverconcentrationBusinessRuleDiagram:
-                return new DotView<BusinessRuleRelationDiagram>(
-                        model -> model.overconcentrationRelationDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
+                return new DotView(
+                        model -> ((BusinessRuleRelationDiagram) model).overconcentrationRelationDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CoreBusinessRuleRelationDiagram:
-                return new DotView<BusinessRuleRelationDiagram>(
-                        model -> model.coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
+                return new DotView(
+                        model -> ((BusinessRuleRelationDiagram) model).coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
             case CategoryUsageDiagram:
                 return enumUsage();
             case CategoryDiagram:

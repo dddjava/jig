@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * ModelReportをPOIで一覧出力するView
  */
-public class ModelReportsPoiView implements JigView<ModelReports> {
+public class ModelReportsPoiView implements JigView {
 
     private ReportItemFormatter reportItemFormatter;
 
@@ -24,7 +24,8 @@ public class ModelReportsPoiView implements JigView<ModelReports> {
     }
 
     @Override
-    public void render(ModelReports modelReports, JigDocumentWriter jigDocumentWriter) throws IOException {
+    public void render(Object model, JigDocumentWriter jigDocumentWriter) throws IOException {
+        ModelReports modelReports = (ModelReports) model;
         if (modelReports.empty()) {
             jigDocumentWriter.markSkip();
             return;

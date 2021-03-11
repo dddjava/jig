@@ -5,7 +5,6 @@ import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
-import org.dddjava.jig.presentation.view.JigModelAndView;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class JigDocumentHandlers {
         };
     }
 
-    JigModelAndView<?> invokeHandlerMethod(JigDocument jigDocument) {
+    Object invokeHandlerMethod(JigDocument jigDocument) {
         try {
             for (Object handler : handlers) {
                 Optional<Method> mayBeHandlerMethod = Arrays.stream(handler.getClass().getMethods())
@@ -49,10 +48,7 @@ public class JigDocumentHandlers {
                         .findFirst();
                 if (mayBeHandlerMethod.isPresent()) {
                     Method method = mayBeHandlerMethod.get();
-                    Object result = method.invoke(handler);
-
-                    JigView<?> jigView = viewResolver.resolve(jigDocument);
-                    return new JigModelAndView(result, jigView);
+                    return method.invoke(handler);
                 }
             }
         } catch (ReflectiveOperationException e) {
@@ -63,7 +59,7 @@ public class JigDocumentHandlers {
 
     public HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
-            JigModelAndView jigModelAndView = invokeHandlerMethod(jigDocument);
+            Object model = invokeHandlerMethod(jigDocument);
 
             if (Files.notExists(outputDirectory)) {
                 Files.createDirectories(outputDirectory);
@@ -71,7 +67,8 @@ public class JigDocumentHandlers {
             }
 
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-            jigModelAndView.render(jigDocumentWriter);
+            JigView jigView = viewResolver.resolve(jigDocument);
+            jigView.render(model, jigDocumentWriter);
 
             copyStaticResourcesForHtml(jigDocument, outputDirectory);
 

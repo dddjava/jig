@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
-import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.SummaryView;
@@ -45,8 +44,8 @@ public class ViewResolver {
         this.dotCommandRunner = new DotCommandRunner();
     }
 
-    public JigView dependencyWriter() {
-        return newGraphvizjView(e -> {
+    private JigView dependencyWriter() {
+        return new DotView(e -> {
             PackageRelationDiagram model = (PackageRelationDiagram) e;
             List<PackageDepth> depths = model.maxDepth().surfaceList();
 
@@ -56,64 +55,29 @@ public class ViewResolver {
                     .filter(diagramSource -> !diagramSource.noValue())
                     .collect(toList());
             return DiagramSource.createDiagramSource(diagramSources);
-        });
-    }
-
-    public JigView serviceMethodCallHierarchy() {
-        return newGraphvizjView(model ->
-                ((ServiceMethodCallHierarchyDiagram) model).methodCallDotText(jigDocumentContext));
-    }
-
-    public JigView enumUsage() {
-        return newGraphvizjView(model ->
-                ((CategoryUsageDiagram) model).diagramSource(jigDocumentContext));
-    }
-
-    public JigView compositeUsecaseDiagram() {
-        return newGraphvizjView(model ->
-                ((CompositeUsecaseDiagram) model).diagramSource(jigDocumentContext));
-    }
-
-    private JigView newGraphvizjView(DiagramSourceEditor diagram) {
-        return new DotView(diagram, diagramFormat, dotCommandRunner);
-    }
-
-    public JigView businessRuleRelationWriter() {
-        return newGraphvizjView(model ->
-                ((BusinessRuleRelationDiagram) model).relationDotText(jigDocumentContext, packageIdentifierFormatter));
-    }
-
-    public JigView categories() {
-        return newGraphvizjView(model ->
-                ((Categories) model).valuesDotText(jigDocumentContext));
-    }
-
-    public JigView architecture() {
-        return newGraphvizjView(model -> ((ArchitectureDiagram) model).dotText(jigDocumentContext));
+        }, diagramFormat, dotCommandRunner);
     }
 
     public JigView resolve(JigDocument jigDocument) {
         switch (jigDocument) {
             case ServiceMethodCallHierarchyDiagram:
-                return serviceMethodCallHierarchy();
+                return new DotView(model -> ((ServiceMethodCallHierarchyDiagram) model).methodCallDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case PackageRelationDiagram:
                 return dependencyWriter();
             case BusinessRuleRelationDiagram:
-                return businessRuleRelationWriter();
+                return new DotView(model -> ((BusinessRuleRelationDiagram) model).relationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
             case OverconcentrationBusinessRuleDiagram:
-                return new DotView(
-                        model -> ((BusinessRuleRelationDiagram) model).overconcentrationRelationDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
+                return new DotView(model -> ((BusinessRuleRelationDiagram) model).overconcentrationRelationDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CoreBusinessRuleRelationDiagram:
-                return new DotView(
-                        model -> ((BusinessRuleRelationDiagram) model).coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
+                return new DotView(model -> ((BusinessRuleRelationDiagram) model).coreRelationDotText(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
             case CategoryUsageDiagram:
-                return enumUsage();
+                return new DotView(model -> ((CategoryUsageDiagram) model).diagramSource(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CategoryDiagram:
-                return categories();
+                return new DotView(model -> ((Categories) model).valuesDotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case ArchitectureDiagram:
-                return architecture();
+                return new DotView(model -> ((ArchitectureDiagram) model).dotText(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CompositeUsecaseDiagram:
-                return compositeUsecaseDiagram();
+                return new DotView(model -> ((CompositeUsecaseDiagram) model).diagramSource(jigDocumentContext), diagramFormat, dotCommandRunner);
             case BusinessRuleList:
             case ApplicationList:
                 return new ModelReportsPoiView(new ConvertContext(aliasService));

@@ -26,11 +26,11 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
-public class HtmlListView implements JigView {
+public class SummaryView implements JigView {
 
     AliasFinder aliasFinder;
 
-    public HtmlListView(AliasFinder aliasFinder) {
+    public SummaryView(AliasFinder aliasFinder) {
         this.aliasFinder = aliasFinder;
     }
 

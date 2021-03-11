@@ -18,7 +18,7 @@ import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
-import org.dddjava.jig.presentation.view.html.HtmlListView;
+import org.dddjava.jig.presentation.view.html.SummaryView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
@@ -119,7 +119,7 @@ public class ViewResolver {
                 return new ModelReportsPoiView(new ConvertContext(aliasService));
             case ApplicationSummary:
             case DomainSummary:
-                return new HtmlListView(jigDocumentContext.aliasFinder());
+                return new SummaryView(jigDocumentContext.aliasFinder());
         }
 
         throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);

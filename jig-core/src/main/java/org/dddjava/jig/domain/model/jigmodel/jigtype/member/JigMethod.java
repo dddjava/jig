@@ -51,6 +51,10 @@ public class JigMethod {
         return methodAnnotations;
     }
 
+    public Visibility visibility() {
+        return visibility;
+    }
+
     public boolean isPublic() {
         return visibility.isPublic();
     }

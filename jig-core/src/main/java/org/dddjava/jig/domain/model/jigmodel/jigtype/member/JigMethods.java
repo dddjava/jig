@@ -24,8 +24,11 @@ public class JigMethods {
     }
 
     public List<JigMethod> list() {
-        list.sort(Comparator.comparing(method -> method.declaration().asFullNameText()));
-        return list;
+        return list.stream()
+                .sorted(Comparator
+                        .comparing(JigMethod::visibility)
+                        .thenComparing(jigMethod -> jigMethod.declaration().asFullNameText()))
+                .collect(Collectors.toList());
     }
 
     public JigMethod get(MethodDeclaration methodDeclaration) {

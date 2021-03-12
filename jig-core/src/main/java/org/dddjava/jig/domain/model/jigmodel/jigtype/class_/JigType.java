@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -90,8 +90,8 @@ public class JigType {
         return jigTypeAttribute.descriptionText();
     }
 
-    public List<JigMethod> listInstanceMethod() {
-        return instanceMember().instanceMethods().list();
+    public JigMethods instanceMethods() {
+        return instanceMember().instanceMethods();
     }
 
     public JigTypeValueKind toValueKind() {

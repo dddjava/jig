@@ -21,7 +21,7 @@
             </ul>
         </section>
 
-        <table th:unless="${item.listInstanceMethod().isEmpty()}">
+        <table th:unless="${item.instanceMethods().empty()}">
             <thead>
             <tr>
                 <th width="20%">メソッド名</th>
@@ -31,7 +31,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="method : ${item.listInstanceMethod()}">
+            <tr th:each="method : ${item.instanceMethods().list()}">
                 <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
                 <td>
                     <a class="method-argument-item" th:each="arg : ${method.listArguments()}"

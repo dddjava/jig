@@ -97,8 +97,9 @@ public class JigMethod {
         return methodAlias.descriptionText();
     }
 
-    public String labelText() {
-        return methodAlias.asTextOrDefault(declaration().methodSignature().methodName());
+    public String labelTextWithSymbol() {
+        String name = methodAlias.asTextOrDefault(declaration().methodSignature().methodName());
+        return visibility.symbol() + ' ' + name;
     }
 
     public List<TypeIdentifier> listArguments() {

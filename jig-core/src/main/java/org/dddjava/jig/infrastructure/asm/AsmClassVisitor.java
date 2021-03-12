@@ -135,7 +135,7 @@ class AsmClassVisitor extends ClassVisitor {
                 toMethodSignature(name, descriptor),
                 methodReturn,
                 access,
-                resolveVisibility(access),
+                resolveMethodVisibility(access),
                 useTypes,
                 throwsTypes);
 
@@ -246,17 +246,20 @@ class AsmClassVisitor extends ClassVisitor {
      * Visibilityに持っていきたいが、accessの定数はasmが持っているのでここに置いておく。
      * 実際はバイトコードの固定値。
      *
-     * class
-     * ソースコードではpublic,protected,default,privateは定義できるが、
+     * classの場合、ソースコードではpublic,protected,default,privateは定義できるが、
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
      */
     private Visibility resolveVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) {
-            return Visibility.PUBLIC;
-        }
-
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
         return Visibility.NOT_PUBLIC;
+    }
+
+    private Visibility resolveMethodVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
+        if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
+        if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
+        return Visibility.PACKAGE;
     }
 
     private MethodSignature toMethodSignature(String name, String descriptor) {

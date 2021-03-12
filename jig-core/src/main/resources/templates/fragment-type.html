@@ -32,7 +32,7 @@
             </thead>
             <tbody>
             <tr th:each="method : ${item.listInstanceMethod()}">
-                <td th:text="${method.labelText()}">xxx</td>
+                <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
                 <td>
                     <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
                        th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>

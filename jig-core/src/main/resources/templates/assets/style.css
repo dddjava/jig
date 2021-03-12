@@ -53,6 +53,9 @@ main table thead {
     color: #FFF;
     background-color: #465DAA;
 }
+.method-name {
+    white-space: nowrap;
+}
 .method-argument-item {
     display: block;
 }

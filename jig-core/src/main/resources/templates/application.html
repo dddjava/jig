@@ -21,8 +21,8 @@
 
         <section>
             <h3>説明</h3>
-            <p class="markdown" th:utext="${item.descriptionText()}">XXX1
-XXX2</p>
+            <div class="markdown" th:utext="${item.descriptionText()}">XXX1
+XXX2</div>
         </section>
 
         <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
@@ -50,9 +50,9 @@ XXX2</p>
 
         <section>
             <h3>説明</h3>
-            <p class="markdown" th:utext="${item.descriptionText()}">description1
+            <div class="markdown" th:utext="${item.descriptionText()}">description1
 description2
-<b>description3</b></p>
+<b>description3</b></div>
         </section>
 
         <section th:if="${categoriesMap.containsKey(item.identifier())}" th:with="category=${categoriesMap.get(item.identifier())}">

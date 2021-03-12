@@ -34,4 +34,8 @@ public class JigStaticMember {
         list.addAll(staticFieldDeclarations.listTypeIdentifiers());
         return list;
     }
+
+    public JigMethods staticMethods() {
+        return staticMethods;
+    }
 }

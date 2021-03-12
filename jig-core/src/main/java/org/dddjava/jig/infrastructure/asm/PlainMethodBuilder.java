@@ -43,7 +43,7 @@ public class PlainMethodBuilder {
 
     public void buildAndCollect() {
         MethodFact methodFact = new MethodFact(
-                methodDeclaration, useTypes, visibility,
+                methodDeclaration, useTypes, visibility, generatedBy,
                 annotations,
                 throwsTypes,
                 fieldInstructions,

@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.GeneratedBy;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -28,8 +29,9 @@ public class JigMethod {
     Visibility visibility;
 
     MethodDepend methodDepend;
+    GeneratedBy generatedBy;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, GeneratedBy generatedBy) {
         this.methodDeclaration = methodDeclaration;
         this.methodAlias = methodAlias;
         this.nullDecision = nullDecision;
@@ -37,6 +39,7 @@ public class JigMethod {
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDepend = methodDepend;
+        this.generatedBy = generatedBy;
     }
 
     public MethodDeclaration declaration() {
@@ -108,5 +111,9 @@ public class JigMethod {
 
     public List<TypeIdentifier> listArguments() {
         return declaration().methodSignature().arguments();
+    }
+
+    public GeneratedBy generatedBy() {
+        return generatedBy;
     }
 }

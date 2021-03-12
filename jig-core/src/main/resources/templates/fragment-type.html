@@ -22,9 +22,10 @@
         </section>
 
         <table th:unless="${item.instanceMethods().empty()}">
+            <caption>メソッド</caption>
             <thead>
             <tr>
-                <th width="20%">メソッド名</th>
+                <th width="20%">名称</th>
                 <th>引数</th>
                 <th>戻り値型</th>
                 <th>説明</th>
@@ -45,14 +46,37 @@
                 <td class="markdown" th:utext="${method.descriptionText()}">javadoc comment</td>
             </tr>
         </table>
+
+        <table th:unless="${item.staticMethods().empty()}">
+            <caption>staticメソッド</caption>
+            <thead>
+            <tr>
+                <th width="20%">名称</th>
+                <th>引数</th>
+                <th>戻り値型</th>
+                <th>説明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="method : ${item.staticMethods().list()}">
+                <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
+                <td>
+                    <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
+                       th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
+                </td>
+                <td>
+                    <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
+                       th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
+                    </a>
+                </td>
+                <td class="markdown" th:utext="${method.descriptionText()}">javadoc comment</td>
+            </tr>
+        </table>
     </section>
 </main>
 
 <script>
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
-
-
-
 </script>
 </body>
 </html>

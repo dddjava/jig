@@ -6,10 +6,7 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Ann
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethod;
@@ -28,6 +25,7 @@ public class MethodFact {
 
     MethodDeclaration methodDeclaration;
     Visibility visibility;
+    GeneratedBy generatedBy;
     List<TypeIdentifier> throwsTypes;
 
     List<Annotation> annotations;
@@ -51,9 +49,10 @@ public class MethodFact {
 
     private MethodAlias methodAlias;
 
-    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
+    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, GeneratedBy generatedBy, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
+        this.generatedBy = generatedBy;
         this.throwsTypes = throwsTypes;
         this.useTypes.addAll(throwsTypes);
 
@@ -90,7 +89,8 @@ public class MethodFact {
                 decisionNumber(),
                 annotatedMethods(),
                 visibility,
-                methodDepend());
+                methodDepend(),
+                generatedBy);
     }
 
     public MethodDepend methodDepend() {

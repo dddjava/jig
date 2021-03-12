@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.GeneratedBy;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
@@ -48,5 +49,11 @@ public class JigMethods {
         return list.stream()
                 .flatMap(jigMethod -> jigMethod.usingTypes().list().stream())
                 .collect(Collectors.toList());
+    }
+
+    public JigMethods excludeCompilerGenerated() {
+        return new JigMethods(list.stream()
+                .filter(jigMethod -> GeneratedBy.COMPILER != jigMethod.generatedBy())
+                .collect(Collectors.toList()));
     }
 }

@@ -124,11 +124,13 @@ class PlainClassBuilder {
             methodFactCollector = staticMethodFacts;
         }
 
-        GeneratedBy generatedBy = GeneratedBy.PROGRAMMER;
-        if ((access & Opcodes.ACC_SYNTHETIC) != 0) {
-            generatedBy = GeneratedBy.COMPILER;
-        }
-
+        GeneratedBy generatedBy = checkGenerated(methodSignature.methodName(), access) ? GeneratedBy.COMPILER : GeneratedBy.PROGRAMMER;
         return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes, generatedBy);
+    }
+
+    private boolean checkGenerated(String name, int access) {
+        return "<init>".equals(name) || "<clinit>".equals(name)
+                || (access & Opcodes.ACC_BRIDGE) != 0
+                || (access & Opcodes.ACC_SYNTHETIC) != 0;
     }
 }

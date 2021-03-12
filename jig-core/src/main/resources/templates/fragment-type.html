@@ -13,46 +13,44 @@
 
         <section class="markdown" th:utext="${item.descriptionText()}">クラスのJavadocコメントが表示されます</section>
 
-        <section th:if="${categoriesMap.containsKey(item.identifier())}" th:with="category=${categoriesMap.get(item.identifier())}">
+        <section th:if="${categoriesMap.containsKey(item.identifier())}"
+                 th:with="category=${categoriesMap.get(item.identifier())}">
             <h3>列挙値</h3>
             <ul>
                 <li th:each="value : ${category.values().list()}" th:text="${value.nameText()}">xx</li>
             </ul>
         </section>
 
-        <section th:unless="${item.listInstanceMethod().isEmpty()}">
-            <h2>メソッド</h2>
-
-            <table>
-                <thead>
-                <tr>
-                    <th width="20%">メソッド名</th>
-                    <th>引数</th>
-                    <th>戻り値型</th>
-                    <th>説明</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="method : ${item.listInstanceMethod()}">
-                    <td th:text="${method.labelText()}">xxx</td>
-                    <td>
-                        <th:block th:each="arg : ${method.listArguments()}">
-                            <a th:href="${'#' + arg.fullQualifiedName()}"
-                               th:text="${#jig.labelText(arg)}">
-                                xxx
-                            </a><br>
-                        </th:block>
-                    </td>
-                    <td>
-                        <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                           th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                        </a>
-                    </td>
-                    <td class="markdown" th:utext="${method.descriptionText()}">yyy1
-yyy2</td>
-                </tr>
-            </table>
-        </section>
+        <table th:unless="${item.listInstanceMethod().isEmpty()}">
+            <thead>
+            <tr>
+                <th width="20%">メソッド名</th>
+                <th>引数</th>
+                <th>戻り値型</th>
+                <th>説明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="method : ${item.listInstanceMethod()}">
+                <td th:text="${method.labelText()}">xxx</td>
+                <td>
+                    <th:block th:each="arg : ${method.listArguments()}">
+                        <a th:href="${'#' + arg.fullQualifiedName()}"
+                           th:text="${#jig.labelText(arg)}">
+                            xxx
+                        </a><br>
+                    </th:block>
+                </td>
+                <td>
+                    <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
+                       th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
+                    </a>
+                </td>
+                <td class="markdown" th:utext="${method.descriptionText()}">yyy1
+                    yyy2
+                </td>
+            </tr>
+        </table>
     </section>
 </main>
 

@@ -7,7 +7,7 @@
 <body>
 
 <nav class="menu" th:with="node=${baseComposite.resolveRootComposite()}">
-    <div th:replace="recursive-package :: item">パッケージツリーに置換</div>
+    <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
 </nav>
 
 <main>

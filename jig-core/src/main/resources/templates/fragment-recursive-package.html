@@ -12,7 +12,7 @@
                 <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
             </summary>
             <div>
-                <th:block th:each="node : ${node.children()}"><b th:replace="recursive-package :: item">replace</b></th:block>
+                <th:block th:each="node : ${node.children()}"><b th:replace="fragment-recursive-package :: item">replace</b></th:block>
             </div>
         </details>
         <th:block th:unless="${node.isPackage()}">

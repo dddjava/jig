@@ -68,3 +68,21 @@ main table thead {
     font-size: 0.8em;
     color: silver;
 }
+
+.index > header {
+    border-bottom:solid 1px #999;
+}
+.index > header > h1 {
+    margin-bottom: 0;
+}
+.index > header > p {
+    font-size: 0.6em;
+    margin-top: 0;
+}
+.index > header, .index > main {
+    margin:0 auto;
+    max-width: 800px;
+}
+.index .diagram img {
+    max-width: 600px;
+}

@@ -19,7 +19,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class JigDocumentHandlers {
 
@@ -86,19 +85,22 @@ public class JigDocumentHandlers {
     private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) throws IOException {
         if (jigDocument == JigDocument.DomainSummary || jigDocument == JigDocument.ApplicationSummary) {
             if (copied) return;
+
+            copyFile("index.html", "templates/", outputDirectory);
             Path assetsPath = outputDirectory.resolve("assets");
             Files.createDirectories(assetsPath);
-
-            Stream.of("style.css", "marked.2.0.1.min.js")
-                    .forEach(resource -> {
-                        ClassLoader classLoader = this.getClass().getClassLoader();
-                        try (InputStream is = classLoader.getResourceAsStream("templates/assets/" + resource)) {
-                            Files.copy(Objects.requireNonNull(is), assetsPath.resolve(resource), StandardCopyOption.REPLACE_EXISTING);
-                        } catch (IOException e) {
-                            throw new IllegalStateException(e);
-                        }
-                    });
+            copyFile("style.css", "templates/assets/", assetsPath);
+            copyFile("marked.2.0.1.min.js", "templates/assets/", assetsPath);
             copied = true;
+        }
+    }
+
+    private void copyFile(String fileName, String sourceDirectory, Path distDirectory) {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream(sourceDirectory + fileName)) {
+            Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

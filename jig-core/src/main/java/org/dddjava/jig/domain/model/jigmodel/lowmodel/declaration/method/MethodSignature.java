@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,5 +48,19 @@ public class MethodSignature {
     public boolean isSame(MethodSignature other) {
         return methodName.equals(other.methodName)
                 && arguments.isSame(other.arguments);
+    }
+
+    static List<MethodSignature> objectMethods = Arrays.asList(
+            new MethodSignature("equals", new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))),
+            new MethodSignature("hashCode", Arguments.empty()),
+            new MethodSignature("toString", Arguments.empty()));
+
+    public boolean isObjectMethod() {
+        for (MethodSignature objectMethod : objectMethods) {
+            if (objectMethod.isSame(this)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

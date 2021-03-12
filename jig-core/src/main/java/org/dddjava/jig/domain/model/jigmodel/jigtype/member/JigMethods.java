@@ -56,4 +56,10 @@ public class JigMethods {
                 .filter(jigMethod -> GeneratedBy.COMPILER != jigMethod.generatedBy())
                 .collect(Collectors.toList()));
     }
+
+    public JigMethods excludeNotNoteworthyObjectMethod() {
+        return new JigMethods(list.stream()
+                .filter(jigMethod -> !jigMethod.objectMethod() || jigMethod.documented())
+                .collect(Collectors.toList()));
+    }
 }

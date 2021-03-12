@@ -116,4 +116,12 @@ public class JigMethod {
     public GeneratedBy generatedBy() {
         return generatedBy;
     }
+
+    public boolean objectMethod() {
+        return declaration().methodSignature().isObjectMethod();
+    }
+
+    public boolean documented() {
+        return !methodAlias.descriptionText().isEmpty();
+    }
 }

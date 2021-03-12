@@ -91,7 +91,9 @@ public class JigType {
     }
 
     public JigMethods instanceMethods() {
-        return instanceMember().instanceMethods().excludeCompilerGenerated();
+        return instanceMember().instanceMethods()
+                .excludeCompilerGenerated()
+                .excludeNotNoteworthyObjectMethod();
     }
 
     public JigMethods staticMethods() {

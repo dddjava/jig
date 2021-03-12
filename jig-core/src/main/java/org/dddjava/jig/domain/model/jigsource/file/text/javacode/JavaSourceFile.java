@@ -20,6 +20,9 @@ public class JavaSourceFile {
         return fileName.endsWith("package-info.java");
     }
 
+    /**
+     * デバッグのためにパスを出力しておく
+     */
     @Override
     public String toString() {
         return path.toString();

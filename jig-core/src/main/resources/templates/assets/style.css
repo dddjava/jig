@@ -24,8 +24,16 @@ main {
     margin-left: 300px;
 }
 
-main > section > h2 {
+section.package > h2, section.type> h2 {
     margin-bottom: 0px;
+}
+section.package, section.type {
+    border-top: #000 solid 1px;
+    padding-left: 1em;
+    padding-bottom: 1em;
+}
+section.markdown {
+    margin: 0.5em;
 }
 
 main table {
@@ -34,25 +42,12 @@ main table {
 }
 main table tr > * {
     border: #000 solid 1px;
-    padding-left: 1em;
+    padding-left: 0.5em;
     text-align: left;
 }
 main table thead {
     color: #FFF;
     background-color: #465DAA;
-}
-
-main > section {
-    margin-left: 10px;
-    border-bottom: #000 solid 1px;
-    padding-left: 10px;
-    padding-bottom: 10px;
-}
-main > section > section {
-    margin-left: 1em;
-}
-main > section > section > p {
-    margin-left: 1em;
 }
 
 .fully-qualified-name {

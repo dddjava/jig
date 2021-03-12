@@ -11,95 +11,24 @@
 </nav>
 
 <main>
-    <section>
-        <h1>パッケージ／クラス一覧</h1>
-    </section>
+    <h1>ドメイン概要</h1>
 
-    <section class="package" th:each="item : ${jigPackages}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
-        <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</div>
-
-        <section>
-            <h3>説明</h3>
-            <div class="markdown" th:utext="${item.descriptionText()}">XXX1
-XXX2</div>
+    <th:block th:each="item : ${jigPackages}">
+        <section th:replace="fragment-package :: item">
+            パッケージ表示
         </section>
+    </th:block>
 
-        <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
-            <section th:if="${composite.hasChild()}">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>名前</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="child : ${composite.children()}">
-                        <td class="package" th:class="${child.isPackage() ? 'package' : 'type'}">
-                            <a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-        </th:block>
-    </section>
-
-    <section class="type" th:each="item : ${jigTypes}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
-        <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
-
-        <section>
-            <h3>説明</h3>
-            <div class="markdown" th:utext="${item.descriptionText()}">description1
-description2
-<b>description3</b></div>
+    <th:block th:each="item : ${jigTypes}">
+        <section th:replace="fragment-type :: item">
+            クラス表示
         </section>
-
-        <section th:if="${categoriesMap.containsKey(item.identifier())}" th:with="category=${categoriesMap.get(item.identifier())}">
-            <h3>列挙値</h3>
-            <ul>
-                <li th:each="value : ${category.values().list()}" th:text="${value.nameText()}">xx</li>
-            </ul>
-        </section>
-
-        <section th:unless="${item.listInstanceMethod().isEmpty()}">
-            <h2>メソッド</h2>
-
-            <table>
-                <thead>
-                <tr>
-                    <th width="20%">メソッド名</th>
-                    <th>引数</th>
-                    <th>戻り値型</th>
-                    <th>説明</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="method : ${item.listInstanceMethod()}">
-                    <td th:text="${method.labelText()}">xxx</td>
-                    <td>
-                        <th:block th:each="arg : ${method.listArguments()}">
-                            <a th:href="${'#' + arg.fullQualifiedName()}"
-                               th:text="${#jig.labelText(arg)}">
-                                xxx
-                            </a><br>
-                        </th:block>
-                    </td>
-                    <td>
-                        <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                           th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                        </a>
-                    </td>
-                    <td class="markdown" th:utext="${method.descriptionText()}">yyy1
-yyy2</td>
-                </tr>
-            </table>
-        </section>
-    </section>
+    </th:block>
 </main>
 
 <script>
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+
 </script>
 </body>
 </html>

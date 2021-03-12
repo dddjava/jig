@@ -1,0 +1,40 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.2.0.1.min.js"></script>
+</head>
+<body>
+
+<main>
+    <section class="package" th:fragment="item">
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
+        <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
+
+        <section class="markdown" th:utext="${item.descriptionText()}">package-infoのJavadocコメントが表示されます</section>
+
+        <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
+            <section th:if="${composite.hasChild()}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>名前</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="child : ${composite.children()}">
+                        <td class="package" th:class="${child.isPackage() ? 'package' : 'type'}">
+                            <a href="#" th:href="${child.href()}" th:text="${child.name()}">xxx</a>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+        </th:block>
+    </section>
+</main>
+
+<script>
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+</script>
+</body>
+</html>

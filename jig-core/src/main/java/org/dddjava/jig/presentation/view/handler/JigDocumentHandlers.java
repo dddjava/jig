@@ -83,15 +83,17 @@ public class JigDocumentHandlers {
 
     boolean copied = false;
 
-    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
+    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) throws IOException {
         if (jigDocument == JigDocument.DomainSummary || jigDocument == JigDocument.ApplicationSummary) {
             if (copied) return;
+            Path assetsPath = outputDirectory.resolve("assets");
+            Files.createDirectories(assetsPath);
 
             Stream.of("style.css", "marked.2.0.1.min.js")
                     .forEach(resource -> {
                         ClassLoader classLoader = this.getClass().getClassLoader();
-                        try (InputStream is = classLoader.getResourceAsStream("templates/" + resource)) {
-                            Files.copy(Objects.requireNonNull(is), outputDirectory.resolve(resource), StandardCopyOption.REPLACE_EXISTING);
+                        try (InputStream is = classLoader.getResourceAsStream("templates/assets/" + resource)) {
+                            Files.copy(Objects.requireNonNull(is), assetsPath.resolve(resource), StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException e) {
                             throw new IllegalStateException(e);
                         }

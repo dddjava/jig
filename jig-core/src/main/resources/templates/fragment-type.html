@@ -34,21 +34,15 @@
             <tr th:each="method : ${item.listInstanceMethod()}">
                 <td th:text="${method.labelText()}">xxx</td>
                 <td>
-                    <th:block th:each="arg : ${method.listArguments()}">
-                        <a th:href="${'#' + arg.fullQualifiedName()}"
-                           th:text="${#jig.labelText(arg)}">
-                            xxx
-                        </a><br>
-                    </th:block>
+                    <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
+                       th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
                 </td>
                 <td>
                     <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
                        th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
                     </a>
                 </td>
-                <td class="markdown" th:utext="${method.descriptionText()}">yyy1
-                    yyy2
-                </td>
+                <td class="markdown" th:utext="${method.descriptionText()}">javadoc comment</td>
             </tr>
         </table>
     </section>
@@ -56,6 +50,9 @@
 
 <script>
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+
+
+
 </script>
 </body>
 </html>

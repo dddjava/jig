@@ -43,6 +43,10 @@ public class TreeComposite implements TreeComponent {
     }
 
     public List<TreeComponent> children() {
+        return list;
+    }
+
+    public List<TreeComponent> expandChildren() {
         if (list.size() == 1) {
             TreeComponent onlyOneChild = list.get(0);
             if (onlyOneChild instanceof TreeComposite) {

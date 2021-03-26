@@ -48,6 +48,7 @@ public class SummaryView implements JigView {
 
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
+                .sorted(Comparator.comparing(PackageIdentifier::asText))
                 .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
                 .collect(toList());
 

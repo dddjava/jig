@@ -2,14 +2,12 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,11 +30,9 @@ public class StringComparingMethodList {
     public static StringComparingMethodList createFrom(ControllerMethods controllerMethods, ServiceMethods serviceMethods) {
         // String#equals(Object)
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(
-                new TypeIdentifier(String.class),
-                new MethodSignature(
-                        "equals",
-                        new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))),
-                new MethodReturn(new TypeIdentifier(boolean.class))
+                TypeIdentifier.of(String.class),
+                new MethodSignature("equals", TypeIdentifier.of(Object.class)),
+                new MethodReturn(TypeIdentifier.of(boolean.class))
         );
 
         List<JigMethod> methods = Stream.concat(

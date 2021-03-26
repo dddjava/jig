@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -72,14 +71,14 @@ public class DocumentationCommentServiceTest {
         JigMethod simpleMethod = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
-                        new MethodSignature("simpleMethod", new Arguments(Collections.emptyList())))))
+                        new MethodSignature("simpleMethod"))))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals("メソッドのドキュメント", simpleMethod.aliasTextOrBlank());
 
         JigMethod overloadMethod1 = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
                         new TypeIdentifier(KotlinMethodJavadocStub.class),
-                        new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
+                        new MethodSignature("overloadMethod"))))
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadMethod1.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 

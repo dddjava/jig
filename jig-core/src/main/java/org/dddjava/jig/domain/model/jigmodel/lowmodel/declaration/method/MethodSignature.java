@@ -20,6 +20,15 @@ public class MethodSignature {
         this.arguments = arguments;
     }
 
+    public MethodSignature(String methodName) {
+        this(methodName, Arguments.empty());
+    }
+
+    public MethodSignature(String methodName, TypeIdentifier argument) {
+        this(methodName, new Arguments(Collections.singletonList(argument)));
+    }
+
+
     public String asText() {
         return methodName + "(" + arguments.argumentsAsText() + ")";
     }
@@ -51,9 +60,9 @@ public class MethodSignature {
     }
 
     static List<MethodSignature> objectMethods = Arrays.asList(
-            new MethodSignature("equals", new Arguments(Collections.singletonList(new TypeIdentifier(Object.class)))),
-            new MethodSignature("hashCode", Arguments.empty()),
-            new MethodSignature("toString", Arguments.empty()));
+            new MethodSignature("equals", TypeIdentifier.of(Object.class)),
+            new MethodSignature("hashCode"),
+            new MethodSignature("toString"));
 
     public boolean isObjectMethod() {
         for (MethodSignature objectMethod : objectMethods) {

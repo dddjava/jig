@@ -31,27 +31,27 @@ public enum JigTypeValueKind {
         if (isCollectionField(fieldDeclarations)) {
             return コレクション;
         }
-        if (fieldDeclarations.matches((new TypeIdentifier(String.class)))) {
+        if (fieldDeclarations.matches((TypeIdentifier.of(String.class)))) {
             return 文字列;
         }
-        if (fieldDeclarations.matches(new TypeIdentifier(BigDecimal.class))
-                || fieldDeclarations.matches(new TypeIdentifier(Long.class))
-                || fieldDeclarations.matches(new TypeIdentifier(Integer.class))
-                || fieldDeclarations.matches(new TypeIdentifier(long.class))
-                || fieldDeclarations.matches(new TypeIdentifier(int.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.of(BigDecimal.class))
+                || fieldDeclarations.matches(TypeIdentifier.of(Long.class))
+                || fieldDeclarations.matches(TypeIdentifier.of(Integer.class))
+                || fieldDeclarations.matches(TypeIdentifier.of(long.class))
+                || fieldDeclarations.matches(TypeIdentifier.of(int.class))) {
             return 数値;
         }
-        if (fieldDeclarations.matches(new TypeIdentifier(LocalDate.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.of(LocalDate.class))) {
             return 日付;
         }
-        if (fieldDeclarations.matches(new TypeIdentifier(LocalDate.class), new TypeIdentifier(LocalDate.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.of(LocalDate.class), TypeIdentifier.of(LocalDate.class))) {
             return 期間;
         }
         return 不明;
     }
 
     private static boolean isCollectionField(FieldDeclarations fieldDeclarations) {
-        return (fieldDeclarations.matches(new TypeIdentifier(List.class))
-                || fieldDeclarations.matches(new TypeIdentifier(Set.class)));
+        return (fieldDeclarations.matches(TypeIdentifier.of(List.class))
+                || fieldDeclarations.matches(TypeIdentifier.of(Set.class)));
     }
 }

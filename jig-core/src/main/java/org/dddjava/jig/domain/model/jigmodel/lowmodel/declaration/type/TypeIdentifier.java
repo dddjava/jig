@@ -21,6 +21,10 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         this.value = value.replace('/', '.');
     }
 
+    public static TypeIdentifier of(Class<?> clz) {
+        return new TypeIdentifier(clz);
+    }
+
     public String fullQualifiedName() {
         return format(value -> value);
     }
@@ -84,7 +88,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
     public boolean isStream() {
         // java.util.streamパッケージかで見たほうがいいかも？
-        return equals(new TypeIdentifier(Stream.class));
+        return equals(TypeIdentifier.of(Stream.class));
     }
 
     public boolean isVoid() {
@@ -93,6 +97,10 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
     public boolean isJavaLanguageType() {
         return isPrimitive() || isVoid() || value.startsWith("java");
+    }
+
+    public boolean isEnum() {
+        return equals(TypeIdentifier.of(Enum.class));
     }
 
     @Override

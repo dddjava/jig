@@ -3,7 +3,6 @@ package org.dddjava.jig.application.service;
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -19,7 +18,6 @@ import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.JigServiceTest;
 
-import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,7 +68,7 @@ class DocumentationCommentServiceTest {
         JigMethod method = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("method", new Arguments(Collections.emptyList())))))
+                        new MethodSignature("method"))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
@@ -78,7 +76,7 @@ class DocumentationCommentServiceTest {
         JigMethod overloadedMethod = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("overloadMethod", new Arguments(Collections.singletonList(new TypeIdentifier(String.class)))))))
+                        new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
@@ -86,7 +84,7 @@ class DocumentationCommentServiceTest {
         JigMethod overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("overloadMethod", new Arguments(Collections.emptyList())))))
+                        new MethodSignature("overloadMethod"))))
                 .map(MethodFact::createMethod)
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));

@@ -6,8 +6,6 @@ public interface TreeComponent {
 
     String href();
 
-    String descriptionText();
-
     default boolean isPackage() {
         return this instanceof TreeComposite;
     }

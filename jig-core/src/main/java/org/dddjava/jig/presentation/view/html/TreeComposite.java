@@ -29,11 +29,6 @@ public class TreeComposite implements TreeComponent {
         return "#" + packageIdentifier.asText();
     }
 
-    @Override
-    public String descriptionText() {
-        return "";
-    }
-
     public PackageIdentifier packageIdentifier() {
         return packageIdentifier;
     }

@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -42,5 +43,12 @@ public class HandleResult {
 
     public JigDocument jigDocument() {
         return jigDocument;
+    }
+
+    public List<String> outputFileNames() {
+        return outputFilePaths.stream()
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .collect(Collectors.toList());
     }
 }

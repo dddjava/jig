@@ -9,37 +9,42 @@
     <h1>JIG</h1>
     <p>Java Instant-document Gazer</p>
 </header>
+
 <main>
     <section>
         <h2>概要: HTML</h2>
         <ul>
-            <li><a href="./domain.html">ドメイン概要</a></li>
-            <li><a href="./application.html">アプリケーション概要</a></li>
+            <li th:if="${DomainSummary}"><a href="#" th:href="${DomainSummary}">ドメイン概要</a></li>
+            <li th:if="${ApplicationSummary}"><a href="#" th:href="${ApplicationSummary}">アプリケーション概要</a></li>
         </ul>
     </section>
     <section>
         <h2>一覧: Excel</h2>
         <ul>
-            <li><a href="./business-rule.html">ビジネスルール一覧</a></li>
-            <li><a href="./application.xlsx">機能一覧</a></li>
+            <li th:if="${BusinessRuleList}"><a href="#" th:href="${BusinessRuleList}">ビジネスルール一覧</a></li>
+            <li th:if="${ApplicationList}"><a href="#" th:href="${ApplicationList}">機能一覧</a></li>
         </ul>
     </section>
 
     <section class="diagram">
         <h2>ダイアグラム: SVG</h2>
 
-        <img src="./architecture.svg">
-        <img src="./business-rule-core.svg">
-        <img src="./business-rule-relation.svg">
-        <img src="./category.svg">
-        <img src="./category-usage.svg">
-        <img src="./composite-usecase.svg">
-        <img src="./service-method-call-hierarchy.svg">
-        <img src="./service-method-call-hierarchy.svg">
-        <img src="./package-relation-depth6.svg">
-        <img src="./package-relation-depth7.svg">
-        <img src="./package-relation-depth8.svg">
-        <img src="./package-relation-depth9.svg">
+        <img th:if="${ArchitectureDiagram}" src="#" th:src="${ArchitectureDiagram}">
+
+        <th:block th:each="diagram : ${PackageRelationDiagram}">
+            <img src="#" th:src="${diagram}">
+        </th:block>
+
+        <img th:if="${CategoryDiagram}" src="#" th:src="${CategoryDiagram}">
+        <img th:if="${CategoryUsageDiagram}" src="#" th:src="${CategoryUsageDiagram}">
+
+        <img th:if="${CompositeUsecaseDiagram}" src="#" th:src="${CompositeUsecaseDiagram}">
+        <img th:if="${ServiceMethodCallHierarchyDiagram}" src="#" th:src="${ServiceMethodCallHierarchyDiagram}">
+
+        <img th:if="${CoreBusinessRuleRelationDiagram}" src="#" th:src="${CoreBusinessRuleRelationDiagram}">
+        <img th:if="${OverconcentrationBusinessRuleDiagram}" src="#" th:src="${OverconcentrationBusinessRuleDiagram}">
+        <img th:if="${BusinessRuleRelationDiagram}" src="#" th:src="${BusinessRuleRelationDiagram}">
+
     </section>
 </main>
 

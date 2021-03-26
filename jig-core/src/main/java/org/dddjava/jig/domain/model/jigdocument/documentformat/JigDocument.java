@@ -89,7 +89,11 @@ public enum JigDocument {
      * アプリケーション概要
      */
     ApplicationSummary("application"),
-    ;
+
+    /**
+     * 全体
+     */
+    Summary("index");
 
     private final String documentFileName;
 

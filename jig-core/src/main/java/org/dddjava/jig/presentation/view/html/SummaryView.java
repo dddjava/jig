@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdent
 import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
-import org.thymeleaf.context.Context;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -64,9 +63,7 @@ public class SummaryView implements JigView {
         contextMap.put("jigTypes", jigTypes);
         contextMap.put("categoriesMap", categoriesMap);
 
-        Context context = new Context(Locale.ROOT, contextMap);
-        String htmlText = templateEngine.process(
-                jigDocumentWriter.jigDocument().fileName(), context);
+        String htmlText = templateEngine.process(jigDocumentWriter, contextMap);
 
         jigDocumentWriter.writeHtml(outputStream -> {
             outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));

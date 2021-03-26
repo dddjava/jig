@@ -7,6 +7,7 @@ import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 import org.dddjava.jig.presentation.view.ViewResolver;
+import org.dddjava.jig.presentation.view.html.IndexHtmlView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,9 +106,17 @@ public class JigDocumentHandlers {
     public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
         List<HandleResult> handleResultList = new ArrayList<>();
         for (JigDocument jigDocument : jigDocuments) {
+            // Summaryはスキップ
+            if (jigDocument == JigDocument.Summary) continue;
+
             HandleResult result = handle(jigDocument, outputDirectory);
             handleResultList.add(result);
         }
+
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(JigDocument.Summary, outputDirectory);
+        IndexHtmlView indexHtmlView = new IndexHtmlView();
+        indexHtmlView.render(handleResultList, jigDocumentWriter);
+
         return handleResultList;
     }
 }

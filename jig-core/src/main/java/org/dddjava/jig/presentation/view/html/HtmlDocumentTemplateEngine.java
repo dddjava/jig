@@ -3,7 +3,9 @@ package org.dddjava.jig.presentation.view.html;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.dialect.IExpressionObjectDialect;
 import org.thymeleaf.expression.IExpressionObjectFactory;
@@ -11,22 +13,28 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 class HtmlDocumentTemplateEngine extends TemplateEngine {
 
     AliasFinder aliasFinder;
 
-    public HtmlDocumentTemplateEngine(AliasFinder aliasFinder) {
+    public HtmlDocumentTemplateEngine() {
         super();
-
-        this.aliasFinder = aliasFinder;
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setSuffix(".html");
         templateResolver.setPrefix("templates/");
-
         super.setTemplateResolver(templateResolver);
+    }
+
+    public HtmlDocumentTemplateEngine(AliasFinder aliasFinder) {
+        this();
+
+        this.aliasFinder = aliasFinder;
+
         super.addDialect(new IExpressionObjectDialect() {
             @Override
             public String getName() {
@@ -53,6 +61,11 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
                 };
             }
         });
+    }
+
+    public String process(JigDocumentWriter jigDocumentWriter, Map<String, Object> contextMap) {
+        Context context = new Context(Locale.ROOT, contextMap);
+        return process(jigDocumentWriter.jigDocument().fileName(), context);
     }
 
     class JigDialectObject {

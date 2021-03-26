@@ -83,7 +83,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     }
 
     public boolean isPrimitive() {
-        return value.matches("(int|long|boolean|double|float|byte|char|short)(\\[\\])?");
+        return value.matches("(int|long|boolean|double|float|byte|char|short)(\\[])?");
     }
 
     public boolean isStream() {

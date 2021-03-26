@@ -11,7 +11,9 @@
         <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
         <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
 
-        <section class="markdown" th:utext="${item.descriptionText()}">package-infoのJavadocコメントが表示されます</section>
+        <th:block th:with="description=${item.description()}">
+            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">package-infoのJavadocコメントが表示されます</section>
+        </th:block>
 
         <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
             <section th:if="${composite.hasChild()}">

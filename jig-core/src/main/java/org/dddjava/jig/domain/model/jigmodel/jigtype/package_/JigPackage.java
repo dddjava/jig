@@ -31,7 +31,7 @@ public class JigPackage {
         return packageAlias.summaryOrSimpleName();
     }
 
-    public String descriptionText() {
-        return packageAlias.descriptionText();
+    public JigPackageDescription description() {
+        return JigPackageDescription.from(packageAlias.descriptionComment());
     }
 }

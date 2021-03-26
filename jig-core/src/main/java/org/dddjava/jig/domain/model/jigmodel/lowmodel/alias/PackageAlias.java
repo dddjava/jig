@@ -37,7 +37,7 @@ public class PackageAlias {
         return packageIdentifier.simpleName();
     }
 
-    public String descriptionText() {
-        return documentationComment.fullText();
+    public DocumentationComment descriptionComment() {
+        return documentationComment;
     }
 }

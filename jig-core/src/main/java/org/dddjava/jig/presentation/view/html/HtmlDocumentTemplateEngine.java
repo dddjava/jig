@@ -13,11 +13,11 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import java.util.Collections;
 import java.util.Set;
 
-public class SummaryTemplateEngine extends TemplateEngine {
+class HtmlDocumentTemplateEngine extends TemplateEngine {
 
     AliasFinder aliasFinder;
 
-    public SummaryTemplateEngine(AliasFinder aliasFinder) {
+    public HtmlDocumentTemplateEngine(AliasFinder aliasFinder) {
         super();
 
         this.aliasFinder = aliasFinder;

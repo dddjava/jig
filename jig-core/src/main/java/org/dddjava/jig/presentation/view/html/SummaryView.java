@@ -21,11 +21,11 @@ import static java.util.stream.Collectors.*;
 public class SummaryView implements JigView {
 
     AliasFinder aliasFinder;
-    SummaryTemplateEngine templateEngine;
+    HtmlDocumentTemplateEngine templateEngine;
 
     public SummaryView(AliasFinder aliasFinder) {
         this.aliasFinder = aliasFinder;
-        this.templateEngine = new SummaryTemplateEngine(aliasFinder);
+        this.templateEngine = new HtmlDocumentTemplateEngine(aliasFinder);
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 public class DocumentationComment {
 
     String value;
+    volatile String firstSentence = null;
 
     private DocumentationComment(String value) {
         this.value = value;
@@ -24,15 +25,18 @@ public class DocumentationComment {
     }
 
     public String summaryText() {
+        if (firstSentence != null) return firstSentence;
         if (value.isEmpty()) {
-            return "";
+            firstSentence = "";
+            return firstSentence;
         }
 
-        return Stream.of(value.indexOf("\n"), value.indexOf("。"))
+        firstSentence = Stream.of(this.value.indexOf("\n"), this.value.indexOf("。"))
                 .filter(length -> length >= 0)
                 .min(Integer::compareTo)
-                .map(end -> value.substring(0, end))
-                .orElse(value); // 改行も句点も無い場合はそのまま返す
+                .map(end -> this.value.substring(0, end))
+                .orElse(this.value);
+        return firstSentence; // 改行も句点も無い場合はそのまま返す
     }
 
     public static DocumentationComment fromText(String sourceText) {
@@ -45,5 +49,14 @@ public class DocumentationComment {
 
     public String fullText() {
         return value;
+    }
+
+    public String bodyText() {
+        String firstSentence = summaryText();
+        if (firstSentence.equals(value)) {
+            return "";
+        }
+
+        return value.substring(firstSentence.length());
     }
 }

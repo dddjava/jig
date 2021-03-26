@@ -44,7 +44,7 @@ public class JigTypeAttribute {
                 .collect(Collectors.toList());
     }
 
-    public String descriptionText() {
-        return typeAlias.descriptionText();
+    public JigTypeDescription description() {
+        return JigTypeDescription.from(typeAlias.documentationComment());
     }
 }

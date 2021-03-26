@@ -86,8 +86,8 @@ public class JigType {
         return typeAlias().asTextOrIdentifierSimpleText();
     }
 
-    public String descriptionText() {
-        return jigTypeAttribute.descriptionText();
+    public JigTypeDescription description() {
+        return jigTypeAttribute.description();
     }
 
     public JigMethods instanceMethods() {

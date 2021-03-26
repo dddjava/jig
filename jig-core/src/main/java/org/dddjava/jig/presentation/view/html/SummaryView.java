@@ -44,7 +44,9 @@ public class SummaryView implements JigView {
 
         createTree(jigTypeMap, packageMap, baseComposite);
 
-        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream).collect(toList());
+        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
+                .sorted(Comparator.comparing(JigType::fqn))
+                .collect(toList());
 
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)

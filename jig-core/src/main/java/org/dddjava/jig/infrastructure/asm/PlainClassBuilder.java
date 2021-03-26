@@ -138,6 +138,15 @@ class PlainClassBuilder {
             return MethodDerivation.COMPILER_GENERATED;
         }
 
+        if (superType.typeIdentifier().isEnum() && (access & Opcodes.ACC_STATIC) != 0) {
+            // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
+            if (methodSignature.isSame(new MethodSignature("values"))) {
+                return MethodDerivation.COMPILER_GENERATED;
+            } else if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.of(String.class)))) {
+                return MethodDerivation.COMPILER_GENERATED;
+            }
+        }
+
         return MethodDerivation.PROGRAMMER;
     }
 }

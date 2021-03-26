@@ -1,0 +1,43 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.2.0.1.min.js"></script>
+</head>
+<body>
+
+<main>
+    <section class="type">
+
+        <th:block th:fragment="methodTable(caption, list)">
+        <table th:unless="${list.isEmpty()}">
+            <caption th:text="${caption}">メソッド</caption>
+            <thead>
+            <tr>
+                <th width="20%">名前</th>
+                <th>引数</th>
+                <th>戻り値型</th>
+                <th>説明</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="method : ${list}">
+                <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
+                <td>
+                    <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
+                       th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
+                </td>
+                <td>
+                    <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
+                       th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
+                    </a>
+                </td>
+                <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
+            </tr>
+        </table>
+        </th:block>
+    </section>
+</main>
+
+</body>
+</html>

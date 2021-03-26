@@ -23,57 +23,12 @@
             </ul>
         </section>
 
-        <table th:unless="${item.instanceMethods().empty()}">
-            <caption>メソッド</caption>
-            <thead>
-            <tr>
-                <th width="20%">名前</th>
-                <th>引数</th>
-                <th>戻り値型</th>
-                <th>説明</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="method : ${item.instanceMethods().listRemarkable()}">
-                <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
-                <td>
-                    <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
-                       th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
-                </td>
-                <td>
-                    <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                       th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                    </a>
-                </td>
-                <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
-            </tr>
-        </table>
-
-        <table th:unless="${item.staticMethods().empty()}">
-            <caption>staticメソッド</caption>
-            <thead>
-            <tr>
-                <th width="20%">名前</th>
-                <th>引数</th>
-                <th>戻り値型</th>
-                <th>説明</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="method : ${item.staticMethods().listRemarkable()}">
-                <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
-                <td>
-                    <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
-                       th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
-                </td>
-                <td>
-                    <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                       th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                    </a>
-                </td>
-                <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
-            </tr>
-        </table>
+        <th:block th:replace="fragment-method :: methodTable(caption='メソッド', list=${item.instanceMethods().listRemarkable()})">
+            メソッドテーブル
+        </th:block>
+        <th:block th:replace="fragment-method :: methodTable(caption='staticメソッド', list=${item.staticMethods().listRemarkable()})">
+            メソッドテーブル
+        </th:block>
     </section>
 </main>
 

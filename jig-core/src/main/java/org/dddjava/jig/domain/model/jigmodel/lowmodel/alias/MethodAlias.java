@@ -40,8 +40,8 @@ public class MethodAlias {
         return methodIdentifier.matchesIgnoreOverload(this.methodIdentifier);
     }
 
-    public String descriptionText() {
-        return documentationComment.fullText();
+    public DocumentationComment documentationComment() {
+        return documentationComment;
     }
 
     public boolean exists() {

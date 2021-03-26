@@ -25,7 +25,7 @@ class PackageInfoReader {
         Optional<DocumentationComment> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
-                .map(DocumentationComment::fromText);
+                .map(DocumentationComment::fromCodeComment);
 
         return optPackageIdentifier.flatMap(packageIdentifier -> optAlias.map(alias ->
                 new PackageAlias(packageIdentifier, alias)));

@@ -31,6 +31,7 @@ public class DocumentationComment {
             return firstSentence;
         }
 
+        // 改行や句点の手前まで。
         firstSentence = Stream.of(this.value.indexOf("\n"), this.value.indexOf("。"))
                 .filter(length -> length >= 0)
                 .min(Integer::compareTo)
@@ -39,7 +40,7 @@ public class DocumentationComment {
         return firstSentence; // 改行も句点も無い場合はそのまま返す
     }
 
-    public static DocumentationComment fromText(String sourceText) {
+    public static DocumentationComment fromCodeComment(String sourceText) {
         return new DocumentationComment(sourceText);
     }
 
@@ -52,11 +53,12 @@ public class DocumentationComment {
     }
 
     public String bodyText() {
-        String firstSentence = summaryText();
-        if (firstSentence.equals(value)) {
+        // 改行や句点を除くために+1
+        int beginIndex = summaryText().length() + 1;
+        if (value.length() <= beginIndex) {
             return "";
         }
 
-        return value.substring(firstSentence.length());
+        return value.substring(beginIndex);
     }
 }

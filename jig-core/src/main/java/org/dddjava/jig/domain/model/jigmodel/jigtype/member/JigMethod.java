@@ -100,8 +100,8 @@ public class JigMethod {
                         + declaration().methodSignature().methodName());
     }
 
-    public String descriptionText() {
-        return methodAlias.descriptionText();
+    public JigMethodDescription description() {
+        return JigMethodDescription.from(methodAlias.documentationComment());
     }
 
     public String labelTextWithSymbol() {

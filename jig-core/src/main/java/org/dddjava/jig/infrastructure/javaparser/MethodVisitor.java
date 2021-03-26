@@ -34,7 +34,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
                                     // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
                                     new Arguments(Collections.emptyList())
                             )),
-                    DocumentationComment.fromText(javadocText)
+                    DocumentationComment.fromCodeComment(javadocText)
             );
             methodAliases.add(methodAlias);
         });

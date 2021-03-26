@@ -37,7 +37,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
             return;
         }
         TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
-        typeJapaneseAliases.add(new TypeAlias(identifier, DocumentationComment.fromText(text)));
+        typeJapaneseAliases.add(new TypeAlias(identifier, DocumentationComment.fromCodeComment(text)));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
         }
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, new Arguments(args)));
-        methodList.add(new MethodAlias(methodIdentifier, DocumentationComment.fromText(text)));
+        methodList.add(new MethodAlias(methodIdentifier, DocumentationComment.fromCodeComment(text)));
     }
 
     private KtClass findKtClass(KtNamedFunction function) {

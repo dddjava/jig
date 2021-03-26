@@ -45,7 +45,7 @@
                        th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
                     </a>
                 </td>
-                <td class="markdown" th:utext="${method.descriptionText()}">javadoc comment</td>
+                <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
             </tr>
         </table>
 
@@ -71,7 +71,7 @@
                        th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
                     </a>
                 </td>
-                <td class="markdown" th:utext="${method.descriptionText()}">javadoc comment</td>
+                <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
             </tr>
         </table>
     </section>

@@ -39,7 +39,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
-            typeAlias = new TypeAlias(typeIdentifier, DocumentationComment.fromText(javadocText));
+            typeAlias = new TypeAlias(typeIdentifier, DocumentationComment.fromCodeComment(javadocText));
         });
         node.accept(new MethodVisitor(typeIdentifier), methodAliases);
     }

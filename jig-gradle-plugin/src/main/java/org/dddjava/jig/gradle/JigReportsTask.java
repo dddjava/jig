@@ -18,7 +18,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -58,12 +57,8 @@ public class JigReportsTask extends DefaultTask {
             }
         }
 
-        List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = outputDirectory(config);
-        for (JigDocument jigDocument : jigDocuments) {
-            HandleResult result = jigDocumentHandlers.handle(jigDocument, outputDirectory);
-            handleResultList.add(result);
-        }
+        List<HandleResult> handleResultList = jigDocumentHandlers.handleJigDocuments(jigDocuments, outputDirectory);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

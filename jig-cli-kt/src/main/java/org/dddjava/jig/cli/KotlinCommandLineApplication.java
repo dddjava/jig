@@ -18,7 +18,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -65,12 +64,8 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
             }
         }
 
-        List<HandleResult> handleResultList = new ArrayList<>();
         Path outputDirectory = cliConfig.outputDirectory();
-        for (JigDocument jigDocument : jigDocuments) {
-            HandleResult result = jigDocumentHandlers.handle(jigDocument, outputDirectory);
-            handleResultList.add(result);
-        }
+        List<HandleResult> handleResultList = jigDocumentHandlers.handleJigDocuments(jigDocuments, outputDirectory);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

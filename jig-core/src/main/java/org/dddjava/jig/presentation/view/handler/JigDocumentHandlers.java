@@ -16,9 +16,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class JigDocumentHandlers {
 
@@ -58,7 +56,7 @@ public class JigDocumentHandlers {
         throw new IllegalStateException("cannot find handler method for " + jigDocument);
     }
 
-    public HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
+    HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
             Object model = invokeHandlerMethod(jigDocument);
 
@@ -102,5 +100,14 @@ public class JigDocumentHandlers {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
+        List<HandleResult> handleResultList = new ArrayList<>();
+        for (JigDocument jigDocument : jigDocuments) {
+            HandleResult result = handle(jigDocument, outputDirectory);
+            handleResultList.add(result);
+        }
+        return handleResultList;
     }
 }

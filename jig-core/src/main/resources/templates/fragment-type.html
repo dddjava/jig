@@ -32,7 +32,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="method : ${item.instanceMethods().list()}">
+            <tr th:each="method : ${item.instanceMethods().listRemarkable()}">
                 <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
                 <td>
                     <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
@@ -58,7 +58,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="method : ${item.staticMethods().list()}">
+            <tr th:each="method : ${item.staticMethods().listRemarkable()}">
                 <td class="method-name" th:text="${method.labelTextWithSymbol()}">xxx</td>
                 <td>
                     <a class="method-argument-item" th:each="arg : ${method.listArguments()}"

@@ -43,4 +43,8 @@ public class MethodAlias {
     public String descriptionText() {
         return documentationComment.fullText();
     }
+
+    public boolean exists() {
+        return documentationComment.exists();
+    }
 }

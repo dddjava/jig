@@ -124,4 +124,9 @@ public class JigMethod {
     public boolean documented() {
         return !methodAlias.descriptionText().isEmpty();
     }
+
+    public boolean remarkable() {
+        return visibility == Visibility.PUBLIC
+                || methodAlias.exists();
+    }
 }

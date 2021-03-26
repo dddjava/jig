@@ -24,6 +24,15 @@ public class JigMethods {
         return list.stream().map(JigMethod::declaration).collect(MethodDeclarations.collector());
     }
 
+    public List<JigMethod> listRemarkable() {
+        return list.stream()
+                .filter(JigMethod::remarkable)
+                .sorted(Comparator
+                        .comparing(JigMethod::visibility)
+                        .thenComparing(jigMethod -> jigMethod.declaration().asFullNameText()))
+                .collect(Collectors.toList());
+    }
+
     public List<JigMethod> list() {
         return list.stream()
                 .sorted(Comparator

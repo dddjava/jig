@@ -122,11 +122,10 @@ public class JigMethod {
     }
 
     public boolean documented() {
-        return !methodAlias.descriptionText().isEmpty();
+        return methodAlias.exists();
     }
 
     public boolean remarkable() {
-        return visibility == Visibility.PUBLIC
-                || methodAlias.exists();
+        return visibility == Visibility.PUBLIC || documented();
     }
 }

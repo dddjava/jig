@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.GeneratedBy;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDerivation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 
 import java.util.Comparator;
@@ -51,9 +51,9 @@ public class JigMethods {
                 .collect(Collectors.toList());
     }
 
-    public JigMethods excludeCompilerGenerated() {
+    public JigMethods filterProgrammerDefined() {
         return new JigMethods(list.stream()
-                .filter(jigMethod -> GeneratedBy.COMPILER != jigMethod.generatedBy())
+                .filter(jigMethod -> MethodDerivation.PROGRAMMER == jigMethod.derivation())
                 .collect(Collectors.toList()));
     }
 

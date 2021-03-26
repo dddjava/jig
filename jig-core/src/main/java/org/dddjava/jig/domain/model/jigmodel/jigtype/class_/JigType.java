@@ -92,12 +92,12 @@ public class JigType {
 
     public JigMethods instanceMethods() {
         return instanceMember().instanceMethods()
-                .excludeCompilerGenerated()
+                .filterProgrammerDefined()
                 .excludeNotNoteworthyObjectMethod();
     }
 
     public JigMethods staticMethods() {
-        return staticMember().staticMethods().excludeCompilerGenerated();
+        return staticMember().staticMethods().filterProgrammerDefined();
     }
 
     public JigTypeValueKind toValueKind() {

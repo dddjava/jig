@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.GeneratedBy;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDerivation;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
@@ -29,9 +29,9 @@ public class JigMethod {
     Visibility visibility;
 
     MethodDepend methodDepend;
-    GeneratedBy generatedBy;
+    MethodDerivation methodDerivation;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, GeneratedBy generatedBy) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation) {
         this.methodDeclaration = methodDeclaration;
         this.methodAlias = methodAlias;
         this.nullDecision = nullDecision;
@@ -39,7 +39,7 @@ public class JigMethod {
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDepend = methodDepend;
-        this.generatedBy = generatedBy;
+        this.methodDerivation = methodDerivation;
     }
 
     public MethodDeclaration declaration() {
@@ -113,8 +113,8 @@ public class JigMethod {
         return declaration().methodSignature().arguments();
     }
 
-    public GeneratedBy generatedBy() {
-        return generatedBy;
+    public MethodDerivation derivation() {
+        return methodDerivation;
     }
 
     public boolean objectMethod() {

@@ -124,13 +124,20 @@ class PlainClassBuilder {
             methodFactCollector = staticMethodFacts;
         }
 
-        GeneratedBy generatedBy = checkGenerated(methodSignature.methodName(), access) ? GeneratedBy.COMPILER : GeneratedBy.PROGRAMMER;
-        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes, generatedBy);
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
+        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes, methodDerivation);
     }
 
-    private boolean checkGenerated(String name, int access) {
-        return "<init>".equals(name) || "<clinit>".equals(name)
-                || (access & Opcodes.ACC_BRIDGE) != 0
-                || (access & Opcodes.ACC_SYNTHETIC) != 0;
+    private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, int access) {
+        String name = methodSignature.methodName();
+        if ("<init>".equals(name) || "<clinit>".equals(name)) {
+            return MethodDerivation.CONSTRUCTOR;
+        }
+
+        if ((access & Opcodes.ACC_BRIDGE) != 0 || (access & Opcodes.ACC_SYNTHETIC) != 0) {
+            return MethodDerivation.COMPILER_GENERATED;
+        }
+
+        return MethodDerivation.PROGRAMMER;
     }
 }

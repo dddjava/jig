@@ -25,7 +25,7 @@ public class MethodFact {
 
     MethodDeclaration methodDeclaration;
     Visibility visibility;
-    GeneratedBy generatedBy;
+    MethodDerivation methodDerivation;
     List<TypeIdentifier> throwsTypes;
 
     List<Annotation> annotations;
@@ -49,10 +49,10 @@ public class MethodFact {
 
     private MethodAlias methodAlias;
 
-    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, GeneratedBy generatedBy, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
+    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
-        this.generatedBy = generatedBy;
+        this.methodDerivation = methodDerivation;
         this.throwsTypes = throwsTypes;
         this.useTypes.addAll(throwsTypes);
 
@@ -90,7 +90,7 @@ public class MethodFact {
                 annotatedMethods(),
                 visibility,
                 methodDepend(),
-                generatedBy);
+                methodDerivation);
     }
 
     public MethodDepend methodDepend() {

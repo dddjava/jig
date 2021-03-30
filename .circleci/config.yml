@@ -41,7 +41,7 @@ commands:
       - pre-build
       - run: ./gradlew build
       - post-build
-  releaseSnapshot:
+  release-snapshot:
     steps:
       - pre-build
       - run: |
@@ -122,7 +122,7 @@ workflows:
       - build-java-11:
           requires:
             - build-java-8
-      - releaseSnapshot:
+      - release-snapshot:
           requires:
             - build-java-8
       - update-bucket:

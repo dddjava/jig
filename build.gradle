@@ -5,14 +5,13 @@
 plugins {
     id 'org.springframework.boot' version '2.4.4' apply false
     id 'com.gradle.plugin-publish' version '0.13.0' apply false
-    id 'com.jfrog.bintray' version '1.8.5' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2021.3.3' apply false
     id "com.github.hierynomus.license" version "0.15.0"
     id "org.jetbrains.kotlin.jvm" version "1.4.32" apply false
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 downloadLicenses {
@@ -34,7 +33,7 @@ subprojects {
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -80,7 +79,7 @@ String findSettingValue(String envName, String propertyName) {
 project(':jig-core') {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
-    apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'signing'
     apply plugin: 'org.dddjava.jig-gradle-plugin'
 
     ext {
@@ -88,8 +87,19 @@ project(':jig-core') {
     }
 
     publishing {
+        // 公開先リポジトリ
+        repositories {
+            maven {
+                name = 'ossrh'
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials(PasswordCredentials)
+            }
+        }
+
         publications {
-            maven(MavenPublication) {
+            mavenJava(MavenPublication) {
                 groupId project.group
                 artifactId project.artifactId
                 version project.version
@@ -109,7 +119,7 @@ project(':jig-core') {
                         developer {
                             id = "irof"
                             name = "irof"
-                            email = "irof@hogedriven.net"
+                            email = "irof.ocean@gmail.com"
                         }
                         developer {
                             id = "haljik"
@@ -118,39 +128,27 @@ project(':jig-core') {
                         }
                     }
                     scm {
+                        connection = 'scm:git:git://github.com/dddjava/jig.git'
+                        developerConnection = 'scm:git:git://github.com/dddjava/jig.git'
                         url = "https://github.com/dddjava/jig.git"
                     }
                 }
             }
         }
     }
-
-    bintray {
-        user = findSettingValue('BINTRAY_USER', 'bintray.user');
-        key = findSettingValue('BINTRAY_APIKEY', 'bintray.apikey')
-
-        configurations = ['archives']
-        publications = ['maven']
-        pkg {
-            repo = 'jig'
-            name = 'jig-core'
-            desc = 'Core of JIG'
-            userOrg = 'dddjava'
-            websiteUrl = 'https://github.com/dddjava/jig'
-            vcsUrl = 'https://github.com/dddjava/jig.git'
-            licenses = ["Apache-2.0"]
-            publish = true
-            publicDownloadNumbers = true
+    signing {
+        def signingKeyId = findProperty("signingKeyId")
+        // keyIdがセットされている時のみ有効（通常のビルドができなくなるため）
+        if (signingKeyId) {
+            def signingKey = findProperty("signingKey")
+            def signingPassword = findProperty("signingPassword")
+            useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+            sign publishing.publications.mavenJava
         }
     }
-
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     dependencies {

@@ -54,7 +54,7 @@ commands:
       - store_artifacts:
           path: example
           destination: example
-      - run: ./gradlew :jig-core:bintrayUpload :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
+      - run: ./gradlew :jig-core:publish :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
 
       # licenses
       - run: ./gradlew downloadLicenses

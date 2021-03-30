@@ -41,31 +41,6 @@ commands:
       - pre-build
       - run: ./gradlew build
       - post-build
-  release:
-    steps:
-      - store_artifacts:
-          path: jig-cli/build/libs
-          destination: module
-      - store_artifacts:
-          path: jig-cli-kt/build/libs
-          destination: module
-      - run: |
-         java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example
-      - store_artifacts:
-          path: example
-          destination: example
-      - run: ./gradlew :jig-core:publish :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
-
-      # licenses
-      - run: ./gradlew downloadLicenses
-      - store_artifacts:
-          path: build/reports/license
-  build-release:
-    steps:
-      - pre-build
-      - run: ./gradlew build -Pversion=${CIRCLE_TAG}
-      - post-build
-      - release
 
 jobs:
   build-java-8:
@@ -76,18 +51,43 @@ jobs:
     executor: circleci-openjdk-11-executor
     steps:
       - build
-  release-build:
-    executor: circleci-openjdk-8-executor
-    steps:
-      - build-release
-  release-snapshot:
+  publish:
     executor: circleci-openjdk-8-executor
     steps:
       - pre-build
-      - run: |
-          ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
-          ./gradlew build -Pversion=0.0.0-SNAPSHOT
-          ./gradlew jig-core:publish -Pversion=0.0.0-SNAPSHOT
+      - run:
+          name: build and publish
+          command: |
+            ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
+            ./gradlew build :jig-core:publish :jig-gradle-plugin:publishPlugins -Pversion=${CIRCLE_TAG}
+      - post-build
+      - store_artifacts:
+          path: jig-cli/build/libs
+          destination: module
+      - store_artifacts:
+          path: jig-cli-kt/build/libs
+          destination: module
+      - run:
+          name: Dogfooding
+          command: |
+            java -jar jig-cli/build/libs/jig-cli.jar --outputDirectory=example
+      - store_artifacts:
+          path: example
+          destination: example
+      - run:
+          name: lisence
+          command: ./gradlew downloadLicenses
+      - store_artifacts:
+          path: build/reports/license
+  publish-snapshot:
+    executor: circleci-openjdk-8-executor
+    steps:
+      - pre-build
+      - run:
+          name: build and publish
+          command: |
+            ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
+            ./gradlew jig-core:publish -Pversion=0.0.0-SNAPSHOT
 
 workflows:
   version: 2
@@ -100,12 +100,12 @@ workflows:
       - build-java-11:
           requires:
             - build-java-8
-      - release-snapshot:
+      - publish-snapshot:
           requires:
             - build-java-8
   release:
     jobs:
-      - release-build:
+      - publish:
           filters:
             branches:
               ignore: /.*/

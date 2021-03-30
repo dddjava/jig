@@ -87,30 +87,6 @@ jobs:
       - run: |
           ./gradlew build -Pversion=0.0.0-SNAPSHOT
           ./gradlew jig-core:publish -Pversion=0.0.0-SNAPSHOT
-  update-bucket:
-    docker:
-      - image: irof/gam:latest
-    steps:
-      - checkout
-      - restore_cache:
-          key: update-bucket-gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: compile jig-core
-          command: gradle :jig-core:build -x test
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: update-bucket-gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: documentation with jig-gradle-plubin
-          command: |
-            gradle jig
-      - run:
-          name: upload s3
-          command: |
-            pwd
-            cd jig-core
-            aws s3 sync ./build/jig ${AWS_S3_URL}/jig/master
 
 workflows:
   version: 2
@@ -126,10 +102,6 @@ workflows:
       - release-snapshot:
           requires:
             - build-java-8
-      - update-bucket:
-          filters:
-            branches:
-              only: 'master'
   release:
     jobs:
       - release-build:

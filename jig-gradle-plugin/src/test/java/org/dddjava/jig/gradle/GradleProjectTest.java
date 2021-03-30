@@ -9,6 +9,7 @@ import org.gradle.api.internal.project.ConfigurationOnDemandProjectAccessListene
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.initialization.ProjectAccessListener;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -195,7 +196,18 @@ class GradleProjectTest {
     }
 
     private static DefaultProjectDependency dependencyOf(ProjectInternal nonJavaChild) {
-        return new DefaultProjectDependency(nonJavaChild, new ConfigurationOnDemandProjectAccessListener(), true);
+        ConfigurationOnDemandProjectAccessListener listener = new ConfigurationOnDemandProjectAccessListener();
+        return new DefaultProjectDependency(nonJavaChild, new ProjectAccessListener() {
+            @Override
+            public void beforeRequestingTaskByPath(ProjectInternal projectInternal) {
+                listener.beforeRequestingTaskByPath(projectInternal);
+            }
+
+            @Override
+            public void beforeResolvingProjectDependency(ProjectInternal projectInternal) {
+                listener.beforeResolvingProjectDependency(projectInternal);
+            }
+        }, true);
     }
 
     private static ProjectInternal projectOf(String name, Path tempDir) {

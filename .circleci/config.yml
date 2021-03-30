@@ -58,8 +58,8 @@ jobs:
       - run:
           name: build and publish
           command: |
-            ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
-            ORG_GRADLE_PROJECT_version=${CIRCLE_TAG}
+            export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
+            export ORG_GRADLE_PROJECT_version=${CIRCLE_TAG}
             ./gradlew build :jig-core:publish :jig-gradle-plugin:publishPlugins
       - post-build
       - store_artifacts:
@@ -87,8 +87,8 @@ jobs:
       - run:
           name: build and publish
           command: |
-            ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
-            ORG_GRADLE_PROJECT_version=0.0.0-SNAPSHOT
+            export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
+            export ORG_GRADLE_PROJECT_version=0.0.0-SNAPSHOT
             ./gradlew build jig-core:publish -x test
 
 workflows:

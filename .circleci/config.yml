@@ -41,6 +41,12 @@ commands:
       - pre-build
       - run: ./gradlew build
       - post-build
+  releaseSnapshot:
+    steps:
+      - pre-build
+      - run: |
+         ./gradlew build -Pversion=0.0.0-SNAPSHOT
+         ./gradlew jig-core:publish -Pversion=0.0.0-SNAPSHOT
   release:
     steps:
       - store_artifacts:
@@ -114,6 +120,9 @@ workflows:
             branches:
               only: 'master'
       - build-java-11:
+          requires:
+            - build-java-8
+      - releaseSnapshot:
           requires:
             - build-java-8
       - update-bucket:

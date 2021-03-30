@@ -85,6 +85,7 @@ jobs:
     steps:
       - pre-build
       - run: |
+          ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
           ./gradlew build -Pversion=0.0.0-SNAPSHOT
           ./gradlew jig-core:publish -Pversion=0.0.0-SNAPSHOT
 

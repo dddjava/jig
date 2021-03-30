@@ -138,9 +138,9 @@ project(':jig-core') {
     }
     signing {
         def signingKeyId = findProperty("signingKeyId")
-        // keyIdがセットされている時のみ有効（通常のビルドができなくなるため）
-        if (signingKeyId) {
-            def signingKey = findProperty("signingKey")
+        def signingKey = findProperty("signingKey")
+        // keyがセットされている時のみ有効（通常のビルドができなくなるため）
+        if (signingKeyId && signingKey) {
             def signingPassword = findProperty("signingPassword")
             useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
             sign publishing.publications.mavenJava

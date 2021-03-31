@@ -4,14 +4,28 @@
 //}
 plugins {
     id 'org.springframework.boot' version '2.4.4' apply false
-    id 'com.gradle.plugin-publish' version '0.13.0' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2021.3.3' apply false
     id "com.github.hierynomus.license" version "0.15.0"
     id "org.jetbrains.kotlin.jvm" version "1.4.32" apply false
+    id 'com.gradle.plugin-publish' version '0.13.0' apply false
+    id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
 }
 
-repositories {
-    mavenCentral()
+allprojects {
+    group = 'org.dddjava.jig'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
 }
 
 downloadLicenses {
@@ -21,8 +35,6 @@ downloadLicenses {
 subprojects {
     apply plugin: 'java'
 
-    group = 'org.dddjava.jig'
-
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
 
@@ -30,10 +42,6 @@ subprojects {
 
     [AbstractCompile, Javadoc].each {
       tasks.withType(it).each { it.options.encoding = defaultEncoding }
-    }
-
-    repositories {
-        mavenCentral()
     }
 
     dependencies {
@@ -87,16 +95,6 @@ project(':jig-core') {
     }
 
     publishing {
-        // 公開先リポジトリ
-        repositories {
-            maven {
-                name = 'ossrh'
-                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-                credentials(PasswordCredentials)
-            }
-        }
 
         publications {
             mavenJava(MavenPublication) {
@@ -145,6 +143,7 @@ project(':jig-core') {
             useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
             sign publishing.publications.mavenJava
         }
+        sign publishing.publications.mavenJava
     }
     java {
         withJavadocJar()

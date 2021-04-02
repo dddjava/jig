@@ -18,6 +18,8 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
@@ -25,9 +27,10 @@ public class JigTestExtension implements ParameterResolver {
 
     public final Configuration configuration;
 
-    public JigTestExtension() {
+    public JigTestExtension() throws Exception {
+        Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
-                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", "", "stub.infrastructure.+", "", LinkPrefix.disable(), null, null),
+                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", "", "stub.infrastructure.+", "", LinkPrefix.disable(), tempDir, null),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

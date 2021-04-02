@@ -31,14 +31,12 @@
 
         <img th:if="${ArchitectureDiagram}" src="#" th:src="${ArchitectureDiagram}">
 
-        <th:block th:each="diagram : ${PackageRelationDiagram}">
-            <img src="#" th:src="${diagram}">
-        </th:block>
+        <img src="#" th:each="diagram : ${PackageRelationDiagram}" th:src="${diagram}">
 
         <img th:if="${CategoryDiagram}" src="#" th:src="${CategoryDiagram}">
         <img th:if="${CategoryUsageDiagram}" src="#" th:src="${CategoryUsageDiagram}">
 
-        <img th:if="${CompositeUsecaseDiagram}" src="#" th:src="${CompositeUsecaseDiagram}">
+        <img src="#" th:each="diagram : ${CompositeUsecaseDiagram}" th:src="${diagram}">
         <img th:if="${ServiceMethodCallHierarchyDiagram}" src="#" th:src="${ServiceMethodCallHierarchyDiagram}">
 
         <img th:if="${CoreBusinessRuleRelationDiagram}" src="#" th:src="${CoreBusinessRuleRelationDiagram}">

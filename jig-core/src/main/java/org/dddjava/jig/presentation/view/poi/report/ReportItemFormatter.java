@@ -90,7 +90,7 @@ public class ReportItemFormatter {
                 }
                 return;
             case 使用箇所:
-                cell.setCellValue(((TypeIdentifiers) item).asSimpleText());
+                writeLongString(cell, ((TypeIdentifiers) item).asSimpleText());
                 return;
             case クラス数:
                 cell.setCellValue(((BusinessRules) item).list().size());

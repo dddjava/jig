@@ -4,12 +4,10 @@ import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatuses;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
+import org.dddjava.jig.presentation.controller.JigExecutor;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.gradle.api.DefaultTask;
@@ -38,27 +36,11 @@ public class JigReportsTask extends DefaultTask {
         long startTime = System.currentTimeMillis();
         JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
-
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
-        AnalyzedImplementation implementations = jigSourceReadService.readSourceFromPaths(sourcePaths);
-
-        AnalyzeStatuses status = implementations.status();
-        if (status.hasError()) {
-            getLogger().warn(jigMessages.getString("failure"));
-            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
-                getLogger().warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
-            }
-            return;
-        }
-        if (status.hasWarning()) {
-            getLogger().warn(jigMessages.getString("implementation.warning"));
-            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
-                getLogger().warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
-            }
-        }
-
         Path outputDirectory = outputDirectory(config);
-        List<HandleResult> handleResultList = jigDocumentHandlers.handleJigDocuments(jigDocuments, outputDirectory);
+
+        List<HandleResult> handleResultList =
+                JigExecutor.execute(jigDocuments, jigSourceReadService, jigDocumentHandlers, sourcePaths, outputDirectory, getLogger());
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

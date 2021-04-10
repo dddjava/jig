@@ -3,11 +3,9 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzeStatuses;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
+import org.dddjava.jig.presentation.controller.JigExecutor;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
@@ -45,27 +43,10 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
         JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
-
         SourcePaths sourcePaths = cliConfig.rawSourceLocations();
-        AnalyzedImplementation implementations = jigSourceReadService.readSourceFromPaths(sourcePaths);
+        Path outputDirectory = configuration.outputDirectory();
 
-        AnalyzeStatuses status = implementations.status();
-        if (status.hasError()) {
-            LOGGER.warn(jigMessages.getString("failure"));
-            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
-                LOGGER.warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
-            }
-            return;
-        }
-        if (status.hasWarning()) {
-            LOGGER.warn(jigMessages.getString("implementation.warning"));
-            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
-                LOGGER.warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
-            }
-        }
-
-        Path outputDirectory = cliConfig.outputDirectory();
-        List<HandleResult> handleResultList = jigDocumentHandlers.handleJigDocuments(jigDocuments, outputDirectory);
+        List<HandleResult> handleResultList = JigExecutor.execute(jigDocuments, jigSourceReadService, jigDocumentHandlers, sourcePaths, outputDirectory, LOGGER);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

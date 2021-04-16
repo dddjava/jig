@@ -3,7 +3,7 @@
 //    dependencies { classpath 'org.dddjava.jig:jig-gradle-plugin:+' }
 //}
 plugins {
-    id 'org.springframework.boot' version '2.4.4' apply false
+    id 'org.springframework.boot' version '2.4.5' apply false
     id 'org.dddjava.jig-gradle-plugin' version '2021.3.3' apply false
     id "com.github.hierynomus.license" version "0.15.0"
     id "org.jetbrains.kotlin.jvm" version "1.4.32" apply false

@@ -2,8 +2,9 @@ package org.dddjava.jig.domain.model.parts.annotation;
 
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,19 +25,6 @@ public class Annotations {
                 .filter(e -> annotations.contains(e.typeIdentifier))
                 .collect(toList());
         return new Annotations(list);
-    }
-
-    public List<String> descriptionTextsOf(String name) {
-        return list.stream()
-                .map(e -> e.descriptionTextOf(name))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    public Annotation get(TypeIdentifier typeIdentifier) {
-        return list.stream().filter(e -> e.typeIdentifier.equals(typeIdentifier))
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException(typeIdentifier.fullQualifiedName()));
     }
 
     public List<Annotation> list() {

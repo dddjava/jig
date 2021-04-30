@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
@@ -40,6 +39,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AsmFactReaderTest {
 
@@ -181,21 +181,8 @@ public class AsmFactReaderTest {
         TypeFact actual = exercise(FieldDefinition.class);
 
         FieldDeclarations fieldDeclarations = actual.fieldDeclarations();
-        assertThat(fieldDeclarations.list())
-                .extracting(FieldDeclaration::nameText)
-                .containsExactlyInAnyOrder(
-                        "instanceField",
-                        "genericFields",
-                        "arrayFields",
-                        "obj"
-                );
-
-        FieldDeclaration genericField = fieldDeclarations.list().stream()
-                .filter(fieldDeclaration -> fieldDeclaration.nameText().equals("genericFields"))
-                .findAny()
-                .orElseThrow(AssertionError::new);
-        assertThat(genericField.fieldType().typeParameterTypeIdentifiers().list())
-                .containsExactly(new TypeIdentifier(GenericField.class));
+        String fieldsText = fieldDeclarations.toSignatureText();
+        assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())

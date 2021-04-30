@@ -18,11 +18,6 @@ public class FieldDeclarations {
         this.list = list;
     }
 
-    @Deprecated
-    public List<FieldDeclaration> list() {
-        return list;
-    }
-
     public String toSignatureText() {
         return list.stream()
                 .map(FieldDeclaration::signatureText)

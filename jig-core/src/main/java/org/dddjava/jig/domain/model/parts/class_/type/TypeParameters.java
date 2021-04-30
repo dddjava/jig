@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.type;
+package org.dddjava.jig.domain.model.parts.class_.type;
 
 import java.util.List;
 import java.util.stream.Collectors;

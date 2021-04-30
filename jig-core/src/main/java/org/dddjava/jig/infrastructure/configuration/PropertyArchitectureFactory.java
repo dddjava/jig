@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.regex.Pattern;

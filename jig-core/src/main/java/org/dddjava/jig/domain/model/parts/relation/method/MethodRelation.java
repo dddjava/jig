@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 
 /**
  * メソッドの使用しているメソッド

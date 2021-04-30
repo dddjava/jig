@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.method.Visibility;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.categories;
 
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 
 /**
  * 区分の切り口

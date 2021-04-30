@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.parts.method;
+package org.dddjava.jig.domain.model.parts.class_.method;
 
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.*;
 

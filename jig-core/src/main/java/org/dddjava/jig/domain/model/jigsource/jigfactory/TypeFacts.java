@@ -13,14 +13,14 @@ import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
 import org.dddjava.jig.domain.model.parts.annotation.*;
-import org.dddjava.jig.domain.model.parts.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.*;
 

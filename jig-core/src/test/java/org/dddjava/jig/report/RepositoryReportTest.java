@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;

@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.parts.field;
+package org.dddjava.jig.domain.model.parts.class_.field;
 
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.stream.Collectors;

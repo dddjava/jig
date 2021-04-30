@@ -2,11 +2,11 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.method.MethodDerivation;
-import org.dddjava.jig.domain.model.parts.method.Visibility;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDerivation;
+import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

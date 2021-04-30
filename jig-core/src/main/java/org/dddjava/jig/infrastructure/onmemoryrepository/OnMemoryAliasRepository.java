@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

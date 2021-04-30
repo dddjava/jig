@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

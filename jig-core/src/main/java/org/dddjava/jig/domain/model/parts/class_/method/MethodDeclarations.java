@@ -1,6 +1,6 @@
-package org.dddjava.jig.domain.model.parts.method;
+package org.dddjava.jig.domain.model.parts.class_.method;
 
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;

@@ -6,12 +6,12 @@ import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.field.FieldType;
-import org.dddjava.jig.domain.model.parts.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.method.*;
-import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.field.FieldType;
+import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.*;
+import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;

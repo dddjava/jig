@@ -1,9 +1,9 @@
-package org.dddjava.jig.domain.model.parts.field;
+package org.dddjava.jig.domain.model.parts.class_.field;
 
-import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.type.TypeParameters;
+import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeParameters;
 
 public class FieldType {
 

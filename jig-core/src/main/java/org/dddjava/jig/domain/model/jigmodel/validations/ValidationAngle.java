@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.validations;
 
 import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMember;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * バリデーション分析の切り口

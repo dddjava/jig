@@ -1,7 +1,7 @@
-package org.dddjava.jig.domain.model.parts.method;
+package org.dddjava.jig.domain.model.parts.class_.method;
 
-import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * メソッド戻り値

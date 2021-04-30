@@ -2,15 +2,15 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.method.DecisionNumber;
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.method.MethodDerivation;
-import org.dddjava.jig.domain.model.parts.method.Visibility;
+import org.dddjava.jig.domain.model.parts.class_.method.DecisionNumber;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDerivation;
+import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 
 import java.util.List;
 

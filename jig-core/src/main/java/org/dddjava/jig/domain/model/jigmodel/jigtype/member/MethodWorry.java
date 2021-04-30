@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.method.MethodReturn;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * メソッドの気になるところ

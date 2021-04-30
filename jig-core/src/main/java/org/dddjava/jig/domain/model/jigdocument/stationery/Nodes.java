@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
-import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 
 public enum Nodes {
     ユースケース_ハンドラ {

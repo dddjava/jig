@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.parts.relation.packages;
 
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * 相互依存

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.annotation;
 
-import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * フィールドにつけられたアノテーション

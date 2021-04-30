@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.StringJoiner;
 

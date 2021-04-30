@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.alias;
 
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
  * 型別名

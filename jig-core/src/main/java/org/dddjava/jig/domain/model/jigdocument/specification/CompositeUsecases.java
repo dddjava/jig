@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.Nodes;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.HashSet;
 import java.util.List;

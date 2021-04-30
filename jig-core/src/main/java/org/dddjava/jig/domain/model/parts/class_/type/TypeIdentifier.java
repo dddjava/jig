@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.type;
+package org.dddjava.jig.domain.model.parts.class_.type;
 
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 

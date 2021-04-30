@@ -4,10 +4,10 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.method.Arguments;
-import org.dddjava.jig.domain.model.parts.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.Collections;
 import java.util.List;

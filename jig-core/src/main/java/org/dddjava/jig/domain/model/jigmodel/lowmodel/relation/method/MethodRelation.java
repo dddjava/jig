@@ -1,18 +1,20 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method;
 
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
+
 /**
  * メソッドの使用しているメソッド
  */
 public class MethodRelation {
-    CallerMethod from;
+    MethodDeclaration from;
     CalleeMethod to;
 
-    public MethodRelation(CallerMethod from, CalleeMethod to) {
+    public MethodRelation(MethodDeclaration from, CalleeMethod to) {
         this.from = from;
         this.to = to;
     }
 
-    CallerMethod from() {
+    MethodDeclaration from() {
         return from;
     }
 

@@ -9,19 +9,15 @@ import java.util.List;
  * 呼び出しメソッド一覧
  */
 public class CallerMethods {
-    List<CallerMethod> list;
+    List<MethodDeclaration> list;
 
-    public CallerMethods(List<CallerMethod> list) {
+    public CallerMethods(List<MethodDeclaration> list) {
         this.list = list;
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.stream()
-                .anyMatch(callerMethod -> methodDeclaration.sameIdentifier(callerMethod.methodDeclaration));
-    }
-
-    public List<CallerMethod> list() {
-        return list;
+                .anyMatch(item -> methodDeclaration.sameIdentifier(item));
     }
 
     public int size() {
@@ -30,7 +26,7 @@ public class CallerMethods {
 
     public TypeIdentifiers toDeclareTypes() {
         return list.stream()
-                .map(callerMethod -> callerMethod.methodDeclaration().declaringType())
+                .map(item -> item.declaringType())
                 .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());

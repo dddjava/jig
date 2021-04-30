@@ -19,7 +19,7 @@ public class MethodRelations {
 
     public CallerMethods callerMethodsOf(MethodDeclaration method) {
         CalleeMethod calleeMethod = new CalleeMethod(method);
-        List<CallerMethod> callers = list.stream()
+        List<MethodDeclaration> callers = list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(calleeMethod))
                 .map(MethodRelation::from)
                 .collect(toList());

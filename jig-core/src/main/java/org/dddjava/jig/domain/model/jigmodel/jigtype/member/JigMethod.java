@@ -6,11 +6,11 @@ import org.dddjava.jig.domain.model.parts.method.DecisionNumber;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.method.MethodDerivation;
 import org.dddjava.jig.domain.model.parts.method.Visibility;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.List;
 

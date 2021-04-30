@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.*;
@@ -12,8 +12,8 @@ import org.dddjava.jig.domain.model.parts.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.method.Visibility;
-import org.dddjava.jig.domain.model.parts.type.*;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.parts.type.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;

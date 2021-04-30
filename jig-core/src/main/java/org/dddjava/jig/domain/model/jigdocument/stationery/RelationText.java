@@ -2,11 +2,11 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 
 import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;
 import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

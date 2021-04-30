@@ -1,11 +1,11 @@
-package org.dddjava.jig.domain.model.jigsource.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
 import org.dddjava.jig.domain.model.parts.rdbaccess.SqlReadStatus;
 
 /**
  * 解析結果
  */
-public enum AnalyzeStatus {
+public enum LoadResult {
     テキストソースなし("implementation.TextSourceNotFound"),
     バイナリソースなし("implementation.BinarySourceNotFound"),
     SQLなし("implementation.SqlNotFound"),
@@ -14,11 +14,11 @@ public enum AnalyzeStatus {
 
     public String messageKey;
 
-    AnalyzeStatus(String messageKey) {
+    LoadResult(String messageKey) {
         this.messageKey = messageKey;
     }
 
-    public static AnalyzeStatus fromSqlReadStatus(SqlReadStatus sqlReadStatus) {
+    public static LoadResult fromSqlReadStatus(SqlReadStatus sqlReadStatus) {
         switch (sqlReadStatus) {
             case SQLなし:
                 return SQLなし;

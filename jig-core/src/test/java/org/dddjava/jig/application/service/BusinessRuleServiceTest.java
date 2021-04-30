@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
-import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFacts;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.parts.method.Visibility;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

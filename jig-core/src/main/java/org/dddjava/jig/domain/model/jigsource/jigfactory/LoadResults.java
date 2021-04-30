@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 /**
  * 解析結果一式
  */
-public class AnalyzeStatuses {
+public class LoadResults {
 
-    List<AnalyzeStatus> list;
+    List<LoadResult> list;
 
-    public AnalyzeStatuses(List<AnalyzeStatus> list) {
+    public LoadResults(List<LoadResult> list) {
         this.list = list;
     }
 
@@ -22,17 +22,17 @@ public class AnalyzeStatuses {
         return !listErrorOnly().isEmpty();
     }
 
-    List<AnalyzeStatus> listErrorOnly() {
+    List<LoadResult> listErrorOnly() {
         return list.stream()
-                .filter(AnalyzeStatus::isError)
+                .filter(LoadResult::isError)
                 .collect(Collectors.toList());
     }
 
-    public List<AnalyzeStatus> listWarning() {
+    public List<LoadResult> listWarning() {
         return list;
     }
 
-    public List<AnalyzeStatus> listErrors() {
+    public List<LoadResult> listErrors() {
         return listErrorOnly();
     }
 }

@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

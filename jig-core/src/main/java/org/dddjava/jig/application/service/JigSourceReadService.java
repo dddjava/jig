@@ -1,9 +1,6 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.jigsource.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.jigsource.analyzed.AnalyzeStatuses;
-import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
@@ -14,6 +11,9 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSour
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResult;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResults;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigloader.FactReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
@@ -47,29 +47,29 @@ public class JigSourceReadService {
     /**
      * パスからソースを読み取る
      */
-    public AnalyzeStatuses readSourceFromPaths(SourcePaths sourcePaths) {
+    public LoadResults readSourceFromPaths(SourcePaths sourcePaths) {
         Sources source = sourceReader.readSources(sourcePaths);
 
         readProjectData(source);
         Sqls sqls = readSqlSource(source.sqlSources());
 
-        List<AnalyzeStatus> list = new ArrayList<>();
+        List<LoadResult> list = new ArrayList<>();
 
         if (source.nothingBinarySource()) {
-            list.add(AnalyzeStatus.バイナリソースなし);
+            list.add(LoadResult.バイナリソースなし);
         }
 
         if (source.nothingTextSource()) {
-            list.add(AnalyzeStatus.テキストソースなし);
+            list.add(LoadResult.テキストソースなし);
         }
 
         // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない
 
         if (sqls.status().not正常()) {
-            list.add(AnalyzeStatus.fromSqlReadStatus(sqls.status()));
+            list.add(LoadResult.fromSqlReadStatus(sqls.status()));
         }
 
-        return new AnalyzeStatuses(list);
+        return new LoadResults(list);
     }
 
     /**

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.analyzed;
+package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.method.*;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.HashSet;
 import java.util.List;

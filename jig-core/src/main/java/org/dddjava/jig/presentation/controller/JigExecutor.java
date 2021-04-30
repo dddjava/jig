@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigsource.analyzed.AnalyzeStatus;
-import org.dddjava.jig.domain.model.jigsource.analyzed.AnalyzeStatuses;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResult;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResults;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
@@ -20,18 +20,18 @@ public class JigExecutor {
     public static List<HandleResult> execute(List<JigDocument> jigDocuments, JigSourceReadService jigSourceReadService, JigDocumentHandlers jigDocumentHandlers, SourcePaths sourcePaths, Path outputDirectory, Logger logger) {
         ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
 
-        AnalyzeStatuses status = jigSourceReadService.readSourceFromPaths(sourcePaths);
+        LoadResults status = jigSourceReadService.readSourceFromPaths(sourcePaths);
         if (status.hasError()) {
             logger.warn(jigMessages.getString("failure"));
-            for (AnalyzeStatus analyzeStatus : status.listErrors()) {
-                logger.warn(jigMessages.getString("failure.details"), jigMessages.getString(analyzeStatus.messageKey));
+            for (LoadResult loadResult : status.listErrors()) {
+                logger.warn(jigMessages.getString("failure.details"), jigMessages.getString(loadResult.messageKey));
             }
             return Collections.emptyList();
         }
         if (status.hasWarning()) {
             logger.warn(jigMessages.getString("implementation.warning"));
-            for (AnalyzeStatus analyzeStatus : status.listWarning()) {
-                logger.warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(analyzeStatus.messageKey));
+            for (LoadResult loadResult : status.listWarning()) {
+                logger.warn(jigMessages.getString("implementation.warning.details"), jigMessages.getString(loadResult.messageKey));
             }
         }
 

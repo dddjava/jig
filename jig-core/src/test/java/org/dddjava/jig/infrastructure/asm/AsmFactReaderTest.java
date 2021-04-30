@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigsource.analyzed.MethodFact;
-import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;

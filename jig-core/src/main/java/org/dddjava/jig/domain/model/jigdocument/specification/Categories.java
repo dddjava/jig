@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.jigmodel.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.parts.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.*;
 import java.util.function.Function;

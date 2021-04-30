@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.Comparator;

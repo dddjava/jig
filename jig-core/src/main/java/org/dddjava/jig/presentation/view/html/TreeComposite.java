@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
+import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

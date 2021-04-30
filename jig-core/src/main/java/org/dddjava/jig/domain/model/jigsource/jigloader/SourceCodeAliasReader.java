@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAliases;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAliases;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
+import org.dddjava.jig.domain.model.parts.alias.PackageAliases;
+import org.dddjava.jig.domain.model.parts.alias.TypeAliases;
 
 /**
  * コードを使用する別名別名読み取り機

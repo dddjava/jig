@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
 
 import java.util.StringJoiner;
 

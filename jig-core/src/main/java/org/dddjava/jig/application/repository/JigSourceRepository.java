@@ -1,11 +1,11 @@
 package org.dddjava.jig.application.repository;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.PackageAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AliasRegisterResult;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
+import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
+import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 
 public interface JigSourceRepository {
 

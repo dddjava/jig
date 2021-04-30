@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.List;

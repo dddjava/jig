@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.jigmodel.collections;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypes;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.List;
 

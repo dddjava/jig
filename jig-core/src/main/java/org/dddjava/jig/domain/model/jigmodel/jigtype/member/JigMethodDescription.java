@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.DocumentationComment;
+import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
 
 public class JigMethodDescription {
 

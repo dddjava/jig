@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.DocumentationComment;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.TypeAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Arguments;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
+import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.declaration.method.Arguments;
+import org.dddjava.jig.domain.model.parts.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement;
 import org.jetbrains.kotlin.kdoc.psi.api.KDoc;
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocSection;

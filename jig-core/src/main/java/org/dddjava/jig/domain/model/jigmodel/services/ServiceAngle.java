@@ -5,14 +5,14 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.MethodWorries;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.MethodWorry;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.UsingMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.RepositoryMethods;
+import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
 
 /**
  * サービスの切り口

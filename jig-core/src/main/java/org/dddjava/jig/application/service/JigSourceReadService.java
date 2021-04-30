@@ -1,8 +1,6 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.SourceReader;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
@@ -18,6 +16,8 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SqlReader;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
+import org.dddjava.jig.domain.model.parts.alias.*;
+import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 import org.springframework.stereotype.Service;
 
 /**

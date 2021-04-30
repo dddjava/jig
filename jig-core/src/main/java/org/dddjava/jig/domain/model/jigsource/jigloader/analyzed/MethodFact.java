@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.MethodAlias;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Annotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
+import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.declaration.method.*;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
 
 import java.util.HashSet;
 import java.util.List;

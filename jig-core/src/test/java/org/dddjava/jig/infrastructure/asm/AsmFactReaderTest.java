@@ -1,17 +1,17 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.ParameterizedType;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.parts.declaration.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.declaration.type.ParameterizedType;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

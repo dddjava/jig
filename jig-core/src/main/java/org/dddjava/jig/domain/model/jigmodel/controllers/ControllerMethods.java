@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.controllers;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.Comparator;
 import java.util.List;

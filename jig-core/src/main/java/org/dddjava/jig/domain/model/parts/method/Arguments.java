@@ -24,15 +24,11 @@ public class Arguments {
     }
 
     String argumentsAsText() {
-        return argumentTypes().stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
-    }
-
-    private List<TypeIdentifier> argumentTypes() {
-        return argumentTypes;
+        return argumentTypes.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
     }
 
     String argumentsAsSimpleText() {
-        return argumentTypes().stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
+        return argumentTypes.stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
     }
 
     public TypeIdentifiers typeIdentifiers() {

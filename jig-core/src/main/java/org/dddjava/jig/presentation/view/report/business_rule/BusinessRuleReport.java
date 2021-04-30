@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRuleTendency;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.Visibility;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
@@ -35,11 +34,6 @@ public class BusinessRuleReport {
     @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類", order = 11)
     public String valueKind() {
         return businessRule.toValueKind().toString();
-    }
-
-    @ReportItemFor(value = ReportItem.汎用文字列, label = "型の傾向", order = 12)
-    public String tendency() {
-        return BusinessRuleTendency.from(businessRule, businessRules).toString();
     }
 
     @ReportItemFor(value = ReportItem.使用箇所数, label = "関連元クラス数", order = 23)

@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.parts.field.FieldType;
 import org.dddjava.jig.domain.model.parts.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.method.*;
@@ -91,8 +90,8 @@ class PlainClassBuilder {
         useTypes.add(typeIdentifier);
     }
 
-    public FieldDeclaration addInstanceField(FieldType fieldType, FieldIdentifier fieldIdentifier) {
-        FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, fieldIdentifier);
+    public FieldDeclaration addInstanceField(FieldType fieldType, String name) {
+        FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, name);
         fieldDeclarations.add(fieldDeclaration);
         return fieldDeclaration;
     }

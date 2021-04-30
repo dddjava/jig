@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.field.FieldIdentifier;
 import org.dddjava.jig.domain.model.parts.field.FieldType;
 import org.dddjava.jig.domain.model.parts.method.*;
 import org.dddjava.jig.domain.model.parts.type.ParameterizedType;
@@ -100,7 +99,7 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールド
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
-            FieldDeclaration fieldDeclaration = plainClassBuilder.addInstanceField(fieldType, new FieldIdentifier(name));
+            FieldDeclaration fieldDeclaration = plainClassBuilder.addInstanceField(fieldType, name);
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
@@ -159,8 +158,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
                 TypeIdentifier declaringType = new TypeIdentifier(owner);
                 FieldType fieldType = typeDescriptorToFieldType(descriptor);
-                FieldIdentifier fieldIdentifier = new FieldIdentifier(name);
-                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, fieldIdentifier);
+                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
 
                 // FIXME: これをFieldDeclarationで扱うとFieldTypeに総称型が入っているのを期待しかねない
                 // このメソッドのdescriptorではフィールドの型パラメタが解決できないため、完全なFieldTypeを作成できない。

@@ -8,12 +8,12 @@ import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 public class FieldDeclaration {
 
     TypeIdentifier declaringType;
-    FieldIdentifier fieldIdentifier;
     FieldType fieldType;
+    String name;
 
-    public FieldDeclaration(TypeIdentifier declaringType, FieldType fieldType, FieldIdentifier fieldIdentifier) {
+    public FieldDeclaration(TypeIdentifier declaringType, FieldType fieldType, String name) {
         this.declaringType = declaringType;
-        this.fieldIdentifier = fieldIdentifier;
+        this.name = name;
         this.fieldType = fieldType;
     }
 
@@ -22,11 +22,11 @@ public class FieldDeclaration {
     }
 
     public String nameText() {
-        return fieldIdentifier.text();
+        return name;
     }
 
     public String signatureText() {
-        return String.format("%s %s", typeIdentifier().asSimpleText(), fieldIdentifier.text());
+        return String.format("%s %s", typeIdentifier().asSimpleText(), name);
     }
 
     public TypeIdentifier declaringType() {

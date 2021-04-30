@@ -3,8 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.jigsource.jigloader.FactReader;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFacts;
+import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFacts;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Repository;
 

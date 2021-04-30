@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
+package org.dddjava.jig.domain.model.jigsource.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;

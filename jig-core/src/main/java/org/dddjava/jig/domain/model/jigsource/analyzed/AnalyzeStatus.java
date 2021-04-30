@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
+package org.dddjava.jig.domain.model.jigsource.analyzed;
 
 import org.dddjava.jig.domain.model.parts.rdbaccess.SqlReadStatus;
 

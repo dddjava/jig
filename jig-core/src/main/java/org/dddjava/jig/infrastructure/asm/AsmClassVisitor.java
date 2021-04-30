@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;

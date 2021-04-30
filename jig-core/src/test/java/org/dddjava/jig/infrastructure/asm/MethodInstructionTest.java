@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.TypeFact;
+import org.dddjava.jig.domain.model.jigsource.analyzed.TypeFact;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.junit.jupiter.api.Test;

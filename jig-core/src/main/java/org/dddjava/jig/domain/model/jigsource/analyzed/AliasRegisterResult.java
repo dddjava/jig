@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
+package org.dddjava.jig.domain.model.jigsource.analyzed;
 
 /**
  * Alias登録結果

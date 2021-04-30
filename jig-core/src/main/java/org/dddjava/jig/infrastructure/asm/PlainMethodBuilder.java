@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.MethodFact;
+import org.dddjava.jig.domain.model.jigsource.analyzed.MethodFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;

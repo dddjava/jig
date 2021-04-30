@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.jigsource.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
-import org.dddjava.jig.domain.model.jigsource.jigloader.analyzed.AnalyzedImplementation;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -39,7 +38,6 @@ public class JigTestExtension implements ParameterResolver {
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         if (parameterContext.getParameter().getType() == Configuration.class) return true;
         if (parameterContext.getParameter().getType() == Sources.class) return true;
-        if (parameterContext.getParameter().getType() == AnalyzedImplementation.class) return true;
         for (Field field : Configuration.class.getDeclaredFields()) {
             if (field.getType() == parameterContext.getParameter().getType()) {
                 return true;

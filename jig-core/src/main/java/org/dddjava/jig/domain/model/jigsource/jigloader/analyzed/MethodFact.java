@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.annotation.Met
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.*;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.CalleeMethod;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.method.MethodRelation;
 
@@ -117,7 +116,7 @@ public class MethodFact {
 
     void collectUsingMethodRelations(List<MethodRelation> collector) {
         for (MethodDeclaration usingMethod : methodInstructions) {
-            MethodRelation methodRelation = new MethodRelation(methodDeclaration, new CalleeMethod(usingMethod));
+            MethodRelation methodRelation = new MethodRelation(methodDeclaration, usingMethod);
             collector.add(methodRelation);
         }
     }

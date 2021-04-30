@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.method.MethodD
  */
 public class MethodRelation {
     MethodDeclaration from;
-    CalleeMethod to;
+    MethodDeclaration to;
 
-    public MethodRelation(MethodDeclaration from, CalleeMethod to) {
+    public MethodRelation(MethodDeclaration from, MethodDeclaration to) {
         this.from = from;
         this.to = to;
     }
@@ -18,7 +18,7 @@ public class MethodRelation {
         return from;
     }
 
-    public boolean calleeMethodIs(CalleeMethod calleeMethod) {
-        return to.methodDeclaration.sameIdentifier(calleeMethod.methodDeclaration);
+    public boolean calleeMethodIs(MethodDeclaration calleeMethod) {
+        return to.sameIdentifier(calleeMethod);
     }
 }

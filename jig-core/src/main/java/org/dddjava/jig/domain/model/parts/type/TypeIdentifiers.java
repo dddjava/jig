@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.parts.type;
 
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.parts.text.Text;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -32,7 +31,10 @@ public class TypeIdentifiers {
     }
 
     public String asSimpleText() {
-        return Text.sortedOf(identifiers.stream().distinct().collect(Collectors.toList()), TypeIdentifier::asSimpleText);
+        return identifiers.stream().distinct().collect(Collectors.toList()).stream()
+                .map(TypeIdentifier::asSimpleText)
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public boolean contains(TypeIdentifier typeIdentifier) {

@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.parts.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.text.Text;
 import org.dddjava.jig.domain.model.parts.type.TypeDeclaration;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -69,7 +69,9 @@ public class ReportItemFormatter {
                 List<TypeAlias> list = methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.aliasService::typeAliasOf)
                         .collect(toList());
-                writeLongString(cell, Text.of(list, alias -> alias.asText()));
+                writeLongString(cell, list.stream()
+                        .map(alias -> alias.asText())
+                        .collect(Collectors.joining(", ", "[", "]")));
             }
             return;
             case 使用しているフィールドの型:

@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.parts.field;
 
-import org.dddjava.jig.domain.model.parts.text.Text;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * フィールド定義一覧
@@ -24,7 +24,9 @@ public class FieldDeclarations {
     }
 
     public String toSignatureText() {
-        return Text.of(list, FieldDeclaration::signatureText);
+        return list.stream()
+                .map(FieldDeclaration::signatureText)
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public TypeIdentifiers toTypeIdentifies() {

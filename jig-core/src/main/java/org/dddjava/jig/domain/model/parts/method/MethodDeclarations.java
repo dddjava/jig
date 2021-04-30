@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.parts.method;
 
-import org.dddjava.jig.domain.model.parts.text.Text;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.Comparator;
@@ -30,7 +29,10 @@ public class MethodDeclarations {
     }
 
     public String asSimpleText() {
-        return Text.sortedOf(list, MethodDeclaration::asSimpleTextWithDeclaringType);
+        return list.stream()
+                .map(MethodDeclaration::asSimpleTextWithDeclaringType)
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
@@ -46,7 +48,10 @@ public class MethodDeclarations {
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return Text.sortedOf(list, MethodDeclaration::asSignatureAndReturnTypeSimpleText);
+        return list.stream()
+                .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public TypeIdentifiers returnTypeIdentifiers() {

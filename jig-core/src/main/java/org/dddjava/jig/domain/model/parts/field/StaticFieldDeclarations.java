@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.parts.field;
 
-import org.dddjava.jig.domain.model.parts.text.Text;
 import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.List;
@@ -22,7 +21,9 @@ public class StaticFieldDeclarations {
     }
 
     public String toNameText() {
-        return Text.of(list, StaticFieldDeclaration::nameText);
+        return list.stream()
+                .map(StaticFieldDeclaration::nameText)
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
     public StaticFieldDeclarations selfDefineOnly() {

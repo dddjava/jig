@@ -15,11 +15,6 @@ public class CallerMethods {
         this.list = list;
     }
 
-    // TODO delete
-    public UserNumber toUserNumber() {
-        return new UserNumber(list.size());
-    }
-
     public boolean contains(MethodDeclaration methodDeclaration) {
         return list.stream()
                 .anyMatch(callerMethod -> methodDeclaration.sameIdentifier(callerMethod.methodDeclaration));

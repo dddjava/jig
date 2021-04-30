@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigmodel.summary;
+package org.dddjava.jig.domain.model.jigdocument.summary;
 
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;

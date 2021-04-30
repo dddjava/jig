@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMe
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
-import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
+import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;

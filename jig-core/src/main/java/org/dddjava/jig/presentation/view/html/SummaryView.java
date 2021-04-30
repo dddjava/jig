@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.alias.AliasFinder;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.jigmodel.summary.SummaryModel;
+import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 

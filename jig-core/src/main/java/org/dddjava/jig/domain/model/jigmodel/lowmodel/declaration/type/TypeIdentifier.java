@@ -111,4 +111,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public TypeIdentifier unarray() {
         return new TypeIdentifier(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
+
+    public boolean belongs(PackageIdentifier packageIdentifier) {
+        return value.startsWith(packageIdentifier.asText());
+    }
 }

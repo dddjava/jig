@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages;
 
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 
 /**
  * 相互依存
@@ -24,7 +26,10 @@ public class BidirectionalRelation {
         return packageRelation.from.asText() + " <-> " + packageRelation.to.asText();
     }
 
-    public PackageRelation packageRelation() {
-        return packageRelation;
+    public boolean matches(ClassRelation classRelation) {
+        TypeIdentifier fromClass = classRelation.from();
+        TypeIdentifier toClass = classRelation.to();
+        return packageRelation.matches(fromClass, toClass) || packageRelation.matches(toClass, fromClass);
     }
+
 }

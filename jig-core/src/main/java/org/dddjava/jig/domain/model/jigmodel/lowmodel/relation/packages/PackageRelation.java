@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.packages;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageDepth;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.jigmodel.lowmodel.declaration.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.jigmodel.lowmodel.relation.class_.ClassRelation;
 
 import java.util.Objects;
@@ -55,5 +56,9 @@ public class PackageRelation {
 
     public boolean bothMatch(PackageIdentifiers packageIdentifiers) {
         return packageIdentifiers.contains(from) && packageIdentifiers.contains(to);
+    }
+
+    boolean matches(TypeIdentifier fromTypeIdentifier, TypeIdentifier toTypeIdentifier) {
+        return fromTypeIdentifier.belongs(from) && toTypeIdentifier.belongs(to);
     }
 }

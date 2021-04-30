@@ -177,14 +177,8 @@ public class PackageRelationDiagram {
         StringJoiner sj = new StringJoiner("\n");
         for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list()) {
             sj.add("# " + bidirectionalRelation.toString());
-            String package1 = bidirectionalRelation.packageRelation().from().asText();
-            String package2 = bidirectionalRelation.packageRelation().to().asText();
             for (ClassRelation classRelation : classRelations.list()) {
-                String from = classRelation.from().fullQualifiedName();
-                String to = classRelation.to().fullQualifiedName();
-
-                if ((from.startsWith(package1) && to.startsWith(package2))
-                        || (from.startsWith(package2) && to.startsWith(package1))) {
+                if (bidirectionalRelation.matches(classRelation)) {
                     sj.add("- " + classRelation.toString());
                 }
             }

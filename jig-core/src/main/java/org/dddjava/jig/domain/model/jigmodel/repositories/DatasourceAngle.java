@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;

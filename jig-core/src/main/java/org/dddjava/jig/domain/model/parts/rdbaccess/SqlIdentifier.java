@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.parts.rdbaccess;
 
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.Objects;
 

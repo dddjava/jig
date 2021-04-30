@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
-import org.dddjava.jig.domain.model.parts.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;

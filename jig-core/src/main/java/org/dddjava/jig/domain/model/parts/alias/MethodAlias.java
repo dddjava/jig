@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.alias;
 
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.method.MethodIdentifier;
 
 /**
  * メソッド別名

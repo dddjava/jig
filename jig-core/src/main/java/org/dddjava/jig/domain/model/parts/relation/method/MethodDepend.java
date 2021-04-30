@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
-import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.*;
 

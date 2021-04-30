@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.jigmodel.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;

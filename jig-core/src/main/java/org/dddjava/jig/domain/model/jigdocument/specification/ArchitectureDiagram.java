@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;

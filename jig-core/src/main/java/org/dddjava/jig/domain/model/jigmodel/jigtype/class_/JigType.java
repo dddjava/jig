@@ -2,11 +2,11 @@ package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
-import org.dddjava.jig.domain.model.parts.declaration.method.Visibility;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.method.Visibility;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeDeclaration;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.List;

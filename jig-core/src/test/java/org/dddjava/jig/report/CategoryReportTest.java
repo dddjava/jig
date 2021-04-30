@@ -4,7 +4,7 @@ import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.report.business_rule.CategoryReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

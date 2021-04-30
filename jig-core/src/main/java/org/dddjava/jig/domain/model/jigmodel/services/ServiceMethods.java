@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.List;

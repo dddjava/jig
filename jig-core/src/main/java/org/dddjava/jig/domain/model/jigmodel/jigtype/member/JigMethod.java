@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.declaration.method.DecisionNumber;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDerivation;
-import org.dddjava.jig.domain.model.parts.declaration.method.Visibility;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.parts.method.DecisionNumber;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.method.MethodDerivation;
+import org.dddjava.jig.domain.model.parts.method.Visibility;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;

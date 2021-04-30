@@ -3,8 +3,8 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.springframework.stereotype.Service;
 
 /**

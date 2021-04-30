@@ -7,10 +7,10 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifierFormatter;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.List;

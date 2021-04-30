@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.relation.packages;
 
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

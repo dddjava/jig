@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.report.application;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngle;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

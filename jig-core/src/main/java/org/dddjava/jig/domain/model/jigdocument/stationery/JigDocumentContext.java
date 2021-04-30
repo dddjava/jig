@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.stationery;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 public interface JigDocumentContext {
 

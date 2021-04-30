@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodReturn;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.stream.Stream;

@@ -2,12 +2,12 @@ package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.declaration.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.parts.declaration.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.declaration.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.declaration.method.*;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.parts.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.method.*;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
 

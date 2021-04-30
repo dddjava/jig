@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.relation.class_;
 
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.HashSet;

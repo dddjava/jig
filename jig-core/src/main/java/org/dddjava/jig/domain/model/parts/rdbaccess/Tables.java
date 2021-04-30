@@ -1,10 +1,9 @@
 package org.dddjava.jig.domain.model.parts.rdbaccess;
 
-import org.dddjava.jig.domain.model.parts.declaration.text.Text;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * テーブル一覧
@@ -31,6 +30,11 @@ public class Tables {
     }
 
     public String asText() {
-        return Text.uniqueOf(tables, Table::name);
+        // 文字列としてユニーク。ソートされてるのは自然なのでメソッド名に含めない。
+        return tables.stream()
+                .map(Table::name)
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 }

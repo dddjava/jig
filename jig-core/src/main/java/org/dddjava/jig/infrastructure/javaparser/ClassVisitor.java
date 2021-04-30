@@ -9,7 +9,7 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
 import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

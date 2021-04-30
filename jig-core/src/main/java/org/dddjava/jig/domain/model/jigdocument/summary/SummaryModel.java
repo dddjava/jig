@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.summary;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.List;
 import java.util.Map;

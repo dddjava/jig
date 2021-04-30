@@ -9,7 +9,7 @@ import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
 import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.Optional;
 

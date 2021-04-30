@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.validations;
 
-import org.dddjava.jig.domain.model.parts.declaration.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
 
 import java.util.Comparator;
 import java.util.List;

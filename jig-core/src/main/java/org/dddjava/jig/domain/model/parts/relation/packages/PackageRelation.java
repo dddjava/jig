@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.parts.relation.packages;
 
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageDepth;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.declaration.package_.PackageIdentifiers;
-import org.dddjava.jig.domain.model.parts.declaration.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.parts.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.Objects;

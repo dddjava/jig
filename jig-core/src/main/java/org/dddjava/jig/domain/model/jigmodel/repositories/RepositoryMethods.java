@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.repositories;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.declaration.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
 
 import java.util.List;
 

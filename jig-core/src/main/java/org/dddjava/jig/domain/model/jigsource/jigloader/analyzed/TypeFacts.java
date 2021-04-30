@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigsource.jigloader.analyzed;
 
-import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
@@ -52,32 +51,27 @@ public class TypeFacts {
         return packageMap;
     }
 
-    public ArchitectureDiagram toArchitectureDiagram(Architecture architecture) {
-        Set<PackageIdentifier> packageIdentifiers = mapJigTypesByPackage().keySet();
-        List<PackageIdentifier> architecturePackages = findArchitecturePackages(packageIdentifiers);
-
-        ArchitectureComponents architectureComponents = new ArchitectureComponents(architecturePackages);
-        ClassRelations classRelations = toClassRelations();
-
-        return new ArchitectureDiagram(architectureComponents, classRelations);
+    public ArchitectureComponents getArchitectureComponents() {
+        return new ArchitectureComponents(getArchitecturePackages());
     }
 
-    private List<PackageIdentifier> findArchitecturePackages(Set<PackageIdentifier> packageIdentifiers) {
+    private List<PackageIdentifier> getArchitecturePackages() {
+        Map<PackageIdentifier, List<JigType>> packageIdentifierListMap = mapJigTypesByPackage();
         // depth単位にリストにする
-        Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifiers.stream()
+        Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifierListMap.keySet().stream()
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
                 .distinct()
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
 
         // 最初に同じ深さに2件以上入っているものが出てきたらアーキテクチャパッケージとして扱う
-        List<PackageIdentifier> list = depthMap.entrySet().stream()
+        List<PackageIdentifier> packages = depthMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .filter(entry -> entry.getValue().size() > 1)
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElse(Collections.emptyList());
-        return list;
+        return packages;
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.List;
@@ -40,21 +39,6 @@ public class ServiceMethods {
         return methods.stream()
                 .filter(method -> methodDeclarations.contains(method.declaration()))
                 .collect(collectingAndThen(toList(), ServiceMethods::new));
-    }
-
-    public String reportText() {
-        return methods.stream()
-                .map(JigMethod::declaration)
-                .collect(MethodDeclarations.collector())
-                .asSimpleText();
-    }
-
-    public TypeIdentifiers typeIdentifiers() {
-        return methods.stream()
-                .map(method -> method.declaration().declaringType())
-                .sorted()
-                .distinct()
-                .collect(TypeIdentifiers.collector());
     }
 
     public MethodDeclarations toMethodDeclarations() {

@@ -1,25 +1,26 @@
-package org.dddjava.jig.domain.model.parts.class_.type;
+package org.dddjava.jig.domain.model.jigsource.jigreader;
 
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * 型名一覧
+ * コメント一覧
  */
-public class ClassComments {
+public class ClassAndMethodComments {
 
     List<ClassComment> list;
     List<MethodComment> methodList;
 
-    public ClassComments(List<ClassComment> list, List<MethodComment> methodList) {
+    public ClassAndMethodComments(List<ClassComment> list, List<MethodComment> methodList) {
         this.list = list;
         this.methodList = methodList;
     }
 
-    public static ClassComments empty() {
-        return new ClassComments(Collections.emptyList(), Collections.emptyList());
+    public static ClassAndMethodComments empty() {
+        return new ClassAndMethodComments(Collections.emptyList(), Collections.emptyList());
     }
 
     public List<ClassComment> list() {

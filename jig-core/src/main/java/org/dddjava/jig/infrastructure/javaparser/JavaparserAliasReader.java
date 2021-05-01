@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSour
 import org.dddjava.jig.domain.model.jigsource.jigreader.JavaSourceAliasReader;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
+import org.dddjava.jig.domain.model.jigsource.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageComments;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class JavaparserAliasReader implements JavaSourceAliasReader {
     }
 
     @Override
-    public ClassComments readAlias(JavaSources javaSources) {
+    public ClassAndMethodComments readAlias(JavaSources javaSources) {
         List<ClassComment> names = new ArrayList<>();
         List<MethodComment> methodNames = new ArrayList<>();
 
@@ -54,6 +54,6 @@ public class JavaparserAliasReader implements JavaSourceAliasReader {
                 LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);
             }
         }
-        return new ClassComments(names, methodNames);
+        return new ClassAndMethodComments(names, methodNames);
     }
 }

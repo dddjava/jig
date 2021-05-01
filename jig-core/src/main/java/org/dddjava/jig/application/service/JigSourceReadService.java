@@ -19,7 +19,7 @@ import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SqlReader;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
+import org.dddjava.jig.domain.model.jigsource.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageComments;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
@@ -117,30 +117,30 @@ public class JigSourceReadService {
      * Javadocから別名を取り込む
      */
     void readJavaSources(JavaSources javaSources) {
-        ClassComments classcomments = aliasReader.readJavaSources(javaSources);
-        readTypeAlias(classcomments);
+        ClassAndMethodComments classcomments = aliasReader.readJavaSources(javaSources);
+        registerComments(classcomments);
     }
 
     /**
      * KtDocから別名を取り込む
      */
     void readKotlinSources(KotlinSources kotlinSources) {
-        ClassComments classcomments = aliasReader.readKotlinSources(kotlinSources);
-        readTypeAlias(classcomments);
+        ClassAndMethodComments classcomments = aliasReader.readKotlinSources(kotlinSources);
+        registerComments(classcomments);
     }
 
     /**
      * ScalaDocから別名を取り込む
      */
     void readScalaSources(ScalaSources scalaSources) {
-        ClassComments classcomments = aliasReader.readScalaSources(scalaSources);
-        readTypeAlias(classcomments);
+        ClassAndMethodComments classcomments = aliasReader.readScalaSources(scalaSources);
+        registerComments(classcomments);
     }
 
     /**
      * 型別名を取り込む
      */
-    private void readTypeAlias(ClassComments classcomments) {
+    private void registerComments(ClassAndMethodComments classcomments) {
         for (ClassComment classComment : classcomments.list()) {
             jigSourceRepository.registerClassComment(classComment);
         }

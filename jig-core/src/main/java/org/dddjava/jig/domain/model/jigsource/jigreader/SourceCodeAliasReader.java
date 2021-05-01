@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSour
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
 import org.dddjava.jig.domain.model.parts.package_.PackageComments;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
 
 /**
  * コードを使用する別名別名読み取り機
@@ -17,15 +16,15 @@ public class SourceCodeAliasReader {
     ScalaSourceAliasReader scalaSourceAliasReader;
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> ClassComments.empty(), sources -> ClassComments.empty());
+        this(javaSourceAliasReader, sources -> ClassAndMethodComments.empty(), sources -> ClassAndMethodComments.empty());
     }
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
-        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> ClassComments.empty());
+        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> ClassAndMethodComments.empty());
     }
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> ClassComments.empty(), scalaSourceAliasReader);
+        this(javaSourceAliasReader, sources -> ClassAndMethodComments.empty(), scalaSourceAliasReader);
     }
 
     private SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
@@ -38,15 +37,15 @@ public class SourceCodeAliasReader {
         return javaSourceAliasReader.readPackages(packageInfoSources);
     }
 
-    public ClassComments readJavaSources(JavaSources javaSources) {
+    public ClassAndMethodComments readJavaSources(JavaSources javaSources) {
         return javaSourceAliasReader.readAlias(javaSources);
     }
 
-    public ClassComments readKotlinSources(KotlinSources kotlinSources) {
+    public ClassAndMethodComments readKotlinSources(KotlinSources kotlinSources) {
         return kotlinSourceAliasReader.readAlias(kotlinSources);
     }
 
-    public ClassComments readScalaSources(ScalaSources scalaSources) {
+    public ClassAndMethodComments readScalaSources(ScalaSources scalaSources) {
         return scalaSourceAliasReader.readAlias(scalaSources);
     }
 }

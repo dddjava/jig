@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.applications.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
@@ -77,7 +76,6 @@ public class Configuration {
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat
-                MethodNodeLabelStyle.SIMPLE,
                 properties.outputDiagramFormat,
                 jigDocumentContext,
                 aliasService

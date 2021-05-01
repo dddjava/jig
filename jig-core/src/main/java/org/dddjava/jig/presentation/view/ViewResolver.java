@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDi
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.applications.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
@@ -28,17 +27,15 @@ import static java.util.stream.Collectors.toList;
 public class ViewResolver {
 
     PackageIdentifierFormatter packageIdentifierFormatter;
-    MethodNodeLabelStyle methodNodeLabelStyle;
     JigDiagramFormat diagramFormat;
     AliasService aliasService;
 
     JigDocumentContext jigDocumentContext;
     DotCommandRunner dotCommandRunner;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, MethodNodeLabelStyle methodNodeLabelStyle, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext, AliasService aliasService) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext, AliasService aliasService) {
         this.jigDocumentContext = jigDocumentContext;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-        this.methodNodeLabelStyle = methodNodeLabelStyle;
         this.diagramFormat = diagramFormat;
         this.aliasService = aliasService;
         this.dotCommandRunner = new DotCommandRunner();

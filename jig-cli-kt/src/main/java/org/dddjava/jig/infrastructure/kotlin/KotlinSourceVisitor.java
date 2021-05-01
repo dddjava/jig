@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
@@ -20,8 +20,8 @@ import java.util.Optional;
 
 public class KotlinSourceVisitor extends KtTreeVisitorVoid {
 
-    List<TypeAlias> typeJapaneseAliases = new ArrayList<>();
-    List<MethodAlias> methodList = new ArrayList<>();
+    List<ClassComment> typeJapaneseAliases = new ArrayList<>();
+    List<MethodComment> methodList = new ArrayList<>();
 
     @Override
     public void visitClass(KtClass klass) {
@@ -37,7 +37,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
             return;
         }
         TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
-        typeJapaneseAliases.add(new TypeAlias(identifier, DocumentationComment.fromCodeComment(text)));
+        typeJapaneseAliases.add(new ClassComment(identifier, Comment.fromCodeComment(text)));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
         }
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, new Arguments(args)));
-        methodList.add(new MethodAlias(methodIdentifier, DocumentationComment.fromCodeComment(text)));
+        methodList.add(new MethodComment(methodIdentifier, Comment.fromCodeComment(text)));
     }
 
     private KtClass findKtClass(KtNamedFunction function) {

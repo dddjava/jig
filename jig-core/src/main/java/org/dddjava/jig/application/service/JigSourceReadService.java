@@ -17,7 +17,11 @@ import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigreader.FactReader;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SqlReader;
-import org.dddjava.jig.domain.model.parts.alias.*;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComments;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 import org.springframework.stereotype.Service;
 
@@ -103,9 +107,9 @@ public class JigSourceReadService {
      * Javadocからパッケージ別名を取り込む
      */
     void loadPackageInfoSources(PackageInfoSources packageInfoSources) {
-        PackageAliases packageAliases = aliasReader.readPackages(packageInfoSources);
-        for (PackageAlias packageAlias : packageAliases.list()) {
-            jigSourceRepository.registerPackageAlias(packageAlias);
+        PackageComments packageComments = aliasReader.readPackages(packageInfoSources);
+        for (PackageComment packageComment : packageComments.list()) {
+            jigSourceRepository.registerPackageComment(packageComment);
         }
     }
 
@@ -113,36 +117,36 @@ public class JigSourceReadService {
      * Javadocから別名を取り込む
      */
     void readJavaSources(JavaSources javaSources) {
-        TypeAliases typeAliases = aliasReader.readJavaSources(javaSources);
-        readTypeAlias(typeAliases);
+        ClassComments classcomments = aliasReader.readJavaSources(javaSources);
+        readTypeAlias(classcomments);
     }
 
     /**
      * KtDocから別名を取り込む
      */
     void readKotlinSources(KotlinSources kotlinSources) {
-        TypeAliases typeAliases = aliasReader.readKotlinSources(kotlinSources);
-        readTypeAlias(typeAliases);
+        ClassComments classcomments = aliasReader.readKotlinSources(kotlinSources);
+        readTypeAlias(classcomments);
     }
 
     /**
      * ScalaDocから別名を取り込む
      */
     void readScalaSources(ScalaSources scalaSources) {
-        TypeAliases typeAliases = aliasReader.readScalaSources(scalaSources);
-        readTypeAlias(typeAliases);
+        ClassComments classcomments = aliasReader.readScalaSources(scalaSources);
+        readTypeAlias(classcomments);
     }
 
     /**
      * 型別名を取り込む
      */
-    private void readTypeAlias(TypeAliases typeAliases) {
-        for (TypeAlias typeAlias : typeAliases.list()) {
-            jigSourceRepository.registerTypeAlias(typeAlias);
+    private void readTypeAlias(ClassComments classcomments) {
+        for (ClassComment classComment : classcomments.list()) {
+            jigSourceRepository.registerClassComment(classComment);
         }
 
-        for (MethodAlias methodAlias : typeAliases.methodList()) {
-            jigSourceRepository.registerMethodAlias(methodAlias);
+        for (MethodComment methodComment : classcomments.methodList()) {
+            jigSourceRepository.registerMethodComment(methodComment);
         }
     }
 

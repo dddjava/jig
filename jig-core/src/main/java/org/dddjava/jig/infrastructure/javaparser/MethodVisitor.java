@@ -2,8 +2,8 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
 import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import java.util.Collections;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
+class MethodVisitor extends VoidVisitorAdapter<List<MethodComment>> {
     private final TypeIdentifier typeIdentifier;
 
     public MethodVisitor(TypeIdentifier typeIdentifier) {
@@ -20,11 +20,11 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
     }
 
     @Override
-    public void visit(MethodDeclaration n, List<MethodAlias> methodAliases) {
+    public void visit(MethodDeclaration n, List<MethodComment> methodComments) {
         n.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
 
-            MethodAlias methodAlias = new MethodAlias(
+            MethodComment methodComment = new MethodComment(
                     new MethodIdentifier(
                             typeIdentifier,
                             new MethodSignature(
@@ -34,9 +34,9 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodAlias>> {
                                     // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
                                     new Arguments(Collections.emptyList())
                             )),
-                    DocumentationComment.fromCodeComment(javadocText)
+                    Comment.fromCodeComment(javadocText)
             );
-            methodAliases.add(methodAlias);
+            methodComments.add(methodComment);
         });
     }
 }

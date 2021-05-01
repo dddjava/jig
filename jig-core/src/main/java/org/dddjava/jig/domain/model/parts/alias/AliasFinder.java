@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.parts.alias;
 
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
@@ -8,7 +10,7 @@ import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
  */
 public interface AliasFinder {
 
-    PackageAlias find(PackageIdentifier packageIdentifier);
+    PackageComment find(PackageIdentifier packageIdentifier);
 
-    TypeAlias find(TypeIdentifier typeIdentifier);
+    ClassComment find(TypeIdentifier typeIdentifier);
 }

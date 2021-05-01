@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
@@ -45,7 +45,7 @@ public class MethodFact {
     // nullによる判定がある
     boolean hasJudgeNull;
 
-    private MethodAlias methodAlias;
+    private MethodComment methodComment;
 
     public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
         this.methodDeclaration = methodDeclaration;
@@ -76,13 +76,13 @@ public class MethodFact {
         this.hasJudgeNull = hasJudgeNull;
         this.hasReferenceNull = hasReferenceNull;
 
-        this.methodAlias = MethodAlias.empty(methodDeclaration.identifier());
+        this.methodComment = MethodComment.empty(methodDeclaration.identifier());
     }
 
     public JigMethod createMethod() {
         return new JigMethod(
                 methodDeclaration,
-                methodAlias,
+                methodComment,
                 judgeNull(),
                 decisionNumber(),
                 annotatedMethods(),
@@ -125,7 +125,7 @@ public class MethodFact {
         return methodDeclaration.identifier();
     }
 
-    public void registerMethodAlias(MethodAlias methodAlias) {
-        this.methodAlias = methodAlias;
+    public void registerMethodAlias(MethodComment methodComment) {
+        this.methodComment = methodComment;
     }
 }

@@ -3,10 +3,10 @@ package org.dddjava.jig.infrastructure.onmemoryrepository;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.AliasRegisterResult;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigsource.jigreader.CommentRepository;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +18,12 @@ import java.util.Collections;
 public class OnMemoryJigSourceRepository implements JigSourceRepository {
     static Logger logger = LoggerFactory.getLogger(OnMemoryJigSourceRepository.class);
 
-    AliasRepository aliasRepository;
+    CommentRepository commentRepository;
     TypeFacts typeFacts = new TypeFacts(Collections.emptyList());
     Sqls sqls;
 
-    public OnMemoryJigSourceRepository(AliasRepository aliasRepository) {
-        this.aliasRepository = aliasRepository;
+    public OnMemoryJigSourceRepository(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -37,31 +37,31 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     }
 
     @Override
-    public void registerPackageAlias(PackageAlias packageAlias) {
-        typeFacts.registerPackageAlias(packageAlias);
-        aliasRepository.register(packageAlias);
+    public void registerPackageComment(PackageComment packageComment) {
+        typeFacts.registerPackageAlias(packageComment);
+        commentRepository.register(packageComment);
     }
 
     @Override
-    public AliasRegisterResult registerTypeAlias(TypeAlias typeAlias) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(typeAlias);
+    public AliasRegisterResult registerClassComment(ClassComment classComment) {
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(classComment);
         // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
-        aliasRepository.register(typeAlias);
+        commentRepository.register(classComment);
 
         if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のTypeAlias登録結果が {} です。処理は続行します。",
-                    typeAlias.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
+            logger.warn("{} のコメント登録が {} です。処理は続行します。",
+                    classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
         }
         return aliasRegisterResult;
     }
 
     @Override
-    public void registerMethodAlias(MethodAlias methodAlias) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodAlias);
+    public void registerMethodComment(MethodComment methodComment) {
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodComment);
 
         if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のMethodAlias登録結果が {} です。処理は続行します。",
-                    methodAlias.methodIdentifier().asText(), aliasRegisterResult);
+            logger.warn("{} のコメント登録が {} です。処理は続行します。",
+                    methodComment.methodIdentifier().asText(), aliasRegisterResult);
         }
     }
 

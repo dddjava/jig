@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.member;
 
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.parts.class_.method.DecisionNumber;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
@@ -20,7 +20,7 @@ import java.util.List;
 public class JigMethod {
 
     MethodDeclaration methodDeclaration;
-    MethodAlias methodAlias;
+    MethodComment methodComment;
 
     boolean nullDecision;
 
@@ -31,9 +31,9 @@ public class JigMethod {
     MethodDepend methodDepend;
     MethodDerivation methodDerivation;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAlias methodAlias, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation) {
         this.methodDeclaration = methodDeclaration;
-        this.methodAlias = methodAlias;
+        this.methodComment = methodComment;
         this.nullDecision = nullDecision;
         this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
@@ -91,21 +91,21 @@ public class JigMethod {
     }
 
     public String aliasTextOrBlank() {
-        return methodAlias.asText();
+        return methodComment.asText();
     }
 
     public String aliasText() {
-        return methodAlias
+        return methodComment
                 .asTextOrDefault(declaration().declaringType().asSimpleText() + "\\n"
                         + declaration().methodSignature().methodName());
     }
 
     public JigMethodDescription description() {
-        return JigMethodDescription.from(methodAlias.documentationComment());
+        return JigMethodDescription.from(methodComment.documentationComment());
     }
 
     public String labelTextWithSymbol() {
-        String name = methodAlias.asTextOrDefault(declaration().methodSignature().methodName());
+        String name = methodComment.asTextOrDefault(declaration().methodSignature().methodName());
         return visibility.symbol() + ' ' + name;
     }
 
@@ -122,7 +122,7 @@ public class JigMethod {
     }
 
     public boolean documented() {
-        return methodAlias.exists();
+        return methodComment.exists();
     }
 
     public boolean remarkable() {

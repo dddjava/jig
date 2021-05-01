@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.parts.alias.TypeAliases;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.jigreader.KotlinSourceAliasReader;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class KotlinSdkAliasReader implements KotlinSourceAliasReader {
 
     @Override
-    public TypeAliases readAlias(KotlinSources sources) {
+    public ClassComments readAlias(KotlinSources sources) {
         KotlinSourceVisitor visitor = new KotlinSourceVisitor();
 
         for (KotlinSource kotlinSource : sources.list()) {
@@ -39,7 +39,7 @@ public class KotlinSdkAliasReader implements KotlinSourceAliasReader {
             ktFile.accept(visitor);
         }
 
-        return new TypeAliases(visitor.typeJapaneseAliases, visitor.methodList);
+        return new ClassComments(visitor.typeJapaneseAliases, visitor.methodList);
     }
 
     private KtFile sourceToKtFile(KotlinSource kotlinSource, String source) {

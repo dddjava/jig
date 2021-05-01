@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.thymeleaf.TemplateEngine;
@@ -70,8 +70,8 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
 
     class JigDialectObject {
         public String labelText(TypeIdentifier typeIdentifier) {
-            TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
-            return typeAlias.asTextOrIdentifierSimpleText();
+            ClassComment classComment = aliasFinder.find(typeIdentifier);
+            return classComment.asTextOrIdentifierSimpleText();
         }
     }
 }

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeDeclaration;
@@ -36,7 +36,7 @@ public class JigType {
         return typeDeclaration;
     }
 
-    public TypeAlias typeAlias() {
+    public ClassComment typeAlias() {
         return jigTypeAttribute.alias();
     }
 

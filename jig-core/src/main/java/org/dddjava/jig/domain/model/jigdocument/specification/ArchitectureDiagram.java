@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
@@ -34,8 +34,8 @@ public class ArchitectureDiagram {
         // packageのaliasを使う
         AliasFinder aliasFinder = jigDocumentContext.aliasFinder();
         Function<PackageIdentifier, String> architectureLabel = packageIdentifier -> {
-            PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
-            return packageAlias.exists() ? packageAlias.asText() : packageIdentifier.simpleName();
+            PackageComment packageComment = aliasFinder.find(packageIdentifier);
+            return packageComment.exists() ? packageComment.asText() : packageIdentifier.simpleName();
         };
 
         DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);

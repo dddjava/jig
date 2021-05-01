@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.alias;
+package org.dddjava.jig.domain.model.parts.comment;
 
 import java.util.stream.Stream;
 
@@ -7,17 +7,17 @@ import java.util.stream.Stream;
  *
  * 通常はソースコードから読み取るJavadoc
  */
-public class DocumentationComment {
+public class Comment {
 
     String value;
     volatile String firstSentence = null;
 
-    private DocumentationComment(String value) {
+    private Comment(String value) {
         this.value = value;
     }
 
-    public static DocumentationComment empty() {
-        return new DocumentationComment("");
+    public static Comment empty() {
+        return new Comment("");
     }
 
     public boolean exists() {
@@ -40,8 +40,8 @@ public class DocumentationComment {
         return firstSentence; // 改行も句点も無い場合はそのまま返す
     }
 
-    public static DocumentationComment fromCodeComment(String sourceText) {
-        return new DocumentationComment(sourceText);
+    public static Comment fromCodeComment(String sourceText) {
+        return new Comment(sourceText);
     }
 
     public boolean markedCore() {

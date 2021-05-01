@@ -1,21 +1,21 @@
-package org.dddjava.jig.domain.model.parts.alias;
+package org.dddjava.jig.domain.model.parts.class_.type;
 
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
 
 /**
  * 型別名
  */
-public class TypeAlias {
+public class ClassComment {
     TypeIdentifier typeIdentifier;
-    DocumentationComment documentationComment;
+    Comment comment;
 
-    public TypeAlias(TypeIdentifier typeIdentifier, DocumentationComment documentationComment) {
+    public ClassComment(TypeIdentifier typeIdentifier, Comment comment) {
         this.typeIdentifier = typeIdentifier;
-        this.documentationComment = documentationComment;
+        this.comment = comment;
     }
 
-    public static TypeAlias empty(TypeIdentifier typeIdentifier) {
-        return new TypeAlias(typeIdentifier, DocumentationComment.empty());
+    public static ClassComment empty(TypeIdentifier typeIdentifier) {
+        return new ClassComment(typeIdentifier, Comment.empty());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -23,11 +23,11 @@ public class TypeAlias {
     }
 
     public boolean exists() {
-        return documentationComment.exists();
+        return comment.exists();
     }
 
     public String asText() {
-        return documentationComment.summaryText();
+        return comment.summaryText();
     }
 
     public String asTextOrDefault(String defaultText) {
@@ -38,7 +38,7 @@ public class TypeAlias {
     }
 
     public boolean markedCore() {
-        return documentationComment.markedCore();
+        return comment.markedCore();
     }
 
     public String nodeLabel() {
@@ -57,7 +57,7 @@ public class TypeAlias {
         return asTextOrDefault(typeIdentifier.asSimpleText());
     }
 
-    public DocumentationComment documentationComment() {
-        return documentationComment;
+    public Comment documentationComment() {
+        return comment;
     }
 }

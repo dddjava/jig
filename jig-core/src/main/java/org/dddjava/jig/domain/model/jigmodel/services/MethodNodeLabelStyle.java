@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigmodel.services;
 
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
@@ -18,9 +18,9 @@ public enum MethodNodeLabelStyle {
     public String apply(MethodDeclaration method, AliasFinder aliasFinder) {
         if (this == JAPANESE) {
             Function<TypeIdentifier, String> func = typeIdentifier -> {
-                TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
-                if (typeAlias.exists()) {
-                    return typeAlias.asText();
+                ClassComment classComment = aliasFinder.find(typeIdentifier);
+                if (classComment.exists()) {
+                    return classComment.asText();
                 }
                 return typeIdentifier.asSimpleText();
             };

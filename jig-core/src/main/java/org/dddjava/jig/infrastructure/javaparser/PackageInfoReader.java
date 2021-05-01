@@ -7,28 +7,28 @@ import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.javadoc.Javadoc;
 import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.Optional;
 
 class PackageInfoReader {
 
-    Optional<PackageAlias> read(PackageInfoSource packageInfoSource) {
+    Optional<PackageComment> read(PackageInfoSource packageInfoSource) {
         CompilationUnit cu = StaticJavaParser.parse(packageInfoSource.toInputStream());
 
         Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
                 .map(PackageIdentifier::new);
 
-        Optional<DocumentationComment> optAlias = getJavadoc(cu)
+        Optional<Comment> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)
                 .map(JavadocDescription::toText)
-                .map(DocumentationComment::fromCodeComment);
+                .map(Comment::fromCodeComment);
 
         return optPackageIdentifier.flatMap(packageIdentifier -> optAlias.map(alias ->
-                new PackageAlias(packageIdentifier, alias)));
+                new PackageComment(packageIdentifier, alias)));
     }
 
     private Optional<Javadoc> getJavadoc(CompilationUnit cu) {

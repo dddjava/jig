@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
@@ -170,8 +170,8 @@ public class ServiceMethodCallHierarchyDiagram {
     private String aliasLineOf(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
         // TODO jigDocumentContextからではなくJigTypeやJigMethodを使うようにしたい
         AliasFinder aliasFinder = jigDocumentContext.aliasFinder();
-        TypeAlias typeAlias = aliasFinder.find(typeIdentifier);
-        return typeAlias.nodeLabel();
+        ClassComment classComment = aliasFinder.find(typeIdentifier);
+        return classComment.nodeLabel();
     }
 
     private static Node controllerNodeOf(MethodDeclaration methodDeclaration) {

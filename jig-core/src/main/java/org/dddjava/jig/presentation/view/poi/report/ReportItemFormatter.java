@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
@@ -66,7 +66,7 @@ public class ReportItemFormatter {
                 return;
             case メソッド引数の型の別名: {
                 MethodDeclaration methodDeclaration = toMethodDeclaration(item);
-                List<TypeAlias> list = methodDeclaration.methodSignature().arguments().stream()
+                List<ClassComment> list = methodDeclaration.methodSignature().arguments().stream()
                         .map(convertContext.aliasService::typeAliasOf)
                         .collect(toList());
                 writeLongString(cell, list.stream()

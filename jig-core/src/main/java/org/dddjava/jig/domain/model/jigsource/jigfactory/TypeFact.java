@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.jigsource.jigfactory;
 import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.*;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
@@ -49,7 +49,7 @@ public class TypeFact {
 
     final Visibility visibility;
 
-    TypeAlias typeAlias;
+    ClassComment classComment;
 
     public TypeFact(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes,
                     TypeKind typeKind, Visibility visibility,
@@ -86,7 +86,7 @@ public class TypeFact {
         this.fieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
         this.staticFieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
 
-        this.typeAlias = TypeAlias.empty(type.typeIdentifier());
+        this.classComment = ClassComment.empty(type.typeIdentifier());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -142,16 +142,16 @@ public class TypeFact {
         }
     }
 
-    public void registerTypeAlias(TypeAlias typeAlias) {
-        this.typeAlias = typeAlias;
+    public void registerTypeAlias(ClassComment classComment) {
+        this.classComment = classComment;
         this.jigType = null;
     }
 
-    public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
+    public AliasRegisterResult registerMethodAlias(MethodComment methodComment) {
         boolean registered = false;
         for (MethodFact methodFact : allMethodFacts()) {
-            if (methodAlias.isAliasFor(methodFact.methodIdentifier())) {
-                methodFact.registerMethodAlias(methodAlias);
+            if (methodComment.isAliasFor(methodFact.methodIdentifier())) {
+                methodFact.registerMethodAlias(methodComment);
                 registered = true;
             }
         }
@@ -169,7 +169,7 @@ public class TypeFact {
 
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
 
-        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(typeAlias, typeKind, visibility, annotations);
+        JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
 
         JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
         JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.Node;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Nodes;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngle;
 import org.dddjava.jig.domain.model.jigmodel.services.Usecase;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 import java.util.HashSet;
@@ -59,10 +59,10 @@ class CompositeUsecases {
 
         // Usecaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
-            TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(otherType);
+            ClassComment classComment = jigDocumentContext.aliasFinder().find(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
-                            .label(typeAlias.asTextOrIdentifierSimpleText())
+                            .label(classComment.asTextOrIdentifierSimpleText())
                             .tooltip(otherType.asSimpleText())
                             .asText()
             );
@@ -70,10 +70,10 @@ class CompositeUsecases {
 
         // controllerのNodeおよびedge
         for (TypeIdentifier controllerType : controllerTypes) {
-            TypeAlias typeAlias = jigDocumentContext.aliasFinder().find(controllerType);
+            ClassComment classComment = jigDocumentContext.aliasFinder().find(controllerType);
             sb.append(
                     new Node(controllerType.fullQualifiedName())
-                            .label(typeAlias.asTextOrIdentifierSimpleText())
+                            .label(classComment.asTextOrIdentifierSimpleText())
                             .tooltip(controllerType.asSimpleText())
                             .screenNode()
                             .asText()

@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
@@ -211,9 +211,9 @@ public class PackageRelationDiagram {
         }
 
         private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasFinder aliasFinder) {
-            PackageAlias packageAlias = aliasFinder.find(packageIdentifier);
-            if (packageAlias.exists()) {
-                return packageAlias.asText() + "\\n" + labelText;
+            PackageComment packageComment = aliasFinder.find(packageIdentifier);
+            if (packageComment.exists()) {
+                return packageComment.asText() + "\\n" + labelText;
             }
             return labelText;
         }

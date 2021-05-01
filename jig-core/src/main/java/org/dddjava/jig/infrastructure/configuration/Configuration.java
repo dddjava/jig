@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.jigsource.jigreader.CommentRepository;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
@@ -17,7 +17,7 @@ import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
@@ -43,10 +43,10 @@ public class Configuration {
         properties.prepareOutputDirectory();
 
         // AliasFinderが無くなったらなくせる
-        AliasRepository aliasRepository = new OnMemoryAliasRepository();
+        CommentRepository commentRepository = new OnMemoryCommentRepository();
 
-        JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(aliasRepository);
-        this.aliasService = new AliasService(aliasRepository);
+        JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(commentRepository);
+        this.aliasService = new AliasService(commentRepository);
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
@@ -60,13 +60,13 @@ public class Configuration {
         // TypeやMethodにAliasを持たせて無くす
         AliasFinder aliasFinder = new AliasFinder() {
             @Override
-            public PackageAlias find(PackageIdentifier packageIdentifier) {
-                return aliasRepository.get(packageIdentifier);
+            public PackageComment find(PackageIdentifier packageIdentifier) {
+                return commentRepository.get(packageIdentifier);
             }
 
             @Override
-            public TypeAlias find(TypeIdentifier typeIdentifier) {
-                return aliasRepository.get(typeIdentifier);
+            public ClassComment find(TypeIdentifier typeIdentifier) {
+                return commentRepository.get(typeIdentifier);
             }
         };
 

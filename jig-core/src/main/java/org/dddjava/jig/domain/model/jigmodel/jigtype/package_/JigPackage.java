@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.package_;
 
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 public class JigPackage {
     PackageIdentifier packageIdentifier;
-    PackageAlias packageAlias;
+    PackageComment packageComment;
 
-    public JigPackage(PackageIdentifier packageIdentifier, PackageAlias packageAlias) {
+    public JigPackage(PackageIdentifier packageIdentifier, PackageComment packageComment) {
         this.packageIdentifier = packageIdentifier;
-        this.packageAlias = packageAlias;
+        this.packageComment = packageComment;
     }
 
     public PackageIdentifier packageIdentifier() {
@@ -28,10 +28,10 @@ public class JigPackage {
     }
 
     public String label() {
-        return packageAlias.summaryOrSimpleName();
+        return packageComment.summaryOrSimpleName();
     }
 
     public JigPackageDescription description() {
-        return JigPackageDescription.from(packageAlias.descriptionComment());
+        return JigPackageDescription.from(packageComment.descriptionComment());
     }
 }

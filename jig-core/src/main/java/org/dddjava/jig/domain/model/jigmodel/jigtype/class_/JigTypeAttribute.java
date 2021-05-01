@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
@@ -12,21 +12,21 @@ import java.util.stream.Collectors;
  * 型の属性
  */
 public class JigTypeAttribute {
-    TypeAlias typeAlias;
+    ClassComment classComment;
     TypeKind typeKind;
     Visibility visibility;
 
     List<Annotation> annotations;
 
-    public JigTypeAttribute(TypeAlias typeAlias, TypeKind typeKind, Visibility visibility, List<Annotation> annotations) {
-        this.typeAlias = typeAlias;
+    public JigTypeAttribute(ClassComment classComment, TypeKind typeKind, Visibility visibility, List<Annotation> annotations) {
+        this.classComment = classComment;
         this.typeKind = typeKind;
         this.visibility = visibility;
         this.annotations = annotations;
     }
 
-    public TypeAlias alias() {
-        return typeAlias;
+    public ClassComment alias() {
+        return classComment;
     }
 
     public TypeKind kind() {
@@ -45,6 +45,6 @@ public class JigTypeAttribute {
     }
 
     public JigTypeDescription description() {
-        return JigTypeDescription.from(typeAlias.documentationComment());
+        return JigTypeDescription.from(classComment.documentationComment());
     }
 }

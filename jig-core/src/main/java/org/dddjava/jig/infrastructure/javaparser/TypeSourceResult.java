@@ -1,16 +1,16 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 
 import java.util.List;
 
 public class TypeSourceResult {
-    TypeAlias typeAlias;
-    List<MethodAlias> methodAliases;
+    ClassComment classComment;
+    List<MethodComment> methodComments;
 
-    public TypeSourceResult(TypeAlias typeAlias, List<MethodAlias> methodAliases) {
-        this.typeAlias = typeAlias;
-        this.methodAliases = methodAliases;
+    public TypeSourceResult(ClassComment classComment, List<MethodComment> methodComments) {
+        this.classComment = classComment;
+        this.methodComments = methodComments;
     }
 }

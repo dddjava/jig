@@ -1,21 +1,21 @@
-package org.dddjava.jig.domain.model.parts.alias;
+package org.dddjava.jig.domain.model.parts.class_.method;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
 
 /**
  * メソッド別名
  */
-public class MethodAlias {
+public class MethodComment {
     MethodIdentifier methodIdentifier;
-    DocumentationComment documentationComment;
+    Comment comment;
 
-    public MethodAlias(MethodIdentifier methodIdentifier, DocumentationComment documentationComment) {
+    public MethodComment(MethodIdentifier methodIdentifier, Comment comment) {
         this.methodIdentifier = methodIdentifier;
-        this.documentationComment = documentationComment;
+        this.comment = comment;
     }
 
-    public static MethodAlias empty(MethodIdentifier methodIdentifier) {
-        return new MethodAlias(methodIdentifier, DocumentationComment.empty());
+    public static MethodComment empty(MethodIdentifier methodIdentifier) {
+        return new MethodComment(methodIdentifier, Comment.empty());
     }
 
     public MethodIdentifier methodIdentifier() {
@@ -23,11 +23,11 @@ public class MethodAlias {
     }
 
     public String asText() {
-        return documentationComment.summaryText();
+        return comment.summaryText();
     }
 
     public String asTextOrDefault(String defaultText) {
-        if (documentationComment.exists()) {
+        if (comment.exists()) {
             return asText();
         }
         return defaultText;
@@ -40,11 +40,11 @@ public class MethodAlias {
         return methodIdentifier.matchesIgnoreOverload(this.methodIdentifier);
     }
 
-    public DocumentationComment documentationComment() {
-        return documentationComment;
+    public Comment documentationComment() {
+        return comment;
     }
 
     public boolean exists() {
-        return documentationComment.exists();
+        return comment.exists();
     }
 }

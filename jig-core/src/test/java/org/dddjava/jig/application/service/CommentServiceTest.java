@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigServiceTest
-class DocumentationCommentServiceTest {
+class CommentServiceTest {
 
     AliasService sut;
     JigSourceReadService jigSourceReadService;
 
-    public DocumentationCommentServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
+    public CommentServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
         sut = aliasService;
         this.jigSourceReadService = jigSourceReadService;
     }
@@ -46,12 +46,12 @@ class DocumentationCommentServiceTest {
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        TypeAlias typeAlias = typeFacts.listJigTypes()
+        ClassComment classComment = typeFacts.listJigTypes()
                 .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
 
-        assertEquals(comment, typeAlias.asText());
+        assertEquals(comment, classComment.asText());
     }
 
     static Stream<org.junit.jupiter.params.provider.Arguments> クラス別名取得() {

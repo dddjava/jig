@@ -9,9 +9,9 @@ import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.annotation.*;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
@@ -209,14 +209,14 @@ public class TypeFacts {
                 .findAny();
     }
 
-    public void registerPackageAlias(PackageAlias packageAlias) {
+    public void registerPackageAlias(PackageComment packageComment) {
         // TODO Packageを取得した際にくっつけて返せるようにする
     }
 
-    public AliasRegisterResult registerTypeAlias(TypeAlias typeAlias) {
+    public AliasRegisterResult registerTypeAlias(ClassComment classComment) {
         for (TypeFact typeFact : list) {
-            if (typeFact.typeIdentifier().equals(typeAlias.typeIdentifier())) {
-                typeFact.registerTypeAlias(typeAlias);
+            if (typeFact.typeIdentifier().equals(classComment.typeIdentifier())) {
+                typeFact.registerTypeAlias(classComment);
                 return AliasRegisterResult.成功;
             }
         }
@@ -224,11 +224,11 @@ public class TypeFacts {
         return AliasRegisterResult.紐付け対象なし;
     }
 
-    public AliasRegisterResult registerMethodAlias(MethodAlias methodAlias) {
+    public AliasRegisterResult registerMethodAlias(MethodComment methodComment) {
         for (TypeFact typeFact : list) {
-            MethodIdentifier methodIdentifier = methodAlias.methodIdentifier();
+            MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
             if (typeFact.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                return typeFact.registerMethodAlias(methodAlias);
+                return typeFact.registerMethodAlias(methodComment);
             }
         }
 

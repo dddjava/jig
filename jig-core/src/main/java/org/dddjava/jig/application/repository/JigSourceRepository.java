@@ -2,9 +2,9 @@ package org.dddjava.jig.application.repository;
 
 import org.dddjava.jig.domain.model.jigsource.jigfactory.AliasRegisterResult;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.parts.alias.MethodAlias;
-import org.dddjava.jig.domain.model.parts.alias.PackageAlias;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 
 public interface JigSourceRepository {
@@ -13,11 +13,11 @@ public interface JigSourceRepository {
 
     void registerTypeFact(TypeFacts typeFacts);
 
-    void registerPackageAlias(PackageAlias packageAlias);
+    void registerPackageComment(PackageComment packageComment);
 
-    AliasRegisterResult registerTypeAlias(TypeAlias typeAlias);
+    AliasRegisterResult registerClassComment(ClassComment classComment);
 
-    void registerMethodAlias(MethodAlias methodAlias);
+    void registerMethodComment(MethodComment methodComment);
 
     TypeFacts allTypeFacts();
 

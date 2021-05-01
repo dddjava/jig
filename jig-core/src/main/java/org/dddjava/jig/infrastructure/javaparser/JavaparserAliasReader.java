@@ -5,7 +5,11 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.jigsource.jigreader.JavaSourceAliasReader;
-import org.dddjava.jig.domain.model.parts.alias.*;
+import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageComments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,33 +27,33 @@ public class JavaparserAliasReader implements JavaSourceAliasReader {
     ClassReader classReader = new ClassReader();
 
     @Override
-    public PackageAliases readPackages(PackageInfoSources nameSources) {
-        List<PackageAlias> names = new ArrayList<>();
+    public PackageComments readPackages(PackageInfoSources nameSources) {
+        List<PackageComment> names = new ArrayList<>();
         for (PackageInfoSource packageInfoSource : nameSources.list()) {
             packageInfoReader.read(packageInfoSource)
                     .ifPresent(names::add);
         }
-        return new PackageAliases(names);
+        return new PackageComments(names);
     }
 
     @Override
-    public TypeAliases readAlias(JavaSources javaSources) {
-        List<TypeAlias> names = new ArrayList<>();
-        List<MethodAlias> methodNames = new ArrayList<>();
+    public ClassComments readAlias(JavaSources javaSources) {
+        List<ClassComment> names = new ArrayList<>();
+        List<MethodComment> methodNames = new ArrayList<>();
 
         for (JavaSource javaSource : javaSources.list()) {
             try {
                 TypeSourceResult typeSourceResult = classReader.read(javaSource);
-                TypeAlias typeAlias = typeSourceResult.typeAlias;
-                if (typeAlias != null) {
-                    names.add(typeAlias);
+                ClassComment classComment = typeSourceResult.classComment;
+                if (classComment != null) {
+                    names.add(classComment);
                 }
-                methodNames.addAll(typeSourceResult.methodAliases);
+                methodNames.addAll(typeSourceResult.methodComments);
             } catch (Exception e) {
                 LOGGER.warn("{} のJavadoc読み取りに失敗しました（処理は続行します）", javaSource);
                 LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);
             }
         }
-        return new TypeAliases(names, methodNames);
+        return new ClassComments(names, methodNames);
     }
 }

@@ -2,15 +2,15 @@ package org.dddjava.jig.domain.model.jigsource.jigreader;
 
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.parts.alias.PackageAliases;
-import org.dddjava.jig.domain.model.parts.alias.TypeAliases;
+import org.dddjava.jig.domain.model.parts.package_.PackageComments;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
 
 /**
  * JavaSourceから別名を読み取る
  */
 public interface JavaSourceAliasReader {
 
-    PackageAliases readPackages(PackageInfoSources nameSources);
+    PackageComments readPackages(PackageInfoSources nameSources);
 
-    TypeAliases readAlias(JavaSources javaSource);
+    ClassComments readAlias(JavaSources javaSource);
 }

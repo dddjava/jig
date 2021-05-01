@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.alias.TypeAlias;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
@@ -17,7 +17,7 @@ import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkAliasReader;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryAliasRepository;
+import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.KotlinMethodJavadocStub;
@@ -36,14 +36,14 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DocumentationCommentServiceTest {
+public class CommentServiceTest {
 
     JigSourceReadService jigSourceReadService;
     AliasService sut;
 
-    DocumentationCommentServiceTest() {
+    CommentServiceTest() {
         SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
-        OnMemoryAliasRepository onMemoryAliasRepository = new OnMemoryAliasRepository();
+        OnMemoryCommentRepository onMemoryAliasRepository = new OnMemoryCommentRepository();
         OnMemoryJigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(onMemoryAliasRepository);
         jigSourceReadService = new JigSourceReadService(jigSourceRepository, new AsmFactReader(), sourceCodeAliasReader, null, new LocalFileSourceReader());
         sut = new AliasService(onMemoryAliasRepository);
@@ -53,12 +53,12 @@ public class DocumentationCommentServiceTest {
     void クラス別名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        TypeAlias typeAlias = typeFacts.listJigTypes()
+        ClassComment classComment = typeFacts.listJigTypes()
                 .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
 
-        assertEquals("KotlinのクラスのDoc", typeAlias.asText());
+        assertEquals("KotlinのクラスのDoc", classComment.asText());
     }
 
 
@@ -121,7 +121,7 @@ public class DocumentationCommentServiceTest {
 
     static URI defaultPackageClassURI(String defaultPackageClass) {
         try {
-            return DocumentationCommentServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
+            return CommentServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

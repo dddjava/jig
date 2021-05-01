@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigmodel.jigtype.class_;
 
-import org.dddjava.jig.domain.model.parts.alias.DocumentationComment;
+import org.dddjava.jig.domain.model.parts.comment.Comment;
 
 public class JigTypeDescription {
 
@@ -12,9 +12,9 @@ public class JigTypeDescription {
         this.content = content;
     }
 
-    public static JigTypeDescription from(DocumentationComment documentationComment) {
-        String subject = documentationComment.summaryText();
-        String content = documentationComment.bodyText();
+    public static JigTypeDescription from(Comment comment) {
+        String subject = comment.summaryText();
+        String content = comment.bodyText();
         return new JigTypeDescription(subject, content);
     }
 

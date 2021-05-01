@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
-import org.dddjava.jig.domain.model.parts.alias.PackageAliases;
-import org.dddjava.jig.domain.model.parts.alias.TypeAliases;
+import org.dddjava.jig.domain.model.parts.package_.PackageComments;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComments;
 
 /**
  * コードを使用する別名別名読み取り機
@@ -17,15 +17,15 @@ public class SourceCodeAliasReader {
     ScalaSourceAliasReader scalaSourceAliasReader;
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> TypeAliases.empty(), sources -> TypeAliases.empty());
+        this(javaSourceAliasReader, sources -> ClassComments.empty(), sources -> ClassComments.empty());
     }
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
-        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> TypeAliases.empty());
+        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> ClassComments.empty());
     }
 
     public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> TypeAliases.empty(), scalaSourceAliasReader);
+        this(javaSourceAliasReader, sources -> ClassComments.empty(), scalaSourceAliasReader);
     }
 
     private SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
@@ -34,19 +34,19 @@ public class SourceCodeAliasReader {
         this.scalaSourceAliasReader = scalaSourceAliasReader;
     }
 
-    public PackageAliases readPackages(PackageInfoSources packageInfoSources) {
+    public PackageComments readPackages(PackageInfoSources packageInfoSources) {
         return javaSourceAliasReader.readPackages(packageInfoSources);
     }
 
-    public TypeAliases readJavaSources(JavaSources javaSources) {
+    public ClassComments readJavaSources(JavaSources javaSources) {
         return javaSourceAliasReader.readAlias(javaSources);
     }
 
-    public TypeAliases readKotlinSources(KotlinSources kotlinSources) {
+    public ClassComments readKotlinSources(KotlinSources kotlinSources) {
         return kotlinSourceAliasReader.readAlias(kotlinSources);
     }
 
-    public TypeAliases readScalaSources(ScalaSources scalaSources) {
+    public ClassComments readScalaSources(ScalaSources scalaSources) {
         return scalaSourceAliasReader.readAlias(scalaSources);
     }
 }

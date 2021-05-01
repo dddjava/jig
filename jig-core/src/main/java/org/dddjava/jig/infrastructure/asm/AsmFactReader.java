@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.jigsource.jigloader.FactReader;
+import org.dddjava.jig.domain.model.jigsource.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Repository;
 

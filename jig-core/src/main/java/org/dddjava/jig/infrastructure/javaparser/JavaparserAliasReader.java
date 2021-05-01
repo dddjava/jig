@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.jigsource.jigloader.JavaSourceAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigreader.JavaSourceAliasReader;
 import org.dddjava.jig.domain.model.parts.alias.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

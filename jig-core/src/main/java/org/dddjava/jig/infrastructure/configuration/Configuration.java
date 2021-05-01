@@ -5,7 +5,7 @@ import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigloader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.alias.AliasRepository;
 import org.dddjava.jig.domain.model.parts.alias.PackageAlias;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.jigloader;
+package org.dddjava.jig.domain.model.jigsource.jigreader;
 
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
 import org.dddjava.jig.domain.model.parts.alias.TypeAliases;

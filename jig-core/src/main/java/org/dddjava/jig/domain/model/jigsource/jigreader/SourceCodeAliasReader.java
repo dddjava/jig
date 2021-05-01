@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.jigsource.jigloader;
+package org.dddjava.jig.domain.model.jigsource.jigreader;
 
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;

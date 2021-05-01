@@ -46,6 +46,7 @@ public class BusinessRuleRelationDiagram {
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
+                .add("newrank=true;")
                 .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
 
         TypeIdentifiers isolatedTypes = targetBusinessRules.isolatedTypes();

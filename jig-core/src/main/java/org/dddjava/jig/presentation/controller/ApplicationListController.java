@@ -1,6 +1,5 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
@@ -10,7 +9,6 @@ import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
 import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceAngles;
 import org.dddjava.jig.domain.model.jigmodel.services.ServiceAngles;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
@@ -22,14 +20,11 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class ApplicationListController {
 
-    ConvertContext convertContext;
     ApplicationService applicationService;
     BusinessRuleService businessRuleService;
 
-    public ApplicationListController(AliasService aliasService,
-                                     ApplicationService applicationService,
+    public ApplicationListController(ApplicationService applicationService,
                                      BusinessRuleService businessRuleService) {
-        this.convertContext = new ConvertContext(aliasService);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
     }

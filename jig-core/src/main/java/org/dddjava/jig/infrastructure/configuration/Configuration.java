@@ -83,12 +83,10 @@ public class Configuration {
                 aliasService
         );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(
-                aliasService,
                 applicationService,
                 businessRuleService
         );
         ApplicationListController applicationListController = new ApplicationListController(
-                aliasService,
                 applicationService,
                 businessRuleService
         );

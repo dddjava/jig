@@ -1,6 +1,5 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
@@ -13,7 +12,6 @@ import org.dddjava.jig.domain.model.jigmodel.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.jigmodel.validations.ValidationAngles;
 import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.business_rule.*;
@@ -22,14 +20,11 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class BusinessRuleListController {
 
-    final ConvertContext convertContext;
     final ApplicationService applicationService;
     final BusinessRuleService businessRuleService;
 
-    public BusinessRuleListController(AliasService aliasService,
-                                      ApplicationService applicationService,
+    public BusinessRuleListController(ApplicationService applicationService,
                                       BusinessRuleService businessRuleService) {
-        this.convertContext = new ConvertContext(aliasService);
         this.applicationService = applicationService;
         this.businessRuleService = businessRuleService;
     }

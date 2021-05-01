@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.TypeKind;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;

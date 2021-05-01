@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.*;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethods;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.*;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;

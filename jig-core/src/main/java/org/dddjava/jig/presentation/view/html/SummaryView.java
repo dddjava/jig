@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
-import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.package_.JigPackage;
+import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigTypeValueKind;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;

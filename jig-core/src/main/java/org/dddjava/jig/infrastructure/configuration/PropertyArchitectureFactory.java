@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponent;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;

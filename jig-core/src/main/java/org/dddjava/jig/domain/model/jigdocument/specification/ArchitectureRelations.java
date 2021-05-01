@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponents;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;

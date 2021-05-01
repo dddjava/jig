@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.MethodWorry;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.MethodWorry;
 import org.dddjava.jig.presentation.view.report.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;

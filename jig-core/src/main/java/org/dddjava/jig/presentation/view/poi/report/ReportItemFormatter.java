@@ -2,10 +2,10 @@ package org.dddjava.jig.presentation.view.poi.report;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.services.ServiceMethods;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;

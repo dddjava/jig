@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigdocument.summary;
 
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.List;

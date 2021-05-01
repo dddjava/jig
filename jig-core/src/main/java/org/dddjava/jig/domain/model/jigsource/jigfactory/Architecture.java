@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponent;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponent;
 
 /**
  * アーキテクチャ

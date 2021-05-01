@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.controllers.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethod;
-import org.dddjava.jig.domain.model.jigmodel.repositories.DatasourceMethods;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.jigmodel.presentations.ControllerMethods;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.jigmodel.infrastructures.DatasourceMethod;
+import org.dddjava.jig.domain.model.jigmodel.infrastructures.DatasourceMethods;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;

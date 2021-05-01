@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureModule;
-import org.dddjava.jig.domain.model.jigmodel.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.jigmodel.categories.CategoryType;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureModule;
+import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 

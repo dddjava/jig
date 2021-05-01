@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigsource.jigfactory;
 
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;

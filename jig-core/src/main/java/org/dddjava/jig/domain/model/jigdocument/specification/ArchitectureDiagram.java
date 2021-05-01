@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.architecture.ArchitectureComponents;
+import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponents;
 import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;

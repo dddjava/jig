@@ -1,7 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
-import org.dddjava.jig.domain.model.jigmodel.jigtype.member.JigMethod;
+import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.jigsource.file.Sources;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;

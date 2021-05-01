@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDi
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigmodel.services.MethodNodeLabelStyle;
+import org.dddjava.jig.domain.model.jigmodel.applications.MethodNodeLabelStyle;
 import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;

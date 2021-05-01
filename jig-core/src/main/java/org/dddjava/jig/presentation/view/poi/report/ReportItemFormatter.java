@@ -2,6 +2,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
@@ -31,10 +32,10 @@ import static java.util.stream.Collectors.toList;
 public class ReportItemFormatter {
     static Logger logger = LoggerFactory.getLogger(ReportItemFormatter.class);
 
-    private ConvertContext convertContext;
+    private JigDocumentContext jigDocumentContext;
 
-    public ReportItemFormatter(ConvertContext convertContext) {
-        this.convertContext = convertContext;
+    public ReportItemFormatter(JigDocumentContext jigDocumentContext) {
+        this.jigDocumentContext = jigDocumentContext;
     }
 
     void format(ReportItem reportItem, Object item, Cell cell) {
@@ -43,14 +44,14 @@ public class ReportItemFormatter {
                 cell.setCellValue(toPackageIdentifier(item).asText());
                 return;
             case パッケージ別名:
-                cell.setCellValue(convertContext.aliasService.packageAliasOf(toPackageIdentifier(item)).asText());
+                cell.setCellValue(jigDocumentContext.packageComment(toPackageIdentifier(item)).asText());
                 return;
             case クラス名:
             case 単純クラス名:
                 cell.setCellValue(toTypeIdentifier(item).asSimpleText());
                 return;
             case クラス別名:
-                cell.setCellValue(convertContext.aliasService.typeAliasOf(toTypeIdentifier(item)).asText());
+                cell.setCellValue(jigDocumentContext.classComment(toTypeIdentifier(item)).asText());
                 return;
             case メソッドシグネチャ:
                 cell.setCellValue(toMethodDeclaration(item).asSignatureSimpleText());
@@ -62,12 +63,12 @@ public class ReportItemFormatter {
                 cell.setCellValue(toMethodDeclaration(item).methodReturn().asSimpleText());
                 return;
             case メソッド戻り値の型の別名:
-                cell.setCellValue(convertContext.aliasService.typeAliasOf(toMethodDeclaration(item).methodReturn().typeIdentifier()).asText());
+                cell.setCellValue(jigDocumentContext.classComment(toMethodDeclaration(item).methodReturn().typeIdentifier()).asText());
                 return;
             case メソッド引数の型の別名: {
                 MethodDeclaration methodDeclaration = toMethodDeclaration(item);
                 List<ClassComment> list = methodDeclaration.methodSignature().arguments().stream()
-                        .map(convertContext.aliasService::typeAliasOf)
+                        .map(jigDocumentContext::classComment)
                         .collect(toList());
                 writeLongString(cell, list.stream()
                         .map(alias -> alias.asText())

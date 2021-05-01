@@ -18,7 +18,6 @@ import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.SummaryView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 
 import java.util.List;
 
@@ -77,7 +76,7 @@ public class ViewResolver {
                 return new DotView(model -> ((CompositeUsecaseDiagram) model).diagramSource(jigDocumentContext), diagramFormat, dotCommandRunner);
             case BusinessRuleList:
             case ApplicationList:
-                return new ModelReportsPoiView(new ConvertContext(aliasService));
+                return new ModelReportsPoiView(jigDocumentContext);
             case ApplicationSummary:
             case DomainSummary:
                 return new SummaryView(jigDocumentContext);

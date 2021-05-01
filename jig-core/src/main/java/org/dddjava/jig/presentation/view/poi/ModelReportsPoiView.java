@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.view.poi;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
-import org.dddjava.jig.presentation.view.poi.report.ConvertContext;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.poi.report.ReportItemFormatter;
@@ -19,8 +19,8 @@ public class ModelReportsPoiView implements JigView {
 
     private ReportItemFormatter reportItemFormatter;
 
-    public ModelReportsPoiView(ConvertContext convertContext) {
-        this.reportItemFormatter = new ReportItemFormatter(convertContext);
+    public ModelReportsPoiView(JigDocumentContext jigDocumentContext) {
+        this.reportItemFormatter = new ReportItemFormatter(jigDocumentContext);
     }
 
     @Override

@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSour
 import org.dddjava.jig.domain.model.jigsource.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.scalacode.ScalaSources;
 import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResult;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.LoadResults;
+import org.dddjava.jig.domain.model.jigsource.jigreader.ReadStatus;
+import org.dddjava.jig.domain.model.jigsource.jigreader.ReadStatuses;
 import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.jigsource.jigreader.FactReader;
 import org.dddjava.jig.domain.model.jigsource.jigreader.SourceCodeAliasReader;
@@ -51,29 +51,29 @@ public class JigSourceReadService {
     /**
      * パスからソースを読み取る
      */
-    public LoadResults readSourceFromPaths(SourcePaths sourcePaths) {
+    public ReadStatuses readSourceFromPaths(SourcePaths sourcePaths) {
         Sources source = sourceReader.readSources(sourcePaths);
 
         readProjectData(source);
         Sqls sqls = readSqlSource(source.sqlSources());
 
-        List<LoadResult> list = new ArrayList<>();
+        List<ReadStatus> list = new ArrayList<>();
 
         if (source.nothingBinarySource()) {
-            list.add(LoadResult.バイナリソースなし);
+            list.add(ReadStatus.バイナリソースなし);
         }
 
         if (source.nothingTextSource()) {
-            list.add(LoadResult.テキストソースなし);
+            list.add(ReadStatus.テキストソースなし);
         }
 
         // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない
 
         if (sqls.status().not正常()) {
-            list.add(LoadResult.fromSqlReadStatus(sqls.status()));
+            list.add(ReadStatus.fromSqlReadStatus(sqls.status()));
         }
 
-        return new LoadResults(list);
+        return new ReadStatuses(list);
     }
 
     /**

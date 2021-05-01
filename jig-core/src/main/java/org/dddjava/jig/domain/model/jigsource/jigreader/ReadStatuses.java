@@ -1,16 +1,16 @@
-package org.dddjava.jig.domain.model.jigsource.jigfactory;
+package org.dddjava.jig.domain.model.jigsource.jigreader;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 解析結果一式
+ * 読み取り結果一覧
  */
-public class LoadResults {
+public class ReadStatuses {
 
-    List<LoadResult> list;
+    List<ReadStatus> list;
 
-    public LoadResults(List<LoadResult> list) {
+    public ReadStatuses(List<ReadStatus> list) {
         this.list = list;
     }
 
@@ -22,17 +22,17 @@ public class LoadResults {
         return !listErrorOnly().isEmpty();
     }
 
-    List<LoadResult> listErrorOnly() {
+    List<ReadStatus> listErrorOnly() {
         return list.stream()
-                .filter(LoadResult::isError)
+                .filter(ReadStatus::isError)
                 .collect(Collectors.toList());
     }
 
-    public List<LoadResult> listWarning() {
+    public List<ReadStatus> listWarning() {
         return list;
     }
 
-    public List<LoadResult> listErrors() {
+    public List<ReadStatus> listErrors() {
         return listErrorOnly();
     }
 }

@@ -1,9 +1,12 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 public interface JigDocumentContext {
 
@@ -11,11 +14,19 @@ public interface JigDocumentContext {
 
     DocumentName documentName(JigDocument jigDocument);
 
-    AliasFinder aliasFinder();
+    AliasService aliasService();
 
-    default String aliasTextOrDefault(TypeIdentifier handlerType, String defaultText) {
-        return aliasFinder().find(handlerType).asTextOrDefault(defaultText);
-    };
+    default String aliasTextOrDefault(TypeIdentifier typeIdentifier, String defaultText) {
+        return aliasService().typeAliasOf(typeIdentifier).asTextOrDefault(defaultText);
+    }
 
     LinkPrefix linkPrefix();
+
+    default PackageComment packageComment(PackageIdentifier packageIdentifier) {
+        return aliasService().packageAliasOf(packageIdentifier);
+    }
+
+    default ClassComment classComment(TypeIdentifier typeIdentifier) {
+        return aliasService().typeAliasOf(typeIdentifier);
+    }
 }

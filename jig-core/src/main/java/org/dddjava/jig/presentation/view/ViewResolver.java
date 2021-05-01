@@ -80,7 +80,7 @@ public class ViewResolver {
                 return new ModelReportsPoiView(new ConvertContext(aliasService));
             case ApplicationSummary:
             case DomainSummary:
-                return new SummaryView(jigDocumentContext.aliasFinder());
+                return new SummaryView(jigDocumentContext.aliasService());
         }
 
         throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);

@@ -3,11 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.package_.PackageComment;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
@@ -41,7 +36,6 @@ public class Configuration {
         this.properties = new JigPropertyLoader(originalProperties).load();
         properties.prepareOutputDirectory();
 
-        // AliasFinderが無くなったらなくせる
         CommentRepository commentRepository = new OnMemoryCommentRepository();
 
         JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(commentRepository);
@@ -56,21 +50,8 @@ public class Configuration {
                 properties.getOutputOmitPrefix()
         );
 
-        // TypeやMethodにAliasを持たせて無くす
-        AliasFinder aliasFinder = new AliasFinder() {
-            @Override
-            public PackageComment find(PackageIdentifier packageIdentifier) {
-                return commentRepository.get(packageIdentifier);
-            }
-
-            @Override
-            public ClassComment find(TypeIdentifier typeIdentifier) {
-                return commentRepository.get(typeIdentifier);
-            }
-        };
-
         JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext
-                .getInstanceWithAliasFinder(aliasFinder, properties.linkPrefix());
+                .getInstanceWithAliasFinder(aliasService, properties.linkPrefix());
         ViewResolver viewResolver = new ViewResolver(
                 prefixRemoveIdentifierFormatter,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする

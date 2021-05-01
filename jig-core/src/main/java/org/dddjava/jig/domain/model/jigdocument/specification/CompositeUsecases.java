@@ -59,7 +59,7 @@ class CompositeUsecases {
 
         // Usecaseが使用しているクラスのNode
         for (TypeIdentifier otherType : otherTypes) {
-            ClassComment classComment = jigDocumentContext.aliasFinder().find(otherType);
+            ClassComment classComment = jigDocumentContext.classComment(otherType);
             sb.append(
                     new Node(otherType.fullQualifiedName())
                             .label(classComment.asTextOrIdentifierSimpleText())
@@ -70,7 +70,7 @@ class CompositeUsecases {
 
         // controllerのNodeおよびedge
         for (TypeIdentifier controllerType : controllerTypes) {
-            ClassComment classComment = jigDocumentContext.aliasFinder().find(controllerType);
+            ClassComment classComment = jigDocumentContext.classComment(controllerType);
             sb.append(
                     new Node(controllerType.fullQualifiedName())
                             .label(classComment.asTextOrIdentifierSimpleText())

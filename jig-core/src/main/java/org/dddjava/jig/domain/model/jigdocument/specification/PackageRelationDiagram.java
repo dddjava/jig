@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.package_.*;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
@@ -183,11 +183,11 @@ public class PackageRelationDiagram {
     }
 
     static class Labeler {
-        AliasFinder aliasFinder;
+        AliasService aliasService;
         PackageIdentifierFormatter packageIdentifierFormatter;
 
         Labeler(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
-            this.aliasFinder = jigDocumentContext.aliasFinder();
+            this.aliasService = jigDocumentContext.aliasService();
             this.packageIdentifierFormatter = packageIdentifierFormatter;
         }
 
@@ -198,16 +198,16 @@ public class PackageRelationDiagram {
             }
             // parentでくくる場合にパッケージ名をの重複を省く
             String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
-            return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+            return addAliasIfExists(packageIdentifier, labelText, aliasService);
         }
 
         private String label(PackageIdentifier packageIdentifier) {
             String labelText = packageIdentifier.format(packageIdentifierFormatter);
-            return addAliasIfExists(packageIdentifier, labelText, aliasFinder);
+            return addAliasIfExists(packageIdentifier, labelText, aliasService);
         }
 
-        private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasFinder aliasFinder) {
-            PackageComment packageComment = aliasFinder.find(packageIdentifier);
+        private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasService aliasService) {
+            PackageComment packageComment = aliasService.packageAliasOf(packageIdentifier);
             if (packageComment.exists()) {
                 return packageComment.asText() + "\\n" + labelText;
             }

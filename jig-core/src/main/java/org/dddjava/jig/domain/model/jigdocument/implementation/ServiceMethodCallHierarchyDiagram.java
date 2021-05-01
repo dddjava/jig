@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngle;
 import org.dddjava.jig.domain.model.models.applications.Usecase;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
@@ -169,8 +169,8 @@ public class ServiceMethodCallHierarchyDiagram {
 
     private String aliasLineOf(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
         // TODO jigDocumentContextからではなくJigTypeやJigMethodを使うようにしたい
-        AliasFinder aliasFinder = jigDocumentContext.aliasFinder();
-        ClassComment classComment = aliasFinder.find(typeIdentifier);
+        AliasService aliasService = jigDocumentContext.aliasService();
+        ClassComment classComment = aliasService.typeAliasOf(typeIdentifier);
         return classComment.nodeLabel();
     }
 

@@ -1,11 +1,11 @@
 package org.dddjava.jig.presentation.view.html;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
@@ -19,12 +19,12 @@ import static java.util.stream.Collectors.*;
 
 public class SummaryView implements JigView {
 
-    AliasFinder aliasFinder;
+    AliasService aliasService;
     HtmlDocumentTemplateEngine templateEngine;
 
-    public SummaryView(AliasFinder aliasFinder) {
-        this.aliasFinder = aliasFinder;
-        this.templateEngine = new HtmlDocumentTemplateEngine(aliasFinder);
+    public SummaryView(AliasService aliasService) {
+        this.aliasService = aliasService;
+        this.templateEngine = new HtmlDocumentTemplateEngine(aliasService);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class SummaryView implements JigView {
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
 
-        TreeComposite baseComposite = new TreeComposite(PackageIdentifier.defaultPackage(), aliasFinder);
+        TreeComposite baseComposite = new TreeComposite(PackageIdentifier.defaultPackage(), aliasService);
 
         createTree(jigTypeMap, packageMap, baseComposite);
 
@@ -51,7 +51,7 @@ public class SummaryView implements JigView {
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
-                .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasFinder.find(packageIdentifier)))
+                .map(packageIdentifier -> new JigPackage(packageIdentifier, aliasService.packageAliasOf(packageIdentifier)))
                 .collect(toList());
 
         Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
@@ -77,7 +77,7 @@ public class SummaryView implements JigView {
                             Map<PackageIdentifier, Set<PackageIdentifier>> packageMap,
                             TreeComposite baseComposite) {
         for (PackageIdentifier current : packageMap.getOrDefault(baseComposite.packageIdentifier(), Collections.emptySet())) {
-            TreeComposite composite = new TreeComposite(current, aliasFinder);
+            TreeComposite composite = new TreeComposite(current, aliasService);
             // add package
             baseComposite.addComponent(composite);
             // add class

@@ -1,10 +1,10 @@
 package org.dddjava.jig.presentation.view;
 
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
@@ -18,16 +18,16 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceBundleJigDocumentContext.class);
 
     ResourceBundle jigDocumentResource;
-    AliasFinder aliasFinder;
+    AliasService aliasService;
     LinkPrefix linkPrefix;
 
     ResourceBundleJigDocumentContext() {
         init();
     }
 
-    ResourceBundleJigDocumentContext(AliasFinder aliasFinder, LinkPrefix linkPrefix) {
+    ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix) {
         init();
-        this.aliasFinder = aliasFinder;
+        this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
     }
 
@@ -52,8 +52,8 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
         return new ResourceBundleJigDocumentContext();
     }
 
-    public static JigDocumentContext getInstanceWithAliasFinder(AliasFinder aliasFinder, LinkPrefix linkPrefix) {
-        return new ResourceBundleJigDocumentContext(aliasFinder, linkPrefix);
+    public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix) {
+        return new ResourceBundleJigDocumentContext(aliasService, linkPrefix);
     }
 
     @Override
@@ -76,9 +76,9 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     }
 
     @Override
-    public AliasFinder aliasFinder() {
-        Objects.requireNonNull(aliasFinder);
-        return aliasFinder;
+    public AliasService aliasService() {
+        Objects.requireNonNull(aliasService);
+        return aliasService;
     }
 
     @Override

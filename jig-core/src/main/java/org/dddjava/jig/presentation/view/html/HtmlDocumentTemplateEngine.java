@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.parts.alias.AliasFinder;
+import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 class HtmlDocumentTemplateEngine extends TemplateEngine {
 
-    AliasFinder aliasFinder;
+    AliasService aliasService;
 
     public HtmlDocumentTemplateEngine() {
         super();
@@ -30,10 +30,10 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
         super.setTemplateResolver(templateResolver);
     }
 
-    public HtmlDocumentTemplateEngine(AliasFinder aliasFinder) {
+    public HtmlDocumentTemplateEngine(AliasService aliasService) {
         this();
 
-        this.aliasFinder = aliasFinder;
+        this.aliasService = aliasService;
 
         super.addDialect(new IExpressionObjectDialect() {
             @Override
@@ -70,7 +70,7 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
 
     class JigDialectObject {
         public String labelText(TypeIdentifier typeIdentifier) {
-            ClassComment classComment = aliasFinder.find(typeIdentifier);
+            ClassComment classComment = aliasService.typeAliasOf(typeIdentifier);
             return classComment.asTextOrIdentifierSimpleText();
         }
     }

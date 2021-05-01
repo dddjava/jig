@@ -83,6 +83,7 @@ public class ServiceMethodCallHierarchyDiagram {
 
         String graphText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
+                .add("newrank=true;")
                 .add("rankdir=LR;")
                 .add(Node.DEFAULT)
                 .add(relationText.asText())

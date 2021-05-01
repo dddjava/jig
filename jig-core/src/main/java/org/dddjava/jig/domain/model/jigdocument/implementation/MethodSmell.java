@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.MethodWorry;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;

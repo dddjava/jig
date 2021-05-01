@@ -1,15 +1,15 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSource;
-import org.dddjava.jig.domain.model.jigsource.file.text.javacode.JavaSources;
-import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.jigsource.file.text.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.jigsource.jigreader.JavaSourceAliasReader;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.jigsource.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageComments;
+import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSource;
+import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
+import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSource;
+import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
+import org.dddjava.jig.domain.model.sources.jigreader.JavaSourceAliasReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

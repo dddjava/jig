@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmell;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.MethodWorry;
+import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 import org.dddjava.jig.presentation.view.report.ReportItem;

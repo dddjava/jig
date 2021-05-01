@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelat
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
-import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.springframework.stereotype.Service;
 
 /**

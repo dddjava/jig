@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 import org.dddjava.jig.presentation.view.report.ReportItem;

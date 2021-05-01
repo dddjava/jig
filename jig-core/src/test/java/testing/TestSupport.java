@@ -1,7 +1,7 @@
 package testing;
 
-import org.dddjava.jig.domain.model.jigsource.file.binary.BinarySourceLocation;
-import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
+import org.dddjava.jig.domain.model.sources.file.binary.BinarySourceLocation;
+import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -3,12 +3,12 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryAngle;
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryType;
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.*;
 import java.util.function.Function;

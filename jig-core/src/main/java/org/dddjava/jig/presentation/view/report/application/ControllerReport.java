@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.report.application;
 
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.RequestHandlerMethod;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.jigobject.member.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;

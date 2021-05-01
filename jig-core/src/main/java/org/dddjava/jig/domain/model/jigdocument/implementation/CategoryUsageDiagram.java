@@ -3,14 +3,14 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethod;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.models.applications.ServiceMethod;
+import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.StringJoiner;
 

@@ -4,14 +4,14 @@ import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.jigdocument.implementation.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
 import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
-import org.dddjava.jig.domain.model.jigmodel.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.jigmodel.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.jigmodel.domains.collections.JigCollectionTypes;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
+import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 
 /**

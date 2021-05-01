@@ -1,8 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.MethodFact;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
@@ -11,6 +9,8 @@ import org.dddjava.jig.domain.model.parts.class_.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

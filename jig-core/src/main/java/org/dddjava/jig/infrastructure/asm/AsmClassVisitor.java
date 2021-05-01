@@ -1,8 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.TypeKind;
-import org.dddjava.jig.domain.model.jigsource.file.binary.ClassSource;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
@@ -13,6 +11,8 @@ import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeParameters;
+import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;

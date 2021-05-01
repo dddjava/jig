@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
-import org.dddjava.jig.domain.model.jigsource.jigreader.ReadStatus;
-import org.dddjava.jig.domain.model.jigsource.jigreader.ReadStatuses;
+import org.dddjava.jig.domain.model.sources.file.SourcePaths;
+import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
+import org.dddjava.jig.domain.model.sources.jigreader.ReadStatuses;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;

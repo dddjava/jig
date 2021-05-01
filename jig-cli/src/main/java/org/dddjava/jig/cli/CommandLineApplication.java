@@ -2,7 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigsource.file.SourcePaths;
+import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.controller.JigExecutor;

@@ -6,18 +6,18 @@ import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMe
 import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
-import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponents;
-import org.dddjava.jig.domain.model.jigmodel.presentations.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.jigmodel.infrastructures.DatasourceAngles;
-import org.dddjava.jig.domain.model.jigmodel.infrastructures.DatasourceMethods;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceAngles;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
+import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
+import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
+import org.dddjava.jig.domain.model.models.infrastructures.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

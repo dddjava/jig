@@ -8,9 +8,9 @@ import org.apache.ibatis.scripting.xmltags.MixedSqlNode;
 import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.scripting.xmltags.StaticTextSqlNode;
 import org.apache.ibatis.session.Configuration;
-import org.dddjava.jig.domain.model.jigsource.file.text.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.jigsource.jigreader.SqlReader;
 import org.dddjava.jig.domain.model.parts.rdbaccess.*;
+import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.sources.jigreader.SqlReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

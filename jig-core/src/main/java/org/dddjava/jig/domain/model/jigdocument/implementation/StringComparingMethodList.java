@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
-import org.dddjava.jig.domain.model.jigmodel.presentations.ControllerMethods;
-import org.dddjava.jig.domain.model.jigmodel.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.jigmodel.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;

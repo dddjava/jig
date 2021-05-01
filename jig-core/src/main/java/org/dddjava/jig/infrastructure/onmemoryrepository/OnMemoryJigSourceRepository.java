@@ -1,13 +1,13 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.AliasRegisterResult;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.jigsource.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.sources.jigfactory.AliasRegisterResult;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
+import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;

@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigmodel.architectures.ArchitectureComponent;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.Architecture;
-import org.dddjava.jig.domain.model.jigsource.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponent;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
 
 import java.util.List;
 import java.util.regex.Pattern;

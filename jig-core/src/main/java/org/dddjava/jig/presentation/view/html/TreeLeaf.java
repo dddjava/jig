@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigmodel.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 
 public class TreeLeaf implements TreeComponent {
 

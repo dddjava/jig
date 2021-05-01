@@ -2,8 +2,8 @@ package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.JigSourceReadService;
-import org.dddjava.jig.domain.model.jigmodel.presentations.ControllerMethods;
-import org.dddjava.jig.domain.model.jigsource.file.Sources;
+import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
+import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigdocument.implementation;
 
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
@@ -27,7 +27,7 @@ public class StringComparingMethodList {
         this.methods = methods;
     }
 
-    public static StringComparingMethodList createFrom(ControllerMethods controllerMethods, ServiceMethods serviceMethods) {
+    public static StringComparingMethodList createFrom(HandlerMethods handlerMethods, ServiceMethods serviceMethods) {
         // String#equals(Object)
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(
                 TypeIdentifier.of(String.class),
@@ -36,7 +36,7 @@ public class StringComparingMethodList {
         );
 
         List<JigMethod> methods = Stream.concat(
-                controllerMethods.list().stream()
+                handlerMethods.list().stream()
                         .filter(controllerMethod -> controllerMethod.isCall(stringEqualsMethod))
                         .map(controllerMethod -> controllerMethod.method()),
                 serviceMethods.list().stream()

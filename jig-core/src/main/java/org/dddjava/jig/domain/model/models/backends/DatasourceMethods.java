@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.infrastructures;
+package org.dddjava.jig.domain.model.models.backends;
 
 import java.util.List;
 import java.util.stream.Collectors;

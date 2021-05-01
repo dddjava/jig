@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.models.applications;
 
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethods;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
+import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.ArrayList;
@@ -22,10 +22,10 @@ public class ServiceAngles {
                 .collect(Collectors.toList());
     }
 
-    public ServiceAngles(ServiceMethods serviceMethods, MethodRelations methodRelations, ControllerMethods controllerMethods, DatasourceMethods datasourceMethods) {
+    public ServiceAngles(ServiceMethods serviceMethods, MethodRelations methodRelations, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
-            list.add(new ServiceAngle(serviceMethod, methodRelations, controllerMethods, serviceMethods, datasourceMethods));
+            list.add(new ServiceAngle(serviceMethod, methodRelations, handlerMethods, serviceMethods, datasourceMethods));
         }
         this.list = list;
     }

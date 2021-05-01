@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.infrastructures;
+package org.dddjava.jig.domain.model.models.backends;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;

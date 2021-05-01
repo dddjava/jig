@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
+import org.dddjava.jig.domain.model.models.backends.DatasourceMethod;
+import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethod;
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.models.jigobject.member.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.annotation.*;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
@@ -84,20 +84,20 @@ public class TypeFacts {
         return new BusinessRules(list, toClassRelations());
     }
 
-    public ControllerMethods createControllerMethods(Architecture architecture) {
-        List<RequestHandlerMethod> list = new ArrayList<>();
+    public HandlerMethods createControllerMethods(Architecture architecture) {
+        List<HandlerMethod> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             if (architecture.isController(typeFact)) {
                 for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
                     JigMethod method = methodFact.createMethod();
-                    RequestHandlerMethod requestHandlerMethod = new RequestHandlerMethod(method, new Annotations(typeFact.listAnnotations()));
-                    if (requestHandlerMethod.valid()) {
-                        list.add(requestHandlerMethod);
+                    HandlerMethod handlerMethod = new HandlerMethod(method, new Annotations(typeFact.listAnnotations()));
+                    if (handlerMethod.valid()) {
+                        list.add(handlerMethod);
                     }
                 }
             }
         }
-        return new ControllerMethods(list);
+        return new HandlerMethods(list);
     }
 
     public DatasourceMethods createDatasourceMethods(Architecture architecture) {

@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.models.applications;
 
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethods;
-import org.dddjava.jig.domain.model.models.infrastructures.RepositoryMethods;
+import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorries;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
-import org.dddjava.jig.domain.model.models.jigobject.member.RequestHandlerMethod;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
@@ -22,7 +22,7 @@ public class ServiceAngle {
     MethodDeclaration methodDeclaration;
 
     ServiceMethods userServiceMethods;
-    ControllerMethods userControllerMethods;
+    HandlerMethods userHandlerMethods;
 
     UsingFields usingFields;
     ServiceMethods usingServiceMethods;
@@ -32,7 +32,7 @@ public class ServiceAngle {
     MethodWorries methodWorries;
     ServiceMethod serviceMethod;
 
-    ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, ControllerMethods controllerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         this.serviceMethod = serviceMethod;
         this.methodDeclaration = serviceMethod.methodDeclaration();
         this.usingFields = serviceMethod.methodUsingFields();
@@ -45,7 +45,7 @@ public class ServiceAngle {
         this.usingServiceMethods = serviceMethods.intersect(usingMethods.methodDeclarations());
 
         CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
-        this.userControllerMethods = controllerMethods.filter(callerMethods);
+        this.userHandlerMethods = handlerMethods.filter(callerMethods);
         this.userServiceMethods = serviceMethods.filter(callerMethods);
     }
 
@@ -58,7 +58,7 @@ public class ServiceAngle {
     }
 
     public boolean usingFromController() {
-        return !userControllerMethods.empty();
+        return !userHandlerMethods.empty();
     }
 
     public UsingFields usingFields() {
@@ -84,8 +84,8 @@ public class ServiceAngle {
 
     public MethodDeclarations userControllerMethods() {
         // TODO requestHandlerMethodsのようなのを返す。MethodDeclarationsは汎用的すぎる。
-        return userControllerMethods.list().stream()
-                .map(RequestHandlerMethod::method)
+        return userHandlerMethods.list().stream()
+                .map(HandlerMethod::method)
                 .map(JigMethod::declaration)
                 .collect(MethodDeclarations.collector());
     }

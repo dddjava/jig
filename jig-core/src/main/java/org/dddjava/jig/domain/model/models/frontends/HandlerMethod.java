@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.models.jigobject.member;
+package org.dddjava.jig.domain.model.models.frontends;
 
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
@@ -11,20 +12,20 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * リクエストハンドラ
+ * ハンドラ
  *
- * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、
- * リクエストハンドラとして扱われません。
+ * 外部からのリクエストを受け取る起点となるメソッドです。
+ * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、ハンドラとして扱われません。
  */
-public class RequestHandlerMethod {
+public class HandlerMethod {
 
-    static Logger LOGGER = LoggerFactory.getLogger(RequestHandlerMethod.class);
+    static Logger LOGGER = LoggerFactory.getLogger(HandlerMethod.class);
 
     private final JigMethod method;
     private final Annotations requestMappingForClass;
     private final Annotations requestMappingsForMethod;
 
-    public RequestHandlerMethod(JigMethod method, Annotations annotations) {
+    public HandlerMethod(JigMethod method, Annotations annotations) {
         this.method = method;
 
         this.requestMappingForClass = annotations.filterAny(

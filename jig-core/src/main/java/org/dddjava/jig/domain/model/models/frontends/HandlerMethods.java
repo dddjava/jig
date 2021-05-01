@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.models.presentations;
+package org.dddjava.jig.domain.model.models.frontends;
 
-import org.dddjava.jig.domain.model.models.jigobject.member.RequestHandlerMethod;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.Comparator;
@@ -10,16 +9,16 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * コントローラーメソッド一覧
+ * ハンドラ一覧
  */
-public class ControllerMethods {
-    List<RequestHandlerMethod> list;
+public class HandlerMethods {
+    List<HandlerMethod> list;
 
-    public ControllerMethods(List<RequestHandlerMethod> list) {
+    public HandlerMethods(List<HandlerMethod> list) {
         this.list = list;
     }
 
-    public List<RequestHandlerMethod> list() {
+    public List<HandlerMethod> list() {
         return list.stream()
                 .sorted(Comparator.comparing(requestHandlerMethod -> requestHandlerMethod.method().declaration().asFullNameText()))
                 .collect(toList());
@@ -29,9 +28,9 @@ public class ControllerMethods {
         return list.isEmpty();
     }
 
-    public ControllerMethods filter(CallerMethods callerMethods) {
+    public HandlerMethods filter(CallerMethods callerMethods) {
         return list.stream()
                 .filter(requestHandlerMethod -> requestHandlerMethod.anyMatch(callerMethods))
-                .collect(collectingAndThen(toList(), ControllerMethods::new));
+                .collect(collectingAndThen(toList(), HandlerMethods::new));
     }
 }

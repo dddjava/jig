@@ -9,10 +9,10 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceAngles;
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
@@ -42,15 +42,15 @@ public class ApplicationService {
     /**
      * コントローラーを分析する
      */
-    public ControllerMethods controllerAngles() {
+    public HandlerMethods controllerAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
 
-        if (controllerMethods.empty()) {
+        if (handlerMethods.empty()) {
             jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
         }
 
-        return controllerMethods;
+        return handlerMethods;
     }
 
     public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
@@ -69,13 +69,13 @@ public class ApplicationService {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
         DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
 
         return new ServiceAngles(
                 serviceMethods,
                 typeFacts.toMethodRelations(),
-                controllerMethods,
+                handlerMethods,
                 datasourceMethods);
     }
 
@@ -99,10 +99,10 @@ public class ApplicationService {
      */
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ControllerMethods controllerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
         ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
 
-        return StringComparingMethodList.createFrom(controllerMethods, serviceMethods);
+        return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);
     }
 
     public ArchitectureDiagram architectureDiagram() {

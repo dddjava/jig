@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
 import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
-import org.dddjava.jig.domain.model.models.infrastructures.DatasourceAngles;
-import org.dddjava.jig.domain.model.models.presentations.ControllerMethods;
+import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
@@ -45,9 +45,9 @@ public class ApplicationListController {
     }
 
     ModelReport<?> controllerReport() {
-        ControllerMethods controllerMethods = applicationService.controllerAngles();
+        HandlerMethods handlerMethods = applicationService.controllerAngles();
 
-        return new ModelReport<>(controllerMethods.list(),
+        return new ModelReport<>(handlerMethods.list(),
                 requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
                 ControllerReport.class);
     }

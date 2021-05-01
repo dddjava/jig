@@ -40,7 +40,7 @@ public class SummaryView implements JigView {
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
 
-        TreeComposite baseComposite = new TreeComposite(PackageIdentifier.defaultPackage(), jigDocumentContext);
+        TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
 
         createTree(jigTypeMap, packageMap, baseComposite);
 
@@ -51,7 +51,7 @@ public class SummaryView implements JigView {
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
-                .map(packageIdentifier -> new JigPackage(packageIdentifier, jigDocumentContext.packageComment(packageIdentifier)))
+                .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
                 .collect(toList());
 
         Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
@@ -77,7 +77,7 @@ public class SummaryView implements JigView {
                             Map<PackageIdentifier, Set<PackageIdentifier>> packageMap,
                             TreeComposite baseComposite) {
         for (PackageIdentifier current : packageMap.getOrDefault(baseComposite.packageIdentifier(), Collections.emptySet())) {
-            TreeComposite composite = new TreeComposite(current, jigDocumentContext);
+            TreeComposite composite = new TreeComposite(jigDocumentContext.jigPackage(current));
             // add package
             baseComposite.addComponent(composite);
             // add class

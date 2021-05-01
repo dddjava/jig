@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.ArrayList;
@@ -9,28 +9,26 @@ import java.util.Optional;
 
 public class TreeComposite implements TreeComponent {
 
-    private final PackageIdentifier packageIdentifier;
-    private final JigDocumentContext jigDocumentContext;
+    private JigPackage jigPackage;
 
     List<TreeComponent> list = new ArrayList<>();
 
-    public TreeComposite(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext) {
-        this.packageIdentifier = packageIdentifier;
-        this.jigDocumentContext = jigDocumentContext;
+    public TreeComposite(JigPackage jigPackage) {
+        this.jigPackage = jigPackage;
     }
 
     @Override
     public String name() {
-        return jigDocumentContext.packageComment(packageIdentifier).summaryOrSimpleName();
+        return jigPackage.label();
     }
 
     @Override
     public String href() {
-        return "#" + packageIdentifier.asText();
+        return "#" + jigPackage.fqn();
     }
 
     public PackageIdentifier packageIdentifier() {
-        return packageIdentifier;
+        return jigPackage.packageIdentifier();
     }
 
     public boolean hasChild() {
@@ -68,11 +66,11 @@ public class TreeComposite implements TreeComponent {
         return findCompositeInternal(packageIdentifier)
                 // 通常は見つかる
                 // これが発生するのはこのインスタンスの子階層にないパッケージを引数にした場合
-                .orElseThrow(() -> new IllegalStateException(packageIdentifier.asText() + " is not found in " + this.packageIdentifier.asText()));
+                .orElseThrow(() -> new IllegalStateException(packageIdentifier.asText() + " is not found in " + this.jigPackage.fqn()));
     }
 
     private Optional<TreeComposite> findCompositeInternal(PackageIdentifier packageIdentifier) {
-        if (packageIdentifier.equals(this.packageIdentifier)) {
+        if (packageIdentifier.equals(this.jigPackage.packageIdentifier())) {
             return Optional.of(this);
         }
         for (TreeComponent child : list) {

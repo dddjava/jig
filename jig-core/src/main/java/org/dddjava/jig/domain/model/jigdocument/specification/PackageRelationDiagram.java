@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
@@ -183,11 +182,11 @@ public class PackageRelationDiagram {
     }
 
     static class Labeler {
-        AliasService aliasService;
+        JigDocumentContext jigDocumentContext;
         PackageIdentifierFormatter packageIdentifierFormatter;
 
         Labeler(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
-            this.aliasService = jigDocumentContext.aliasService();
+            this.jigDocumentContext = jigDocumentContext;
             this.packageIdentifierFormatter = packageIdentifierFormatter;
         }
 
@@ -198,16 +197,16 @@ public class PackageRelationDiagram {
             }
             // parentでくくる場合にパッケージ名をの重複を省く
             String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
-            return addAliasIfExists(packageIdentifier, labelText, aliasService);
+            return addAliasIfExists(packageIdentifier, labelText);
         }
 
         private String label(PackageIdentifier packageIdentifier) {
             String labelText = packageIdentifier.format(packageIdentifierFormatter);
-            return addAliasIfExists(packageIdentifier, labelText, aliasService);
+            return addAliasIfExists(packageIdentifier, labelText);
         }
 
-        private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText, AliasService aliasService) {
-            PackageComment packageComment = aliasService.packageAliasOf(packageIdentifier);
+        private String addAliasIfExists(PackageIdentifier packageIdentifier, String labelText) {
+            PackageComment packageComment = jigDocumentContext.packageComment(packageIdentifier);
             if (packageComment.exists()) {
                 return packageComment.asText() + "\\n" + labelText;
             }

@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.application.service.AliasService;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 
 import java.util.ArrayList;
@@ -10,18 +10,18 @@ import java.util.Optional;
 public class TreeComposite implements TreeComponent {
 
     private final PackageIdentifier packageIdentifier;
-    private final AliasService aliasService;
+    private final JigDocumentContext jigDocumentContext;
 
     List<TreeComponent> list = new ArrayList<>();
 
-    public TreeComposite(PackageIdentifier packageIdentifier, AliasService aliasService) {
+    public TreeComposite(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext) {
         this.packageIdentifier = packageIdentifier;
-        this.aliasService = aliasService;
+        this.jigDocumentContext = jigDocumentContext;
     }
 
     @Override
     public String name() {
-        return aliasService.packageAliasOf(packageIdentifier).summaryOrSimpleName();
+        return jigDocumentContext.packageComment(packageIdentifier).summaryOrSimpleName();
     }
 
     @Override

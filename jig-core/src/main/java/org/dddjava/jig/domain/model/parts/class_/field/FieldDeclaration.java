@@ -36,4 +36,10 @@ public class FieldDeclaration {
     public FieldType fieldType() {
         return fieldType;
     }
+
+    public boolean matches(FieldDeclaration other) {
+        return this.declaringType.equals(other.declaringType)
+                && this.typeIdentifier().equals(other.typeIdentifier())
+                && this.name.equals(other.name);
+    }
 }

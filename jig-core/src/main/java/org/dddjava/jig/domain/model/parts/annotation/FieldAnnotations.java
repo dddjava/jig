@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.parts.annotation;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,6 +12,10 @@ public class FieldAnnotations {
 
     public FieldAnnotations(List<FieldAnnotation> list) {
         this.list = list;
+    }
+
+    public static FieldAnnotations none() {
+        return new FieldAnnotations(Collections.emptyList());
     }
 
     public List<FieldAnnotation> list() {

@@ -2,10 +2,11 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.jigobject.class_.*;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclarations;
@@ -34,8 +35,7 @@ public class TypeFact {
     final List<Annotation> annotations;
     final List<StaticFieldDeclaration> staticFieldDeclarations;
 
-    final List<FieldAnnotation> fieldAnnotations;
-    final List<FieldDeclaration> fieldDeclarations;
+    final List<JigField> instanceFields;
 
     final List<MethodFact> instanceMethodFacts;
     final List<MethodFact> staticMethodFacts;
@@ -56,8 +56,7 @@ public class TypeFact {
                     List<MethodFact> instanceMethodFacts,
                     List<MethodFact> staticMethodFacts,
                     List<MethodFact> constructorFacts,
-                    List<FieldDeclaration> fieldDeclarations,
-                    List<FieldAnnotation> fieldAnnotations,
+                    List<JigField> instanceFields,
                     List<StaticFieldDeclaration> staticFieldDeclarations,
                     List<TypeIdentifier> usingTypes) {
         this.type = type;
@@ -69,8 +68,7 @@ public class TypeFact {
         this.instanceMethodFacts = instanceMethodFacts;
         this.staticMethodFacts = staticMethodFacts;
         this.constructorFacts = constructorFacts;
-        this.fieldDeclarations = fieldDeclarations;
-        this.fieldAnnotations = fieldAnnotations;
+        this.instanceFields = instanceFields;
         this.staticFieldDeclarations = staticFieldDeclarations;
 
         this.usingTypes = usingTypes;
@@ -82,7 +80,7 @@ public class TypeFact {
             this.useTypes.add(interfaceType.typeIdentifier());
         }
         this.annotations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
-        this.fieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
+        this.instanceFields.forEach(e -> this.useTypes.add(e.fieldDeclaration().typeIdentifier()));
         this.staticFieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
 
         this.classComment = ClassComment.empty(type.typeIdentifier());
@@ -92,8 +90,9 @@ public class TypeFact {
         return type.typeIdentifier();
     }
 
+    // TODO テスト専用、削除したい
     public FieldDeclarations fieldDeclarations() {
-        return new FieldDeclarations(fieldDeclarations);
+        return new FieldDeclarations(instanceFields.stream().map(JigField::fieldDeclaration).collect(toList()));
     }
 
     public TypeIdentifiers useTypes() {
@@ -112,8 +111,9 @@ public class TypeFact {
         return annotations;
     }
 
+    // TODO JigFieldで不要になる予定
     public List<FieldAnnotation> annotatedFields() {
-        return fieldAnnotations;
+        return instanceFields.stream().flatMap(jigField -> jigField.fieldAnnotations().list().stream()).collect(toList());
     }
 
     public List<MethodFact> allMethodFacts() {
@@ -175,9 +175,8 @@ public class TypeFact {
         StaticFieldDeclarations staticFieldDeclarations = new StaticFieldDeclarations(this.staticFieldDeclarations);
         JigStaticMember jigStaticMember = new JigStaticMember(constructors, staticMethods, staticFieldDeclarations);
 
-        FieldDeclarations fieldDeclarations = new FieldDeclarations(this.fieldDeclarations);
         JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        JigInstanceMember jigInstanceMember = new JigInstanceMember(fieldDeclarations, instanceMethods);
+        JigInstanceMember jigInstanceMember = new JigInstanceMember(new JigFields(instanceFields), instanceMethods);
 
         jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember, usingTypes);
         return jigType;

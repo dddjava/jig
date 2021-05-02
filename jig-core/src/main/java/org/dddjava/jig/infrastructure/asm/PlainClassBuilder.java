@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
@@ -35,8 +36,8 @@ class PlainClassBuilder {
     List<MethodFact> staticMethodFacts = new ArrayList<>();
     List<MethodFact> constructorFacts = new ArrayList<>();
 
-    List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
-    List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
+    List<JigField> instanceFields = new ArrayList<>();
+
     List<StaticFieldDeclaration> staticFieldDeclarations = new ArrayList<>();
 
     List<TypeIdentifier> useTypes = new ArrayList<>();
@@ -51,8 +52,7 @@ class PlainClassBuilder {
                 instanceMethodFacts,
                 staticMethodFacts,
                 constructorFacts,
-                fieldDeclarations,
-                fieldAnnotations,
+                instanceFields,
                 staticFieldDeclarations,
                 useTypes
         );
@@ -92,15 +92,17 @@ class PlainClassBuilder {
 
     public FieldDeclaration addInstanceField(FieldType fieldType, String name) {
         FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, name);
-        fieldDeclarations.add(fieldDeclaration);
+        instanceFields.add(new JigField(fieldDeclaration));
         return fieldDeclaration;
     }
 
-    /**
-     * FieldについているアノテーションをFieldと別に管理するのは違和感。。。
-     */
     public void addFieldAnnotation(FieldAnnotation fieldAnnotation) {
-        fieldAnnotations.add(fieldAnnotation);
+        instanceFields.replaceAll(jigField -> {
+            if (jigField.matches(fieldAnnotation.fieldDeclaration())) {
+                return jigField.newInstanceWith(fieldAnnotation);
+            }
+            return jigField;
+        });
     }
 
     public void addStaticField(String name, TypeIdentifier typeIdentifier) {

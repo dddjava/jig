@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
+import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
@@ -11,20 +12,20 @@ import java.util.List;
  * インスタンスに属するもの
  */
 public class JigInstanceMember {
-    FieldDeclarations fieldDeclarations;
+    JigFields jigFields;
     JigMethods instanceMethods;
 
-    public JigInstanceMember(FieldDeclarations fieldDeclarations, JigMethods instanceMethods) {
-        this.fieldDeclarations = fieldDeclarations;
+    public JigInstanceMember(JigFields jigFields, JigMethods instanceMethods) {
+        this.jigFields = jigFields;
         this.instanceMethods = instanceMethods;
     }
 
     public boolean hasField() {
-        return !fieldDeclarations.empty();
+        return !jigFields.empty();
     }
 
     public FieldDeclarations fieldDeclarations() {
-        return fieldDeclarations;
+        return jigFields.fieldDeclarations();
     }
 
     public boolean hasMethod() {
@@ -37,7 +38,7 @@ public class JigInstanceMember {
 
     List<TypeIdentifier> listUsingTypes() {
         List<TypeIdentifier> list = new ArrayList<>();
-        list.addAll(fieldDeclarations.toTypeIdentifies().list());
+        list.addAll(jigFields.typeIdentifies().list());
         list.addAll(instanceMethods.listUsingTypes());
         return list;
     }

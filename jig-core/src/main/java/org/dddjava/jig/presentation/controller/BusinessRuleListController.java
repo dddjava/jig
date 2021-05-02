@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
-import org.dddjava.jig.domain.model.models.domains.validations.ValidationAngles;
+import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedMembers;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
@@ -71,8 +71,8 @@ public class BusinessRuleListController {
     ModelReport<?> validateAnnotationReport() {
         ValidationAnnotatedMembers validationAnnotatedMembers = businessRuleService.validationAnnotatedMembers();
 
-        ValidationAngles validationAngles = ValidationAngles.validationAngles(validationAnnotatedMembers);
-        return new ModelReport<>(validationAngles.list(), ValidationReport::new, ValidationReport.class);
+        Validations validations = Validations.validationAngles(validationAnnotatedMembers);
+        return new ModelReport<>(validations.list(), ValidationReport::new, ValidationReport.class);
     }
 
     ModelReport<?> smellReport() {

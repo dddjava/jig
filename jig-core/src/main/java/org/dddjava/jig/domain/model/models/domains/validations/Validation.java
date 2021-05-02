@@ -4,13 +4,13 @@ import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedM
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**
- * バリデーション分析の切り口
+ * バリデーション
  */
-public class ValidationAngle {
+public class Validation {
 
     ValidationAnnotatedMember validationAnnotatedMember;
 
-    public ValidationAngle(ValidationAnnotatedMember validationAnnotatedMember) {
+    public Validation(ValidationAnnotatedMember validationAnnotatedMember) {
         this.validationAnnotatedMember = validationAnnotatedMember;
     }
 

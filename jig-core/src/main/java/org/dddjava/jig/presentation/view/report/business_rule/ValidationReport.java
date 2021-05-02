@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.models.domains.validations.ValidationAngle;
+import org.dddjava.jig.domain.model.models.domains.validations.Validation;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
@@ -9,9 +9,9 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("VALIDATION")
 public class ValidationReport {
 
-    ValidationAngle angle;
+    Validation angle;
 
-    public ValidationReport(ValidationAngle angle) {
+    public ValidationReport(Validation angle) {
         this.angle = angle;
     }
 

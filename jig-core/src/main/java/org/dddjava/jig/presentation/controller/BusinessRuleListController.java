@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePac
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.ValidationAngles;
-import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedMembers;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;

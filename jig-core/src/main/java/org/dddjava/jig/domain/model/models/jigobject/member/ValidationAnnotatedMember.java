@@ -1,5 +1,8 @@
-package org.dddjava.jig.domain.model.parts.annotation;
+package org.dddjava.jig.domain.model.models.jigobject.member;
 
+import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
-import org.dddjava.jig.domain.model.parts.annotation.ValidationAnnotatedMembers;
+import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedMembers;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;

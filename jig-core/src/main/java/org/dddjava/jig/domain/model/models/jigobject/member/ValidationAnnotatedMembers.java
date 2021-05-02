@@ -1,4 +1,7 @@
-package org.dddjava.jig.domain.model.parts.annotation;
+package org.dddjava.jig.domain.model.models.jigobject.member;
+
+import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
 
 import java.util.List;
 import java.util.stream.Collectors;

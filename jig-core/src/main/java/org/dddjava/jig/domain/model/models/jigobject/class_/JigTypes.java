@@ -25,4 +25,8 @@ public class JigTypes {
                 .sorted(Comparator.comparing(JigType::identifier))
                 .collect(Collectors.toList());
     }
+
+    public List<JigType> list() {
+        return list;
+    }
 }

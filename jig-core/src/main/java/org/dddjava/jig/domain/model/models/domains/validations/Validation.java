@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.models.domains.validations;
 
-import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedMember;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 
 /**

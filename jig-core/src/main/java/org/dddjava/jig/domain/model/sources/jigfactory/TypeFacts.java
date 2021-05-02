@@ -9,8 +9,7 @@ import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.models.jigobject.member.ValidationAnnotatedMembers;
-import org.dddjava.jig.domain.model.parts.annotation.*;
+import org.dddjava.jig.domain.model.parts.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
@@ -182,26 +181,6 @@ public class TypeFacts {
                 .map(TypeFact::instanceMethodFacts)
                 .flatMap(List::stream)
                 .collect(toList());
-    }
-
-    public FieldAnnotations annotatedFields() {
-        List<FieldAnnotation> fieldAnnotations = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            fieldAnnotations.addAll(typeFact.annotatedFields());
-        }
-        return new FieldAnnotations(fieldAnnotations);
-    }
-
-    public MethodAnnotations annotatedMethods() {
-        List<MethodAnnotation> methodAnnotations = new ArrayList<>();
-        for (MethodFact methodFact : instanceMethodFacts()) {
-            methodAnnotations.addAll(methodFact.annotatedMethods().list());
-        }
-        return new MethodAnnotations(methodAnnotations);
-    }
-
-    public ValidationAnnotatedMembers validationAnnotatedMembers() {
-        return new ValidationAnnotatedMembers(annotatedFields(), annotatedMethods());
     }
 
     public Optional<TypeFact> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {

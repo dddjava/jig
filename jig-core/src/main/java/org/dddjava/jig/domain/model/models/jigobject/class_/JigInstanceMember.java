@@ -12,20 +12,20 @@ import java.util.List;
  * インスタンスに属するもの
  */
 public class JigInstanceMember {
-    JigFields jigFields;
+    JigFields instanceFields;
     JigMethods instanceMethods;
 
-    public JigInstanceMember(JigFields jigFields, JigMethods instanceMethods) {
-        this.jigFields = jigFields;
+    public JigInstanceMember(JigFields instanceFields, JigMethods instanceMethods) {
+        this.instanceFields = instanceFields;
         this.instanceMethods = instanceMethods;
     }
 
     public boolean hasField() {
-        return !jigFields.empty();
+        return !instanceFields.empty();
     }
 
     public FieldDeclarations fieldDeclarations() {
-        return jigFields.fieldDeclarations();
+        return instanceFields.fieldDeclarations();
     }
 
     public boolean hasMethod() {
@@ -38,8 +38,12 @@ public class JigInstanceMember {
 
     List<TypeIdentifier> listUsingTypes() {
         List<TypeIdentifier> list = new ArrayList<>();
-        list.addAll(jigFields.typeIdentifies().list());
+        list.addAll(instanceFields.typeIdentifies().list());
         list.addAll(instanceMethods.listUsingTypes());
         return list;
+    }
+
+    public JigFields instanceFields() {
+        return instanceFields;
     }
 }

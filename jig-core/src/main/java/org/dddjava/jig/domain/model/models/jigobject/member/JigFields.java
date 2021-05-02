@@ -31,4 +31,8 @@ public class JigFields {
     public TypeIdentifiers typeIdentifies() {
         return list.stream().map(jigField -> jigField.fieldDeclaration.typeIdentifier()).collect(TypeIdentifiers.collector());
     }
+
+    public List<JigField> list() {
+        return list;
+    }
 }

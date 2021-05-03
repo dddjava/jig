@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class JigTypes {
@@ -28,5 +29,11 @@ public class JigTypes {
 
     public List<JigType> list() {
         return list;
+    }
+
+    public List<JigType> listMatches(Predicate<JigType> predicate) {
+        return list.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
     }
 }

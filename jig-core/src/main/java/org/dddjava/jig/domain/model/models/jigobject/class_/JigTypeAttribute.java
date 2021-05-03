@@ -47,4 +47,9 @@ public class JigTypeAttribute {
     public JigTypeDescription description() {
         return JigTypeDescription.from(classComment.documentationComment());
     }
+
+    public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
+        return annotations.stream()
+                .anyMatch(annotation -> annotation.is(typeIdentifier));
+    }
 }

@@ -103,4 +103,8 @@ public class JigType {
     public JigTypeValueKind toValueKind() {
         return JigTypeValueKind.from(this);
     }
+
+    public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
+        return jigTypeAttribute.hasAnnotation(typeIdentifier);
+    }
 }

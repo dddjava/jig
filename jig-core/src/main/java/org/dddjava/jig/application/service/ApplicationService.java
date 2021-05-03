@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
@@ -63,7 +64,8 @@ public class ApplicationService {
      */
     public ServiceAngles serviceAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
+        JigTypes jigTypes = typeFacts.jigTypes();
+        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes);
 
         if (serviceMethods.empty()) {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);

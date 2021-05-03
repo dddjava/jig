@@ -28,6 +28,7 @@ public class PropertyArchitectureFactory {
 
             @Override
             public boolean isService(TypeFact typeFact) {
+                // TODO ServiceMethodsと重複。こちらは廃止したい。
                 TypeIdentifier serviceAnnotation = new TypeIdentifier("org.springframework.stereotype.Service");
                 return typeFact.listAnnotations().stream()
                         .anyMatch(annotation -> annotation.is(serviceAnnotation));

@@ -104,6 +104,7 @@ public class ApplicationService {
 
     public ArchitectureDiagram architectureDiagram() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        // TODO packageBasedArchitectureがjigTypeを受け取っているのでclassRelationを別に受け取らなくてもいけるはず
         PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
         ClassRelations classRelations = typeFacts.toClassRelations();
         return new ArchitectureDiagram(packageBasedArchitecture, classRelations);

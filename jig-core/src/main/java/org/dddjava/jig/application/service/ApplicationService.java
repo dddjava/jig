@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
+import org.dddjava.jig.domain.model.models.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
@@ -104,9 +104,9 @@ public class ApplicationService {
 
     public ArchitectureDiagram architectureDiagram() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ArchitectureComponents architectureComponents = ArchitectureComponents.from(typeFacts.jigTypes());
+        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
         ClassRelations classRelations = typeFacts.toClassRelations();
-        return new ArchitectureDiagram(architectureComponents, classRelations);
+        return new ArchitectureDiagram(packageBasedArchitecture, classRelations);
     }
 
     public ServiceMethods serviceMethods() {

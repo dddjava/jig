@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.specification;
 
-import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
+import org.dddjava.jig.domain.model.models.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
@@ -22,19 +22,19 @@ public class ArchitectureRelations {
         this.list = list;
     }
 
-    public static ArchitectureRelations from(ArchitectureComponents architectureComponents, ClassRelations classRelations) {
+    public static ArchitectureRelations from(PackageBasedArchitecture packageBasedArchitecture, ClassRelations classRelations) {
         ArrayList<PackageRelation> list = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.list()) {
             TypeIdentifier from = classRelation.from();
             TypeIdentifier to = classRelation.to();
 
-            PackageIdentifier fromPackage = architectureComponents.packageIdentifier(from);
+            PackageIdentifier fromPackage = packageBasedArchitecture.packageIdentifier(from);
 
             if (to.isJavaLanguageType()) {
                 // 興味のない関連
                 continue;
             }
-            PackageIdentifier toPackage = architectureComponents.packageIdentifier(to);
+            PackageIdentifier toPackage = packageBasedArchitecture.packageIdentifier(to);
 
             if (fromPackage.equals(toPackage)) {
                 // 自己参照

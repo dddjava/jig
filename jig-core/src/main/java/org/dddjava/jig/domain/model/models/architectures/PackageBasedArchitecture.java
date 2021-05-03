@@ -11,20 +11,18 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
- * アーキテクチャ構成要素コレクション
- *
- * TODO PackageBasedArchitectureなどに変更する
+ * 上位パッケージの構成
  */
-public class ArchitectureComponents {
+public class PackageBasedArchitecture {
 
     List<PackageIdentifier> architecturePackages;
 
-    ArchitectureComponents(List<PackageIdentifier> architecturePackages) {
+    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages) {
         this.architecturePackages = architecturePackages;
     }
 
-    public static ArchitectureComponents from(JigTypes jigTypes) {
-        return new ArchitectureComponents(getArchitecturePackages(jigTypes));
+    public static PackageBasedArchitecture from(JigTypes jigTypes) {
+        return new PackageBasedArchitecture(getArchitecturePackages(jigTypes));
     }
 
     private static List<PackageIdentifier> getArchitecturePackages(JigTypes jigTypes) {

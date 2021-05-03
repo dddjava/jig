@@ -15,7 +15,7 @@ public enum JigDocument {
      * ビジネスルールを表すクラスの一覧。
      * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
      */
-    BusinessRuleList("business-rule"),
+    BusinessRuleList("business-rule", JigDocumentType.LIST),
 
     /**
      * パッケージ関連ダイアグラム
@@ -24,7 +24,7 @@ public enum JigDocument {
      * トップレベルからの階層(depth)で丸めて複数出力される。
      * パッケージの関連有無や方向からドメインを語れるかのウォークスルーに使用する。
      */
-    PackageRelationDiagram("package-relation"),
+    PackageRelationDiagram("package-relation", JigDocumentType.DIAGRAM),
 
     /**
      * ビジネスルール関連ダイアグラム
@@ -33,9 +33,9 @@ public enum JigDocument {
      * クラス名と依存線のみのクラス図。ある程度以上の規模になると大きくなりすぎて使いづらくなる。
      * パッケージ関連ダイアグラムで把握できない場合の補助に使用する。
      */
-    BusinessRuleRelationDiagram("business-rule-relation"),
-    OverconcentrationBusinessRuleDiagram("business-rule-overconcentration"),
-    CoreBusinessRuleRelationDiagram("business-rule-core"),
+    BusinessRuleRelationDiagram("business-rule-relation", JigDocumentType.DIAGRAM),
+    OverconcentrationBusinessRuleDiagram("business-rule-overconcentration", JigDocumentType.DIAGRAM),
+    CoreBusinessRuleRelationDiagram("business-rule-core", JigDocumentType.DIAGRAM),
 
     /**
      * 区分ダイアグラム
@@ -43,14 +43,14 @@ public enum JigDocument {
      * 区分と区分値を可視化する。
      * 区分の充実はドメインの把握具合と密接に関わる。
      */
-    CategoryDiagram("category"),
+    CategoryDiagram("category", JigDocumentType.DIAGRAM),
 
     /**
      * 区分使用ダイアグラム
      *
      * 区分を使用しているクラスを可視化する。
      */
-    CategoryUsageDiagram("category-usage"),
+    CategoryUsageDiagram("category-usage", JigDocumentType.DIAGRAM),
 
     /**
      * 機能一覧
@@ -61,44 +61,46 @@ public enum JigDocument {
      *
      * 制限事項: {@link org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader}
      */
-    ApplicationList("application"),
+    ApplicationList("application", JigDocumentType.LIST),
 
     /**
      * サービスメソッド呼び出しダイアグラム
      *
      * サービスクラスのメソッド呼び出しを可視化する。
      */
-    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy"),
+    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy", JigDocumentType.DIAGRAM),
 
     /**
      * ユースケース複合図
      */
-    CompositeUsecaseDiagram("composite-usecase"),
+    CompositeUsecaseDiagram("composite-usecase", JigDocumentType.DIAGRAM),
 
     /**
      * アーキテクチャダイアグラム
      */
-    ArchitectureDiagram("architecture"),
+    ArchitectureDiagram("architecture", JigDocumentType.DIAGRAM),
 
     /**
      * ドメイン概要
      */
-    DomainSummary("domain"),
+    DomainSummary("domain", JigDocumentType.SUMMARY),
 
     /**
      * アプリケーション概要
      */
-    ApplicationSummary("application"),
+    ApplicationSummary("application", JigDocumentType.SUMMARY),
 
     /**
      * 全体
      */
-    Summary("index");
+    Summary("index", JigDocumentType.SUMMARY);
 
     private final String documentFileName;
+    private final JigDocumentType jigDocumentType;
 
-    JigDocument(String documentFileName) {
+    JigDocument(String documentFileName, JigDocumentType jigDocumentType) {
         this.documentFileName = documentFileName;
+        this.jigDocumentType = jigDocumentType;
     }
 
     public static List<JigDocument> canonical() {
@@ -114,5 +116,9 @@ public enum JigDocument {
         return Arrays.stream(diagramTypes.split(","))
                 .map(JigDocument::valueOf)
                 .collect(Collectors.toList());
+    }
+
+    public JigDocumentType jigDocumentType() {
+        return jigDocumentType;
     }
 }

@@ -5,12 +5,8 @@ import org.dddjava.jig.domain.model.models.backends.DatasourceMethod;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
-import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
@@ -88,22 +84,6 @@ public class TypeFacts {
             }
         }
         return new BusinessRules(list, toClassRelations());
-    }
-
-    public HandlerMethods createControllerMethods(Architecture architecture) {
-        List<HandlerMethod> list = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            if (architecture.isController(typeFact)) {
-                for (MethodFact methodFact : typeFact.instanceMethodFacts()) {
-                    JigMethod method = methodFact.createMethod();
-                    HandlerMethod handlerMethod = new HandlerMethod(method, new Annotations(typeFact.listAnnotations()));
-                    if (handlerMethod.valid()) {
-                        list.add(handlerMethod);
-                    }
-                }
-            }
-        }
-        return new HandlerMethods(list);
     }
 
     public DatasourceMethods createDatasourceMethods(Architecture architecture) {

@@ -40,7 +40,7 @@ public class ApplicationService {
      */
     public HandlerMethods controllerAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
 
         if (handlerMethods.empty()) {
             jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
@@ -66,7 +66,7 @@ public class ApplicationService {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
         DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
 
         return new ServiceAngles(
@@ -96,7 +96,7 @@ public class ApplicationService {
      */
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
+        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
         ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes());
 
         return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeDeclaration;
@@ -106,5 +107,9 @@ public class JigType {
 
     public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
         return jigTypeAttribute.hasAnnotation(typeIdentifier);
+    }
+
+    public List<Annotation> listAnnotations() {
+        return jigTypeAttribute.annotations;
     }
 }

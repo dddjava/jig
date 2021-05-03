@@ -1,7 +1,13 @@
 package org.dddjava.jig.domain.model.models.frontends;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.parts.annotation.Annotations;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,6 +22,27 @@ public class HandlerMethods {
 
     public HandlerMethods(List<HandlerMethod> list) {
         this.list = list;
+    }
+
+    public static HandlerMethods from(JigTypes jigTypes) {
+        List<HandlerMethod> list = new ArrayList<>();
+
+        TypeIdentifier controller = new TypeIdentifier("org.springframework.stereotype.Controller");
+        TypeIdentifier restController = new TypeIdentifier("org.springframework.web.bind.annotation.RestController");
+        TypeIdentifier controllerAdvice = new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice");
+        List<JigType> frontends = jigTypes.listMatches(jigType ->
+                jigType.hasAnnotation(controller)
+                        || jigType.hasAnnotation(restController)
+                        || jigType.hasAnnotation(controllerAdvice));
+        for (JigType jigType : frontends) {
+            for (JigMethod jigMethod : jigType.instanceMember().instanceMethods().list()) {
+                HandlerMethod handlerMethod = new HandlerMethod(jigMethod, new Annotations(jigType.listAnnotations()));
+                if (handlerMethod.valid()) {
+                    list.add(handlerMethod);
+                }
+            }
+        }
+        return new HandlerMethods(list);
     }
 
     public List<HandlerMethod> list() {

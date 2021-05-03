@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
@@ -39,6 +40,10 @@ public class TypeFacts {
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
     private Map<PackageIdentifier, List<JigType>> packageMap;
+
+    public JigTypes jigTypes() {
+        return new JigTypes(listJigTypes());
+    }
 
     public List<JigType> listJigTypes() {
         return list.stream().map(TypeFact::jigType).collect(toList());

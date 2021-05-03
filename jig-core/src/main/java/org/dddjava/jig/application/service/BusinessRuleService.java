@@ -75,6 +75,6 @@ public class BusinessRuleService {
 
     public JigTypes jigTypes() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return new JigTypes(typeFacts.listJigTypes());
+        return typeFacts.jigTypes();
     }
 }

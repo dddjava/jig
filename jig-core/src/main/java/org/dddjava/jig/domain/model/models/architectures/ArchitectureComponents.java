@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 /**
  * アーキテクチャ構成要素コレクション
+ *
+ * TODO PackageBasedArchitectureなどに変更する
  */
 public class ArchitectureComponents {
 

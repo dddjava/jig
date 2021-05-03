@@ -18,7 +18,7 @@ public interface JigDocumentContext {
     AliasService aliasService();
 
     default String aliasTextOrDefault(TypeIdentifier typeIdentifier, String defaultText) {
-        return aliasService().typeAliasOf(typeIdentifier).asTextOrDefault(defaultText);
+        return classComment(typeIdentifier).asTextOrDefault(defaultText);
     }
 
     LinkPrefix linkPrefix();

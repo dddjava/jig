@@ -43,7 +43,7 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     }
 
     @Override
-    public AliasRegisterResult registerClassComment(ClassComment classComment) {
+    public void registerClassComment(ClassComment classComment) {
         AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(classComment);
         // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
         commentRepository.register(classComment);
@@ -52,7 +52,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
             logger.warn("{} のコメント登録が {} です。処理は続行します。",
                     classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
         }
-        return aliasRegisterResult;
     }
 
     @Override

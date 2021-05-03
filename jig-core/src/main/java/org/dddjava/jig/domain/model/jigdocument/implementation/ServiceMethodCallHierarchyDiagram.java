@@ -67,7 +67,7 @@ public class ServiceMethodCallHierarchyDiagram {
                         "subgraph \"cluster_" + entry.getKey().fullQualifiedName() + "\""
                                 + "{"
                                 + "style=solid;"
-                                + "label=\"" + aliasLineOf(entry.getKey(), jigDocumentContext) + "\";"
+                                + "label=\"" + jigDocumentContext.classComment(entry.getKey()).nodeLabel() + "\";"
                                 + entry.getValue().stream()
                                 .map(serviceAngle -> serviceAngle.method().asFullNameText())
                                 .map(text -> "\"" + text + "\";")
@@ -164,11 +164,6 @@ public class ServiceMethodCallHierarchyDiagram {
                 .add("{rank=same;").add(repositoryTypes).add("}")
                 .add("{edge [style=dashed];").add(repositoryRelation.asUniqueText()).add("}")
                 .toString();
-    }
-
-    private String aliasLineOf(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
-        // TODO jigDocumentContextからではなくJigTypeやJigMethodを使うようにしたい
-        return jigDocumentContext.classComment(typeIdentifier).nodeLabel();
     }
 
     private static Node controllerNodeOf(MethodDeclaration methodDeclaration) {

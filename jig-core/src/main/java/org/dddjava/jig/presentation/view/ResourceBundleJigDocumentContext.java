@@ -5,6 +5,10 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
@@ -76,9 +80,15 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     }
 
     @Override
-    public AliasService aliasService() {
+    public PackageComment packageComment(PackageIdentifier packageIdentifier) {
         Objects.requireNonNull(aliasService);
-        return aliasService;
+        return aliasService.packageAliasOf(packageIdentifier);
+    }
+
+    @Override
+    public ClassComment classComment(TypeIdentifier typeIdentifier) {
+        Objects.requireNonNull(aliasService);
+        return aliasService.typeAliasOf(typeIdentifier);
     }
 
     @Override

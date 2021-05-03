@@ -35,13 +35,6 @@ class CliConfig {
     @Value("${jig.model.pattern:}")
     String modelPattern;
 
-    @Value("${jig.application.pattern:}")
-    String applicationPattern;
-    @Value("${jig.infrastructure.pattern:}")
-    String infrastructurePattern;
-    @Value("${jig.presentation.pattern:}")
-    String presentationPattern;
-
     @Value("${project.path}")
     String projectPath;
     @Value("${directory.classes}")
@@ -60,7 +53,6 @@ class CliConfig {
                 .add("outputDirectory=" + outputDirectory)
                 .add("output.omit.prefix=" + outputOmitPrefix)
                 .add("jig.model.pattern=" + modelPattern)
-                .add("jig.infrastructure.pattern=" + infrastructurePattern)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
@@ -79,9 +71,6 @@ class CliConfig {
         JigProperties properties = new JigProperties(
                 new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
-                applicationPattern,
-                infrastructurePattern,
-                presentationPattern,
                 new LinkPrefix(linkPrefix),
                 Paths.get(this.outputDirectory),
                 JigDiagramFormat.SVG

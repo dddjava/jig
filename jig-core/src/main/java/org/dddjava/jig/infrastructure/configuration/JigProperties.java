@@ -17,23 +17,15 @@ public class JigProperties {
     OutputOmitPrefix outputOmitPrefix;
     String businessRulePattern;
 
-    String applicationPattern;
-    String infrastructurePattern;
-    String presentationPattern;
-
     LinkPrefix linkPrefix;
 
     Path outputDirectory;
     JigDiagramFormat outputDiagramFormat;
 
-    public JigProperties(OutputOmitPrefix outputOmitPrefix, String businessRulePattern, String applicationPattern, String infrastructurePattern, String presentationPattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
+    public JigProperties(OutputOmitPrefix outputOmitPrefix, String businessRulePattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
         this.outputOmitPrefix = outputOmitPrefix;
 
         this.businessRulePattern = businessRulePattern;
-        this.applicationPattern = applicationPattern;
-        this.infrastructurePattern = infrastructurePattern;
-        this.presentationPattern = presentationPattern;
-
         this.linkPrefix = linkPrefix;
 
         this.outputDirectory = outputDirectory;
@@ -44,9 +36,6 @@ public class JigProperties {
         JigProperties jigProperties = new JigProperties(
                 new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),
                 JigProperty.PATTERN_DOMAIN.defaultValue(),
-                JigProperty.PATTERN_APPLICATION.defaultValue(),
-                JigProperty.PATTERN_INFRASTRUCTURE.defaultValue(),
-                JigProperty.PATTERN_PRESENTATION.defaultValue(),
                 LinkPrefix.disable(),
                 Paths.get(JigProperty.OUTPUT_DIRECTORY.defaultValue()),
                 JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue())
@@ -65,11 +54,6 @@ public class JigProperties {
     public LinkPrefix linkPrefix() {
         return linkPrefix;
     }
-
-    public String getInfrastructurePattern() {
-        return infrastructurePattern;
-    }
-
 
     public Path resolveOutputPath(DocumentName documentName) {
         return outputDirectory.resolve(outputPath(documentName, outputDiagramFormat)).toAbsolutePath();
@@ -126,9 +110,6 @@ public class JigProperties {
         return "JigProperties{" +
                 "outputOmitPrefix=" + outputOmitPrefix +
                 ", businessRulePattern='" + businessRulePattern + '\'' +
-                ", applicationPattern='" + applicationPattern + '\'' +
-                ", infrastructurePattern='" + infrastructurePattern + '\'' +
-                ", presentationPattern='" + presentationPattern + '\'' +
                 ", linkPrefix=" + linkPrefix +
                 ", outputDirectory=" + outputDirectory +
                 ", outputDiagramFormat=" + outputDiagramFormat +

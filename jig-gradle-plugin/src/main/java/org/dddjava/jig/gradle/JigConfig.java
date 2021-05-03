@@ -16,10 +16,6 @@ public class JigConfig {
 
     String modelPattern = "";
 
-    String infrastructurePattern = "";
-    String presentationPattern = "";
-    String applicationPattern = "";
-
     List<String> documentTypes = new ArrayList<>();
 
     String outputDirectory = "";
@@ -41,9 +37,6 @@ public class JigConfig {
         return new JigProperties(
                 new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
-                applicationPattern,
-                infrastructurePattern,
-                presentationPattern,
                 new LinkPrefix(linkPrefix),
                 Paths.get(this.outputDirectory),
                 JigDiagramFormat.SVG
@@ -101,36 +94,9 @@ public class JigConfig {
         this.linkPrefix = linkPrefix;
     }
 
-    public String getInfrastructurePattern() {
-        return infrastructurePattern;
-    }
-
-    public void setInfrastructurePattern(String infrastructurePattern) {
-        this.infrastructurePattern = infrastructurePattern;
-    }
-
-    public String getPresentationPattern() {
-        return presentationPattern;
-    }
-
-    public void setPresentationPattern(String presentationPattern) {
-        this.presentationPattern = presentationPattern;
-    }
-
-    public String getApplicationPattern() {
-        return applicationPattern;
-    }
-
-    public void setApplicationPattern(String applicationPattern) {
-        this.applicationPattern = applicationPattern;
-    }
-
     public String propertiesText() {
         return new StringJoiner("\n\t", "jig {\n\t", "\n}")
                 .add("modelPattern = '" + modelPattern + '\'')
-                .add("applicationPattern = '" + applicationPattern + '\'')
-                .add("infrastructurePattern = '" + infrastructurePattern + '\'')
-                .add("presentationPattern = '" + presentationPattern + '\'')
                 .add("documentTypes = '" + documentTypes + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')

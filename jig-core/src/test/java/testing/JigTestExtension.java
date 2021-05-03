@@ -29,7 +29,7 @@ public class JigTestExtension implements ParameterResolver {
     public JigTestExtension() throws Exception {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
-                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", "", "stub.infrastructure.+", "", LinkPrefix.disable(), tempDir, null),
+                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", LinkPrefix.disable(), tempDir, null),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

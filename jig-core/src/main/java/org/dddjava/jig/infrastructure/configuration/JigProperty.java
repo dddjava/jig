@@ -15,9 +15,6 @@ public enum JigProperty {
     OUTPUT_DIAGRAM_FORMAT("SVG"),
 
     PATTERN_DOMAIN(".+\\.domain\\.(model|type)\\..+"),
-    PATTERN_PRESENTATION(".+\\.presentation\\..+"),
-    PATTERN_APPLICATION(".+\\.application\\..+"),
-    PATTERN_INFRASTRUCTURE(".+\\.infrastructure\\..+"),
 
     LINK_PREFIX(LinkPrefix.DISABLE),
 

@@ -95,15 +95,6 @@ public class JigPropertyLoader {
             case PATTERN_DOMAIN:
                 jigProperties.businessRulePattern = value;
                 break;
-            case PATTERN_PRESENTATION:
-                jigProperties.presentationPattern = value;
-                break;
-            case PATTERN_APPLICATION:
-                jigProperties.applicationPattern = value;
-                break;
-            case PATTERN_INFRASTRUCTURE:
-                jigProperties.infrastructurePattern = value;
-                break;
             case LINK_PREFIX:
                 jigProperties.linkPrefix = new LinkPrefix(value);
                 break;

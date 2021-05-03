@@ -29,4 +29,8 @@ public class ServiceAngles {
         }
         this.list = list;
     }
+
+    public boolean none() {
+        return list.isEmpty();
+    }
 }

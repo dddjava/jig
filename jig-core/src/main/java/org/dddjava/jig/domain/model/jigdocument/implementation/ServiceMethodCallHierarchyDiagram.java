@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngle;
+import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.Usecase;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
@@ -19,18 +20,18 @@ import static java.util.stream.Collectors.joining;
  */
 public class ServiceMethodCallHierarchyDiagram {
 
-    List<ServiceAngle> list;
+    ServiceAngles serviceAngles;
 
-    public ServiceMethodCallHierarchyDiagram(List<ServiceAngle> list) {
-        this.list = list;
+    public ServiceMethodCallHierarchyDiagram(ServiceAngles serviceAngles) {
+        this.serviceAngles = serviceAngles;
     }
 
     public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext) {
-        if (list.isEmpty()) {
+        if (serviceAngles.none()) {
             return DiagramSource.empty();
         }
 
-        List<ServiceAngle> angles = list;
+        List<ServiceAngle> angles = serviceAngles.list();
 
         // メソッド間の関連
         RelationText relationText = new RelationText();

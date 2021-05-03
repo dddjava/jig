@@ -55,7 +55,7 @@ public class ApplicationService {
 
     public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
         ServiceAngles serviceAngles = serviceAngles();
-        return new ServiceMethodCallHierarchyDiagram(serviceAngles.list());
+        return new ServiceMethodCallHierarchyDiagram(serviceAngles);
     }
 
     /**

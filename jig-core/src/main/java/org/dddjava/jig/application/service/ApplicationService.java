@@ -102,7 +102,7 @@ public class ApplicationService {
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         HandlerMethods handlerMethods = typeFacts.createControllerMethods(architecture);
-        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
+        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes());
 
         return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);
     }
@@ -115,6 +115,7 @@ public class ApplicationService {
     }
 
     public Map<PackageIdentifier, List<JigType>> serviceTypes() {
-        return jigSourceRepository.allTypeFacts().applicationTypes(architecture);
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return typeFacts.applicationTypes(architecture);
     }
 }

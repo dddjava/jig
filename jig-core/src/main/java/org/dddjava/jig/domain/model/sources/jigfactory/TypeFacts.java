@@ -129,15 +129,6 @@ public class TypeFacts {
         return new DatasourceMethods(list);
     }
 
-    public List<JigMethod> applicationMethodsOf(Architecture architecture) {
-        return list().stream()
-                .filter(typeFact -> architecture.isService(typeFact))
-                .map(TypeFact::instanceMethodFacts)
-                .flatMap(List::stream)
-                .map(methodFact -> methodFact.createMethod())
-                .collect(toList());
-    }
-
     public Map<PackageIdentifier, List<JigType>> applicationTypes(Architecture architecture) {
         Set<PackageIdentifier> servicePackages = list().stream()
                 .filter(typeFact -> architecture.isService(typeFact))

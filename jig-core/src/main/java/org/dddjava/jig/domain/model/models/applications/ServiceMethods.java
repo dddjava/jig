@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 public class ServiceMethods {
     private final List<JigMethod> methods;
 
-    public ServiceMethods(List<JigMethod> list) {
+    private ServiceMethods(List<JigMethod> list) {
         this.methods = list;
     }
 

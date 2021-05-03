@@ -68,7 +68,7 @@ public class BusinessRuleService {
      */
     public CategoryUsageDiagram categoryUsages() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ServiceMethods serviceMethods = new ServiceMethods(typeFacts.applicationMethodsOf(architecture));
+        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes());
 
         return new CategoryUsageDiagram(serviceMethods, typeFacts.toBusinessRules(architecture));
     }

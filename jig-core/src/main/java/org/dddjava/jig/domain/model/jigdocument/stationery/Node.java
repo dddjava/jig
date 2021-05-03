@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.models.architectures.ArchitectureModule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
@@ -34,10 +33,6 @@ public class Node {
         return new Node(businessRule.typeIdentifier().fullQualifiedName())
                 .label(businessRule.nodeLabel())
                 .highlightColorIf(businessRule.markedCore());
-    }
-
-    public static Node architectureModuleOf(ArchitectureModule module) {
-        return new Node(module.nodeLabel());
     }
 
     public static Node categoryNodeOf(CategoryType categoryType) {

@@ -124,7 +124,7 @@ public class ServiceMethodCallHierarchyDiagram {
 
             dotTextBuilder
                     .add("subgraph \"cluster_" + handlerType.fullQualifiedName() + "\" {")
-                    .add("label=\"" + jigDocumentContext.aliasTextOrDefault(handlerType, handlerType.asSimpleText()) + "\";")
+                    .add("label=\"" + jigDocumentContext.classComment(handlerType).asTextOrDefault(handlerType.asSimpleText()) + "\";")
                     // 画面の色と合わせる
                     .add("style=solid;")
                     .add("bgcolor=lightgrey;")

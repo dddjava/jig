@@ -14,10 +14,6 @@ public interface JigDocumentContext {
 
     DocumentName documentName(JigDocument jigDocument);
 
-    default String aliasTextOrDefault(TypeIdentifier typeIdentifier, String defaultText) {
-        return classComment(typeIdentifier).asTextOrDefault(defaultText);
-    }
-
     LinkPrefix linkPrefix();
 
     PackageComment packageComment(PackageIdentifier packageIdentifier);

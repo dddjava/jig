@@ -19,7 +19,7 @@ class BusinessRuleServiceTest {
     @Test
     void ビジネスルールの可視性(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) throws Exception {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(sources);
-        List<JigType> jigTypes = typeFacts.listJigTypes();
+        List<JigType> jigTypes = typeFacts.jigTypes().list();
 
         JigType publicType = jigTypes.stream()
                 .filter(businessRule -> businessRule.identifier().fullQualifiedName().endsWith("PublicType"))

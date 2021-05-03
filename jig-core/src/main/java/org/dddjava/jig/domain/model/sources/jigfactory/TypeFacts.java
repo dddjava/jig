@@ -1,11 +1,9 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethod;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
@@ -13,15 +11,15 @@ import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -36,44 +34,13 @@ public class TypeFacts {
 
     private ClassRelations classRelations;
     private MethodRelations methodRelations;
-    private Map<PackageIdentifier, List<JigType>> packageMap;
+
+    private JigTypes jigTypes;
 
     public JigTypes jigTypes() {
-        return new JigTypes(listJigTypes());
-    }
-
-    public List<JigType> listJigTypes() {
-        return list.stream().map(TypeFact::jigType).collect(toList());
-    }
-
-    public Map<PackageIdentifier, List<JigType>> mapJigTypesByPackage() {
-        if (packageMap != null) return packageMap;
-        packageMap = listJigTypes().stream()
-                .collect(groupingBy(JigType::packageIdentifier));
-        return packageMap;
-    }
-
-    public ArchitectureComponents getArchitectureComponents() {
-        return new ArchitectureComponents(getArchitecturePackages());
-    }
-
-    private List<PackageIdentifier> getArchitecturePackages() {
-        Map<PackageIdentifier, List<JigType>> packageIdentifierListMap = mapJigTypesByPackage();
-        // depth単位にリストにする
-        Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifierListMap.keySet().stream()
-                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
-                .sorted(Comparator.comparing(PackageIdentifier::asText))
-                .distinct()
-                .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
-
-        // 最初に同じ深さに2件以上入っているものが出てきたらアーキテクチャパッケージとして扱う
-        List<PackageIdentifier> packages = depthMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .filter(entry -> entry.getValue().size() > 1)
-                .findFirst()
-                .map(Map.Entry::getValue)
-                .orElse(Collections.emptyList());
-        return packages;
+        if (jigTypes != null) return jigTypes;
+        jigTypes = new JigTypes(list.stream().map(TypeFact::jigType).collect(toList()));
+        return jigTypes;
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {

@@ -53,7 +53,7 @@ public class CommentServiceTest {
     void クラス別名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        ClassComment classComment = typeFacts.listJigTypes()
+        ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);

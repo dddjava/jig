@@ -46,7 +46,7 @@ class CommentServiceTest {
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        ClassComment classComment = typeFacts.listJigTypes()
+        ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);

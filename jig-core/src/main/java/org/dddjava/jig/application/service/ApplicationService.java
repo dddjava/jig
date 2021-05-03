@@ -104,7 +104,7 @@ public class ApplicationService {
 
     public ArchitectureDiagram architectureDiagram() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ArchitectureComponents architectureComponents = typeFacts.getArchitectureComponents();
+        ArchitectureComponents architectureComponents = ArchitectureComponents.from(typeFacts.jigTypes());
         ClassRelations classRelations = typeFacts.toClassRelations();
         return new ArchitectureDiagram(architectureComponents, classRelations);
     }

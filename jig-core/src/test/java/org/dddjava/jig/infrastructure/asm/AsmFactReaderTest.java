@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
@@ -55,12 +56,15 @@ public class AsmFactReaderTest {
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         TypeFact actual = exercise(Annotated.class);
 
-        List<FieldAnnotation> fieldAnnotations = actual.annotatedFields();
-        FieldAnnotation fieldAnnotation = fieldAnnotations.stream()
-                .filter(e -> e.fieldDeclaration().nameText().equals("field"))
-                .findFirst().orElseThrow(AssertionError::new);
+        JigFields jigFields = actual.jigType().instanceMember().instanceFields();
 
-        assertThat(fieldAnnotation.annotationType()).isEqualTo(new TypeIdentifier(VariableAnnotation.class));
+        FieldAnnotation fieldAnnotation = jigFields.list().stream()
+                .filter(e -> e.fieldDeclaration().nameText().equals("field"))
+                .findFirst()
+                .flatMap(jigField -> jigField.fieldAnnotations().list().stream().findFirst())
+                .orElseThrow(AssertionError::new);
+
+        assertEquals(new TypeIdentifier(VariableAnnotation.class), fieldAnnotation.annotationType());
 
         AnnotationDescription description = fieldAnnotation.description();
         assertThat(description.asText())

@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclarations;
@@ -111,11 +110,6 @@ public class TypeFact {
         return annotations;
     }
 
-    // TODO JigFieldで不要になる予定
-    public List<FieldAnnotation> annotatedFields() {
-        return instanceFields.stream().flatMap(jigField -> jigField.fieldAnnotations().list().stream()).collect(toList());
-    }
-
     public List<MethodFact> allMethodFacts() {
         ArrayList<MethodFact> list = new ArrayList<>();
         list.addAll(instanceMethodFacts);
@@ -163,7 +157,7 @@ public class TypeFact {
 
     JigType jigType;
 
-    JigType jigType() {
+    public JigType jigType() {
         if (jigType != null) return jigType;
 
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.summary;
 
+import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
@@ -24,8 +25,10 @@ public class SummaryModel {
         return new SummaryModel(map);
     }
 
-    public static SummaryModel from(Map<PackageIdentifier, List<JigType>> serviceMap) {
-        return new SummaryModel(serviceMap);
+    public static SummaryModel from(ServiceMethods serviceMethods) {
+        Map<PackageIdentifier, List<JigType>> map = serviceMethods.listJigTypes().stream()
+                .collect(groupingBy(JigType::packageIdentifier));
+        return new SummaryModel(map);
     }
 
     public Map<PackageIdentifier, List<JigType>> map() {

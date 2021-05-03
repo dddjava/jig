@@ -25,7 +25,8 @@ import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 /**
  * 型の実装から読み取れること一覧
@@ -127,21 +128,6 @@ public class TypeFacts {
             }
         }
         return new DatasourceMethods(list);
-    }
-
-    public Map<PackageIdentifier, List<JigType>> applicationTypes(Architecture architecture) {
-        Set<PackageIdentifier> servicePackages = list().stream()
-                .filter(typeFact -> architecture.isService(typeFact))
-                .map(TypeFact::typeIdentifier)
-                .map(TypeIdentifier::packageIdentifier)
-                .collect(toSet());
-        HashMap<PackageIdentifier, List<JigType>> packageMap = new HashMap<>();
-        for (Map.Entry<PackageIdentifier, List<JigType>> entry : mapJigTypesByPackage().entrySet()) {
-            if (servicePackages.contains(entry.getKey())) {
-                packageMap.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return packageMap;
     }
 
     public synchronized MethodRelations toMethodRelations() {

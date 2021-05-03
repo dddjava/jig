@@ -12,17 +12,12 @@ import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponents;
 import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 機能の分析サービス
@@ -114,8 +109,8 @@ public class ApplicationService {
         return new ArchitectureDiagram(architectureComponents, classRelations);
     }
 
-    public Map<PackageIdentifier, List<JigType>> serviceTypes() {
+    public ServiceMethods serviceMethods() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return typeFacts.applicationTypes(architecture);
+        return ServiceMethods.from(typeFacts.jigTypes());
     }
 }

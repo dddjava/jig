@@ -8,18 +8,23 @@ import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
  * サービスメソッド一覧
+ *
+ * TODO Servicesにリネームしたい
  */
 public class ServiceMethods {
-    private final List<JigMethod> methods;
 
-    private ServiceMethods(List<JigMethod> list) {
-        this.methods = list;
+    List<JigType> jigTypes;
+    Predicate<JigMethod> methodFilter;
+
+    private ServiceMethods(List<JigType> jigTypes, Predicate<JigMethod> methodFilter) {
+        this.jigTypes = jigTypes;
+        this.methodFilter = methodFilter;
     }
 
     public static ServiceMethods from(JigTypes jigTypes) {
@@ -27,36 +32,40 @@ public class ServiceMethods {
                 .listMatches(jigType ->
                         // TODO Architecture.isService と重複。こちらに寄せたい。
                         jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
-        return new ServiceMethods(services.stream()
-                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
-                .collect(toList()));
+        return new ServiceMethods(services, jigMethod -> true);
     }
 
     public boolean empty() {
-        return methods.isEmpty();
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
+                .noneMatch(methodFilter);
     }
 
     public List<ServiceMethod> list() {
-        return methods.stream()
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
+                .filter(methodFilter)
                 .map(ServiceMethod::new)
                 .collect(toList());
     }
 
+    public List<JigType> listJigTypes() {
+        return jigTypes;
+    }
+
     public ServiceMethods filter(CallerMethods callerMethods) {
-        return methods.stream()
-                .filter(method -> callerMethods.contains(method.declaration()))
-                .collect(collectingAndThen(toList(), ServiceMethods::new));
+        return new ServiceMethods(jigTypes, jigMethod -> callerMethods.contains(jigMethod.declaration()));
     }
 
     public ServiceMethods intersect(MethodDeclarations methodDeclarations) {
-        return methods.stream()
-                .filter(method -> methodDeclarations.contains(method.declaration()))
-                .collect(collectingAndThen(toList(), ServiceMethods::new));
+        return new ServiceMethods(jigTypes, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
     }
 
     public MethodDeclarations toMethodDeclarations() {
-        return methods.stream()
-                .map(JigMethod::declaration)
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
+                .filter(methodFilter)
+                .map(jigMethod -> jigMethod.declaration())
                 .collect(MethodDeclarations.collector());
     }
 }

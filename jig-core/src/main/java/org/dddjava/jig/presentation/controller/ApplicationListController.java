@@ -41,7 +41,7 @@ public class ApplicationListController {
 
     @DocumentMapping(JigDocument.ApplicationSummary)
     public SummaryModel applicationSummary() {
-        return SummaryModel.from(applicationService.serviceTypes());
+        return SummaryModel.from(applicationService.serviceMethods());
     }
 
     ModelReport<?> controllerReport() {

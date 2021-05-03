@@ -30,7 +30,6 @@ public class ServiceMethods {
     public static ServiceMethods from(JigTypes jigTypes) {
         List<JigType> services = jigTypes
                 .listMatches(jigType ->
-                        // TODO Architecture.isService と重複。こちらに寄せたい。
                         jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
         return new ServiceMethods(services, jigMethod -> true);
     }

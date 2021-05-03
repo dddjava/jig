@@ -7,11 +7,7 @@ import org.dddjava.jig.domain.model.models.architectures.ArchitectureComponent;
  */
 public interface Architecture {
 
-    boolean isService(TypeFact typeFact);
-
     boolean isRepositoryImplementation(TypeFact typeFact);
-
-    boolean isController(TypeFact typeFact);
 
     boolean isBusinessRule(TypeFact typeFact);
 

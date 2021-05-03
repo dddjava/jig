@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorries;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
@@ -19,26 +18,16 @@ import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
  */
 public class ServiceAngle {
 
-    MethodDeclaration methodDeclaration;
+    ServiceMethod serviceMethod;
 
     ServiceMethods userServiceMethods;
     HandlerMethods userHandlerMethods;
 
-    UsingFields usingFields;
     ServiceMethods usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    boolean isPublic;
-    MethodWorries methodWorries;
-    ServiceMethod serviceMethod;
-
     ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         this.serviceMethod = serviceMethod;
-        this.methodDeclaration = serviceMethod.methodDeclaration();
-        this.usingFields = serviceMethod.methodUsingFields();
-        this.isPublic = serviceMethod.isPublic();
-
-        methodWorries = serviceMethod.methodWorries();
 
         UsingMethods usingMethods = serviceMethod.usingMethods();
         this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
@@ -54,7 +43,7 @@ public class ServiceAngle {
     }
 
     public MethodDeclaration method() {
-        return methodDeclaration;
+        return serviceMethod.methodDeclaration();
     }
 
     public boolean usingFromController() {
@@ -62,7 +51,7 @@ public class ServiceAngle {
     }
 
     public UsingFields usingFields() {
-        return usingFields;
+        return serviceMethod.methodUsingFields();
     }
 
     public RepositoryMethods usingRepositoryMethods() {
@@ -70,11 +59,11 @@ public class ServiceAngle {
     }
 
     public boolean useStream() {
-        return methodWorries.contains(MethodWorry.StreamAPIを使用している);
+        return serviceMethod.methodWorries().contains(MethodWorry.StreamAPIを使用している);
     }
 
     public boolean useNull() {
-        return methodWorries.contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
+        return serviceMethod.methodWorries().contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
     }
 
 
@@ -91,7 +80,7 @@ public class ServiceAngle {
     }
 
     public boolean isNotPublicMethod() {
-        return !isPublic;
+        return !serviceMethod.isPublic();
     }
 
     public ServiceMethods usingServiceMethods() {

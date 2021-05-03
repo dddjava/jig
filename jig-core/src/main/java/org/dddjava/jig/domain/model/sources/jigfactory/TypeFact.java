@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.jigobject.class_.*;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
@@ -149,10 +148,6 @@ public class TypeFact {
             }
         }
         return registered ? AliasRegisterResult.成功 : AliasRegisterResult.紐付け対象なし;
-    }
-
-    public BusinessRule createBusinessRule() {
-        return new BusinessRule(jigType());
     }
 
     JigType jigType;

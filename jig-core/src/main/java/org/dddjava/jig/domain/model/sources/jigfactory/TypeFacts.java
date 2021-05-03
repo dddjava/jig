@@ -80,7 +80,7 @@ public class TypeFacts {
         List<BusinessRule> list = new ArrayList<>();
         for (TypeFact typeFact : list()) {
             if (architecture.isBusinessRule(typeFact)) {
-                list.add(typeFact.createBusinessRule());
+                list.add(new BusinessRule(typeFact.jigType()));
             }
         }
         return new BusinessRules(list, toClassRelations());

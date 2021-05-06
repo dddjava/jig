@@ -1,6 +1,5 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
@@ -27,16 +26,14 @@ public class ViewResolver {
 
     PackageIdentifierFormatter packageIdentifierFormatter;
     JigDiagramFormat diagramFormat;
-    AliasService aliasService;
 
     JigDocumentContext jigDocumentContext;
     DotCommandRunner dotCommandRunner;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext, AliasService aliasService) {
+    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.diagramFormat = diagramFormat;
-        this.aliasService = aliasService;
         this.dotCommandRunner = new DotCommandRunner();
     }
 

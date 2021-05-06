@@ -35,7 +35,7 @@ public class ArchitectureDiagram {
             return packageComment.exists() ? packageComment.asText() : packageIdentifier.simpleName();
         };
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.ArchitectureDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.ArchitectureDiagram);
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")

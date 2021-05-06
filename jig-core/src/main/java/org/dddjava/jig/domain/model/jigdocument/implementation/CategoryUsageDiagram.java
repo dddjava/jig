@@ -62,7 +62,7 @@ public class CategoryUsageDiagram {
             }
         }
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryUsageDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.CategoryUsageDiagram);
         return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")

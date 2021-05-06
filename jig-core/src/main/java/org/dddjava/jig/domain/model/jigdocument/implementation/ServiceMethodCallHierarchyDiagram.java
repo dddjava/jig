@@ -78,7 +78,7 @@ public class ServiceMethodCallHierarchyDiagram {
                         "subgraph cluster_usecases {style=invis;",
                         "}"));
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.ServiceMethodCallHierarchyDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram);
 
         String graphText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")

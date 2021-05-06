@@ -79,7 +79,7 @@ public class Categories {
                 }
         );
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CategoryDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.CategoryDiagram);
         return DiagramSource.createDiagramSource(
                 documentName, new StringJoiner("\n", "graph \"" + documentName.label() + "\" {", "}")
                         .add("label=\"" + documentName.label() + "\";")

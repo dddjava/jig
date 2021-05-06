@@ -31,7 +31,7 @@ public class CompositeUsecaseDiagram {
         }
         List<DiagramSource> diagramList = new ArrayList<>();
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.CompositeUsecaseDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.CompositeUsecaseDiagram);
         String text = list.stream()
                 .map(compositeUsecases -> compositeUsecases.dotText(jigDocumentContext))
                 .collect(Collectors.joining("\n", "digraph \"" + documentName.label() + "\" {\n" +

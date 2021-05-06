@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.jigdocument.documentformat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -15,7 +16,8 @@ public enum JigDocument {
      * ビジネスルールを表すクラスの一覧。
      * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
      */
-    BusinessRuleList("business-rule", JigDocumentType.LIST),
+    BusinessRuleList(
+            JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"), "business-rule", JigDocumentType.LIST),
 
     /**
      * パッケージ関連ダイアグラム
@@ -24,7 +26,9 @@ public enum JigDocument {
      * トップレベルからの階層(depth)で丸めて複数出力される。
      * パッケージの関連有無や方向からドメインを語れるかのウォークスルーに使用する。
      */
-    PackageRelationDiagram("package-relation", JigDocumentType.DIAGRAM),
+    PackageRelationDiagram(
+            JigDocumentLabel.of("パッケージ関連図", "PackageRelationDiagram"),
+            "package-relation", JigDocumentType.DIAGRAM),
 
     /**
      * ビジネスルール関連ダイアグラム
@@ -33,9 +37,15 @@ public enum JigDocument {
      * クラス名と依存線のみのクラス図。ある程度以上の規模になると大きくなりすぎて使いづらくなる。
      * パッケージ関連ダイアグラムで把握できない場合の補助に使用する。
      */
-    BusinessRuleRelationDiagram("business-rule-relation", JigDocumentType.DIAGRAM),
-    OverconcentrationBusinessRuleDiagram("business-rule-overconcentration", JigDocumentType.DIAGRAM),
-    CoreBusinessRuleRelationDiagram("business-rule-core", JigDocumentType.DIAGRAM),
+    BusinessRuleRelationDiagram(
+            JigDocumentLabel.of("ビジネスルール関連図", "BusinessRuleRelationDiagram"),
+            "business-rule-relation", JigDocumentType.DIAGRAM),
+    OverconcentrationBusinessRuleDiagram(
+            JigDocumentLabel.of("集中ビジネスルールツリー図", "OverconcentrationBusinessRuleDiagram"), "business-rule-overconcentration",
+            JigDocumentType.DIAGRAM),
+    CoreBusinessRuleRelationDiagram(
+            JigDocumentLabel.of("コアビジネスルール関連図", "CoreBusinessRuleRelationDiagram"),
+            "business-rule-core", JigDocumentType.DIAGRAM),
 
     /**
      * 区分ダイアグラム
@@ -43,14 +53,18 @@ public enum JigDocument {
      * 区分と区分値を可視化する。
      * 区分の充実はドメインの把握具合と密接に関わる。
      */
-    CategoryDiagram("category", JigDocumentType.DIAGRAM),
+    CategoryDiagram(
+            JigDocumentLabel.of("区分図", "CategoryDiagram"),
+            "category", JigDocumentType.DIAGRAM),
 
     /**
      * 区分使用ダイアグラム
      *
      * 区分を使用しているクラスを可視化する。
      */
-    CategoryUsageDiagram("category-usage", JigDocumentType.DIAGRAM),
+    CategoryUsageDiagram(
+            JigDocumentLabel.of("区分使用図", "CategoryUsageDiagram"),
+            "category-usage", JigDocumentType.DIAGRAM),
 
     /**
      * 機能一覧
@@ -61,44 +75,61 @@ public enum JigDocument {
      *
      * 制限事項: {@link org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader}
      */
-    ApplicationList("application", JigDocumentType.LIST),
+    ApplicationList(
+            JigDocumentLabel.of("機能一覧", "ApplicationList"),
+            "application", JigDocumentType.LIST),
 
     /**
      * サービスメソッド呼び出しダイアグラム
      *
      * サービスクラスのメソッド呼び出しを可視化する。
      */
-    ServiceMethodCallHierarchyDiagram("service-method-call-hierarchy", JigDocumentType.DIAGRAM),
+    ServiceMethodCallHierarchyDiagram(
+            JigDocumentLabel.of("サービスメソッド呼び出し図", "ServiceMethodCallHierarchyDiagram"),
+            "service-method-call-hierarchy", JigDocumentType.DIAGRAM),
 
     /**
      * ユースケース複合図
      */
-    CompositeUsecaseDiagram("composite-usecase", JigDocumentType.DIAGRAM),
+    CompositeUsecaseDiagram(
+            JigDocumentLabel.of("ユースケース複合図", "CompositeUsecaseDiagram"),
+            "composite-usecase", JigDocumentType.DIAGRAM),
 
     /**
      * アーキテクチャダイアグラム
      */
-    ArchitectureDiagram("architecture", JigDocumentType.DIAGRAM),
+    ArchitectureDiagram(
+            JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),
+            "architecture", JigDocumentType.DIAGRAM),
 
     /**
      * ドメイン概要
      */
-    DomainSummary("domain", JigDocumentType.SUMMARY),
+    DomainSummary(
+            JigDocumentLabel.of("", ""),
+            "domain", JigDocumentType.SUMMARY),
 
     /**
      * アプリケーション概要
      */
-    ApplicationSummary("application", JigDocumentType.SUMMARY),
+    ApplicationSummary(
+            JigDocumentLabel.of("", ""),
+            "application", JigDocumentType.SUMMARY),
 
     /**
      * 全体
      */
-    Summary("index", JigDocumentType.SUMMARY);
+    Summary(
+            JigDocumentLabel.of("", ""),
+            "index", JigDocumentType.SUMMARY);
 
+    private final JigDocumentLabel label;
     private final String documentFileName;
     private final JigDocumentType jigDocumentType;
 
-    JigDocument(String documentFileName, JigDocumentType jigDocumentType) {
+    JigDocument(
+            JigDocumentLabel label, String documentFileName, JigDocumentType jigDocumentType) {
+        this.label = label;
         this.documentFileName = documentFileName;
         this.jigDocumentType = jigDocumentType;
     }
@@ -114,11 +145,17 @@ public enum JigDocument {
 
     public static List<JigDocument> resolve(String diagramTypes) {
         return Arrays.stream(diagramTypes.split(","))
-                .map(JigDocument::valueOf)
+                .map(
+                        JigDocument::valueOf)
                 .collect(Collectors.toList());
     }
 
     public JigDocumentType jigDocumentType() {
         return jigDocumentType;
+    }
+
+    public String label() {
+        Locale locale = Locale.getDefault();
+        return locale.getLanguage().equals("en") ? label.english : label.japanese;
     }
 }

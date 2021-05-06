@@ -147,7 +147,7 @@ public class PackageRelationDiagram {
                 + jigDocumentContext.label("number_of_relations") + ": " + packageRelations.number().asText() + "\\l"
                 + "\"]";
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.PackageRelationDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram);
         String text = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add(summaryText)

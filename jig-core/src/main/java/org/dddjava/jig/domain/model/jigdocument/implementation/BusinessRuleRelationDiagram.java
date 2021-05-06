@@ -32,11 +32,11 @@ public class BusinessRuleRelationDiagram {
     }
 
     public DiagramSources relationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
-        return diagramSources(packageIdentifierFormatter, businessRules, jigDocumentContext.documentName(JigDocument.BusinessRuleRelationDiagram));
+        return diagramSources(packageIdentifierFormatter, businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
     public DiagramSources coreRelationDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
-        return diagramSources(packageIdentifierFormatter, businessRules.filterCore(), jigDocumentContext.documentName(JigDocument.CoreBusinessRuleRelationDiagram));
+        return diagramSources(packageIdentifierFormatter, businessRules.filterCore(), DocumentName.of(JigDocument.CoreBusinessRuleRelationDiagram));
     }
 
     private DiagramSources diagramSources(PackageIdentifierFormatter packageIdentifierFormatter, BusinessRules targetBusinessRules, DocumentName documentName) {
@@ -82,7 +82,7 @@ public class BusinessRuleRelationDiagram {
         Map<BusinessRule, TypeIdentifiers> map = businessRules.overconcentrationMap();
         if (map.isEmpty()) return DiagramSource.empty();
 
-        DocumentName documentName = jigDocumentContext.documentName(JigDocument.OverconcentrationBusinessRuleDiagram);
+        DocumentName documentName = DocumentName.of(JigDocument.OverconcentrationBusinessRuleDiagram);
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")

@@ -67,11 +67,6 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     }
 
     @Override
-    public DocumentName documentName(JigDocument jigDocument) {
-        return DocumentName.of(jigDocument, label(jigDocument.name()));
-    }
-
-    @Override
     public PackageComment packageComment(PackageIdentifier packageIdentifier) {
         Objects.requireNonNull(aliasService);
         return aliasService.packageAliasOf(packageIdentifier);

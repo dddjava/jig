@@ -44,14 +44,6 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
         }
     }
 
-    public String jigDocumentLabel(JigDocument jigDocument) {
-        return label(jigDocument.name());
-    }
-
-    public String diagramLabel(JigDocument jigDocument) {
-        return jigDocumentLabel(jigDocument);
-    }
-
     public static ResourceBundleJigDocumentContext getInstance() {
         return new ResourceBundleJigDocumentContext();
     }
@@ -76,7 +68,7 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
     @Override
     public DocumentName documentName(JigDocument jigDocument) {
-        return DocumentName.of(jigDocument, diagramLabel(jigDocument));
+        return DocumentName.of(jigDocument, label(jigDocument.name()));
     }
 
     @Override

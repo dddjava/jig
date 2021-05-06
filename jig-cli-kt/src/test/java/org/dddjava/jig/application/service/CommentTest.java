@@ -36,17 +36,17 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CommentServiceTest {
+public class CommentTest {
 
     JigSourceReadService jigSourceReadService;
-    AliasService sut;
 
-    CommentServiceTest() {
-        SourceCodeAliasReader sourceCodeAliasReader = new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader());
-        OnMemoryCommentRepository onMemoryAliasRepository = new OnMemoryCommentRepository();
-        OnMemoryJigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(onMemoryAliasRepository);
-        jigSourceReadService = new JigSourceReadService(jigSourceRepository, new AsmFactReader(), sourceCodeAliasReader, null, new LocalFileSourceReader());
-        sut = new AliasService(onMemoryAliasRepository);
+    CommentTest() {
+        jigSourceReadService = new JigSourceReadService(
+                new OnMemoryJigSourceRepository(new OnMemoryCommentRepository()),
+                new AsmFactReader(),
+                new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader()),
+                null,
+                new LocalFileSourceReader());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class CommentServiceTest {
 
     static URI defaultPackageClassURI(String defaultPackageClass) {
         try {
-            return CommentServiceTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
+            return CommentTest.class.getResource("/" + defaultPackageClass + ".class").toURI().resolve("./");
         } catch (URISyntaxException e) {
             throw new AssertionError(e);
         }

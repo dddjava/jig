@@ -1,6 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
@@ -22,7 +21,6 @@ public class JigReportsTask extends DefaultTask {
         Project project = getProject();
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
-        List<JigDocument> jigDocuments = config.documentTypes();
         Configuration configuration = new Configuration(config.asProperties(getProject()), new SourceCodeAliasReader(new JavaparserAliasReader()));
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
@@ -30,7 +28,7 @@ public class JigReportsTask extends DefaultTask {
         long startTime = System.currentTimeMillis();
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, jigDocuments, sourcePaths, getLogger());
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths, getLogger());
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
@@ -21,6 +22,7 @@ import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 import java.nio.file.Path;
+import java.util.List;
 
 public class Configuration {
     JigProperties properties;
@@ -94,5 +96,9 @@ public class Configuration {
 
     public Path outputDirectory() {
         return properties.outputDirectory;
+    }
+
+    public List<JigDocument> jigDocuments() {
+        return properties.jigDocuments;
     }
 }

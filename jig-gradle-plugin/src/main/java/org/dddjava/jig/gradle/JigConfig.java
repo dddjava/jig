@@ -37,6 +37,7 @@ public class JigConfig {
 
     public JigProperties asProperties(Project project) {
         return new JigProperties(
+                documentTypes(),
                 new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
                 new LinkPrefix(linkPrefix),

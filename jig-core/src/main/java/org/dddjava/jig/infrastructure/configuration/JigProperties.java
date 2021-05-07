@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 
 import java.io.File;
@@ -11,9 +12,11 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class JigProperties {
 
+    List<JigDocument> jigDocuments;
     OutputOmitPrefix outputOmitPrefix;
     String businessRulePattern;
 
@@ -22,7 +25,8 @@ public class JigProperties {
     Path outputDirectory;
     JigDiagramFormat outputDiagramFormat;
 
-    public JigProperties(OutputOmitPrefix outputOmitPrefix, String businessRulePattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
+    public JigProperties(List<JigDocument> jigDocuments, OutputOmitPrefix outputOmitPrefix, String businessRulePattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
+        this.jigDocuments = jigDocuments;
         this.outputOmitPrefix = outputOmitPrefix;
 
         this.businessRulePattern = businessRulePattern;
@@ -34,6 +38,7 @@ public class JigProperties {
 
     public static JigProperties defaultInstance() {
         JigProperties jigProperties = new JigProperties(
+                JigDocument.canonical(),
                 new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),
                 JigProperty.PATTERN_DOMAIN.defaultValue(),
                 LinkPrefix.disable(),

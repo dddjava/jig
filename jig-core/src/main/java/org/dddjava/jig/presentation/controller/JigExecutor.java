@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.JigSourceReadService;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatuses;
@@ -17,7 +16,7 @@ import java.util.ResourceBundle;
 
 public class JigExecutor {
 
-    public static List<HandleResult> execute(Configuration configuration, List<JigDocument> jigDocuments, SourcePaths sourcePaths, Logger logger) {
+    public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths, Logger logger) {
 
         JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
@@ -38,6 +37,6 @@ public class JigExecutor {
             }
         }
 
-        return jigDocumentHandlers.handleJigDocuments(jigDocuments, configuration.outputDirectory());
+        return jigDocumentHandlers.handleJigDocuments(configuration.jigDocuments(), configuration.outputDirectory());
     }
 }

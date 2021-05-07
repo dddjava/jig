@@ -1,5 +1,6 @@
 package testing;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -29,7 +30,7 @@ public class JigTestExtension implements ParameterResolver {
     public JigTestExtension() throws Exception {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
-                new JigProperties(new OutputOmitPrefix(), "stub.domain.model.+", LinkPrefix.disable(), tempDir, null),
+                new JigProperties(JigDocument.canonical(), new OutputOmitPrefix(), "stub.domain.model.+", LinkPrefix.disable(), tempDir, null),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

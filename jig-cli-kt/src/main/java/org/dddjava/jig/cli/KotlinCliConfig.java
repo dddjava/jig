@@ -75,6 +75,7 @@ class KotlinCliConfig {
     Configuration configuration() {
         return new Configuration(
                 new JigProperties(
+                        jigDocuments(),
                         new OutputOmitPrefix(outputOmitPrefix),
                         modelPattern,
                         new LinkPrefix(linkPrefix),

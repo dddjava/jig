@@ -1,6 +1,5 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
@@ -30,7 +29,6 @@ public class CommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
         LOGGER.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
@@ -38,7 +36,7 @@ public class CommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
         SourcePaths sourcePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, jigDocuments, sourcePaths, LOGGER);
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths, LOGGER);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

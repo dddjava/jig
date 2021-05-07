@@ -69,6 +69,7 @@ class CliConfig {
 
     Configuration configuration() {
         JigProperties properties = new JigProperties(
+                jigDocuments(),
                 new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
                 new LinkPrefix(linkPrefix),

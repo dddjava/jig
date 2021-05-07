@@ -24,9 +24,9 @@ public class JigConfig {
 
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
-    boolean enableDebugDocument = false;
-
     String linkPrefix = LinkPrefix.disable().textValue();
+
+    JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
 
     List<JigDocument> documentTypes() {
         if (documentTypes.isEmpty()) return JigDocument.canonical();
@@ -38,7 +38,7 @@ public class JigConfig {
     public JigProperties asProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                modelPattern, resolveOutputDirectory(project), JigDiagramFormat.SVG, new OutputOmitPrefix(outputOmitPrefix),
+                modelPattern, resolveOutputDirectory(project), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
                 new LinkPrefix(linkPrefix)
         );
     }
@@ -83,20 +83,20 @@ public class JigConfig {
         this.outputDirectory = outputDirectory;
     }
 
+    public JigDiagramFormat getDiagramFormat() {
+        return diagramFormat;
+    }
+
+    public void setDiagramFormat(JigDiagramFormat diagramFormat) {
+        this.diagramFormat = diagramFormat;
+    }
+
     public String getOutputOmitPrefix() {
         return outputOmitPrefix;
     }
 
     public void setOutputOmitPrefix(String outputOmitPrefix) {
         this.outputOmitPrefix = outputOmitPrefix;
-    }
-
-    public boolean isEnableDebugDocument() {
-        return enableDebugDocument;
-    }
-
-    public void setEnableDebugDocument(boolean enableDebugDocument) {
-        this.enableDebugDocument = enableDebugDocument;
     }
 
     public String getLinkPrefix() {
@@ -109,11 +109,11 @@ public class JigConfig {
 
     public String propertiesText() {
         return new StringJoiner("\n\t", "jig {\n\t", "\n}")
-                .add("modelPattern = '" + modelPattern + '\'')
                 .add("documentTypes = '" + documentTypes + '\'')
+                .add("modelPattern = '" + modelPattern + '\'')
                 .add("outputDirectory = '" + outputDirectory + '\'')
+                .add("diagramFormat= '" + diagramFormat + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
-                .add("enableDebugDocument = " + enableDebugDocument)
                 .add("linkPrefix = '" + linkPrefix + '\'')
                 .toString();
     }

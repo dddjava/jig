@@ -24,7 +24,7 @@ public class ArchitectureDiagram {
         this.classRelations = classRelations;
     }
 
-    public DiagramSources dotText(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         ArchitectureRelations architectureRelations = ArchitectureRelations.from(packageBasedArchitecture, classRelations);
         if (architectureRelations.worthless()) {
             return DiagramSource.empty();

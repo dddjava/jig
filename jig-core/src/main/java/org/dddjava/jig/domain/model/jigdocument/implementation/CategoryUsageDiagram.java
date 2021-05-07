@@ -31,7 +31,7 @@ public class CategoryUsageDiagram {
         this.categoryTypes = CategoryTypes.from(businessRules.jigTypes());
     }
 
-    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }

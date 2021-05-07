@@ -1,7 +1,6 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.jigdocument.implementation.BusinessRuleRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
@@ -28,7 +27,7 @@ public class DependencyService {
      * パッケージの関連を取得する
      */
     public PackageRelationDiagram packageDependencies() {
-        BusinessRules businessRules = businessRuleService.businessRules();
+        BusinessRules businessRules = businessRules();
 
         if (businessRules.empty()) {
             jigLogger.warn(Warning.ビジネスルールが見つからないので出力されない通知);
@@ -38,10 +37,7 @@ public class DependencyService {
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
     }
 
-    /**
-     * ビジネスルールの関連を取得する
-     */
-    public BusinessRuleRelationDiagram businessRuleNetwork() {
-        return new BusinessRuleRelationDiagram(businessRuleService.businessRules());
+    public BusinessRules businessRules() {
+        return businessRuleService.businessRules();
     }
 }

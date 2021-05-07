@@ -25,7 +25,7 @@ public class CompositeUsecaseDiagram {
                 .collect(Collectors.toList());
     }
 
-    public DiagramSources diagramSource(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSources.empty();
         }

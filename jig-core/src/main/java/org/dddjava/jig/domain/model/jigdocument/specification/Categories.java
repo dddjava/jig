@@ -41,7 +41,7 @@ public class Categories {
                 .collect(toList());
     }
 
-    public DiagramSources valuesDotText(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         if (list.isEmpty()) {
             return DiagramSource.empty();
         }

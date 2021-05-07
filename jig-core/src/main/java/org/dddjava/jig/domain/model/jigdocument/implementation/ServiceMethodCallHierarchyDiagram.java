@@ -26,7 +26,7 @@ public class ServiceMethodCallHierarchyDiagram {
         this.serviceAngles = serviceAngles;
     }
 
-    public DiagramSources methodCallDotText(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         if (serviceAngles.none()) {
             return DiagramSource.empty();
         }

@@ -1,7 +1,6 @@
 package testing;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
@@ -9,7 +8,6 @@ import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -30,7 +28,7 @@ public class JigTestExtension implements ParameterResolver {
     public JigTestExtension() throws Exception {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
-                new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir, null, new OutputOmitPrefix(""), LinkPrefix.disable()),
+                new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );
     }

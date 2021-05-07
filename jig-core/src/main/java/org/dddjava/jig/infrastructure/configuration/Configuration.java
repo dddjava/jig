@@ -32,6 +32,7 @@ public class Configuration {
     ApplicationService applicationService;
     DependencyService dependencyService;
     BusinessRuleService businessRuleService;
+    AliasService aliasService;
 
     public Configuration(JigProperties jigProperties, SourceCodeAliasReader sourceCodeAliasReader) {
         this.properties = new JigPropertyLoader(jigProperties).load();
@@ -68,8 +69,9 @@ public class Configuration {
                 new LocalFileSourceReader()
         );
 
+        this.aliasService = new AliasService(commentRepository);
         JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
-                new AliasService(commentRepository), properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
+                aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
         this.documentHandlers = new JigDocumentHandlers(
                 new ViewResolver(
                         properties.outputDiagramFormat,

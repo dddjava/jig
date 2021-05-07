@@ -1,10 +1,11 @@
 package org.dddjava.jig.presentation.view.html;
 
+import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocumentType;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,17 +16,19 @@ public class IndexHtmlView {
         HtmlDocumentTemplateEngine templateEngine = new HtmlDocumentTemplateEngine();
 
         Map<String, Object> context = new HashMap<>();
+
+        List<String> diagramFiles = new ArrayList<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 List<String> list = handleResult.outputFileNames();
-                if (list.size() == 1) {
-                    context.put(handleResult.jigDocument().name(), list.get(0));
+                if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
+                    diagramFiles.addAll(list);
                 } else {
-                    Collections.sort(list);
-                    context.put(handleResult.jigDocument().name(), list);
+                    context.put(handleResult.jigDocument().name(), list.get(0));
                 }
             }
         }
+        context.put("diagramFiles", diagramFiles);
 
         String htmlText = templateEngine.process(jigDocumentWriter, context);
 

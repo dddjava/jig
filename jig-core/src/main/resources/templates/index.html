@@ -29,20 +29,9 @@
     <section class="diagram">
         <h2>ダイアグラム: SVG</h2>
 
-        <img th:if="${ArchitectureDiagram}" src="#" th:src="${ArchitectureDiagram}">
-
-        <img src="#" th:each="diagram : ${PackageRelationDiagram}" th:src="${diagram}">
-
-        <img th:if="${CategoryDiagram}" src="#" th:src="${CategoryDiagram}">
-        <img th:if="${CategoryUsageDiagram}" src="#" th:src="${CategoryUsageDiagram}">
-
-        <img src="#" th:each="diagram : ${CompositeUsecaseDiagram}" th:src="${diagram}">
-        <img th:if="${ServiceMethodCallHierarchyDiagram}" src="#" th:src="${ServiceMethodCallHierarchyDiagram}">
-
-        <img th:if="${CoreBusinessRuleRelationDiagram}" src="#" th:src="${CoreBusinessRuleRelationDiagram}">
-        <img th:if="${OverconcentrationBusinessRuleDiagram}" src="#" th:src="${OverconcentrationBusinessRuleDiagram}">
-        <img th:if="${BusinessRuleRelationDiagram}" src="#" th:src="${BusinessRuleRelationDiagram}">
-
+        <a href="#" th:href="${diagramFile}" th:each="diagramFile : ${diagramFiles}">
+            <img src="dummy.svg" th:src="${diagramFile}">
+        </a>
     </section>
 </main>
 

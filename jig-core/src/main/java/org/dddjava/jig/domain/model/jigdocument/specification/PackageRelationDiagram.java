@@ -85,7 +85,7 @@ public class PackageRelationDiagram {
         return bidirectionalRelations;
     }
 
-    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter formatter) {
+    public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext) {
         if (!available()) {
             return DiagramSource.emptyUnit();
         }
@@ -122,7 +122,7 @@ public class PackageRelationDiagram {
             groupingPackages.clear();
         }
 
-        Labeler labeler = new Labeler(jigDocumentContext, formatter);
+        Labeler labeler = new Labeler(jigDocumentContext);
 
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
@@ -186,11 +186,9 @@ public class PackageRelationDiagram {
 
     static class Labeler {
         JigDocumentContext jigDocumentContext;
-        PackageIdentifierFormatter packageIdentifierFormatter;
 
-        Labeler(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
+        Labeler(JigDocumentContext jigDocumentContext) {
             this.jigDocumentContext = jigDocumentContext;
-            this.packageIdentifierFormatter = packageIdentifierFormatter;
         }
 
         private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
@@ -204,7 +202,7 @@ public class PackageRelationDiagram {
         }
 
         private String label(PackageIdentifier packageIdentifier) {
-            String labelText = packageIdentifierFormatter.format(packageIdentifier);
+            String labelText = jigDocumentContext.packageIdentifierFormatter().format(packageIdentifier);
             return addAliasIfExists(packageIdentifier, labelText);
         }
 

@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 
 public class CoreDomainDiagram {
 
@@ -14,9 +13,9 @@ public class CoreDomainDiagram {
         this.businessRuleRelationDiagram = businessRuleRelationDiagram;
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         return businessRuleRelationDiagram.sources(
-                packageIdentifierFormatter,
+                jigDocumentContext,
                 businessRuleRelationDiagram.businessRules.filterCore(),
                 DocumentName.of(JigDocument.CoreBusinessRuleRelationDiagram));
     }

@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDia
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
-import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.SummaryView;
@@ -22,15 +21,13 @@ import static java.util.stream.Collectors.toList;
 
 public class ViewResolver {
 
-    PackageIdentifierFormatter packageIdentifierFormatter;
     JigDiagramFormat diagramFormat;
 
     JigDocumentContext jigDocumentContext;
     DotCommandRunner dotCommandRunner;
 
-    public ViewResolver(PackageIdentifierFormatter packageIdentifierFormatter, JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
+    public ViewResolver(JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;
-        this.packageIdentifierFormatter = packageIdentifierFormatter;
         this.diagramFormat = diagramFormat;
         this.dotCommandRunner = new DotCommandRunner();
     }
@@ -42,7 +39,7 @@ public class ViewResolver {
 
             List<DiagramSource> diagramSources = depths.stream()
                     .map(model::applyDepth)
-                    .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext, packageIdentifierFormatter))
+                    .map(packageNetwork1 -> packageNetwork1.dependencyDotText(jigDocumentContext))
                     .filter(diagramSource -> !diagramSource.noValue())
                     .collect(toList());
             return DiagramSource.createDiagramSource(diagramSources);
@@ -56,11 +53,11 @@ public class ViewResolver {
             case PackageRelationDiagram:
                 return dependencyWriter();
             case BusinessRuleRelationDiagram:
-                return new DotView(model -> ((BusinessRuleRelationDiagram) model).sources(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
+                return new DotView(model -> ((BusinessRuleRelationDiagram) model).sources(jigDocumentContext), diagramFormat, dotCommandRunner);
             case OverconcentrationBusinessRuleDiagram:
                 return new DotView(model -> ((ConcentrateDomainDiagram) model).sources(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CoreBusinessRuleRelationDiagram:
-                return new DotView(model -> ((CoreDomainDiagram) model).sources(jigDocumentContext, packageIdentifierFormatter), diagramFormat, dotCommandRunner);
+                return new DotView(model -> ((CoreDomainDiagram) model).sources(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CategoryUsageDiagram:
                 return new DotView(model -> ((CategoryUsageDiagram) model).sources(jigDocumentContext), diagramFormat, dotCommandRunner);
             case CategoryDiagram:

@@ -1,10 +1,9 @@
 package org.dddjava.jig.presentation.view;
 
 import org.dddjava.jig.application.service.AliasService;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.package_.PackageComment;
@@ -24,15 +23,17 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     ResourceBundle jigDocumentResource;
     AliasService aliasService;
     LinkPrefix linkPrefix;
+    PackageIdentifierFormatter packageIdentifierFormatter;
 
     ResourceBundleJigDocumentContext() {
         init();
     }
 
-    ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix) {
+    ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
         init();
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
+        this.packageIdentifierFormatter = packageIdentifierFormatter;
     }
 
 
@@ -48,8 +49,8 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
         return new ResourceBundleJigDocumentContext();
     }
 
-    public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix) {
-        return new ResourceBundleJigDocumentContext(aliasService, linkPrefix);
+    public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
+        return new ResourceBundleJigDocumentContext(aliasService, linkPrefix, packageIdentifierFormatter);
     }
 
     @Override
@@ -76,6 +77,11 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     public ClassComment classComment(TypeIdentifier typeIdentifier) {
         Objects.requireNonNull(aliasService);
         return aliasService.typeAliasOf(typeIdentifier);
+    }
+
+    @Override
+    public PackageIdentifierFormatter packageIdentifierFormatter() {
+        return packageIdentifierFormatter;
     }
 
     @Override

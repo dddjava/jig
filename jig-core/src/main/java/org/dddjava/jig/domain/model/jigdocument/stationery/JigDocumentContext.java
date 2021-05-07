@@ -19,4 +19,6 @@ public interface JigDocumentContext {
     default JigPackage jigPackage(PackageIdentifier packageIdentifier) {
         return new JigPackage(packageIdentifier, packageComment(packageIdentifier));
     }
+
+    PackageIdentifierFormatter packageIdentifierFormatter();
 }

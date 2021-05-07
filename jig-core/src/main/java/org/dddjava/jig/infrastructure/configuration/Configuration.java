@@ -46,14 +46,10 @@ public class Configuration {
         this.businessRuleService = new BusinessRuleService(architecture, jigSourceRepository);
         this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class), jigSourceRepository);
         this.applicationService = new ApplicationService(architecture, new MessageLogger(ApplicationService.class), jigSourceRepository);
-        PrefixRemoveIdentifierFormatter prefixRemoveIdentifierFormatter = new PrefixRemoveIdentifierFormatter(
-                properties.getOutputOmitPrefix()
-        );
 
-        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext
-                .getInstanceWithAliasFinder(aliasService, properties.linkPrefix());
+        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
+                aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
         ViewResolver viewResolver = new ViewResolver(
-                prefixRemoveIdentifierFormatter,
                 // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
                 // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
                 // @Value("${diagram.format:SVG}") String diagramFormat

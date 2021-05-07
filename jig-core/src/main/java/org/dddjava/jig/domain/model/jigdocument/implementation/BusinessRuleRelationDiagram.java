@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePac
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.StringJoiner;
@@ -25,11 +24,11 @@ public class BusinessRuleRelationDiagram {
         this.businessRules = businessRules;
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext, PackageIdentifierFormatter packageIdentifierFormatter) {
-        return sources(packageIdentifierFormatter, businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+        return sources(jigDocumentContext, businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(PackageIdentifierFormatter packageIdentifierFormatter, BusinessRules targetBusinessRules, DocumentName documentName) {
+    DiagramSources sources(JigDocumentContext jigDocumentContext, BusinessRules targetBusinessRules, DocumentName documentName) {
         if (targetBusinessRules.empty()) {
             return DiagramSource.empty();
         }
@@ -45,7 +44,7 @@ public class BusinessRuleRelationDiagram {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
             Subgraph subgraph = new Subgraph(packageIdentifier.asText())
-                    .label(packageIdentifierFormatter.format(packageIdentifier))
+                    .label(jigDocumentContext.packageIdentifierFormatter().format(packageIdentifier))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             BusinessRules businessRules = businessRulePackage.businessRules();

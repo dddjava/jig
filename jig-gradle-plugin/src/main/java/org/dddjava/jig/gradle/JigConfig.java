@@ -5,7 +5,9 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
+import org.gradle.api.Project;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +35,27 @@ public class JigConfig {
                 .collect(Collectors.toList());
     }
 
-    public JigProperties asProperties() {
+    public JigProperties asProperties(Project project) {
         return new JigProperties(
                 new OutputOmitPrefix(outputOmitPrefix),
                 modelPattern,
                 new LinkPrefix(linkPrefix),
-                Paths.get(this.outputDirectory),
+                resolveOutputDirectory(project),
                 JigDiagramFormat.SVG
         );
+    }
+
+    private Path resolveOutputDirectory(Project project) {
+        if (this.outputDirectory.isEmpty()) {
+            return defaultOutputDirectory(project);
+        }
+        return Paths.get(this.outputDirectory);
+    }
+
+    private Path defaultOutputDirectory(Project project) {
+        Path path = Paths.get(getOutputDirectory());
+        if (path.isAbsolute()) return path;
+        return project.getBuildDir().toPath().resolve("jig");
     }
 
     public String getModelPattern() {

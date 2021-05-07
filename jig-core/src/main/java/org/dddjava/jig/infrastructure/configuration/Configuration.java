@@ -34,8 +34,8 @@ public class Configuration {
     BusinessRuleService businessRuleService;
     AliasService aliasService;
 
-    public Configuration(JigProperties originalProperties, SourceCodeAliasReader sourceCodeAliasReader) {
-        this.properties = new JigPropertyLoader(originalProperties).load();
+    public Configuration(JigProperties primaryProperties, SourceCodeAliasReader sourceCodeAliasReader) {
+        this.properties = new JigPropertyLoader(primaryProperties).load();
         properties.prepareOutputDirectory();
 
         CommentRepository commentRepository = new OnMemoryCommentRepository();

@@ -14,7 +14,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @SpringBootApplication
@@ -31,7 +30,6 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
         List<JigDocument> jigDocuments = cliConfig.jigDocuments();
         Configuration configuration = cliConfig.configuration();
 
@@ -47,6 +45,6 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        LOGGER.info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);
+        LOGGER.info(Utf8ResourceBundle.messageBundle().getString("success"), System.currentTimeMillis() - startTime);
     }
 }

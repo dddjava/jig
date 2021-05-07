@@ -13,14 +13,12 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class JigReportsTask extends DefaultTask {
 
     @TaskAction
     void outputReports() {
-        ResourceBundle jigMessages = Utf8ResourceBundle.messageBundle();
         Project project = getProject();
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
@@ -39,7 +37,7 @@ public class JigReportsTask extends DefaultTask {
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         getLogger().info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        getLogger().info(jigMessages.getString("success"), System.currentTimeMillis() - startTime);
+        getLogger().info(Utf8ResourceBundle.messageBundle().getString("success"), System.currentTimeMillis() - startTime);
     }
 
 }

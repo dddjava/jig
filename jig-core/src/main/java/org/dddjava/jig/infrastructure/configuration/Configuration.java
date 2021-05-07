@@ -32,7 +32,6 @@ public class Configuration {
     ApplicationService applicationService;
     DependencyService dependencyService;
     BusinessRuleService businessRuleService;
-    AliasService aliasService;
 
     public Configuration(JigProperties jigProperties, SourceCodeAliasReader sourceCodeAliasReader) {
         this.properties = new JigPropertyLoader(jigProperties).load();
@@ -41,7 +40,6 @@ public class Configuration {
         CommentRepository commentRepository = new OnMemoryCommentRepository();
 
         JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(commentRepository);
-        this.aliasService = new AliasService(commentRepository);
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
@@ -49,15 +47,6 @@ public class Configuration {
         this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class), jigSourceRepository);
         this.applicationService = new ApplicationService(architecture, new MessageLogger(ApplicationService.class), jigSourceRepository);
 
-        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
-                aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
-        ViewResolver viewResolver = new ViewResolver(
-                // TODO MethodNodeLabelStyleとDiagramFormatをプロパティで受け取れるようにする
-                // @Value("${methodNodeLabelStyle:SIMPLE}") String methodNodeLabelStyle
-                // @Value("${diagram.format:SVG}") String diagramFormat
-                properties.outputDiagramFormat,
-                jigDocumentContext
-        );
         BusinessRuleListController businessRuleListController = new BusinessRuleListController(
                 applicationService,
                 businessRuleService
@@ -78,8 +67,14 @@ public class Configuration {
                 new MyBatisSqlReader(),
                 new LocalFileSourceReader()
         );
+
+        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
+                new AliasService(commentRepository), properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
         this.documentHandlers = new JigDocumentHandlers(
-                viewResolver,
+                new ViewResolver(
+                        properties.outputDiagramFormat,
+                        jigDocumentContext
+                ),
                 businessRuleListController,
                 applicationListController,
                 diagramController

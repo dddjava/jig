@@ -26,9 +26,6 @@ public class DotView implements JigView {
 
     @Override
     public void render(Object model, JigDocumentWriter jigDocumentWriter) {
-        if (!(model instanceof DiagramSourceWriter)) {
-            throw new RuntimeException("実装ミス");
-        }
         DiagramSourceWriter sourceWriter = (DiagramSourceWriter) model;
 
         DiagramSources diagramSources = sourceWriter.sources(jigDocumentContext);

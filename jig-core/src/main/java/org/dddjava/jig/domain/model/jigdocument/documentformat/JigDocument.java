@@ -17,7 +17,8 @@ public enum JigDocument {
      * 用語集としてや、ビジネスルールの充足具合の把握などに使用できる。
      */
     BusinessRuleList(
-            JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"), "business-rule", JigDocumentType.LIST),
+            JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"),
+            "business-rule", JigDocumentType.LIST),
 
     /**
      * パッケージ関連ダイアグラム
@@ -41,8 +42,8 @@ public enum JigDocument {
             JigDocumentLabel.of("ビジネスルール関連図", "BusinessRuleRelationDiagram"),
             "business-rule-relation", JigDocumentType.DIAGRAM),
     OverconcentrationBusinessRuleDiagram(
-            JigDocumentLabel.of("集中ビジネスルールツリー図", "OverconcentrationBusinessRuleDiagram"), "business-rule-overconcentration",
-            JigDocumentType.DIAGRAM),
+            JigDocumentLabel.of("集中ビジネスルールツリー図", "OverconcentrationBusinessRuleDiagram"),
+            "business-rule-overconcentration", JigDocumentType.DIAGRAM),
     CoreBusinessRuleRelationDiagram(
             JigDocumentLabel.of("コアビジネスルール関連図", "CoreBusinessRuleRelationDiagram"),
             "business-rule-core", JigDocumentType.DIAGRAM),

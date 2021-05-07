@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDia
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.SummaryView;

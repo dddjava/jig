@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePac
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.StringJoiner;
@@ -45,7 +45,7 @@ public class BusinessRuleRelationDiagram {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
             Subgraph subgraph = new Subgraph(packageIdentifier.asText())
-                    .label(packageIdentifier.format(packageIdentifierFormatter))
+                    .label(packageIdentifierFormatter.format(packageIdentifier))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             BusinessRules businessRules = businessRulePackage.businessRules();

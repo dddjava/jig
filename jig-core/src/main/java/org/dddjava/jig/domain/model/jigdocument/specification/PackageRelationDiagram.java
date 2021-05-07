@@ -3,7 +3,10 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.*;
-import org.dddjava.jig.domain.model.parts.package_.*;
+import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.package_.PackageIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.packages.BidirectionalRelation;
@@ -201,7 +204,7 @@ public class PackageRelationDiagram {
         }
 
         private String label(PackageIdentifier packageIdentifier) {
-            String labelText = packageIdentifier.format(packageIdentifierFormatter);
+            String labelText = packageIdentifierFormatter.format(packageIdentifier);
             return addAliasIfExists(packageIdentifier, labelText);
         }
 

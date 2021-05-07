@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifierFormatter;
+import org.dddjava.jig.domain.model.jigdocument.stationery.PackageIdentifierFormatter;
 
 public class CoreDomainDiagram {
 

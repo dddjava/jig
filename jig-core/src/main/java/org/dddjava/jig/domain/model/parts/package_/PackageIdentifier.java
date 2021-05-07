@@ -28,10 +28,6 @@ public class PackageIdentifier {
         return new PackageDepth(value.split("\\.").length);
     }
 
-    public String format(PackageIdentifierFormatter formatter) {
-        return formatter.format(value);
-    }
-
     public static PackageIdentifier defaultPackage() {
         return new PackageIdentifier("(default)");
     }

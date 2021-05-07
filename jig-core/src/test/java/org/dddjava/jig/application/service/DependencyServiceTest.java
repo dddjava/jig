@@ -22,7 +22,7 @@ public class DependencyServiceTest {
 
         // パッケージのリストアップ
         List<String> packageNames = packageRelationDiagram.allPackages().list().stream()
-                .map(packageIdentifier -> packageIdentifier.format(value -> value))
+                .map(packageIdentifier -> packageIdentifier.asText())
                 .collect(Collectors.toList());
         assertThat(packageNames)
                 .containsExactlyInAnyOrder(
@@ -48,7 +48,7 @@ public class DependencyServiceTest {
                 .extracting(dependency -> {
                     PackageIdentifier from = dependency.from();
                     PackageIdentifier to = dependency.to();
-                    return from.format(value -> value) + " -> " + to.format(value -> value);
+                    return from.asText() + " -> " + to.asText();
                 })
                 .containsExactlyInAnyOrder(
                         "stub.domain.model -> stub.domain.model.relation.annotation",

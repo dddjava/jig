@@ -68,15 +68,17 @@ class CliConfig {
     }
 
     Configuration configuration() {
-        JigProperties properties = new JigProperties(
-                jigDocuments(),
-                new OutputOmitPrefix(outputOmitPrefix),
-                modelPattern,
-                new LinkPrefix(linkPrefix),
-                Paths.get(this.outputDirectory),
-                JigDiagramFormat.SVG
+        return new Configuration(
+                new JigProperties(
+                        jigDocuments(),
+                        new OutputOmitPrefix(outputOmitPrefix),
+                        modelPattern,
+                        new LinkPrefix(linkPrefix),
+                        Paths.get(this.outputDirectory),
+                        JigDiagramFormat.SVG
+                ),
+                new SourceCodeAliasReader(new JavaparserAliasReader())
         );
-        return new Configuration(properties, new SourceCodeAliasReader(new JavaparserAliasReader()));
     }
 
     SourcePaths rawSourceLocations() {

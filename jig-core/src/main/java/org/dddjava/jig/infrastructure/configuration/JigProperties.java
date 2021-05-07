@@ -15,17 +15,21 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class JigProperties {
-
     List<JigDocument> jigDocuments;
+
     OutputOmitPrefix outputOmitPrefix;
     String businessRulePattern;
-
     LinkPrefix linkPrefix;
 
     Path outputDirectory;
     JigDiagramFormat outputDiagramFormat;
 
-    public JigProperties(List<JigDocument> jigDocuments, OutputOmitPrefix outputOmitPrefix, String businessRulePattern, LinkPrefix linkPrefix, Path outputDirectory, JigDiagramFormat outputDiagramFormat) {
+    public JigProperties(List<JigDocument> jigDocuments,
+                         OutputOmitPrefix outputOmitPrefix,
+                         String businessRulePattern,
+                         LinkPrefix linkPrefix,
+                         Path outputDirectory,
+                         JigDiagramFormat outputDiagramFormat) {
         this.jigDocuments = jigDocuments;
         this.outputOmitPrefix = outputOmitPrefix;
 
@@ -36,7 +40,7 @@ public class JigProperties {
         this.outputDiagramFormat = outputDiagramFormat;
     }
 
-    public static JigProperties defaultInstance() {
+    static JigProperties defaultInstance() {
         JigProperties jigProperties = new JigProperties(
                 JigDocument.canonical(),
                 new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),

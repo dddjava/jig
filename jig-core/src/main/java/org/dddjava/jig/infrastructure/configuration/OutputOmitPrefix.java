@@ -7,12 +7,7 @@ public class OutputOmitPrefix {
         this.pattern = pattern;
     }
 
-    public OutputOmitPrefix() {
-        this(".+\\.(service|domain\\.(model|basic))\\.");
-    }
-
     public String format(String fullQualifiedName) {
         return fullQualifiedName.replaceFirst(pattern, "");
     }
-
 }

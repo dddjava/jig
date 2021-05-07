@@ -21,7 +21,7 @@ public enum JigDocument {
             "business-rule", JigDocumentType.LIST),
 
     /**
-     * パッケージ関連ダイアグラム
+     * パッケージ関連図
      *
      * ビジネスルールのパッケージ関連を可視化する。
      * トップレベルからの階層(depth)で丸めて複数出力される。
@@ -32,11 +32,11 @@ public enum JigDocument {
             "package-relation", JigDocumentType.DIAGRAM),
 
     /**
-     * ビジネスルール関連ダイアグラム
+     * ビジネスルール関連図
      *
      * ビジネスルール間の関連を可視化する。
      * クラス名と依存線のみのクラス図。ある程度以上の規模になると大きくなりすぎて使いづらくなる。
-     * パッケージ関連ダイアグラムで把握できない場合の補助に使用する。
+     * パッケージ関連図で把握できない場合の補助に使用する。
      */
     BusinessRuleRelationDiagram(
             JigDocumentLabel.of("ビジネスルール関連図", "BusinessRuleRelationDiagram"),
@@ -49,7 +49,7 @@ public enum JigDocument {
             "business-rule-core", JigDocumentType.DIAGRAM),
 
     /**
-     * 区分ダイアグラム
+     * 区分図
      *
      * 区分と区分値を可視化する。
      * 区分の充実はドメインの把握具合と密接に関わる。
@@ -59,7 +59,7 @@ public enum JigDocument {
             "category", JigDocumentType.DIAGRAM),
 
     /**
-     * 区分使用ダイアグラム
+     * 区分使用図
      *
      * 区分を使用しているクラスを可視化する。
      */
@@ -81,7 +81,7 @@ public enum JigDocument {
             "application", JigDocumentType.LIST),
 
     /**
-     * サービスメソッド呼び出しダイアグラム
+     * サービスメソッド呼び出し図
      *
      * サービスクラスのメソッド呼び出しを可視化する。
      */
@@ -97,7 +97,7 @@ public enum JigDocument {
             "composite-usecase", JigDocumentType.DIAGRAM),
 
     /**
-     * アーキテクチャダイアグラム
+     * アーキテクチャ図
      */
     ArchitectureDiagram(
             JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),

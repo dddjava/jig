@@ -38,7 +38,7 @@ jig {
     modelPattern = '.+'
     // パッケージ関連図とビジネスルール一覧のみ出力する
     documentTypes = ['PackageRelationDiagram', 'BusinessRuleList']
-    // ダイアグラムのリンクのprefix: ダイアグラムのクラスなどからソースコードにリンクする（SVG限定）
+    // 図のリンクのprefix: ダイアグラムのクラスなどからソースコードにリンクする（SVG限定）
     linkPrefix = "https://github.com/dddjava/jig/tree/master/jig-core/src/main/java"
 }
 ```

@@ -17,7 +17,7 @@ public class VerifyJigEnvironmentTask extends DefaultTask {
             logger.warn("-- JIG ERROR -----------------------------------------------");
             logger.warn("+ 実行可能なGraphvizが見つけられませんでした。");
             logger.warn("+ dotにPATHが通っているか確認してください。");
-            logger.warn("+ JIGはダイアグラムの出力にGraphvizを使用しています。");
+            logger.warn("+ JIGは図の出力にGraphvizを使用しています。");
             logger.warn("+ ");
             logger.warn("+ Graphvizは以下から入手できます。");
             logger.warn("+     https://www.graphviz.org/");

@@ -17,13 +17,14 @@ import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelations;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * パッケージ関連図
  *
  * 浅い階層は仕様記述、深い階層は実装に使用します。
  */
-public class PackageRelationDiagram {
+public class PackageRelationDiagram implements DiagramSourceWriter {
 
     PackageIdentifiers packageIdentifiers;
     PackageRelations packageRelations;
@@ -182,6 +183,18 @@ public class PackageRelationDiagram {
             }
         }
         return sj.toString();
+    }
+
+    @Override
+    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+        List<PackageDepth> depths = maxDepth().surfaceList();
+
+        List<DiagramSource> diagramSources = depths.stream()
+                .map(this::applyDepth)
+                .map(packageRelationDiagram -> packageRelationDiagram.dependencyDotText(jigDocumentContext))
+                .filter(diagramSource -> !diagramSource.noValue())
+                .collect(toList());
+        return DiagramSource.createDiagramSource(diagramSources);
     }
 
     static class Labeler {

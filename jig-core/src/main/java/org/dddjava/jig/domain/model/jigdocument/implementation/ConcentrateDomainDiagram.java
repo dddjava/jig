@@ -2,10 +2,7 @@ package org.dddjava.jig.domain.model.jigdocument.implementation;
 
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
-import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigdocument.stationery.Node;
+import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
@@ -19,7 +16,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-public class ConcentrateDomainDiagram {
+public class ConcentrateDomainDiagram implements DiagramSourceWriter {
 
     BusinessRules businessRules;
 

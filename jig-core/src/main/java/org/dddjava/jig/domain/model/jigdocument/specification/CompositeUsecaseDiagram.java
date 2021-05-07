@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.jigdocument.specification;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * ユースケース複合図
  */
-public class CompositeUsecaseDiagram {
+public class CompositeUsecaseDiagram implements DiagramSourceWriter {
 
     private final List<CompositeUsecases> list;
 

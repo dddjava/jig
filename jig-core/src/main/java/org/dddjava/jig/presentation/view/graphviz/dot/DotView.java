@@ -3,29 +3,36 @@ package org.dddjava.jig.presentation.view.graphviz.dot;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.jigdocument.stationery.AdditionalText;
+import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
+import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
-import org.dddjava.jig.presentation.view.graphviz.DiagramSourceEditor;
 
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 
 public class DotView implements JigView {
 
-    DiagramSourceEditor editor;
     JigDiagramFormat diagramFormat;
     DotCommandRunner dotCommandRunner;
+    JigDocumentContext jigDocumentContext;
 
-    public DotView(DiagramSourceEditor editor, JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner) {
-        this.editor = editor;
+    public DotView(JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
         this.diagramFormat = diagramFormat;
         this.dotCommandRunner = dotCommandRunner;
+        this.jigDocumentContext = jigDocumentContext;
     }
 
     @Override
     public void render(Object model, JigDocumentWriter jigDocumentWriter) {
-        DiagramSources diagramSources = editor.edit(model);
+        if (!(model instanceof DiagramSourceWriter)) {
+            throw new RuntimeException("実装ミス");
+        }
+        DiagramSourceWriter sourceWriter = (DiagramSourceWriter) model;
+
+        DiagramSources diagramSources = sourceWriter.sources(jigDocumentContext);
+        // editor.edit(model);
 
         if (diagramSources.noEntity()) {
             jigDocumentWriter.markSkip();

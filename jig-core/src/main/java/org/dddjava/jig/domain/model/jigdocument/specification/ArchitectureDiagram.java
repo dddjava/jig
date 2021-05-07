@@ -14,7 +14,7 @@ import java.util.function.Function;
 /**
  * アーキテクチャ図
  */
-public class ArchitectureDiagram {
+public class ArchitectureDiagram implements DiagramSourceWriter {
 
     PackageBasedArchitecture packageBasedArchitecture;
     ClassRelations classRelations;

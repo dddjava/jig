@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.toMap;
 /**
  * 区分の切り口一覧
  */
-public class Categories {
+public class Categories implements DiagramSourceWriter {
 
     List<CategoryAngle> list;
 

@@ -18,7 +18,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * サービスメソッド呼び出し図
  */
-public class ServiceMethodCallHierarchyDiagram {
+public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
     ServiceAngles serviceAngles;
 

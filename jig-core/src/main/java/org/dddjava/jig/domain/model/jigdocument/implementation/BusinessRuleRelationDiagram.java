@@ -16,7 +16,7 @@ import java.util.StringJoiner;
 /**
  * ビジネスルールの関連
  */
-public class BusinessRuleRelationDiagram {
+public class BusinessRuleRelationDiagram implements DiagramSourceWriter {
 
     BusinessRules businessRules;
 

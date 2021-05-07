@@ -19,7 +19,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * 区分使用図
  */
-public class CategoryUsageDiagram {
+public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     ServiceMethods serviceMethods;
     BusinessRules businessRules;

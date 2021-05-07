@@ -38,11 +38,8 @@ public class JigConfig {
     public JigProperties asProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                new OutputOmitPrefix(outputOmitPrefix),
-                modelPattern,
-                new LinkPrefix(linkPrefix),
-                resolveOutputDirectory(project),
-                JigDiagramFormat.SVG
+                modelPattern, resolveOutputDirectory(project), JigDiagramFormat.SVG, new OutputOmitPrefix(outputOmitPrefix),
+                new LinkPrefix(linkPrefix)
         );
     }
 

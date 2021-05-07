@@ -18,7 +18,7 @@ public class PropertyArchitectureFactory {
 
     public Architecture architecture() {
         Pattern compilerGeneratedClassPattern = Pattern.compile(".+\\$\\d+");
-        Pattern businessRulePattern = Pattern.compile(jigProperties.getBusinessRulePattern());
+        Pattern businessRulePattern = Pattern.compile(jigProperties.getDomainPattern());
 
         return new Architecture() {
 

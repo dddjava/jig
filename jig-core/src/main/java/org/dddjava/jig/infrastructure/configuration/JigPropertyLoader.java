@@ -93,7 +93,7 @@ public class JigPropertyLoader {
                 jigProperties.outputDiagramFormat = JigDiagramFormat.valueOf(value.toUpperCase(Locale.ENGLISH));
                 break;
             case PATTERN_DOMAIN:
-                jigProperties.businessRulePattern = value;
+                jigProperties.domainPattern = value;
                 break;
             case LINK_PREFIX:
                 jigProperties.linkPrefix = new LinkPrefix(value);

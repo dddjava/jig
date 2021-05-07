@@ -71,11 +71,8 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        new OutputOmitPrefix(outputOmitPrefix),
-                        modelPattern,
-                        new LinkPrefix(linkPrefix),
-                        Paths.get(this.outputDirectory),
-                        JigDiagramFormat.SVG
+                        modelPattern, Paths.get(this.outputDirectory), JigDiagramFormat.SVG, new OutputOmitPrefix(outputOmitPrefix),
+                        new LinkPrefix(linkPrefix)
                 ),
                 new SourceCodeAliasReader(new JavaparserAliasReader())
         );

@@ -21,7 +21,7 @@ class JigDocumentHandlersTest {
     @EnumSource(value = JigDocument.class, mode = EnumSource.Mode.EXCLUDE, names = "Summary")
     void diagrams(JigDocument jigDocument, @TempDir Path temp) throws IOException {
         Configuration configuration = new Configuration(
-                new JigProperties(JigDocument.canonical(), new OutputOmitPrefix(""), "", LinkPrefix.disable(), temp, null),
+                new JigProperties(JigDocument.canonical(), "", temp, null, new OutputOmitPrefix(""), LinkPrefix.disable()),
                 new SourceCodeAliasReader(null)
         );
 

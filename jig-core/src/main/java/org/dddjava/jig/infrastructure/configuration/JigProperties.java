@@ -14,26 +14,63 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * 実行時に設定するプロパティ。
+ */
 public class JigProperties {
-    List<JigDocument> jigDocuments;
-
-    OutputOmitPrefix outputOmitPrefix;
-    String businessRulePattern;
-    LinkPrefix linkPrefix;
-
+    /** 主要: ドメイン（主として扱うクラス名）のパターン */
+    String domainPattern;
+    /** 主要: ドキュメントの出力先ディレクトリ */
     Path outputDirectory;
+
+    /** 図の出力形式 */
     JigDiagramFormat outputDiagramFormat;
 
+    /**
+     * 出力対象となるJigDocumentのリスト。
+     * 全部出ると邪魔／時間がかかる時に指定。
+     */
+    List<JigDocument> jigDocuments;
+
+    /**
+     * 図の出力時に出力を抑止する冗長な部分。
+     * TODO 廃止予定。指定しなくても導出できると思われる。
+     */
+    OutputOmitPrefix outputOmitPrefix;
+
+    /**
+     * 実験的: 図のノードからリンクする場合に使用。
+     * SVGの限定かつうまく使うのが難しいのでなくすかもしれない。
+     */
+    LinkPrefix linkPrefix;
+
+    /**
+     * 最小のコンストラクタ。あまり変更しない。
+     */
+    public JigProperties(List<JigDocument> jigDocuments, String domainPattern, Path outputDirectory) {
+        this(
+                jigDocuments,
+                domainPattern,
+                outputDirectory,
+                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue()),
+                new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),
+                LinkPrefix.disable()
+        );
+    }
+
+    /**
+     * 実験的な項目も含むコンストラクタ。よく変わる。
+     */
     public JigProperties(List<JigDocument> jigDocuments,
-                         OutputOmitPrefix outputOmitPrefix,
-                         String businessRulePattern,
-                         LinkPrefix linkPrefix,
+                         String domainPattern,
                          Path outputDirectory,
-                         JigDiagramFormat outputDiagramFormat) {
+                         JigDiagramFormat outputDiagramFormat,
+                         OutputOmitPrefix outputOmitPrefix,
+                         LinkPrefix linkPrefix) {
         this.jigDocuments = jigDocuments;
         this.outputOmitPrefix = outputOmitPrefix;
 
-        this.businessRulePattern = businessRulePattern;
+        this.domainPattern = domainPattern;
         this.linkPrefix = linkPrefix;
 
         this.outputDirectory = outputDirectory;
@@ -41,23 +78,15 @@ public class JigProperties {
     }
 
     static JigProperties defaultInstance() {
-        JigProperties jigProperties = new JigProperties(
-                JigDocument.canonical(),
-                new OutputOmitPrefix(JigProperty.OMIT_PREFIX.defaultValue()),
-                JigProperty.PATTERN_DOMAIN.defaultValue(),
-                LinkPrefix.disable(),
-                Paths.get(JigProperty.OUTPUT_DIRECTORY.defaultValue()),
-                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue())
-        );
-        return jigProperties;
+        return new JigProperties(JigDocument.canonical(), JigProperty.PATTERN_DOMAIN.defaultValue(), Paths.get(JigProperty.OUTPUT_DIRECTORY.defaultValue()));
     }
 
     public OutputOmitPrefix getOutputOmitPrefix() {
         return outputOmitPrefix;
     }
 
-    public String getBusinessRulePattern() {
-        return businessRulePattern;
+    public String getDomainPattern() {
+        return domainPattern;
     }
 
     public LinkPrefix linkPrefix() {
@@ -118,7 +147,7 @@ public class JigProperties {
     public String toString() {
         return "JigProperties{" +
                 "outputOmitPrefix=" + outputOmitPrefix +
-                ", businessRulePattern='" + businessRulePattern + '\'' +
+                ", businessRulePattern='" + domainPattern + '\'' +
                 ", linkPrefix=" + linkPrefix +
                 ", outputDirectory=" + outputDirectory +
                 ", outputDiagramFormat=" + outputDiagramFormat +

@@ -25,15 +25,18 @@ import java.util.StringJoiner;
 
 @Component
 class KotlinCliConfig {
-    @Value("${documentType:}")
+    @Value("${jig.document.types:}")
     String documentTypeText;
-    @Value("${outputDirectory}")
-    String outputDirectory;
-
-    @Value("${output.omit.prefix}")
-    String outputOmitPrefix;
-    @Value("${jig.model.pattern}")
+    @Value("${jig.pattern.domain:}")
     String modelPattern;
+    @Value("${jig.output.directory}")
+    String outputDirectory;
+    @Value("${jig.output.diagram.format:svg}")
+    JigDiagramFormat diagramFormat;
+    @Value("${jig.omit.prefix}")
+    String outputOmitPrefix;
+    @Value("${jig.link.prefix:" + LinkPrefix.DISABLE + "}")
+    String linkPrefix;
 
     @Value("${project.path}")
     String projectPath;
@@ -44,15 +47,14 @@ class KotlinCliConfig {
     @Value("${directory.sources}")
     String directorySources;
 
-    @Value("${linkPrefix:" + LinkPrefix.DISABLE + "}")
-    String linkPrefix;
-
     public String propertiesText() {
         return new StringJoiner("\n")
-                .add("documentType=" + documentTypeText)
-                .add("outputDirectory=" + outputDirectory)
-                .add("output.omit.prefix=" + outputOmitPrefix)
-                .add("jig.model.pattern=" + modelPattern)
+                .add("jig.document.types=" + documentTypeText)
+                .add("jig.pattern.domain=" + modelPattern)
+                .add("jig.output.directory=" + outputDirectory)
+                .add("jig.output.diagram.format=" + diagramFormat)
+                .add("jig.omit.prefix=" + outputOmitPrefix)
+                .add("jig.link.prefix=" + linkPrefix)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
@@ -76,7 +78,7 @@ class KotlinCliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory), JigDiagramFormat.SVG, new OutputOmitPrefix(outputOmitPrefix),
+                        modelPattern, Paths.get(this.outputDirectory), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
                         new LinkPrefix(linkPrefix)
                 ),
                 new SourceCodeAliasReader(new JavaparserAliasReader(), new KotlinSdkAliasReader())

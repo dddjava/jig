@@ -9,12 +9,10 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 public class DatasourceMethod {
     JigMethod repositoryMethod;
     JigMethod concreteMethod;
-    MethodDeclarations usingMethods;
 
-    public DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod, MethodDeclarations usingMethods) {
+    public DatasourceMethod(JigMethod repositoryMethod, JigMethod concreteMethod) {
         this.repositoryMethod = repositoryMethod;
         this.concreteMethod = concreteMethod;
-        this.usingMethods = usingMethods;
     }
 
     public JigMethod repositoryMethod() {
@@ -26,6 +24,6 @@ public class DatasourceMethod {
     }
 
     public MethodDeclarations usingMethods() {
-        return usingMethods;
+        return concreteMethod().usingMethods().methodDeclarations();
     }
 }

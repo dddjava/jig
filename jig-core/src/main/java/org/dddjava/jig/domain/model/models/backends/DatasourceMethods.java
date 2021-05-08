@@ -44,9 +44,7 @@ public class DatasourceMethods {
                     implJigType.instanceMember().instanceMethods().list().stream()
                             // シグネチャが一致するもの
                             .filter(implJigMethod -> interfaceJigMethod.declaration().methodSignature().isSame(implJigMethod.declaration().methodSignature()))
-                            .map(implJigMethod -> new DatasourceMethod(interfaceJigMethod, implJigMethod,
-                                    // TODO 渡さなくていいはず
-                                    implJigMethod.usingMethods().methodDeclarations()))
+                            .map(implJigMethod -> new DatasourceMethod(interfaceJigMethod, implJigMethod))
                             .forEach(datasourceMethod -> list.add(datasourceMethod));
                 }
             }

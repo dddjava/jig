@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;

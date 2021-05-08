@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.models.jigobject.member;
 
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.class_.method.*;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.classes.method.*;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.relation.packages;
 
-import org.dddjava.jig.domain.model.parts.package_.PackageDepth;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifiers;
+import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.ArrayList;

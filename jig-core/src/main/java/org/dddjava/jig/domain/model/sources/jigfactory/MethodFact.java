@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.method.*;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.*;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
 

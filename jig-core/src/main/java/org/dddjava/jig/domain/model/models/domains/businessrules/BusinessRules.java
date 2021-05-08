@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.models.domains.businessrules;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 

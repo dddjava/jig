@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.package_.PackageComment;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.springframework.stereotype.Repository;
 

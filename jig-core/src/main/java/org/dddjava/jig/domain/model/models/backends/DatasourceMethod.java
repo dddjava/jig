@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.models.backends;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 
 /**
  * データソースの構造

@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.List;
 

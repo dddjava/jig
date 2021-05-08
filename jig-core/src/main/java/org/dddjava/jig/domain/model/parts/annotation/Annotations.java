@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.annotation;
 
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.Node;
 import org.dddjava.jig.domain.model.jigdocument.stationery.Nodes;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngle;
 import org.dddjava.jig.domain.model.models.applications.Usecase;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.HashSet;
 import java.util.List;

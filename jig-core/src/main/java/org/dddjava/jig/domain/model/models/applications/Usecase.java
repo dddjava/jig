@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.models.applications;
 
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.Optional;

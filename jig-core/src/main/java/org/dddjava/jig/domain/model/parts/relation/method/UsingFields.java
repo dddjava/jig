@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
-import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 /**
  * 使用フィールド一覧

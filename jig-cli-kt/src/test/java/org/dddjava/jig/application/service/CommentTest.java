@@ -1,11 +1,11 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.class_.method.Arguments;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.Arguments;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;

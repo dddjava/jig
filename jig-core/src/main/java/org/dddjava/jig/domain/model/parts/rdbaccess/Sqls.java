@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.parts.rdbaccess;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 
 import java.util.Collections;
 import java.util.List;

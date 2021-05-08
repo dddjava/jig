@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigdocument.stationery;
 
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 /**
  * パッケージ識別子のフォーマッタ

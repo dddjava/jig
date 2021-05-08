@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.models.domains.validations;
 import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 /**
  * バリデーションアノテーションのついたメンバ

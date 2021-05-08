@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

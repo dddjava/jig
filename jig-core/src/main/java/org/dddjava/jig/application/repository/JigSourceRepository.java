@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.repository;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.package_.PackageComment;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 

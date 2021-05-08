@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.jigdocument.stationery.*;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.*;

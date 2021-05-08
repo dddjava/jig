@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.models.domains.categories;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
-import static org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifiers.collector;
+import static org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers.collector;
 
 /**
  * 区分一覧

@@ -5,12 +5,12 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.class_.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodComment;
-import org.dddjava.jig.domain.model.parts.class_.method.Visibility;
-import org.dddjava.jig.domain.model.parts.class_.type.*;
+import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
+import org.dddjava.jig.domain.model.parts.classes.type.*;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.ArrayList;

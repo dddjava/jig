@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 
 /**
  * 使用しているメソッド一覧

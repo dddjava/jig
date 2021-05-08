@@ -2,11 +2,11 @@ package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.class_.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.class_.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;

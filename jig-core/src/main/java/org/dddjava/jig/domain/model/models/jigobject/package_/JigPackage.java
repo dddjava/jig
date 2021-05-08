@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.models.jigobject.package_;
 
-import org.dddjava.jig.domain.model.parts.package_.PackageComment;
-import org.dddjava.jig.domain.model.parts.package_.PackageIdentifier;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 public class JigPackage {
     PackageIdentifier packageIdentifier;

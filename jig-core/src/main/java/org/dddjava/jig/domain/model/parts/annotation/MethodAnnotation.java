@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.parts.annotation;
 
-import org.dddjava.jig.domain.model.parts.class_.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.class_.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 /**
  * メソッドにつけられたアノテーション

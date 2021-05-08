@@ -41,7 +41,7 @@ public class TypeFacts {
             return methodRelations;
         }
         List<MethodRelation> collector = new ArrayList<>();
-        for (JigTypeBuilder jigTypeBuilder : list()) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
             for (JigMethodBuilder jigMethodBuilder : jigTypeBuilder.allMethodFacts()) {
                 jigMethodBuilder.collectUsingMethodRelations(collector);
             }
@@ -54,14 +54,10 @@ public class TypeFacts {
             return classRelations;
         }
         List<ClassRelation> collector = new ArrayList<>();
-        for (JigTypeBuilder jigTypeBuilder : list()) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
             jigTypeBuilder.collectClassRelations(collector);
         }
         return classRelations = new ClassRelations(collector);
-    }
-
-    public List<JigTypeBuilder> list() {
-        return list;
     }
 
     public void registerPackageAlias(PackageComment packageComment) {

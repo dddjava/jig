@@ -3,6 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.Arguments;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -71,7 +73,8 @@ public class CommentTest {
         JigMethod method = jigMethods.resolveMethodBySignature(new MethodSignature("simpleMethod"));
         assertEquals("メソッドのドキュメント", method.aliasTextOrBlank());
 
-        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)));
+        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(
+                new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
         JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));

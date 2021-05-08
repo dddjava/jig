@@ -1,16 +1,16 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
-import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 

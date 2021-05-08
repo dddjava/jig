@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
@@ -13,7 +12,6 @@ import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -64,12 +62,6 @@ public class TypeFacts {
 
     public List<JigTypeBuilder> list() {
         return list;
-    }
-
-    private Optional<JigTypeBuilder> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
-                .findAny();
     }
 
     public void registerPackageAlias(PackageComment packageComment) {

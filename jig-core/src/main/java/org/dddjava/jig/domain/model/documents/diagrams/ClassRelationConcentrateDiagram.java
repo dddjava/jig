@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-public class ConcentrateDomainDiagram implements DiagramSourceWriter {
+public class ClassRelationConcentrateDiagram implements DiagramSourceWriter {
 
     BusinessRules businessRules;
 
-    public ConcentrateDomainDiagram(BusinessRules businessRules) {
+    public ClassRelationConcentrateDiagram(BusinessRules businessRules) {
         this.businessRules = businessRules;
     }
 

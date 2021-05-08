@@ -31,18 +31,18 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.BusinessRuleRelationDiagram)
-    public BusinessRuleRelationDiagram businessRuleRelation() {
-        return new BusinessRuleRelationDiagram(dependencyService.businessRules());
+    public ClassRelationDiagram businessRuleRelation() {
+        return new ClassRelationDiagram(dependencyService.businessRules());
     }
 
     @DocumentMapping(JigDocument.CoreBusinessRuleRelationDiagram)
-    public CoreDomainDiagram coreBusinessRuleRelation() {
-        return new CoreDomainDiagram(new BusinessRuleRelationDiagram(dependencyService.businessRules()));
+    public ClassRelationCoreDiagram coreBusinessRuleRelation() {
+        return new ClassRelationCoreDiagram(new ClassRelationDiagram(dependencyService.businessRules()));
     }
 
     @DocumentMapping(JigDocument.OverconcentrationBusinessRuleDiagram)
-    public ConcentrateDomainDiagram overconcentrationBusinessRuleRelation() {
-        return new ConcentrateDomainDiagram(dependencyService.businessRules());
+    public ClassRelationConcentrateDiagram overconcentrationBusinessRuleRelation() {
+        return new ClassRelationConcentrateDiagram(dependencyService.businessRules());
     }
 
     @DocumentMapping(JigDocument.CategoryUsageDiagram)

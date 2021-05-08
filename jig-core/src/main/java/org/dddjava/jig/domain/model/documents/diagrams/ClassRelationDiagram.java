@@ -16,11 +16,11 @@ import java.util.StringJoiner;
 /**
  * ビジネスルールの関連
  */
-public class BusinessRuleRelationDiagram implements DiagramSourceWriter {
+public class ClassRelationDiagram implements DiagramSourceWriter {
 
     BusinessRules businessRules;
 
-    public BusinessRuleRelationDiagram(BusinessRules businessRules) {
+    public ClassRelationDiagram(BusinessRules businessRules) {
         this.businessRules = businessRules;
     }
 

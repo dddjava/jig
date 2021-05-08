@@ -6,18 +6,18 @@ import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
-public class CoreDomainDiagram implements DiagramSourceWriter {
+public class ClassRelationCoreDiagram implements DiagramSourceWriter {
 
-    BusinessRuleRelationDiagram businessRuleRelationDiagram;
+    ClassRelationDiagram classRelationDiagram;
 
-    public CoreDomainDiagram(BusinessRuleRelationDiagram businessRuleRelationDiagram) {
-        this.businessRuleRelationDiagram = businessRuleRelationDiagram;
+    public ClassRelationCoreDiagram(ClassRelationDiagram classRelationDiagram) {
+        this.classRelationDiagram = classRelationDiagram;
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        return businessRuleRelationDiagram.sources(
+        return classRelationDiagram.sources(
                 jigDocumentContext,
-                businessRuleRelationDiagram.businessRules.filterCore(),
+                classRelationDiagram.businessRules.filterCore(),
                 DocumentName.of(JigDocument.CoreBusinessRuleRelationDiagram));
     }
 }

@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class PlainMethodBuilder {
     List<TypeIdentifier> throwsTypes;
     MethodDerivation methodDerivation;
 
-    List<MethodFact> methodFactCollector;
+    List<JigMethodBuilder> jigMethodBuilderCollector;
 
     List<Annotation> annotations = new ArrayList<>();
     List<FieldDeclaration> fieldInstructions = new ArrayList<>();
@@ -32,17 +32,17 @@ public class PlainMethodBuilder {
     boolean hasJudgeNull = false;
     boolean hasReferenceNull = false;
 
-    public PlainMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<MethodFact> methodFactCollector, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation) {
+    public PlainMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<JigMethodBuilder> jigMethodBuilderCollector, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation) {
         this.methodDeclaration = methodDeclaration;
         this.useTypes = useTypes;
         this.visibility = visibility;
-        this.methodFactCollector = methodFactCollector;
+        this.jigMethodBuilderCollector = jigMethodBuilderCollector;
         this.throwsTypes = throwsTypes;
         this.methodDerivation = methodDerivation;
     }
 
     public void buildAndCollect() {
-        MethodFact methodFact = new MethodFact(
+        JigMethodBuilder jigMethodBuilder = new JigMethodBuilder(
                 methodDeclaration, useTypes, visibility, methodDerivation,
                 annotations,
                 throwsTypes,
@@ -56,7 +56,7 @@ public class PlainMethodBuilder {
                 hasReferenceNull
         );
 
-        methodFactCollector.add(methodFact);
+        jigMethodBuilderCollector.add(jigMethodBuilder);
     }
 
     public void addAnnotation(Annotation annotation) {

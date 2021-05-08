@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -69,7 +69,7 @@ class AliasServiceTest {
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("method"))))
-                .map(MethodFact::createMethod)
+                .map(JigMethodBuilder::build)
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
@@ -77,7 +77,7 @@ class AliasServiceTest {
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)))))
-                .map(MethodFact::createMethod)
+                .map(JigMethodBuilder::build)
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
@@ -85,7 +85,7 @@ class AliasServiceTest {
                 .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
                         new TypeIdentifier(MethodJavadocStub.class),
                         new MethodSignature("overloadMethod"))))
-                .map(MethodFact::createMethod)
+                .map(JigMethodBuilder::build)
                 .findAny().orElseThrow(AssertionError::new);
         assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
     }

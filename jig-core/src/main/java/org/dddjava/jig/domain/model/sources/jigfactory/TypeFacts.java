@@ -26,9 +26,9 @@ import static java.util.stream.Collectors.toList;
  * 型の実装から読み取れること一覧
  */
 public class TypeFacts {
-    private final List<TypeFact> list;
+    private final List<JigTypeBuilder> list;
 
-    public TypeFacts(List<TypeFact> list) {
+    public TypeFacts(List<JigTypeBuilder> list) {
         this.list = list;
     }
 
@@ -39,15 +39,15 @@ public class TypeFacts {
 
     public JigTypes jigTypes() {
         if (jigTypes != null) return jigTypes;
-        jigTypes = new JigTypes(list.stream().map(TypeFact::jigType).collect(toList()));
+        jigTypes = new JigTypes(list.stream().map(JigTypeBuilder::build).collect(toList()));
         return jigTypes;
     }
 
     public BusinessRules toBusinessRules(Architecture architecture) {
         List<BusinessRule> list = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            if (architecture.isBusinessRule(typeFact)) {
-                list.add(new BusinessRule(typeFact.jigType()));
+        for (JigTypeBuilder jigTypeBuilder : list()) {
+            if (architecture.isBusinessRule(jigTypeBuilder)) {
+                list.add(new BusinessRule(jigTypeBuilder.build()));
             }
         }
         return new BusinessRules(list, toClassRelations());
@@ -55,18 +55,18 @@ public class TypeFacts {
 
     public DatasourceMethods createDatasourceMethods(Architecture architecture) {
         List<DatasourceMethod> list = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            if (architecture.isRepositoryImplementation(typeFact)) {
-                for (ParameterizedType interfaceType : typeFact.interfaceTypes()) {
+        for (JigTypeBuilder jigTypeBuilder : list()) {
+            if (architecture.isRepositoryImplementation(jigTypeBuilder)) {
+                for (ParameterizedType interfaceType : jigTypeBuilder.interfaceTypes()) {
                     TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
                     selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {
-                        for (MethodFact interfaceMethodFact : interfaceTypeFact.instanceMethodFacts()) {
-                            typeFact.instanceMethodFacts().stream()
-                                    .filter(datasourceMethodByteCode -> interfaceMethodFact.sameSignature(datasourceMethodByteCode))
+                        for (JigMethodBuilder interfaceJigMethodBuilder : interfaceTypeFact.instanceMethodFacts()) {
+                            jigTypeBuilder.instanceMethodFacts().stream()
+                                    .filter(datasourceMethodByteCode -> interfaceJigMethodBuilder.sameSignature(datasourceMethodByteCode))
                                     // 0 or 1
                                     .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                            interfaceMethodFact.createMethod(),
-                                            concreteMethodByteCode.createMethod(),
+                                            interfaceJigMethodBuilder.build(),
+                                            concreteMethodByteCode.build(),
                                             concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
                                     );
                         }
@@ -82,9 +82,9 @@ public class TypeFacts {
             return methodRelations;
         }
         List<MethodRelation> collector = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            for (MethodFact methodFact : typeFact.allMethodFacts()) {
-                methodFact.collectUsingMethodRelations(collector);
+        for (JigTypeBuilder jigTypeBuilder : list()) {
+            for (JigMethodBuilder jigMethodBuilder : jigTypeBuilder.allMethodFacts()) {
+                jigMethodBuilder.collectUsingMethodRelations(collector);
             }
         }
         return methodRelations = new MethodRelations(collector);
@@ -95,24 +95,24 @@ public class TypeFacts {
             return classRelations;
         }
         List<ClassRelation> collector = new ArrayList<>();
-        for (TypeFact typeFact : list()) {
-            typeFact.collectClassRelations(collector);
+        for (JigTypeBuilder jigTypeBuilder : list()) {
+            jigTypeBuilder.collectClassRelations(collector);
         }
         return classRelations = new ClassRelations(collector);
     }
 
-    public List<TypeFact> list() {
+    public List<JigTypeBuilder> list() {
         return list;
     }
 
-    public List<MethodFact> instanceMethodFacts() {
+    public List<JigMethodBuilder> instanceMethodFacts() {
         return list.stream()
-                .map(TypeFact::instanceMethodFacts)
+                .map(JigTypeBuilder::instanceMethodFacts)
                 .flatMap(List::stream)
                 .collect(toList());
     }
 
-    public Optional<TypeFact> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
+    public Optional<JigTypeBuilder> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
         return list.stream()
                 .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
                 .findAny();
@@ -123,9 +123,9 @@ public class TypeFacts {
     }
 
     public AliasRegisterResult registerTypeAlias(ClassComment classComment) {
-        for (TypeFact typeFact : list) {
-            if (typeFact.typeIdentifier().equals(classComment.typeIdentifier())) {
-                typeFact.registerTypeAlias(classComment);
+        for (JigTypeBuilder jigTypeBuilder : list) {
+            if (jigTypeBuilder.typeIdentifier().equals(classComment.typeIdentifier())) {
+                jigTypeBuilder.registerTypeAlias(classComment);
                 return AliasRegisterResult.成功;
             }
         }
@@ -134,10 +134,10 @@ public class TypeFacts {
     }
 
     public AliasRegisterResult registerMethodAlias(MethodComment methodComment) {
-        for (TypeFact typeFact : list) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
             MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
-            if (typeFact.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                return typeFact.registerMethodAlias(methodComment);
+            if (jigTypeBuilder.typeIdentifier().equals(methodIdentifier.declaringType())) {
+                return jigTypeBuilder.registerMethodAlias(methodComment);
             }
         }
 

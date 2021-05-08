@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
-import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
@@ -32,9 +32,9 @@ class PlainClassBuilder {
 
     List<Annotation> annotations = new ArrayList<>();
 
-    List<MethodFact> instanceMethodFacts = new ArrayList<>();
-    List<MethodFact> staticMethodFacts = new ArrayList<>();
-    List<MethodFact> constructorFacts = new ArrayList<>();
+    List<JigMethodBuilder> instanceJigMethodBuilders = new ArrayList<>();
+    List<JigMethodBuilder> staticJigMethodBuilders = new ArrayList<>();
+    List<JigMethodBuilder> constructorFacts = new ArrayList<>();
 
     List<JigField> instanceFields = new ArrayList<>();
 
@@ -46,11 +46,11 @@ class PlainClassBuilder {
         this.classSource = classSource;
     }
 
-    public TypeFact build() {
-        return new TypeFact(type, superType, interfaceTypes, typeKind, visibility,
+    public JigTypeBuilder build() {
+        return new JigTypeBuilder(type, superType, interfaceTypes, typeKind, visibility,
                 annotations,
-                instanceMethodFacts,
-                staticMethodFacts,
+                instanceJigMethodBuilders,
+                staticJigMethodBuilders,
                 constructorFacts,
                 instanceFields,
                 staticFieldDeclarations,
@@ -118,15 +118,15 @@ class PlainClassBuilder {
         MethodDeclaration methodDeclaration = new MethodDeclaration(type.typeIdentifier(), methodSignature, methodReturn);
 
         // 追加先のコレクションを判別
-        List<MethodFact> methodFactCollector = instanceMethodFacts;
+        List<JigMethodBuilder> jigMethodBuilderCollector = instanceJigMethodBuilders;
         if (methodDeclaration.isConstructor()) {
-            methodFactCollector = constructorFacts;
+            jigMethodBuilderCollector = constructorFacts;
         } else if ((access & Opcodes.ACC_STATIC) != 0) {
-            methodFactCollector = staticMethodFacts;
+            jigMethodBuilderCollector = staticJigMethodBuilders;
         }
 
         MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
-        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, methodFactCollector, throwsTypes, methodDerivation);
+        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, jigMethodBuilderCollector, throwsTypes, methodDerivation);
     }
 
     private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, int access) {

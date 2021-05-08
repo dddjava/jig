@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeParameters;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
@@ -39,17 +39,17 @@ class AsmClassVisitor extends ClassVisitor {
         return plainClassBuilder;
     }
 
-    TypeFact typeFact;
+    JigTypeBuilder jigTypeBuilder;
 
     @Override
     public void visitEnd() {
-        typeFact = plainClassBuilder.build();
+        jigTypeBuilder = plainClassBuilder.build();
         super.visitEnd();
     }
 
-    public TypeFact typeFact() {
+    public JigTypeBuilder typeFact() {
         // visitEnd後にしか呼んではいけない
-        return Objects.requireNonNull(typeFact);
+        return Objects.requireNonNull(jigTypeBuilder);
     }
 
     @Override

@@ -10,8 +10,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,9 +54,9 @@ public class AsmFactReaderTest {
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        TypeFact actual = exercise(Annotated.class);
+        JigTypeBuilder actual = exercise(Annotated.class);
 
-        JigFields jigFields = actual.jigType().instanceMember().instanceFields();
+        JigFields jigFields = actual.build().instanceMember().instanceFields();
 
         FieldAnnotation fieldAnnotation = jigFields.list().stream()
                 .filter(e -> e.fieldDeclaration().nameText().equals("field"))
@@ -83,11 +83,11 @@ public class AsmFactReaderTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        TypeFact actual = exercise(Annotated.class);
+        JigTypeBuilder actual = exercise(Annotated.class);
 
-        List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
-        MethodAnnotation methodAnnotation = instanceMethodFacts.stream()
-                .filter(e -> e.createMethod().declaration().asSignatureSimpleText().equals("method()"))
+        List<JigMethodBuilder> instanceJigMethodBuilders = actual.instanceMethodFacts();
+        MethodAnnotation methodAnnotation = instanceJigMethodBuilders.stream()
+                .filter(e -> e.build().declaration().asSignatureSimpleText().equals("method()"))
                 .flatMap(e -> e.annotatedMethods().list().stream())
                 // 今はアノテーション1つなのでこれでOK
                 .findFirst().orElseThrow(AssertionError::new);
@@ -107,7 +107,7 @@ public class AsmFactReaderTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        TypeFact actual = exercise(ClassDefinition.class);
+        JigTypeBuilder actual = exercise(ClassDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -133,7 +133,7 @@ public class AsmFactReaderTest {
 
     @Test
     void インタフェース定義に使用している型が取得できる() throws Exception {
-        TypeFact actual = exercise(InterfaceDefinition.class);
+        JigTypeBuilder actual = exercise(InterfaceDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -157,7 +157,7 @@ public class AsmFactReaderTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() throws Exception {
-        TypeFact actual = exercise(InterfaceDefinition.class);
+        JigTypeBuilder actual = exercise(InterfaceDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -166,11 +166,11 @@ public class AsmFactReaderTest {
                         new TypeIdentifier(String.class)
                 );
 
-        List<MethodFact> instanceMethodFacts = actual.instanceMethodFacts();
-        MethodFact methodFact = instanceMethodFacts.stream()
-                .filter(e -> e.createMethod().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
+        List<JigMethodBuilder> instanceJigMethodBuilders = actual.instanceMethodFacts();
+        JigMethodBuilder jigMethodBuilder = instanceJigMethodBuilders.stream()
+                .filter(e -> e.build().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
                 .findFirst().orElseThrow(AssertionError::new);
-        JigMethod method = methodFact.createMethod();
+        JigMethod method = jigMethodBuilder.build();
 
         MethodReturn methodReturn = method.declaration().methodReturn();
 
@@ -182,7 +182,7 @@ public class AsmFactReaderTest {
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        TypeFact actual = exercise(FieldDefinition.class);
+        JigTypeBuilder actual = exercise(FieldDefinition.class);
 
         FieldDeclarations fieldDeclarations = actual.fieldDeclarations();
         String fieldsText = fieldDeclarations.toSignatureText();
@@ -205,11 +205,11 @@ public class AsmFactReaderTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        TypeFact actual = exercise(DecisionClass.class);
+        JigTypeBuilder actual = exercise(DecisionClass.class);
 
-        List<MethodFact> methodFacts = actual.instanceMethodFacts();
+        List<JigMethodBuilder> jigMethodBuilders = actual.instanceMethodFacts();
 
-        assertThat(methodFacts)
+        assertThat(jigMethodBuilders)
                 .extracting(
                         methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
                         methodByteCode -> methodByteCode.decisionNumber().asText())
@@ -224,7 +224,7 @@ public class AsmFactReaderTest {
 
     @Test
     void enumで使用している型が取得できる() throws Exception {
-        TypeFact actual = exercise(EnumDefinition.class);
+        JigTypeBuilder actual = exercise(EnumDefinition.class);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -238,7 +238,7 @@ public class AsmFactReaderTest {
     @ParameterizedTest
     @MethodSource
     void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField) throws Exception {
-        TypeFact actual = exercise(clz);
+        JigTypeBuilder actual = exercise(clz);
 
         assertThat(actual)
                 .extracting(
@@ -260,7 +260,7 @@ public class AsmFactReaderTest {
                 Arguments.of(RichEnum.class, true, true));
     }
 
-    private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
+    private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();

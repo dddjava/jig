@@ -23,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * 型の実装から読み取れること
  */
-public class TypeFact {
+public class JigTypeBuilder {
 
     final ParameterizedType type;
 
@@ -35,9 +35,9 @@ public class TypeFact {
 
     final List<JigField> instanceFields;
 
-    final List<MethodFact> instanceMethodFacts;
-    final List<MethodFact> staticMethodFacts;
-    final List<MethodFact> constructorFacts;
+    final List<JigMethodBuilder> instanceJigMethodBuilders;
+    final List<JigMethodBuilder> staticJigMethodBuilders;
+    final List<JigMethodBuilder> constructorFacts;
 
     final List<TypeIdentifier> usingTypes;
 
@@ -48,23 +48,23 @@ public class TypeFact {
 
     ClassComment classComment;
 
-    public TypeFact(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes,
-                    TypeKind typeKind, Visibility visibility,
-                    List<Annotation> annotations,
-                    List<MethodFact> instanceMethodFacts,
-                    List<MethodFact> staticMethodFacts,
-                    List<MethodFact> constructorFacts,
-                    List<JigField> instanceFields,
-                    List<StaticFieldDeclaration> staticFieldDeclarations,
-                    List<TypeIdentifier> usingTypes) {
+    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes,
+                          TypeKind typeKind, Visibility visibility,
+                          List<Annotation> annotations,
+                          List<JigMethodBuilder> instanceJigMethodBuilders,
+                          List<JigMethodBuilder> staticJigMethodBuilders,
+                          List<JigMethodBuilder> constructorFacts,
+                          List<JigField> instanceFields,
+                          List<StaticFieldDeclaration> staticFieldDeclarations,
+                          List<TypeIdentifier> usingTypes) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
         this.typeKind = typeKind;
         this.visibility = visibility;
         this.annotations = annotations;
-        this.instanceMethodFacts = instanceMethodFacts;
-        this.staticMethodFacts = staticMethodFacts;
+        this.instanceJigMethodBuilders = instanceJigMethodBuilders;
+        this.staticJigMethodBuilders = staticJigMethodBuilders;
         this.constructorFacts = constructorFacts;
         this.instanceFields = instanceFields;
         this.staticFieldDeclarations = staticFieldDeclarations;
@@ -94,25 +94,25 @@ public class TypeFact {
     }
 
     public TypeIdentifiers useTypes() {
-        for (MethodFact methodFact : allMethodFacts()) {
-            useTypes.addAll(methodFact.methodDepend().collectUsingTypes());
+        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
+            useTypes.addAll(jigMethodBuilder.methodDepend().collectUsingTypes());
         }
 
         return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
-    public List<MethodFact> instanceMethodFacts() {
-        return instanceMethodFacts;
+    public List<JigMethodBuilder> instanceMethodFacts() {
+        return instanceJigMethodBuilders;
     }
 
     public List<Annotation> listAnnotations() {
         return annotations;
     }
 
-    public List<MethodFact> allMethodFacts() {
-        ArrayList<MethodFact> list = new ArrayList<>();
-        list.addAll(instanceMethodFacts);
-        list.addAll(staticMethodFacts);
+    public List<JigMethodBuilder> allMethodFacts() {
+        ArrayList<JigMethodBuilder> list = new ArrayList<>();
+        list.addAll(instanceJigMethodBuilders);
+        list.addAll(staticJigMethodBuilders);
         list.addAll(constructorFacts);
         return list;
     }
@@ -141,9 +141,9 @@ public class TypeFact {
 
     public AliasRegisterResult registerMethodAlias(MethodComment methodComment) {
         boolean registered = false;
-        for (MethodFact methodFact : allMethodFacts()) {
-            if (methodComment.isAliasFor(methodFact.methodIdentifier())) {
-                methodFact.registerMethodAlias(methodComment);
+        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
+            if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {
+                jigMethodBuilder.registerMethodAlias(methodComment);
                 registered = true;
             }
         }
@@ -152,19 +152,19 @@ public class TypeFact {
 
     JigType jigType;
 
-    public JigType jigType() {
+    public JigType build() {
         if (jigType != null) return jigType;
 
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
 
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
 
-        JigMethods constructors = new JigMethods(constructorFacts.stream().map(MethodFact::createMethod).collect(toList()));
-        JigMethods staticMethods = new JigMethods(staticMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods constructors = new JigMethods(constructorFacts.stream().map(JigMethodBuilder::build).collect(toList()));
+        JigMethods staticMethods = new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
         StaticFieldDeclarations staticFieldDeclarations = new StaticFieldDeclarations(this.staticFieldDeclarations);
         JigStaticMember jigStaticMember = new JigStaticMember(constructors, staticMethods, staticFieldDeclarations);
 
-        JigMethods instanceMethods = new JigMethods(instanceMethodFacts.stream().map(MethodFact::createMethod).collect(toList()));
+        JigMethods instanceMethods = new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
         JigInstanceMember jigInstanceMember = new JigInstanceMember(new JigFields(instanceFields), instanceMethods);
 
         jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember, usingTypes);

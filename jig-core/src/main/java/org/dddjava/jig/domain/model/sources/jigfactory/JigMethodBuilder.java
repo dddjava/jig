@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * メソッドの実装から読み取れること
  */
-public class MethodFact {
+public class JigMethodBuilder {
 
     MethodDeclaration methodDeclaration;
     Visibility visibility;
@@ -46,7 +46,7 @@ public class MethodFact {
 
     private MethodComment methodComment;
 
-    public MethodFact(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
+    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
@@ -78,11 +78,11 @@ public class MethodFact {
         this.methodComment = MethodComment.empty(methodDeclaration.identifier());
     }
 
-    public JigMethod createMethod() {
+    public JigMethod build() {
         return new JigMethod(
                 methodDeclaration,
                 methodComment,
-                judgeNull(),
+                hasJudgeNull,
                 decisionNumber(),
                 annotatedMethods(),
                 visibility,
@@ -105,12 +105,8 @@ public class MethodFact {
         return new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber);
     }
 
-    public boolean sameSignature(MethodFact other) {
+    public boolean sameSignature(JigMethodBuilder other) {
         return methodDeclaration.methodSignature().isSame(other.methodDeclaration.methodSignature());
-    }
-
-    public boolean judgeNull() {
-        return hasJudgeNull;
     }
 
     void collectUsingMethodRelations(List<MethodRelation> collector) {

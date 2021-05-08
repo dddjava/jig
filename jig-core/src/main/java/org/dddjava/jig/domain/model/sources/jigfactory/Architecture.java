@@ -5,7 +5,7 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
  */
 public interface Architecture {
 
-    boolean isRepositoryImplementation(TypeFact typeFact);
+    boolean isRepositoryImplementation(JigTypeBuilder jigTypeBuilder);
 
-    boolean isBusinessRule(TypeFact typeFact);
+    boolean isBusinessRule(JigTypeBuilder jigTypeBuilder);
 }

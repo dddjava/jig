@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
@@ -21,15 +21,15 @@ public class AsmFactReader implements FactReader {
 
     @Override
     public TypeFacts readTypeFacts(ClassSources classSources) {
-        List<TypeFact> list = new ArrayList<>();
+        List<JigTypeBuilder> list = new ArrayList<>();
         for (ClassSource source : classSources.list()) {
-            TypeFact typeFact = typeByteCode(source);
-            list.add(typeFact);
+            JigTypeBuilder jigTypeBuilder = typeByteCode(source);
+            list.add(jigTypeBuilder);
         }
         return new TypeFacts(list);
     }
 
-    TypeFact typeByteCode(ClassSource classSource) {
+    JigTypeBuilder typeByteCode(ClassSource classSource) {
         AsmClassVisitor asmClassVisitor = new AsmClassVisitor(classSource);
 
         ClassReader classReader = new ClassReader(classSource.value());

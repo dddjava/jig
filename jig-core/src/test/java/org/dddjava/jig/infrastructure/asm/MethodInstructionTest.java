@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -28,7 +28,7 @@ public class MethodInstructionTest {
     @ParameterizedTest
     @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
-        TypeFact actual = exercise(clz);
+        JigTypeBuilder actual = exercise(clz);
 
         TypeIdentifiers identifiers = actual.useTypes();
         assertThat(identifiers.list())
@@ -77,7 +77,7 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
-        TypeFact actual = exercise(MethodInstruction.class);
+        JigTypeBuilder actual = exercise(MethodInstruction.class);
 
         assertThat(actual.instanceMethodFacts())
                 .extracting(
@@ -90,7 +90,7 @@ public class MethodInstructionTest {
                 );
     }
 
-    private TypeFact exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
+    private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();

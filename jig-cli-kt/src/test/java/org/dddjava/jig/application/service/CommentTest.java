@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigfactory.MethodFact;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
@@ -66,7 +66,7 @@ public class CommentTest {
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        List<JigMethod> methods = typeFacts.instanceMethodFacts().stream().map(MethodFact::createMethod).collect(Collectors.toList());
+        List<JigMethod> methods = typeFacts.instanceMethodFacts().stream().map(JigMethodBuilder::build).collect(Collectors.toList());
 
         JigMethod simpleMethod = methods.stream()
                 .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(

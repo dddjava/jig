@@ -1,7 +1,5 @@
-package org.dddjava.jig.domain.model.documents.lists;
+package org.dddjava.jig.domain.model.models.domains.businessrules;
 
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 

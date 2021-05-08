@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.documents.lists;
+package org.dddjava.jig.domain.model.models.applications;
 
-import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;

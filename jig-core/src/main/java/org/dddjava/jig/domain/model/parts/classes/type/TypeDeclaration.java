@@ -28,4 +28,8 @@ public class TypeDeclaration {
         list.addAll(interfaceTypes.listTypeIdentifiers());
         return list;
     }
+
+    public ParameterizedTypes interfaceTypes() {
+        return interfaceTypes;
+    }
 }

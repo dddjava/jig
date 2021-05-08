@@ -13,7 +13,7 @@ public class ParameterizedTypes {
         this.list = list;
     }
 
-    List<TypeIdentifier> listTypeIdentifiers() {
+    public List<TypeIdentifier> listTypeIdentifiers() {
         return list.stream()
                 .flatMap(parameterizedType -> parameterizedType.listTypeIdentifiers().stream())
                 .collect(Collectors.toList());

@@ -1,14 +1,11 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.backends.DatasourceMethod;
-import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
@@ -53,30 +50,6 @@ public class TypeFacts {
         return new BusinessRules(list, toClassRelations());
     }
 
-    public DatasourceMethods createDatasourceMethods(Architecture architecture) {
-        List<DatasourceMethod> list = new ArrayList<>();
-        for (JigTypeBuilder jigTypeBuilder : list()) {
-            if (architecture.isRepositoryImplementation(jigTypeBuilder)) {
-                for (ParameterizedType interfaceType : jigTypeBuilder.interfaceTypes()) {
-                    TypeIdentifier interfaceTypeIdentifier = interfaceType.typeIdentifier();
-                    selectByTypeIdentifier(interfaceTypeIdentifier).ifPresent(interfaceTypeFact -> {
-                        for (JigMethodBuilder interfaceJigMethodBuilder : interfaceTypeFact.instanceMethodFacts()) {
-                            jigTypeBuilder.instanceMethodFacts().stream()
-                                    .filter(datasourceMethodByteCode -> interfaceJigMethodBuilder.sameSignature(datasourceMethodByteCode))
-                                    // 0 or 1
-                                    .forEach(concreteMethodByteCode -> list.add(new DatasourceMethod(
-                                            interfaceJigMethodBuilder.build(),
-                                            concreteMethodByteCode.build(),
-                                            concreteMethodByteCode.methodDepend().usingMethods().methodDeclarations()))
-                                    );
-                        }
-                    });
-                }
-            }
-        }
-        return new DatasourceMethods(list);
-    }
-
     public synchronized MethodRelations toMethodRelations() {
         if (methodRelations != null) {
             return methodRelations;
@@ -112,7 +85,7 @@ public class TypeFacts {
                 .collect(toList());
     }
 
-    public Optional<JigTypeBuilder> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
+    private Optional<JigTypeBuilder> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
         return list.stream()
                 .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))
                 .findAny();

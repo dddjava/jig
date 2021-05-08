@@ -66,8 +66,8 @@ public class ApplicationService {
             jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
         }
 
-        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
-        DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
+        HandlerMethods handlerMethods = HandlerMethods.from(jigTypes);
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
         return new ServiceAngles(
                 serviceMethods,
@@ -81,7 +81,7 @@ public class ApplicationService {
      */
     public DatasourceAngles datasourceAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        DatasourceMethods datasourceMethods = typeFacts.createDatasourceMethods(architecture);
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(typeFacts.jigTypes());
 
         if (datasourceMethods.empty()) {
             jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);

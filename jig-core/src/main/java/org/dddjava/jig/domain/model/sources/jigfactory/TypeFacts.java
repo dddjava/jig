@@ -66,13 +66,6 @@ public class TypeFacts {
         return list;
     }
 
-    public List<JigMethodBuilder> instanceMethodFacts() {
-        return list.stream()
-                .map(JigTypeBuilder::instanceMethodFacts)
-                .flatMap(List::stream)
-                .collect(toList());
-    }
-
     private Optional<JigTypeBuilder> selectByTypeIdentifier(TypeIdentifier typeIdentifier) {
         return list.stream()
                 .filter(typeFact -> typeIdentifier.equals(typeFact.typeIdentifier()))

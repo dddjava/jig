@@ -1,8 +1,8 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.Arguments;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
@@ -27,11 +26,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,28 +62,20 @@ public class CommentTest {
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        List<JigMethod> methods = typeFacts.instanceMethodFacts().stream().map(JigMethodBuilder::build).collect(Collectors.toList());
 
-        JigMethod simpleMethod = methods.stream()
-                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(KotlinMethodJavadocStub.class),
-                        new MethodSignature("simpleMethod"))))
-                .findAny().orElseThrow(AssertionError::new);
-        assertEquals("メソッドのドキュメント", simpleMethod.aliasTextOrBlank());
+        TypeIdentifier テスト対象クラス = new TypeIdentifier(KotlinMethodJavadocStub.class);
+        JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
-        JigMethod overloadMethod1 = methods.stream()
-                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(KotlinMethodJavadocStub.class),
-                        new MethodSignature("overloadMethod"))))
-                .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadMethod1.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
+        JigMethods jigMethods = jigType.instanceMember().instanceMethods();
 
-        JigMethod overloadMethod2 = methods.stream()
-                .filter(e -> e.declaration().identifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(KotlinMethodJavadocStub.class),
-                        new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))))))
-                .findAny().orElseThrow(AssertionError::new);
-        assertTrue(overloadMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
+        JigMethod method = jigMethods.resolveMethodBySignature(new MethodSignature("simpleMethod"));
+        assertEquals("メソッドのドキュメント", method.aliasTextOrBlank());
+
+        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)));
+        assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
+
+        JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));
+        assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
     }
 
     public Sources getTestRawSource() {

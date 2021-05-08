@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.models.jigobject.member;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDerivation;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.Comparator;
@@ -70,5 +71,12 @@ public class JigMethods {
         return new JigMethods(list.stream()
                 .filter(jigMethod -> !jigMethod.objectMethod() || jigMethod.documented())
                 .collect(Collectors.toList()));
+    }
+
+    public JigMethod resolveMethodBySignature(MethodSignature methodSignature) {
+        return list.stream()
+                .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 }

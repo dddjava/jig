@@ -1,14 +1,14 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -65,28 +65,18 @@ class AliasServiceTest {
     @Test
     void メソッド別名取得(Sources source) {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
-        JigMethod method = typeFacts.instanceMethodFacts().stream()
-                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("method"))))
-                .map(JigMethodBuilder::build)
-                .findAny().orElseThrow(AssertionError::new);
+        TypeIdentifier テスト対象クラス = new TypeIdentifier(MethodJavadocStub.class);
+        JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
+
+        JigMethods jigMethods = jigType.instanceMember().instanceMethods();
+
+        JigMethod method = jigMethods.resolveMethodBySignature(new MethodSignature("method"));
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
-        JigMethod overloadedMethod = typeFacts.instanceMethodFacts().stream()
-                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)))))
-                .map(JigMethodBuilder::build)
-                .findAny().orElseThrow(AssertionError::new);
+        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)));
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
-        JigMethod overloadedMethod2 = typeFacts.instanceMethodFacts().stream()
-                .filter(e -> e.methodIdentifier().equals(new MethodIdentifier(
-                        new TypeIdentifier(MethodJavadocStub.class),
-                        new MethodSignature("overloadMethod"))))
-                .map(JigMethodBuilder::build)
-                .findAny().orElseThrow(AssertionError::new);
+        JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));
         assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
     }
 }

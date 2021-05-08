@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.models.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
@@ -13,11 +11,6 @@ public class JigFields {
 
     public JigFields(List<JigField> list) {
         this.list = list;
-    }
-
-    public static JigFields from(List<FieldDeclaration> fieldDeclarations, List<FieldAnnotation> fieldAnnotations) {
-        // FIXME
-        return null;
     }
 
     public boolean empty() {

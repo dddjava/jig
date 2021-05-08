@@ -2,7 +2,7 @@ package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.JigSourceReadService;
-import org.dddjava.jig.domain.model.documents.diagrams.Categories;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.presentation.view.report.business_rule.CategoryReport;
@@ -18,9 +18,9 @@ public class CategoryReportTest {
     @Test
     void test(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
-        Categories categories = businessRuleService.categories();
+        CategoryDiagram categoryDiagram = businessRuleService.categories();
 
-        assertThat(categories.list().stream().map(CategoryReport::new))
+        assertThat(categoryDiagram.list().stream().map(CategoryReport::new))
                 .extracting(
                         categoryReport -> categoryReport.typeIdentifier(),
                         categoryReport -> categoryReport.constantsDeclarationsName(),

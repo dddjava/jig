@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
-import org.dddjava.jig.domain.model.documents.diagrams.Categories;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
@@ -48,10 +48,10 @@ public class BusinessRuleService {
     /**
      * 区分一覧を取得する
      */
-    public Categories categories() {
+    public CategoryDiagram categories() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
 
-        return Categories.create(CategoryTypes.from(businessRules().jigTypes()), typeFacts.toClassRelations());
+        return CategoryDiagram.create(CategoryTypes.from(businessRules().jigTypes()), typeFacts.toClassRelations());
     }
 
     /**

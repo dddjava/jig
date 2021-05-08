@@ -6,7 +6,7 @@ import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.Categories;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
@@ -51,7 +51,7 @@ public class DiagramController {
     }
 
     @DocumentMapping(JigDocument.CategoryDiagram)
-    public Categories categories() {
+    public CategoryDiagram categories() {
         return businessRuleService.categories();
     }
 

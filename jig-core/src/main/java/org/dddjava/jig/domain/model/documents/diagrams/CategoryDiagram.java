@@ -17,22 +17,22 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
- * 区分の切り口一覧
+ * 区分図
  */
-public class Categories implements DiagramSourceWriter {
+public class CategoryDiagram implements DiagramSourceWriter {
 
     List<CategoryAngle> list;
 
-    Categories(List<CategoryAngle> list) {
+    CategoryDiagram(List<CategoryAngle> list) {
         this.list = list;
     }
 
-    public static Categories create(CategoryTypes categoryTypes, ClassRelations classRelations) {
+    public static CategoryDiagram create(CategoryTypes categoryTypes, ClassRelations classRelations) {
         List<CategoryAngle> list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
             list.add(new CategoryAngle(categoryType, classRelations));
         }
-        return new Categories(list);
+        return new CategoryDiagram(list);
     }
 
     public List<CategoryAngle> list() {

@@ -1,13 +1,12 @@
 package org.dddjava.jig.presentation.controller;
 
-import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -20,12 +19,9 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class BusinessRuleListController {
 
-    final ApplicationService applicationService;
     final BusinessRuleService businessRuleService;
 
-    public BusinessRuleListController(ApplicationService applicationService,
-                                      BusinessRuleService businessRuleService) {
-        this.applicationService = applicationService;
+    public BusinessRuleListController(BusinessRuleService businessRuleService) {
         this.businessRuleService = businessRuleService;
     }
 

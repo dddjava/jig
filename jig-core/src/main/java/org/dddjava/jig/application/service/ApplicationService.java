@@ -1,13 +1,13 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
-import org.dddjava.jig.domain.model.models.applications.StringComparingMethodList;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.applications.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +24,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationService {
 
-    final Architecture architecture;
     final JigLogger jigLogger;
     final JigSourceRepository jigSourceRepository;
 
-    public ApplicationService(Architecture architecture, JigLogger jigLogger, JigSourceRepository jigSourceRepository) {
-        this.architecture = architecture;
+    public ApplicationService(JigLogger jigLogger, JigSourceRepository jigSourceRepository) {
         this.jigLogger = jigLogger;
         this.jigSourceRepository = jigSourceRepository;
     }

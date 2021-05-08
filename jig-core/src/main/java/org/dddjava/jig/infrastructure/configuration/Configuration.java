@@ -45,22 +45,9 @@ public class Configuration {
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
         this.businessRuleService = new BusinessRuleService(architecture, jigSourceRepository);
-        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class), jigSourceRepository);
-        this.applicationService = new ApplicationService(architecture, new MessageLogger(ApplicationService.class), jigSourceRepository);
+        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class));
+        this.applicationService = new ApplicationService(new MessageLogger(ApplicationService.class), jigSourceRepository);
 
-        BusinessRuleListController businessRuleListController = new BusinessRuleListController(
-                applicationService,
-                businessRuleService
-        );
-        ApplicationListController applicationListController = new ApplicationListController(
-                applicationService,
-                businessRuleService
-        );
-        DiagramController diagramController = new DiagramController(
-                dependencyService,
-                businessRuleService,
-                applicationService
-        );
         this.jigSourceReadService = new JigSourceReadService(
                 jigSourceRepository,
                 new AsmFactReader(),
@@ -72,14 +59,15 @@ public class Configuration {
         this.aliasService = new AliasService(commentRepository);
         JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
                 aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
+
         this.documentHandlers = new JigDocumentHandlers(
                 new ViewResolver(
                         properties.outputDiagramFormat,
                         jigDocumentContext
                 ),
-                businessRuleListController,
-                applicationListController,
-                diagramController
+                new BusinessRuleListController(businessRuleService),
+                new ApplicationListController(applicationService),
+                new DiagramController(dependencyService, businessRuleService, applicationService)
         );
     }
 

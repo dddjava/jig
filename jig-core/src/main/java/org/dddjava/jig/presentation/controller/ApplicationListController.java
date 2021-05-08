@@ -1,11 +1,10 @@
 package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
-import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.models.applications.StringComparingMethodList;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
+import org.dddjava.jig.domain.model.models.applications.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
@@ -21,12 +20,9 @@ import org.springframework.stereotype.Controller;
 public class ApplicationListController {
 
     ApplicationService applicationService;
-    BusinessRuleService businessRuleService;
 
-    public ApplicationListController(ApplicationService applicationService,
-                                     BusinessRuleService businessRuleService) {
+    public ApplicationListController(ApplicationService applicationService) {
         this.applicationService = applicationService;
-        this.businessRuleService = businessRuleService;
     }
 
     @DocumentMapping(JigDocument.ApplicationList)

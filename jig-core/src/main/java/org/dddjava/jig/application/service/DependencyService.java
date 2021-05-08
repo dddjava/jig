@@ -1,6 +1,5 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
@@ -15,12 +14,10 @@ public class DependencyService {
 
     final JigLogger jigLogger;
     final BusinessRuleService businessRuleService;
-    final JigSourceRepository jigSourceRepository;
 
-    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger, JigSourceRepository jigSourceRepository) {
+    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger) {
         this.businessRuleService = businessRuleService;
         this.jigLogger = jigLogger;
-        this.jigSourceRepository = jigSourceRepository;
     }
 
     /**

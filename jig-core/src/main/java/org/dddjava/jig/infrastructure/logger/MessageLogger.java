@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.logger;
 
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
-import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
+import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
+import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

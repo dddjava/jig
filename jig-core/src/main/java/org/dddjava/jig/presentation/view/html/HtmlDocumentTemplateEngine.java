@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;

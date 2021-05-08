@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.graphviz.dot;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSource;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
 import org.dddjava.jig.presentation.view.graphviz.process.ProcessExecutor;
 import org.dddjava.jig.presentation.view.graphviz.process.ProcessResult;
 

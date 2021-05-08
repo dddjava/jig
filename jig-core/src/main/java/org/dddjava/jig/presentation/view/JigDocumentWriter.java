@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

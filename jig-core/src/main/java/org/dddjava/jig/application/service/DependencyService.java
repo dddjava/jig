@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigLogger;
-import org.dddjava.jig.domain.model.jigdocument.stationery.Warning;
+import org.dddjava.jig.domain.model.documents.specification.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
+import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.springframework.stereotype.Service;
 

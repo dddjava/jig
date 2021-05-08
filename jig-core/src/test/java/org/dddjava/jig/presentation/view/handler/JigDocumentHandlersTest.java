@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;

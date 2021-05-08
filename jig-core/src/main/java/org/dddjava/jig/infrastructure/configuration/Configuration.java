@@ -2,8 +2,8 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;

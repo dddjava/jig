@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

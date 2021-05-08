@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;

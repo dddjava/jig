@@ -1,8 +1,8 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.SummaryView;

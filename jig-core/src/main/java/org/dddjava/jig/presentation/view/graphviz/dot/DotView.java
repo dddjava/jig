@@ -1,11 +1,11 @@
 package org.dddjava.jig.presentation.view.graphviz.dot;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.jigdocument.stationery.AdditionalText;
-import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSourceWriter;
-import org.dddjava.jig.domain.model.jigdocument.stationery.DiagramSources;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.stationery.AdditionalText;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.JigView;
 

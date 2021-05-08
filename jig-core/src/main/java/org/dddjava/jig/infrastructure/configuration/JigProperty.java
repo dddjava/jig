@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 
 import java.nio.file.Paths;
 

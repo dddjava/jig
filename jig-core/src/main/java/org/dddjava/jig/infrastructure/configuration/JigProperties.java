@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.DocumentName;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDiagramFormat;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.stationery.LinkPrefix;
+import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 
 import java.io.File;
 import java.io.IOException;

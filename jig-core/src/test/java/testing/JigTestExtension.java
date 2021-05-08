@@ -1,6 +1,6 @@
 package testing;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;

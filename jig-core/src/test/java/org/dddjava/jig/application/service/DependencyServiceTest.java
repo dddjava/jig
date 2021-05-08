@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.documents.specification.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.junit.jupiter.api.Test;

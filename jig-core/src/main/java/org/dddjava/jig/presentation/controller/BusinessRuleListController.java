@@ -2,10 +2,10 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.implementation.MethodSmellList;
-import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
-import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.implementation.MethodSmellList;
+import org.dddjava.jig.domain.model.documents.specification.Categories;
+import org.dddjava.jig.domain.model.documents.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;

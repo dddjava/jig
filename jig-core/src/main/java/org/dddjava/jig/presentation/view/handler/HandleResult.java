@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.nio.file.Path;
 import java.util.Collections;

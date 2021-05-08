@@ -2,9 +2,9 @@ package org.dddjava.jig.presentation.controller;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.implementation.StringComparingMethodList;
-import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.implementation.StringComparingMethodList;
+import org.dddjava.jig.domain.model.documents.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;

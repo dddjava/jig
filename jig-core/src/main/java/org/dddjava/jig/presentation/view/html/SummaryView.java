@@ -1,7 +1,7 @@
 package org.dddjava.jig.presentation.view.html;
 
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.jigdocument.summary.SummaryModel;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.summary.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;

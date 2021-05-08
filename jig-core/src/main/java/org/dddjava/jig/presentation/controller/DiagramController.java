@@ -3,12 +3,12 @@ package org.dddjava.jig.presentation.controller;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
-import org.dddjava.jig.domain.model.jigdocument.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.jigdocument.implementation.*;
-import org.dddjava.jig.domain.model.jigdocument.specification.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.jigdocument.specification.Categories;
-import org.dddjava.jig.domain.model.jigdocument.specification.CompositeUsecaseDiagram;
-import org.dddjava.jig.domain.model.jigdocument.specification.PackageRelationDiagram;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.implementation.*;
+import org.dddjava.jig.domain.model.documents.specification.ArchitectureDiagram;
+import org.dddjava.jig.domain.model.documents.specification.Categories;
+import org.dddjava.jig.domain.model.documents.specification.CompositeUsecaseDiagram;
+import org.dddjava.jig.domain.model.documents.specification.PackageRelationDiagram;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.springframework.stereotype.Controller;
 

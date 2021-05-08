@@ -2,7 +2,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.dddjava.jig.domain.model.jigdocument.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;

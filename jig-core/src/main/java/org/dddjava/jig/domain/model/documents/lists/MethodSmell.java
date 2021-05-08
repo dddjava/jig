@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.implementation;
+package org.dddjava.jig.domain.model.documents.lists;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;

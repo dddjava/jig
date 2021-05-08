@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.specification;
+package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.models.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;

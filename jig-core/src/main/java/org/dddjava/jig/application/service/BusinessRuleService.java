@@ -1,9 +1,9 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.documents.implementation.CategoryUsageDiagram;
-import org.dddjava.jig.domain.model.documents.implementation.MethodSmellList;
-import org.dddjava.jig.domain.model.documents.specification.Categories;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.documents.lists.MethodSmellList;
+import org.dddjava.jig.domain.model.documents.diagrams.Categories;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;

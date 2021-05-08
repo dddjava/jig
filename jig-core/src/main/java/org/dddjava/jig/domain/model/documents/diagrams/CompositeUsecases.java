@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.specification;
+package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Node;

@@ -2,9 +2,9 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;

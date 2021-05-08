@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.annotation;
+package org.dddjava.jig.domain.model.parts.classes.annotation;
 
 import java.util.HashMap;
 import java.util.List;

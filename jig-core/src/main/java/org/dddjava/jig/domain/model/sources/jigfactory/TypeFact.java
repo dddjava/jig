@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.*;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;

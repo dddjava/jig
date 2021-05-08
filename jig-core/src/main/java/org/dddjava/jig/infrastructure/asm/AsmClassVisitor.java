@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
-import org.dddjava.jig.domain.model.parts.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldType;
 import org.dddjava.jig.domain.model.parts.classes.method.*;

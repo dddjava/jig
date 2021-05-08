@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.annotation;
+package org.dddjava.jig.domain.model.parts.classes.annotation;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 

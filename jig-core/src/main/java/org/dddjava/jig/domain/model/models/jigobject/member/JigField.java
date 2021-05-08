@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.models.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 
 import java.util.ArrayList;

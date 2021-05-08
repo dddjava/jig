@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
+import org.dddjava.jig.domain.model.models.architectures.Architecture;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 
 import java.util.regex.Pattern;
 
@@ -20,8 +20,8 @@ public class PropertyArchitectureFactory {
         return new Architecture() {
 
             @Override
-            public boolean isBusinessRule(JigTypeBuilder jigTypeBuilder) {
-                String fqn = jigTypeBuilder.typeIdentifier().fullQualifiedName();
+            public boolean isBusinessRule(JigType jigType) {
+                String fqn = jigType.identifier().fullQualifiedName();
                 return businessRulePattern.matcher(fqn).matches()
                         && !compilerGeneratedClassPattern.matcher(fqn).matches();
             }

@@ -1,11 +1,13 @@
 package org.dddjava.jig.domain.model.models.domains.businessrules;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.models.architectures.Architecture;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +39,16 @@ public class BusinessRules {
             }
         }
         this.businessRuleRelations = new ClassRelations(businessRuleRelationList);
+    }
+
+    public static BusinessRules from(Architecture architecture, ClassRelations classRelations, JigTypes jigTypes) {
+        List<BusinessRule> list = new ArrayList<>();
+        for (JigType jigType : jigTypes.list()) {
+            if (architecture.isBusinessRule(jigType)) {
+                list.add(new BusinessRule(jigType));
+            }
+        }
+        return new BusinessRules(list, classRelations);
     }
 
     public List<BusinessRule> list() {

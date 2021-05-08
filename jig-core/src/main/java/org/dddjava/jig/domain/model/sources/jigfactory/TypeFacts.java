@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
@@ -38,16 +36,6 @@ public class TypeFacts {
         if (jigTypes != null) return jigTypes;
         jigTypes = new JigTypes(list.stream().map(JigTypeBuilder::build).collect(toList()));
         return jigTypes;
-    }
-
-    public BusinessRules toBusinessRules(Architecture architecture) {
-        List<BusinessRule> list = new ArrayList<>();
-        for (JigTypeBuilder jigTypeBuilder : list()) {
-            if (architecture.isBusinessRule(jigTypeBuilder)) {
-                list.add(new BusinessRule(jigTypeBuilder.build()));
-            }
-        }
-        return new BusinessRules(list, toClassRelations());
     }
 
     public synchronized MethodRelations toMethodRelations() {

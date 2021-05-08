@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.sources.jigfactory.Architecture;
+import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,7 @@ public class BusinessRuleService {
      */
     public BusinessRules businessRules() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return typeFacts.toBusinessRules(architecture);
+        return BusinessRules.from(architecture, typeFacts.toClassRelations(), typeFacts.jigTypes());
     }
 
     /**
@@ -68,9 +68,12 @@ public class BusinessRuleService {
      */
     public CategoryUsageDiagram categoryUsages() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes());
+        JigTypes jigTypes = typeFacts.jigTypes();
 
-        return new CategoryUsageDiagram(serviceMethods, typeFacts.toBusinessRules(architecture));
+        BusinessRules businessRules = BusinessRules.from(architecture, typeFacts.toClassRelations(), jigTypes);
+        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes);
+
+        return new CategoryUsageDiagram(serviceMethods, businessRules);
     }
 
     public JigTypes jigTypes() {

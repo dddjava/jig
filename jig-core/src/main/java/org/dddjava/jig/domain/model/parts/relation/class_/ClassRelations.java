@@ -66,7 +66,7 @@ public class ClassRelations {
     public ClassRelations relationsFromRootTo(TypeIdentifiers toTypeIdentifiers) {
         HashSet<ClassRelation> set = new HashSet<>();
 
-        int size = set.size();
+        int size = 0;
         while (true) {
             ClassRelations temp = filterRelationsTo(toTypeIdentifiers);
             set.addAll(temp.list());

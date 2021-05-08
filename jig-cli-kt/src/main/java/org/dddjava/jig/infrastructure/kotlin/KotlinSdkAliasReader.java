@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.psi.KtFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +53,7 @@ public class KotlinSdkAliasReader implements KotlinSourceAliasReader {
     }
 
     private KtFile readKotlinSource(KotlinSource source) {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source.toInputStream(), Charset.forName("utf8")))) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source.toInputStream(), StandardCharsets.UTF_8))) {
             String sourceCode = bufferedReader.lines().collect(Collectors.joining("\n"));
             return sourceToKtFile(source, sourceCode);
         } catch (IOException e) {

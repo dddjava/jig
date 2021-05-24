@@ -75,11 +75,6 @@ jobs:
       - store_artifacts:
           path: example
           destination: example
-      - run:
-          name: lisence
-          command: ./gradlew downloadLicenses
-      - store_artifacts:
-          path: build/reports/license
   publish-snapshot:
     executor: circleci-openjdk-8-executor
     steps:

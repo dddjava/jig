@@ -9,12 +9,11 @@
 <main>
     <section class="type">
 
-        <th:block th:fragment="methodTable(caption, list)">
+        <th:block th:fragment="methodTable(kind, list)">
         <table th:unless="${list.isEmpty()}">
-            <caption th:text="${caption}">メソッド</caption>
             <thead>
             <tr>
-                <th width="20%">名前</th>
+                <th width="20%" th:text="${kind}">メソッド</th>
                 <th>引数</th>
                 <th>戻り値型</th>
                 <th>説明</th>

@@ -21,7 +21,7 @@ public class GradleTaskRunner {
         this.file = file;
     }
 
-    BuildResult executeGradleTasks(GradleVersions version, String... tasks) throws IOException, URISyntaxException {
+    BuildResult executeGradleTasks(SupportGradleVersion version, String... tasks) throws IOException, URISyntaxException {
         URL resource = GradleTaskRunner.class.getClassLoader().getResource("plugin-classpath.txt");
         List<File> pluginClasspath = Files.readAllLines(Paths.get(resource.toURI())).stream()
                 .map(File::new)

@@ -27,8 +27,8 @@ public class IntegrationTest {
 
     @DisabledOnJre(JRE.JAVA_13)
     @ParameterizedTest
-    @EnumSource(GradleVersions.class)
-    void test(GradleVersions version) throws IOException, URISyntaxException {
+    @EnumSource(SupportGradleVersion.class)
+    void test(SupportGradleVersion version) throws IOException, URISyntaxException {
         GradleTaskRunner runner = new GradleTaskRunner(new File("./stub"));
         Path outputDir = Paths.get("./stub/sub-project/build/jig");
         String jigTask = ":sub-project:jigReports";
@@ -56,7 +56,7 @@ public class IntegrationTest {
     void testKotlinDSL() throws IOException, URISyntaxException {
         Path outputDir = Paths.get("./stub-kotlin-dsl/build/jig");
         GradleTaskRunner runner = new GradleTaskRunner(new File("./stub-kotlin-dsl"));
-        BuildResult result = runner.executeGradleTasks(GradleVersions.CURRENT, "clean", "compileJava", "jigReports", "--stacktrace");
+        BuildResult result = runner.executeGradleTasks(SupportGradleVersion.CURRENT, "clean", "compileJava", "jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();

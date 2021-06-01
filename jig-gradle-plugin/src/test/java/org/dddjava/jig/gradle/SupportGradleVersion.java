@@ -2,7 +2,13 @@ package org.dddjava.jig.gradle;
 
 import org.gradle.util.GradleVersion;
 
-public enum GradleVersions {
+/**
+ * テストするGradleのバージョンを列挙
+ *
+ * 数の分だけGradleを動かすJavaプロセスが立ち上がってしまい、CIでメモリ確保できなくなるため少なくしている。
+ * ちゃんとJavaプロセス殺すようにして増やしたい。
+ */
+public enum SupportGradleVersion {
     CURRENT {
         @Override
         public String version() {

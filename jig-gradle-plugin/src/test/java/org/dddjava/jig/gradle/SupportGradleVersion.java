@@ -2,6 +2,8 @@ package org.dddjava.jig.gradle;
 
 import org.gradle.util.GradleVersion;
 
+import java.nio.file.Path;
+
 /**
  * テストするGradleのバージョンを列挙
  *
@@ -23,4 +25,8 @@ public enum SupportGradleVersion {
     };
 
     public abstract String version();
+
+    GradleTaskRunner runner(Path path) {
+        return new GradleTaskRunner(this, path);
+    }
 }

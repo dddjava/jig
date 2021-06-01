@@ -1,6 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.assertj.core.api.SoftAssertions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -29,12 +27,13 @@ public class IntegrationTest {
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
     void test(SupportGradleVersion version) throws IOException, URISyntaxException {
-        GradleTaskRunner runner = new GradleTaskRunner(new File("./stub"));
-        Path outputDir = Paths.get("./stub/sub-project/build/jig");
+        Path path = Paths.get("./stub");
+        GradleTaskRunner runner = version.runner(path);
+        Path outputDir = path.resolve("sub-project/build/jig");
         String jigTask = ":sub-project:jigReports";
 
         {
-            BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", jigTask, "--stacktrace");
+            BuildResult result = runner.runTask("clean", "compileJava", jigTask, "--stacktrace");
             assertAll("スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること",
                     () -> {
                         BuildTask buildTask = Objects.requireNonNull(result.task(jigTask));
@@ -46,22 +45,27 @@ public class IntegrationTest {
         }
 
         {
+            // cleanで build/jig が削除されること
             assertTrue(Files.exists(outputDir));
-            runner.executeGradleTasks(version, "clean");
+            runner.runTask("clean");
             assertFalse(Files.exists(outputDir));
         }
     }
 
     @Test
     void testKotlinDSL() throws IOException, URISyntaxException {
-        Path outputDir = Paths.get("./stub-kotlin-dsl/build/jig");
-        GradleTaskRunner runner = new GradleTaskRunner(new File("./stub-kotlin-dsl"));
-        BuildResult result = runner.executeGradleTasks(SupportGradleVersion.CURRENT, "clean", "compileJava", "jigReports", "--stacktrace");
+        SupportGradleVersion version = SupportGradleVersion.CURRENT;
+        Path path = Paths.get("./stub-kotlin-dsl");
+        GradleTaskRunner runner = version.runner(path);
+        BuildResult result = runner.runTask("clean", "compileJava", "jigReports", "--stacktrace");
 
-        System.out.println(result.getOutput());
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
-        softly.assertThat(outputDir.resolve("package-relation-depth4.svg")).exists();
-        softly.assertAll();
+        Path outputDir = path.resolve("build/jig");
+        assertAll(
+                () -> {
+                    BuildTask buildTask = Objects.requireNonNull(result.task(":jigReports"));
+                    assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
+                },
+                () -> assertTrue(outputDir.resolve("package-relation-depth4.svg").toFile().exists())
+        );
     }
 }

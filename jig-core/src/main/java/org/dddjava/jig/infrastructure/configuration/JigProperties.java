@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.util.List;
  * 実行時に設定するプロパティ。
  */
 public class JigProperties {
+    static Logger logger = LoggerFactory.getLogger(JigProperties.class);
+
     /** 主要: ドメイン（主として扱うクラス名）のパターン */
     String domainPattern;
     /** 主要: ドキュメントの出力先ディレクトリ */
@@ -123,19 +127,18 @@ public class JigProperties {
         }
     }
 
-    public void override(JigProperties jigProperties) {
+    public void override(JigProperties overrideProperties) {
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
+                Object currentValue = field.get(this);
                 // nullでないフィールドは全て上書きする
-                Object value = field.get(jigProperties);
+                Object value = field.get(overrideProperties);
                 if (value != null) {
-                    if (value instanceof String) {
-                        if (!((String) value).isEmpty()) {
-                            field.set(this, value);
-                        }
-                    } else {
-                        field.set(this, value);
-                    }
+                    if (value.equals(currentValue)) continue;
+                    if (value.equals("")) continue;
+
+                    field.set(this, value);
+                    logger.info("configure {} from {} to {}", field.getName(), currentValue, value);
                 }
             }
         } catch (IllegalAccessException e) {

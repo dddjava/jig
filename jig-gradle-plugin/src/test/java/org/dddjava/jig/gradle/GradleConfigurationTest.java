@@ -3,18 +3,13 @@ package org.dddjava.jig.gradle;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.internal.artifacts.dependencies.DefaultProjectDependency;
-import org.gradle.api.internal.project.ConfigurationOnDemandProjectAccessListener;
-import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
-import org.gradle.initialization.ProjectAccessListener;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -26,15 +21,18 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GradleProjectTest {
+/**
+ * Gradleの compile や implementation が解決できるかのテスト
+ */
+class GradleConfigurationTest {
 
+    // Gradleがフォルダを作成するので一時ディレクトリを作成する
     @TempDir
     Path tempDir;
 
     @ParameterizedTest
     @MethodSource("fixtures")
-    public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(
-            Fixture fixture) throws Exception {
+    public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(Fixture fixture) {
         Project project = fixture.createProject(tempDir);
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
@@ -139,7 +137,7 @@ class GradleProjectTest {
 
         public Project createProject(Path tempDir) {
             try {
-                Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + name, Path.class);
+                Method projectMethod = GradleConfigurationTest.class.getDeclaredMethod("_" + name, Path.class);
                 projectMethod.setAccessible(true);
                 return (Project) projectMethod.invoke(null, tempDir);
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
@@ -195,33 +193,16 @@ class GradleProjectTest {
         return project;
     }
 
-    private static DefaultProjectDependency dependencyOf(ProjectInternal nonJavaChild) {
-        ConfigurationOnDemandProjectAccessListener listener = new ConfigurationOnDemandProjectAccessListener();
-        return new DefaultProjectDependency(nonJavaChild, new ProjectAccessListener() {
-            @Override
-            public void beforeRequestingTaskByPath(@Nonnull ProjectInternal projectInternal) {
-                listener.beforeRequestingTaskByPath(projectInternal);
-            }
-
-            @Override
-            public void beforeResolvingProjectDependency(@Nonnull ProjectInternal projectInternal) {
-                listener.beforeResolvingProjectDependency(projectInternal);
-            }
-        }, true);
-    }
-
-    private static ProjectInternal javaProjectOf(String name, Path tempDir) {
-        ProjectInternal project = projectOf(name, tempDir);
+    private static Project javaProjectOf(String name, Path tempDir) {
+        Project project = projectOf(name, tempDir);
         project.getPlugins().apply(JavaPlugin.class);
         return project;
     }
 
-    private static ProjectInternal projectOf(String name, Path tempDir) {
-        Project root = ProjectBuilder.builder()
+    private static Project projectOf(String name, Path tempDir) {
+        return ProjectBuilder.builder()
                 .withName(name)
                 .withProjectDir(tempDir.resolve(name).toFile())
                 .build();
-        return (ProjectInternal) root;
     }
-
 }

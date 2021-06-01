@@ -4,8 +4,6 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.BuildTask;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnJre;
-import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -19,11 +17,10 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *
+ * Gradleのサポート対象のバージョンでの動作確認
  */
 public class IntegrationTest {
 
-    @DisabledOnJre(JRE.JAVA_13)
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
     void test(SupportGradleVersion version) throws IOException, URISyntaxException {

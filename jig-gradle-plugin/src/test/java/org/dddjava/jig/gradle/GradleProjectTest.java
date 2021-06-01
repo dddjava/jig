@@ -160,31 +160,34 @@ class GradleProjectTest {
         return project;
     }
 
+    /**
+     * 後方互換用: Gradle6サポートを切るまでは必要なテスト
+     */
     private static Project _3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project javaChild = addDependencyTo(javaProjectOf("javaChild", tempDir),
+        Project javaChild = withDependency(javaProjectOf("javaChild", tempDir),
                 "compile",
                 projectOf("nonJavaGrandson", tempDir),
                 javaProjectOf("javaGrandson", tempDir));
 
-        return addDependencyTo(javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
+        return withDependency(javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
                 "compile",
                 projectOf("nonJavaChild", tempDir),
                 javaChild);
     }
 
     private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project javaChild = addDependencyTo(javaProjectOf("javaChild", tempDir),
+        Project javaChild = withDependency(javaProjectOf("javaChild", tempDir),
                 "implementation",
                 projectOf("nonJavaGrandson", tempDir),
                 javaProjectOf("javaGrandson", tempDir));
 
-        return addDependencyTo(javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
+        return withDependency(javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
                 "implementation",
                 projectOf("nonJavaChild", tempDir),
                 javaChild);
     }
 
-    static Project addDependencyTo(Project project, String configurationName, Project... dependencies) {
+    static Project withDependency(Project project, String configurationName, Project... dependencies) {
         DependencyHandler projectDependencies = project.getDependencies();
         for (Project dependency : dependencies) {
             projectDependencies.add(configurationName, dependency);

@@ -118,13 +118,21 @@ class GradleProjectTest {
             this.sourcePathSuffixes = sourcePathSuffixes;
         }
 
-
         public boolean classPathContains(Set<Path> paths) {
             return Arrays.stream(classPathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
         }
 
         public boolean sourcePathContains(Set<Path> paths) {
             return Arrays.stream(sourcePathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
+        }
+
+        @Override
+        public String toString() {
+            return "Fixture{" +
+                    "name='" + name + '\'' +
+                    ", classPathSuffixes=" + Arrays.toString(classPathSuffixes) +
+                    ", sourcePathSuffixes=" + Arrays.toString(sourcePathSuffixes) +
+                    '}';
         }
     }
 

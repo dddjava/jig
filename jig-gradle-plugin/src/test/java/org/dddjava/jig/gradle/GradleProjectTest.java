@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,19 +116,19 @@ class GradleProjectTest {
         final List<String> sourcePathSuffixes;
 
         static Fixture of(String name) {
-            return new Fixture(name, null, null);
+            return new Fixture(name, Collections.emptyList(), Collections.emptyList());
         }
 
         Fixture withClassPathSuffixes(String... args) {
-            List<String> list = Arrays.asList(args);
-            Collections.sort(list);
-            return new Fixture(name, list, sourcePathSuffixes);
+            return new Fixture(name,
+                    Stream.of(args).sorted().collect(Collectors.toList()),
+                    sourcePathSuffixes);
         }
 
         Fixture withSourcePathSuffixes(String... args) {
-            List<String> list = Arrays.asList(args);
-            Collections.sort(list);
-            return new Fixture(name, classPathSuffixes, list);
+            return new Fixture(name,
+                    classPathSuffixes,
+                    Stream.of(args).sorted().collect(Collectors.toList()));
         }
 
         public Fixture(String name, List<String> classPathSuffixes, List<String> sourcePathSuffixes) {

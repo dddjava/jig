@@ -1,3 +1,13 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    plugins {
+        id 'org.dddjava.jig-gradle-plugin' version '2021.5.5'
+    }
+}
+
 rootProject.name = 'jig'
 
 include 'jig-core',

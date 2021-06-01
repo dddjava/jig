@@ -19,7 +19,9 @@ public class BinarySourcePaths {
     }
 
     public List<Path> paths() {
-        return list;
+        return list.stream()
+                .sorted().distinct()
+                .collect(Collectors.toList());
     }
 
     public BinarySourcePaths merge(BinarySourcePaths other) {

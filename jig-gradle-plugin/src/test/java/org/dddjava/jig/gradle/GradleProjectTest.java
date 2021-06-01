@@ -19,13 +19,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GradleProjectTest {
 
@@ -41,13 +39,30 @@ class GradleProjectTest {
 
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
-        List<Path> binarySourcePaths = sourcePaths.binarySourcePaths();
-        List<Path> textSourcePaths = sourcePaths.textSourcePaths();
+        List<Path> actualBinaryPaths = sourcePaths.binarySourcePaths();
+        List<Path> actualTextPaths = sourcePaths.textSourcePaths();
 
-        assertAll(() -> {
-            assertTrue(fixture.classPathContains(new HashSet<>(binarySourcePaths)));
-            assertTrue(fixture.sourcePathContains(new HashSet<>(textSourcePaths)));
-        });
+        assertAll(
+                () -> {
+                    assertEquals(fixture.classPathSuffixes.size(), actualBinaryPaths.size(),
+                            () -> actualBinaryPaths.toString());
+                    for (int i = 0; i < actualBinaryPaths.size(); i++) {
+                        Path actualPath = actualBinaryPaths.get(i);
+                        String expectedSuffix = fixture.classPathSuffixes.get(i);
+                        assertTrue(actualPath.endsWith(expectedSuffix),
+                                () -> String.format("expected: %s, actual: %s", expectedSuffix, actualPath));
+                    }
+                },
+                () -> {
+                    assertEquals(fixture.sourcePathSuffixes.size(), actualTextPaths.size(),
+                            () -> actualTextPaths.toString());
+                    for (int i = 0; i < actualTextPaths.size(); i++) {
+                        Path actualPath = actualTextPaths.get(i);
+                        String expectedSuffix = fixture.sourcePathSuffixes.get(i);
+                        assertTrue(actualPath.endsWith(expectedSuffix),
+                                () -> String.format("expected: %s, actual: %s", expectedSuffix, actualPath));
+                    }
+                });
     }
 
 
@@ -97,42 +112,34 @@ class GradleProjectTest {
 
     static class Fixture {
         final String name;
-        final String[] classPathSuffixes;
-        final String[] sourcePathSuffixes;
+        final List<String> classPathSuffixes;
+        final List<String> sourcePathSuffixes;
 
         static Fixture of(String name) {
             return new Fixture(name, null, null);
         }
 
         Fixture withClassPathSuffixes(String... args) {
-            return new Fixture(name, args, sourcePathSuffixes);
+            List<String> list = Arrays.asList(args);
+            Collections.sort(list);
+            return new Fixture(name, list, sourcePathSuffixes);
         }
 
         Fixture withSourcePathSuffixes(String... args) {
-            return new Fixture(name, classPathSuffixes, args);
+            List<String> list = Arrays.asList(args);
+            Collections.sort(list);
+            return new Fixture(name, classPathSuffixes, list);
         }
 
-        private Fixture(String name, String[] classPathSuffixes, String[] sourcePathSuffixes) {
+        public Fixture(String name, List<String> classPathSuffixes, List<String> sourcePathSuffixes) {
             this.name = name;
             this.classPathSuffixes = classPathSuffixes;
             this.sourcePathSuffixes = sourcePathSuffixes;
         }
 
-        public boolean classPathContains(Set<Path> paths) {
-            return Arrays.stream(classPathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
-        }
-
-        public boolean sourcePathContains(Set<Path> paths) {
-            return Arrays.stream(sourcePathSuffixes).allMatch(suffix -> paths.stream().anyMatch(path -> path.endsWith(suffix)));
-        }
-
         @Override
         public String toString() {
-            return "Fixture{" +
-                    "name='" + name + '\'' +
-                    ", classPathSuffixes=" + Arrays.toString(classPathSuffixes) +
-                    ", sourcePathSuffixes=" + Arrays.toString(sourcePathSuffixes) +
-                    '}';
+            return String.format("%s{classPaths: %s, sourcePaths: %s}", name, classPathSuffixes, sourcePathSuffixes);
         }
 
         public Project createProject(Path tempDir) {
@@ -144,6 +151,7 @@ class GradleProjectTest {
                 throw new AssertionError(e);
             }
         }
+
     }
 
     private static Project _依存プロジェクトのないJavaプロジェクト(Path tempDir) {

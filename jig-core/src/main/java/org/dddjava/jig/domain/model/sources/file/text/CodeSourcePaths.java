@@ -19,7 +19,9 @@ public class CodeSourcePaths {
     }
 
     public List<Path> paths() {
-        return list;
+        return list.stream()
+                .sorted().distinct()
+                .collect(Collectors.toList());
     }
 
     public CodeSourcePaths merge(CodeSourcePaths other) {

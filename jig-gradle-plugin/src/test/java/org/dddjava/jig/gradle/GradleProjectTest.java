@@ -1,6 +1,5 @@
 package org.dddjava.jig.gradle;
 
-import org.assertj.core.api.SoftAssertions;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
@@ -13,7 +12,6 @@ import org.gradle.initialization.ProjectAccessListener;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Method;
@@ -24,7 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GradleProjectTest {
 
@@ -34,11 +33,9 @@ class GradleProjectTest {
     @ParameterizedTest
     @MethodSource("fixtures")
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(
-            String name,
-            String[] classPathSuffixes,
-            String[] sourcePathSuffixes) throws Exception {
+            Fixture fixture) throws Exception {
 
-        Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + name, Path.class);
+        Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + fixture.name, Path.class);
         projectMethod.setAccessible(true);
         Project project = (Project) projectMethod.invoke(null, tempDir);
 
@@ -47,79 +44,76 @@ class GradleProjectTest {
         List<Path> binarySourcePaths = sourcePaths.binarySourcePaths();
         List<Path> textSourcePaths = sourcePaths.textSourcePaths();
 
-        Fixture fixture = new Fixture(classPathSuffixes, sourcePathSuffixes);
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(fixture.classPathContains(new HashSet<>(binarySourcePaths))).isTrue();
-        softly.assertThat(fixture.sourcePathContains(new HashSet<>(textSourcePaths))).isTrue();
-        softly.assertAll();
+        assertAll(() -> {
+            assertTrue(fixture.classPathContains(new HashSet<>(binarySourcePaths)));
+            assertTrue(fixture.sourcePathContains(new HashSet<>(textSourcePaths)));
+        });
     }
 
 
-    static List<Arguments> fixtures() {
+    static List<Fixture> fixtures() {
         return Arrays.asList(
-                arguments(
-                        "依存プロジェクトのないJavaプロジェクト",
-                        new String[]{
+                Fixture.of("依存プロジェクトのないJavaプロジェクト")
+                        .withClassPathSuffixes(
                                 "依存プロジェクトのないJavaプロジェクト/build/classes/java/main",
-                                "依存プロジェクトのないJavaプロジェクト/build/resources/main"
-                        },
-                        new String[]{
-                                "依存プロジェクトのないJavaプロジェクト/src/main/java"
-                        }
-                ),
-                arguments(
-                        "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト",
-                        new String[]{
+                                "依存プロジェクトのないJavaプロジェクト/build/resources/main")
+                        .withSourcePathSuffixes(
+                                "依存プロジェクトのないJavaプロジェクト/src/main/java"),
+                Fixture.of("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト")
+                        .withClassPathSuffixes(
                                 "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
                                 "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
                                 "javaChild/build/classes/java/main",
                                 "javaChild/build/resources/main",
                                 "javaGrandson/build/classes/java/main",
-                                "javaGrandson/build/resources/main"
-                        },
-                        new String[]{
+                                "javaGrandson/build/resources/main")
+                        .withSourcePathSuffixes(
                                 "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
                                 "javaChild/src/main/java",
-                                "javaGrandson/src/main/java"
-                        }
-                ),
-                arguments(
-                        "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト",
-                        new String[]{
+                                "javaGrandson/src/main/java"),
+                Fixture.of("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト")
+                        .withClassPathSuffixes(
                                 "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
                                 "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
                                 "javaChild/build/classes/java/main",
                                 "javaChild/build/resources/main",
                                 "javaGrandson/build/classes/java/main",
-                                "javaGrandson/build/resources/main"
-                        },
-                        new String[]{
+                                "javaGrandson/build/resources/main")
+                        .withSourcePathSuffixes(
                                 "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
                                 "javaChild/src/main/java",
-                                "javaGrandson/src/main/java"
-                        }
-                ),
-                arguments(
-                        "複数のソースセットを持つJavaプロジェクト",
-                        new String[]{
+                                "javaGrandson/src/main/java"),
+                Fixture.of("複数のソースセットを持つJavaプロジェクト")
+                        .withClassPathSuffixes(
                                 "複数のソースセットを持つJavaプロジェクト/build/classes/java/main",
                                 "複数のソースセットを持つJavaプロジェクト/build/classes/java/sub",
                                 "複数のソースセットを持つJavaプロジェクト/build/resources/main",
-                                "複数のソースセットを持つJavaプロジェクト/build/resources/sub"
-                        },
-                        new String[]{
+                                "複数のソースセットを持つJavaプロジェクト/build/resources/sub")
+                        .withSourcePathSuffixes(
                                 "複数のソースセットを持つJavaプロジェクト/src/main/java",
-                                "複数のソースセットを持つJavaプロジェクト/src/sub/java"
-                        }
-                )
+                                "複数のソースセットを持つJavaプロジェクト/src/sub/java")
         );
     }
 
     static class Fixture {
+        final String name;
         final String[] classPathSuffixes;
         final String[] sourcePathSuffixes;
 
-        Fixture(String[] classPathSuffixes, String[] sourcePathSuffixes) {
+        static Fixture of(String name) {
+            return new Fixture(name, null, null);
+        }
+
+        Fixture withClassPathSuffixes(String... args) {
+            return new Fixture(name, args, sourcePathSuffixes);
+        }
+
+        Fixture withSourcePathSuffixes(String... args) {
+            return new Fixture(name, classPathSuffixes, args);
+        }
+
+        private Fixture(String name, String[] classPathSuffixes, String[] sourcePathSuffixes) {
+            this.name = name;
             this.classPathSuffixes = classPathSuffixes;
             this.sourcePathSuffixes = sourcePathSuffixes;
         }

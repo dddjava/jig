@@ -14,6 +14,8 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -35,9 +37,7 @@ class GradleProjectTest {
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(
             Fixture fixture) throws Exception {
 
-        Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + fixture.name, Path.class);
-        projectMethod.setAccessible(true);
-        Project project = (Project) projectMethod.invoke(null, tempDir);
+        Project project = fixture.createProject(tempDir);
 
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
@@ -134,6 +134,16 @@ class GradleProjectTest {
                     ", sourcePathSuffixes=" + Arrays.toString(sourcePathSuffixes) +
                     '}';
         }
+
+        public Project createProject(Path tempDir) {
+            try {
+                Method projectMethod = GradleProjectTest.class.getDeclaredMethod("_" + name, Path.class);
+                projectMethod.setAccessible(true);
+                return (Project) projectMethod.invoke(null, tempDir);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new AssertionError(e);
+            }
+        }
     }
 
     private static Project _依存プロジェクトのないJavaプロジェクト(Path tempDir) {
@@ -201,15 +211,21 @@ class GradleProjectTest {
         ConfigurationOnDemandProjectAccessListener listener = new ConfigurationOnDemandProjectAccessListener();
         return new DefaultProjectDependency(nonJavaChild, new ProjectAccessListener() {
             @Override
-            public void beforeRequestingTaskByPath(ProjectInternal projectInternal) {
+            public void beforeRequestingTaskByPath(@Nonnull ProjectInternal projectInternal) {
                 listener.beforeRequestingTaskByPath(projectInternal);
             }
 
             @Override
-            public void beforeResolvingProjectDependency(ProjectInternal projectInternal) {
+            public void beforeResolvingProjectDependency(@Nonnull ProjectInternal projectInternal) {
                 listener.beforeResolvingProjectDependency(projectInternal);
             }
         }, true);
+    }
+
+    private static ProjectInternal javaProjectOf(String name, Path tempDir) {
+        ProjectInternal project = projectOf(name, tempDir);
+        project.getPlugins().apply(JavaPlugin.class);
+        return project;
     }
 
     private static ProjectInternal projectOf(String name, Path tempDir) {
@@ -218,12 +234,6 @@ class GradleProjectTest {
                 .withProjectDir(tempDir.resolve(name).toFile())
                 .build();
         return (ProjectInternal) root;
-    }
-
-    private static ProjectInternal javaProjectOf(String name, Path tempDir) {
-        ProjectInternal project = projectOf(name, tempDir);
-        project.getPlugins().apply(JavaPlugin.class);
-        return project;
     }
 
 }

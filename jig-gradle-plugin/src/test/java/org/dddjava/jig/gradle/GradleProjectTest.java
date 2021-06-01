@@ -154,35 +154,22 @@ class GradleProjectTest {
     }
 
     private static Project _複数のソースセットを持つJavaプロジェクト(Path tempDir) {
-        ProjectInternal project = javaProjectOf("複数のソースセットを持つJavaプロジェクト", tempDir);
+        Project project = javaProjectOf("複数のソースセットを持つJavaプロジェクト", tempDir);
         JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
         convention.getSourceSets().create("sub");
         return project;
     }
 
     private static Project _3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project root = javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir);
-        DependencyHandler dependencies = root.getDependencies();
-
-        ProjectInternal javaChild = javaProjectOf("javaChild", tempDir);
-        Stream<ProjectInternal> children = Stream.of(
-                projectOf("nonJavaChild", tempDir),
-                javaChild
-        );
-        children
-                .map(GradleProjectTest::dependencyOf)
-                .forEach(dependency -> dependencies.add("compile", dependency));
-
-
-        DependencyHandler javaChildDependencies = javaChild.getDependencies();
-        Stream<ProjectInternal> grandsons = Stream.of(
+        Project javaChild = addDependencyTo(javaProjectOf("javaChild", tempDir),
+                "compile",
                 projectOf("nonJavaGrandson", tempDir),
-                javaProjectOf("javaGrandson", tempDir)
-        );
-        grandsons
-                .map(GradleProjectTest::dependencyOf)
-                .forEach(dependency -> javaChildDependencies.add("compile", dependency));
-        return root;
+                javaProjectOf("javaGrandson", tempDir));
+
+        return addDependencyTo(javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
+                "compile",
+                projectOf("nonJavaChild", tempDir),
+                javaChild);
     }
 
     private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {

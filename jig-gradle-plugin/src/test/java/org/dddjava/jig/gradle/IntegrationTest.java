@@ -1,8 +1,10 @@
 package org.dddjava.jig.gradle;
 
 import org.assertj.core.api.SoftAssertions;
-import org.gradle.internal.impldep.org.junit.Before;
 import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
+import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnJre;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,56 +16,52 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
-@DisabledOnJre(JRE.JAVA_13)
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ *
+ */
 public class IntegrationTest {
-    final Path outputDir = Paths.get("stub/sub-project/build/jig");
-    final GradleTaskRunner runner = new GradleTaskRunner(new File("./stub"));
 
-    @Before
-    public void clean() {
-        File dir = outputDir.toFile();
-        if (dir.exists()) {
-            for (File file : dir.listFiles()) {
-                file.delete();
-            }
+    @DisabledOnJre(JRE.JAVA_13)
+    @ParameterizedTest
+    @EnumSource(GradleVersions.class)
+    void test(GradleVersions version) throws IOException, URISyntaxException {
+        GradleTaskRunner runner = new GradleTaskRunner(new File("./stub"));
+        Path outputDir = Paths.get("./stub/sub-project/build/jig");
+        String jigTask = ":sub-project:jigReports";
+
+        {
+            BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", jigTask, "--stacktrace");
+            assertAll("スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること",
+                    () -> {
+                        BuildTask buildTask = Objects.requireNonNull(result.task(jigTask));
+                        assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
+                    },
+                    () -> assertTrue(outputDir.resolve("package-relation-depth4.svg").toFile().exists()),
+                    () -> assertTrue(outputDir.resolve("business-rule.xlsx").toFile().exists())
+            );
+        }
+
+        {
+            assertTrue(Files.exists(outputDir));
+            runner.executeGradleTasks(version, "clean");
+            assertFalse(Files.exists(outputDir));
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(GradleVersions.class)
-    void スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること(GradleVersions version) throws IOException, URISyntaxException {
-        BuildResult result = runner.executeGradleTasks(version, "clean", "compileJava", ":sub-project:jigReports", "--stacktrace");
+    @Test
+    void testKotlinDSL() throws IOException, URISyntaxException {
+        Path outputDir = Paths.get("./stub-kotlin-dsl/build/jig");
+        GradleTaskRunner runner = new GradleTaskRunner(new File("./stub-kotlin-dsl"));
+        BuildResult result = runner.executeGradleTasks(GradleVersions.CURRENT, "clean", "compileJava", "jigReports", "--stacktrace");
 
         System.out.println(result.getOutput());
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
         softly.assertThat(outputDir.resolve("package-relation-depth4.svg")).exists();
-        softly.assertThat(outputDir.resolve("business-rule.xlsx")).exists();
         softly.assertAll();
     }
-
-    //TODO 並列で走ると競合して落ちる
-    @ParameterizedTest
-    @EnumSource(GradleVersions.class)
-    void スタブプロジェクトのcleanタスクで出力ディレクトリが中のファイルごと削除されること(GradleVersions version) throws IOException, URISyntaxException {
-        Files.createDirectories(outputDir);
-        Path includedFile = outputDir.resolve("somme.txt");
-        Files.createFile(includedFile);
-
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(outputDir).exists();
-        softly.assertThat(includedFile).exists();
-        softly.assertAll();
-
-        BuildResult result = runner.executeGradleTasks(version, "clean");
-
-        softly.assertThat(result.getOutput()).contains("BUILD SUCCESSFUL");
-        softly.assertThat(includedFile).doesNotExist();
-        softly.assertThat(outputDir).doesNotExist();
-        softly.assertAll();
-    }
-
-
-
 }

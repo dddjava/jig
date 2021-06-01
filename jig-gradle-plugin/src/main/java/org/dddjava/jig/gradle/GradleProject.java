@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -70,16 +71,28 @@ public class GradleProject {
             return Stream.empty();
         }
 
-        //FIXME: 誰かcompileとimplementation両方が取得できるより良い方法があれば
-        DependencySet compileDependencies = root.getConfigurations().getByName("compile").getAllDependencies();
-        DependencySet implementationDependencies = root.getConfigurations().getByName("implementation").getAllDependencies();
-        Stream<Project> descendantStream = Stream.concat(compileDependencies.stream(), implementationDependencies.stream())
-                .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
-                .map(ProjectDependency.class::cast)
-                .map(ProjectDependency::getDependencyProject)
-                .flatMap(this::allDependencyProjectsFrom);
+        Stream<Project> descendantStream =
+                root.getConfigurations().stream()
+                        .filter(this::implementationConfiguration)
+                        .map(Configuration::getAllDependencies)
+                        .flatMap(DependencySet::stream)
+                        .filter(dependency -> ProjectDependency.class.isAssignableFrom(dependency.getClass()))
+                        .map(ProjectDependency.class::cast)
+                        .map(ProjectDependency::getDependencyProject)
+                        .flatMap(this::allDependencyProjectsFrom);
 
         return Stream.concat(Stream.of(root), descendantStream);
+    }
+
+    private boolean implementationConfiguration(Configuration configuration) {
+        String name = configuration.getName();
+        if ("implementation".equals(name)) return true;
+
+        // Gradle7でcompileスコープが削除されたが、後方互換のため対応しておく
+        // https://docs.gradle.org/current/userguide/upgrading_version_6.html#sec:configuration_removal
+        if ("compile".equals(name)) return true;
+
+        return false;
     }
 
     private boolean isNonJavaProject(Project root) {

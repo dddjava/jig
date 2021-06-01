@@ -62,15 +62,15 @@ public class JigPropertyLoader {
 
     private void loadConfigFromPath(Path configDirectoryPath) {
         Path jigPropertiesPath = configDirectoryPath.resolve("jig.properties");
-        logger.info("try to load " + jigPropertiesPath.toAbsolutePath() + " ...");
+        logger.debug("try to load " + jigPropertiesPath.toAbsolutePath() + " ...");
         if (jigPropertiesPath.toFile().exists()) {
-            logger.info("loading " + jigPropertiesPath.toAbsolutePath());
             try (InputStream is = Files.newInputStream(jigPropertiesPath)) {
                 Properties properties = new Properties();
                 properties.load(is);
                 apply(properties);
+                logger.info("configuration loaded from {}", jigPropertiesPath.toAbsolutePath());
             } catch (IOException e) {
-                logger.warn("JIG設定ファイルのロードに失敗しました。", e);
+                logger.warn("fail to load {}", jigPropertiesPath, e);
             }
         }
     }

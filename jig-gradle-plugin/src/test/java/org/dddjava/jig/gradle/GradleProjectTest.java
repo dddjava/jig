@@ -43,26 +43,25 @@ class GradleProjectTest {
         List<Path> actualTextPaths = sourcePaths.textSourcePaths();
 
         assertAll(
-                () -> {
-                    assertEquals(fixture.classPathSuffixes.size(), actualBinaryPaths.size(),
-                            () -> actualBinaryPaths.toString());
-                    for (int i = 0; i < actualBinaryPaths.size(); i++) {
-                        Path actualPath = actualBinaryPaths.get(i);
-                        String expectedSuffix = fixture.classPathSuffixes.get(i);
-                        assertTrue(actualPath.endsWith(expectedSuffix),
-                                () -> String.format("expected: %s, actual: %s", expectedSuffix, actualPath));
-                    }
-                },
-                () -> {
-                    assertEquals(fixture.sourcePathSuffixes.size(), actualTextPaths.size(),
-                            () -> actualTextPaths.toString());
-                    for (int i = 0; i < actualTextPaths.size(); i++) {
-                        Path actualPath = actualTextPaths.get(i);
-                        String expectedSuffix = fixture.sourcePathSuffixes.get(i);
-                        assertTrue(actualPath.endsWith(expectedSuffix),
-                                () -> String.format("expected: %s, actual: %s", expectedSuffix, actualPath));
-                    }
-                });
+                () -> assertPath(actualBinaryPaths, fixture.classPathSuffixes),
+                () -> assertPath(actualTextPaths, fixture.sourcePathSuffixes)
+        );
+    }
+
+    void assertPath(List<Path> actualPaths, List<String> expectPathSuffixes) {
+        // 数の一致を検証。不一致の場合は実際に解決されたパスを出力する。
+        assertEquals(expectPathSuffixes.size(), actualPaths.size(),
+                () -> actualPaths.toString());
+        // 順序通りの一致を検証する。
+        // Path#relativize などで完全一致を検証したいが
+        // /var がシンボリックリンクだとactualが /private/var になったりするためうまくいかない。
+        // endsWithで検証する。
+        for (int i = 0; i < actualPaths.size(); i++) {
+            Path actualPath = actualPaths.get(i);
+            String expectedSuffix = expectPathSuffixes.get(i);
+            assertTrue(actualPath.endsWith(expectedSuffix),
+                    () -> String.format("expected: %s, actual: %s", expectedSuffix, actualPath));
+        }
     }
 
 

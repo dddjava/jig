@@ -35,17 +35,12 @@ class GradleProjectTest {
     @MethodSource("fixtures")
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(
             Fixture fixture) throws Exception {
-
         Project project = fixture.createProject(tempDir);
-
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
-        List<Path> actualBinaryPaths = sourcePaths.binarySourcePaths();
-        List<Path> actualTextPaths = sourcePaths.textSourcePaths();
-
         assertAll(
-                () -> assertPath(actualBinaryPaths, fixture.classPathSuffixes),
-                () -> assertPath(actualTextPaths, fixture.sourcePathSuffixes)
+                () -> assertPath(sourcePaths.binarySourcePaths(), fixture.classPathSuffixes),
+                () -> assertPath(sourcePaths.textSourcePaths(), fixture.sourcePathSuffixes)
         );
     }
 
@@ -191,28 +186,23 @@ class GradleProjectTest {
     }
 
     private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project root = javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir);
-        DependencyHandler dependencies = root.getDependencies();
-
-        ProjectInternal javaChild = javaProjectOf("javaChild", tempDir);
-        Stream<ProjectInternal> children = Stream.of(
-                projectOf("nonJavaChild", tempDir),
-                javaChild
-        );
-        children
-                .map(GradleProjectTest::dependencyOf)
-                .forEach(dependency -> dependencies.add("implementation", dependency));
-
-
-        DependencyHandler javaChildDependencies = javaChild.getDependencies();
-        Stream<ProjectInternal> grandsons = Stream.of(
+        Project javaChild = addDependencyTo(javaProjectOf("javaChild", tempDir),
+                "implementation",
                 projectOf("nonJavaGrandson", tempDir),
-                javaProjectOf("javaGrandson", tempDir)
-        );
-        grandsons
-                .map(GradleProjectTest::dependencyOf)
-                .forEach(dependency -> javaChildDependencies.add("implementation", dependency));
-        return root;
+                javaProjectOf("javaGrandson", tempDir));
+
+        return addDependencyTo(javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
+                "implementation",
+                projectOf("nonJavaChild", tempDir),
+                javaChild);
+    }
+
+    static Project addDependencyTo(Project project, String configurationName, Project... dependencies) {
+        DependencyHandler projectDependencies = project.getDependencies();
+        for (Project dependency : dependencies) {
+            projectDependencies.add(configurationName, dependency);
+        }
+        return project;
     }
 
     private static DefaultProjectDependency dependencyOf(ProjectInternal nonJavaChild) {

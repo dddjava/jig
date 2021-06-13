@@ -41,7 +41,7 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
-        LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        LOGGER.info("Finished: {} ms", System.currentTimeMillis() - startTime);
+        LOGGER.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
+                System.currentTimeMillis() - startTime, resultLog);
     }
 }

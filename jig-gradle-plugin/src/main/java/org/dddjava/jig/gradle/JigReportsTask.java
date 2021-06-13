@@ -33,8 +33,8 @@ public class JigReportsTask extends DefaultTask {
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
-        getLogger().info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        getLogger().info("Finished: {} ms", System.currentTimeMillis() - startTime);
+        getLogger().info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
+                System.currentTimeMillis() - startTime, resultLog);
     }
 
 }

@@ -34,7 +34,7 @@ public class ModelReportsPoiView implements JigView {
         try (Workbook book = new XSSFWorkbook()) {
             List<ModelReport<?>> list = modelReports.list();
             for (ModelReport<?> modelReport : list) {
-                modelReport.writeSheet(book, reportItemFormatter);
+                modelReport.writeSheet(book, jigDocumentWriter, reportItemFormatter);
             }
 
             jigDocumentWriter.writeXlsx(book::write);

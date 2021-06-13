@@ -3,6 +3,7 @@ package org.dddjava.jig.presentation.view.poi.report;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
+import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.report.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,9 +98,9 @@ public class ModelReport<MODEL> {
         return new Header(reportItemMethods);
     }
 
-    public void writeSheet(Workbook book, ReportItemFormatter reportItemFormatter) {
+    public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter) {
         if (pivotModels.isEmpty()) {
-            logger.info("出力対象がないため {} シートをスキップしました。", title);
+            logger.info("出力する情報がないため、{}/{}の出力を抑止します。", jigDocumentWriter.jigDocument().label(), title);
             return;
         }
         Sheet sheet = book.createSheet(title);

@@ -13,8 +13,8 @@ public class Header {
         this.reportItemMethods = reportItemMethods;
     }
 
-    public String textOf(int i) {
-        return reportItemMethods.get(i).label();
+    public String textOf(int i, ReportItemFormatter reportItemFormatter) {
+        return reportItemMethods.get(i).label(reportItemFormatter);
     }
 
     public int size() {

@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +23,10 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
     LinkPrefix linkPrefix;
     PackageIdentifierFormatter packageIdentifierFormatter;
 
-    ResourceBundleJigDocumentContext() {
-    }
-
     ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-    }
-
-    public static ResourceBundleJigDocumentContext getInstance() {
-        return new ResourceBundleJigDocumentContext();
     }
 
     public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
@@ -49,10 +41,6 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
         // 取得できない場合はkeyをそのまま返す
         LOGGER.warn("Can't find resource for '{}'", key);
         return key;
-    }
-
-    public String reportLabel(ReportItem reportItem) {
-        return label(reportItem.key);
     }
 
     @Override

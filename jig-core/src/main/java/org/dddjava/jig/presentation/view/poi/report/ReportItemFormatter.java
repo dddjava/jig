@@ -182,4 +182,8 @@ public class ReportItemFormatter {
         }
         cell.setCellValue(value);
     }
+
+    public String reportLabel(ReportItem reportItem) {
+        return jigDocumentContext.label(reportItem.key);
+    }
 }

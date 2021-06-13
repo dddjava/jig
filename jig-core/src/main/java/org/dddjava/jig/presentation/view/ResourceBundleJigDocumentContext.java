@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,29 +19,18 @@ public class ResourceBundleJigDocumentContext implements JigDocumentContext {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceBundleJigDocumentContext.class);
 
-    ResourceBundle jigDocumentResource;
+    ResourceBundle jigDocumentResource = Utf8ResourceBundle.getBundle();
     AliasService aliasService;
     LinkPrefix linkPrefix;
     PackageIdentifierFormatter packageIdentifierFormatter;
 
     ResourceBundleJigDocumentContext() {
-        init();
     }
 
     ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
-        init();
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-    }
-
-
-    private void init() {
-        try {
-            jigDocumentResource = Utf8ResourceBundle.documentBundle();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static ResourceBundleJigDocumentContext getInstance() {

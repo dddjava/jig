@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
-import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.controller.JigExecutor;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.gradle.api.DefaultTask;
@@ -35,7 +34,7 @@ public class JigReportsTask extends DefaultTask {
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         getLogger().info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        getLogger().info(Utf8ResourceBundle.messageBundle().getString("success"), System.currentTimeMillis() - startTime);
+        getLogger().info("Finished: {} ms", System.currentTimeMillis() - startTime);
     }
 
 }

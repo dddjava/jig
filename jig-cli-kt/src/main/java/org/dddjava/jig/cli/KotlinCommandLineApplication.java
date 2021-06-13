@@ -2,7 +2,6 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.resourcebundle.Utf8ResourceBundle;
 import org.dddjava.jig.presentation.controller.JigExecutor;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.slf4j.Logger;
@@ -43,6 +42,6 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
         LOGGER.info("-- output documents -------------------------------------------\n{}\n------------------------------------------------------------", resultLog);
-        LOGGER.info(Utf8ResourceBundle.messageBundle().getString("success"), System.currentTimeMillis() - startTime);
+        LOGGER.info("Finished: {} ms", System.currentTimeMillis() - startTime);
     }
 }

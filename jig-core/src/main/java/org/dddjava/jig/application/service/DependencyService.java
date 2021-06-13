@@ -1,9 +1,10 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,12 +13,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class DependencyService {
 
-    final JigLogger jigLogger;
+    static Logger logger = LoggerFactory.getLogger(DependencyService.class);
     final BusinessRuleService businessRuleService;
 
-    public DependencyService(BusinessRuleService businessRuleService, JigLogger jigLogger) {
+    public DependencyService(BusinessRuleService businessRuleService) {
         this.businessRuleService = businessRuleService;
-        this.jigLogger = jigLogger;
     }
 
     /**
@@ -27,7 +27,7 @@ public class DependencyService {
         BusinessRules businessRules = businessRules();
 
         if (businessRules.empty()) {
-            jigLogger.warn(Warning.ビジネスルールが見つからないので出力されない通知);
+            logger.warn(Warning.ビジネスルールが見つからないので出力されない通知.localizedMessage());
             return PackageRelationDiagram.empty();
         }
 

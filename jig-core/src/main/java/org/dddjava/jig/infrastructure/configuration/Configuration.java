@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
-import org.dddjava.jig.infrastructure.logger.MessageLogger;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
@@ -45,8 +44,8 @@ public class Configuration {
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
         this.businessRuleService = new BusinessRuleService(architecture, jigSourceRepository);
-        this.dependencyService = new DependencyService(businessRuleService, new MessageLogger(DependencyService.class));
-        this.applicationService = new ApplicationService(new MessageLogger(ApplicationService.class), jigSourceRepository);
+        this.dependencyService = new DependencyService(businessRuleService);
+        this.applicationService = new ApplicationService(jigSourceRepository);
 
         this.jigSourceReadService = new JigSourceReadService(
                 jigSourceRepository,

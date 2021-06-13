@@ -3,7 +3,6 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
-import org.dddjava.jig.domain.model.documents.stationery.JigLogger;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
@@ -16,6 +15,8 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -24,11 +25,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApplicationService {
 
-    final JigLogger jigLogger;
+    static Logger logger = LoggerFactory.getLogger(ApplicationService.class);
     final JigSourceRepository jigSourceRepository;
 
-    public ApplicationService(JigLogger jigLogger, JigSourceRepository jigSourceRepository) {
-        this.jigLogger = jigLogger;
+    public ApplicationService(JigSourceRepository jigSourceRepository) {
         this.jigSourceRepository = jigSourceRepository;
     }
 
@@ -40,7 +40,7 @@ public class ApplicationService {
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
 
         if (handlerMethods.empty()) {
-            jigLogger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知);
+            logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
         return handlerMethods;
@@ -60,7 +60,7 @@ public class ApplicationService {
         ServiceMethods serviceMethods = ServiceMethods.from(jigTypes);
 
         if (serviceMethods.empty()) {
-            jigLogger.warn(Warning.サービスメソッドが見つからないので出力されない通知);
+            logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
         HandlerMethods handlerMethods = HandlerMethods.from(jigTypes);
@@ -81,7 +81,7 @@ public class ApplicationService {
         DatasourceMethods datasourceMethods = DatasourceMethods.from(typeFacts.jigTypes());
 
         if (datasourceMethods.empty()) {
-            jigLogger.warn(Warning.リポジトリが見つからないので出力されない通知);
+            logger.warn(Warning.リポジトリが見つからないので出力されない通知.localizedMessage());
         }
 
         MethodRelations methodRelations = typeFacts.toMethodRelations();

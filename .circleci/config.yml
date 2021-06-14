@@ -93,7 +93,7 @@ workflows:
       - build-java-8:
           filters:
             branches:
-              only: 'master'
+              only: 'main'
       - build-java-11:
           requires:
             - build-java-8

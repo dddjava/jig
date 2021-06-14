@@ -152,7 +152,7 @@ project(':jig-core') {
         // javadocコメントの取得: infrastructure/javaparser
         api 'com.github.javaparser:javaparser-core:3.22.1'
         // excel出力: presentation/poi
-        api 'org.apache.poi:poi:4.1.2'
+        api 'org.apache.poi:poi:5.0.0'
         api 'org.apache.poi:poi-ooxml:4.1.2'
         // HTML出力
         api 'org.thymeleaf:thymeleaf:3.0.12.RELEASE'

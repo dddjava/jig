@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.documents.stationery.AdditionalText;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.presentation.view.JigDocumentWriter;
-import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
+import org.dddjava.jig.presentation.view.handler.JigView;
 
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;

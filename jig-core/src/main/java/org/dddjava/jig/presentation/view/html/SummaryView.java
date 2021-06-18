@@ -8,8 +8,10 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.presentation.view.JigDocumentWriter;
-import org.dddjava.jig.presentation.view.JigView;
+import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
+import org.dddjava.jig.presentation.view.handler.JigView;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -19,12 +21,12 @@ import static java.util.stream.Collectors.*;
 
 public class SummaryView implements JigView {
 
-    HtmlDocumentTemplateEngine templateEngine;
+    TemplateEngine templateEngine;
     JigDocumentContext jigDocumentContext;
 
-    public SummaryView(JigDocumentContext jigDocumentContext) {
+    public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+        this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
-        this.templateEngine = new HtmlDocumentTemplateEngine(jigDocumentContext);
     }
 
     @Override
@@ -66,7 +68,8 @@ public class SummaryView implements JigView {
         contextMap.put("jigTypes", jigTypes);
         contextMap.put("categoriesMap", categoriesMap);
 
-        String htmlText = templateEngine.process(jigDocumentWriter, contextMap);
+        Context context = new Context(Locale.ROOT, contextMap);
+        String htmlText = templateEngine.process(jigDocumentWriter.jigDocument().fileName(), context);
 
         jigDocumentWriter.writeHtml(outputStream -> {
             outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));

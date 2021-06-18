@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view;
+package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;

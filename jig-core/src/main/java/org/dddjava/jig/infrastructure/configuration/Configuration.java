@@ -17,7 +17,7 @@ import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
-import org.dddjava.jig.presentation.view.ViewResolver;
+import org.dddjava.jig.presentation.view.handler.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
 import java.nio.file.Path;

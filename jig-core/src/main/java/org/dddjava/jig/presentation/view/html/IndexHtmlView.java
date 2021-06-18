@@ -1,21 +1,24 @@
 package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
-import org.dddjava.jig.presentation.view.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
+import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IndexHtmlView {
 
-    public void render(List<HandleResult> handleResultList, JigDocumentWriter jigDocumentWriter) {
-        HtmlDocumentTemplateEngine templateEngine = new HtmlDocumentTemplateEngine();
+    TemplateEngine templateEngine;
 
-        Map<String, Object> context = new HashMap<>();
+    public IndexHtmlView(TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
+    }
+
+    public void render(List<HandleResult> handleResultList, JigDocumentWriter jigDocumentWriter) {
+        Map<String, Object> contextMap = new HashMap<>();
 
         List<String> diagramFiles = new ArrayList<>();
         for (HandleResult handleResult : handleResultList) {
@@ -24,13 +27,14 @@ public class IndexHtmlView {
                 if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
                     diagramFiles.addAll(list);
                 } else {
-                    context.put(handleResult.jigDocument().name(), list.get(0));
+                    contextMap.put(handleResult.jigDocument().name(), list.get(0));
                 }
             }
         }
-        context.put("diagramFiles", diagramFiles);
+        contextMap.put("diagramFiles", diagramFiles);
 
-        String htmlText = templateEngine.process(jigDocumentWriter, context);
+        Context context = new Context(Locale.ROOT, contextMap);
+        String htmlText = templateEngine.process(jigDocumentWriter.jigDocument().fileName(), context);
 
         jigDocumentWriter.writeHtml(outputStream -> {
             outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));

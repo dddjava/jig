@@ -1,30 +1,25 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
-import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.infrastructure.configuration.JigProperties;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import testing.JigTestExtension;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@ExtendWith(JigTestExtension.class)
 class JigDocumentHandlersTest {
 
     @ParameterizedTest
     @EnumSource(value = JigDocument.class, mode = EnumSource.Mode.EXCLUDE, names = "Summary")
-    void diagrams(JigDocument jigDocument, @TempDir Path temp) throws IOException {
-        Configuration configuration = new Configuration(
-                new JigProperties(JigDocument.canonical(), "stub.domain.model.+", temp),
-                new SourceCodeAliasReader(null)
-        );
+    void JigDocumentHandlerですべてのJigDocumentが処理できること(JigDocument jigDocument, @TempDir Path outputDirectory, JigDocumentHandlers sut) throws IOException {
 
-        JigDocumentHandlers sut = configuration.documentHandlers();
-        HandleResult handle = sut.handle(jigDocument, temp);
+        HandleResult handle = sut.handle(jigDocument, outputDirectory);
 
         assertEquals("skip", handle.failureMessage);
     }

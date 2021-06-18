@@ -16,7 +16,7 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceReposi
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
-import org.dddjava.jig.presentation.view.ResourceBundleJigDocumentContext;
+import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 import org.dddjava.jig.presentation.view.ViewResolver;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 
@@ -56,7 +56,7 @@ public class Configuration {
         );
 
         this.aliasService = new AliasService(commentRepository);
-        JigDocumentContext jigDocumentContext = ResourceBundleJigDocumentContext.getInstanceWithAliasFinder(
+        JigDocumentContext jigDocumentContext = JigDocumentContextImpl.getInstanceWithAliasFinder(
                 aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
 
         this.documentHandlers = new JigDocumentHandlers(

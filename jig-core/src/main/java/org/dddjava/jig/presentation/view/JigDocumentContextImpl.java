@@ -11,20 +11,20 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.Objects;
 
-public class ResourceBundleJigDocumentContext implements JigDocumentContext {
+public class JigDocumentContextImpl implements JigDocumentContext {
 
     AliasService aliasService;
     LinkPrefix linkPrefix;
     PackageIdentifierFormatter packageIdentifierFormatter;
 
-    ResourceBundleJigDocumentContext(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
+    JigDocumentContextImpl(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
     }
 
     public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
-        return new ResourceBundleJigDocumentContext(aliasService, linkPrefix, packageIdentifierFormatter);
+        return new JigDocumentContextImpl(aliasService, linkPrefix, packageIdentifierFormatter);
     }
 
     @Override

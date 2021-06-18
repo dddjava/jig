@@ -8,13 +8,15 @@ import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JigExecutor {
+    static Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
-    public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths, Logger logger) {
+    public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
 
         JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();

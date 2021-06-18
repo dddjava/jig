@@ -27,7 +27,7 @@ public class JigReportsTask extends DefaultTask {
         long startTime = System.currentTimeMillis();
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths, getLogger());
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

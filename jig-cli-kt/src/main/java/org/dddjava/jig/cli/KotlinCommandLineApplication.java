@@ -35,7 +35,7 @@ public class KotlinCommandLineApplication implements CommandLineRunner {
         long startTime = System.currentTimeMillis();
         SourcePaths sourcePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths, LOGGER);
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

@@ -8,8 +8,6 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 public interface JigDocumentContext {
 
-    String label(String key);
-
     LinkPrefix linkPrefix();
 
     PackageComment packageComment(PackageIdentifier packageIdentifier);

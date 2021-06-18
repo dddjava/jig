@@ -14,13 +14,13 @@ public class ReportItemMethod implements Comparable<ReportItemMethod> {
         this.reportItemFor = reportItemFor;
     }
 
-    String label(ReportItemFormatter reportItemFormatter) {
+    String label() {
         String label = reportItemFor.label();
-        return label.isEmpty() ? name(reportItemFormatter) : label;
+        return label.isEmpty() ? name() : label;
     }
 
-    private String name(ReportItemFormatter reportItemFormatter) {
-        return reportItemFormatter.reportLabel(reportItemFor.value());
+    private String name() {
+        return reportItemFor.value().localizedText();
     }
 
     @Override

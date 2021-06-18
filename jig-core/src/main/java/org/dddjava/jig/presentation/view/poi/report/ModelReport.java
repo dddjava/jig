@@ -104,18 +104,18 @@ public class ModelReport<MODEL> {
             return;
         }
         Sheet sheet = book.createSheet(title);
-        writeHeader(sheet, reportItemFormatter);
+        writeHeader(sheet);
         writeBody(sheet, reportItemFormatter);
         updateSheetAttribute(sheet);
     }
 
-    void writeHeader(Sheet sheet, ReportItemFormatter reportItemFormatter) {
+    void writeHeader(Sheet sheet) {
         Header header = header();
         Row row = sheet.createRow(0);
         for (int i = 0; i < header.size(); i++) {
             // headerは全てSTRINGで作る
             Cell cell = row.createCell(i, CellType.STRING);
-            cell.setCellValue(header.textOf(i, reportItemFormatter));
+            cell.setCellValue(header.textOf(i));
         }
     }
 

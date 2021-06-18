@@ -147,8 +147,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         stringJoiner.add(labelsText);
 
         String summaryText = "summary[shape=note,label=\""
-                + jigDocumentContext.label("number_of_packages") + ": " + allPackages().number().asText() + "\\l"
-                + jigDocumentContext.label("number_of_relations") + ": " + packageRelations.number().asText() + "\\l"
+                + allPackages().number().localizedLabel() + "\\l"
+                + packageRelations.number().localizedLabel() + "\\l"
                 + "\"]";
 
         DocumentName documentName = DocumentName.of(JigDocument.PackageRelationDiagram);

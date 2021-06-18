@@ -17,17 +17,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-class HtmlDocumentTemplateEngine extends TemplateEngine {
+class HtmlDocumentTemplateEngine {
 
     JigDocumentContext jigDocumentContext;
+    TemplateEngine templateEngine = new TemplateEngine();
 
     public HtmlDocumentTemplateEngine() {
-        super();
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setSuffix(".html");
         templateResolver.setPrefix("templates/");
-        super.setTemplateResolver(templateResolver);
+        templateEngine.setTemplateResolver(templateResolver);
     }
 
     public HtmlDocumentTemplateEngine(JigDocumentContext jigDocumentContext) {
@@ -35,7 +35,7 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
 
         this.jigDocumentContext = jigDocumentContext;
 
-        super.addDialect(new IExpressionObjectDialect() {
+        templateEngine.addDialect(new IExpressionObjectDialect() {
             @Override
             public String getName() {
                 return "jig-dialect";
@@ -65,7 +65,7 @@ class HtmlDocumentTemplateEngine extends TemplateEngine {
 
     public String process(JigDocumentWriter jigDocumentWriter, Map<String, Object> contextMap) {
         Context context = new Context(Locale.ROOT, contextMap);
-        return process(jigDocumentWriter.jigDocument().fileName(), context);
+        return templateEngine.process(jigDocumentWriter.jigDocument().fileName(), context);
     }
 
     class JigDialectObject {

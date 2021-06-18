@@ -17,14 +17,10 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     LinkPrefix linkPrefix;
     PackageIdentifierFormatter packageIdentifierFormatter;
 
-    JigDocumentContextImpl(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
+    public JigDocumentContextImpl(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
         this.packageIdentifierFormatter = packageIdentifierFormatter;
-    }
-
-    public static JigDocumentContext getInstanceWithAliasFinder(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
-        return new JigDocumentContextImpl(aliasService, linkPrefix, packageIdentifierFormatter);
     }
 
     @Override

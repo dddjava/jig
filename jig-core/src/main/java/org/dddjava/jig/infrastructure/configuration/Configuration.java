@@ -56,7 +56,7 @@ public class Configuration {
         );
 
         this.aliasService = new AliasService(commentRepository);
-        JigDocumentContext jigDocumentContext = JigDocumentContextImpl.getInstanceWithAliasFinder(
+        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(
                 aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
 
         this.documentHandlers = new JigDocumentHandlers(

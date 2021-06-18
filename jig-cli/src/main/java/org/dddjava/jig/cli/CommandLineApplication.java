@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @SpringBootApplication
 public class CommandLineApplication implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommandLineApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(CommandLineApplication.class, args);
@@ -29,8 +29,7 @@ public class CommandLineApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         Configuration configuration = cliConfig.configuration();
-
-        LOGGER.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
+        logger.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
 
         long startTime = System.currentTimeMillis();
         SourcePaths sourcePaths = cliConfig.rawSourceLocations();
@@ -41,7 +40,7 @@ public class CommandLineApplication implements CommandLineRunner {
                 .filter(HandleResult::success)
                 .map(handleResult -> handleResult.jigDocument() + " : " + handleResult.outputFilePathsText())
                 .collect(Collectors.joining("\n"));
-        LOGGER.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
+        logger.info("-- Output Complete {} ms -------------------------------------------\n{}\n------------------------------------------------------------",
                 System.currentTimeMillis() - startTime,
                 resultLog);
     }

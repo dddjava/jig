@@ -13,6 +13,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import java.nio.charset.StandardCharsets;
+
 public class ViewResolver {
 
     JigDiagramFormat diagramFormat;
@@ -34,6 +36,7 @@ public class ViewResolver {
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setSuffix(".html");
         templateResolver.setPrefix("templates/");
+        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
         this.templateEngine = templateEngine;

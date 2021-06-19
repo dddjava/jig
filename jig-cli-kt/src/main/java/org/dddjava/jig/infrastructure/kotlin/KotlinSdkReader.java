@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.kotlin;
 
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSource;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSources;
+import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
+import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.sources.jigreader.KotlinTextSourceReader;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 public class KotlinSdkReader implements KotlinTextSourceReader {
 
     @Override
-    public ClassAndMethodComments readClasses(KotlinSources sources) {
+    public ClassAndMethodComments readClasses(ReadableTextSources readableTextSources) {
         KotlinSourceVisitor visitor = new KotlinSourceVisitor();
 
-        for (KotlinSource kotlinSource : sources.list()) {
-            KtFile ktFile = readKotlinSource(kotlinSource);
+        for (ReadableTextSource readableTextSource : readableTextSources.list()) {
+            KtFile ktFile = readKotlinSource(readableTextSource);
             if (ktFile == null) {
                 continue;
             }
@@ -42,20 +42,20 @@ public class KotlinSdkReader implements KotlinTextSourceReader {
         return new ClassAndMethodComments(visitor.typeJapaneseAliases, visitor.methodList);
     }
 
-    private KtFile sourceToKtFile(KotlinSource kotlinSource, String source) {
+    private KtFile sourceToKtFile(ReadableTextSource readableTextSource, String source) {
         CompilerConfiguration configuration = new CompilerConfiguration();
         configuration.put(CLIConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.Companion.getNONE());
         KotlinCoreEnvironment environment = KotlinCoreEnvironment.createForProduction(() -> {
         }, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES);
         Project project = environment.getProject();
-        LightVirtualFile virtualFile = new LightVirtualFile(kotlinSource.sourceFilePath().fineName(), KotlinFileType.INSTANCE, source);
+        LightVirtualFile virtualFile = new LightVirtualFile(readableTextSource.fineName(), KotlinFileType.INSTANCE, source);
         return (KtFile) PsiManager.getInstance(project).findFile(virtualFile);
     }
 
-    private KtFile readKotlinSource(KotlinSource source) {
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(source.toInputStream(), StandardCharsets.UTF_8))) {
+    private KtFile readKotlinSource(ReadableTextSource readableTextSource) {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(readableTextSource.toInputStream(), StandardCharsets.UTF_8))) {
             String sourceCode = bufferedReader.lines().collect(Collectors.joining("\n"));
-            return sourceToKtFile(source, sourceCode);
+            return sourceToKtFile(readableTextSource, sourceCode);
         } catch (IOException e) {
             e.printStackTrace();
         }

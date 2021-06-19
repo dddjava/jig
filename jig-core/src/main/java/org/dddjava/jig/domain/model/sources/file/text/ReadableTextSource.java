@@ -1,0 +1,36 @@
+package org.dddjava.jig.domain.model.sources.file.text;
+
+import java.io.ByteArrayInputStream;
+import java.nio.file.Path;
+
+/**
+ * 読めるテキストソース
+ *
+ * 先にbytesとして読み込んでおく。このインスタンスでは少なくともIOExceptionは発生しない。
+ */
+public class ReadableTextSource {
+
+    private CodeSource codeSource;
+    private byte[] bytes;
+
+    public ReadableTextSource(CodeSource codeSource, byte[] bytes) {
+        this.codeSource = codeSource;
+        this.bytes = bytes;
+    }
+
+    public ByteArrayInputStream toInputStream() {
+        return new ByteArrayInputStream(bytes());
+    }
+
+    public String fineName() {
+        return path().getFileName().toString();
+    }
+
+    public Path path() {
+        return codeSource.codeSourceFile.path;
+    }
+
+    public byte[] bytes() {
+        return bytes;
+    }
+}

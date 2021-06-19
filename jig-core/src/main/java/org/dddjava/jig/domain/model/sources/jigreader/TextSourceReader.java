@@ -1,8 +1,7 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
-import org.dddjava.jig.domain.model.sources.file.text.TextSources;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
 
 import java.util.stream.Stream;
 
@@ -33,15 +32,15 @@ public class TextSourceReader {
         this.scalaSourceAliasReader = scalaSourceAliasReader;
     }
 
-    public PackageComments readPackageComments(PackageInfoSources packageInfoSources) {
-        return javaTextSourceReader.readPackages(packageInfoSources);
+    public PackageComments readPackageComments(CodeSources codeSources) {
+        return javaTextSourceReader.readPackages(codeSources.packageInfoSources());
     }
 
-    public ClassAndMethodComments readClassAndMethodComments(TextSources textSources) {
+    public ClassAndMethodComments readClassAndMethodComments(CodeSources codeSources) {
         return Stream.of(
-                javaTextSourceReader.readClasses(textSources.javaSources()),
-                kotlinTextSourceReader.readClasses(textSources.kotlinSources()),
-                scalaSourceAliasReader.readAlias(textSources.scalaSources()))
+                javaTextSourceReader.readClasses(codeSources.javaSources()),
+                kotlinTextSourceReader.readClasses(codeSources.kotlinSources()),
+                scalaSourceAliasReader.readAlias(codeSources.scalaSources()))
                 .reduce(ClassAndMethodComments.empty(), ClassAndMethodComments::merge);
     }
 }

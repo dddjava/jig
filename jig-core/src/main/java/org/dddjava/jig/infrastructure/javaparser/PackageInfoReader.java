@@ -9,14 +9,14 @@ import com.github.javaparser.javadoc.description.JavadocDescription;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSource;
+import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 
 import java.util.Optional;
 
 class PackageInfoReader {
 
-    Optional<PackageComment> read(PackageInfoSource packageInfoSource) {
-        CompilationUnit cu = StaticJavaParser.parse(packageInfoSource.toInputStream());
+    Optional<PackageComment> read(ReadableTextSource codeSource) {
+        CompilationUnit cu = StaticJavaParser.parse(codeSource.toInputStream());
 
         Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)

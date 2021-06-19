@@ -7,13 +7,7 @@ import org.dddjava.jig.domain.model.sources.file.binary.*;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSource;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourceFile;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.*;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSource;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSourceFile;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSource;
-import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSourceFile;
-import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSourceType;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,40 +60,17 @@ public class LocalFileSourceReader implements SourceReader {
         List<CodeSource> list = new ArrayList<>();
         for (Path path : sourcePaths.textSourcePaths()) {
             try {
-                List<JavaSource> javaSources = new ArrayList<>();
-                List<KotlinSource> kotlinSources = new ArrayList<>();
-                List<ScalaSource> scalaSources = new ArrayList<>();
-                List<PackageInfoSource> packageInfoSources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        try {
-                            CodeSourceFile codeSourceFile = new CodeSourceFile(file);
-                            JavaSourceFile javaSourceFile = codeSourceFile.asJava();
-                            KotlinSourceFile kotlinSourceFile = codeSourceFile.asKotlin();
-                            ScalaSourceFile scalaSourceFile = codeSourceFile.asScala();
-                            if (javaSourceFile.isJava()) {
-                                JavaSource javaSource = new JavaSource(javaSourceFile, Files.readAllBytes(file));
-                                if (javaSourceFile.isPackageInfo()) {
-                                    packageInfoSources.add(new PackageInfoSource(javaSource));
-                                } else {
-                                    javaSources.add(javaSource);
-                                }
-                            } else if (kotlinSourceFile.isKotlin()) {
-                                KotlinSource kotlinSource = new KotlinSource(kotlinSourceFile, Files.readAllBytes(file));
-                                kotlinSources.add(kotlinSource);
-                            } else if (scalaSourceFile.isScala()) {
-                                ScalaSource scalaSource = new ScalaSource(scalaSourceFile, Files.readAllBytes(file));
-                                scalaSources.add(scalaSource);
-                            }
-
-                            return FileVisitResult.CONTINUE;
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
+                        CodeSourceFile codeSourceFile = new CodeSourceFile(file);
+                        TextSourceType textSourceType = codeSourceFile.textSourceType();
+                        if (textSourceType != TextSourceType.UNSUPPORTED) {
+                            list.add(new CodeSource(codeSourceFile));
                         }
+                        return FileVisitResult.CONTINUE;
                     }
                 });
-                list.add(new CodeSource(new JavaSources(javaSources), new KotlinSources(kotlinSources), new ScalaSources(scalaSources), new PackageInfoSources(packageInfoSources)));
             } catch (IOException e) {
                 LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }

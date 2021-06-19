@@ -4,10 +4,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSource;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSource;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
+import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
+import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.slf4j.Logger;
@@ -27,31 +25,31 @@ public class JavaparserReader implements JavaTextSourceReader {
     ClassReader classReader = new ClassReader();
 
     @Override
-    public PackageComments readPackages(PackageInfoSources nameSources) {
+    public PackageComments readPackages(ReadableTextSources readableTextSources) {
         List<PackageComment> names = new ArrayList<>();
-        for (PackageInfoSource packageInfoSource : nameSources.list()) {
-            packageInfoReader.read(packageInfoSource)
+        for (ReadableTextSource readableTextSource : readableTextSources.list()) {
+            packageInfoReader.read(readableTextSource)
                     .ifPresent(names::add);
         }
         return new PackageComments(names);
     }
 
     @Override
-    public ClassAndMethodComments readClasses(JavaSources javaSources) {
+    public ClassAndMethodComments readClasses(ReadableTextSources readableTextSources) {
         List<ClassComment> names = new ArrayList<>();
         List<MethodComment> methodNames = new ArrayList<>();
 
-        for (JavaSource javaSource : javaSources.list()) {
+        for (ReadableTextSource readableTextSource : readableTextSources.list()) {
             try {
-                TypeSourceResult typeSourceResult = classReader.read(javaSource);
+                TypeSourceResult typeSourceResult = classReader.read(readableTextSource);
                 ClassComment classComment = typeSourceResult.classComment;
                 if (classComment != null) {
                     names.add(classComment);
                 }
                 methodNames.addAll(typeSourceResult.methodComments);
             } catch (Exception e) {
-                LOGGER.warn("{} のJavadoc読み取りに失敗しました（処理は続行します）", javaSource);
-                LOGGER.debug("{}読み取り失敗の詳細", javaSource, e);
+                LOGGER.warn("{} のJavadoc読み取りに失敗しました（処理は続行します）", readableTextSource);
+                LOGGER.debug("{}読み取り失敗の詳細", readableTextSource, e);
             }
         }
         return new ClassAndMethodComments(names, methodNames);

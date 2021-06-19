@@ -101,7 +101,7 @@ public class JigSourceReadService {
     /**
      * Javadocからパッケージ別名を取り込む
      */
-    void loadPackageInfoSources(PackageInfoSources packageInfoSources) {
+    void readPackageInfoSources(PackageInfoSources packageInfoSources) {
         PackageComments packageComments = aliasReader.readPackages(packageInfoSources);
         for (PackageComment packageComment : packageComments.list()) {
             jigSourceRepository.registerPackageComment(packageComment);
@@ -152,6 +152,6 @@ public class JigSourceReadService {
         readJavaSources(aliasSource.javaSources());
         readKotlinSources(aliasSource.kotlinSources());
         readScalaSources(aliasSource.scalaSources());
-        loadPackageInfoSources(aliasSource.packageInfoSources());
+        readPackageInfoSources(aliasSource.packageInfoSources());
     }
 }

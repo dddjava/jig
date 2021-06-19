@@ -13,10 +13,10 @@ public class CodeSources {
         this.list = list;
     }
 
-    public AliasSource aliasSource() {
+    public TextSources aliasSource() {
         return list.stream()
-                .map(codeSource -> new AliasSource(codeSource))
-                .reduce(new AliasSource(), AliasSource::merge);
+                .map(codeSource -> new TextSources(codeSource))
+                .reduce(new TextSources(), TextSources::merge);
     }
 
     public boolean nothing() {

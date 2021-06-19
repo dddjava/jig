@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSources;
+
+import java.util.stream.Stream;
 
 /**
  * コードを使用する別名別名読み取り機
@@ -33,19 +33,15 @@ public class TextSourceReader {
         this.scalaSourceAliasReader = scalaSourceAliasReader;
     }
 
-    public PackageComments readPackages(PackageInfoSources packageInfoSources) {
+    public PackageComments readPackageComments(PackageInfoSources packageInfoSources) {
         return javaTextSourceReader.readPackages(packageInfoSources);
     }
 
-    public ClassAndMethodComments readJavaSources(JavaSources javaSources) {
-        return javaTextSourceReader.readClasses(javaSources);
-    }
-
-    public ClassAndMethodComments readKotlinSources(KotlinSources kotlinSources) {
-        return kotlinTextSourceReader.readClasses(kotlinSources);
-    }
-
-    public ClassAndMethodComments readScalaSources(ScalaSources scalaSources) {
-        return scalaSourceAliasReader.readAlias(scalaSources);
+    public ClassAndMethodComments readClassAndMethodComments(TextSources textSources) {
+        return Stream.of(
+                javaTextSourceReader.readClasses(textSources.javaSources()),
+                kotlinTextSourceReader.readClasses(textSources.kotlinSources()),
+                scalaSourceAliasReader.readAlias(textSources.scalaSources()))
+                .reduce(ClassAndMethodComments.empty(), ClassAndMethodComments::merge);
     }
 }

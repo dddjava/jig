@@ -10,11 +10,7 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.file.text.AliasSource;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
-import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
-import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSources;
-import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.*;
@@ -78,7 +74,7 @@ public class JigSourceReadService {
      */
     public TypeFacts readProjectData(Sources sources) {
         TypeFacts typeFacts = readBinarySources(sources.classSources());
-        readTextSources(sources.aliasSource());
+        readTextSources(sources.textSources());
         return typeFacts;
     }
 
@@ -92,68 +88,29 @@ public class JigSourceReadService {
     }
 
     /**
-     * ソースからSQLを読み取る
+     * コメントを読み取る
      */
-    public Sqls readSqlSource(SqlSources sqlSources) {
-        Sqls sqls = sqlReader.readFrom(sqlSources);
-        jigSourceRepository.registerSqls(sqls);
-        return sqls;
-    }
+    void readTextSources(TextSources textSources) {
+        ClassAndMethodComments classAndMethodComments = textSourceReader.readClassAndMethodComments(textSources);
+        for (ClassComment classComment : classAndMethodComments.list()) {
+            jigSourceRepository.registerClassComment(classComment);
+        }
+        for (MethodComment methodComment : classAndMethodComments.methodList()) {
+            jigSourceRepository.registerMethodComment(methodComment);
+        }
 
-    /**
-     * Javadocからパッケージ別名を取り込む
-     */
-    void readPackageInfoSources(PackageInfoSources packageInfoSources) {
-        PackageComments packageComments = textSourceReader.readPackages(packageInfoSources);
+        PackageComments packageComments = textSourceReader.readPackageComments(textSources.packageInfoSources());
         for (PackageComment packageComment : packageComments.list()) {
             jigSourceRepository.registerPackageComment(packageComment);
         }
     }
 
     /**
-     * Javadocから別名を取り込む
+     * ソースからSQLを読み取る
      */
-    void readJavaSources(JavaSources javaSources) {
-        ClassAndMethodComments classAndMethodComments = textSourceReader.readJavaSources(javaSources);
-        registerComments(classAndMethodComments);
-    }
-
-    /**
-     * KtDocから別名を取り込む
-     */
-    void readKotlinSources(KotlinSources kotlinSources) {
-        ClassAndMethodComments classAndMethodComments = textSourceReader.readKotlinSources(kotlinSources);
-        registerComments(classAndMethodComments);
-    }
-
-    /**
-     * ScalaDocから別名を取り込む
-     */
-    void readScalaSources(ScalaSources scalaSources) {
-        ClassAndMethodComments classAndMethodComments = textSourceReader.readScalaSources(scalaSources);
-        registerComments(classAndMethodComments);
-    }
-
-    /**
-     * 型別名を取り込む
-     */
-    private void registerComments(ClassAndMethodComments classAndMethodComments) {
-        for (ClassComment classComment : classAndMethodComments.list()) {
-            jigSourceRepository.registerClassComment(classComment);
-        }
-
-        for (MethodComment methodComment : classAndMethodComments.methodList()) {
-            jigSourceRepository.registerMethodComment(methodComment);
-        }
-    }
-
-    /**
-     * 別名を取り込む
-     */
-    void readTextSources(AliasSource aliasSource) {
-        readJavaSources(aliasSource.javaSources());
-        readKotlinSources(aliasSource.kotlinSources());
-        readScalaSources(aliasSource.scalaSources());
-        readPackageInfoSources(aliasSource.packageInfoSources());
+    public Sqls readSqlSource(SqlSources sqlSources) {
+        Sqls sqls = sqlReader.readFrom(sqlSources);
+        jigSourceRepository.registerSqls(sqls);
+        return sqls;
     }
 }

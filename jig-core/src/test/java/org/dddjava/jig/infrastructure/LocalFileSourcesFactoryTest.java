@@ -25,7 +25,7 @@ class LocalFileSourcesFactoryTest {
         Sources source = sut.readSources(sourcePaths);
 
         assertTrue(source.classSources().list().isEmpty());
-        assertTrue(source.aliasSource().javaSources().list().isEmpty());
-        assertTrue(source.aliasSource().packageInfoSources().list().isEmpty());
+        assertTrue(source.textSources().javaSources().list().isEmpty());
+        assertTrue(source.textSources().packageInfoSources().list().isEmpty());
     }
 }

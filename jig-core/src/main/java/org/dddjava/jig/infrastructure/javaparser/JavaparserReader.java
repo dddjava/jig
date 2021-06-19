@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSource;
 import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
-import org.dddjava.jig.domain.model.sources.jigreader.JavaSourceAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * JavaparserでJavadocから別名を取得する実装
  */
-public class JavaparserAliasReader implements JavaSourceAliasReader {
+public class JavaparserReader implements JavaTextSourceReader {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserAliasReader.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
@@ -37,7 +37,7 @@ public class JavaparserAliasReader implements JavaSourceAliasReader {
     }
 
     @Override
-    public ClassAndMethodComments readAlias(JavaSources javaSources) {
+    public ClassAndMethodComments readClasses(JavaSources javaSources) {
         List<ClassComment> names = new ArrayList<>();
         List<MethodComment> methodNames = new ArrayList<>();
 

@@ -5,11 +5,11 @@ import org.dddjava.jig.domain.model.sources.file.text.javacode.JavaSources;
 import org.dddjava.jig.domain.model.sources.file.text.javacode.PackageInfoSources;
 
 /**
- * JavaSourceから別名を読み取る
+ * Javaのテキストソースを読み取る
  */
-public interface JavaSourceAliasReader {
+public interface JavaTextSourceReader {
 
     PackageComments readPackages(PackageInfoSources nameSources);
 
-    ClassAndMethodComments readAlias(JavaSources javaSource);
+    ClassAndMethodComments readClasses(JavaSources javaSource);
 }

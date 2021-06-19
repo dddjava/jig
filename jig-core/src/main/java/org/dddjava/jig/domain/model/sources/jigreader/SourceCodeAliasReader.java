@@ -11,38 +11,38 @@ import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSources;
  */
 public class SourceCodeAliasReader {
 
-    JavaSourceAliasReader javaSourceAliasReader;
-    KotlinSourceAliasReader kotlinSourceAliasReader;
+    JavaTextSourceReader javaTextSourceReader;
+    KotlinTextSourceReader kotlinTextSourceReader;
     ScalaSourceAliasReader scalaSourceAliasReader;
 
-    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> ClassAndMethodComments.empty(), sources -> ClassAndMethodComments.empty());
+    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader) {
+        this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), sources -> ClassAndMethodComments.empty());
     }
 
-    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader) {
-        this(javaSourceAliasReader, kotlinSourceAliasReader, sources -> ClassAndMethodComments.empty());
+    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader) {
+        this(javaTextSourceReader, kotlinTextSourceReader, sources -> ClassAndMethodComments.empty());
     }
 
-    public SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
-        this(javaSourceAliasReader, sources -> ClassAndMethodComments.empty(), scalaSourceAliasReader);
+    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+        this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), scalaSourceAliasReader);
     }
 
-    private SourceCodeAliasReader(JavaSourceAliasReader javaSourceAliasReader, KotlinSourceAliasReader kotlinSourceAliasReader, ScalaSourceAliasReader scalaSourceAliasReader) {
-        this.javaSourceAliasReader = javaSourceAliasReader;
-        this.kotlinSourceAliasReader = kotlinSourceAliasReader;
+    private SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+        this.javaTextSourceReader = javaTextSourceReader;
+        this.kotlinTextSourceReader = kotlinTextSourceReader;
         this.scalaSourceAliasReader = scalaSourceAliasReader;
     }
 
     public PackageComments readPackages(PackageInfoSources packageInfoSources) {
-        return javaSourceAliasReader.readPackages(packageInfoSources);
+        return javaTextSourceReader.readPackages(packageInfoSources);
     }
 
     public ClassAndMethodComments readJavaSources(JavaSources javaSources) {
-        return javaSourceAliasReader.readAlias(javaSources);
+        return javaTextSourceReader.readClasses(javaSources);
     }
 
     public ClassAndMethodComments readKotlinSources(KotlinSources kotlinSources) {
-        return kotlinSourceAliasReader.readAlias(kotlinSources);
+        return kotlinTextSourceReader.readClasses(kotlinSources);
     }
 
     public ClassAndMethodComments readScalaSources(ScalaSources scalaSources) {

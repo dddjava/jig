@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.kotlin;
 import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSource;
 import org.dddjava.jig.domain.model.sources.file.text.kotlincode.KotlinSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
-import org.dddjava.jig.domain.model.sources.jigreader.KotlinSourceAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.KotlinTextSourceReader;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
 import org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles;
@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 /**
  * KotlinのSDKを使用して別名を読み取る
  */
-public class KotlinSdkAliasReader implements KotlinSourceAliasReader {
+public class KotlinSdkReader implements KotlinTextSourceReader {
 
     @Override
-    public ClassAndMethodComments readAlias(KotlinSources sources) {
+    public ClassAndMethodComments readClasses(KotlinSources sources) {
         KotlinSourceVisitor visitor = new KotlinSourceVisitor();
 
         for (KotlinSource kotlinSource : sources.list()) {

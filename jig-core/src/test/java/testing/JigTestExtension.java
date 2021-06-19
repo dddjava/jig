@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserAliasReader;
+import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -29,7 +29,7 @@ public class JigTestExtension implements ParameterResolver {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
                 new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir),
-                new SourceCodeAliasReader(new JavaparserAliasReader())
+                new SourceCodeAliasReader(new JavaparserReader())
         );
     }
 

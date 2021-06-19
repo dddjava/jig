@@ -30,10 +30,12 @@ import java.util.List;
 public class JigSourceReadService {
 
     final JigSourceRepository jigSourceRepository;
-    final FactReader binarySourceReader;
+
     final SourceReader sourceReader;
-    final SqlReader sqlReader;
+
+    final FactReader binarySourceReader;
     final TextSourceReader textSourceReader;
+    final SqlReader sqlReader;
 
     public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.jigSourceRepository = jigSourceRepository;

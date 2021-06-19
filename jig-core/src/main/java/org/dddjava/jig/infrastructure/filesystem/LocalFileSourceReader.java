@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.*;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSource;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSource;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.TextSourceType;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -55,17 +55,17 @@ public class LocalFileSourceReader implements SourceReader {
         return new BinarySources(list);
     }
 
-    CodeSources readTextSources(SourcePaths sourcePaths) {
-        List<CodeSource> list = new ArrayList<>();
+    TextSources readTextSources(SourcePaths sourcePaths) {
+        List<TextSource> list = new ArrayList<>();
         for (Path path : sourcePaths.textSourcePaths()) {
             try {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
-                        CodeSource codeSource = new CodeSource(path);
-                        TextSourceType textSourceType = codeSource.textSourceType();
+                        TextSource textSource = new TextSource(path);
+                        TextSourceType textSourceType = textSource.textSourceType();
                         if (textSourceType != TextSourceType.UNSUPPORTED) {
-                            list.add(codeSource);
+                            list.add(textSource);
                         }
                         return FileVisitResult.CONTINUE;
                     }
@@ -75,7 +75,7 @@ public class LocalFileSourceReader implements SourceReader {
             }
         }
 
-        return new CodeSources(list);
+        return new TextSources(list);
     }
 
     @Override

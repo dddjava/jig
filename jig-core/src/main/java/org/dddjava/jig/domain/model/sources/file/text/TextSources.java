@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 /**
  * テキストソース一覧
  */
-public class CodeSources {
+public class TextSources {
 
-    Map<TextSourceType, List<CodeSource>> map;
+    Map<TextSourceType, List<TextSource>> map;
 
-    public CodeSources(List<CodeSource> list) {
-        this.map = list.stream().collect(Collectors.groupingBy(CodeSource::textSourceType));
+    public TextSources(List<TextSource> list) {
+        this.map = list.stream().collect(Collectors.groupingBy(TextSource::textSourceType));
     }
 
     public boolean nothing() {
@@ -46,7 +46,7 @@ public class CodeSources {
     }
 
     private ReadableTextSources toReadableSources(TextSourceType javaPackageInfo) {
-        List<CodeSource> codeSources = map.getOrDefault(javaPackageInfo, Collections.emptyList());
-        return new ReadableTextSources(codeSources);
+        List<TextSource> textSources = map.getOrDefault(javaPackageInfo, Collections.emptyList());
+        return new ReadableTextSources(textSources);
     }
 }

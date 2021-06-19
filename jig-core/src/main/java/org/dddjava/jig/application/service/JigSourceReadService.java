@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.*;
@@ -90,8 +90,8 @@ public class JigSourceReadService {
     /**
      * コメントを読み取る
      */
-    void readTextSources(CodeSources codeSources) {
-        ClassAndMethodComments classAndMethodComments = textSourceReader.readClassAndMethodComments(codeSources);
+    void readTextSources(TextSources textSources) {
+        ClassAndMethodComments classAndMethodComments = textSourceReader.readClassAndMethodComments(textSources);
         for (ClassComment classComment : classAndMethodComments.list()) {
             jigSourceRepository.registerClassComment(classComment);
         }
@@ -99,7 +99,7 @@ public class JigSourceReadService {
             jigSourceRepository.registerMethodComment(methodComment);
         }
 
-        PackageComments packageComments = textSourceReader.readPackageComments(codeSources);
+        PackageComments packageComments = textSourceReader.readPackageComments(textSources);
         for (PackageComment packageComment : packageComments.list()) {
             jigSourceRepository.registerPackageComment(packageComment);
         }

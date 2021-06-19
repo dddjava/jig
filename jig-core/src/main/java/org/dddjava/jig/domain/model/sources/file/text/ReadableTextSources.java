@@ -10,20 +10,20 @@ import java.util.List;
 public class ReadableTextSources {
     static Logger logger = LoggerFactory.getLogger(ReadableTextSources.class);
 
-    private List<CodeSource> codeSources;
+    private List<TextSource> textSources;
 
-    public ReadableTextSources(List<CodeSource> codeSources) {
-        this.codeSources = codeSources;
+    public ReadableTextSources(List<TextSource> textSources) {
+        this.textSources = textSources;
     }
 
     public List<ReadableTextSource> list() {
         ArrayList<ReadableTextSource> list = new ArrayList<>();
-        for (CodeSource codeSource : codeSources) {
+        for (TextSource textSource : textSources) {
             try {
-                byte[] bytes = codeSource.readAllBytes();
-                list.add(new ReadableTextSource(codeSource, bytes));
+                byte[] bytes = textSource.readAllBytes();
+                list.add(new ReadableTextSource(textSource, bytes));
             } catch (IOException e) {
-                logger.warn("cannot read {} (skip)", codeSource.location());
+                logger.warn("cannot read {} (skip)", textSource.location());
             }
         }
         return list;

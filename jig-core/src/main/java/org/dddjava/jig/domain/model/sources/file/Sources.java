@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.sources.file;
 
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySources;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 
 import java.io.UncheckedIOException;
@@ -17,16 +17,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class Sources {
 
-    CodeSources codeSources;
+    TextSources textSources;
     BinarySources binarySources;
 
-    public Sources(CodeSources codeSources, BinarySources binarySources) {
-        this.codeSources = codeSources;
+    public Sources(TextSources textSources, BinarySources binarySources) {
+        this.textSources = textSources;
         this.binarySources = binarySources;
     }
 
-    public CodeSources textSources() {
-        return codeSources;
+    public TextSources textSources() {
+        return textSources;
     }
 
     public SqlSources sqlSources() {
@@ -52,7 +52,7 @@ public class Sources {
     }
 
     public boolean nothingTextSource() {
-        return codeSources.nothing();
+        return textSources.nothing();
     }
 
     public ClassSources classSources() {

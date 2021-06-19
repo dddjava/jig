@@ -10,11 +10,11 @@ import java.nio.file.Path;
  */
 public class ReadableTextSource {
 
-    private CodeSource codeSource;
+    private TextSource textSource;
     private byte[] bytes;
 
-    public ReadableTextSource(CodeSource codeSource, byte[] bytes) {
-        this.codeSource = codeSource;
+    public ReadableTextSource(TextSource textSource, byte[] bytes) {
+        this.textSource = textSource;
         this.bytes = bytes;
     }
 
@@ -27,7 +27,7 @@ public class ReadableTextSource {
     }
 
     public Path path() {
-        return codeSource.location();
+        return textSource.location();
     }
 
     public byte[] bytes() {

@@ -33,4 +33,9 @@ public class ReadableTextSource {
     public byte[] bytes() {
         return bytes;
     }
+
+    @Override
+    public String toString() {
+        return "ReadableTextSource{path=" + path() + '}';
+    }
 }

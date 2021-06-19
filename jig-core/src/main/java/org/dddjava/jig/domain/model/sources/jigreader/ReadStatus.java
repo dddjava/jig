@@ -9,11 +9,11 @@ import java.util.Locale;
  */
 public enum ReadStatus {
     テキストソースなし(
-            "ソースファイル(*.java)が見つかりませんでした。ソースディレクトリの指定を確認してください。このメッセージが出る場合、別名が出力できません。",
-            "Source file(*.java) was not found. Check the specification of the source directory. If this message appears, Japanese name can not be output."),
+            "テキストソース(*.javaなど)が見つかりませんでした。ソースディレクトリの指定を確認してください。このメッセージが出る場合、テキストソース由来の情報が出力できません。",
+            "Text Source file(*.java, etc) was not found. Check the specification of the source directory. If this message appears, alias can not be output."),
     バイナリソースなし(
-            "コンパイルされたファイル(*.class)が見つかりませんでした。出力ディレクトリの指定を確認してください。",
-            "Compiled file(*.class) was not found. Check the output directory specification."),
+            "バイナリソース(*.class)が見つかりませんでした。出力ディレクトリの指定を確認してください。",
+            "Binary Source file(*.class) was not found. Check the output directory specification."),
     SQLなし(
             "SQLが見つかりませんでした。SQLを実装していない場合やMyBatisを使用していない場合は正常です。CRUDに関わる情報が出力されません。",
             "SQL was not found. It is normal if you do not implement SQL or if you are not using MyBatis. If this message appears, CRUD is not output in the data source list."),

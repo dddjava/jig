@@ -16,6 +16,9 @@ public class ReadableTextSources {
         this.textSources = textSources;
     }
 
+    /**
+     * 読み込み可能なソースのみをリストする
+     */
     public List<ReadableTextSource> list() {
         ArrayList<ReadableTextSource> list = new ArrayList<>();
         for (TextSource textSource : textSources) {

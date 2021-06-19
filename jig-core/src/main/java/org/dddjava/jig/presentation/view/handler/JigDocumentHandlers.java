@@ -109,11 +109,13 @@ public class JigDocumentHandlers {
             HandleResult result = handle(jigDocument, outputDirectory);
             handleResultList.add(result);
         }
+        writeIndexHtml(outputDirectory, handleResultList);
+        return handleResultList;
+    }
 
+    void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(JigDocument.Summary, outputDirectory);
         IndexHtmlView indexHtmlView = viewResolver.indexView();
         indexHtmlView.render(handleResultList, jigDocumentWriter);
-
-        return handleResultList;
     }
 }

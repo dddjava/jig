@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.*;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSource;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSourceFile;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSources;
 import org.dddjava.jig.domain.model.sources.file.text.TextSourceType;
 import org.objectweb.asm.ClassReader;
@@ -62,11 +61,11 @@ public class LocalFileSourceReader implements SourceReader {
             try {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        CodeSourceFile codeSourceFile = new CodeSourceFile(file);
-                        TextSourceType textSourceType = codeSourceFile.textSourceType();
+                    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
+                        CodeSource codeSource = new CodeSource(path);
+                        TextSourceType textSourceType = codeSource.textSourceType();
                         if (textSourceType != TextSourceType.UNSUPPORTED) {
-                            list.add(new CodeSource(codeSourceFile));
+                            list.add(codeSource);
                         }
                         return FileVisitResult.CONTINUE;
                     }

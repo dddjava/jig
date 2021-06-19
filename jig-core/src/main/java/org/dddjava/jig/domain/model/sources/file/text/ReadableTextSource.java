@@ -27,7 +27,7 @@ public class ReadableTextSource {
     }
 
     public Path path() {
-        return codeSource.codeSourceFile.path;
+        return codeSource.location();
     }
 
     public byte[] bytes() {

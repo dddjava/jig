@@ -6,7 +6,6 @@ import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class IndexHtmlView {
@@ -32,12 +31,10 @@ public class IndexHtmlView {
             }
         }
         contextMap.put("diagramFiles", diagramFiles);
-
         Context context = new Context(Locale.ROOT, contextMap);
-        String htmlText = templateEngine.process(jigDocumentWriter.jigDocument().fileName(), context);
+        String template = jigDocumentWriter.jigDocument().fileName();
 
-        jigDocumentWriter.writeHtml(outputStream -> {
-            outputStream.write(htmlText.getBytes(StandardCharsets.UTF_8));
-        });
+        jigDocumentWriter.writeAs(".html",
+                writer -> templateEngine.process(template, context, writer));
     }
 }

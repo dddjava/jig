@@ -4,15 +4,13 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class JigDocumentWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);
@@ -34,6 +32,20 @@ public class JigDocumentWriter {
     public void writeXlsx(OutputStreamWriter writer) {
         String fileName = jigDocument.fileName() + ".xlsx";
         write(writer, fileName);
+    }
+
+    public void writeAs(String extension, Consumer<Writer> consumer) {
+        String fileName = jigDocument.fileName() + extension;
+        Path outputFilePath = directory.resolve(fileName);
+        try (OutputStream out = Files.newOutputStream(outputFilePath);
+             OutputStream outputStream = new BufferedOutputStream(out);
+             Writer writer = new java.io.OutputStreamWriter(outputStream);
+        ) {
+            consumer.accept(writer);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        documentPaths.add(outputFilePath);
     }
 
     public void write(OutputStreamWriter writer, String fileName) {

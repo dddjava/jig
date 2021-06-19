@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -29,7 +29,7 @@ public class JigTestExtension implements ParameterResolver {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
                 new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir),
-                new SourceCodeAliasReader(new JavaparserReader())
+                new TextSourceReader(new JavaparserReader())
         );
     }
 

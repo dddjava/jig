@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
@@ -74,7 +74,7 @@ class CliConfig {
                         modelPattern, Paths.get(this.outputDirectory), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
                         new LinkPrefix(linkPrefix)
                 ),
-                new SourceCodeAliasReader(new JavaparserReader())
+                new TextSourceReader(new JavaparserReader())
         );
     }
 

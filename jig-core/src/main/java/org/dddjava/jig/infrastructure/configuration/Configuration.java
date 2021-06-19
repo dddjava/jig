@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
@@ -33,7 +33,7 @@ public class Configuration {
     BusinessRuleService businessRuleService;
     AliasService aliasService;
 
-    public Configuration(JigProperties jigProperties, SourceCodeAliasReader sourceCodeAliasReader) {
+    public Configuration(JigProperties jigProperties, TextSourceReader textSourceReader) {
         this.properties = new JigPropertyLoader(jigProperties).load();
         this.properties.prepareOutputDirectory();
 
@@ -50,7 +50,7 @@ public class Configuration {
         this.jigSourceReadService = new JigSourceReadService(
                 jigSourceRepository,
                 new AsmFactReader(),
-                sourceCodeAliasReader,
+                textSourceReader,
                 new MyBatisSqlReader(),
                 new LocalFileSourceReader()
         );

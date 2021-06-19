@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
@@ -42,7 +42,7 @@ public class CommentTest {
         jigSourceReadService = new JigSourceReadService(
                 new OnMemoryJigSourceRepository(new OnMemoryCommentRepository()),
                 new AsmFactReader(),
-                new SourceCodeAliasReader(new JavaparserReader(), new KotlinSdkReader()),
+                new TextSourceReader(new JavaparserReader(), new KotlinSdkReader()),
                 null,
                 new LocalFileSourceReader());
     }

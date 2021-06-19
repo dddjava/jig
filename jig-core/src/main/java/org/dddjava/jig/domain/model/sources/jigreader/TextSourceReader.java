@@ -9,25 +9,25 @@ import org.dddjava.jig.domain.model.sources.file.text.scalacode.ScalaSources;
 /**
  * コードを使用する別名別名読み取り機
  */
-public class SourceCodeAliasReader {
+public class TextSourceReader {
 
     JavaTextSourceReader javaTextSourceReader;
     KotlinTextSourceReader kotlinTextSourceReader;
     ScalaSourceAliasReader scalaSourceAliasReader;
 
-    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader) {
+    public TextSourceReader(JavaTextSourceReader javaTextSourceReader) {
         this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), sources -> ClassAndMethodComments.empty());
     }
 
-    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader) {
+    public TextSourceReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader) {
         this(javaTextSourceReader, kotlinTextSourceReader, sources -> ClassAndMethodComments.empty());
     }
 
-    public SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+    public TextSourceReader(JavaTextSourceReader javaTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
         this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), scalaSourceAliasReader);
     }
 
-    private SourceCodeAliasReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+    private TextSourceReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
         this.javaTextSourceReader = javaTextSourceReader;
         this.kotlinTextSourceReader = kotlinTextSourceReader;
         this.scalaSourceAliasReader = scalaSourceAliasReader;

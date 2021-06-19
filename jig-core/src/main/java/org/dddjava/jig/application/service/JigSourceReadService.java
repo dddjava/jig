@@ -30,15 +30,15 @@ import java.util.List;
 public class JigSourceReadService {
 
     final JigSourceRepository jigSourceRepository;
-    final FactReader factReader;
+    final FactReader binarySourceReader;
     final SourceReader sourceReader;
     final SqlReader sqlReader;
-    final SourceCodeAliasReader aliasReader;
+    final TextSourceReader textSourceReader;
 
-    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader factReader, SourceCodeAliasReader sourceCodeAliasReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.jigSourceRepository = jigSourceRepository;
-        this.factReader = factReader;
-        this.aliasReader = sourceCodeAliasReader;
+        this.binarySourceReader = binarySourceReader;
+        this.textSourceReader = textSourceReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
     }
@@ -84,7 +84,7 @@ public class JigSourceReadService {
      * ソースからバイトコードを読み取る
      */
     TypeFacts readBinarySources(ClassSources classSources) {
-        TypeFacts typeFacts = factReader.readTypeFacts(classSources);
+        TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources);
         jigSourceRepository.registerTypeFact(typeFacts);
         return typeFacts;
     }
@@ -102,7 +102,7 @@ public class JigSourceReadService {
      * Javadocからパッケージ別名を取り込む
      */
     void readPackageInfoSources(PackageInfoSources packageInfoSources) {
-        PackageComments packageComments = aliasReader.readPackages(packageInfoSources);
+        PackageComments packageComments = textSourceReader.readPackages(packageInfoSources);
         for (PackageComment packageComment : packageComments.list()) {
             jigSourceRepository.registerPackageComment(packageComment);
         }
@@ -112,7 +112,7 @@ public class JigSourceReadService {
      * Javadocから別名を取り込む
      */
     void readJavaSources(JavaSources javaSources) {
-        ClassAndMethodComments classAndMethodComments = aliasReader.readJavaSources(javaSources);
+        ClassAndMethodComments classAndMethodComments = textSourceReader.readJavaSources(javaSources);
         registerComments(classAndMethodComments);
     }
 
@@ -120,7 +120,7 @@ public class JigSourceReadService {
      * KtDocから別名を取り込む
      */
     void readKotlinSources(KotlinSources kotlinSources) {
-        ClassAndMethodComments classAndMethodComments = aliasReader.readKotlinSources(kotlinSources);
+        ClassAndMethodComments classAndMethodComments = textSourceReader.readKotlinSources(kotlinSources);
         registerComments(classAndMethodComments);
     }
 
@@ -128,7 +128,7 @@ public class JigSourceReadService {
      * ScalaDocから別名を取り込む
      */
     void readScalaSources(ScalaSources scalaSources) {
-        ClassAndMethodComments classAndMethodComments = aliasReader.readScalaSources(scalaSources);
+        ClassAndMethodComments classAndMethodComments = textSourceReader.readScalaSources(scalaSources);
         registerComments(classAndMethodComments);
     }
 

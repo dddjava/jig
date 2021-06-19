@@ -1,7 +1,7 @@
 package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
-import org.dddjava.jig.domain.model.sources.jigreader.SourceCodeAliasReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.presentation.controller.JigExecutor;
@@ -20,7 +20,7 @@ public class JigReportsTask extends DefaultTask {
         Project project = getProject();
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
 
-        Configuration configuration = new Configuration(config.asProperties(getProject()), new SourceCodeAliasReader(new JavaparserReader()));
+        Configuration configuration = new Configuration(config.asProperties(getProject()), new TextSourceReader(new JavaparserReader()));
 
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 

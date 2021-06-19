@@ -83,7 +83,7 @@ public class JigSourceReadService {
     /**
      * ソースからバイトコードを読み取る
      */
-    public TypeFacts readClassSource(ClassSources classSources) {
+    TypeFacts readClassSource(ClassSources classSources) {
         TypeFacts typeFacts = factReader.readTypeFacts(classSources);
         jigSourceRepository.registerTypeFact(typeFacts);
         return typeFacts;
@@ -148,7 +148,7 @@ public class JigSourceReadService {
     /**
      * 別名を取り込む
      */
-    public void readAliases(AliasSource aliasSource) {
+    void readAliases(AliasSource aliasSource) {
         readJavaSources(aliasSource.javaSources());
         readKotlinSources(aliasSource.kotlinSources());
         readScalaSources(aliasSource.scalaSources());

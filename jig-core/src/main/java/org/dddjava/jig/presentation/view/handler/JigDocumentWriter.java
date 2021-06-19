@@ -17,7 +17,7 @@ public class JigDocumentWriter {
 
     JigDocument jigDocument;
     Path directory;
-    List<Path> documentPaths = new ArrayList<>();
+    List<Path> writtenDocuments = new ArrayList<>();
 
     public JigDocumentWriter(JigDocument jigDocument, Path directory) {
         this.jigDocument = jigDocument;
@@ -45,7 +45,7 @@ public class JigDocumentWriter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        documentPaths.add(outputFilePath);
+        writtenDocuments.add(outputFilePath);
     }
 
     public void write(OutputStreamWriter writer, String fileName) {
@@ -55,11 +55,11 @@ public class JigDocumentWriter {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        documentPaths.add(outputFilePath);
+        writtenDocuments.add(outputFilePath);
     }
 
     public void writePath(BiConsumer<Path, List<Path>> biConsumer) {
-        biConsumer.accept(directory, documentPaths);
+        biConsumer.accept(directory, writtenDocuments);
     }
 
     public void markSkip() {
@@ -67,7 +67,7 @@ public class JigDocumentWriter {
     }
 
     public List<Path> outputFilePaths() {
-        return documentPaths;
+        return writtenDocuments;
     }
 
     public interface OutputStreamWriter {

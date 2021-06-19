@@ -112,35 +112,35 @@ public class JigSourceReadService {
      * Javadocから別名を取り込む
      */
     void readJavaSources(JavaSources javaSources) {
-        ClassAndMethodComments classcomments = aliasReader.readJavaSources(javaSources);
-        registerComments(classcomments);
+        ClassAndMethodComments classAndMethodComments = aliasReader.readJavaSources(javaSources);
+        registerComments(classAndMethodComments);
     }
 
     /**
      * KtDocから別名を取り込む
      */
     void readKotlinSources(KotlinSources kotlinSources) {
-        ClassAndMethodComments classcomments = aliasReader.readKotlinSources(kotlinSources);
-        registerComments(classcomments);
+        ClassAndMethodComments classAndMethodComments = aliasReader.readKotlinSources(kotlinSources);
+        registerComments(classAndMethodComments);
     }
 
     /**
      * ScalaDocから別名を取り込む
      */
     void readScalaSources(ScalaSources scalaSources) {
-        ClassAndMethodComments classcomments = aliasReader.readScalaSources(scalaSources);
-        registerComments(classcomments);
+        ClassAndMethodComments classAndMethodComments = aliasReader.readScalaSources(scalaSources);
+        registerComments(classAndMethodComments);
     }
 
     /**
      * 型別名を取り込む
      */
-    private void registerComments(ClassAndMethodComments classcomments) {
-        for (ClassComment classComment : classcomments.list()) {
+    private void registerComments(ClassAndMethodComments classAndMethodComments) {
+        for (ClassComment classComment : classAndMethodComments.list()) {
             jigSourceRepository.registerClassComment(classComment);
         }
 
-        for (MethodComment methodComment : classcomments.methodList()) {
+        for (MethodComment methodComment : classAndMethodComments.methodList()) {
             jigSourceRepository.registerMethodComment(methodComment);
         }
     }

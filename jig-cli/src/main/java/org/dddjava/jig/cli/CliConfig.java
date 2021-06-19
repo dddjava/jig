@@ -6,11 +6,9 @@ import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -73,9 +71,7 @@ class CliConfig {
                         jigDocuments(),
                         modelPattern, Paths.get(this.outputDirectory), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
                         new LinkPrefix(linkPrefix)
-                ),
-                new TextSourceReader(new JavaparserReader())
-        );
+                ));
     }
 
     SourcePaths rawSourceLocations() {

@@ -5,11 +5,9 @@ import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
-import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -28,9 +26,7 @@ public class JigTestExtension implements ParameterResolver {
     public JigTestExtension() throws Exception {
         Path tempDir = Files.createTempDirectory("jig");
         configuration = new Configuration(
-                new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir),
-                new TextSourceReader(new JavaparserReader())
-        );
+                new JigProperties(JigDocument.canonical(), "stub.domain.model.+", tempDir));
     }
 
     @Override

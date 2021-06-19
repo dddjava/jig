@@ -14,22 +14,10 @@ public class TextSourceReader {
     KotlinTextSourceReader kotlinTextSourceReader;
     ScalaSourceAliasReader scalaSourceAliasReader;
 
-    public TextSourceReader(JavaTextSourceReader javaTextSourceReader) {
-        this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), sources -> ClassAndMethodComments.empty());
-    }
-
-    public TextSourceReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader) {
-        this(javaTextSourceReader, kotlinTextSourceReader, sources -> ClassAndMethodComments.empty());
-    }
-
-    public TextSourceReader(JavaTextSourceReader javaTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
-        this(javaTextSourceReader, sources -> ClassAndMethodComments.empty(), scalaSourceAliasReader);
-    }
-
-    private TextSourceReader(JavaTextSourceReader javaTextSourceReader, KotlinTextSourceReader kotlinTextSourceReader, ScalaSourceAliasReader scalaSourceAliasReader) {
+    public TextSourceReader(JavaTextSourceReader javaTextSourceReader, AdditionalTextSourceReader additionalTextSourceReader) {
         this.javaTextSourceReader = javaTextSourceReader;
-        this.kotlinTextSourceReader = kotlinTextSourceReader;
-        this.scalaSourceAliasReader = scalaSourceAliasReader;
+        this.kotlinTextSourceReader = additionalTextSourceReader.kotlinTextSourceReader();
+        this.scalaSourceAliasReader = additionalTextSourceReader.scalaSourceAliasReader();
     }
 
     public PackageComments readPackageComments(TextSources textSources) {

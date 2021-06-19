@@ -75,15 +75,15 @@ public class JigSourceReadService {
      * プロジェクト情報を読み取る
      */
     public TypeFacts readProjectData(Sources sources) {
-        TypeFacts typeFacts = readClassSource(sources.classSources());
-        readAliases(sources.aliasSource());
+        TypeFacts typeFacts = readBinarySources(sources.classSources());
+        readTextSources(sources.aliasSource());
         return typeFacts;
     }
 
     /**
      * ソースからバイトコードを読み取る
      */
-    TypeFacts readClassSource(ClassSources classSources) {
+    TypeFacts readBinarySources(ClassSources classSources) {
         TypeFacts typeFacts = factReader.readTypeFacts(classSources);
         jigSourceRepository.registerTypeFact(typeFacts);
         return typeFacts;
@@ -148,7 +148,7 @@ public class JigSourceReadService {
     /**
      * 別名を取り込む
      */
-    void readAliases(AliasSource aliasSource) {
+    void readTextSources(AliasSource aliasSource) {
         readJavaSources(aliasSource.javaSources());
         readKotlinSources(aliasSource.kotlinSources());
         readScalaSources(aliasSource.scalaSources());

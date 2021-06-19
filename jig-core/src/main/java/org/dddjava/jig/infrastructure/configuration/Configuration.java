@@ -53,7 +53,7 @@ public class Configuration {
         this.dependencyService = new DependencyService(businessRuleService);
         this.applicationService = new ApplicationService(jigSourceRepository);
 
-        JavaparserReader javaparserReader = new JavaparserReader();
+        JavaparserReader javaparserReader = new JavaparserReader(properties);
         TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
 
         this.jigSourceReadService = new JigSourceReadService(

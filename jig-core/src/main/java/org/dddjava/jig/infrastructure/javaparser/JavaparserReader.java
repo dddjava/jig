@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
+import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * JavaparserでJavadocから別名を取得する実装
+ * Javaparserでテキストソースを読み取る
  */
 public class JavaparserReader implements JavaTextSourceReader {
 
@@ -23,6 +24,16 @@ public class JavaparserReader implements JavaTextSourceReader {
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
+
+    @Deprecated
+    public JavaparserReader() {
+    }
+
+    public JavaparserReader(JigProperties properties) {
+        // TODO プロパティで指定してる場合だけ上書きするようにする
+        // ParserConfiguration configuration = StaticJavaParser.getConfiguration();
+        // configuration.setCharacterEncoding(properties.inputEncoding());
+    }
 
     @Override
     public PackageComments readPackages(ReadableTextSources readableTextSources) {

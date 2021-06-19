@@ -35,10 +35,10 @@ public class JigSourceReadService {
     final SqlReader sqlReader;
     final SourceCodeAliasReader aliasReader;
 
-    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader factReader, SourceCodeAliasReader AliasReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader factReader, SourceCodeAliasReader sourceCodeAliasReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.jigSourceRepository = jigSourceRepository;
         this.factReader = factReader;
-        this.aliasReader = AliasReader;
+        this.aliasReader = sourceCodeAliasReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
     }

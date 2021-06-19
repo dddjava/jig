@@ -24,11 +24,6 @@ public class JigDocumentWriter {
         this.directory = directory;
     }
 
-    public void writeHtml(OutputStreamWriter writer) {
-        String fileName = jigDocument.fileName() + ".html";
-        write(writer, fileName);
-    }
-
     public void writeXlsx(OutputStreamWriter writer) {
         String fileName = jigDocument.fileName() + ".xlsx";
         write(writer, fileName);

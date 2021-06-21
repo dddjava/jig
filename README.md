@@ -1,8 +1,8 @@
 # JIG
 
 [![MavenCentral](https://maven-badges.herokuapp.com/maven-central/org.dddjava.jig/jig-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.dddjava.jig/jig-core)
-[![CircleCI](https://circleci.com/gh/dddjava/jig/tree/master.svg?style=svg)](https://circleci.com/gh/dddjava/jig)
-[![Build status](https://ci.appveyor.com/api/projects/status/yklsnjlvds0l3ka5/branch/master?svg=true)](https://ci.appveyor.com/project/irof/jig/branch/master)
+[![CircleCI](https://circleci.com/gh/dddjava/jig/tree/main.svg?style=svg)](https://circleci.com/gh/dddjava/jig)
+[![Build status](https://ci.appveyor.com/api/projects/status/yklsnjlvds0l3ka5/branch/main?svg=true)](https://ci.appveyor.com/project/irof/jig/branch/main)
 
 ![banner](./docs/banner.png)
 

@@ -1,7 +1,6 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -34,7 +33,6 @@ class JigDocumentHandlersTest {
         assertEquals("skip", handle.failureMessage);
     }
 
-    @Disabled
     @Test
     void indexHTMLがUTF8で出力されていること(JigDocumentHandlers sut) throws Exception {
         // defaultCharsetはstaticフィールドにキャッシュされるため、無理矢理クリアする

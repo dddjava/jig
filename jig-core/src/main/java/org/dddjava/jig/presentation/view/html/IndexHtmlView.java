@@ -34,7 +34,7 @@ public class IndexHtmlView {
         Context context = new Context(Locale.ROOT, contextMap);
         String template = jigDocumentWriter.jigDocument().fileName();
 
-        jigDocumentWriter.writeAs(".html",
+        jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
     }
 }

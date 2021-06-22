@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -29,12 +30,12 @@ public class JigDocumentWriter {
         write(writer, fileName);
     }
 
-    public void writeAs(String extension, Consumer<Writer> consumer) {
+    public void writeTextAs(String extension, Consumer<Writer> consumer) {
         String fileName = jigDocument.fileName() + extension;
         Path outputFilePath = directory.resolve(fileName);
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
-             Writer writer = new java.io.OutputStreamWriter(outputStream);
+             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         ) {
             consumer.accept(writer);
         } catch (IOException e) {

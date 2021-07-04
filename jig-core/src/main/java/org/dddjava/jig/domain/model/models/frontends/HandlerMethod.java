@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.frontends;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
@@ -21,13 +22,16 @@ public class HandlerMethod {
 
     static Logger LOGGER = LoggerFactory.getLogger(HandlerMethod.class);
 
-    private final JigMethod method;
-    private final Annotations requestMappingForClass;
-    private final Annotations requestMappingsForMethod;
+    final JigType jigType;
+    final JigMethod method;
+    final Annotations requestMappingForClass;
+    final Annotations requestMappingsForMethod;
 
-    public HandlerMethod(JigMethod method, Annotations annotations) {
+    public HandlerMethod(JigType jigType, JigMethod method) {
+        this.jigType = jigType;
         this.method = method;
 
+        Annotations annotations = new Annotations(jigType.listAnnotations());
         this.requestMappingForClass = annotations.filterAny(
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
 

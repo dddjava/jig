@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.models.frontends;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
@@ -36,7 +35,7 @@ public class HandlerMethods {
                         || jigType.hasAnnotation(controllerAdvice));
         for (JigType jigType : frontends) {
             for (JigMethod jigMethod : jigType.instanceMember().instanceMethods().list()) {
-                HandlerMethod handlerMethod = new HandlerMethod(jigMethod, new Annotations(jigType.listAnnotations()));
+                HandlerMethod handlerMethod = new HandlerMethod(jigType, jigMethod);
                 if (handlerMethod.valid()) {
                     list.add(handlerMethod);
                 }

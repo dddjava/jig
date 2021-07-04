@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.Usecase;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
@@ -123,9 +124,11 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                     .map(Node::asText)
                     .collect(joining("\n"));
 
+            ClassComment classComment = jigDocumentContext.classComment(handlerType);
+            String typeLabel = classComment.asTextOrIdentifierSimpleText();
             dotTextBuilder
                     .add("subgraph \"cluster_" + handlerType.fullQualifiedName() + "\" {")
-                    .add("label=\"" + jigDocumentContext.classComment(handlerType).asTextOrDefault(handlerType.asSimpleText()) + "\";")
+                    .add("label=\"" + typeLabel + "\";")
                     // 画面の色と合わせる
                     .add("style=solid;")
                     .add("bgcolor=lightgrey;")

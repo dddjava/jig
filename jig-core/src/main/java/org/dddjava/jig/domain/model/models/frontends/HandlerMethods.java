@@ -20,7 +20,7 @@ import static java.util.stream.Collectors.toList;
 public class HandlerMethods {
     List<HandlerMethod> list;
 
-    public HandlerMethods(List<HandlerMethod> list) {
+    HandlerMethods(List<HandlerMethod> list) {
         this.list = list;
     }
 

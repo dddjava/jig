@@ -9,6 +9,8 @@ import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -19,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class HandlerMethods {
     List<HandlerMethod> list;
 
-    HandlerMethods(List<HandlerMethod> list) {
+    public HandlerMethods(List<HandlerMethod> list) {
         this.list = list;
     }
 
@@ -58,5 +60,22 @@ public class HandlerMethods {
         return list.stream()
                 .filter(requestHandlerMethod -> requestHandlerMethod.anyMatch(callerMethods))
                 .collect(collectingAndThen(toList(), HandlerMethods::new));
+    }
+
+    public Set<TypeIdentifier> controllerTypeIdentifiers() {
+        return list.stream()
+                .map(handlerMethod -> handlerMethod.jigType.identifier())
+                .collect(Collectors.toSet());
+    }
+
+    public HandlerMethods merge(HandlerMethod handlerMethod) {
+        for (HandlerMethod method : list) {
+            if (method.same(handlerMethod)) {
+                return this;
+            }
+        }
+        ArrayList<HandlerMethod> newList = new ArrayList<>(this.list);
+        list.add(handlerMethod);
+        return new HandlerMethods(newList);
     }
 }

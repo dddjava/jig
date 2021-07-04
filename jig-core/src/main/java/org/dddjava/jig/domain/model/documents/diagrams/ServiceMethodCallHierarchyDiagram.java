@@ -6,9 +6,10 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngle;
 import org.dddjava.jig.domain.model.models.applications.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.Usecase;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
+import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
@@ -89,7 +90,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .add(relationText.asText())
                 .add(subgraphText)
                 .add(serviceMethodText)
-                .add(requestHandlerText(angles, jigDocumentContext))
+                .add(requestHandlerText(angles))
                 .add(repositoryText(angles))
                 .toString();
         return DiagramSource.createDiagramSource(documentName, graphText);
@@ -100,14 +101,20 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
      *
      * [RequestHandlerMethod] --> [ServiceMethod]
      */
-    private String requestHandlerText(List<ServiceAngle> angles, JigDocumentContext jigDocumentContext) {
+    private String requestHandlerText(List<ServiceAngle> angles) {
 
-        Set<MethodDeclaration> handlers = new HashSet<>();
-        RelationText handlingRelation = new RelationText();
+        // Handlerをクラス単位にまとめる＆一意にする（複数のServiceからの同じクラスの別メソッド呼び出しなど）
+        Map<TypeIdentifier, HandlerMethods> handlerMap = new HashMap<>();
+
+        RelationText handlerToServiceMethodRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
-            for (MethodDeclaration handlerMethod : serviceAngle.userControllerMethods().list()) {
-                handlingRelation.add(handlerMethod, serviceAngle.method());
-                handlers.add(handlerMethod);
+            for (HandlerMethod handlerMethod : serviceAngle.userControllerMethods().list()) {
+                handlerToServiceMethodRelation.add(handlerMethod.method().declaration(), serviceAngle.method());
+
+                handlerMap.compute(handlerMethod.typeIdentifier(), (key, current) -> {
+                    if (current == null) return new HandlerMethods(Collections.singletonList(handlerMethod));
+                    return current.merge(handlerMethod);
+                });
             }
         }
 
@@ -116,16 +123,17 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         dotTextBuilder.add("subgraph cluster_controllers{")
                 .add("rank=same;")
                 .add("style=invis;");
-        Map<TypeIdentifier, List<MethodDeclaration>> handlerMap = handlers.stream()
-                .collect(groupingBy(MethodDeclaration::declaringType));
-        handlerMap.forEach((handlerType, v) -> {
-            String requestHandlerMethods = v.stream()
+        handlerMap.forEach((handlerType, handlerMethods) -> {
+            List<HandlerMethod> list = handlerMethods.list();
+            String requestHandlerMethods = list.stream()
+                    .map(HandlerMethod::method)
+                    .map(JigMethod::declaration)
                     .map(method -> controllerNodeOf(method))
                     .map(Node::asText)
                     .collect(joining("\n"));
 
-            ClassComment classComment = jigDocumentContext.classComment(handlerType);
-            String typeLabel = classComment.asTextOrIdentifierSimpleText();
+            // TODO get(0)はダサい
+            String typeLabel = list.get(0).typeLabel();
             dotTextBuilder
                     .add("subgraph \"cluster_" + handlerType.fullQualifiedName() + "\" {")
                     .add("label=\"" + typeLabel + "\";")
@@ -140,7 +148,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
         return dotTextBuilder
                 .add("{")
                 .add("edge [style=dashed];")
-                .add(handlingRelation.asText())
+                .add(handlerToServiceMethodRelation.asText())
                 .add("}")
                 .toString();
     }

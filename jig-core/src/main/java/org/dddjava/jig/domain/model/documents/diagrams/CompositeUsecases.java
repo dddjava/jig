@@ -9,24 +9,19 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * ユースケースと愉快な仲間たち
  */
 class CompositeUsecases {
     Usecase usecase;
-    List<TypeIdentifier> controllerTypes;
+    Set<TypeIdentifier> controllerTypes;
 
     public CompositeUsecases(ServiceAngle serviceAngle) {
         this.usecase = new Usecase(serviceAngle);
-        this.controllerTypes = serviceAngle.userControllerMethods().list().stream()
-                .map(methodDeclaration -> methodDeclaration.declaringType())
-                .distinct()
-                .collect(Collectors.toList());
+        this.controllerTypes = serviceAngle.userControllerMethods().controllerTypeIdentifiers();
     }
 
     public String dotText(JigDocumentContext jigDocumentContext) {

@@ -116,4 +116,16 @@ public class HandlerMethod {
     public boolean isCall(MethodDeclaration methodDeclaration) {
         return method.usingMethods().methodDeclarations().contains(methodDeclaration);
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return jigType.identifier();
+    }
+
+    public boolean same(HandlerMethod handlerMethod) {
+        return method.declaration().sameIdentifier(handlerMethod.method().declaration());
+    }
+
+    public String typeLabel() {
+        return jigType.label();
+    }
 }

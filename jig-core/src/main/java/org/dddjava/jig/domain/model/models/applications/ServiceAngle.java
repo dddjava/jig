@@ -2,9 +2,7 @@ package org.dddjava.jig.domain.model.models.applications;
 
 import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.frontends.HandlerMethod;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
@@ -71,12 +69,8 @@ public class ServiceAngle {
         return userServiceMethods.list().stream().map(ServiceMethod::methodDeclaration).collect(MethodDeclarations.collector());
     }
 
-    public MethodDeclarations userControllerMethods() {
-        // TODO requestHandlerMethodsのようなのを返す。MethodDeclarationsは汎用的すぎる。
-        return userHandlerMethods.list().stream()
-                .map(HandlerMethod::method)
-                .map(JigMethod::declaration)
-                .collect(MethodDeclarations.collector());
+    public HandlerMethods userControllerMethods() {
+        return userHandlerMethods;
     }
 
     public boolean isNotPublicMethod() {

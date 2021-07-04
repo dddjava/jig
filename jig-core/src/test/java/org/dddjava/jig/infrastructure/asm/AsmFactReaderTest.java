@@ -1,5 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
@@ -184,7 +186,9 @@ public class AsmFactReaderTest {
     void フィールド定義に使用している型が取得できる() throws Exception {
         JigTypeBuilder actual = exercise(FieldDefinition.class);
 
-        FieldDeclarations fieldDeclarations = actual.fieldDeclarations();
+        JigType jigType = actual.build();
+
+        FieldDeclarations fieldDeclarations = jigType.instanceMember().fieldDeclarations();
         String fieldsText = fieldDeclarations.toSignatureText();
         assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
 
@@ -237,27 +241,23 @@ public class AsmFactReaderTest {
 
     @ParameterizedTest
     @MethodSource
-    void enumの特徴づけに必要な情報が取得できる(Class<?> clz, boolean hasMethod, boolean hasField) throws Exception {
+    void enumの種類が識別できる(Class<?> clz, boolean parameter, boolean behavior, boolean polymorphism) throws Exception {
         JigTypeBuilder actual = exercise(clz);
+        JigType jigType = actual.build();
+        CategoryType categoryType = new CategoryType(jigType);
 
-        assertThat(actual)
-                .extracting(
-                        typeFact -> !typeFact.instanceMethodFacts().isEmpty(),
-                        typeFact -> !typeFact.fieldDeclarations().empty()
-                )
-                .containsExactly(
-                        hasMethod,
-                        hasField
-                );
+        assertEquals(categoryType.hasParameter(), parameter);
+        assertEquals(categoryType.hasBehaviour(), behavior);
+        assertEquals(categoryType.isPolymorphism(), polymorphism);
     }
 
-    static Stream<Arguments> enumの特徴づけに必要な情報が取得できる() {
+    static Stream<Arguments> enumの種類が識別できる() {
         return Stream.of(
-                Arguments.of(SimpleEnum.class, false, false),
-                Arguments.of(BehaviourEnum.class, true, false),
-                Arguments.of(ParameterizedEnum.class, false, true),
-                Arguments.of(PolymorphismEnum.class, false, false),
-                Arguments.of(RichEnum.class, true, true));
+                Arguments.of(SimpleEnum.class, false, false, false),
+                Arguments.of(BehaviourEnum.class, false, true, false),
+                Arguments.of(ParameterizedEnum.class, true, false, false),
+                Arguments.of(PolymorphismEnum.class, false, false, true),
+                Arguments.of(RichEnum.class, true, true, true));
     }
 
     private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {

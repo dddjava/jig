@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
@@ -86,11 +85,6 @@ public class JigTypeBuilder {
 
     public TypeIdentifier typeIdentifier() {
         return type.typeIdentifier();
-    }
-
-    // TODO テスト専用、削除したい
-    public FieldDeclarations fieldDeclarations() {
-        return new FieldDeclarations(instanceFields.stream().map(JigField::fieldDeclaration).collect(toList()));
     }
 
     public TypeIdentifiers useTypes() {

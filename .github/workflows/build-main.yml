@@ -8,6 +8,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
+    env:
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
@@ -21,11 +23,12 @@ jobs:
              ~/.gradle/caches
              ~/.gradle/wrapper
            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-      - run: |
-          ./gradlew --no-daemon :jig-core:build
-      - name: Upload test reporta Build Artifact
+      - name: Run Build
+        run: |
+          ./gradlew :jig-core:build
+      - name: Upload test report
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: test-reports
+          name: test-reports-${{ runner.os }}
           path: jig-core/build/reports/tests/test/
-          retention-days: 7
+          retention-days: 3

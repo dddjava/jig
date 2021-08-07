@@ -3,7 +3,7 @@ on:
     branches:
       - main
 jobs:
-  build:
+  build-cli:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -11,4 +11,13 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - run: ./gradlew build
+      - run: ./gradlew :jig-cli:build
+  build-core-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - run: ./gradlew :jig-core:build

@@ -11,7 +11,14 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - run: ./gradlew :jig-cli:build
+      - name: Cache Gradle
+        uses: actions/cache@v2.1.6
+        with:
+           path: |
+             ~/.gradle/caches
+             ~/.gradle/wrapper
+           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+      - run: ./gradlew --no-daemon :jig-cli:build
   build-core-windows:
     runs-on: windows-latest
     steps:
@@ -20,4 +27,4 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '11'
-      - run: ./gradlew :jig-core:build
+      - run: ./gradlew --no-daemon :jig-core:build

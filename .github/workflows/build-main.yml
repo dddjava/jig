@@ -23,3 +23,9 @@ jobs:
            key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       - run: |
           ./gradlew --no-daemon :jig-core:build
+      - name: Upload test reporta Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: test-reports
+          path: jig-core/build/reports/tests/test/
+          retention-days: 7

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -20,18 +21,20 @@ import static java.util.stream.Collectors.toList;
 public class ServiceMethods {
 
     List<JigType> serviceJigTypes;
+    MethodRelations methodRelations;
     Predicate<JigMethod> methodFilter;
 
-    private ServiceMethods(List<JigType> serviceJigTypes, Predicate<JigMethod> methodFilter) {
+    private ServiceMethods(List<JigType> serviceJigTypes, MethodRelations methodRelations, Predicate<JigMethod> methodFilter) {
         this.serviceJigTypes = serviceJigTypes;
+        this.methodRelations = methodRelations;
         this.methodFilter = methodFilter;
     }
 
-    public static ServiceMethods from(JigTypes jigTypes) {
+    public static ServiceMethods from(JigTypes jigTypes, MethodRelations methodRelations) {
         List<JigType> serviceJigTypes = jigTypes
                 .listMatches(jigType ->
                         jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
-        return new ServiceMethods(serviceJigTypes, jigMethod -> true);
+        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> true);
     }
 
     public boolean empty() {
@@ -53,11 +56,11 @@ public class ServiceMethods {
     }
 
     public ServiceMethods filter(CallerMethods callerMethods) {
-        return new ServiceMethods(serviceJigTypes, jigMethod -> callerMethods.contains(jigMethod.declaration()));
+        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> callerMethods.contains(jigMethod.declaration()));
     }
 
     public ServiceMethods intersect(MethodDeclarations methodDeclarations) {
-        return new ServiceMethods(serviceJigTypes, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
+        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
     }
 
     public MethodDeclarations toMethodDeclarations() {

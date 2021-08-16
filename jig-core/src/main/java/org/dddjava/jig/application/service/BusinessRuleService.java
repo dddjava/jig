@@ -71,7 +71,7 @@ public class BusinessRuleService {
         JigTypes jigTypes = typeFacts.jigTypes();
 
         BusinessRules businessRules = BusinessRules.from(architecture, typeFacts.toClassRelations(), jigTypes);
-        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes);
+        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
 
         return new CategoryUsageDiagram(serviceMethods, businessRules);
     }

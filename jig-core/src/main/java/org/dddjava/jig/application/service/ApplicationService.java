@@ -57,7 +57,7 @@ public class ApplicationService {
     public ServiceAngles serviceAngles() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
-        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes);
+        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
 
         if (serviceMethods.empty()) {
             logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
@@ -94,7 +94,7 @@ public class ApplicationService {
     public StringComparingMethodList stringComparing() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
-        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes());
+        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
 
         return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);
     }
@@ -109,6 +109,6 @@ public class ApplicationService {
 
     public ServiceMethods serviceMethods() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        return ServiceMethods.from(typeFacts.jigTypes());
+        return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
     }
 }

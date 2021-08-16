@@ -34,13 +34,13 @@ public class ServiceAngles {
     }
 
     private static ServiceAngle createServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
-        MethodDeclarations methodDeclarations = serviceMethod.usingMethods().methodDeclarations();
+        MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
         CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
 
         HandlerMethods userHandlerMethods = handlerMethods.filter(callerMethods);
-        ServiceMethods usingServiceMethods = serviceMethods.intersect(methodDeclarations);
-        RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(methodDeclarations);
         ServiceMethods userServiceMethods = serviceMethods.filter(callerMethods);
+        ServiceMethods usingServiceMethods = serviceMethods.intersect(usingMethods);
+        RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
         return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);
     }
 

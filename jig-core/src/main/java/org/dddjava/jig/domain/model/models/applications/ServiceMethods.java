@@ -15,8 +15,6 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * サービスメソッド一覧
- *
- * TODO Servicesにリネームしたい
  */
 public class ServiceMethods {
 

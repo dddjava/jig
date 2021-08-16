@@ -68,7 +68,6 @@ public class ApplicationService {
 
         return new ServiceAngles(
                 serviceMethods,
-                typeFacts.toMethodRelations(),
                 handlerMethods,
                 datasourceMethods);
     }

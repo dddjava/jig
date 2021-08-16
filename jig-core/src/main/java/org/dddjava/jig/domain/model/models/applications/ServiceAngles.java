@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,17 +24,17 @@ public class ServiceAngles {
                 .collect(Collectors.toList());
     }
 
-    public ServiceAngles(ServiceMethods serviceMethods, MethodRelations methodRelations, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
+    public ServiceAngles(ServiceMethods serviceMethods, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
-            list.add(createServiceAngle(serviceMethod, methodRelations, handlerMethods, serviceMethods, datasourceMethods));
+            list.add(createServiceAngle(serviceMethod, handlerMethods, serviceMethods, datasourceMethods));
         }
         this.list = list;
     }
 
-    private static ServiceAngle createServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
+    private static ServiceAngle createServiceAngle(ServiceMethod serviceMethod, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
-        CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
+        CallerMethods callerMethods = serviceMethods.methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
 
         HandlerMethods userHandlerMethods = handlerMethods.filter(callerMethods);
         ServiceMethods userServiceMethods = serviceMethods.filter(callerMethods);

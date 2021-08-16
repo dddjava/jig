@@ -17,28 +17,29 @@ public class ServiceAngles {
 
     List<ServiceAngle> list;
 
+    public static ServiceAngles from(ServiceMethods serviceMethods, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
+        List<ServiceAngle> list = new ArrayList<>();
+        for (ServiceMethod serviceMethod : serviceMethods.list()) {
+            MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
+
+            HandlerMethods userHandlerMethods = handlerMethods.filter(serviceMethod.callerMethods());
+            ServiceMethods userServiceMethods = serviceMethods.filter(serviceMethod.callerMethods());
+            ServiceMethods usingServiceMethods = serviceMethods.intersect(usingMethods);
+            RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
+            ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);
+            list.add(serviceAngle);
+        }
+        return new ServiceAngles(list);
+    }
+
     public List<ServiceAngle> list() {
         return list.stream()
                 .sorted(Comparator.comparing(serviceAngle -> serviceAngle.method().asFullNameText()))
                 .collect(Collectors.toList());
     }
 
-    public ServiceAngles(ServiceMethods serviceMethods, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
-        List<ServiceAngle> list = new ArrayList<>();
-        for (ServiceMethod serviceMethod : serviceMethods.list()) {
-            list.add(createServiceAngle(serviceMethod, handlerMethods, serviceMethods, datasourceMethods));
-        }
+    private ServiceAngles(List<ServiceAngle> list) {
         this.list = list;
-    }
-
-    private static ServiceAngle createServiceAngle(ServiceMethod serviceMethod, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
-        MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
-
-        HandlerMethods userHandlerMethods = handlerMethods.filter(serviceMethod.callerMethods());
-        ServiceMethods userServiceMethods = serviceMethods.filter(serviceMethod.callerMethods());
-        ServiceMethods usingServiceMethods = serviceMethods.intersect(usingMethods);
-        RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
-        return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);
     }
 
     public boolean none() {

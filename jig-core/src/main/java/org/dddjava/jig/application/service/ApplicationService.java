@@ -66,10 +66,7 @@ public class ApplicationService {
         HandlerMethods handlerMethods = HandlerMethods.from(jigTypes);
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
-        return new ServiceAngles(
-                serviceMethods,
-                handlerMethods,
-                datasourceMethods);
+        return ServiceAngles.from(serviceMethods, handlerMethods, datasourceMethods);
     }
 
     /**

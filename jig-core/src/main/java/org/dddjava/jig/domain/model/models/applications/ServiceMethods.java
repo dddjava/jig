@@ -45,7 +45,7 @@ public class ServiceMethods {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .filter(methodFilter)
-                .map(method -> new ServiceMethod(method))
+                .map(method -> new ServiceMethod(method, methodRelations))
                 .collect(toList());
     }
 

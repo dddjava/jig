@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,10 +33,9 @@ public class ServiceAngles {
 
     private static ServiceAngle createServiceAngle(ServiceMethod serviceMethod, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
         MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
-        CallerMethods callerMethods = serviceMethods.methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
 
-        HandlerMethods userHandlerMethods = handlerMethods.filter(callerMethods);
-        ServiceMethods userServiceMethods = serviceMethods.filter(callerMethods);
+        HandlerMethods userHandlerMethods = handlerMethods.filter(serviceMethod.callerMethods());
+        ServiceMethods userServiceMethods = serviceMethods.filter(serviceMethod.callerMethods());
         ServiceMethods usingServiceMethods = serviceMethods.intersect(usingMethods);
         RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
         return new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);

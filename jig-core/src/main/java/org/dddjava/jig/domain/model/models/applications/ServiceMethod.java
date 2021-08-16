@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorries;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
 
@@ -16,10 +18,12 @@ import java.util.stream.Collectors;
  * サービスメソッド
  */
 public class ServiceMethod {
-    private final JigMethod method;
+    final JigMethod method;
+    final MethodRelations methodRelations;
 
-    public ServiceMethod(JigMethod method) {
+    public ServiceMethod(JigMethod method, MethodRelations methodRelations) {
         this.method = method;
+        this.methodRelations = methodRelations;
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -84,5 +88,9 @@ public class ServiceMethod {
 
     public TypeIdentifiers usingTypes() {
         return method().usingTypes();
+    }
+
+    public CallerMethods callerMethods() {
+        return methodRelations.callerMethodsOf(methodDeclaration());
     }
 }

@@ -19,49 +19,49 @@ import static java.util.stream.Collectors.toList;
  */
 public class ServiceMethods {
 
-    List<JigType> jigTypes;
+    List<JigType> serviceJigTypes;
     Predicate<JigMethod> methodFilter;
 
-    private ServiceMethods(List<JigType> jigTypes, Predicate<JigMethod> methodFilter) {
-        this.jigTypes = jigTypes;
+    private ServiceMethods(List<JigType> serviceJigTypes, Predicate<JigMethod> methodFilter) {
+        this.serviceJigTypes = serviceJigTypes;
         this.methodFilter = methodFilter;
     }
 
     public static ServiceMethods from(JigTypes jigTypes) {
-        List<JigType> services = jigTypes
+        List<JigType> serviceJigTypes = jigTypes
                 .listMatches(jigType ->
                         jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
-        return new ServiceMethods(services, jigMethod -> true);
+        return new ServiceMethods(serviceJigTypes, jigMethod -> true);
     }
 
     public boolean empty() {
-        return jigTypes.stream()
+        return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .noneMatch(methodFilter);
     }
 
     public List<ServiceMethod> list() {
-        return jigTypes.stream()
+        return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .filter(methodFilter)
-                .map(ServiceMethod::new)
+                .map(method -> new ServiceMethod(method))
                 .collect(toList());
     }
 
     public List<JigType> listJigTypes() {
-        return jigTypes;
+        return serviceJigTypes;
     }
 
     public ServiceMethods filter(CallerMethods callerMethods) {
-        return new ServiceMethods(jigTypes, jigMethod -> callerMethods.contains(jigMethod.declaration()));
+        return new ServiceMethods(serviceJigTypes, jigMethod -> callerMethods.contains(jigMethod.declaration()));
     }
 
     public ServiceMethods intersect(MethodDeclarations methodDeclarations) {
-        return new ServiceMethods(jigTypes, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
+        return new ServiceMethods(serviceJigTypes, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
     }
 
     public MethodDeclarations toMethodDeclarations() {
-        return jigTypes.stream()
+        return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .filter(methodFilter)
                 .map(jigMethod -> jigMethod.declaration())

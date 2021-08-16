@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.parts.relation.method;
 
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.List;
@@ -30,5 +31,9 @@ public class CallerMethods {
                 .sorted()
                 .distinct()
                 .collect(TypeIdentifiers.collector());
+    }
+
+    public MethodDeclarations methodDeclarations() {
+        return new MethodDeclarations(list);
     }
 }

@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 
 import java.util.List;
@@ -52,10 +51,6 @@ public class ServiceMethods {
 
     public List<JigType> listJigTypes() {
         return serviceJigTypes;
-    }
-
-    public ServiceMethods filter(CallerMethods callerMethods) {
-        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> callerMethods.contains(jigMethod.declaration()));
     }
 
     public MethodDeclarations toMethodDeclarations() {

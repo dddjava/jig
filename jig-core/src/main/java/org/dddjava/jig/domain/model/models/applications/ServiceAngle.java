@@ -14,13 +14,13 @@ public class ServiceAngle {
 
     ServiceMethod serviceMethod;
 
-    ServiceMethods userServiceMethods;
+    MethodDeclarations userServiceMethods;
     HandlerMethods userHandlerMethods;
 
     MethodDeclarations usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, HandlerMethods userHandlerMethods, ServiceMethods userServiceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, HandlerMethods userHandlerMethods, MethodDeclarations userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
@@ -60,7 +60,7 @@ public class ServiceAngle {
 
 
     public MethodDeclarations userServiceMethods() {
-        return userServiceMethods.list().stream().map(ServiceMethod::methodDeclaration).collect(MethodDeclarations.collector());
+        return userServiceMethods;
     }
 
     public HandlerMethods userControllerMethods() {

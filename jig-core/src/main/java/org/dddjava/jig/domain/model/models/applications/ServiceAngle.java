@@ -1,15 +1,11 @@
 package org.dddjava.jig.domain.model.models.applications;
 
-import org.dddjava.jig.domain.model.models.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
 
 /**
  * サービスの切り口
@@ -24,16 +20,14 @@ public class ServiceAngle {
     ServiceMethods usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    ServiceAngle(ServiceMethod serviceMethod, MethodRelations methodRelations, HandlerMethods handlerMethods, ServiceMethods serviceMethods, DatasourceMethods datasourceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, ServiceMethods usingServiceMethods, HandlerMethods userHandlerMethods, ServiceMethods userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
-        UsingMethods usingMethods = serviceMethod.usingMethods();
-        this.usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods.methodDeclarations());
-        this.usingServiceMethods = serviceMethods.intersect(usingMethods.methodDeclarations());
+        this.usingRepositoryMethods = usingRepositoryMethods;
+        this.usingServiceMethods = usingServiceMethods;
 
-        CallerMethods callerMethods = methodRelations.callerMethodsOf(serviceMethod.methodDeclaration());
-        this.userHandlerMethods = handlerMethods.filter(callerMethods);
-        this.userServiceMethods = serviceMethods.filter(callerMethods);
+        this.userHandlerMethods = userHandlerMethods;
+        this.userServiceMethods = userServiceMethods;
     }
 
     public ServiceMethod serviceMethod() {

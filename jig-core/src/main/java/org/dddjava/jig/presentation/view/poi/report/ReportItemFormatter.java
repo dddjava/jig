@@ -3,7 +3,6 @@ package org.dddjava.jig.presentation.view.poi.report;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
@@ -130,9 +129,6 @@ public class ReportItemFormatter {
     private MethodDeclarations toMethodDeclarations(Object item) {
         if (item instanceof JigType) {
             return ((JigType) item).instanceMember().instanceMethods().declarations();
-        }
-        if (item instanceof ServiceMethods) {
-            return ((ServiceMethods) item).toMethodDeclarations();
         }
         return (MethodDeclarations) item;
     }

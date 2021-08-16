@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.models.applications;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
@@ -57,15 +58,18 @@ public class ServiceMethods {
         return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> callerMethods.contains(jigMethod.declaration()));
     }
 
-    public ServiceMethods intersect(MethodDeclarations methodDeclarations) {
-        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> methodDeclarations.contains(jigMethod.declaration()));
-    }
-
     public MethodDeclarations toMethodDeclarations() {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .filter(methodFilter)
                 .map(jigMethod -> jigMethod.declaration())
                 .collect(MethodDeclarations.collector());
+    }
+
+    public boolean contains(MethodDeclaration methodDeclaration) {
+        return serviceJigTypes.stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
+                .filter(methodFilter)
+                .anyMatch(jigMethod -> methodDeclaration.sameIdentifier(jigMethod.declaration()));
     }
 }

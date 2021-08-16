@@ -24,7 +24,7 @@ public class ServiceAngles {
 
             HandlerMethods userHandlerMethods = handlerMethods.filter(serviceMethod.callerMethods());
             ServiceMethods userServiceMethods = serviceMethods.filter(serviceMethod.callerMethods());
-            ServiceMethods usingServiceMethods = serviceMethods.intersect(usingMethods);
+            MethodDeclarations usingServiceMethods = usingMethods.filter(methodDeclaration -> serviceMethods.contains(methodDeclaration));
             RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
             ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);
             list.add(serviceAngle);

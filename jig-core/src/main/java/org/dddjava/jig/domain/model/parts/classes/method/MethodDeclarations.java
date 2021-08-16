@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -68,5 +69,9 @@ public class MethodDeclarations {
                 .map(MethodDeclaration::argumentsTypeIdentifiers)
                 .flatMap(List::stream)
                 .collect(TypeIdentifiers.collector());
+    }
+
+    public MethodDeclarations filter(Predicate<MethodDeclaration> predicate) {
+        return list.stream().filter(predicate).collect(collector());
     }
 }

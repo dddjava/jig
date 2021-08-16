@@ -17,10 +17,10 @@ public class ServiceAngle {
     ServiceMethods userServiceMethods;
     HandlerMethods userHandlerMethods;
 
-    ServiceMethods usingServiceMethods;
+    MethodDeclarations usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, ServiceMethods usingServiceMethods, HandlerMethods userHandlerMethods, ServiceMethods userServiceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, HandlerMethods userHandlerMethods, ServiceMethods userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
@@ -71,7 +71,7 @@ public class ServiceAngle {
         return !serviceMethod.isPublic();
     }
 
-    public ServiceMethods usingServiceMethods() {
+    public MethodDeclarations usingServiceMethods() {
         return usingServiceMethods;
     }
 }

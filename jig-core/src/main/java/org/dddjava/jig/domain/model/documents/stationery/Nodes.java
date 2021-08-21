@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.models.applications.ServiceMethod;
-import org.dddjava.jig.domain.model.models.applications.Usecase;
+import org.dddjava.jig.domain.model.models.services.ServiceMethod;
+import org.dddjava.jig.domain.model.models.services.Usecase;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 
 public enum Nodes {

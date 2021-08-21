@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
-import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;

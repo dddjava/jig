@@ -3,8 +3,8 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Node;
 import org.dddjava.jig.domain.model.documents.stationery.Nodes;
-import org.dddjava.jig.domain.model.models.applications.ServiceAngle;
-import org.dddjava.jig.domain.model.models.applications.Usecase;
+import org.dddjava.jig.domain.model.models.services.ServiceAngle;
+import org.dddjava.jig.domain.model.models.services.Usecase;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 

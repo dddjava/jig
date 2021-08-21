@@ -3,7 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
-import org.dddjava.jig.domain.model.models.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.models.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;

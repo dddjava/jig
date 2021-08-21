@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications;
+package org.dddjava.jig.domain.model.models.services;
 
 /**
  * ユースケースの種類

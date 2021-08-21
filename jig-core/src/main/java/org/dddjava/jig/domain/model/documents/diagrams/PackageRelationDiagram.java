@@ -177,7 +177,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list()) {
             sj.add("# " + bidirectionalRelation.toString());
             for (ClassRelation classRelation : classRelations.list()) {
-                if (bidirectionalRelation.matches(classRelation)) {
+                PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
+                if (bidirectionalRelation.matches(packageRelation)) {
                     sj.add("- " + classRelation.toString());
                 }
             }

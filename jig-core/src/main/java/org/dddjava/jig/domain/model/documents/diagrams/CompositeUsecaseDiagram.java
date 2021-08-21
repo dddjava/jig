@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.models.services.ServiceAngles;
+import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 
 import java.util.ArrayList;
 import java.util.List;

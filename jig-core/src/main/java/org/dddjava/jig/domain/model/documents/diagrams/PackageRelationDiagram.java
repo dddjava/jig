@@ -179,7 +179,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             for (ClassRelation classRelation : classRelations.list()) {
                 PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
                 if (bidirectionalRelation.matches(packageRelation)) {
-                    sj.add("- " + classRelation.toString());
+                    sj.add("- " + classRelation.formatText());
                 }
             }
         }

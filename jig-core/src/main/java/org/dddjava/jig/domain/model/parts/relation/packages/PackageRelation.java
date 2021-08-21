@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
 
 import java.util.Objects;
 
@@ -18,10 +17,6 @@ public class PackageRelation {
     public PackageRelation(PackageIdentifier from, PackageIdentifier to) {
         this.from = from;
         this.to = to;
-    }
-
-    public static PackageRelation fromClassRelation(ClassRelation classRelation) {
-        return new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
     }
 
     public PackageIdentifier from() {

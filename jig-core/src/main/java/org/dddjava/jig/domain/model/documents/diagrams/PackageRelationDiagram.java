@@ -33,7 +33,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     BidirectionalRelations bidirectionalRelations;
 
     public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
-        this(packageIdentifiers, PackageRelations.fromClassRelations(classRelations), classRelations, new PackageDepth(-1));
+        this(packageIdentifiers, classRelations.toPackageRelations(), classRelations, new PackageDepth(-1));
     }
 
     private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {

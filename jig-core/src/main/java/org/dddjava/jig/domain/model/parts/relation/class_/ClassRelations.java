@@ -2,12 +2,18 @@ package org.dddjava.jig.domain.model.parts.relation.class_;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * 型依存関係一覧
@@ -18,6 +24,14 @@ public class ClassRelations {
 
     public ClassRelations(List<ClassRelation> list) {
         this.list = list;
+    }
+
+    public PackageRelations toPackageRelations() {
+        Map<PackageRelation, List<PackageRelation>> map = list().stream()
+                .map(ClassRelation::toPackageRelation)
+                .filter(PackageRelation::notSelfRelation)
+                .collect(groupingBy(Function.identity()));
+        return new PackageRelations(map);
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {

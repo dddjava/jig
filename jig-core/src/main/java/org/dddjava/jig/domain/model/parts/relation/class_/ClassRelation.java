@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.parts.relation.class_;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;
 
 import java.util.Objects;
 
@@ -16,6 +17,10 @@ public class ClassRelation {
     public ClassRelation(TypeIdentifier from, TypeIdentifier to) {
         this.from = from.normalize();
         this.to = to.normalize();
+    }
+
+    public PackageRelation toPackageRelation() {
+        return new PackageRelation(from().packageIdentifier(), to().packageIdentifier());
     }
 
     public boolean toIs(TypeIdentifier typeIdentifier) {

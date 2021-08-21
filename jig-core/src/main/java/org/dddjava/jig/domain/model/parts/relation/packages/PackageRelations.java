@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.parts.relation.packages;
 
 import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +23,6 @@ public class PackageRelations {
 
     public PackageRelations(Map<PackageRelation, List<PackageRelation>> map) {
         this.map = map;
-    }
-
-    public static PackageRelations fromClassRelations(ClassRelations classRelations) {
-        Map<PackageRelation, List<PackageRelation>> map = classRelations.list().stream()
-                .map(PackageRelation::fromClassRelation)
-                .filter(PackageRelation::notSelfRelation)
-                .collect(groupingBy(Function.identity()));
-        return new PackageRelations(map);
     }
 
     public List<PackageRelation> list() {

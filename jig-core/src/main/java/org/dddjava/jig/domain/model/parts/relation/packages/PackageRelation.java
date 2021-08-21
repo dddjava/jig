@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.parts.relation.packages;
 
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
@@ -51,9 +50,5 @@ public class PackageRelation {
 
     public boolean bothMatch(PackageIdentifiers packageIdentifiers) {
         return packageIdentifiers.contains(from) && packageIdentifiers.contains(to);
-    }
-
-    boolean matches(TypeIdentifier fromTypeIdentifier, TypeIdentifier toTypeIdentifier) {
-        return fromTypeIdentifier.belongs(from) && toTypeIdentifier.belongs(to);
     }
 }

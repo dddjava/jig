@@ -6,6 +6,10 @@ a:hover {
     text-decoration-line: underline;
 }
 
+body {
+    margin: 0 8px;
+}
+
 .menu {
     /* box-sizing: border-box; */
     position: fixed;

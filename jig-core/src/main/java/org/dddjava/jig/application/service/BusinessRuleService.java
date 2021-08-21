@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.report.application;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
 import org.dddjava.jig.presentation.view.report.ReportItem;
 import org.dddjava.jig.presentation.view.report.ReportItemFor;
 import org.dddjava.jig.presentation.view.report.ReportTitle;

@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
+import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
 
 /**
  * サービスの切り口

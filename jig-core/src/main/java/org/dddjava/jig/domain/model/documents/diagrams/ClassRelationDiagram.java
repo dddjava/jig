@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePac
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 
 import java.util.StringJoiner;
 

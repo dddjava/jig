@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 
 import java.util.*;
 import java.util.function.Function;

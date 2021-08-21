@@ -7,12 +7,12 @@ import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.parts.relation.packages.BidirectionalRelation;
-import org.dddjava.jig.domain.model.parts.relation.packages.BidirectionalRelations;
-import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelation;
-import org.dddjava.jig.domain.model.parts.relation.packages.PackageRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.packages.BidirectionalRelation;
+import org.dddjava.jig.domain.model.parts.packages.BidirectionalRelations;
+import org.dddjava.jig.domain.model.parts.packages.PackageRelation;
+import org.dddjava.jig.domain.model.parts.packages.PackageRelations;
 
 import java.util.*;
 

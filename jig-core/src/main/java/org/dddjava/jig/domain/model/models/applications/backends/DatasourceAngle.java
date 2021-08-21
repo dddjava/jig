@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 
 /**
  * データソースの切り口

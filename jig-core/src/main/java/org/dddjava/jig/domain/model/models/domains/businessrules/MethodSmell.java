@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 
 /**
  * メソッドの不吉なにおい

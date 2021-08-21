@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

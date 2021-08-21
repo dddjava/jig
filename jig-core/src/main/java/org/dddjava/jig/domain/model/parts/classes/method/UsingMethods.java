@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.relation.method;
+package org.dddjava.jig.domain.model.parts.classes.method;
 
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;

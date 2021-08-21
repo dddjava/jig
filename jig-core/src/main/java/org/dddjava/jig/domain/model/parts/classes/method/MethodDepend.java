@@ -1,9 +1,7 @@
-package org.dddjava.jig.domain.model.parts.relation.method;
+package org.dddjava.jig.domain.model.parts.classes.method;
 
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 

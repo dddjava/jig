@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorries;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.relation.method.CallerMethods;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.relation.method.UsingFields;
-import org.dddjava.jig.domain.model.parts.relation.method.UsingMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
+import org.dddjava.jig.domain.model.parts.classes.method.UsingMethods;
 
 import java.util.List;
 import java.util.Optional;

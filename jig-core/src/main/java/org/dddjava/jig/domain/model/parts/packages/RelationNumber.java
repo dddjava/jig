@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.relation.packages;
+package org.dddjava.jig.domain.model.parts.packages;
 
 import java.util.Locale;
 

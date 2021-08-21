@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodDepend;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDepend;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 
 import java.util.HashSet;
 import java.util.List;

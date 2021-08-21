@@ -5,10 +5,10 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelation;
-import org.dddjava.jig.domain.model.parts.relation.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 
 import java.util.ArrayList;
 import java.util.List;

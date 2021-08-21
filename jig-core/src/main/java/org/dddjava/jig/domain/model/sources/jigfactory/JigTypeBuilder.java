@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.*;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 
 import java.util.ArrayList;
 import java.util.HashSet;

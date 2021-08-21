@@ -1,8 +1,4 @@
-package org.dddjava.jig.domain.model.parts.relation.packages;
-
-import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
+package org.dddjava.jig.domain.model.parts.packages;
 
 import java.util.Objects;
 

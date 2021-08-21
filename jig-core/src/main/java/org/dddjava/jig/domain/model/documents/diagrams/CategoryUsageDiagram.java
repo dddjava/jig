@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.relation.class_.ClassRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 
 import java.util.StringJoiner;
 

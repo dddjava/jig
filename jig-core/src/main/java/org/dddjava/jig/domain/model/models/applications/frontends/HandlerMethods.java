@@ -75,8 +75,7 @@ public class HandlerMethods {
             }
         }
         ArrayList<HandlerMethod> newList = new ArrayList<>(this.list);
-        // TODO #723 listがunmodifiableの場合がある
-        list.add(handlerMethod);
+        newList.add(handlerMethod);
         return new HandlerMethods(newList);
     }
 }

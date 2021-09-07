@@ -24,7 +24,7 @@ public class IndexHtmlView {
             if (handleResult.success()) {
                 List<String> list = handleResult.outputFileNames();
                 if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
-                    diagramFiles.addAll(list);
+                    list.stream().filter(item -> !item.endsWith(".txt")).forEach(diagramFiles::add);
                 } else {
                     contextMap.put(handleResult.jigDocument().name(), list.get(0));
                 }

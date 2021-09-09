@@ -25,6 +25,9 @@ public class ComponentRelationDiagram implements DiagramSourceWriter {
 
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+        if (componentRelations.none()) {
+            return DiagramSources.empty();
+        }
 
         DocumentName documentName = DocumentName.of(JigDocument.ComponentRelationDiagram);
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {\n", "\n}")

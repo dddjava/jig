@@ -4,10 +4,7 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +24,7 @@ public class ComponentRelations {
         SpringComponentFactory componentResolver = new SpringComponentFactory();
         Map<ComponentType, List<SpecifiedComponent>> temp = allJigTypes.list().stream().map(componentResolver::create)
                 .collect(Collectors.groupingBy(SpecifiedComponent::componentType));
-        List<SpecifiedComponent> excluded = temp.remove(ComponentType.EXCLUDE);
+        List<SpecifiedComponent> excluded = Optional.ofNullable(temp.remove(ComponentType.EXCLUDE)).orElse(Collections.emptyList());
 
         List<SpecifiedComponent> 実装している可能性のあるComponent = temp.values().stream()
                 .flatMap(List::stream)
@@ -67,5 +64,9 @@ public class ComponentRelations {
             text.add(componentRelation.edgeTextWithNumber(count));
         }
         return text.toString();
+    }
+
+    public boolean none() {
+        return componentMap.isEmpty();
     }
 }

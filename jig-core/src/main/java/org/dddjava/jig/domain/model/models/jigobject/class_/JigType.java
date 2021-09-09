@@ -112,4 +112,12 @@ public class JigType {
     public List<Annotation> listAnnotations() {
         return jigTypeAttribute.annotations;
     }
+
+    public boolean implementing(TypeIdentifier typeIdentifier) {
+        return typeDeclaration.extendsOrImplements(typeIdentifier);
+    }
+
+    public boolean hasSuperOrInterface() {
+        return typeDeclaration.hasSuperOrInterface();
+    }
 }

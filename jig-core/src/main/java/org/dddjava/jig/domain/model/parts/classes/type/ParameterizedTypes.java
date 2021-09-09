@@ -18,4 +18,8 @@ public class ParameterizedTypes {
                 .flatMap(parameterizedType -> parameterizedType.listTypeIdentifiers().stream())
                 .collect(Collectors.toList());
     }
+
+    public boolean exists() {
+        return !list.isEmpty();
+    }
 }

@@ -11,9 +11,11 @@ public enum TypeKind {
     // abstractな型
     抽象列挙型,
 
-    アノテーション,
-    インタフェース,
-    抽象型;
+    // アノテーション、インタフェース、抽象型の判定がAsmClassVisitorで行われていないのでまだ使えない
+    //アノテーション,
+    //インタフェース,
+    //抽象型
+    ;
 
     public boolean isCategory() {
         return this == 列挙型 || this == 抽象列挙型;

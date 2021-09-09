@@ -32,4 +32,12 @@ public class TypeDeclaration {
     public ParameterizedTypes interfaceTypes() {
         return interfaceTypes;
     }
+
+    public boolean extendsOrImplements(TypeIdentifier typeIdentifier) {
+        return superType.typeIdentifier().equals(typeIdentifier) || interfaceTypes.listTypeIdentifiers().contains(typeIdentifier);
+    }
+
+    public boolean hasSuperOrInterface() {
+        return !superType.typeIdentifier.equals(new TypeIdentifier(Object.class)) || interfaceTypes.exists();
+    }
 }

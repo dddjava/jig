@@ -61,6 +61,11 @@ public class DiagramController {
         return applicationService.architectureDiagram();
     }
 
+    @DocumentMapping(JigDocument.ComponentRelationDiagram)
+    public ComponentRelationDiagram componentRelation() {
+        return applicationService.componentRelationDiagram();
+    }
+
     @DocumentMapping(JigDocument.CompositeUsecaseDiagram)
     public CompositeUsecaseDiagram useCaseDiagram() {
         return new CompositeUsecaseDiagram(applicationService.serviceAngles());

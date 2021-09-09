@@ -99,9 +99,17 @@ public enum JigDocument {
     /**
      * アーキテクチャ図
      */
+    @Deprecated
     ArchitectureDiagram(
             JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),
             "architecture", JigDocumentType.DIAGRAM),
+
+    /**
+     * コンポーネント関連図
+     */
+    ComponentRelationDiagram(
+            JigDocumentLabel.of("コンポーネント関連図", "ComponentRelationDiagram"),
+            "component-relation", JigDocumentType.DIAGRAM),
 
     /**
      * ドメイン概要

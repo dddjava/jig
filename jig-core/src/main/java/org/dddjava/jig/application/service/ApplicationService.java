@@ -2,6 +2,7 @@ package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.ComponentRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
@@ -12,6 +13,7 @@ import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.components.ComponentRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
@@ -106,5 +108,10 @@ public class ApplicationService {
     public ServiceMethods serviceMethods() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
+    }
+
+    public ComponentRelationDiagram componentRelationDiagram() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return new ComponentRelationDiagram(ComponentRelations.from(typeFacts.jigTypes(), typeFacts.toClassRelations()));
     }
 }

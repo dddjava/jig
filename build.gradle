@@ -166,6 +166,13 @@ project(':jig-core') {
     jigReports.dependsOn(clean, classes)
 }
 
+[":jig-cli", ":jig-cli-kt"].each {
+    project(it) {
+        // *-plain.jarを作らない
+        jar.enabled = false
+    }
+}
+
 project(':jig-cli') {
     apply plugin: 'org.springframework.boot'
 

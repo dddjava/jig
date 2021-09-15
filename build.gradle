@@ -6,14 +6,6 @@ plugins {
     id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 }
 
-allprojects {
-    group = 'org.dddjava.jig'
-
-    repositories {
-        mavenCentral()
-    }
-}
-
 nexusPublishing {
     repositories {
         sonatype {
@@ -25,6 +17,11 @@ nexusPublishing {
 
 subprojects {
     apply plugin: 'java'
+    group = 'org.dddjava.jig'
+
+    repositories {
+        mavenCentral()
+    }
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -62,11 +59,6 @@ subprojects {
     }
 }
 
-static String findSettingValue(String envName, String propertyName) {
-    def env = System.getenv().get(envName)
-    def property = env ? env : System.properties.getProperty(propertyName)
-    property ? property : ''
-}
 
 project(':jig-core') {
     apply plugin: 'java-library'
@@ -294,5 +286,10 @@ project(':jig-gradle-plugin') {
     build.dependsOn(publishToMavenLocal)
 
     test.dependsOn(createClasspathManifest)
+}
 
+static String findSettingValue(String envName, String propertyName) {
+    def env = System.getenv().get(envName)
+    def property = env ? env : System.properties.getProperty(propertyName)
+    property ? property : ''
 }

@@ -15,13 +15,13 @@ nexusPublishing {
     }
 }
 
+allprojects {
+    group = 'org.dddjava.jig'
+    repositories.mavenCentral()
+}
+
 subprojects {
     apply plugin: 'java'
-    group = 'org.dddjava.jig'
-
-    repositories {
-        mavenCentral()
-    }
 
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'

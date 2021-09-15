@@ -177,6 +177,7 @@ project(':jig-core') {
 
         bootJar {
             metaInf { from(rootDir) { include 'LICENSE' } }
+            archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()
             manifest {
                 attributes "Implementation-Version": (project.version ?: localSnapshotVersion())
             }
@@ -237,7 +238,7 @@ project(':jig-gradle-plugin') {
     }
 
     jar {
-        baseName = 'jig-gradle-plugin'
+        archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()
     }
 
     ext {

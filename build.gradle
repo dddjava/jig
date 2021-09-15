@@ -32,7 +32,7 @@ subprojects {
     def defaultEncoding = 'UTF-8'
 
     [AbstractCompile, Javadoc].each {
-      tasks.withType(it).each { it.options.encoding = defaultEncoding }
+        tasks.withType(it).each { it.options.encoding = defaultEncoding }
     }
 
     dependencies {
@@ -69,7 +69,7 @@ configure([project(":jig-core")]) {
     }
 }
 
-String findSettingValue(String envName, String propertyName) {
+static String findSettingValue(String envName, String propertyName) {
     def env = System.getenv().get(envName)
     def property = env ? env : System.properties.getProperty(propertyName)
     property ? property : ''
@@ -168,60 +168,46 @@ project(':jig-core') {
 
 [":jig-cli", ":jig-cli-kt"].each {
     project(it) {
+        apply plugin: 'org.springframework.boot'
+
+        dependencies {
+            implementation project(':jig-core')
+            implementation 'org.springframework.boot:spring-boot-starter'
+        }
+
+        bootJar {
+            metaInf { from(rootDir) { include 'LICENSE' } }
+            manifest {
+                attributes "Implementation-Version": (project.version ?: localSnapshotVersion())
+            }
+        }
+
         // *-plain.jarを作らない
         jar.enabled = false
     }
 }
 
-project(':jig-cli') {
-    apply plugin: 'org.springframework.boot'
-
-    dependencies {
-        implementation project(':jig-core')
-        implementation 'org.springframework.boot:spring-boot-starter'
-    }
-
-    bootJar {
-        metaInf { from(rootDir) { include 'LICENSE' } }
-        archiveName 'jig-cli.jar'
-        manifest {
-            attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + "." + LocalDateTime.now().format("MMddHHmm") + ".LOCAL-SNAPSHOT" ))
-        }
-    }
-}
-
 project(':jig-cli-kt') {
-    apply plugin: 'org.springframework.boot'
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     dependencies {
-        implementation project(':jig-core')
-        implementation 'org.springframework.boot:spring-boot-starter'
-        // kotlinのコメント取得: infrastructure/kotlin
         api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.30'
         api 'org.jetbrains.kotlin:kotlin-stdlib:1.5.30'
     }
 
     bootJar {
-        metaInf { from(rootDir) { include 'LICENSE' } }
-        archiveName 'jig-cli-kt.jar'
-        manifest {
-            attributes "Implementation-Version": (version ?: (LocalDate.now().format("uuuu.M.W") + ".LOCAL-SNAPSHOT" ))
-        }
         requiresUnpack '**/kotlin-compiler-*.jar'
     }
 
-    compileKotlin {
-        kotlinOptions {
+    [compileKotlin, compileTestKotlin].each {
+        it.kotlinOptions {
             jvmTarget = '1.8'
         }
     }
+}
 
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = '1.8'
-        }
-    }
+static def localSnapshotVersion() {
+    return java.time.LocalDate.now().format("uuuu.M.W") + "." + java.time.LocalDateTime.now().format("MMddHHmm") + ".LOCAL-SNAPSHOT"
 }
 
 project(':jig-gradle-plugin') {
@@ -266,7 +252,6 @@ project(':jig-gradle-plugin') {
             }
         }
     }
-
 
     pluginBundle {
         website = 'https://github.com/dddjava/jig'

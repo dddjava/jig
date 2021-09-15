@@ -16,6 +16,7 @@ nexusPublishing {
 }
 
 allprojects {
+    // groupをpublish-pluginが使用するため、subでなくallで定義する必要がある
     group = 'org.dddjava.jig'
     repositories.mavenCentral()
 }

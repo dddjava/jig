@@ -62,13 +62,6 @@ subprojects {
     }
 }
 
-configure([project(":jig-core")]) {
-
-    javadoc {
-        options.addStringOption('Xdoclint:none', '-quiet')
-    }
-}
-
 static String findSettingValue(String envName, String propertyName) {
     def env = System.getenv().get(envName)
     def property = env ? env : System.properties.getProperty(propertyName)
@@ -138,6 +131,9 @@ project(':jig-core') {
     java {
         withJavadocJar()
         withSourcesJar()
+    }
+    javadoc {
+        options.addStringOption('Xdoclint:none', '-quiet')
     }
 
     dependencies {

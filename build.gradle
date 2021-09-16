@@ -32,6 +32,9 @@ subprojects {
     [AbstractCompile, Javadoc].each {
         tasks.withType(it).each { it.options.encoding = defaultEncoding }
     }
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:deprecation"
+    }
 
     dependencies {
         implementation platform('org.springframework.boot:spring-boot-dependencies:2.5.4')

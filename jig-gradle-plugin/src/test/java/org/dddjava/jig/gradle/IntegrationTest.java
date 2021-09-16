@@ -41,7 +41,7 @@ public class IntegrationTest {
         assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
 
         File outputDirectory = outputDir.toFile();
-        logger.warn("outputDir={}, exists={}, list={}", outputDir.normalize(), outputDirectory.exists(), outputDirectory.list());
+        logger.warn("outputDir={}, exists={}, list={}", outputDir.toAbsolutePath(), outputDirectory.exists(), outputDirectory.list());
 
         assertAll("スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること",
                 () -> assertTrue(outputDir.resolve("package-relation-depth4.svg").toFile().exists()),

@@ -3,11 +3,12 @@ on:
     branches:
       - main
 jobs:
-  build-cli:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ ubuntu-latest, windows-latest ]
+        java-version: [ '8', '11' ]
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
     steps:
@@ -15,14 +16,14 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: ${{ matrix.java-version }}
       - name: Cache Gradle
         uses: actions/cache@v2.1.6
         with:
-           path: |
-             ~/.gradle/caches
-             ~/.gradle/wrapper
-           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
       - name: Run Build
         run: |
           ./gradlew build

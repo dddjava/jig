@@ -32,3 +32,6 @@ jobs:
           name: test-reports-${{ runner.os }}
           path: jig-core/build/reports/tests/test/
           retention-days: 3
+      - name: Run Build
+        run: |
+          ./gradlew build

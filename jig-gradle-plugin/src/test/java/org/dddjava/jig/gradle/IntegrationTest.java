@@ -29,10 +29,10 @@ public class IntegrationTest {
     @EnumSource(SupportGradleVersion.class)
     void test(SupportGradleVersion version) throws IOException, URISyntaxException {
         Path path = Paths.get("./stub");
-        GradleTaskRunner runner = version.runner(path);
         Path outputDir = path.resolve("sub-project/build/jig");
         String jigTask = ":sub-project:jigReports";
 
+        GradleTaskRunner runner = version.runner(path);
         BuildResult result = runner.runTask("clean", "compileJava", jigTask, "--stacktrace");
 
         logger.warn("task results = {}", result.getTasks());
@@ -43,13 +43,10 @@ public class IntegrationTest {
         File outputDirectory = outputDir.toFile();
         logger.warn("outputDir={}, exists={}, list={}", outputDir.toAbsolutePath(), outputDirectory.exists(), outputDirectory.list());
 
-        assertAll("スタブプロジェクトへの適用でパッケージ図とビジネスルール一覧が出力されること",
-                () -> assertTrue(outputDir.resolve("package-relation-depth4.svg").toFile().exists()),
-                () -> assertTrue(outputDir.resolve("business-rule.xlsx").toFile().exists())
-        );
+        assertTrue(Files.exists(outputDir));
+        assertTrue(Objects.requireNonNull(outputDirectory.list()).length > 0);
 
         // cleanで build/jig が削除されること
-        assertTrue(Files.exists(outputDir));
         runner.runTask("clean");
         assertFalse(Files.exists(outputDir));
     }
@@ -58,16 +55,21 @@ public class IntegrationTest {
     void testKotlinDSL() throws IOException, URISyntaxException {
         SupportGradleVersion version = SupportGradleVersion.CURRENT;
         Path path = Paths.get("./stub-kotlin-dsl");
-        GradleTaskRunner runner = version.runner(path);
-        BuildResult result = runner.runTask("clean", "compileJava", "jigReports", "--stacktrace");
-
         Path outputDir = path.resolve("build/jig");
-        assertAll(
-                () -> {
-                    BuildTask buildTask = Objects.requireNonNull(result.task(":jigReports"));
-                    assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
-                },
-                () -> assertTrue(outputDir.resolve("package-relation-depth4.svg").toFile().exists())
-        );
+        String jigTask = ":jigReports";
+
+        GradleTaskRunner runner = version.runner(path);
+        BuildResult result = runner.runTask("clean", "compileJava", jigTask, "--stacktrace");
+
+        logger.warn("task results = {}", result.getTasks());
+
+        BuildTask buildTask = Objects.requireNonNull(result.task(jigTask));
+        assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
+
+        File outputDirectory = outputDir.toFile();
+        logger.warn("outputDir={}, exists={}, list={}", outputDir.toAbsolutePath(), outputDirectory.exists(), outputDirectory.list());
+
+        assertTrue(Files.exists(outputDir));
+        assertTrue(Objects.requireNonNull(outputDirectory.list()).length > 0);
     }
 }

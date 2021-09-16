@@ -131,7 +131,6 @@ project(':jig-core') {
     dependencies {
         api 'org.springframework:spring-context'
         api 'org.slf4j:slf4j-api'
-        api 'ch.qos.logback:logback-classic'
 
         // バイトコードの読み取り: infrastructure/asm
         api 'org.ow2.asm:asm:9.2'

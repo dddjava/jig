@@ -32,6 +32,10 @@ public class IntegrationTest {
         Path outputDir = path.resolve("sub-project/build/jig");
         String jigTask = ":sub-project:jigReports";
 
+        runTest(version, path, outputDir, jigTask);
+    }
+
+    void runTest(SupportGradleVersion version, Path path, Path outputDir, String jigTask) throws IOException, URISyntaxException {
         GradleTaskRunner runner = version.runner(path);
         BuildResult result = runner.runTask("clean", "compileJava", jigTask, "--stacktrace");
 
@@ -58,18 +62,6 @@ public class IntegrationTest {
         Path outputDir = path.resolve("build/jig");
         String jigTask = ":jigReports";
 
-        GradleTaskRunner runner = version.runner(path);
-        BuildResult result = runner.runTask("clean", "compileJava", jigTask, "--stacktrace");
-
-        logger.warn("task results = {}", result.getTasks());
-
-        BuildTask buildTask = Objects.requireNonNull(result.task(jigTask));
-        assertEquals(TaskOutcome.SUCCESS, buildTask.getOutcome());
-
-        File outputDirectory = outputDir.toFile();
-        logger.warn("outputDir={}, exists={}, list={}", outputDir.toAbsolutePath(), outputDirectory.exists(), outputDirectory.list());
-
-        assertTrue(Files.exists(outputDir));
-        assertTrue(Objects.requireNonNull(outputDirectory.list()).length > 0);
+        runTest(version, path, outputDir, jigTask);
     }
 }

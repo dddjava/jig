@@ -35,3 +35,10 @@ jobs:
       - name: Run Build
         run: |
           ./gradlew build
+      - name: Upload test failure report
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-failure-reports-${{ runner.os }}
+          path: jig-*/build/reports/tests/test/
+          retention-days: 3

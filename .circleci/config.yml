@@ -75,16 +75,6 @@ jobs:
       - store_artifacts:
           path: example
           destination: example
-  publish-snapshot:
-    executor: circleci-openjdk-8-executor
-    steps:
-      - pre-build
-      - run:
-          name: build and publish
-          command: |
-            export ORG_GRADLE_PROJECT_signingKey=$(echo $base64SigningKey | base64 -d)
-            export ORG_GRADLE_PROJECT_version=0.0.0-SNAPSHOT
-            ./gradlew build publishToSonatype -x test
 
 workflows:
   version: 2
@@ -95,9 +85,6 @@ workflows:
             branches:
               only: 'main'
       - build-java-11:
-          requires:
-            - build-java-8
-      - publish-snapshot:
           requires:
             - build-java-8
   release:

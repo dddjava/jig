@@ -4,7 +4,7 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id 'org.dddjava.jig-gradle-plugin' version '2021.5.5'
+        id 'org.dddjava.jig-gradle-plugin' version '2021.9.2'
     }
 }
 

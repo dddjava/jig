@@ -3,7 +3,7 @@
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <script src="./assets/marked.2.0.1.min.js"></script>
-    <title>JIG: domain</title>
+    <title th:text="${title}">domain</title>
 </head>
 <body>
 
@@ -12,7 +12,7 @@
 </nav>
 
 <main>
-    <h1>ドメイン概要</h1>
+    <h1 th:text="${title}">ドメイン概要</h1>
 
     <th:block th:each="item : ${jigPackages}">
         <section th:replace="fragment-package :: item">

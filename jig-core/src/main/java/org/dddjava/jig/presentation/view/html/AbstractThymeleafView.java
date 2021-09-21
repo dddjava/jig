@@ -19,6 +19,7 @@ abstract class AbstractThymeleafView {
     }
 
     protected void write(JigDocumentWriter jigDocumentWriter) {
+        contextMap.put("title", jigDocumentWriter.jigDocument().label());
         Context context = new Context(Locale.ROOT, contextMap);
         String template = jigDocumentWriter.jigDocument().fileName();
 

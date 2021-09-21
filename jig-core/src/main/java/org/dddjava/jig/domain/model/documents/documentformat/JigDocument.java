@@ -115,21 +115,21 @@ public enum JigDocument {
      * ドメイン概要
      */
     DomainSummary(
-            JigDocumentLabel.of("", ""),
+            JigDocumentLabel.of("ドメイン概要", "domain"),
             "domain", JigDocumentType.SUMMARY),
 
     /**
      * アプリケーション概要
      */
     ApplicationSummary(
-            JigDocumentLabel.of("", ""),
+            JigDocumentLabel.of("アプリケーション概要", "application"),
             "application", JigDocumentType.SUMMARY),
 
     /**
      * 全体
      */
     Summary(
-            JigDocumentLabel.of("", ""),
+            JigDocumentLabel.of("JIG", "JIG"),
             "index", JigDocumentType.SUMMARY);
 
     private final JigDocumentLabel label;

@@ -11,20 +11,18 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.JigView;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.util.*;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
-public class SummaryView implements JigView {
+public class SummaryView extends AbstractThymeleafView implements JigView {
 
-    TemplateEngine templateEngine;
     JigDocumentContext jigDocumentContext;
 
     public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
-        this.templateEngine = templateEngine;
+        super(templateEngine);
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -60,18 +58,11 @@ public class SummaryView implements JigView {
                 .map(CategoryType::new)
                 .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
 
-        // ThymeleafのContextに設定
-        Map<String, Object> contextMap = new HashMap<>();
-        contextMap.put("baseComposite", baseComposite);
-        contextMap.put("jigPackages", jigPackages);
-        contextMap.put("jigTypes", jigTypes);
-        contextMap.put("categoriesMap", categoriesMap);
-
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+        putContext("baseComposite", baseComposite);
+        putContext("jigPackages", jigPackages);
+        putContext("jigTypes", jigTypes);
+        putContext("categoriesMap", categoriesMap);
+        write(jigDocumentWriter);
     }
 
     private void createTree(Map<PackageIdentifier, List<JigType>> jigTypeMap,

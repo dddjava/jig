@@ -32,9 +32,7 @@ public class ComponentRelationDiagram implements DiagramSourceWriter {
         DocumentName documentName = DocumentName.of(JigDocument.ComponentRelationDiagram);
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {\n", "\n}")
                 .add("label=\"" + documentName.label() + "\";")
-                .add("layout=fdp;")
-                //.add("splines=ortho;")
-                ;
+                .add("layout=fdp;");
         graph.add(componentRelations.dotText());
         return DiagramSource.createDiagramSource(documentName, graph.toString());
     }

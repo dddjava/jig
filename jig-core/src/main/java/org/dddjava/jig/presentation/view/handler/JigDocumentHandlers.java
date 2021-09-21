@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.presentation.controller.ApplicationListController;
 import org.dddjava.jig.presentation.controller.BusinessRuleListController;
 import org.dddjava.jig.presentation.controller.DiagramController;
-import org.dddjava.jig.presentation.view.html.IndexHtmlView;
+import org.dddjava.jig.presentation.view.html.IndexView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public class JigDocumentHandlers {
 
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(JigDocument.Summary, outputDirectory);
-        IndexHtmlView indexHtmlView = viewResolver.indexView();
-        indexHtmlView.render(handleResultList, jigDocumentWriter);
+        IndexView indexView = viewResolver.indexView();
+        indexView.render(handleResultList, jigDocumentWriter);
     }
 }

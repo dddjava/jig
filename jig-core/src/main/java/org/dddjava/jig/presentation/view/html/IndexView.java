@@ -8,11 +8,11 @@ import org.thymeleaf.context.Context;
 
 import java.util.*;
 
-public class IndexHtmlView {
+public class IndexView {
 
     TemplateEngine templateEngine;
 
-    public IndexHtmlView(TemplateEngine templateEngine) {
+    public IndexView(TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 

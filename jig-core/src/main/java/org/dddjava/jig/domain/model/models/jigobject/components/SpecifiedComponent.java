@@ -45,7 +45,6 @@ public class SpecifiedComponent {
             return String.format("\"%s\"[label=\"%s\" shape=ellipse fontsize=9];", componentIdentifier(), jigType.simpleName());
         } else {
             return String.format("%s[shape=component fillcolor=lightgoldenrod" +
-                            " fontsize=30 height=0.8 " +
                             " label=\"%s\"];",
                     componentIdentifier(), componentType.label());
         }

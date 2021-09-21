@@ -180,7 +180,7 @@ project(':jig-cli-kt') {
 
     dependencies {
         api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.30'
-        api 'org.jetbrains.kotlin:kotlin-stdlib:1.5.30'
+        api 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
     }
 
     bootJar {

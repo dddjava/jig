@@ -45,6 +45,9 @@ jig {
 
 設定できる項目は [JigConfig.java](./src/main/java/org/dddjava/jig/gradle/JigConfig.java) を参照してください。
 
+### ログ出力
+期待した出力がされない場合など、ログを確認する際は `--info` などを指定してください。
+
 ## プラグイン開発者向け
 
 ### SNAPSHOTの適用

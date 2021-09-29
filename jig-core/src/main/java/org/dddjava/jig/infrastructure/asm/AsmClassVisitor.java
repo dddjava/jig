@@ -30,7 +30,7 @@ class AsmClassVisitor extends ClassVisitor {
     final ClassSource classSource;
 
     AsmClassVisitor(ClassSource classSource) {
-        super(Opcodes.ASM7);
+        super(Opcodes.ASM9);
         this.plainClassBuilder = new PlainClassBuilder(classSource);
         this.classSource = classSource;
     }

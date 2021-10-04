@@ -2,6 +2,8 @@ package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +12,6 @@ import testing.JigTestExtension;
 
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -33,6 +34,7 @@ class JigDocumentHandlersTest {
         assertEquals("skip", handle.failureMessage);
     }
 
+    @EnabledForJreRange(max = JRE.JAVA_11) // FIXME 17で動作しない
     @Test
     void indexHTMLがUTF8で出力されていること(JigDocumentHandlers sut) throws Exception {
         // defaultCharsetはstaticフィールドにキャッシュされるため、無理矢理クリアする
@@ -45,7 +47,7 @@ class JigDocumentHandlersTest {
         sut.writeIndexHtml(outputDirectory, results);
 
         Path actualPath = outputDirectory.resolve("index.html");
-        String text = new String(Files.readAllBytes(actualPath), StandardCharsets.UTF_8);
+        String text = Files.readString(actualPath);
 
         assertTrue(text.contains("概要: HTML"));
         assertTrue(text.contains("ドメイン概要"));

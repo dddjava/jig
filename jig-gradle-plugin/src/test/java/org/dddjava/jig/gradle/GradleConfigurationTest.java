@@ -6,6 +6,8 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,6 +32,7 @@ class GradleConfigurationTest {
     @TempDir
     Path tempDir;
 
+    @EnabledForJreRange(max = JRE.JAVA_11) // FIXME 17で動作しない
     @ParameterizedTest
     @MethodSource("fixtures")
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(Fixture fixture) {

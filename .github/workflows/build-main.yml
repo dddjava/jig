@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        java-version: [ '11', '17' ]
+        java-version: [ '11' ]
     name: build Java ${{ matrix.java-version }} (${{ matrix.os }})
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
-    steps:
+    steps: &build-steps
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
         with:
@@ -32,6 +32,17 @@ jobs:
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: test-failure-reports-${{ runner.os }}
+          name: test-failure-reports-${{ matrix.java-version }}-${{ runner.os }}
           path: jig-*/build/reports/tests/test/
           retention-days: 3
+  build-17:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+        java-version: [ '17' ]
+    name: build Java ${{ matrix.java-version }} (${{ matrix.os }})
+    env:
+      GRADLE_OPTS: '-Dorg.gradle.daemon=false'
+    steps: *build-steps

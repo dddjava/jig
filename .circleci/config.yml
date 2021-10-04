@@ -3,7 +3,7 @@ version: 2.1
 executors:
   circleci-openjdk-11-executor:
     docker:
-      - image: cimg/openjdk:11.0.12-jdk
+      - image: cimg/openjdk:11.0.12
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m

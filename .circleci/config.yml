@@ -1,17 +1,9 @@
 version: 2.1
 
 executors:
-  circleci-openjdk-8-executor:
-    docker:
-      - image: circleci/openjdk:8u265-jdk
-    working_directory: ~/repo
-    environment:
-      _JAVA_OPTIONS: -Xmx512m
-      GRADLE_OPTS: -Dkotlin.compiler.execution.strategy="in-process"
-      TERM: dumb
   circleci-openjdk-11-executor:
     docker:
-      - image: circleci/openjdk:11.0.8-jdk
+      - image: cimg/openjdk:11.0.12-jdk
     working_directory: ~/repo
     environment:
       _JAVA_OPTIONS: -Xmx512m
@@ -43,16 +35,12 @@ commands:
       - post-build
 
 jobs:
-  build-java-8:
-    executor: circleci-openjdk-8-executor
-    steps:
-      - build
   build-java-11:
     executor: circleci-openjdk-11-executor
     steps:
       - build
   publish:
-    executor: circleci-openjdk-8-executor
+    executor: circleci-openjdk-11-executor
     steps:
       - pre-build
       - run:
@@ -80,13 +68,10 @@ workflows:
   version: 2
   usually:
     jobs:
-      - build-java-8:
+      - build-java-11:
           filters:
             branches:
               only: 'main'
-      - build-java-11:
-          requires:
-            - build-java-8
   release:
     jobs:
       - publish:

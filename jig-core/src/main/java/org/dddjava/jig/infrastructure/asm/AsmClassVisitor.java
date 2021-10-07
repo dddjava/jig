@@ -16,6 +16,8 @@ import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class AsmClassVisitor extends ClassVisitor {
+    static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
     final PlainClassBuilder plainClassBuilder;
     final ClassSource classSource;
@@ -170,8 +173,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                plainMethodBuilder.addMethodInstruction(
-                        new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, descriptor), new MethodReturn(methodDescriptorToReturnIdentifier(descriptor))));
+                plainMethodBuilder.addMethodInstruction(toMethodDeclaration(owner, name, descriptor));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -204,13 +206,36 @@ class AsmClassVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle) {
                         Handle handle = (Handle) bootstrapMethodArgument;
-                        plainMethodBuilder.addMethodInstruction(
-                                new MethodDeclaration(new TypeIdentifier(handle.getOwner()), toMethodSignature(handle.getName(), handle.getDesc()), new MethodReturn(methodDescriptorToReturnIdentifier(handle.getDesc())))
-                        );
+                        if (isMethodRef(handle)) {
+                            plainMethodBuilder.addMethodInstruction(toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc()));
+                        }
                     }
                 }
 
                 super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
+            }
+
+            private boolean isMethodRef(Handle handle) {
+                switch (handle.getTag()) {
+                    case Opcodes.H_GETFIELD:
+                    case Opcodes.H_GETSTATIC:
+                    case Opcodes.H_PUTFIELD:
+                    case Opcodes.H_PUTSTATIC:
+                        return false;
+                    case Opcodes.H_INVOKEVIRTUAL:
+                    case Opcodes.H_INVOKESTATIC:
+                    case Opcodes.H_INVOKESPECIAL:
+                    case Opcodes.H_NEWINVOKESPECIAL:
+                    case Opcodes.H_INVOKEINTERFACE:
+                        return true;
+                    default:
+                        logger.warn("Handler tag={}, skipped. handler={}", handle.getTag(), handle);
+                        return false;
+                }
+            }
+
+            private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {
+                return new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, desc), new MethodReturn(methodDescriptorToReturnIdentifier(desc)));
             }
 
             @Override

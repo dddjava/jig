@@ -1,0 +1,2 @@
+record MyRecord(String value) {
+}

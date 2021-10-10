@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.parts.term.Term;
+import org.dddjava.jig.domain.model.parts.term.TermIdentifier;
 import org.dddjava.jig.domain.model.sources.jigfactory.AliasRegisterResult;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
@@ -13,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class OnMemoryJigSourceRepository implements JigSourceRepository {
@@ -40,6 +44,7 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     public void registerPackageComment(PackageComment packageComment) {
         typeFacts.registerPackageAlias(packageComment);
         commentRepository.register(packageComment);
+        registerTerm(Term.fromPackage(packageComment.packageIdentifier(), packageComment.asText(), packageComment.descriptionComment().bodyText()));
     }
 
     @Override
@@ -52,6 +57,8 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
             logger.warn("{} のコメント登録が {} です。処理は続行します。",
                     classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
         }
+
+        registerTerm(Term.fromClass(classComment.typeIdentifier(), classComment.asText(), classComment.documentationComment().bodyText()));
     }
 
     @Override
@@ -62,6 +69,15 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
             logger.warn("{} のコメント登録が {} です。処理は続行します。",
                     methodComment.methodIdentifier().asText(), aliasRegisterResult);
         }
+
+        registerTerm(Term.fromMethod(methodComment.methodIdentifier(), methodComment.asText(), methodComment.documentationComment().bodyText()));
+    }
+
+    Map<TermIdentifier, Term> termMap = new HashMap<>();
+
+    @Override
+    public void registerTerm(Term term) {
+        termMap.put(term.identifier(), term);
     }
 
     @Override

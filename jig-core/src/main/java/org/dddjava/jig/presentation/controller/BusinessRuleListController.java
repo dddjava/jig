@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.presentation.view.handler.DocumentMapping;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
@@ -23,6 +24,12 @@ public class BusinessRuleListController {
 
     public BusinessRuleListController(BusinessRuleService businessRuleService) {
         this.businessRuleService = businessRuleService;
+    }
+
+    @DocumentMapping(JigDocument.TermList)
+    public ModelReports termList() {
+        Terms terms = businessRuleService.terms();
+        return new ModelReports(new ModelReport<>(terms.list(), TermReport::new, TermReport.class));
     }
 
     @DocumentMapping(JigDocument.DomainSummary)

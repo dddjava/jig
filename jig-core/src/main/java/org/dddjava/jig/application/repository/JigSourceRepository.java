@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
+import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 public interface JigSourceRepository {
@@ -24,4 +25,6 @@ public interface JigSourceRepository {
     TypeFacts allTypeFacts();
 
     Sqls sqls();
+
+    Terms terms();
 }

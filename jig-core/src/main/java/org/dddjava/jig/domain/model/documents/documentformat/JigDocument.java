@@ -126,6 +126,13 @@ public enum JigDocument {
             "application", JigDocumentType.SUMMARY),
 
     /**
+     * 用語集
+     */
+    TermList(
+            JigDocumentLabel.of("用語集", "term"),
+            "term", JigDocumentType.LIST),
+
+    /**
      * 全体
      */
     Summary(

@@ -36,4 +36,16 @@ public class Term {
     public TermIdentifier identifier() {
         return identifier;
     }
+
+    public String title() {
+        return title;
+    }
+
+    public TermKind termKind() {
+        return termKind;
+    }
+
+    public String description() {
+        return description;
+    }
 }

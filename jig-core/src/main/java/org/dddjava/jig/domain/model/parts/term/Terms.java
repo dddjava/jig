@@ -1,6 +1,8 @@
 package org.dddjava.jig.domain.model.parts.term;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Terms {
     List<Term> terms;
@@ -10,6 +12,8 @@ public class Terms {
     }
 
     public List<Term> list() {
-        return terms;
+        return terms.stream()
+                .sorted(Comparator.comparing(Term::termKind).thenComparing(term -> term.identifier.asText()))
+                .collect(Collectors.toList());
     }
 }

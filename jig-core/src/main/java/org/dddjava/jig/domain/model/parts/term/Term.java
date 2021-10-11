@@ -46,6 +46,6 @@ public class Term {
     }
 
     public String description() {
-        return description;
+        return description.trim();
     }
 }

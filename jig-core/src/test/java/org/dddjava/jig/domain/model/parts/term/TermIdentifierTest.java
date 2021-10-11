@@ -31,6 +31,6 @@ class TermIdentifierTest {
         Term term = Term.fromMethod(
                 new MethodIdentifier(new TypeIdentifier("this.is.type"), new MethodSignature("method", TypeIdentifier.of(String.class))),
                 "title", "description");
-        assertEquals("method", term.identifier().simpleText());
+        assertEquals("method", term.identifier().simpleText(), () -> term.identifier().asText());
     }
 }

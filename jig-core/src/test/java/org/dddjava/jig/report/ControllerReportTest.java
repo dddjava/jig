@@ -25,8 +25,8 @@ public class ControllerReportTest {
                         controllerReport -> controllerReport.path()
                 )
                 .containsExactlyInAnyOrder(
-                        tuple("stub.presentation.controller.SimpleController.getService()", "simple-class/simple-method"),
-                        tuple("stub.presentation.controller.SimpleRestController.getService()", "test-get")
+                        tuple("stub.presentation.controller.SimpleController#getService()", "simple-class/simple-method"),
+                        tuple("stub.presentation.controller.SimpleRestController#getService()", "test-get")
                 );
     }
 }

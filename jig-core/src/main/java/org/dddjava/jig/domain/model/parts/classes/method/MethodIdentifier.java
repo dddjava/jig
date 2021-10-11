@@ -18,7 +18,7 @@ public class MethodIdentifier {
     }
 
     public String asText() {
-        return declaringType.fullQualifiedName() + "." + methodSignature.asText();
+        return declaringType.fullQualifiedName() + "#" + methodSignature.asText();
     }
 
     @Override

@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.parts.term;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 用語の識別子
@@ -33,12 +31,19 @@ public class TermIdentifier {
     }
 
     public String simpleText() {
-        Pattern pattern = Pattern.compile("([^.]+\\.)*([^.()]+)(\\(.*\\))?");
-        Matcher matcher = pattern.matcher(value);
-        if (matcher.matches()) {
-            String name = matcher.group(2);
-            return name;
+        int methodStart = value.indexOf('#');
+        if (methodStart == -1) {
+            int lastDot = value.lastIndexOf('.');
+            String temp = lastDot != -1 ? value.substring(lastDot + 1) : value;
+
+            return temp;
         }
-        return "";
+
+        int argStart = value.indexOf('(');
+        if (argStart == -1) {
+            // ないはず
+            return value;
+        }
+        return value.substring(methodStart + 1, argStart);
     }
 }

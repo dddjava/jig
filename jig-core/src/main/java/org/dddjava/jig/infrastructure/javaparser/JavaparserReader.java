@@ -1,5 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
+import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.StaticJavaParser;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Javaparserでテキストソースを読み取る
@@ -30,8 +33,14 @@ public class JavaparserReader implements JavaTextSourceReader {
     }
 
     public JavaparserReader(JigProperties properties) {
+        Optional.ofNullable(System.getProperty("java.version"))
+                .filter(version -> version.startsWith("17"))
+                .ifPresent(v -> {
+                    ParserConfiguration configuration = StaticJavaParser.getConfiguration();
+                    configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+                });
+
         // TODO プロパティで指定してる場合だけ上書きするようにする
-        // ParserConfiguration configuration = StaticJavaParser.getConfiguration();
         // configuration.setCharacterEncoding(properties.inputEncoding());
     }
 

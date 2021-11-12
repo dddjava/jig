@@ -32,6 +32,10 @@ public class PackageIdentifier {
         return new PackageIdentifier("(default)");
     }
 
+    public boolean contains(PackageIdentifier packageIdentifier) {
+        return this.equals(packageIdentifier) || packageIdentifier.value.startsWith(this.value + ".");
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

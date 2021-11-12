@@ -13,8 +13,8 @@ public class BidirectionalRelation {
     public boolean matches(PackageRelation packageRelation) {
         PackageIdentifier left = this.packageRelation.from;
         PackageIdentifier right = this.packageRelation.to;
-        return (left.equals(packageRelation.from()) && right.equals(packageRelation.to())) ||
-                (left.equals(packageRelation.to()) && right.equals(packageRelation.from()));
+        return (left.contains(packageRelation.from()) && right.contains(packageRelation.to())) ||
+                (left.contains(packageRelation.to()) && right.contains(packageRelation.from()));
     }
 
     @Override

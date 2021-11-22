@@ -7,7 +7,8 @@
 </head>
 <body>
 
-<nav class="menu" th:with="node=${baseComposite.resolveRootComposite()}">
+<div class="treeMenuAndMain">
+<nav class="tree" th:with="node=${baseComposite.resolveRootComposite()}">
     <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
 </nav>
 
@@ -26,6 +27,7 @@
         </section>
     </th:block>
 </main>
+</div>
 
 <script>
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))

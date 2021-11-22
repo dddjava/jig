@@ -10,17 +10,25 @@ body {
     margin: 0 8px;
 }
 
-.menu {
-    /* box-sizing: border-box; */
-    position: fixed;
-    overflow: auto;
+.treeMenuAndMain {
+    display: flex;
+    flex-wrap: nowrap;
+}
+.treeMenuAndMain > * {
     height: 100%;
+    overflow: auto;
+}
+.treeMenuAndMain > main {
+    flex-grow: 1;
+}
+.tree {
     width: 300px;
-    font-size: 0.8em;
+    resize: horizontal;
 
+    font-size: 0.8em;
     border-right: dashed 1px;
 }
-.menu a, .menu summary {
+.tree a, .tree summary {
     word-break: keep-all;
     white-space: nowrap;
 }
@@ -29,7 +37,6 @@ body {
 }
 
 main {
-    margin-left: 300px;
 }
 
 section.package > h2, section.type> h2 {

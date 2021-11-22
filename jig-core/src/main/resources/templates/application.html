@@ -5,9 +5,8 @@
     <script src="./assets/marked.2.0.1.min.js"></script>
     <title th:text="${title}">application</title>
 </head>
-<body>
+<body class="treeMenuAndMain">
 
-<div class="treeMenuAndMain">
 <nav class="tree" th:with="node=${baseComposite.resolveRootComposite()}">
     <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
 </nav>
@@ -27,7 +26,6 @@
         </section>
     </th:block>
 </main>
-</div>
 
 <script>
 Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))

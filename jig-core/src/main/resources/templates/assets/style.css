@@ -14,7 +14,7 @@ body {
     display: flex;
     flex-wrap: nowrap;
 }
-.treeMenuAndMain > * {
+.treeMenuAndMain > nav, .treeMenuAndMain > main {
     height: 100%;
     overflow: auto;
 }

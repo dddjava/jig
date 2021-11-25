@@ -32,7 +32,7 @@ body {
     word-break: keep-all;
     white-space: nowrap;
 }
-.menu details > div {
+.tree details > div {
     margin-left: 30px;
 }
 

@@ -19,10 +19,11 @@ body {
     overflow: auto;
 }
 .treeMenuAndMain > main {
+    width: 80%;
     flex-grow: 1;
 }
 .tree {
-    width: 300px;
+    width: 20%;
     resize: horizontal;
 
     font-size: 0.8em;
@@ -34,9 +35,6 @@ body {
 }
 .tree details > div {
     margin-left: 30px;
-}
-
-main {
 }
 
 section.package > h2, section.type> h2 {

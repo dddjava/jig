@@ -140,7 +140,7 @@ project(':jig-core') {
         api 'org.apache.poi:poi:5.1.0'
         api 'org.apache.poi:poi-ooxml:5.1.0'
         // HTML出力
-        api 'org.thymeleaf:thymeleaf:3.0.13.RELEASE'
+        api 'org.thymeleaf:thymeleaf:3.0.14.RELEASE'
 
         testImplementation 'org.springframework:spring-web'
     }

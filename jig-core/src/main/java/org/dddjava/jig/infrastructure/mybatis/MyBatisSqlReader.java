@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlSource;
@@ -39,7 +40,10 @@ public class MyBatisSqlReader implements SqlReader {
 
             return extractSql(sqlSources, classLoader);
         } catch (IOException e) {
-            LOGGER.warn("SQL読み込みに失敗（処理続行）", e);
+            LOGGER.warn("SQLファイルの読み込みに失敗（処理続行）", e);
+            return new Sqls(SqlReadStatus.失敗);
+        } catch (PersistenceException e) {
+            LOGGER.warn("SQL読み込み中にMyBatisに関する例外が発生（処理続行）", e);
             return new Sqls(SqlReadStatus.失敗);
         }
     }

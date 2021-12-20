@@ -40,10 +40,13 @@ public class MyBatisSqlReader implements SqlReader {
 
             return extractSql(sqlSources, classLoader);
         } catch (IOException e) {
-            LOGGER.warn("SQLファイルの読み込みに失敗（処理続行）", e);
+            LOGGER.warn("SQLファイルの読み込みでIO例外が発生しました。" +
+                    "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
             return new Sqls(SqlReadStatus.失敗);
         } catch (PersistenceException e) {
-            LOGGER.warn("SQL読み込み中にMyBatisに関する例外が発生（処理続行）", e);
+            LOGGER.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
+                    "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
+                    "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
             return new Sqls(SqlReadStatus.失敗);
         }
     }
@@ -57,11 +60,14 @@ public class MyBatisSqlReader implements SqlReader {
                 Class<?> mapperClass = classLoader.loadClass(className);
                 config.addMapper(mapperClass);
             } catch (NoClassDefFoundError e) {
-                LOGGER.warn("Mapperが未知のクラスに依存しているため読み取れませんでした。 読み取りに失敗したclass={}, メッセージ={}",
+                LOGGER.warn("{} がJIG実行時クラスパスに存在しないクラスに依存しているため読み取れませんでした。このMapperの読み取りはスキップします。" +
+                                "メッセージ={}",
                         className, e.getLocalizedMessage());
                 sqlReadStatus = SqlReadStatus.読み取り失敗あり;
             } catch (Exception e) {
-                LOGGER.warn("Mapperの取り込みに失敗", e);
+                LOGGER.warn("なんらかの例外により {} の読み取りに失敗しました。このMapperの読み取りはスキップします。" +
+                                "例外メッセージを添えてIssueを作成していただけると、対応できるかもしれません。",
+                        className, e);
                 sqlReadStatus = SqlReadStatus.読み取り失敗あり;
             }
         }

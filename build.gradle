@@ -177,7 +177,7 @@ project(':jig-cli-kt') {
     apply plugin: 'org.jetbrains.kotlin.jvm'
 
     dependencies {
-        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.6.0'
+        api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.6.10'
         api 'org.jetbrains.kotlin:kotlin-stdlib:1.6.10'
     }
 

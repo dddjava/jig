@@ -218,6 +218,8 @@ project(':jig-gradle-plugin') {
         implementation project(':jig-core')
         implementation gradleApi()
         implementation localGroovy()
+        implementation 'org.apache.logging.log4j:log4j-to-slf4j'
+
         // Add the classpath file to the test runtime classpath
         testRuntimeOnly files(createClasspathManifest)
     }

@@ -36,7 +36,7 @@ subprojects {
     }
 
     dependencies {
-        implementation platform('org.springframework.boot:spring-boot-dependencies:2.6.1')
+        implementation platform('org.springframework.boot:spring-boot-dependencies:2.6.2')
         implementation platform('org.apache.logging.log4j:log4j-bom:2.17.0')
 
         testImplementation 'org.junit.jupiter:junit-jupiter-api'

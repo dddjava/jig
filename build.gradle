@@ -134,7 +134,7 @@ project(':jig-core') {
         // バイトコードの読み取り: infrastructure/asm
         api 'org.ow2.asm:asm:9.2'
         // SQLの取得: infrastructure/mybatis
-        api 'org.mybatis:mybatis:3.5.8'
+        api 'org.mybatis:mybatis:3.5.9'
         // javadocコメントの取得: infrastructure/javaparser
         api 'com.github.javaparser:javaparser-core:3.23.1'
         // excel出力: presentation/poi

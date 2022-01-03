@@ -42,7 +42,7 @@ subprojects {
         testImplementation 'org.junit.platform:junit-platform-commons'
         testImplementation 'org.junit.jupiter:junit-jupiter-params'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-        testImplementation 'org.assertj:assertj-core:3.21.0'
+        testImplementation 'org.assertj:assertj-core:3.22.0'
         testImplementation 'org.mockito:mockito-core'
 
         testImplementation('org.springframework:spring-test') {

@@ -19,6 +19,7 @@ public class JigConfig {
     String modelPattern = "";
 
     List<String> documentTypes = new ArrayList<>();
+    List<String> documentTypesExclude = new ArrayList<>();
 
     String outputDirectory = "";
 
@@ -29,10 +30,24 @@ public class JigConfig {
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
 
     List<JigDocument> documentTypes() {
+        List<JigDocument> toExclude = documentTypesToExclude();
+        return documentTypesToInclude().stream()
+              .filter(each -> ! toExclude.contains(each))
+              .collect(Collectors.toList());
+    }
+
+    List<JigDocument> documentTypesToExclude() {
+        if (documentTypesExclude.isEmpty()) return List.of();
+        return documentTypesExclude.stream()
+              .map(JigDocument::valueOf)
+              .collect(Collectors.toList());
+    }
+
+    List<JigDocument> documentTypesToInclude() {
         if (documentTypes.isEmpty()) return JigDocument.canonical();
         return documentTypes.stream()
-                .map(JigDocument::valueOf)
-                .collect(Collectors.toList());
+              .map(JigDocument::valueOf)
+              .collect(Collectors.toList());
     }
 
     public JigProperties asProperties(Project project) {

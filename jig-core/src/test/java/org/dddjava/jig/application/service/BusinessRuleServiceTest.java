@@ -3,6 +3,7 @@ package org.dddjava.jig.application.service;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @JigServiceTest
 class BusinessRuleServiceTest {
@@ -57,5 +59,11 @@ class BusinessRuleServiceTest {
                         "longParameter",
                         "judgeNull"
                 );
+    }
+
+    @Test
+    void アノテーションつきのpackage_infoをビジネスルールに扱ってしまう(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+        jigSourceReadService.readProjectData(sources);
+        assertTrue(businessRuleService.businessRules().contains(new TypeIdentifier("stub.domain.model.annotation.package-info")));
     }
 }

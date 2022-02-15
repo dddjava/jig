@@ -22,6 +22,7 @@ public class PropertyArchitectureFactory {
             @Override
             public boolean isBusinessRule(JigType jigType) {
                 String fqn = jigType.identifier().fullQualifiedName();
+                if (fqn.endsWith(".package-info")) return false;
                 return businessRulePattern.matcher(fqn).matches()
                         && !compilerGeneratedClassPattern.matcher(fqn).matches();
             }

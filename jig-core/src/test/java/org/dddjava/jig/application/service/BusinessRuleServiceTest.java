@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @JigServiceTest
 class BusinessRuleServiceTest {
@@ -62,8 +62,8 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void アノテーションつきのpackage_infoをビジネスルールに扱ってしまう(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
-        assertTrue(businessRuleService.businessRules().contains(new TypeIdentifier("stub.domain.model.annotation.package-info")));
+        assertFalse(businessRuleService.businessRules().contains(new TypeIdentifier("stub.domain.model.annotation.package-info")));
     }
 }

@@ -143,6 +143,7 @@ project(':jig-core') {
         api 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
 
         testImplementation 'org.springframework:spring-web'
+        testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.10'
     }
 
     build.dependsOn(publishToMavenLocal)

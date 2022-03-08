@@ -23,7 +23,7 @@ import java.util.List;
 
 public class LocalFileSourceReader implements SourceReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LocalFileSourceReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalFileSourceReader.class);
 
     BinarySources readBinarySources(SourcePaths sourcePaths) {
         List<BinarySource> list = new ArrayList<>();
@@ -49,7 +49,7 @@ public class LocalFileSourceReader implements SourceReader {
                 });
                 list.add(new BinarySource(new BinarySourceLocation(path), new ClassSources(sources)));
             } catch (IOException e) {
-                LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
+                logger.warn("skip binary source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
         }
         return new BinarySources(list);
@@ -71,7 +71,7 @@ public class LocalFileSourceReader implements SourceReader {
                     }
                 });
             } catch (IOException e) {
-                LOGGER.warn("skipped '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
+                logger.warn("skip text source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
             }
         }
 
@@ -80,6 +80,7 @@ public class LocalFileSourceReader implements SourceReader {
 
     @Override
     public Sources readSources(SourcePaths sourcePaths) {
+        logger.info("read paths: binary={}, text={}", sourcePaths.binarySourcePaths(), sourcePaths.textSourcePaths());
         return new Sources(readTextSources(sourcePaths), readBinarySources(sourcePaths));
     }
 }

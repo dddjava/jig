@@ -73,6 +73,11 @@ main table thead {
 .method-argument-item {
     display: block;
 }
+
+main table thead.enum {
+    color: #FFF;
+    background-color: #46ADAA;
+}
 .enum-param-item {
     display: block;
     white-space: nowrap;

@@ -17,7 +17,7 @@
 
         <table th:if="${categoriesMap.containsKey(item.identifier())}"
                th:with="category=${categoriesMap.get(item.identifier())}">
-            <thead>
+            <thead class="enum">
             <tr>
                 <th>列挙定数名</th>
                 <th>パラメータ</th>
@@ -34,7 +34,7 @@
         </table>
 
         <table th:unless="${item.instanceFields().empty()}">
-            <thead>
+            <thead class="enum">
             <tr>
                 <th width="20%">フィールド</th>
                 <th>引数</th>

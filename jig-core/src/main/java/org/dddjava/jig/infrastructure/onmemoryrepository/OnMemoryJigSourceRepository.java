@@ -97,6 +97,11 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     }
 
     @Override
+    public EnumModels enumModels() {
+        return enumModels;
+    }
+
+    @Override
     public TypeFacts allTypeFacts() {
         return typeFacts;
     }

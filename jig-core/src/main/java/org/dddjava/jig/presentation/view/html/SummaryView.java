@@ -62,6 +62,7 @@ public class SummaryView extends AbstractThymeleafView implements JigView {
         putContext("jigPackages", jigPackages);
         putContext("jigTypes", jigTypes);
         putContext("categoriesMap", categoriesMap);
+        putContext("enumModels", summaryModel.enumModels());
         write(jigDocumentWriter);
     }
 

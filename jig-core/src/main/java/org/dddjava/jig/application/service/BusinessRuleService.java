@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -51,8 +52,12 @@ public class BusinessRuleService {
      */
     public CategoryDiagram categories() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        CategoryTypes categoryTypes = categoryTypes();
+        return CategoryDiagram.create(categoryTypes, typeFacts.toClassRelations());
+    }
 
-        return CategoryDiagram.create(CategoryTypes.from(businessRules().jigTypes()), typeFacts.toClassRelations());
+    public CategoryTypes categoryTypes() {
+        return CategoryTypes.from(businessRules().jigTypes());
     }
 
     /**
@@ -84,5 +89,9 @@ public class BusinessRuleService {
 
     public Terms terms() {
         return jigSourceRepository.terms();
+    }
+
+    public EnumModels enumModels() {
+        return jigSourceRepository.enumModels();
     }
 }

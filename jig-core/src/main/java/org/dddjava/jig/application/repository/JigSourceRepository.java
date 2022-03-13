@@ -30,4 +30,6 @@ public interface JigSourceRepository {
     Terms terms();
 
     void registerEnumModels(EnumModels enumModels);
+
+    EnumModels enumModels();
 }

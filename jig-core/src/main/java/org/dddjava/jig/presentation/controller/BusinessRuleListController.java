@@ -37,6 +37,11 @@ public class BusinessRuleListController {
         return SummaryModel.from(businessRuleService.businessRules());
     }
 
+    @DocumentMapping(JigDocument.EnumSummary)
+    public SummaryModel enumListHtml() {
+        return SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
+    }
+
     @DocumentMapping(JigDocument.BusinessRuleList)
     public ModelReports domainList() {
         return new ModelReports(

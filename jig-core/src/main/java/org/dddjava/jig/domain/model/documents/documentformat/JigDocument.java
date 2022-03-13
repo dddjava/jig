@@ -125,6 +125,13 @@ public enum JigDocument {
             "application", JigDocumentType.SUMMARY),
 
     /**
+     * 区分概要
+     */
+    EnumSummary(
+            JigDocumentLabel.of("区分概要", "enum"),
+            "enum", JigDocumentType.SUMMARY),
+
+    /**
      * 用語集
      */
     TermList(

@@ -79,7 +79,9 @@ public class JigDocumentHandlers {
     boolean copied = false;
 
     private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) throws IOException {
-        if (jigDocument == JigDocument.DomainSummary || jigDocument == JigDocument.ApplicationSummary) {
+        if (jigDocument == JigDocument.DomainSummary
+                || jigDocument == JigDocument.ApplicationSummary
+                || jigDocument == JigDocument.EnumSummary) {
             if (copied) return;
 
             copyFile("index.html", "templates/", outputDirectory);

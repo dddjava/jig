@@ -56,6 +56,7 @@ section.type table caption {
 main table {
     border-collapse: collapse;
     width: 80%;
+    margin-bottom: 0.5em;
 }
 main table tr > * {
     border: #000 solid 1px;
@@ -71,6 +72,10 @@ main table thead {
 }
 .method-argument-item {
     display: block;
+}
+.enum-param-item {
+    display: block;
+    white-space: nowrap;
 }
 
 .fully-qualified-name {

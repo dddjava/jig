@@ -17,4 +17,12 @@ public class EnumModel {
         this.typeIdentifier = typeIdentifier;
         this.enumConstants = enumConstants;
     }
+
+    public List<String> paramOf(String name) {
+        return enumConstants.stream()
+                .filter(enumConstant -> enumConstant.name.equals(name))
+                .map(enumConstant -> enumConstant.argumentExpressions)
+                .findAny()
+                .orElseGet(() -> List.of());
+    }
 }

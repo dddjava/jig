@@ -1,0 +1,62 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.2.0.1.min.js"></script>
+</head>
+<body>
+
+<main>
+    <section class="type" th:fragment="item">
+        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+        <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
+
+        <th:block th:with="description=${item.description()}">
+            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
+        </th:block>
+
+        <table th:if="${categoriesMap.containsKey(item.identifier())}"
+               th:with="category=${categoriesMap.get(item.identifier())}">
+            <thead>
+            <tr>
+                <th>列挙定数名</th>
+                <th>パラメータ</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="value : ${category.values().list()}" th:with="params=${enumModels.select(item.identifier()).paramOf(value.nameText())}">
+                <td class="method-name" th:text="${value.nameText()}">xxx</td>
+                <td>
+                    <span class="enum-param-item" th:each="param: ${params}" th:text="${param}">xxx</span>
+                    <span th:if="${params.isEmpty()}">なし</span>
+                </td>
+            </tr>
+        </table>
+
+        <table th:unless="${item.instanceFields().empty()}">
+            <thead>
+            <tr>
+                <th width="20%">フィールド</th>
+                <th>引数</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="field: ${item.instanceFields().list()}">
+                <td class="method-name" th:text="${field.nameText()}">xxx</td>
+                <td>
+                    <a class="method-argument-item"
+                       th:href="${'./domain.html#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                </td>
+            </tr>
+        </table>
+
+        <th:block th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">メソッドテーブル</th:block>
+        <th:block th:replace="fragment-method :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">メソッドテーブル</th:block>
+    </section>
+</main>
+
+<script>
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+</script>
+</body>
+</html>

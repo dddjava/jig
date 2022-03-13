@@ -24,6 +24,10 @@ public class FieldDeclarations {
                 .collect(Collectors.joining(", ", "[", "]"));
     }
 
+    public List<FieldDeclaration> list() {
+        return list;
+    }
+
     public TypeIdentifiers toTypeIdentifies() {
         return list.stream()
                 .map(FieldDeclaration::typeIdentifier)

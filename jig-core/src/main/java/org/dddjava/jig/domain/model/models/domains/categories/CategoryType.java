@@ -17,6 +17,10 @@ public class CategoryType {
         this.jigType = jigType;
     }
 
+    public JigType jigType() {
+        return jigType;
+    }
+
     public boolean hasParameter() {
         return jigType.instanceMember().hasField();
     }

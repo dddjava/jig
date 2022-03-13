@@ -1,0 +1,28 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.2.0.1.min.js"></script>
+    <title th:text="${title}">enum</title>
+</head>
+<body class="treeMenuAndMain">
+
+<nav class="tree" th:with="node=${baseComposite.resolveRootComposite()}">
+    <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
+</nav>
+
+<main>
+    <h1 th:text="${title}">enum概要</h1>
+
+    <th:block th:each="item : ${jigTypes}">
+        <section th:replace="fragment-enum:: item">
+            クラス表示
+        </section>
+    </th:block>
+</main>
+
+<script>
+Array.from(document.getElementsByClassName("markdown")).forEach(x => x.innerHTML = marked(x.innerHTML))
+</script>
+</body>
+</html>

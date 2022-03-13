@@ -2,23 +2,34 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
+import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
+import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumConstant;
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModel;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClassVisitor extends VoidVisitorAdapter<Void> {
+    static Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
 
     private final String packageName;
-    ClassComment classComment = null;
+    ClassComment classComment;
     List<MethodComment> methodComments = new ArrayList<>();
+    EnumModel enumModel;
+    TypeIdentifier typeIdentifier;
 
     public ClassVisitor(String packageName) {
         this.packageName = packageName;
@@ -26,25 +37,54 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
 
     @Override
     public void visit(ClassOrInterfaceDeclaration node, Void arg) {
-        visitClassDeclaration(node);
+        visitTopNode(node);
     }
 
     @Override
     public void visit(EnumDeclaration node, Void arg) {
-        visitClassDeclaration(node);
+        TypeIdentifier typeIdentifier = visitTopNode(node);
+
+        List<EnumConstant> constants = node.getEntries().stream()
+                .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        enumModel = new EnumModel(typeIdentifier, constants);
     }
 
-    private <T extends NodeWithSimpleName<?> & NodeWithJavadoc<?> & Visitable> void visitClassDeclaration(T node) {
-        TypeIdentifier typeIdentifier = new TypeIdentifier(packageName + node.getNameAsString());
+    @Override
+    public void visit(RecordDeclaration n, Void arg) {
+        logger.warn("record 未対応 #745");
+        super.visit(n, arg);
+    }
+
+    @Override
+    public void visit(LocalRecordDeclarationStmt n, Void arg) {
+        // メソッド内のRecordに対応する必要がある場合
+        super.visit(n, arg);
+    }
+
+    @Override
+    public void visit(LocalClassDeclarationStmt n, Void arg) {
+        // メソッド内のclassに対応する必要がある場合
+        super.visit(n, arg);
+    }
+
+    private <T extends NodeWithSimpleName<?> & NodeWithJavadoc<?> & Visitable> TypeIdentifier visitTopNode(T node) {
+        if (typeIdentifier != null) {
+            logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
+            return typeIdentifier;
+        }
+        typeIdentifier = new TypeIdentifier(packageName + node.getNameAsString());
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();
             classComment = new ClassComment(typeIdentifier, Comment.fromCodeComment(javadocText));
         });
         node.accept(new MethodVisitor(typeIdentifier), methodComments);
+
+        return typeIdentifier;
     }
 
     public TypeSourceResult toTypeSourceResult() {
-        return new TypeSourceResult(classComment, methodComments);
+        return new TypeSourceResult(classComment, methodComments, enumModel);
     }
 }

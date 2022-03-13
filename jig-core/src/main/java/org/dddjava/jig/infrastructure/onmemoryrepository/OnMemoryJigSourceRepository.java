@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
@@ -86,6 +87,13 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     @Override
     public Terms terms() {
         return new Terms(new ArrayList<>(termMap.values()));
+    }
+
+    EnumModels enumModels;
+
+    @Override
+    public void registerEnumModels(EnumModels enumModels) {
+        this.enumModels = enumModels;
     }
 
     @Override

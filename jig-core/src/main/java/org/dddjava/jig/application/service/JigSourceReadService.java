@@ -91,13 +91,15 @@ public class JigSourceReadService {
      * コメントを読み取る
      */
     void readTextSources(TextSources textSources) {
-        ClassAndMethodComments classAndMethodComments = textSourceReader.readClassAndMethodComments(textSources);
+        TextSourceModel textSourceModel = textSourceReader.readClassAndMethodComments(textSources);
+        ClassAndMethodComments classAndMethodComments = textSourceModel.classAndMethodComments();
         for (ClassComment classComment : classAndMethodComments.list()) {
             jigSourceRepository.registerClassComment(classComment);
         }
         for (MethodComment methodComment : classAndMethodComments.methodList()) {
             jigSourceRepository.registerMethodComment(methodComment);
         }
+        jigSourceRepository.registerEnumModels(textSourceModel.enumModels());
 
         PackageComments packageComments = textSourceReader.readPackageComments(textSources);
         for (PackageComment packageComment : packageComments.list()) {

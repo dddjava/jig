@@ -1,5 +1,6 @@
 package org.dddjava.jig.application.repository;
 
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
@@ -27,4 +28,6 @@ public interface JigSourceRepository {
     Sqls sqls();
 
     Terms terms();
+
+    void registerEnumModels(EnumModels enumModels);
 }

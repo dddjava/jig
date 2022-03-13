@@ -99,7 +99,6 @@ public enum JigDocument {
     /**
      * アーキテクチャ図
      */
-    @Deprecated(since = "2021.9.2", forRemoval = true)
     ArchitectureDiagram(
             JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),
             "architecture", JigDocumentType.DIAGRAM),

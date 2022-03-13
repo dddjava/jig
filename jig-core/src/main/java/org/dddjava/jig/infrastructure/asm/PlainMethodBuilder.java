@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlainMethodBuilder {
+class PlainMethodBuilder {
     MethodDeclaration methodDeclaration;
     List<TypeIdentifier> useTypes;
     Visibility visibility;

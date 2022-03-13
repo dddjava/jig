@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser.learning;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -45,10 +46,25 @@ class ReadEnumTest {
                 super.visit(n, arg);
             }
 
+            @Override
+            public void visit(ConstructorDeclaration n, Void arg) {
+                logger.info("{}", n);
+                logger.info("{}", n.getParameters());
+                super.visit(n, arg);
+            }
         }, null);
 
         assertEquals(2, res.size());
-        assertEquals(List.of("\"A\""), res.get("A"));
-        assertEquals(List.of("\"B\""), res.get("B"));
+        assertEquals(List.of(
+                "111",
+                "\"A-String-Parameter\"",
+                "a -> a"
+        ), res.get("A"));
+        assertEquals(List.of(
+                "2222",
+                "\"B-String-Parameter\"",
+                "(b) -> b",
+                "\"B-String-Parameter-2\""
+        ), res.get("B"));
     }
 }

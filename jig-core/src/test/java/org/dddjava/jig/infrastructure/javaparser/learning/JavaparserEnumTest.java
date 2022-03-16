@@ -4,6 +4,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumConstantDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
@@ -37,7 +38,14 @@ class JavaparserEnumTest {
         var 列挙定数と引数リスト = new 列挙定数と引数リスト();
         cu.accept(new VoidVisitorAdapter<Void>() {
             @Override
+            public void visit(EnumDeclaration n, Void arg) {
+                logger.info("{}", n);
+                super.visit(n, arg);
+            }
+
+            @Override
             public void visit(EnumConstantDeclaration n, Void arg) {
+                logger.info("{}", n);
                 列挙定数と引数リスト.put(n.getName().asString(),
                         n.getArguments().stream()
                                 .map(expression -> expression.toString())

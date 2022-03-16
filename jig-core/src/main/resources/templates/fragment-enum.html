@@ -16,22 +16,20 @@
         </th:block>
 
         <table th:if="${categoriesMap.containsKey(item.identifier())}"
-               th:with="category=${categoriesMap.get(item.identifier())}">
+               th:with="category=${categoriesMap.get(item.identifier())}, enumModel=${enumModels.select(item.identifier())}">
             <thead class="enum">
             <tr>
                 <th>列挙定数名</th>
-                <th>パラメータ</th>
+                <th th:each="name : ${enumModel.constructorArgumentNames()}" th:text="${name}">パラメータ</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="value : ${category.values().list()}" th:with="params=${enumModels.select(item.identifier()).paramOf(value.nameText())}">
+            <tr th:each="value : ${category.values().list()}" th:with="params=${enumModel.paramOf(value.nameText())}">
                 <td class="method-name" th:text="${value.nameText()}">xxx</td>
-                <td>
-                    <span class="enum-param-item" th:each="param: ${params}" th:text="${param}">xxx</span>
-                    <span th:if="${params.isEmpty()}">なし</span>
-                </td>
+                <td th:each="param: ${params}" th:text="${param}">xxx</td>
             </tr>
         </table>
+        </th:block>
 
         <table th:unless="${item.instanceFields().empty()}">
             <thead class="enum">

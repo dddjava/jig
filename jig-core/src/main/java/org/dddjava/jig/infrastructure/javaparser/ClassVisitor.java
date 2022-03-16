@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.RecordDeclaration;
 import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
@@ -38,6 +39,8 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(ClassOrInterfaceDeclaration node, Void arg) {
         visitTopNode(node);
+        // クラスの中を読む必要が出てきたらこのコメントを外す
+        // super.visit(node, arg);
     }
 
     @Override
@@ -48,12 +51,22 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).collect(Collectors.toList())))
                 .collect(Collectors.toList());
         enumModel = new EnumModel(typeIdentifier, constants);
+        super.visit(node, arg);
+    }
+
+    @Override
+    public void visit(ConstructorDeclaration n, Void arg) {
+        // enumの時だけコンストラクタの引数名を取る
+        if (enumModel != null) {
+            enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
+        }
+        super.visit(n, arg);
     }
 
     @Override
     public void visit(RecordDeclaration n, Void arg) {
         logger.warn("record 未対応 #745");
-        super.visit(n, arg);
+        // super.visit(n, arg);
     }
 
     @Override

@@ -31,15 +31,14 @@ class JavaparserEnumTest {
         // ここで出力されるものは読める
         logger.info("{}", cu.toString());
 
-        // 定数と引数リストのPair
-        class Res extends HashMap<String, List<String>> {
+        class 列挙定数と引数リスト extends HashMap<String, List<String>> {
         }
 
-        Res res = new Res();
+        var 列挙定数と引数リスト = new 列挙定数と引数リスト();
         cu.accept(new VoidVisitorAdapter<Void>() {
             @Override
             public void visit(EnumConstantDeclaration n, Void arg) {
-                res.put(n.getName().asString(),
+                列挙定数と引数リスト.put(n.getName().asString(),
                         n.getArguments().stream()
                                 .map(expression -> expression.toString())
                                 .collect(Collectors.toList()));
@@ -50,21 +49,22 @@ class JavaparserEnumTest {
             public void visit(ConstructorDeclaration n, Void arg) {
                 logger.info("{}", n);
                 logger.info("{}", n.getParameters());
+                logger.info("{}", n.getParameters().stream().map(e -> e.getName()).collect(Collectors.toList()));
                 super.visit(n, arg);
             }
         }, null);
 
-        assertEquals(2, res.size());
+        assertEquals(2, 列挙定数と引数リスト.size());
         assertEquals(List.of(
                 "111",
                 "\"A-String-Parameter\"",
                 "a -> a"
-        ), res.get("A"));
+        ), 列挙定数と引数リスト.get("A"));
         assertEquals(List.of(
                 "2222",
                 "\"B-String-Parameter\"",
                 "(b) -> b",
                 "\"B-String-Parameter-2\""
-        ), res.get("B"));
+        ), 列挙定数と引数リスト.get("B"));
     }
 }

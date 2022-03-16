@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(JigTestExtension.class)
-class ReadEnumTest {
-    static Logger logger = LoggerFactory.getLogger(ReadEnumTest.class);
+class JavaparserEnumTest {
+    static Logger logger = LoggerFactory.getLogger(JavaparserEnumTest.class);
 
     @Test
     void test(Sources sources) throws Exception {

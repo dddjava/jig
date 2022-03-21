@@ -138,7 +138,7 @@ project(':jig-core') {
         api 'com.github.javaparser:javaparser-core:3.24.0'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:5.2.1'
-        api 'org.apache.poi:poi-ooxml:5.2.1'
+        api 'org.apache.poi:poi-ooxml:5.2.2'
         // HTML出力
         api 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
 

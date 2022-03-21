@@ -23,8 +23,7 @@ public class ReadableTextSources {
         ArrayList<ReadableTextSource> list = new ArrayList<>();
         for (TextSource textSource : textSources) {
             try {
-                byte[] bytes = textSource.readAllBytes();
-                list.add(new ReadableTextSource(textSource, bytes));
+                list.add(textSource.toReadableTextSource());
             } catch (IOException e) {
                 logger.warn("cannot read {} (skip)", textSource.location());
             }

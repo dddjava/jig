@@ -24,4 +24,8 @@ public class TextSource {
     public byte[] readAllBytes() throws IOException {
         return Files.readAllBytes(location());
     }
+
+    public ReadableTextSource toReadableTextSource() throws IOException {
+        return new ReadableTextSource(this, readAllBytes());
+    }
 }

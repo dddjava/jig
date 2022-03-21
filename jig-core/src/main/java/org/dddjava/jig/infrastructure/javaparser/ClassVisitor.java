@@ -65,7 +65,8 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
 
     @Override
     public void visit(RecordDeclaration n, Void arg) {
-        logger.warn("record 未対応 #745");
+        visitTopNode(n);
+        // recordの中を読む必要がある場合
         // super.visit(n, arg);
     }
 

@@ -89,6 +89,8 @@ public class JigDocumentHandlers {
             Files.createDirectories(assetsPath);
             copyFile("style.css", "templates/assets/", assetsPath);
             copyFile("marked.min.js", "templates/assets/", assetsPath);
+            copyFile("jig.js", "templates/assets/", assetsPath);
+            copyFile("favicon.ico", "templates/assets/", assetsPath);
             copied = true;
         }
     }

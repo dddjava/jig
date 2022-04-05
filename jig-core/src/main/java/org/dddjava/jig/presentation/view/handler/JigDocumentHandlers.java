@@ -88,7 +88,7 @@ public class JigDocumentHandlers {
             Path assetsPath = outputDirectory.resolve("assets");
             Files.createDirectories(assetsPath);
             copyFile("style.css", "templates/assets/", assetsPath);
-            copyFile("marked.2.0.1.min.js", "templates/assets/", assetsPath);
+            copyFile("marked.min.js", "templates/assets/", assetsPath);
             copied = true;
         }
     }

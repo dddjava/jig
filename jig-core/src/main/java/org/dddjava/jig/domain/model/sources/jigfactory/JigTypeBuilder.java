@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.*;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -163,5 +163,11 @@ public class JigTypeBuilder {
 
         jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember, usingTypes);
         return jigType;
+    }
+
+    public void applyTextSource(TextSourceModel textSourceModel) {
+        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
+            jigMethodBuilder.applyTextSource(textSourceModel);
+        }
     }
 }

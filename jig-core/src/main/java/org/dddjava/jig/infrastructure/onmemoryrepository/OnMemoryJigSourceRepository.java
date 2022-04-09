@@ -79,6 +79,8 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
             registerMethodComment(methodComment);
         }
         this.enumModels = textSourceModel.enumModels();
+
+        typeFacts.applyTextSource(textSourceModel);
     }
 
     void registerClassComment(ClassComment classComment) {

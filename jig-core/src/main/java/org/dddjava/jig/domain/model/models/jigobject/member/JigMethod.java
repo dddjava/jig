@@ -4,9 +4,6 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDepend;
-import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
-import org.dddjava.jig.domain.model.parts.classes.method.UsingMethods;
 
 import java.util.List;
 
@@ -26,8 +23,9 @@ public class JigMethod {
 
     MethodDepend methodDepend;
     MethodDerivation methodDerivation;
+    MethodImplementation methodImplementation;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
         this.nullDecision = nullDecision;
@@ -36,6 +34,7 @@ public class JigMethod {
         this.visibility = visibility;
         this.methodDepend = methodDepend;
         this.methodDerivation = methodDerivation;
+        this.methodImplementation = methodImplementation;
     }
 
     public MethodDeclaration declaration() {

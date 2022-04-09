@@ -3,10 +3,12 @@ package org.dddjava.jig.domain.model.sources.jigreader;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModel;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,12 +18,12 @@ import java.util.stream.Stream;
 public class TextSourceModel {
 
     List<ClassComment> classComments;
-    List<MethodImplementation> methodImplementation;
+    List<MethodImplementation> methodImplementations;
     List<EnumModel> enumModels;
 
-    public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementation, List<EnumModel> enumModels) {
+    public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
         this.classComments = classComments;
-        this.methodImplementation = methodImplementation;
+        this.methodImplementations = methodImplementations;
         this.enumModels = enumModels;
     }
 
@@ -52,7 +54,7 @@ public class TextSourceModel {
     public TextSourceModel merge(TextSourceModel other) {
         return new TextSourceModel(
                 Stream.concat(classComments.stream(), other.classComments.stream()).collect(Collectors.toList()),
-                Stream.concat(methodImplementation.stream(), other.methodImplementation.stream()).collect(Collectors.toList()),
+                Stream.concat(methodImplementations.stream(), other.methodImplementations.stream()).collect(Collectors.toList()),
                 Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList())
         );
     }
@@ -62,8 +64,14 @@ public class TextSourceModel {
     }
 
     public List<MethodComment> methodCommentList() {
-        return methodImplementation.stream()
+        return methodImplementations.stream()
                 .flatMap(methodImplementation -> methodImplementation.comment().stream())
                 .collect(Collectors.toList());
+    }
+
+    public Optional<MethodImplementation> methodImplementation(MethodIdentifier methodIdentifier) {
+        return methodImplementations.stream()
+                .filter(methodImplementation -> methodImplementation.matches(methodIdentifier))
+                .findAny();
     }
 }

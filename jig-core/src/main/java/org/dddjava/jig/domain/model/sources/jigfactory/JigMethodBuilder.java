@@ -7,8 +7,7 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDepend;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +43,8 @@ public class JigMethodBuilder {
     // nullによる判定がある
     boolean hasJudgeNull;
 
-    private MethodComment methodComment;
+    private MethodComment methodComment = null;
+    private MethodImplementation methodImplementation = null;
 
     public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
         this.methodDeclaration = methodDeclaration;
@@ -74,20 +74,19 @@ public class JigMethodBuilder {
         this.jumpInstructionNumber = jumpInstructionNumber;
         this.hasJudgeNull = hasJudgeNull;
         this.hasReferenceNull = hasReferenceNull;
-
-        this.methodComment = MethodComment.empty(methodDeclaration.identifier());
     }
 
     public JigMethod build() {
         return new JigMethod(
                 methodDeclaration,
-                methodComment,
+                methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
                 hasJudgeNull,
                 decisionNumber(),
                 annotatedMethods(),
                 visibility,
                 methodDepend(),
-                methodDerivation);
+                methodDerivation,
+                methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()));
     }
 
     public MethodDepend methodDepend() {
@@ -122,5 +121,10 @@ public class JigMethodBuilder {
 
     public void registerMethodAlias(MethodComment methodComment) {
         this.methodComment = methodComment;
+    }
+
+    public void applyTextSource(TextSourceModel textSourceModel) {
+        textSourceModel.methodImplementation(methodDeclaration.identifier())
+                .ifPresent(methodImplementation -> this.methodImplementation = methodImplementation);
     }
 }

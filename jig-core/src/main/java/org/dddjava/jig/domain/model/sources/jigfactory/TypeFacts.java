@@ -3,12 +3,13 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,5 +85,11 @@ public class TypeFacts {
         }
 
         return AliasRegisterResult.紐付け対象なし;
+    }
+
+    public void applyTextSource(TextSourceModel textSourceModel) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
+            jigTypeBuilder.applyTextSource(textSourceModel);
+        }
     }
 }

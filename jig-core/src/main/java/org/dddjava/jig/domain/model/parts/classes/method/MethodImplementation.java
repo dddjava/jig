@@ -20,7 +20,19 @@ public class MethodImplementation {
         this(methodIdentifier, null);
     }
 
+    /**
+     * ソースコードなしの場合
+     */
+    public static MethodImplementation unknown(MethodIdentifier methodIdentifier) {
+        return new MethodImplementation(methodIdentifier);
+    }
+
     public Optional<MethodComment> comment() {
         return Optional.ofNullable(methodComment);
+    }
+
+    public boolean matches(MethodIdentifier methodIdentifier) {
+        // テキストソース由来では引数型が確定しないのでクラスと名前で当てる
+        return this.methodIdentifier.matches(methodIdentifier.declaringType(), methodIdentifier.methodSignature().methodName());
     }
 }

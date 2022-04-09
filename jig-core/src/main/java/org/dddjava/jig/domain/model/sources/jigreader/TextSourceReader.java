@@ -3,8 +3,6 @@ package org.dddjava.jig.domain.model.sources.jigreader;
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 
-import java.util.stream.Stream;
-
 /**
  * テキストソース読み取り機
  */
@@ -25,12 +23,10 @@ public class TextSourceReader {
     }
 
     public TextSourceModel readClassAndMethodComments(TextSources textSources) {
-        JavaTextSourceModel javaTextSourceModel = javaTextSourceReader.readClasses(textSources.javaSources());
-        ClassAndMethodComments comments = Stream.of(
-                        javaTextSourceModel.classAndMethodComments(),
-                        kotlinTextSourceReader.readClasses(textSources.kotlinSources()),
-                        scalaSourceAliasReader.readAlias(textSources.scalaSources()))
-                .reduce(ClassAndMethodComments.empty(), ClassAndMethodComments::merge);
-        return new TextSourceModel(comments, javaTextSourceModel.enumModels());
+        TextSourceModel javaTextSourceModel = javaTextSourceReader.readClasses(textSources.javaSources());
+        return javaTextSourceModel.addClassAndMethodComments(
+                kotlinTextSourceReader.readClasses(textSources.kotlinSources()),
+                scalaSourceAliasReader.readAlias(textSources.scalaSources())
+        );
     }
 }

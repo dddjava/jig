@@ -10,5 +10,5 @@ public interface JavaTextSourceReader {
 
     PackageComments readPackages(ReadableTextSources readableTextSources);
 
-    JavaTextSourceModel readClasses(ReadableTextSources readableTextSources);
+    TextSourceModel readClasses(ReadableTextSources readableTextSources);
 }

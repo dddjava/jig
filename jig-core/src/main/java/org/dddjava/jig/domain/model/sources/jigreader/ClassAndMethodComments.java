@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.sources.jigreader;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,9 +33,9 @@ public class ClassAndMethodComments {
         return methodList;
     }
 
-    public static ClassAndMethodComments merge(ClassAndMethodComments a, ClassAndMethodComments b) {
+    public ClassAndMethodComments add(ClassAndMethodComments other) {
         return new ClassAndMethodComments(
-                Stream.of(a.list, b.list).flatMap(Collection::stream).collect(Collectors.toList()),
-                Stream.of(a.methodList, b.methodList).flatMap(Collection::stream).collect(Collectors.toList()));
+                Stream.concat(list.stream(), other.list().stream()).collect(Collectors.toList()),
+                Stream.concat(methodList.stream(), other.methodList().stream()).collect(Collectors.toList()));
     }
 }

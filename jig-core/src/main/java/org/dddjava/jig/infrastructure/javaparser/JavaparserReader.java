@@ -10,8 +10,8 @@ import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
 import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
-import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ public class JavaparserReader implements JavaTextSourceReader {
     }
 
     @Override
-    public JavaTextSourceModel readClasses(ReadableTextSources readableTextSources) {
+    public TextSourceModel readClasses(ReadableTextSources readableTextSources) {
         List<ClassComment> names = new ArrayList<>();
         List<MethodComment> methodNames = new ArrayList<>();
         List<EnumModel> enums = new ArrayList<>();
@@ -73,6 +73,6 @@ public class JavaparserReader implements JavaTextSourceReader {
                 LOGGER.debug("{}読み取り失敗の詳細", readableTextSource, e);
             }
         }
-        return new JavaTextSourceModel(enums, new ClassAndMethodComments(names, methodNames));
+        return new TextSourceModel(new ClassAndMethodComments(names, methodNames), enums);
     }
 }

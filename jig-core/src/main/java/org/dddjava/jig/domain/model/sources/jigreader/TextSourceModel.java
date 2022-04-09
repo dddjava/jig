@@ -25,4 +25,12 @@ public class TextSourceModel {
     public EnumModels enumModels() {
         return new EnumModels(enumModels);
     }
+
+    public TextSourceModel addClassAndMethodComments(ClassAndMethodComments... others) {
+        var temp = classAndMethodComments;
+        for (ClassAndMethodComments other : others) {
+            temp = temp.add(other);
+        }
+        return new TextSourceModel(temp, enumModels);
+    }
 }

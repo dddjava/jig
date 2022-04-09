@@ -22,7 +22,7 @@ public class TextSourceReader {
         return javaTextSourceReader.readPackages(textSources.packageInfoSources());
     }
 
-    public TextSourceModel readClassAndMethodComments(TextSources textSources) {
+    public TextSourceModel readTextSource(TextSources textSources) {
         TextSourceModel javaTextSourceModel = javaTextSourceReader.readClasses(textSources.javaSources());
         return javaTextSourceModel.addClassAndMethodComments(
                 kotlinTextSourceReader.readClasses(textSources.kotlinSources()),

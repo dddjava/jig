@@ -88,10 +88,10 @@ public class JigSourceReadService {
     }
 
     /**
-     * コメントを読み取る
+     * ソースからテキストコードを読み取る
      */
     void readTextSources(TextSources textSources) {
-        TextSourceModel textSourceModel = textSourceReader.readClassAndMethodComments(textSources);
+        TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
         ClassAndMethodComments classAndMethodComments = textSourceModel.classAndMethodComments();
         for (ClassComment classComment : classAndMethodComments.list()) {
             jigSourceRepository.registerClassComment(classComment);

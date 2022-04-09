@@ -8,8 +8,9 @@ import java.util.stream.Stream;
  * 通常はソースコードから読み取るJavadoc
  */
 public class Comment {
+    private static final Comment EMPTY = new Comment("");
 
-    String value;
+    final String value;
     volatile String firstSentence = null;
 
     private Comment(String value) {
@@ -17,7 +18,7 @@ public class Comment {
     }
 
     public static Comment empty() {
-        return new Comment("");
+        return EMPTY;
     }
 
     public boolean exists() {

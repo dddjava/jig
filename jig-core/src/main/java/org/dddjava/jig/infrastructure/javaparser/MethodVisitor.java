@@ -21,22 +21,22 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodComment>> {
 
     @Override
     public void visit(MethodDeclaration n, List<MethodComment> methodComments) {
-        n.getJavadoc().ifPresent(javadoc -> {
-            String javadocText = javadoc.getDescription().toText();
+        MethodIdentifier methodIdentifier = new MethodIdentifier(
+                typeIdentifier,
+                new MethodSignature(
+                        n.getNameAsString(),
+                        // TODO 引数を取得したい
+                        // n.getParameters() でパラメタは取れるが、fqnは直接とれず、もしとれたとしても確実ではない。
+                        // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
+                        new Arguments(Collections.emptyList())
+                ));
 
-            MethodComment methodComment = new MethodComment(
-                    new MethodIdentifier(
-                            typeIdentifier,
-                            new MethodSignature(
-                                    n.getNameAsString(),
-                                    // TODO 引数を取得したい
-                                    // n.getParameters() でパラメタは取れるが、fqnは直接とれず、もしとれたとしても確実ではない。
-                                    // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
-                                    new Arguments(Collections.emptyList())
-                            )),
-                    Comment.fromCodeComment(javadocText)
-            );
-            methodComments.add(methodComment);
-        });
+        methodComments.add(new MethodComment(
+                methodIdentifier,
+                n.getJavadoc().map(javadoc -> {
+                    String javadocText = javadoc.getDescription().toText();
+                    return Comment.fromCodeComment(javadocText);
+                }).orElseGet(Comment::empty)
+        ));
     }
 }

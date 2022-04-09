@@ -16,6 +16,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +99,10 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
         return typeIdentifier;
     }
 
-    public TypeSourceResult toTypeSourceResult() {
-        return new TypeSourceResult(classComment, methodComments, enumModel);
+    public TextSourceModel toTextSourceModel() {
+        return new TextSourceModel(
+                classComment != null ? List.of(classComment) : List.of(),
+                methodComments,
+                enumModel != null ? List.of(enumModel) : List.of());
     }
 }

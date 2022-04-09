@@ -5,8 +5,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * コメント一覧
@@ -31,11 +29,5 @@ public class ClassAndMethodComments {
 
     public List<MethodComment> methodList() {
         return methodList;
-    }
-
-    public ClassAndMethodComments add(ClassAndMethodComments other) {
-        return new ClassAndMethodComments(
-                Stream.concat(list.stream(), other.list().stream()).collect(Collectors.toList()),
-                Stream.concat(methodList.stream(), other.methodList().stream()).collect(Collectors.toList()));
     }
 }

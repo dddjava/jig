@@ -4,6 +4,8 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.sources.file.text.TextSource;
+import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +24,9 @@ class ClassReaderTest {
 
         ClassReader sut = new ClassReader();
         Path path = Paths.get("./src/test/resources/jdk17/MyRecord.java").toAbsolutePath();
-        TypeSourceResult typeSourceResult = sut.read(new TextSource(path).toReadableTextSource());
-        ClassComment actual = typeSourceResult.classComment;
+        TextSourceModel textSourceModel = sut.read(new TextSource(path).toReadableTextSource());
+        ClassAndMethodComments classAndMethodComments = textSourceModel.classAndMethodComments();
+        ClassComment actual = classAndMethodComments.list().get(0);
 
         assertEquals("レコードのJavadocコメント", actual.asText());
     }

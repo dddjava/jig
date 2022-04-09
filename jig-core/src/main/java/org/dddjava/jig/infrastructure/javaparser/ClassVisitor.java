@@ -12,7 +12,7 @@ import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumConstant;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModel;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
@@ -29,7 +29,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
 
     private final String packageName;
     ClassComment classComment;
-    List<MethodComment> methodComments = new ArrayList<>();
+    List<MethodImplementation> methods = new ArrayList<>();
     EnumModel enumModel;
     TypeIdentifier typeIdentifier;
 
@@ -94,7 +94,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
             String javadocText = javadoc.getDescription().toText();
             classComment = new ClassComment(typeIdentifier, Comment.fromCodeComment(javadocText));
         });
-        node.accept(new MethodVisitor(typeIdentifier), methodComments);
+        node.accept(new MethodVisitor(typeIdentifier), methods);
 
         return typeIdentifier;
     }
@@ -102,7 +102,7 @@ public class ClassVisitor extends VoidVisitorAdapter<Void> {
     public TextSourceModel toTextSourceModel() {
         return new TextSourceModel(
                 classComment != null ? List.of(classComment) : List.of(),
-                methodComments,
+                methods,
                 enumModel != null ? List.of(enumModel) : List.of());
     }
 }

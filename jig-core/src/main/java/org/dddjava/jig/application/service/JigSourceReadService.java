@@ -92,11 +92,10 @@ public class JigSourceReadService {
      */
     void readTextSources(TextSources textSources) {
         TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
-        ClassAndMethodComments classAndMethodComments = textSourceModel.classAndMethodComments();
-        for (ClassComment classComment : classAndMethodComments.list()) {
+        for (ClassComment classComment : textSourceModel.classCommentList()) {
             jigSourceRepository.registerClassComment(classComment);
         }
-        for (MethodComment methodComment : classAndMethodComments.methodList()) {
+        for (MethodComment methodComment : textSourceModel.methodCommentList()) {
             jigSourceRepository.registerMethodComment(methodComment);
         }
         jigSourceRepository.registerEnumModels(textSourceModel.enumModels());

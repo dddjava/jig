@@ -2,17 +2,14 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.parts.classes.method.Arguments;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
 
 import java.util.Collections;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter<List<MethodComment>> {
+class MethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
     private final TypeIdentifier typeIdentifier;
 
     public MethodVisitor(TypeIdentifier typeIdentifier) {
@@ -20,7 +17,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodComment>> {
     }
 
     @Override
-    public void visit(MethodDeclaration n, List<MethodComment> methodComments) {
+    public void visit(MethodDeclaration n, List<MethodImplementation> collector) {
         MethodIdentifier methodIdentifier = new MethodIdentifier(
                 typeIdentifier,
                 new MethodSignature(
@@ -31,12 +28,11 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodComment>> {
                         new Arguments(Collections.emptyList())
                 ));
 
-        methodComments.add(new MethodComment(
-                methodIdentifier,
-                n.getJavadoc().map(javadoc -> {
-                    String javadocText = javadoc.getDescription().toText();
-                    return Comment.fromCodeComment(javadocText);
-                }).orElseGet(Comment::empty)
-        ));
+        collector.add(
+                n.getJavadoc().map(javadoc ->
+                        new MethodImplementation(methodIdentifier,
+                                new MethodComment(methodIdentifier, Comment.fromCodeComment(javadoc.getDescription().toText()))
+                        )).orElseGet(() -> new MethodImplementation(methodIdentifier))
+        );
     }
 }

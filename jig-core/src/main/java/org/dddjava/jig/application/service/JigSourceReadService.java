@@ -1,9 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
@@ -92,13 +90,7 @@ public class JigSourceReadService {
      */
     void readTextSources(TextSources textSources) {
         TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
-        for (ClassComment classComment : textSourceModel.classCommentList()) {
-            jigSourceRepository.registerClassComment(classComment);
-        }
-        for (MethodComment methodComment : textSourceModel.methodCommentList()) {
-            jigSourceRepository.registerMethodComment(methodComment);
-        }
-        jigSourceRepository.registerEnumModels(textSourceModel.enumModels());
+        jigSourceRepository.registerTextSourceModel(textSourceModel);
 
         PackageComments packageComments = textSourceReader.readPackageComments(textSources);
         for (PackageComment packageComment : packageComments.list()) {

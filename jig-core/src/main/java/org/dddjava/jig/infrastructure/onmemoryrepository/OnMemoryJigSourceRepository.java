@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.AliasRegisterResult;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -50,33 +51,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
         registerTerm(Term.fromPackage(packageComment.packageIdentifier(), packageComment.summaryOrSimpleName(), packageComment.descriptionComment().bodyText()));
     }
 
-    @Override
-    public void registerClassComment(ClassComment classComment) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(classComment);
-        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
-        commentRepository.register(classComment);
-
-        if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のコメント登録が {} です。処理は続行します。",
-                    classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
-        }
-
-        registerTerm(Term.fromClass(classComment.typeIdentifier(), classComment.asTextOrIdentifierSimpleText(), classComment.documentationComment().bodyText()));
-    }
-
-    @Override
-    public void registerMethodComment(MethodComment methodComment) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodComment);
-
-        if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のコメント登録が {} です。処理は続行します。",
-                    methodComment.methodIdentifier().asText(), aliasRegisterResult);
-        }
-
-        registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
-                methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
-    }
-
     Map<TermIdentifier, Term> termMap = new HashMap<>();
 
     @Override
@@ -92,13 +66,44 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     EnumModels enumModels;
 
     @Override
-    public void registerEnumModels(EnumModels enumModels) {
-        this.enumModels = enumModels;
+    public EnumModels enumModels() {
+        return enumModels;
     }
 
     @Override
-    public EnumModels enumModels() {
-        return enumModels;
+    public void registerTextSourceModel(TextSourceModel textSourceModel) {
+        for (ClassComment classComment : textSourceModel.classCommentList()) {
+            registerClassComment(classComment);
+        }
+        for (MethodComment methodComment : textSourceModel.methodCommentList()) {
+            registerMethodComment(methodComment);
+        }
+        this.enumModels = textSourceModel.enumModels();
+    }
+
+    void registerClassComment(ClassComment classComment) {
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(classComment);
+        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
+        commentRepository.register(classComment);
+
+        if (aliasRegisterResult != AliasRegisterResult.成功) {
+            logger.warn("{} のコメント登録が {} です。処理は続行します。",
+                    classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
+        }
+
+        registerTerm(Term.fromClass(classComment.typeIdentifier(), classComment.asTextOrIdentifierSimpleText(), classComment.documentationComment().bodyText()));
+    }
+
+    void registerMethodComment(MethodComment methodComment) {
+        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodComment);
+
+        if (aliasRegisterResult != AliasRegisterResult.成功) {
+            logger.warn("{} のコメント登録が {} です。処理は続行します。",
+                    methodComment.methodIdentifier().asText(), aliasRegisterResult);
+        }
+
+        registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
+                methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
     }
 
     @Override

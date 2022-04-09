@@ -1,13 +1,12 @@
 package org.dddjava.jig.application.repository;
 
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
+import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 public interface JigSourceRepository {
 
@@ -17,10 +16,6 @@ public interface JigSourceRepository {
 
     void registerPackageComment(PackageComment packageComment);
 
-    void registerClassComment(ClassComment classComment);
-
-    void registerMethodComment(MethodComment methodComment);
-
     void registerTerm(Term term);
 
     TypeFacts allTypeFacts();
@@ -29,7 +24,7 @@ public interface JigSourceRepository {
 
     Terms terms();
 
-    void registerEnumModels(EnumModels enumModels);
-
     EnumModels enumModels();
+
+    void registerTextSourceModel(TextSourceModel textSourceModel);
 }

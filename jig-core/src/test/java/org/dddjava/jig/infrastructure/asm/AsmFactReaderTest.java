@@ -4,16 +4,16 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -56,9 +56,9 @@ public class AsmFactReaderTest {
 
     @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(Annotated.class);
+        JigType actual = JigType構築(Annotated.class);
 
-        JigFields jigFields = actual.build().instanceMember().instanceFields();
+        JigFields jigFields = actual.instanceMember().instanceFields();
 
         FieldAnnotation fieldAnnotation = jigFields.list().stream()
                 .filter(e -> e.fieldDeclaration().nameText().equals("field"))
@@ -85,14 +85,10 @@ public class AsmFactReaderTest {
 
     @Test
     void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(Annotated.class);
+        JigType actual = JigType構築(Annotated.class);
 
-        List<JigMethodBuilder> instanceJigMethodBuilders = actual.instanceMethodFacts();
-        MethodAnnotation methodAnnotation = instanceJigMethodBuilders.stream()
-                .filter(e -> e.build().declaration().asSignatureSimpleText().equals("method()"))
-                .flatMap(e -> e.annotatedMethods().list().stream())
-                // 今はアノテーション1つなのでこれでOK
-                .findFirst().orElseThrow(AssertionError::new);
+        JigMethod method = actual.instanceMethods().resolveMethodBySignature(new MethodSignature("method"));
+        MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);
 
         assertThat(methodAnnotation.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
 
@@ -109,9 +105,9 @@ public class AsmFactReaderTest {
 
     @Test
     void クラス定義に使用している型が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(ClassDefinition.class);
+        JigType actual = JigType構築(ClassDefinition.class);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(ClassAnnotation.class),
@@ -121,7 +117,7 @@ public class AsmFactReaderTest {
                         new TypeIdentifier(GenericsParameter.class)
                 );
 
-        ParameterizedType parameterizedSuperType = actual.superType();
+        ParameterizedType parameterizedSuperType = actual.typeDeclaration().superType();
         assertThat(parameterizedSuperType)
                 .extracting(
                         ParameterizedType::asSimpleText,
@@ -135,9 +131,9 @@ public class AsmFactReaderTest {
 
     @Test
     void インタフェース定義に使用している型が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(InterfaceDefinition.class);
+        JigType actual = JigType構築(InterfaceDefinition.class);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(ClassAnnotation.class),
@@ -145,7 +141,7 @@ public class AsmFactReaderTest {
                         new TypeIdentifier(GenericsParameter.class)
                 );
 
-        ParameterizedType parameterizedType = actual.interfaceTypes().get(0);
+        ParameterizedType parameterizedType = actual.typeDeclaration().interfaceTypes().list().get(0);
         assertThat(parameterizedType)
                 .extracting(
                         ParameterizedType::asSimpleText,
@@ -159,40 +155,32 @@ public class AsmFactReaderTest {
 
     @Test
     void 戻り値のジェネリクスが取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(InterfaceDefinition.class);
+        JigType actual = JigType構築(InterfaceDefinition.class);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(List.class),
                         new TypeIdentifier(String.class)
                 );
 
-        List<JigMethodBuilder> instanceJigMethodBuilders = actual.instanceMethodFacts();
-        JigMethodBuilder jigMethodBuilder = instanceJigMethodBuilders.stream()
-                .filter(e -> e.build().declaration().asSignatureSimpleText().equals("parameterizedListMethod()"))
-                .findFirst().orElseThrow(AssertionError::new);
-        JigMethod method = jigMethodBuilder.build();
-
-        MethodReturn methodReturn = method.declaration().methodReturn();
-
-        ParameterizedType parameterizedType =
-                methodReturn.parameterizedType();
+        MethodReturn methodReturn = actual.instanceMethods()
+                .resolveMethodBySignature(new MethodSignature("parameterizedListMethod"))
+                .declaration().methodReturn();
+        ParameterizedType parameterizedType = methodReturn.parameterizedType();
 
         assertThat(parameterizedType.asSimpleText()).isEqualTo("List<String>");
     }
 
     @Test
     void フィールド定義に使用している型が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(FieldDefinition.class);
-
-        JigType jigType = actual.build();
+        JigType jigType = JigType構築(FieldDefinition.class);
 
         FieldDeclarations fieldDeclarations = jigType.instanceMember().fieldDeclarations();
         String fieldsText = fieldDeclarations.toSignatureText();
         assertEquals("[InstanceField instanceField, List genericFields, ArrayField[] arrayFields, Object obj]", fieldsText);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = jigType.usingTypes();
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(List.class),
@@ -209,14 +197,13 @@ public class AsmFactReaderTest {
 
     @Test
     void メソッドでifやswitchを使用していると検出できる() throws Exception {
-        JigTypeBuilder actual = exercise(DecisionClass.class);
+        JigType actual = JigType構築(DecisionClass.class);
 
-        List<JigMethodBuilder> jigMethodBuilders = actual.instanceMethodFacts();
-
-        assertThat(jigMethodBuilders)
+        JigMethods jigMethods = actual.instanceMethods();
+        assertThat(jigMethods.list())
                 .extracting(
-                        methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
-                        methodByteCode -> methodByteCode.decisionNumber().asText())
+                        method -> method.declaration().methodSignature().asSimpleText(),
+                        method -> method.decisionNumber().asText())
                 .containsExactlyInAnyOrder(
                         tuple("分岐なしメソッド()", "0"),
                         tuple("ifがあるメソッド()", "1"),
@@ -228,9 +215,9 @@ public class AsmFactReaderTest {
 
     @Test
     void enumで使用している型が取得できる() throws Exception {
-        JigTypeBuilder actual = exercise(EnumDefinition.class);
+        JigType actual = JigType構築(EnumDefinition.class);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
                         new TypeIdentifier(EnumField.class),
@@ -242,8 +229,7 @@ public class AsmFactReaderTest {
     @ParameterizedTest
     @MethodSource
     void enumの種類が識別できる(Class<?> clz, boolean parameter, boolean behavior, boolean polymorphism) throws Exception {
-        JigTypeBuilder actual = exercise(clz);
-        JigType jigType = actual.build();
+        JigType jigType = JigType構築(clz);
         CategoryType categoryType = new CategoryType(jigType);
 
         assertEquals(categoryType.hasParameter(), parameter);
@@ -260,10 +246,10 @@ public class AsmFactReaderTest {
                 Arguments.of(RichEnum.class, true, true, true));
     }
 
-    private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
-        Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
+    private JigType JigType構築(Class<?> clz) throws URISyntaxException, IOException {
+        Path path = Paths.get(clz.getResource(clz.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path));
+        return sut.typeByteCode(TestSupport.newClassSource(path)).build();
     }
 }

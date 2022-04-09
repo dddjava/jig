@@ -22,4 +22,8 @@ public class ParameterizedTypes {
     public boolean exists() {
         return !list.isEmpty();
     }
+
+    public List<ParameterizedType> list() {
+        return list;
+    }
 }

@@ -15,7 +15,8 @@ public enum TypeKind {
     //アノテーション,
     //インタフェース,
     //抽象型
-    ;
+
+    レコード型;
 
     public boolean isCategory() {
         return this == 列挙型 || this == 抽象列挙型;

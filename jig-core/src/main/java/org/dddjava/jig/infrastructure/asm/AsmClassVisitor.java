@@ -78,6 +78,10 @@ class AsmClassVisitor extends ClassVisitor {
 
         // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
 
+        if ((access & Opcodes.ACC_RECORD) != 0) {
+            return TypeKind.レコード型;
+        }
+
         return TypeKind.通常型;
     }
 

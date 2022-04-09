@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.models.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 /**
@@ -10,57 +8,47 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 public enum MethodWorry {
     メンバを使用していない {
         @Override
-        boolean judge(JigMethod method) {
-            return method.notUseMember();
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.notUseMember();
         }
     },
     基本型の授受を行なっている {
         @Override
-        boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
-            return methodDeclaration.methodReturn().isPrimitive()
-                    || methodDeclaration.methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.declaration().methodReturn().isPrimitive()
+                    || jigMethod.declaration().methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
         }
     },
     NULLリテラルを使用している {
         @Override
-        boolean judge(JigMethod method) {
-            return method.referenceNull();
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.referenceNull();
         }
     },
     NULL判定をしている {
         @Override
-        boolean judge(JigMethod method) {
-            return method.conditionalNull();
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.conditionalNull();
         }
     },
     真偽値を返している {
         @Override
-        boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
-            return methodDeclaration.methodReturn().typeIdentifier().isBoolean();
+        boolean judge(JigMethod method) {
+            return method.declaration().methodReturn().typeIdentifier().isBoolean();
         }
     },
     StreamAPIを使用している {
         @Override
-        boolean judge(JigMethod method) {
-            return method.usingMethods().containsStream();
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.usingMethods().containsStream();
         }
     },
     voidを返している {
         @Override
-        boolean judgeMethodReturn(MethodReturn methodReturn) {
-            return methodReturn.isVoid();
+        boolean judge(JigMethod jigMethod) {
+            return jigMethod.declaration().methodReturn().isVoid();
         }
     };
 
-    boolean judge(JigMethod method) {
-        return judgeDeclaration(method.declaration());
-    }
-
-    boolean judgeDeclaration(MethodDeclaration methodDeclaration) {
-        return judgeMethodReturn(methodDeclaration.methodReturn());
-    }
-
-    boolean judgeMethodReturn(MethodReturn methodReturn) {
-        return false;
-    }
+    abstract boolean judge(JigMethod method);
 }

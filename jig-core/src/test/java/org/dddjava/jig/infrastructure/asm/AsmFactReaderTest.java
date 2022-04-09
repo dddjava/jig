@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
@@ -19,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import stub.domain.model.Annotated;
+import stub.domain.model.annotation.RuntimeRetainedAnnotation;
 import stub.domain.model.category.*;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
@@ -30,6 +32,8 @@ import stub.domain.model.relation.enumeration.ClassReference;
 import stub.domain.model.relation.enumeration.ConstructorArgument;
 import stub.domain.model.relation.enumeration.EnumField;
 import stub.domain.model.relation.field.*;
+import stub.domain.model.type.HogeRepository;
+import stub.domain.model.type.SimpleNumber;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
@@ -43,6 +47,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class AsmFactReaderTest {
 
@@ -244,6 +249,25 @@ public class AsmFactReaderTest {
                 Arguments.of(ParameterizedEnum.class, true, false, false),
                 Arguments.of(PolymorphismEnum.class, false, false, true),
                 Arguments.of(RichEnum.class, true, true, true));
+    }
+
+    @MethodSource
+    @ParameterizedTest
+    void TypeKind判定(Class<?> targetType, TypeKind typeKind) throws Exception {
+        JigType actual = JigType構築(targetType);
+        assertEquals(typeKind, actual.typeKind());
+    }
+
+    static Stream<Arguments> TypeKind判定() {
+        return Stream.of(
+                arguments(SimpleNumber.class, TypeKind.通常型),
+                arguments(SimpleEnum.class, TypeKind.列挙型),
+                arguments(RichEnum.class, TypeKind.抽象列挙型),
+                // インタフェースと判定させたい
+                arguments(HogeRepository.class, TypeKind.通常型),
+                // アノテーションと判定させたい
+                arguments(RuntimeRetainedAnnotation.class, TypeKind.通常型)
+        );
     }
 
     private JigType JigType構築(Class<?> clz) throws URISyntaxException, IOException {

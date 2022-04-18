@@ -48,6 +48,10 @@ section.package, section.type {
 section.markdown {
     margin: 0.5em;
 }
+section.markdown table thead {
+    color: #000;
+    background-color: #CCC;
+}
 section.type table caption {
     caption-side: top;
     text-align: left;

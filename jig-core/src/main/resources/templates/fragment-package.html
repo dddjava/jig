@@ -12,7 +12,17 @@
         <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
 
         <th:block th:with="description=${item.description()}">
-            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">package-infoのJavadocコメントが表示されます</section>
+            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
+package-infoのJavadocコメントが表示されます
+
+- ここではMarkdownがmarkedによりHTML出力されます。
+- 箇条書きやテーブルが使用できます。
+
+|head1|head2|
+|---|---|
+|col1|col2|
+|col1|col2|
+            </section>
         </th:block>
 
         <th:block th:with="composite=${baseComposite.findComposite(item.packageIdentifier())}">
@@ -35,5 +45,6 @@
     </section>
 </main>
 
+<script src="./assets/jig.js"></script>
 </body>
 </html>

@@ -57,6 +57,11 @@ section.type table caption {
     text-align: left;
 }
 
+section.schema .component {
+    border: #000 solid 1px;
+    padding: 1em;
+}
+
 main table {
     border-collapse: collapse;
     width: 80%;

@@ -1,0 +1,41 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.min.js"></script>
+    <link rel="icon" href="./assets/favicon.ico">
+    <title th:text="${title}">domain</title>
+</head>
+<body class="treeMenuAndMain">
+
+<nav class="tree" th:with="node=${baseComposite.resolveRootComposite()}">
+    <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
+</nav>
+
+<main>
+    <h1 th:text="${title}">スキーマ概要</h1>
+
+    <th:block th:each="item : ${jigTypes}" th:insert="~{::item}">
+        <section class="type schema" th:fragment="item">
+            <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+            <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
+
+            <th:block th:with="description=${item.description()}">
+                <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
+            </th:block>
+
+            <div class="component">
+                <th:block th:each="field: ${item.instanceFields().list()}">
+                    <b th:text="${field.nameText()}">xxx</b>
+                    :
+                    <a th:href="${'./domain.html#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                </th:block>
+                hoge
+            </div>
+        </section>
+    </th:block>
+</main>
+
+<script src="./assets/jig.js"></script>
+</body>
+</html>

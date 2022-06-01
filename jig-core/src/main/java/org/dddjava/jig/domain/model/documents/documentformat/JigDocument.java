@@ -132,6 +132,13 @@ public enum JigDocument {
             "enum", JigDocumentType.SUMMARY),
 
     /**
+     * スキーマ概要
+     */
+    SchemaSummary(
+            JigDocumentLabel.of("スキーマ概要", "schema"),
+            "schema", JigDocumentType.SUMMARY),
+
+    /**
      * 用語集
      */
     TermList(

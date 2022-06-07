@@ -135,7 +135,7 @@ public enum JigDocument {
      * スキーマ概要
      */
     SchemaSummary(
-            JigDocumentLabel.of("スキーマ概要", "schema"),
+            JigDocumentLabel.of("スキーマ概要", "domain-schema"),
             "schema", JigDocumentType.SUMMARY),
 
     /**

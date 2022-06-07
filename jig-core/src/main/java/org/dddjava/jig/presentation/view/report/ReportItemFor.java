@@ -11,7 +11,6 @@ public @interface ReportItemFor {
 
     int order() default 0;
 
-    // 廃止 #309
-    @Deprecated
+    // TODO 無くしたい #309
     String label() default "";
 }

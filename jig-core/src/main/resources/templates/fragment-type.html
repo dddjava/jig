@@ -34,8 +34,7 @@
             <tr th:each="field: ${item.instanceFields().list()}">
                 <td class="method-name" th:text="${field.nameText()}">xxx</td>
                 <td>
-                    <a class="method-argument-item"
-                       th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                    <a th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
                 </td>
             </tr>
         </table>

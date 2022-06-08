@@ -15,4 +15,11 @@ class JigExpressionObject {
         ClassComment classComment = jigDocumentContext.classComment(typeIdentifier);
         return classComment.asTextOrIdentifierSimpleText();
     }
+
+    public String fieldLinkType(TypeIdentifier typeIdentifier) {
+        if (typeIdentifier.isJavaLanguageType()) {
+            return "none";
+        }
+        return "other";
+    }
 }

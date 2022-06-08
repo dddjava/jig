@@ -33,8 +33,9 @@
             <tbody>
             <tr th:each="field: ${item.instanceFields().list()}">
                 <td class="method-name" th:text="${field.nameText()}">xxx</td>
-                <td>
-                    <a th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                <td th:switch="${#jig.fieldLinkType(field.typeIdentifier())}">
+                    <span th:case="none" th:text="${field.typeIdentifier().fullQualifiedName()}">long</span>
+                    <a th:case="*" th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
                 </td>
             </tr>
         </table>

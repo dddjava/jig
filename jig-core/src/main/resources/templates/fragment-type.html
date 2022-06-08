@@ -23,6 +23,23 @@
             </ul>
         </section>
 
+        <table th:unless="${item.instanceFields().empty()}">
+            <thead class="enum">
+            <tr>
+                <th width="20%">フィールド</th>
+                <th>フィールド型</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="field: ${item.instanceFields().list()}">
+                <td class="method-name" th:text="${field.nameText()}">xxx</td>
+                <td>
+                    <a class="method-argument-item"
+                       th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                </td>
+            </tr>
+        </table>
+
         <th:block th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
             メソッドテーブル
         </th:block>

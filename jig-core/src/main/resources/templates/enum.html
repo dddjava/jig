@@ -47,11 +47,13 @@
             </thead>
             <tbody>
             <tr th:each="field: ${item.instanceFields().list()}">
-                <td class="method-name" th:text="${field.nameText()}">xxx</td>
-                <td>
-                    <a th:href="${'./domain.html#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                <td th:text="${field.nameText()}">xxx</td>
+                <td th:switch="${#jig.fieldLinkType(field.typeIdentifier())}">
+                    <span th:case="none" class="weak" th:text="${field.typeIdentifier().fullQualifiedName()}">long</span>
+                    <a th:case="*" th:href="${'./domain.html#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
                 </td>
             </tr>
+            </tbody>
         </table>
 
         <th:block th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">メソッドテーブル</th:block>

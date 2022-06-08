@@ -31,11 +31,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="field: ${item.instanceFields().list()}">
+            <tr th:each="field: ${item.instanceFields().list()}" th:with="it=${field.typeIdentifier()}">
                 <td th:text="${field.nameText()}">xxx</td>
-                <td th:switch="${#jig.fieldLinkType(field.typeIdentifier())}">
-                    <span th:case="none" class="weak" th:text="${field.typeIdentifier().fullQualifiedName()}">long</span>
-                    <a th:case="*" th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
+                <td th:switch="${#jig.fieldLinkType(it)}">
+                    <span th:case="none" class="weak" th:text="${it.fullQualifiedName()}">long</span>
+                    <a th:case="*" th:href="${'#' + it.fullQualifiedName()}" th:text="${#jig.labelText(it)}">xxx</a>
                 </td>
             </tr>
             </tbody>

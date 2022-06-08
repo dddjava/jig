@@ -38,6 +38,7 @@
                     <a th:case="*" th:href="${'#' + field.typeIdentifier().fullQualifiedName()}" th:text="${#jig.labelText(field.typeIdentifier())}">xxx</a>
                 </td>
             </tr>
+            </tbody>
         </table>
 
         <th:block th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">

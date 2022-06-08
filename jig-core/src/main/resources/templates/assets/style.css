@@ -114,3 +114,9 @@ main table thead.enum {
 .index .diagram img {
     max-width: 800px;
 }
+
+/* 一般 */
+.weak {
+    font-size: 0.9em;
+    color: gray;
+}

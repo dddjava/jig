@@ -17,7 +17,7 @@
 
         <section th:if="${categoriesMap.containsKey(item.identifier())}"
                  th:with="category=${categoriesMap.get(item.identifier())}">
-            <h3>列挙値</h3>
+            <h3>列挙値 (<a th:href="${'./enum.html#' + item.fqn()}">区分概要</a>)</h3>
             <ul>
                 <li th:each="value : ${category.values().list()}" th:text="${value.nameText()}">xx</li>
             </ul>

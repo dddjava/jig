@@ -94,6 +94,6 @@ public class MethodInstructionTest {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path));
+        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow();
     }
 }

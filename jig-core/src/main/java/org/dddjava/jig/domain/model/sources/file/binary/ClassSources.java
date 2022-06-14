@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.sources.file.binary;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * classソース一覧
@@ -24,5 +25,9 @@ public class ClassSources {
 
     public boolean notFound() {
         return sources.isEmpty();
+    }
+
+    public Stream<ClassSource> stream() {
+        return sources.stream();
     }
 }

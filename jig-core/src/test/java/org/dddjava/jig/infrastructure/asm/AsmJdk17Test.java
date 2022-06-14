@@ -17,7 +17,7 @@ public class AsmJdk17Test {
         Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk17").resolve("MyRecord.class");
 
         AsmFactReader sut = new AsmFactReader();
-        JigType jigType = sut.typeByteCode(TestSupport.newClassSource(path)).build();
+        JigType jigType = sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
 
         TypeKind typeKind = jigType.typeKind();
         assertEquals(typeKind, TypeKind.レコード型);

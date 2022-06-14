@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ASMを使用したFactFactoryの実装
@@ -21,20 +21,18 @@ public class AsmFactReader implements FactReader {
 
     @Override
     public TypeFacts readTypeFacts(ClassSources classSources) {
-        List<JigTypeBuilder> list = new ArrayList<>();
-        for (ClassSource source : classSources.list()) {
-            JigTypeBuilder jigTypeBuilder = typeByteCode(source);
-            list.add(jigTypeBuilder);
-        }
-        return new TypeFacts(list);
+        return classSources.stream()
+                .map(this::typeByteCode)
+                .flatMap(Optional::stream)
+                .collect(Collectors.collectingAndThen(Collectors.toList(), TypeFacts::new));
     }
 
-    JigTypeBuilder typeByteCode(ClassSource classSource) {
+    Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {
         AsmClassVisitor asmClassVisitor = new AsmClassVisitor(classSource);
 
         ClassReader classReader = new ClassReader(classSource.value());
         classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
-        return asmClassVisitor.typeFact();
+        return Optional.of(asmClassVisitor.typeFact());
     }
 }

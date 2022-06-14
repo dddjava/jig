@@ -274,6 +274,6 @@ public class AsmFactReaderTest {
         Path path = Paths.get(clz.getResource(clz.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path)).build();
+        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
     }
 }

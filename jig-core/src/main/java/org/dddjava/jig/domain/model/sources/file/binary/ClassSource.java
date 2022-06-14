@@ -22,4 +22,13 @@ public class ClassSource {
     public String className() {
         return className;
     }
+
+    @Override
+    public String toString() {
+        return "ClassSource{" +
+                "binarySourceLocation=" + binarySourceLocation +
+                ", value(byte[] length)=" + value.length +
+                ", className='" + className + '\'' +
+                '}';
+    }
 }

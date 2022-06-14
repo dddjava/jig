@@ -26,4 +26,11 @@ public class BinarySourceLocation {
     public URI uri() {
         return Paths.get(value).toUri();
     }
+
+    @Override
+    public String toString() {
+        return "BinarySourceLocation{" +
+                "value='" + value + '\'' +
+                '}';
+    }
 }

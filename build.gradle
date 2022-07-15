@@ -234,6 +234,7 @@ project(':jig-gradle-plugin') {
             jigGradlePlugin {
                 id = "org.dddjava.${project.name}"
                 implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
+                displayName = 'JIG Gradle Plugin'
             }
         }
     }
@@ -243,13 +244,6 @@ project(':jig-gradle-plugin') {
         vcsUrl = 'https://github.com/dddjava/jig.git'
         description = 'Visualizing code for DDD'
         tags = ['ddd', 'visualize']
-
-        plugins {
-            jigGradlePlugin {
-                id = "org.dddjava.${project.name}"
-                displayName = 'JIG Gradle Plugin'
-            }
-        }
     }
 
     publishing {

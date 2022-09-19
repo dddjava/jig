@@ -5,7 +5,10 @@
 </head>
 <body>
 
-<nav class="menu">
+<nav class="tree" th:fragment="tree-navigation(node)">
+    <div>
+        <a href="./index.html">=> INDEX</a>
+    </div>
     <th:block th:fragment="item">
         <details th:if="${node.isPackage()}" open>
             <summary class="package">
@@ -20,5 +23,6 @@
         </th:block>
     </th:block>
 </nav>
+
 </body>
 </html>

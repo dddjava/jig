@@ -8,8 +8,8 @@
 </head>
 <body class="treeMenuAndMain">
 
-<nav class="tree" th:with="node=${baseComposite.resolveRootComposite()}">
-    <div th:replace="fragment-recursive-package :: item">パッケージツリーに置換</div>
+<nav class="tree" th:replace="fragment-recursive-package :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+    パッケージツリーに置換
 </nav>
 
 <main>

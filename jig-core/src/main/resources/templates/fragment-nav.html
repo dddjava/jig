@@ -9,20 +9,19 @@
     <div>
         <a href="./index.html">=> INDEX</a>
     </div>
-    <th:block th:fragment="item(node)">
-        <details th:if="${node.isPackage()}" open>
-            <summary class="package">
-                <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
-            </summary>
-            <div>
-                <th:block th:each="childNode : ${node.expandChildren()}"><b th:replace="this :: item(node=${childNode})">replace</b></th:block>
-            </div>
-        </details>
-        <th:block th:unless="${node.isPackage()}">
-            <a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a><br>
-        </th:block>
-    </th:block>
+    <details th:fragment="tree-composite(node)" open>
+        <summary class="package">
+            <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
+        </summary>
+        <div>
+            <th:block th:each="child : ${node.expandChildren()}"><b
+                    th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
+        </div>
+    </details>
 </nav>
 
+<nav class="tree">
+    <th:block th:fragment="tree-leaf(node)"><a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a><br></th:block>
+</nav>
 </body>
 </html>

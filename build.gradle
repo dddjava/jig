@@ -131,7 +131,7 @@ project(':jig-core') {
         api 'org.slf4j:slf4j-api'
 
         // バイトコードの読み取り: infrastructure/asm
-        api 'org.ow2.asm:asm:9.3'
+        api 'org.ow2.asm:asm:9.4'
         // SQLの取得: infrastructure/mybatis
         api 'org.mybatis:mybatis:3.5.11'
         // javadocコメントの取得: infrastructure/javaparser

@@ -2,10 +2,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
-import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
-import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 
 import java.util.ArrayList;
@@ -35,22 +32,12 @@ public class CompositeUsecaseDiagram implements DiagramSourceWriter {
         DocumentName documentName = DocumentName.of(JigDocument.CompositeUsecaseDiagram);
         String text = list.stream()
                 .map(compositeUsecases -> compositeUsecases.dotText(jigDocumentContext))
-                .collect(Collectors.joining("\n", "digraph \"" + documentName.label() + "\" {\n" +
-                        "layout=fdp;\n" +
-                        "label=\"" + documentName.label() + "\";\n" +
-                        "node[shape=box];\n" +
-                        "edge[arrowhead=none];\n" +
-                        "", "}"));
+                .collect(Collectors.joining("\n", graphHeader(documentName), "}"));
         DiagramSource compositeUsecaseDiagram = DiagramSource.createDiagramSourceUnit(documentName, text);
         diagramList.add(compositeUsecaseDiagram);
 
         boolean containsHandler = false;
-        StringJoiner handlersText = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {\n" +
-                "layout=fdp;\n" +
-                "label=\"" + documentName.label() + "\";\n" +
-                "node[shape=box];\n" +
-                "edge[arrowhead=none];\n" +
-                "", "}");
+        StringJoiner handlersText = new StringJoiner("\n", graphHeader(documentName), "}");
         for (CompositeUsecases compositeUsecases : list) {
             if (compositeUsecases.usecase.isHandler()) {
                 String handlerText = compositeUsecases.dotText(jigDocumentContext);
@@ -65,5 +52,13 @@ public class CompositeUsecaseDiagram implements DiagramSourceWriter {
         }
 
         return DiagramSource.createDiagramSource(diagramList);
+    }
+
+    private static String graphHeader(DocumentName documentName) {
+        return "digraph \"" + documentName.label() + "\" {\n" +
+                "layout=fdp;\n" +
+                "label=\"" + documentName.label() + "\";\n" +
+                Node.DEFAULT + "\n" +
+                "edge[arrowhead=none];\n";
     }
 }

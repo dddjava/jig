@@ -67,7 +67,6 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         return DiagramSource.createDiagramSource(documentName, new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
-                //.add("node [shape=box,style=filled,fillcolor=lightgoldenrod];")
                 .add("node [shape=box,style=filled,fillcolor=white];")
                 .add("{")
                 .add("rank=sink;")
@@ -101,15 +100,11 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     }
 
     private static Node getNode(CategoryType categoryType) {
+        Node node = new Node(categoryType.typeIdentifier().fullQualifiedName())
+                .label(categoryType.nodeLabel());
         if (categoryType.markedCore()) {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.スポットライト)
-                    .label(categoryType.nodeLabel());
-        } else if (categoryType.hasBehaviour()) {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.準主役)
-                    .label(categoryType.nodeLabel());
-        } else {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.主役)
-                    .label(categoryType.nodeLabel());
+            return node.as(NodeRole.スポットライト);
         }
+        return node.as(categoryType.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
     }
 }

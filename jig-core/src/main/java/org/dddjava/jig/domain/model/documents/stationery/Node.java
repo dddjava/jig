@@ -57,7 +57,7 @@ public class Node {
     }
 
     public Node html(String html) {
-        attribute.add("label=<" + html + ">;");
+        attribute.add("label=<" + html + ">");
         return this;
     }
 

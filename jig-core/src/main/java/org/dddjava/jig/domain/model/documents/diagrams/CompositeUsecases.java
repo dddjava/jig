@@ -60,6 +60,7 @@ class CompositeUsecases {
                     new Node(otherType.fullQualifiedName())
                             .label(classComment.asTextOrIdentifierSimpleText())
                             .tooltip(otherType.asSimpleText())
+                            .as(NodeRole.脇役)
                             .asText()
             );
         }
@@ -70,7 +71,8 @@ class CompositeUsecases {
             sb.append(
                     new Node(controllerType.fullQualifiedName())
                             .label(classComment.asTextOrIdentifierSimpleText())
-                            .tooltip(controllerType.asSimpleText()).as(NodeRole.モブ)
+                            .tooltip(controllerType.asSimpleText())
+                            .as(NodeRole.モブ)
                             .asText()
             );
 

@@ -36,7 +36,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("newrank=true;")
-                .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
+                .add(Node.DEFAULT);
 
         TypeIdentifiers isolatedTypes = targetBusinessRules.isolatedTypes();
         BusinessRulePackages businessRulePackages = targetBusinessRules.businessRulePackages();

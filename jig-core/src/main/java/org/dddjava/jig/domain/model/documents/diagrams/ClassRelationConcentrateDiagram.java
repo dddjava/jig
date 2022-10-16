@@ -34,7 +34,7 @@ public class ClassRelationConcentrateDiagram implements DiagramSourceWriter {
                 .add("label=\"" + documentName.label() + "\";")
                 .add("rankdir=LR;")
                 //.add("layout=\"circo\";")
-                .add("node [shape=box,style=filled,fillcolor=lightgoldenrod];");
+                .add(Node.DEFAULT);
 
         List<TypeIdentifier> targetTypeIdentifiers = map.entrySet().stream()
                 .flatMap(entry -> Stream.concat(Stream.of(entry.getKey().typeIdentifier()), entry.getValue().list().stream()))

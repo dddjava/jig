@@ -68,14 +68,8 @@ public class CategoryDiagram implements DiagramSourceWriter {
                     }
                     String categoryName = categoryAngle.nodeLabel("<br/>");
 
-                    if (categoryAngle.hasBehaviour()) {
-                        return Node.typeOf(typeIdentifier)
-                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
-                    } else {
-                        return Node.typeOf(typeIdentifier)
-                                .as(NodeRole.準主役)
-                                .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
-                    }
+                    Node node = Node.typeOf(typeIdentifier).html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
+                    return node.as(categoryAngle.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
                 }
         );
 

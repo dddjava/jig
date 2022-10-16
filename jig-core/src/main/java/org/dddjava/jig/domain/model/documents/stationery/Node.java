@@ -55,8 +55,7 @@ public class Node {
      * 主要でない
      */
     public Node other() {
-        return fillColor("whitesmoke")
-                .style("dashed");
+        return NodeType.モブ.edit(this);
     }
 
     public Node label(String value) {
@@ -93,7 +92,7 @@ public class Node {
     }
 
     public Node handlerMethod() {
-        return fillColor("greenyellow");
+        return NodeType.スポットライト.edit(this);
     }
 
     public Node html(String html) {
@@ -102,11 +101,11 @@ public class Node {
     }
 
     public Node normalColor() {
-        return fillColor("lightgoldenrod");
+        return NodeType.主役.edit(this);
     }
 
     public Node weakColor() {
-        return fillColor("lemonchiffon");
+        return NodeType.脇役.edit(this);
     }
 
 
@@ -117,7 +116,9 @@ public class Node {
 
     public Node screenNode() {
         // 画面
-        return style("filled").fillColor("lightgray").shape("box");
+        return NodeType.モブ.edit(this);
+        // TODO 色以外の指定が必要かを確認
+        // style("filled").fillColor("lightgray").shape("box");
     }
 
     public Node useCase() {
@@ -125,7 +126,7 @@ public class Node {
     }
 
     public Node highlightColor() {
-        return fillColor("greenyellow");
+        return NodeType.スポットライト.edit(this);
     }
 
     public Node moderately() {

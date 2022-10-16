@@ -51,11 +51,15 @@ public class Node {
         }
     }
 
+    public Node as(NodeType nodeType) {
+        return nodeType.edit(this);
+    }
+
     /**
      * 主要でない
      */
     public Node other() {
-        return NodeType.モブ.edit(this);
+        return as(NodeType.モブ);
     }
 
     public Node label(String value) {
@@ -92,7 +96,7 @@ public class Node {
     }
 
     public Node handlerMethod() {
-        return NodeType.スポットライト.edit(this);
+        return as(NodeType.スポットライト);
     }
 
     public Node html(String html) {
@@ -101,11 +105,11 @@ public class Node {
     }
 
     public Node normalColor() {
-        return NodeType.主役.edit(this);
+        return as(NodeType.主役);
     }
 
     public Node weakColor() {
-        return NodeType.脇役.edit(this);
+        return as(NodeType.脇役);
     }
 
 
@@ -116,7 +120,7 @@ public class Node {
 
     public Node screenNode() {
         // 画面
-        return NodeType.モブ.edit(this);
+        return as(NodeType.モブ);
         // TODO 色以外の指定が必要かを確認
         // style("filled").fillColor("lightgray").shape("box");
     }
@@ -126,7 +130,7 @@ public class Node {
     }
 
     public Node highlightColor() {
-        return NodeType.スポットライト.edit(this);
+        return as(NodeType.スポットライト);
     }
 
     public Node moderately() {

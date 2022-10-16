@@ -1,6 +1,6 @@
 digraph {
     layout = fdp;
-    label = "凡例 [2020.6.1]";
+    label = "凡例 [2022.10.1]";
     style = dotted
     node [shape = box,style = filled,fillcolor = lightgoldenrod];
 
@@ -9,32 +9,35 @@ digraph {
     label = "全般"
 
     highlightModel [label = "特に注目のモデル", fillcolor = greenyellow];
-    model [label = "主なモデル"];
-    other1 [label = "主でないモデル", style = solid, fillcolor = whitesmoke];
-    other2 [label = "もっと主要でないモデル", style = dashed, fillcolor = whitesmoke];
+    firstModel [label = "主役モデル"];
+    secondModel [label = "準主役モデル", fillcolor = lemonchiffon];
+    thirdModel [label = "脇役モデル", fillcolor = whitesmoke];
+    mobModel [label = "モブモデル", fillcolor = lightgray];
     }
 
     subgraph cluster1 {
     label = "サービスメソッド呼び出し図"
 
-    usecase [label = "ユースケース", shape = ellipse];
-    nonPublicUsecase [label = "パブリックでない\nユースケース", fillcolor = black, style = solid, shape = ellipse];
-    lambda [label = "ラムダ", shape = ellipse, fillcolor = gray];
+    entrypointUsecase [label = "ハンドラとなる\nユースケース", shape = ellipse];
+    subUsecase [label = "ユースケース", fillcolor=lemonchiffon, shape = ellipse];
+    nonPublicUsecase [label = "パブリックでない\nユースケース", fillcolor = whitesmoke, shape = ellipse];
+    lambda [label = "ラムダ", shape = ellipse, fillcolor = lightgray];
 
-    usecase -> nonPublicUsecase
-    usecase -> lambda
+    entrypointUsecase -> subUsecase
+    subUsecase -> nonPublicUsecase
+    subUsecase -> lambda
     }
     subgraph cluster2 {
     label = "ユースケース複合図"
     edge [arrowhead = none];
 
-    handlerUsecase [label = "ハンドラとなる\nユースケース", fillcolor = greenyellow, shape = ellipse];
-    otherUsecase [label = "その他のユースケース", shape = ellipse];
+    handlerUsecase [label = "ハンドラとなる\nユースケース", shape = ellipse];
+    otherUsecase [label = "その他のユースケース", fillcolor = lemonchiffon, shape = ellipse];
 
-    screen [label = "呼び出し元の画面", shape = box, style = filled, fillcolor = lightgray];
-    returnModel [label = "戻り値型", style = solid, fillcolor = whitesmoke]
-    requireModel [label = "引数型", style = solid, fillcolor = whitesmoke]
-    usingModel [label = "使用する型", style = solid, fillcolor = whitesmoke]
+    screen [label = "呼び出し元の画面", fillcolor = lightgray];
+    returnModel [label = "戻り値型", fillcolor = whitesmoke]
+    requireModel [label = "引数型", fillcolor = whitesmoke]
+    usingModel [label = "使用する型", fillcolor = whitesmoke]
 
     screen -> handlerUsecase [style = dotted];
     handlerUsecase -> returnModel [style = bold];

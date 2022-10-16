@@ -35,4 +35,8 @@ public class BusinessRule {
     public JigType jigType() {
         return jigType;
     }
+
+    public boolean markedCore() {
+        return jigType.markedCore();
+    }
 }

@@ -125,4 +125,8 @@ public class JigType {
     public boolean hasSuperOrInterface() {
         return typeDeclaration.hasSuperOrInterface();
     }
+
+    public boolean markedCore() {
+        return jigTypeAttribute.alias().asText().startsWith("*");
+    }
 }

@@ -1,12 +1,15 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.stationery.JigPropertyHolder;
 import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,7 +69,7 @@ public class JigPropertyLoader {
         if (jigPropertiesPath.toFile().exists()) {
             try (InputStream is = Files.newInputStream(jigPropertiesPath)) {
                 Properties properties = new Properties();
-                properties.load(is);
+                properties.load(new InputStreamReader(is, StandardCharsets.UTF_8));
                 apply(properties);
                 logger.info("configuration loaded from {}", jigPropertiesPath.toAbsolutePath());
             } catch (IOException e) {
@@ -82,6 +85,8 @@ public class JigPropertyLoader {
                 apply(jigProperty, properties.getProperty(key));
             }
         }
+
+        JigPropertyHolder.getInstance().load(properties);
     }
 
     public void apply(JigProperty jigProperty, String value) {

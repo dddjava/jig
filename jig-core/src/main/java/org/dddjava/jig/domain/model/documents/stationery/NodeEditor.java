@@ -31,7 +31,8 @@ public class NodeEditor {
 
     static Optional<String> property(String key) {
         return Optional.ofNullable(System.getProperty(key))
-                .or(() -> Optional.ofNullable(System.getenv(key)));
+                .or(() -> Optional.ofNullable(System.getenv(key)))
+                .or(() -> JigPropertyHolder.getInstance().get(key));
     }
 
     List<Editor> editors;

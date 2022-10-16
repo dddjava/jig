@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.models.applications.services.Usecase;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 
 public enum Nodes {
@@ -13,7 +14,7 @@ public enum Nodes {
                     .label(label)
                     .tooltip(tooltip)
                     .style("filled")
-                    .handlerMethod();
+                    .as(NodeRole.スポットライト);
         }
     },
     ユースケース_その他 {
@@ -24,7 +25,7 @@ public enum Nodes {
                     .label(label)
                     .tooltip(tooltip)
                     .style("filled")
-                    .normalColor();
+                    .as(NodeRole.主役);
         }
     },
     ラムダ {
@@ -54,6 +55,12 @@ public enum Nodes {
 
     public static Node lambda(MethodDeclaration method) {
         return ラムダ.node(method.asFullNameText(), "", "");
+    }
+
+    public static Node businessRuleNodeOf(BusinessRule businessRule) {
+        Node node = new Node(businessRule.typeIdentifier().fullQualifiedName())
+                .label(businessRule.nodeLabel());
+        return businessRule.markedCore() ? node.as(NodeRole.スポットライト) : node;
     }
 
     abstract Node node(String identifier, String label, String tooltip);

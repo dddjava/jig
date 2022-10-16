@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
-import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
@@ -29,37 +27,8 @@ public class Node {
         return new Node(identifier.asText());
     }
 
-    public static Node businessRuleNodeOf(BusinessRule businessRule) {
-        return new Node(businessRule.typeIdentifier().fullQualifiedName())
-                .label(businessRule.nodeLabel())
-                .highlightColorIf(businessRule.markedCore());
-    }
-
-    public static Node categoryNodeOf(CategoryType categoryType) {
-        if (categoryType.markedCore()) {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName())
-                    .highlightColor()
-                    .label(categoryType.nodeLabel());
-        } else if (categoryType.hasBehaviour()) {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName())
-                    .weakColor()
-                    .label(categoryType.nodeLabel());
-        } else {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName())
-                    .normalColor()
-                    .label(categoryType.nodeLabel());
-        }
-    }
-
-    public Node as(NodeType nodeType) {
-        return nodeType.edit(this);
-    }
-
-    /**
-     * 主要でない
-     */
-    public Node other() {
-        return as(NodeType.モブ);
+    public Node as(NodeRole nodeRole) {
+        return nodeRole.edit(this);
     }
 
     public Node label(String value) {
@@ -95,23 +64,10 @@ public class Node {
         return shape("ellipse").fillColor("gray");
     }
 
-    public Node handlerMethod() {
-        return as(NodeType.スポットライト);
-    }
-
     public Node html(String html) {
         attribute.add("label=<" + html + ">;");
         return this;
     }
-
-    public Node normalColor() {
-        return as(NodeType.主役);
-    }
-
-    public Node weakColor() {
-        return as(NodeType.脇役);
-    }
-
 
     public Node tooltip(String tooltip) {
         attribute.add("tooltip=\"" + tooltip + "\"");
@@ -120,17 +76,13 @@ public class Node {
 
     public Node screenNode() {
         // 画面
-        return as(NodeType.モブ);
+        return as(NodeRole.モブ);
         // TODO 色以外の指定が必要かを確認
         // style("filled").fillColor("lightgray").shape("box");
     }
 
     public Node useCase() {
         return shape("ellipse");
-    }
-
-    public Node highlightColor() {
-        return as(NodeType.スポットライト);
     }
 
     public Node moderately() {
@@ -157,10 +109,6 @@ public class Node {
                 typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java" +
                 "\"");
         return this;
-    }
-
-    public Node highlightColorIf(boolean markedCore) {
-        return markedCore ? this.highlightColor() : this;
     }
 
     public Node big() {

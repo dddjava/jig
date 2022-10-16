@@ -6,11 +6,12 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 
 import java.util.StringJoiner;
 
@@ -87,15 +88,28 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         return businessRules.list().stream()
                 .filter(businessRule -> businessRule.toValueKind() != JigTypeValueKind.区分)
                 .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
-                .map(businessRule -> Node.businessRuleNodeOf(businessRule))
+                .map(businessRule -> Nodes.businessRuleNodeOf(businessRule))
                 .map(Node::asText)
                 .collect(joining("\n"));
     }
 
     String categoryNodeTexts() {
         return categoryTypes.list().stream()
-                .map(Node::categoryNodeOf)
+                .map(CategoryUsageDiagram::getNode)
                 .map(Node::asText)
                 .collect(joining("\n"));
+    }
+
+    private static Node getNode(CategoryType categoryType) {
+        if (categoryType.markedCore()) {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.スポットライト)
+                    .label(categoryType.nodeLabel());
+        } else if (categoryType.hasBehaviour()) {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.脇役)
+                    .label(categoryType.nodeLabel());
+        } else {
+            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.主役)
+                    .label(categoryType.nodeLabel());
+        }
     }
 }

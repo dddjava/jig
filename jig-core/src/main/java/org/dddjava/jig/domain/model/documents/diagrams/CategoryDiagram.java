@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
 import java.util.function.Function;
@@ -73,7 +73,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                                 .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     } else {
                         return Node.typeOf(typeIdentifier)
-                                .weakColor()
+                                .as(NodeRole.脇役)
                                 .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     }
                 }

@@ -5,9 +5,9 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 
 import java.util.List;
 import java.util.Map;
@@ -41,11 +41,11 @@ public class ClassRelationConcentrateDiagram implements DiagramSourceWriter {
                 .collect(toList());
         for (BusinessRule businessRule : businessRules.list()) {
             if (targetTypeIdentifiers.contains(businessRule.typeIdentifier())) {
-                Node node = Node.businessRuleNodeOf(businessRule);
+                Node node = Nodes.businessRuleNodeOf(businessRule);
                 if (map.containsKey(businessRule)) {
                     node.big();
                 } else {
-                    node.weakColor();
+                    node.as(NodeRole.脇役);
                 }
                 graph.add(node.asText());
             }

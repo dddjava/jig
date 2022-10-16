@@ -168,7 +168,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
             }
         }
         String repositoryTypes = repositories.stream()
-                .map(repository -> Node.typeOf(repository).other().label(repository.asSimpleText()))
+                .map(repository -> Node.typeOf(repository).as(NodeRole.モブ).label(repository.asSimpleText()))
                 .map(Node::asText)
                 .collect(joining("\n"));
 

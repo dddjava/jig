@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Node;
+import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
 import org.dddjava.jig.domain.model.documents.stationery.Nodes;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.models.applications.services.Usecase;
@@ -69,8 +70,7 @@ class CompositeUsecases {
             sb.append(
                     new Node(controllerType.fullQualifiedName())
                             .label(classComment.asTextOrIdentifierSimpleText())
-                            .tooltip(controllerType.asSimpleText())
-                            .screenNode()
+                            .tooltip(controllerType.asSimpleText()).as(NodeRole.モブ)
                             .asText()
             );
 

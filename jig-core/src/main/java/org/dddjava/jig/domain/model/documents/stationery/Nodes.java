@@ -13,7 +13,6 @@ public enum Nodes {
                     .shape("ellipse")
                     .label(label)
                     .tooltip(tooltip)
-                    .style("filled")
                     .as(NodeRole.スポットライト);
         }
     },
@@ -24,7 +23,6 @@ public enum Nodes {
                     .shape("ellipse")
                     .label(label)
                     .tooltip(tooltip)
-                    .style("filled")
                     .as(NodeRole.主役);
         }
     },
@@ -32,8 +30,7 @@ public enum Nodes {
         @Override
         Node node(String identifier, String label, String tooltip) {
             return new Node(identifier)
-                    .label("(lambda)")
-                    .lambda();
+                        .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
         }
     };
 

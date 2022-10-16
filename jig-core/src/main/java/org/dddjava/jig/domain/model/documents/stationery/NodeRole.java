@@ -11,7 +11,8 @@ import java.util.function.Function;
 public enum NodeRole {
     スポットライト(node -> node.fillColor("greenyellow")),
     主役(node -> node.fillColor("lightgoldenrod")),
-    脇役(node -> node.fillColor("lemonchiffon")),
+    準主役(node -> node.fillColor("lemonchiffon")),
+    脇役(node -> node.fillColor("whitesmoke")),
     モブ(node -> node.fillColor("lightgray"))
     ;
     final Function<Node, Node> editor;

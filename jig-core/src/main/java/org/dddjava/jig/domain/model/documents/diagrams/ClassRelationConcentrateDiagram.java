@@ -45,7 +45,7 @@ public class ClassRelationConcentrateDiagram implements DiagramSourceWriter {
                 if (map.containsKey(businessRule)) {
                     node.big();
                 } else {
-                    node.as(NodeRole.脇役);
+                    node.as(NodeRole.準主役);
                 }
                 graph.add(node.asText());
             }

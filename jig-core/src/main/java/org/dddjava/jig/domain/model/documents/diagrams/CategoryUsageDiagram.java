@@ -105,7 +105,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.スポットライト)
                     .label(categoryType.nodeLabel());
         } else if (categoryType.hasBehaviour()) {
-            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.脇役)
+            return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.準主役)
                     .label(categoryType.nodeLabel());
         } else {
             return new Node(categoryType.typeIdentifier().fullQualifiedName()).as(NodeRole.主役)

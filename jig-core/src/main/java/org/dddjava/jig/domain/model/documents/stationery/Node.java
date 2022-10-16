@@ -46,22 +46,14 @@ public class Node {
         return '"' + identifier + '"' + attribute + ';';
     }
 
-    public Node style(String value) {
+    Node style(String value) {
         attribute.add("style=\"" + value + "\"");
         return this;
     }
 
-    public Node shape(String value) {
+    Node shape(String value) {
         attribute.add("shape=\"" + value + "\"");
         return this;
-    }
-
-    public Node notPublicMethod() {
-        return style("solid").fillColor("black");
-    }
-
-    public Node lambda() {
-        return shape("ellipse").fillColor("gray");
     }
 
     public Node html(String html) {
@@ -72,17 +64,6 @@ public class Node {
     public Node tooltip(String tooltip) {
         attribute.add("tooltip=\"" + tooltip + "\"");
         return this;
-    }
-
-    public Node screenNode() {
-        // 画面
-        return as(NodeRole.モブ);
-        // TODO 色以外の指定が必要かを確認
-        // style("filled").fillColor("lightgray").shape("box");
-    }
-
-    public Node useCase() {
-        return shape("ellipse");
     }
 
     public Node moderately() {

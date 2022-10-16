@@ -56,7 +56,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
                     // 非publicは色なし
                     if (serviceAngle.isNotPublicMethod()) {
-                        useCaseNode.notPublicMethod();
+                        useCaseNode.as(NodeRole.脇役);
                     }
 
                     return useCaseNode.asText();
@@ -179,8 +179,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
     }
 
     private static Node controllerNodeOf(MethodDeclaration methodDeclaration) {
-        return new Node(methodDeclaration.asFullNameText())
-                .screenNode()
+        return new Node(methodDeclaration.asFullNameText()).as(NodeRole.モブ)
                 .label(methodDeclaration.methodSignature().methodName());
     }
 }

@@ -73,7 +73,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
                                 .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     } else {
                         return Node.typeOf(typeIdentifier)
-                                .as(NodeRole.脇役)
+                                .as(NodeRole.準主役)
                                 .html("<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
                     }
                 }

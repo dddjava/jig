@@ -32,10 +32,6 @@ public class BusinessRule {
         return jigType.typeAlias().nodeLabel();
     }
 
-    public boolean markedCore() {
-        return jigType.typeAlias().markedCore();
-    }
-
     public JigType jigType() {
         return jigType;
     }

@@ -100,11 +100,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     }
 
     private static Node getNode(CategoryType categoryType) {
-        Node node = new Node(categoryType.typeIdentifier().fullQualifiedName())
-                .label(categoryType.nodeLabel());
-        if (categoryType.markedCore()) {
-            return node.as(NodeRole.スポットライト);
-        }
+        Node node = new Node(categoryType.typeIdentifier().fullQualifiedName()).label(categoryType.nodeLabel());
         return node.as(categoryType.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
     }
 }

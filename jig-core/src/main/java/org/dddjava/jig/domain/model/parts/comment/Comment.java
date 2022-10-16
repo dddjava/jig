@@ -45,10 +45,6 @@ public class Comment {
         return new Comment(sourceText);
     }
 
-    public boolean markedCore() {
-        return value.startsWith("*");
-    }
-
     public String fullText() {
         return value;
     }

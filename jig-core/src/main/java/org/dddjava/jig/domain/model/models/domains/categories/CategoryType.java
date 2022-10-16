@@ -55,10 +55,6 @@ public class CategoryType {
         return jigType.instanceMember().fieldDeclarations();
     }
 
-    public boolean markedCore() {
-        return jigType.typeAlias().markedCore();
-    }
-
     public StaticFieldDeclarations values() {
         return constantsDeclarations().selfDefineOnly();
     }

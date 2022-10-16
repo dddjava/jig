@@ -31,8 +31,7 @@ public class Nodes {
     }
 
     public static Node businessRuleNodeOf(BusinessRule businessRule) {
-        Node node = new Node(businessRule.typeIdentifier().fullQualifiedName())
+        return new Node(businessRule.typeIdentifier().fullQualifiedName())
                 .label(businessRule.nodeLabel());
-        return businessRule.markedCore() ? node.as(NodeRole.スポットライト) : node;
     }
 }

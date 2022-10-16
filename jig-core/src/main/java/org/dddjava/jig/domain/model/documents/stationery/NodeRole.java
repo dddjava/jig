@@ -9,12 +9,10 @@ import java.util.function.Function;
  * 何にどのタイプを使用するかは各ダイアグラムで決める。
  */
 public enum NodeRole {
-    スポットライト(node -> node.fillColor("greenyellow")),
     主役(node -> node.fillColor("lightgoldenrod")),
     準主役(node -> node.fillColor("lemonchiffon")),
     脇役(node -> node.fillColor("whitesmoke")),
-    モブ(node -> node.fillColor("lightgray"))
-    ;
+    モブ(node -> node.fillColor("lightgray"));
     final Function<Node, Node> editor;
 
     NodeRole(Function<Node, Node> editor) {

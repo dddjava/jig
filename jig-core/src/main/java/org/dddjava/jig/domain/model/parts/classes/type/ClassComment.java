@@ -37,10 +37,6 @@ public class ClassComment {
         return defaultText;
     }
 
-    public boolean markedCore() {
-        return comment.markedCore();
-    }
-
     public String nodeLabel() {
         return nodeLabel("\\n");
     }

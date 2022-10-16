@@ -3,7 +3,10 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 /**
  * ノードの表現
@@ -14,6 +17,8 @@ public class Node {
 
     String identifier;
     StringJoiner attribute = new StringJoiner(",", "[", "]");
+
+    Map<String, String> attributeMap = new HashMap<>();
 
     public Node(String identifier) {
         this.identifier = identifier;
@@ -33,6 +38,13 @@ public class Node {
 
     public Node label(String value) {
         attribute.add("label=\"" + value.replace("\"", "\\\"") + "\"");
+        attributeMap.put("label", value);
+        return this;
+    }
+
+    public Node html(String summary, String html) {
+        attribute.add("label=<" + html + ">");
+        attributeMap.put("label", summary);
         return this;
     }
 
@@ -43,16 +55,11 @@ public class Node {
 
     public String asText() {
         // "hoge"[label="fuga",color="piyo"];
-        return '"' + identifier + '"' + attribute + ';';
+        return NodeEditor.INSTANCE.toText(this);
     }
 
     Node shape(String value) {
         attribute.add("shape=\"" + value + "\"");
-        return this;
-    }
-
-    public Node html(String html) {
-        attribute.add("label=<" + html + ">");
         return this;
     }
 
@@ -89,5 +96,10 @@ public class Node {
 
     public void warning() {
         attribute.add("color=red");
+    }
+
+    public boolean labelMatches(Pattern pattern) {
+        String label = attributeMap.get("label");
+        return label != null && pattern.asMatchPredicate().test(label);
     }
 }

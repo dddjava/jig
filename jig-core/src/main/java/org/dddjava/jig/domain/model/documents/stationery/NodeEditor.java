@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -16,10 +14,24 @@ public class NodeEditor {
     static final Predicate<String> 英数のみ = Pattern.compile("^0-9a-zA-Z$").asMatchPredicate();
 
     private NodeEditor() {
-        editors = List.of(
-                // labelが * で始まったらgreenyellowにする
-                new Editor(node -> node.labelMatches(label -> label.startsWith("*")), node -> node.fillColor("greenyellow"))
-        );
+        editors = new ArrayList<>();
+        // labelが * で始まったらgreenyellowにする
+        editors.add(new Editor(node -> node.labelMatches(label -> label.startsWith("*")), node -> node.fillColor("greenyellow")));
+
+        // #837 実験機能
+        property("jig.highlight.label-pattern").ifPresent(pattern -> {
+            String fillColor = property("jig.highlight.fillcolor").orElse("yellow");
+            editors.add(new Editor(node -> node.labelMatches(Pattern.compile(pattern).asMatchPredicate()), node -> node.fillColor(fillColor)));
+        });
+        property("jig.highlight.identifier-pattern").ifPresent(pattern -> {
+            String fillColor = property("jig.highlight.fillcolor").orElse("yellow");
+            editors.add(new Editor(node -> node.identifierMatches(Pattern.compile(pattern).asMatchPredicate()), node -> node.fillColor(fillColor)));
+        });
+    }
+
+    static Optional<String> property(String key) {
+        return Optional.ofNullable(System.getProperty(key))
+                .or(() -> Optional.ofNullable(System.getenv(key)));
     }
 
     List<Editor> editors;

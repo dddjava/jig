@@ -94,8 +94,12 @@ public class Node {
         attributeMap.put("color", "red");
     }
 
-    public boolean labelMatches(Predicate<String> stringPredicate) {
+    public boolean labelMatches(Predicate<String> predicate) {
         String label = attributeMap.get("label");
-        return label != null && stringPredicate.test(label);
+        return label != null && predicate.test(label);
+    }
+
+    public boolean identifierMatches(Predicate<String> predicate) {
+        return predicate.test(identifier);
     }
 }

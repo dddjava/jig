@@ -46,11 +46,6 @@ public class Node {
         return '"' + identifier + '"' + attribute + ';';
     }
 
-    Node style(String value) {
-        attribute.add("style=\"" + value + "\"");
-        return this;
-    }
-
     Node shape(String value) {
         attribute.add("shape=\"" + value + "\"");
         return this;

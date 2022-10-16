@@ -3,10 +3,9 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.StringJoiner;
-import java.util.regex.Pattern;
+import java.util.function.Predicate;
 
 /**
  * ノードの表現
@@ -16,9 +15,8 @@ public class Node {
     public static final String DEFAULT = "node [shape=box,style=filled,fillcolor=lightgoldenrod];";
 
     String identifier;
-    StringJoiner attribute = new StringJoiner(",", "[", "]");
 
-    Map<String, String> attributeMap = new HashMap<>();
+    Map<String, String> attributeMap = new LinkedHashMap<>();
 
     public Node(String identifier) {
         this.identifier = identifier;
@@ -37,19 +35,18 @@ public class Node {
     }
 
     public Node label(String value) {
-        attribute.add("label=\"" + value.replace("\"", "\\\"") + "\"");
         attributeMap.put("label", value);
         return this;
     }
 
     public Node html(String summary, String html) {
-        attribute.add("label=<" + html + ">");
         attributeMap.put("label", summary);
+        attributeMap.put("htmlLabel", html);
         return this;
     }
 
     Node fillColor(String value) {
-        attribute.add("fillcolor=\"" + value + "\"");
+        attributeMap.put("fillcolor", value);
         return this;
     }
 
@@ -59,12 +56,12 @@ public class Node {
     }
 
     Node shape(String value) {
-        attribute.add("shape=\"" + value + "\"");
+        attributeMap.put("shape", value);
         return this;
     }
 
-    public Node tooltip(String tooltip) {
-        attribute.add("tooltip=\"" + tooltip + "\"");
+    public Node tooltip(String value) {
+        attributeMap.put("tooltip", value);
         return this;
     }
 
@@ -72,9 +69,8 @@ public class Node {
         if (jigDocumentContext.linkPrefix().disabled()) {
             return this;
         }
-        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue() + '/' +
-                packageIdentifier.asText().replaceAll("\\.", "/") +
-                "\"");
+        attributeMap.put("URL",
+                jigDocumentContext.linkPrefix().textValue() + '/' + packageIdentifier.asText().replaceAll("\\.", "/"));
         return this;
     }
 
@@ -82,24 +78,24 @@ public class Node {
         if (jigDocumentContext.linkPrefix().disabled()) {
             return this;
         }
-        attribute.add("URL=\"" + jigDocumentContext.linkPrefix().textValue() + '/' +
-                // TODO CodeSourceから解決できるようにしたい。
-                typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java" +
-                "\"");
+        attributeMap.put("URL",
+                jigDocumentContext.linkPrefix().textValue() + '/' +
+                        // TODO CodeSourceから解決できるようにしたい。
+                        typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
         return this;
     }
 
     public Node big() {
-        attribute.add("fontsize=30");
+        attributeMap.put("fontsize", "30");
         return this;
     }
 
     public void warning() {
-        attribute.add("color=red");
+        attributeMap.put("color", "red");
     }
 
-    public boolean labelMatches(Pattern pattern) {
+    public boolean labelMatches(Predicate<String> stringPredicate) {
         String label = attributeMap.get("label");
-        return label != null && pattern.asMatchPredicate().test(label);
+        return label != null && stringPredicate.test(label);
     }
 }

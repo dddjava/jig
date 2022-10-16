@@ -66,11 +66,6 @@ public class Node {
         return this;
     }
 
-    public Node moderately() {
-        attribute.add("fontsize=8");
-        return this;
-    }
-
     public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext) {
         if (jigDocumentContext.linkPrefix().disabled()) {
             return this;

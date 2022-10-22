@@ -4,14 +4,22 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class IndexView extends AbstractThymeleafView {
+public class IndexView {
+
+    final Map<String, Object> contextMap;
+    final TemplateEngine templateEngine;
 
     public IndexView(TemplateEngine templateEngine) {
-        super(templateEngine);
+        this.templateEngine = templateEngine;
+        this.contextMap = new ConcurrentHashMap<>();
     }
 
     public void render(List<HandleResult> handleResultList, JigDocumentWriter jigDocumentWriter) {
@@ -29,5 +37,18 @@ public class IndexView extends AbstractThymeleafView {
 
         putContext("diagramFiles", diagramFiles);
         write(jigDocumentWriter);
+    }
+
+    protected void write(JigDocumentWriter jigDocumentWriter) {
+        contextMap.put("title", jigDocumentWriter.jigDocument().label());
+        Context context = new Context(Locale.ROOT, contextMap);
+        String template = jigDocumentWriter.jigDocument().fileName();
+
+        jigDocumentWriter.writeTextAs(".html",
+                writer -> templateEngine.process(template, context, writer));
+    }
+
+    protected void putContext(String key, Object variable) {
+        contextMap.put(key, variable);
     }
 }

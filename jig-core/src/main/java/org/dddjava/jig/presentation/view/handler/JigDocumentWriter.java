@@ -17,12 +17,12 @@ public class JigDocumentWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     JigDocument jigDocument;
-    Path directory;
+    Path outputDirectory;
     List<Path> writtenDocuments = new ArrayList<>();
 
-    public JigDocumentWriter(JigDocument jigDocument, Path directory) {
+    public JigDocumentWriter(JigDocument jigDocument, Path outputDirectory) {
         this.jigDocument = jigDocument;
-        this.directory = directory;
+        this.outputDirectory = outputDirectory;
     }
 
     public void writeXlsx(OutputStreamWriter writer) {
@@ -32,7 +32,7 @@ public class JigDocumentWriter {
 
     public void writeTextAs(String extension, Consumer<Writer> consumer) {
         String fileName = jigDocument.fileName() + extension;
-        Path outputFilePath = directory.resolve(fileName);
+        Path outputFilePath = outputDirectory.resolve(fileName);
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
              Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -45,7 +45,7 @@ public class JigDocumentWriter {
     }
 
     public void write(OutputStreamWriter writer, String fileName) {
-        Path outputFilePath = directory.resolve(fileName);
+        Path outputFilePath = outputDirectory.resolve(fileName);
         try (OutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(outputFilePath))) {
             writer.writeTo(outputStream);
         } catch (IOException e) {
@@ -55,7 +55,7 @@ public class JigDocumentWriter {
     }
 
     public void writePath(BiConsumer<Path, List<Path>> biConsumer) {
-        biConsumer.accept(directory, writtenDocuments);
+        biConsumer.accept(outputDirectory, writtenDocuments);
     }
 
     public void markSkip() {

@@ -107,9 +107,6 @@ public class JigDocumentHandlers {
     public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
         List<HandleResult> handleResultList = new ArrayList<>();
         for (JigDocument jigDocument : jigDocuments) {
-            // Summaryはスキップ
-            if (jigDocument == JigDocument.Summary) continue;
-
             HandleResult result = handle(jigDocument, outputDirectory);
             handleResultList.add(result);
         }
@@ -118,8 +115,7 @@ public class JigDocumentHandlers {
     }
 
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(JigDocument.Summary, outputDirectory);
         IndexView indexView = viewResolver.indexView();
-        indexView.render(handleResultList, jigDocumentWriter);
+        indexView.render(handleResultList, outputDirectory);
     }
 }

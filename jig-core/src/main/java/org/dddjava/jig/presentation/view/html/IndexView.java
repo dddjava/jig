@@ -2,10 +2,13 @@ package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
-import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +25,7 @@ public class IndexView {
         this.contextMap = new ConcurrentHashMap<>();
     }
 
-    public void render(List<HandleResult> handleResultList, JigDocumentWriter jigDocumentWriter) {
+    public void render(List<HandleResult> handleResultList, Path outputDirectory) {
         List<String> diagramFiles = new ArrayList<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
@@ -36,16 +39,24 @@ public class IndexView {
         }
 
         putContext("diagramFiles", diagramFiles);
-        write(jigDocumentWriter);
+        write(outputDirectory);
     }
 
-    protected void write(JigDocumentWriter jigDocumentWriter) {
-        contextMap.put("title", jigDocumentWriter.jigDocument().label());
+    protected void write(Path outputDirectory) {
+        contextMap.put("title", "JIG");
         Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
+        String template = "index";
 
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
+        String fileName = "index.html";
+        Path outputFilePath = outputDirectory.resolve(fileName);
+        try (OutputStream out = Files.newOutputStream(outputFilePath);
+             OutputStream outputStream = new BufferedOutputStream(out);
+             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        ) {
+            templateEngine.process(template, context, writer);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     protected void putContext(String key, Object variable) {

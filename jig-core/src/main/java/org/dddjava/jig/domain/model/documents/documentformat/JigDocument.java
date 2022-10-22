@@ -143,14 +143,8 @@ public enum JigDocument {
      */
     TermList(
             JigDocumentLabel.of("用語集", "term"),
-            "term", JigDocumentType.LIST),
-
-    /**
-     * 全体
-     */
-    Summary(
-            JigDocumentLabel.of("JIG", "JIG"),
-            "index", JigDocumentType.SUMMARY);
+            "term", JigDocumentType.LIST)
+    ;
 
     private final JigDocumentLabel label;
     private final String documentFileName;

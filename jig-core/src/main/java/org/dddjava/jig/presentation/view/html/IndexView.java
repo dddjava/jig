@@ -42,10 +42,8 @@ public class IndexView {
         write(outputDirectory);
     }
 
-    protected void write(Path outputDirectory) {
+    private void write(Path outputDirectory) {
         contextMap.put("title", "JIG");
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = "index";
 
         String fileName = "index.html";
         Path outputFilePath = outputDirectory.resolve(fileName);
@@ -53,7 +51,7 @@ public class IndexView {
              OutputStream outputStream = new BufferedOutputStream(out);
              Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         ) {
-            templateEngine.process(template, context, writer);
+            templateEngine.process("index", new Context(Locale.ROOT, contextMap), writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

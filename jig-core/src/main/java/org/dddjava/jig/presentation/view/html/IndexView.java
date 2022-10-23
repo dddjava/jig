@@ -33,12 +33,12 @@ public class IndexView {
                 if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
                     list.stream().filter(item -> !item.endsWith(".txt")).forEach(diagramFiles::add);
                 } else {
-                    putContext(handleResult.jigDocument().name(), list.get(0));
+                    contextMap.put(handleResult.jigDocument().name(), list.get(0));
                 }
             }
         }
 
-        putContext("diagramFiles", diagramFiles);
+        contextMap.put("diagramFiles", diagramFiles);
         write(outputDirectory);
     }
 
@@ -54,9 +54,5 @@ public class IndexView {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    protected void putContext(String key, Object variable) {
-        contextMap.put(key, variable);
     }
 }

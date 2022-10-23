@@ -40,14 +40,14 @@ public class JigDocumentHandlers {
 
     public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
         long startTime = System.currentTimeMillis();
-        logger.info("JIGドキュメントを出力します。");
+        logger.info("[JIG] write jig documents: {}", jigDocuments);
         List<HandleResult> handleResultList = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> handle(jigDocument, outputDirectory))
                 .collect(Collectors.toList());
         writeIndexHtml(outputDirectory, handleResultList);
         long takenTime = System.currentTimeMillis() - startTime;
-        logger.info("すべてのJIGドキュメントの出力完了: {} ms", takenTime);
+        logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
         return handleResultList;
     }
 
@@ -66,10 +66,10 @@ public class JigDocumentHandlers {
             jigView.render(model, jigDocumentWriter);
 
             long takenTime = System.currentTimeMillis() - startTime;
-            logger.info("{} を {} ms で出力しました。", jigDocument, takenTime);
+            logger.info("[{}] completed: {} ms", jigDocument, takenTime);
             return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());
         } catch (Exception e) {
-            logger.warn("{} の出力に失敗しました。", jigDocument, e);
+            logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
     }

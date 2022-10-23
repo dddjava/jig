@@ -104,8 +104,10 @@ main table thead.enum {
     margin-bottom: 0;
 }
 .index > header > p {
-    font-size: 0.6em;
+    font-size: 0.8em;
+    color: #aaa;
     margin-top: 0;
+    margin-bottom: 0;
 }
 .index > header, .index > main {
     margin:0 auto;

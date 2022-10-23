@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class IndexView {
@@ -40,6 +42,7 @@ public class IndexView {
 
     private void write(Path outputDirectory) {
         contextMap.put("title", "JIG");
+        contextMap.put("timestamp", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         Path outputFilePath = outputDirectory.resolve("index.html");
         try (OutputStream out = Files.newOutputStream(outputFilePath);

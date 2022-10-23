@@ -75,14 +75,17 @@ public class IndexView {
         }
 
         public boolean hasOthers() {
+            if (diagramFormat == JigDiagramFormat.DOT) return true;
             return srcList.stream().anyMatch(name -> !name.endsWith(diagramFormat.extension()));
         }
 
         public List<String> imageFileNames() {
+            if (diagramFormat == JigDiagramFormat.DOT) return List.of();
             return srcList.stream().filter(name -> name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
         }
 
         public List<String> otherFileNames() {
+            if (diagramFormat == JigDiagramFormat.DOT) return srcList;
             return srcList.stream().filter(name -> !name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
         }
     }

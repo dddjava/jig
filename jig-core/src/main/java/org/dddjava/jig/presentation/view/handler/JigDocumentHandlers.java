@@ -88,25 +88,30 @@ public class JigDocumentHandlers {
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
         IndexView indexView = viewResolver.indexView();
         indexView.render(handleResultList, outputDirectory);
-        copyStaticResourcesForHtml(null, outputDirectory);
+        copyAssets(outputDirectory);
     }
 
-    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
+    private void copyAssets(Path outputDirectory) {
+        Path assetsDirectory = createAssetsDirectory(outputDirectory);
+        copyAsset("style.css", assetsDirectory);
+        copyAsset("marked.min.js", assetsDirectory);
+        copyAsset("jig.js", assetsDirectory);
+        copyAsset("favicon.ico", assetsDirectory);
+    }
+
+    private static Path createAssetsDirectory(Path outputDirectory) {
         Path assetsPath = outputDirectory.resolve("assets");
         try {
             Files.createDirectories(assetsPath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        copyFile("style.css", "templates/assets/", assetsPath);
-        copyFile("marked.min.js", "templates/assets/", assetsPath);
-        copyFile("jig.js", "templates/assets/", assetsPath);
-        copyFile("favicon.ico", "templates/assets/", assetsPath);
+        return assetsPath;
     }
 
-    private void copyFile(String fileName, String sourceDirectory, Path distDirectory) {
+    private void copyAsset(String fileName, Path distDirectory) {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        try (InputStream is = classLoader.getResourceAsStream(sourceDirectory + fileName)) {
+        try (InputStream is = classLoader.getResourceAsStream("templates/assets/" + fileName)) {
             Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

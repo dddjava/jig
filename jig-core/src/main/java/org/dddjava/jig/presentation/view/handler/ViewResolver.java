@@ -56,7 +56,7 @@ public class ViewResolver {
     }
 
     IndexView indexView() {
-        return new IndexView(templateEngine);
+        return new IndexView(templateEngine, diagramFormat);
     }
 }
 

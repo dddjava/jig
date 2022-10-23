@@ -1,5 +1,7 @@
 package org.dddjava.jig.presentation.view.html;
 
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
 import org.thymeleaf.TemplateEngine;
@@ -12,31 +14,35 @@ import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class IndexView {
 
     private final Map<String, Object> contextMap;
     private final TemplateEngine templateEngine;
+    private JigDiagramFormat diagramFormat;
 
-    public IndexView(TemplateEngine templateEngine) {
+    public IndexView(TemplateEngine templateEngine, JigDiagramFormat diagramFormat) {
         this.templateEngine = templateEngine;
+        this.diagramFormat = diagramFormat;
         this.contextMap = new HashMap<>();
     }
 
     public void render(List<HandleResult> handleResultList, Path outputDirectory) {
-        List<String> diagramFiles = new ArrayList<>();
+        var diagrams = new ArrayList<>();
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 List<String> list = handleResult.outputFileNames();
                 if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
-                    list.stream().filter(item -> !item.endsWith(".txt")).forEach(diagramFiles::add);
+                    diagrams.add(new DiagramComponent(handleResult.jigDocument(), list));
                 } else {
                     contextMap.put(handleResult.jigDocument().name(), list.get(0));
                 }
             }
         }
 
-        contextMap.put("diagramFiles", diagramFiles);
+        contextMap.put("diagramFormat", diagramFormat);
+        contextMap.put("diagrams", diagrams);
         write(outputDirectory);
     }
 
@@ -52,6 +58,32 @@ public class IndexView {
             templateEngine.process("index", new Context(Locale.ROOT, contextMap), writer);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    class DiagramComponent {
+        JigDocument jigDocument;
+        List<String> srcList;
+
+        public DiagramComponent(JigDocument jigDocument, List<String> srcList) {
+            this.jigDocument = jigDocument;
+            this.srcList = srcList;
+        }
+
+        public String label() {
+            return jigDocument.label();
+        }
+
+        public boolean hasOthers() {
+            return srcList.stream().anyMatch(name -> !name.endsWith(diagramFormat.extension()));
+        }
+
+        public List<String> imageFileNames() {
+            return srcList.stream().filter(name -> name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
+        }
+
+        public List<String> otherFileNames() {
+            return srcList.stream().filter(name -> !name.endsWith(diagramFormat.extension())).collect(Collectors.toList());
         }
     }
 }

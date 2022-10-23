@@ -98,7 +98,7 @@ main table thead.enum {
 }
 
 .index > header {
-    border-bottom:solid 1px #999;
+    border-bottom:solid 2px #000;
 }
 .index > header > h1 {
     margin-bottom: 0;
@@ -115,6 +115,12 @@ main table thead.enum {
 }
 .index .diagram img {
     max-width: 800px;
+}
+.index > main > section h2 {
+    border-bottom:solid 1px #000;
+}
+.index > main > section h3 {
+    border-bottom:solid 1px #999;
 }
 
 /* 一般 */

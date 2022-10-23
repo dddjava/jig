@@ -9,7 +9,7 @@
 
 <header>
     <h1 th:text="${title}">JIG</h1>
-    <p>出力日時: <i th:text="${timestamp}">2012-03-04T05:06:07</i><p>
+    <p>出力日時: <i th:text="${timestamp}">2012-03-04T05:06:07</i></p>
 </header>
 
 <main>
@@ -31,11 +31,16 @@
     </section>
 
     <section class="diagram">
-        <h2>図: SVG</h2>
-
-        <a href="#" th:href="${diagramFile}" th:each="diagramFile : ${diagramFiles}">
-            <img src="dummy.svg" th:src="${diagramFile}">
-        </a>
+        <h2>図: <span th:text="${diagramFormat}">SVG</span></h2>
+        <div th:each="diagram : ${diagrams}">
+            <h3 th:text="${diagram.label()}">XXX</h3>
+            <a href="#" th:href="${image}" th:each="image : ${diagram.imageFileNames()}">
+                <img src="dummy.svg" th:src="${image}">
+            </a>
+            <ul th:if="${diagram.hasOthers()}">
+                <li th:each="text : ${diagram.otherFileNames()}"><a th:href="${text}" th:text="${text}">XXX</a></li>
+            </ul>
+        </div>
     </section>
 </main>
 

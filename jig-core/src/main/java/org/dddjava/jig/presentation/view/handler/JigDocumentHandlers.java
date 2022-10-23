@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,40 +68,10 @@ public class JigDocumentHandlers {
             JigView jigView = viewResolver.resolve(jigDocument);
             jigView.render(model, jigDocumentWriter);
 
-            copyStaticResourcesForHtml(jigDocument, outputDirectory);
-
             return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());
         } catch (Exception e) {
             LOGGER.warn("{} の出力に失敗しました。", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
-        }
-    }
-
-    boolean copied = false;
-
-    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) throws IOException {
-        if (jigDocument == JigDocument.DomainSummary
-                || jigDocument == JigDocument.ApplicationSummary
-                || jigDocument == JigDocument.EnumSummary) {
-            if (copied) return;
-
-            copyFile("index.html", "templates/", outputDirectory);
-            Path assetsPath = outputDirectory.resolve("assets");
-            Files.createDirectories(assetsPath);
-            copyFile("style.css", "templates/assets/", assetsPath);
-            copyFile("marked.min.js", "templates/assets/", assetsPath);
-            copyFile("jig.js", "templates/assets/", assetsPath);
-            copyFile("favicon.ico", "templates/assets/", assetsPath);
-            copied = true;
-        }
-    }
-
-    private void copyFile(String fileName, String sourceDirectory, Path distDirectory) {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        try (InputStream is = classLoader.getResourceAsStream(sourceDirectory + fileName)) {
-            Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
         }
     }
 
@@ -117,5 +88,28 @@ public class JigDocumentHandlers {
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
         IndexView indexView = viewResolver.indexView();
         indexView.render(handleResultList, outputDirectory);
+        copyStaticResourcesForHtml(null, outputDirectory);
+    }
+
+    private void copyStaticResourcesForHtml(JigDocument jigDocument, Path outputDirectory) {
+        Path assetsPath = outputDirectory.resolve("assets");
+        try {
+            Files.createDirectories(assetsPath);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        copyFile("style.css", "templates/assets/", assetsPath);
+        copyFile("marked.min.js", "templates/assets/", assetsPath);
+        copyFile("jig.js", "templates/assets/", assetsPath);
+        copyFile("favicon.ico", "templates/assets/", assetsPath);
+    }
+
+    private void copyFile(String fileName, String sourceDirectory, Path distDirectory) {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        try (InputStream is = classLoader.getResourceAsStream(sourceDirectory + fileName)) {
+            Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 }

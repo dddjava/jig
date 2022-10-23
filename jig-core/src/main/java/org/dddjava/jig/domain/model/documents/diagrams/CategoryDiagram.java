@@ -68,7 +68,9 @@ public class CategoryDiagram implements DiagramSourceWriter {
                     }
                     String categoryName = categoryAngle.nodeLabel("<br/>");
 
-                    Node node = Node.typeOf(typeIdentifier).html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>");
+                    Node node = Node.typeOf(typeIdentifier)
+                            .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")
+                            .url(typeIdentifier, jigDocumentContext, JigDocument.EnumSummary);
                     return node.as(categoryAngle.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
                 }
         );

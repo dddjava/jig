@@ -41,7 +41,7 @@ public class ClassRelationConcentrateDiagram implements DiagramSourceWriter {
                 .collect(toList());
         for (BusinessRule businessRule : businessRules.list()) {
             if (targetTypeIdentifiers.contains(businessRule.typeIdentifier())) {
-                Node node = Nodes.businessRuleNodeOf(businessRule);
+                Node node = Nodes.businessRuleNodeOf(businessRule, jigDocumentContext);
                 if (map.containsKey(businessRule)) {
                     node.big();
                 } else {

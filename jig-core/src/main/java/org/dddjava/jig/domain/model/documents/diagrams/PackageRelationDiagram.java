@@ -3,16 +3,9 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.parts.packages.BidirectionalRelation;
-import org.dddjava.jig.domain.model.parts.packages.BidirectionalRelations;
-import org.dddjava.jig.domain.model.parts.packages.PackageRelation;
-import org.dddjava.jig.domain.model.parts.packages.PackageRelations;
+import org.dddjava.jig.domain.model.parts.packages.*;
 
 import java.util.*;
 
@@ -131,7 +124,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             String labelsText = entry.getValue().stream()
                     .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                             .label(labeler.label(packageIdentifier, parent))
-                            .url(packageIdentifier, jigDocumentContext).asText())
+                            .url(packageIdentifier, jigDocumentContext, JigDocument.DomainSummary).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
                     .add(labelsText)
@@ -142,7 +135,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         String labelsText = standalonePackages.stream()
                 .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                         .label(labeler.label(packageIdentifier))
-                        .url(packageIdentifier, jigDocumentContext).asText())
+                        .url(packageIdentifier, jigDocumentContext, JigDocument.DomainSummary).asText())
                 .collect(joining("\n"));
         stringJoiner.add(labelsText);
 

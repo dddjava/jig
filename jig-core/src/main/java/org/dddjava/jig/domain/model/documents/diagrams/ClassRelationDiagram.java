@@ -49,7 +49,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
 
             BusinessRules businessRules = businessRulePackage.businessRules();
             for (BusinessRule businessRule : businessRules.list()) {
-                Node node = Nodes.businessRuleNodeOf(businessRule);
+                Node node = Nodes.businessRuleNodeOf(businessRule, jigDocumentContext);
                 if (isolatedTypes.contains(businessRule.typeIdentifier())) {
                     node.warning();
                 }

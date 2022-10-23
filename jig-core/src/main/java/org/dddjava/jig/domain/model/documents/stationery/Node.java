@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
@@ -65,23 +66,36 @@ public class Node {
         return this;
     }
 
-    public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext) {
-        if (jigDocumentContext.linkPrefix().disabled()) {
+    public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
+        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
+        if (linkPrefix.disabled()) {
+            String ref = jigDocument.fileName() + ".html";
+            attributeMap.put("URL", "./" + ref + "#" + packageIdentifier.asText());
             return this;
         }
-        attributeMap.put("URL",
-                jigDocumentContext.linkPrefix().textValue() + '/' + packageIdentifier.asText().replaceAll("\\.", "/"));
+        attributeMap.put("URL", linkPrefix.textValue() + '/' + packageIdentifier.asText().replaceAll("\\.", "/"));
         return this;
     }
 
     public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
-        if (jigDocumentContext.linkPrefix().disabled()) {
+        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
+        if (linkPrefix.disabled()) {
             return this;
         }
-        attributeMap.put("URL",
-                jigDocumentContext.linkPrefix().textValue() + '/' +
-                        // TODO CodeSourceから解決できるようにしたい。
-                        typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
+        // TODO CodeSourceから解決できるようにしたい。
+        attributeMap.put("URL", linkPrefix.textValue() + '/' + typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
+        return this;
+    }
+
+    public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
+        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
+        if (linkPrefix.disabled()) {
+            String ref = jigDocument.fileName() + ".html";
+            attributeMap.put("URL", "./" + ref + "#" + typeIdentifier.fullQualifiedName());
+            return this;
+        }
+        // TODO CodeSourceから解決できるようにしたい。
+        attributeMap.put("URL", linkPrefix.textValue() + '/' + typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
         return this;
     }
 

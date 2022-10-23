@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.models.applications.services.Usecase;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
@@ -13,7 +14,7 @@ public class Nodes {
                 .label(usecase.usecaseLabel())
                 .tooltip(usecase.simpleTextWithDeclaringType())
                 .as(usecase.isHandler() ? NodeRole.主役 : NodeRole.準主役)
-                .url(usecase.declaringType(), jigDocumentContext);
+                .url(usecase.declaringType(), jigDocumentContext, JigDocument.ApplicationSummary);
     }
 
     public static Node usecase(JigDocumentContext jigDocumentContext, ServiceMethod serviceMethod) {
@@ -22,7 +23,7 @@ public class Nodes {
                 .label(serviceMethod.method().aliasText())
                 .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
                 .as(NodeRole.準主役)
-                .url(serviceMethod.methodDeclaration().declaringType(), jigDocumentContext);
+                .url(serviceMethod.methodDeclaration().declaringType(), jigDocumentContext, JigDocument.ApplicationSummary);
     }
 
     public static Node lambda(MethodDeclaration method) {
@@ -30,8 +31,9 @@ public class Nodes {
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }
 
-    public static Node businessRuleNodeOf(BusinessRule businessRule) {
+    public static Node businessRuleNodeOf(BusinessRule businessRule, JigDocumentContext jigDocumentContext) {
         return new Node(businessRule.typeIdentifier().fullQualifiedName())
-                .label(businessRule.nodeLabel());
+                .label(businessRule.nodeLabel())
+                .url(businessRule.typeIdentifier(), jigDocumentContext, JigDocument.DomainSummary);
     }
 }

@@ -77,17 +77,17 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(nonCategoryBusinessRuleNodeTexts(categoryRelatedTypes))
+                .add(nonCategoryBusinessRuleNodeTexts(categoryRelatedTypes, jigDocumentContext))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes) {
+    private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes, JigDocumentContext jigDocumentContext) {
         return businessRules.list().stream()
                 .filter(businessRule -> businessRule.toValueKind() != JigTypeValueKind.区分)
                 .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
-                .map(businessRule -> Nodes.businessRuleNodeOf(businessRule))
+                .map(businessRule -> Nodes.businessRuleNodeOf(businessRule, jigDocumentContext))
                 .map(Node::asText)
                 .collect(joining("\n"));
     }

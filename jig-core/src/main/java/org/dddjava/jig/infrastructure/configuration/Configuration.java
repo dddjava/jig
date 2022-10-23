@@ -37,7 +37,6 @@ public class Configuration {
 
     public Configuration(JigProperties jigProperties, AdditionalTextSourceReader additionalTextSourceReader) {
         this.properties = new JigPropertyLoader(jigProperties).load();
-        this.properties.prepareOutputDirectory();
 
         CommentRepository commentRepository = new OnMemoryCommentRepository();
 

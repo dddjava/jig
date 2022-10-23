@@ -7,11 +7,7 @@ import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -103,28 +99,6 @@ public class JigProperties {
 
     private String outputPath(DocumentName documentName, JigDiagramFormat JigDiagramFormat) {
         return documentName.fileName() + '.' + JigDiagramFormat.extension();
-    }
-
-    void prepareOutputDirectory() {
-        File file = outputDirectory.toFile();
-        if (file.exists()) {
-            if (file.isDirectory() && file.canWrite()) {
-                // ディレクトリかつ書き込み可能なので対応不要
-                return;
-            }
-            if (!file.isDirectory()) {
-                throw new IllegalStateException(file.getAbsolutePath() + " is not Directory. Please review your settings.");
-            }
-            if (file.isDirectory() && !file.canWrite()) {
-                throw new IllegalStateException(file.getAbsolutePath() + " can not writable. Please specify another directory.");
-            }
-        }
-
-        try {
-            Files.createDirectories(outputDirectory);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
     public void override(JigProperties overrideProperties) {

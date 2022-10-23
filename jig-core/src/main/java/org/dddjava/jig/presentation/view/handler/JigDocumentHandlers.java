@@ -1,9 +1,7 @@
 package org.dddjava.jig.presentation.view.handler;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.presentation.controller.ApplicationListController;
-import org.dddjava.jig.presentation.controller.BusinessRuleListController;
-import org.dddjava.jig.presentation.controller.DiagramController;
+import org.dddjava.jig.presentation.controller.JigController;
 import org.dddjava.jig.presentation.view.html.IndexView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,23 +22,16 @@ public class JigDocumentHandlers {
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
     private final ViewResolver viewResolver;
-    private final BusinessRuleListController businessRuleListController;
-    private final ApplicationListController applicationListController;
-    private final DiagramController diagramController;
+    private final JigController jigController;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
     public JigDocumentHandlers(ViewResolver viewResolver,
-                               BusinessRuleListController businessRuleListController,
-                               ApplicationListController applicationListController,
-                               DiagramController diagramController,
+                               JigController jigController,
                                List<JigDocument> jigDocuments,
                                Path outputDirectory) {
         this.viewResolver = viewResolver;
-
-        this.businessRuleListController = businessRuleListController;
-        this.applicationListController = applicationListController;
-        this.diagramController = diagramController;
+        this.jigController = jigController;
         this.jigDocuments = jigDocuments;
         this.outputDirectory = outputDirectory;
     }
@@ -106,39 +97,39 @@ public class JigDocumentHandlers {
         // Java17でswitch式に変更
         switch (jigDocument) {
             case BusinessRuleList:
-                return businessRuleListController.domainList();
+                return jigController.domainList();
             case PackageRelationDiagram:
-                return diagramController.packageDependency();
+                return jigController.packageDependency();
             case BusinessRuleRelationDiagram:
-                return diagramController.businessRuleRelation();
+                return jigController.businessRuleRelation();
             case OverconcentrationBusinessRuleDiagram:
-                return diagramController.overconcentrationBusinessRuleRelation();
+                return jigController.overconcentrationBusinessRuleRelation();
             case CoreBusinessRuleRelationDiagram:
-                return diagramController.coreBusinessRuleRelation();
+                return jigController.coreBusinessRuleRelation();
             case CategoryDiagram:
-                return diagramController.categories();
+                return jigController.categories();
             case CategoryUsageDiagram:
-                return diagramController.categoryUsage();
+                return jigController.categoryUsage();
             case ApplicationList:
-                return applicationListController.applicationList();
+                return jigController.applicationList();
             case ServiceMethodCallHierarchyDiagram:
-                return diagramController.serviceMethodCallHierarchy();
+                return jigController.serviceMethodCallHierarchy();
             case CompositeUsecaseDiagram:
-                return diagramController.useCaseDiagram();
+                return jigController.useCaseDiagram();
             case ArchitectureDiagram:
-                return diagramController.architecture();
+                return jigController.architecture();
             case ComponentRelationDiagram:
-                return diagramController.componentRelation();
+                return jigController.componentRelation();
             case DomainSummary:
-                return businessRuleListController.domainListHtml();
+                return jigController.domainListHtml();
             case ApplicationSummary:
-                return applicationListController.applicationSummary();
+                return jigController.applicationSummary();
             case EnumSummary:
-                return businessRuleListController.enumListHtml();
+                return jigController.enumListHtml();
             case SchemaSummary:
-                return businessRuleListController.schemaHtml();
+                return jigController.schemaHtml();
             case TermList:
-                return businessRuleListController.termList();
+                return jigController.termList();
         }
 
         throw new IllegalStateException("cannot find handler method for " + jigDocument);

@@ -14,9 +14,7 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
-import org.dddjava.jig.presentation.controller.ApplicationListController;
-import org.dddjava.jig.presentation.controller.BusinessRuleListController;
-import org.dddjava.jig.presentation.controller.DiagramController;
+import org.dddjava.jig.presentation.controller.JigController;
 import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.dddjava.jig.presentation.view.handler.ViewResolver;
@@ -68,9 +66,7 @@ public class Configuration {
                         properties.outputDiagramFormat,
                         jigDocumentContext
                 ),
-                new BusinessRuleListController(businessRuleService),
-                new ApplicationListController(applicationService),
-                new DiagramController(dependencyService, businessRuleService, applicationService),
+                new JigController(dependencyService, businessRuleService, applicationService),
                 properties.jigDocuments,
                 properties.outputDirectory
         );

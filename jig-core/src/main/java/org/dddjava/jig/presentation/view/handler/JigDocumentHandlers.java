@@ -84,7 +84,7 @@ public class JigDocumentHandlers {
         }
     }
 
-    private HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
+    HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
             long startTime = System.currentTimeMillis();
             Object model = createModelForJigDocument(jigDocument);

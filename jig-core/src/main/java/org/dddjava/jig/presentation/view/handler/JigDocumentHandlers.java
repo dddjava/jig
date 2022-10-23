@@ -14,9 +14,9 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class JigDocumentHandlers {
 
@@ -41,11 +41,10 @@ public class JigDocumentHandlers {
     public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
         long startTime = System.currentTimeMillis();
         logger.info("JIGドキュメントを出力します。");
-        List<HandleResult> handleResultList = new ArrayList<>();
-        for (JigDocument jigDocument : jigDocuments) {
-            HandleResult result = handle(jigDocument, outputDirectory);
-            handleResultList.add(result);
-        }
+        List<HandleResult> handleResultList = jigDocuments
+                .parallelStream()
+                .map(jigDocument -> handle(jigDocument, outputDirectory))
+                .collect(Collectors.toList());
         writeIndexHtml(outputDirectory, handleResultList);
         long takenTime = System.currentTimeMillis() - startTime;
         logger.info("すべてのJIGドキュメントの出力完了: {} ms", takenTime);

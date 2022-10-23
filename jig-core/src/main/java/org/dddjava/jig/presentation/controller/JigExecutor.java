@@ -34,6 +34,6 @@ public class JigExecutor {
             }
         }
 
-        return jigDocumentHandlers.handleJigDocuments(configuration.jigDocuments(), configuration.outputDirectory());
+        return jigDocumentHandlers.handleJigDocuments();
     }
 }

@@ -26,21 +26,30 @@ public class JigDocumentHandlers {
     private final BusinessRuleListController businessRuleListController;
     private final ApplicationListController applicationListController;
     private final DiagramController diagramController;
+    private final List<JigDocument> jigDocuments;
+    private final Path outputDirectory;
 
     public JigDocumentHandlers(ViewResolver viewResolver,
                                BusinessRuleListController businessRuleListController,
                                ApplicationListController applicationListController,
-                               DiagramController diagramController) {
+                               DiagramController diagramController,
+                               List<JigDocument> jigDocuments,
+                               Path outputDirectory) {
         this.viewResolver = viewResolver;
 
         this.businessRuleListController = businessRuleListController;
         this.applicationListController = applicationListController;
         this.diagramController = diagramController;
+        this.jigDocuments = jigDocuments;
+        this.outputDirectory = outputDirectory;
     }
 
-    public List<HandleResult> handleJigDocuments(List<JigDocument> jigDocuments, Path outputDirectory) {
+    public List<HandleResult> handleJigDocuments() {
         long startTime = System.currentTimeMillis();
         logger.info("[JIG] write jig documents: {}", jigDocuments);
+
+        prepareOutputDirectory(outputDirectory);
+
         List<HandleResult> handleResultList = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> handle(jigDocument, outputDirectory))
@@ -51,15 +60,21 @@ public class JigDocumentHandlers {
         return handleResultList;
     }
 
-    HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
+    private void prepareOutputDirectory(Path outputDirectory) {
+        if (Files.notExists(outputDirectory)) {
+            try {
+                Files.createDirectories(outputDirectory);
+                logger.info("[JIG] created {}", outputDirectory.toAbsolutePath());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
+    private HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
             long startTime = System.currentTimeMillis();
             Object model = createModelForJigDocument(jigDocument);
-
-            if (Files.notExists(outputDirectory)) {
-                Files.createDirectories(outputDirectory);
-                logger.info("{} を作成しました。", outputDirectory.toAbsolutePath());
-            }
 
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             JigView jigView = viewResolver.resolve(jigDocument);

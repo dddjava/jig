@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.application.service.*;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
@@ -21,9 +20,6 @@ import org.dddjava.jig.presentation.controller.DiagramController;
 import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.dddjava.jig.presentation.view.handler.ViewResolver;
-
-import java.nio.file.Path;
-import java.util.List;
 
 public class Configuration {
     JigProperties properties;
@@ -75,7 +71,9 @@ public class Configuration {
                 ),
                 new BusinessRuleListController(businessRuleService),
                 new ApplicationListController(applicationService),
-                new DiagramController(dependencyService, businessRuleService, applicationService)
+                new DiagramController(dependencyService, businessRuleService, applicationService),
+                properties.jigDocuments,
+                properties.outputDirectory
         );
     }
 
@@ -87,11 +85,4 @@ public class Configuration {
         return documentHandlers;
     }
 
-    public Path outputDirectory() {
-        return properties.outputDirectory;
-    }
-
-    public List<JigDocument> jigDocuments() {
-        return properties.jigDocuments;
-    }
 }

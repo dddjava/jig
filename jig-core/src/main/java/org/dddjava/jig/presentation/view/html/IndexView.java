@@ -13,8 +13,8 @@ import java.util.*;
 
 public class IndexView {
 
-    final Map<String, Object> contextMap;
-    final TemplateEngine templateEngine;
+    private final Map<String, Object> contextMap;
+    private final TemplateEngine templateEngine;
 
     public IndexView(TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;

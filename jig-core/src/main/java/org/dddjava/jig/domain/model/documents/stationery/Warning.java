@@ -20,7 +20,7 @@ public enum Warning {
             "Repository method cannot be found."),
     ;
 
-    String message;
+    private final String message;
 
     Warning(String... message) {
         Locale locale = Locale.getDefault();

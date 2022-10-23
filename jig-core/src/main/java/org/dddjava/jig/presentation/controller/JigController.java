@@ -26,9 +26,9 @@ import org.dddjava.jig.presentation.view.report.business_rule.*;
 
 public class JigController {
 
-    DependencyService dependencyService;
-    BusinessRuleService businessRuleService;
-    ApplicationService applicationService;
+    private final DependencyService dependencyService;
+    private final BusinessRuleService businessRuleService;
+    private final ApplicationService applicationService;
 
     public JigController(DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService) {
         this.dependencyService = dependencyService;

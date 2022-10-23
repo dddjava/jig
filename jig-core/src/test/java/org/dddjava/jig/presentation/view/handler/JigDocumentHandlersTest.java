@@ -28,7 +28,7 @@ class JigDocumentHandlersTest {
     @ParameterizedTest
     @EnumSource(value = JigDocument.class, mode = EnumSource.Mode.EXCLUDE, names = "Summary")
     void JigDocumentHandlerですべてのJigDocumentが処理できること(JigDocument jigDocument, JigDocumentHandlers sut) {
-        HandleResult handle = sut.handle(jigDocument, outputDirectory);
+        HandleResult handle = sut.handleJigDocument(jigDocument, outputDirectory);
 
         // sourceを読み込んでいないのですべて空でスキップされて出力されない
         assertEquals("skip", handle.failureMessage);

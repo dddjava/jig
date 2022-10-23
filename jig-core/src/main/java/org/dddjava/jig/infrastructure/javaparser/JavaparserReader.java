@@ -26,10 +26,6 @@ public class JavaparserReader implements JavaTextSourceReader {
     PackageInfoReader packageInfoReader = new PackageInfoReader();
     ClassReader classReader = new ClassReader();
 
-    @Deprecated
-    public JavaparserReader() {
-    }
-
     public JavaparserReader(JigProperties properties) {
         Optional.ofNullable(System.getProperty("java.version"))
                 .filter(version -> version.startsWith("17"))

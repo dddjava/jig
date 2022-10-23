@@ -45,8 +45,7 @@ public class IndexView {
     private void write(Path outputDirectory) {
         contextMap.put("title", "JIG");
 
-        String fileName = "index.html";
-        Path outputFilePath = outputDirectory.resolve(fileName);
+        Path outputFilePath = outputDirectory.resolve("index.html");
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
              Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);

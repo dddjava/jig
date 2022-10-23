@@ -4,6 +4,7 @@ import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
@@ -174,5 +175,47 @@ public class JigController {
     ModelReport<?> stringComparingReport() {
         StringComparingMethodList stringComparingMethodList = applicationService.stringComparing();
         return new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class);
+    }
+
+    public Object handle(JigDocument jigDocument) {
+        // Java17でswitch式に変更
+        switch (jigDocument) {
+            case BusinessRuleList:
+                return domainList();
+            case PackageRelationDiagram:
+                return packageDependency();
+            case BusinessRuleRelationDiagram:
+                return businessRuleRelation();
+            case OverconcentrationBusinessRuleDiagram:
+                return overconcentrationBusinessRuleRelation();
+            case CoreBusinessRuleRelationDiagram:
+                return coreBusinessRuleRelation();
+            case CategoryDiagram:
+                return categories();
+            case CategoryUsageDiagram:
+                return categoryUsage();
+            case ApplicationList:
+                return applicationList();
+            case ServiceMethodCallHierarchyDiagram:
+                return serviceMethodCallHierarchy();
+            case CompositeUsecaseDiagram:
+                return useCaseDiagram();
+            case ArchitectureDiagram:
+                return architecture();
+            case ComponentRelationDiagram:
+                return componentRelation();
+            case DomainSummary:
+                return domainListHtml();
+            case ApplicationSummary:
+                return applicationSummary();
+            case EnumSummary:
+                return enumListHtml();
+            case SchemaSummary:
+                return schemaHtml();
+            case TermList:
+                return termList();
+        }
+
+        throw new IllegalStateException("cannot find handler method for " + jigDocument);
     }
 }

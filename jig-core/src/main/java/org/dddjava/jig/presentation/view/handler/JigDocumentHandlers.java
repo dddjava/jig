@@ -78,7 +78,7 @@ public class JigDocumentHandlers {
     HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
             long startTime = System.currentTimeMillis();
-            Object model = createModelForJigDocument(jigDocument);
+            Object model = jigController.handle(jigDocument);
 
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             JigView jigView = viewResolver.resolve(jigDocument);
@@ -91,48 +91,6 @@ public class JigDocumentHandlers {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
-    }
-
-    private Object createModelForJigDocument(JigDocument jigDocument) {
-        // Java17でswitch式に変更
-        switch (jigDocument) {
-            case BusinessRuleList:
-                return jigController.domainList();
-            case PackageRelationDiagram:
-                return jigController.packageDependency();
-            case BusinessRuleRelationDiagram:
-                return jigController.businessRuleRelation();
-            case OverconcentrationBusinessRuleDiagram:
-                return jigController.overconcentrationBusinessRuleRelation();
-            case CoreBusinessRuleRelationDiagram:
-                return jigController.coreBusinessRuleRelation();
-            case CategoryDiagram:
-                return jigController.categories();
-            case CategoryUsageDiagram:
-                return jigController.categoryUsage();
-            case ApplicationList:
-                return jigController.applicationList();
-            case ServiceMethodCallHierarchyDiagram:
-                return jigController.serviceMethodCallHierarchy();
-            case CompositeUsecaseDiagram:
-                return jigController.useCaseDiagram();
-            case ArchitectureDiagram:
-                return jigController.architecture();
-            case ComponentRelationDiagram:
-                return jigController.componentRelation();
-            case DomainSummary:
-                return jigController.domainListHtml();
-            case ApplicationSummary:
-                return jigController.applicationSummary();
-            case EnumSummary:
-                return jigController.enumListHtml();
-            case SchemaSummary:
-                return jigController.schemaHtml();
-            case TermList:
-                return jigController.termList();
-        }
-
-        throw new IllegalStateException("cannot find handler method for " + jigDocument);
     }
 
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {

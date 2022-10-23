@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.4' apply false
+    id 'org.springframework.boot' version '2.7.5' apply false
     id 'org.dddjava.jig-gradle-plugin' apply false
     id "org.jetbrains.kotlin.jvm" version "1.7.20" apply false
     id 'com.gradle.plugin-publish' version '1.0.0' apply false
@@ -135,7 +135,7 @@ project(':jig-core') {
         // SQLの取得: infrastructure/mybatis
         api 'org.mybatis:mybatis:3.5.11'
         // javadocコメントの取得: infrastructure/javaparser
-        api 'com.github.javaparser:javaparser-core:3.24.4'
+        api 'com.github.javaparser:javaparser-core:3.24.7'
         // excel出力: presentation/poi
         api 'org.apache.poi:poi:5.2.3'
         api 'org.apache.poi:poi-ooxml:5.2.3'

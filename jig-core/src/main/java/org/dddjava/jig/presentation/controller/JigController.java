@@ -94,87 +94,48 @@ public class JigController {
     }
 
     public ModelReports domainList() {
+        MethodSmellList angles = businessRuleService.methodSmells();
+        JigTypes jigTypes = businessRuleService.jigTypes();
+
+        JigCollectionTypes jigCollectionTypes = businessRuleService.collections();
+        CategoryDiagram categoryDiagram = businessRuleService.categories();
+        BusinessRules businessRules = businessRuleService.businessRules();
+        BusinessRulePackages businessRulePackages = businessRuleService.businessRules().businessRulePackages();
         return new ModelReports(
-                packageReport(),
-                businessRulesReport(),
-                categoriesReport(),
-                collectionsReport(),
-                validateAnnotationReport(),
-                smellReport()
+                new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class),
+                new ModelReport<>(businessRules.list(),
+                        businessRule -> new BusinessRuleReport(businessRule, businessRules),
+                        BusinessRuleReport.class),
+                new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class),
+                new ModelReport<>(jigCollectionTypes.listJigType(),
+                        jigType -> new CollectionReport(jigType, jigCollectionTypes.classRelations()),
+                        CollectionReport.class),
+                new ModelReport<>(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
+                new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class)
         );
     }
 
-    ModelReport<?> packageReport() {
-        BusinessRulePackages businessRulePackages = businessRuleService.businessRules().businessRulePackages();
-        return new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class);
-    }
-
-    ModelReport<?> businessRulesReport() {
-        BusinessRules businessRules = businessRuleService.businessRules();
-        return new ModelReport<>(businessRules.list(), businessRule -> new BusinessRuleReport(businessRule, businessRules), BusinessRuleReport.class);
-    }
-
-    ModelReport<?> collectionsReport() {
-        JigCollectionTypes jigCollectionTypes = businessRuleService.collections();
-        return new ModelReport<>(jigCollectionTypes.listJigType(),
-                jigType -> new CollectionReport(jigType, jigCollectionTypes.classRelations()),
-                CollectionReport.class);
-    }
-
-    ModelReport<?> categoriesReport() {
-        CategoryDiagram categoryDiagram = businessRuleService.categories();
-        return new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class);
-    }
-
-    ModelReport<?> validateAnnotationReport() {
-        JigTypes jigTypes = businessRuleService.jigTypes();
-
-        return new ModelReport<>(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class);
-    }
-
-    ModelReport<?> smellReport() {
-        MethodSmellList angles = businessRuleService.methodSmells();
-        return new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class);
-    }
-
-
     public ModelReports applicationList() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
+
+        DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
+        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing();
+        HandlerMethods handlerMethods = applicationService.controllerAngles();
+
         return new ModelReports(
-                controllerReport(),
-                serviceReport(),
-                datasourceReport(),
-                stringComparingReport()
+                new ModelReport<>(handlerMethods.list(),
+                        requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
+                        ControllerReport.class),
+                new ModelReport<>(serviceAngles.list(),
+                        serviceAngle -> new ServiceReport(serviceAngle),
+                        ServiceReport.class),
+                new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
+                new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );
     }
 
     public SummaryModel applicationSummary() {
         return SummaryModel.from(applicationService.serviceMethods());
-    }
-
-    ModelReport<?> controllerReport() {
-        HandlerMethods handlerMethods = applicationService.controllerAngles();
-
-        return new ModelReport<>(handlerMethods.list(),
-                requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
-                ControllerReport.class);
-    }
-
-    ModelReport<?> serviceReport() {
-        ServiceAngles serviceAngles = applicationService.serviceAngles();
-
-        return new ModelReport<>(serviceAngles.list(),
-                serviceAngle -> new ServiceReport(serviceAngle),
-                ServiceReport.class);
-    }
-
-    ModelReport<?> datasourceReport() {
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
-        return new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class);
-    }
-
-    ModelReport<?> stringComparingReport() {
-        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing();
-        return new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class);
     }
 
     public Object handle(JigDocument jigDocument) {

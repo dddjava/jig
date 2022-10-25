@@ -42,9 +42,9 @@ public class DotCommandRunner {
                     inputPath.toString());
 
             if (result.failed()) {
-                logger.warning("dot command failed. write DOT file.");
                 Path dotFilePath = outputPath.getParent().resolve(inputPath.getFileName());
                 Files.copy(inputPath, dotFilePath, StandardCopyOption.REPLACE_EXISTING);
+                logger.warning("dot command failed. write DOT file: " + dotFilePath);
                 return dotFilePath;
             }
 

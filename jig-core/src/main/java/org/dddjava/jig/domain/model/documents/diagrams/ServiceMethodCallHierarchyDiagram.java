@@ -76,9 +76,10 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                                 .map(text -> "\"" + text + "\";")
                                 .collect(joining("\n"))
                                 + "}")
-                .collect(joining("\n",
-                        "subgraph cluster_usecases {style=invis;",
-                        "}"));
+                .collect(joining("\n"
+                        // TODO #852 暫定対処
+                        // , "subgraph cluster_usecases {style=invis;", "}"
+                ));
 
         DocumentName documentName = DocumentName.of(JigDocument.ServiceMethodCallHierarchyDiagram);
 

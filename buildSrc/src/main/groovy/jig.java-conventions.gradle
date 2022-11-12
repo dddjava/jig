@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+}
+
+
+sourceCompatibility = '11'
+
+def defaultEncoding = 'UTF-8'
+[AbstractCompile, Javadoc].each {
+    tasks.withType(it).each { it.options.encoding = defaultEncoding }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:deprecation"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('jar') {
+    metaInf { from(rootDir) { include 'LICENSE' } }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.springframework:spring-test'
+}

@@ -1,0 +1,19 @@
+plugins {
+    id 'jig.cli-conventions'
+    id 'org.jetbrains.kotlin.jvm' version '1.7.21'
+}
+
+dependencies {
+    api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.7.21'
+    api 'org.jetbrains.kotlin:kotlin-stdlib:1.7.21'
+}
+
+bootJar {
+    requiresUnpack '**/kotlin-compiler-*.jar'
+}
+
+[compileKotlin, compileTestKotlin].each {
+    it.kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}

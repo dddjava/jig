@@ -1,0 +1,89 @@
+plugins {
+    id 'jig.java-conventions'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+            pom {
+                name = "jig-core"
+                description = "Core of JIG"
+                url = "https://github.com/dddjava/jig"
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "irof"
+                        name = "irof"
+                        email = "irof.ocean@gmail.com"
+                    }
+                    developer {
+                        id = "haljik"
+                        name = "haljik"
+                        email = "seiji.kawakami@sora-works.com"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/dddjava/jig.git'
+                    developerConnection = 'scm:git:git://github.com/dddjava/jig.git'
+                    url = "https://github.com/dddjava/jig.git"
+                }
+            }
+        }
+    }
+}
+
+signing {
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    // keyがセットされている時のみ有効（通常のビルドができなくなるため）
+    if (signingKeyId && signingKey) {
+        def signingPassword = findProperty("signingPassword")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign publishing.publications.mavenJava
+    }
+}
+
+java {
+    // Mavenリポジトリにデプロイするために必要なので追加
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+dependencies {
+    api 'org.springframework:spring-context'
+    api 'org.slf4j:slf4j-api'
+
+    // バイトコードの読み取り: infrastructure/asm
+    api 'org.ow2.asm:asm:9.4'
+    // SQLの取得: infrastructure/mybatis
+    api 'org.mybatis:mybatis:3.5.11'
+    // javadocコメントの取得: infrastructure/javaparser
+    api 'com.github.javaparser:javaparser-core:3.24.7'
+    // excel出力: presentation/poi
+    api 'org.apache.poi:poi:5.2.3'
+    api 'org.apache.poi:poi-ooxml:5.2.3'
+    // HTML出力
+    api 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
+
+    testImplementation 'org.springframework:spring-web'
+    testRuntimeOnly 'ch.qos.logback:logback-classic:1.4.4'
+}
+
+build.dependsOn(publishToMavenLocal)

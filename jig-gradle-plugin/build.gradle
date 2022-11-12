@@ -1,0 +1,87 @@
+plugins {
+    id 'jig.java-conventions'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '1.0.0'
+}
+
+// Write the plugin's classpath to a file to share with the tests
+task createClasspathManifest {
+    def outputDir = file("$buildDir/$name")
+
+    inputs.files sourceSets.main.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+    }
+}
+
+dependencies {
+    implementation project(':jig-core')
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'org.apache.logging.log4j:log4j-to-slf4j'
+
+    // Add the classpath file to the test runtime classpath
+    testRuntimeOnly files(createClasspathManifest)
+}
+
+jar {
+    archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()
+}
+
+gradlePlugin {
+    plugins {
+        jigGradlePlugin {
+            id = "org.dddjava.${project.name}"
+            implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
+            displayName = 'JIG Gradle Plugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/dddjava/jig'
+    vcsUrl = 'https://github.com/dddjava/jig.git'
+    description = 'Visualizing code for DDD'
+    tags = ['ddd', 'visualize']
+}
+
+publishing {
+    publications {
+        puluginPublication(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+        }
+    }
+}
+
+task setupPluginUpload doLast {
+    final def KEY_PROPERTY = "gradle.publish.key"
+    final def SECRET_PROPERTY = "gradle.publish.secret"
+
+    String key = findSettingValue('GRADLE_PUBLISH_KEY', KEY_PROPERTY)
+    String secret = findSettingValue('GRADLE_PUBLISH_SECRET', SECRET_PROPERTY)
+
+    if (key.isEmpty() || secret.isEmpty()) {
+        throw new RuntimeException("GRADLE_PUBLISH_KEY and/or GRADLE_PUBLISH_SECRET are not defined environment variables")
+    }
+
+    System.properties.setProperty(KEY_PROPERTY, key)
+    System.properties.setProperty(SECRET_PROPERTY, secret)
+}
+
+tasks.publishPlugins.dependsOn tasks.setupPluginUpload
+build.dependsOn(publishToMavenLocal)
+
+test.dependsOn(createClasspathManifest)
+
+static String findSettingValue(String envName, String propertyName) {
+    def env = System.getenv().get(envName)
+    def property = env ? env : System.properties.getProperty(propertyName)
+    property ? property : ''
+}

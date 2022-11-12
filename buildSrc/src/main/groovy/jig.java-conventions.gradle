@@ -1,7 +1,7 @@
 plugins {
+    id 'jig.base-conventions'
     id 'java'
 }
-
 
 sourceCompatibility = '11'
 

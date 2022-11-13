@@ -18,11 +18,11 @@ import static java.util.stream.Collectors.toList;
 public class GradleTaskRunner {
 
     SupportGradleVersion version;
-    Path path;
+    Path projectDir;
 
-    GradleTaskRunner(SupportGradleVersion version, Path path) {
+    GradleTaskRunner(SupportGradleVersion version, Path projectDir) {
         this.version = version;
-        this.path = path;
+        this.projectDir = projectDir;
     }
 
     BuildResult runTask(String... tasks) throws IOException, URISyntaxException {
@@ -33,7 +33,7 @@ public class GradleTaskRunner {
 
         return GradleRunner.create()
                 .withGradleVersion(version.version())
-                .withProjectDir(path.toFile())
+                .withProjectDir(projectDir.toFile())
                 .withArguments(tasks)
                 .withPluginClasspath(pluginClasspath)
                 .build();

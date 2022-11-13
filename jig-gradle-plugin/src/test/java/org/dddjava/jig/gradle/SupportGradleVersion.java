@@ -25,7 +25,7 @@ public enum SupportGradleVersion {
 
     public abstract String version();
 
-    GradleTaskRunner runner(Path path) {
-        return new GradleTaskRunner(this, path);
+    GradleTaskRunner createTaskRunner(Path projectDir) {
+        return new GradleTaskRunner(this, projectDir);
     }
 }

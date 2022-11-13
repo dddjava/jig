@@ -16,16 +16,10 @@ public enum SupportGradleVersion {
             return GradleVersion.current().getVersion();
         }
     },
-    _6 {
+    MIN {
         @Override
         public String version() {
             return "6.9.3";
-        }
-    },
-    _5 {
-        @Override
-        public String version() {
-            return "5.6.4";
         }
     };
 

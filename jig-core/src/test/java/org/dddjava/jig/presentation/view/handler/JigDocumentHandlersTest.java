@@ -6,8 +6,6 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import testing.JigTestExtension;
 
 import java.lang.reflect.Field;
@@ -17,22 +15,12 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(JigTestExtension.class)
 class JigDocumentHandlersTest {
     @TempDir
     Path outputDirectory;
-
-    @ParameterizedTest
-    @EnumSource(value = JigDocument.class)
-    void JigDocumentHandlerですべてのJigDocumentが処理できること(JigDocument jigDocument, JigDocumentHandlers sut) {
-        HandleResult handle = sut.handle(jigDocument, outputDirectory);
-
-        // sourceを読み込んでいないのですべて空でスキップされて出力されない
-        assertEquals("skip", handle.failureMessage);
-    }
 
     @EnabledForJreRange(max = JRE.JAVA_11) // FIXME 17で動作しない
     @Test

@@ -1,6 +1,7 @@
 plugins {
     id 'jig.base-conventions'
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+    id 'test-report-aggregation'
 }
 
 nexusPublishing {
@@ -10,4 +11,23 @@ nexusPublishing {
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
     }
+}
+
+dependencies {
+    testReportAggregation project(':jig-core')
+    testReportAggregation project(':jig-cli')
+    testReportAggregation project(':jig-cli-kt')
+    testReportAggregation project(':jig-gradle-plugin')
+}
+
+reporting {
+    reports {
+        testAggregateTestReport(AggregateTestReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
+}
+
+tasks.register('build') {
+    dependsOn tasks.named('testAggregateTestReport', TestReport)
 }

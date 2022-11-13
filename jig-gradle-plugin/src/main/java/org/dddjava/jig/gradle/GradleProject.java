@@ -44,14 +44,27 @@ public class GradleProject {
                 .collect(toSet());
     }
 
+    /**
+     * ConventionやJavaPluginConventionは非推奨となっておりGradle8で削除されるが、
+     * Gradle6.xでは新しい方法が使用できないので警告抑止して使っておく。
+     */
+    @SuppressWarnings("deprecation")
+    private boolean isNonJavaProject(Project root) {
+        return root.getConvention().findPlugin(JavaPluginConvention.class) == null;
+    }
+
+    /**
+     * ConventionやJavaPluginConventionは非推奨となっておりGradle8で削除されるが、
+     * Gradle6.xでは新しい方法が使用できないので警告抑止して使っておく。
+     */
+    @SuppressWarnings("deprecation")
     private List<SourceSet> sourceSets() {
-        JavaPluginConvention convention = project.getConvention().findPlugin(JavaPluginConvention.class);
+        JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
         List<SourceSet> sourceSets = convention.getSourceSets().stream()
                 .filter(sourceSet -> !sourceSet.getName().equals(SourceSet.TEST_SOURCE_SET_NAME))
                 .collect(Collectors.toList());
         return sourceSets;
     }
-
 
     public SourcePaths rawSourceLocations() {
         SourcePaths sourcePaths = allDependencyProjectsFrom(project)
@@ -93,9 +106,5 @@ public class GradleProject {
         if ("compile".equals(name)) return true;
 
         return false;
-    }
-
-    private boolean isNonJavaProject(Project root) {
-        return root.getConvention().findPlugin(JavaPluginConvention.class) == null;
     }
 }

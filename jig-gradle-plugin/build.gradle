@@ -3,6 +3,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '1.0.0'
+    id 'groovy'
 }
 
 // Write the plugin's classpath to a file to share with the tests
@@ -20,12 +21,11 @@ task createClasspathManifest {
 
 dependencies {
     implementation project(':jig-core')
-    implementation gradleApi()
-    implementation localGroovy()
     implementation 'org.apache.logging.log4j:log4j-to-slf4j'
 
-    // Add the classpath file to the test runtime classpath
-    testRuntimeOnly files(createClasspathManifest)
+    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
+        exclude group: 'org.codehaus.groovy'
+    }
 }
 
 jar {

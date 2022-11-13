@@ -8,8 +8,9 @@ dependencies {
 
     implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     implementation 'org.springframework.boot:spring-boot-starter'
-    api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.7.21'
-    api 'org.jetbrains.kotlin:kotlin-stdlib:1.7.21'
+
+    implementation 'org.jetbrains.kotlin:kotlin-compiler-embeddable'
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-stdlib'
 
     testImplementation libs.junit
     testImplementation libs.mockito

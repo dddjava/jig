@@ -46,7 +46,15 @@ public class IntegrationTest {
     @EnabledOnJre(JRE.JAVA_11)
     @ParameterizedTest
     @EnumSource(SupportGradleVersion.class)
-    void testKotlinDSL(SupportGradleVersion version) {
+    void testKotlinDSLJava11(SupportGradleVersion version) {
+        runTest("./stub-kotlin-dsl", "build/jig", ":jigReports", version);
+    }
+
+    @EnabledOnJre(JRE.JAVA_17)
+    @Test
+    void testKotlinDSLJava17() {
+        // Java17対応はGradle7.3以降なのでCURRENTのみを対象にする
+        SupportGradleVersion version = SupportGradleVersion.CURRENT;
         runTest("./stub-kotlin-dsl", "build/jig", ":jigReports", version);
     }
 

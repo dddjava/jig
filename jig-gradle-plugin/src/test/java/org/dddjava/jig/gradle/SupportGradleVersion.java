@@ -7,8 +7,7 @@ import java.nio.file.Path;
 /**
  * テストするGradleのバージョンを列挙
  *
- * 数の分だけGradleを動かすJavaプロセスが立ち上がってしまい、CIでメモリ確保できなくなるため少なくしている。
- * ちゃんとJavaプロセス殺すようにして増やしたい。
+ * 各メジャーバージョンのMAXを使用する。
  */
 public enum SupportGradleVersion {
     CURRENT {
@@ -17,10 +16,16 @@ public enum SupportGradleVersion {
             return GradleVersion.current().getVersion();
         }
     },
-    MIN {
+    _6 {
         @Override
         public String version() {
-            return "5.0";
+            return "6.9.3";
+        }
+    },
+    _5 {
+        @Override
+        public String version() {
+            return "5.6.4";
         }
     };
 

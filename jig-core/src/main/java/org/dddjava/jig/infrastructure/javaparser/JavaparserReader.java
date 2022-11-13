@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Javaparserでテキストソースを読み取る
@@ -27,12 +26,10 @@ public class JavaparserReader implements JavaTextSourceReader {
     ClassReader classReader = new ClassReader();
 
     public JavaparserReader(JigProperties properties) {
-        Optional.ofNullable(System.getProperty("java.version"))
-                .filter(version -> version.startsWith("17"))
-                .ifPresent(v -> {
-                    ParserConfiguration configuration = StaticJavaParser.getConfiguration();
-                    configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
-                });
+        if (Runtime.version().feature() >= 17) {
+            ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
+            configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        }
 
         // TODO プロパティで指定してる場合だけ上書きするようにする
         // configuration.setCharacterEncoding(properties.inputEncoding());

@@ -22,6 +22,10 @@ tasks.named('jar') {
     metaInf { from(rootDir) { include 'LICENSE' } }
 }
 
+tasks.named('javadoc') {
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
 repositories {
     mavenCentral()
 }

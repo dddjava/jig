@@ -62,10 +62,6 @@ java {
     withSourcesJar()
 }
 
-javadoc {
-    options.addStringOption('Xdoclint:none', '-quiet')
-}
-
 dependencies {
     api 'org.springframework:spring-context'
     api 'org.slf4j:slf4j-api'

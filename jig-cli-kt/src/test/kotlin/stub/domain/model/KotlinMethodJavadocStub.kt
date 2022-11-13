@@ -22,6 +22,6 @@ class KotlinMethodJavadocStub {
      * 引数ありのメソッド
      */
     fun overloadMethod(str: String, dateTime: LocalDateTime): String? {
-        return null
+        return str + dateTime
     }
 }

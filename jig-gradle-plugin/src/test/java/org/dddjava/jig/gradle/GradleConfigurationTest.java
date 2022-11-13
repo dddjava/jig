@@ -139,6 +139,7 @@ class GradleConfigurationTest {
         return javaProjectOf("依存プロジェクトのないJavaプロジェクト", tempDir);
     }
 
+    @SuppressWarnings("deprecation") // JavaPluginConventionを使わなくて良くなるまで抑止
     private static Project _複数のソースセットを持つJavaプロジェクト(Path tempDir) {
         Project project = javaProjectOf("複数のソースセットを持つJavaプロジェクト", tempDir);
         JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
@@ -148,20 +149,18 @@ class GradleConfigurationTest {
 
     private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
         Project javaChild = withDependency(javaProjectOf("javaChild", tempDir),
-                "implementation",
                 projectOf("nonJavaGrandson", tempDir),
                 javaProjectOf("javaGrandson", tempDir));
 
         return withDependency(javaProjectOf("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
-                "implementation",
                 projectOf("nonJavaChild", tempDir),
                 javaChild);
     }
 
-    static Project withDependency(Project project, String configurationName, Project... dependencies) {
+    static Project withDependency(Project project, Project... dependencies) {
         DependencyHandler projectDependencies = project.getDependencies();
         for (Project dependency : dependencies) {
-            projectDependencies.add(configurationName, dependency);
+            projectDependencies.add("implementation", dependency);
         }
         return project;
     }

@@ -14,6 +14,6 @@ bootJar {
 
 [compileKotlin, compileTestKotlin].each {
     it.kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = targetCompatibility
     }
 }

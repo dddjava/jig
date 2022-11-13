@@ -67,18 +67,6 @@ class GradleConfigurationTest {
                                 "依存プロジェクトのないJavaプロジェクト/build/resources/main")
                         .withSourcePathSuffixes(
                                 "依存プロジェクトのないJavaプロジェクト/src/main/java"),
-                Fixture.of("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト")
-                        .withClassPathSuffixes(
-                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
-                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/build/resources/main",
-                                "javaChild/build/classes/java/main",
-                                "javaChild/build/resources/main",
-                                "javaGrandson/build/classes/java/main",
-                                "javaGrandson/build/resources/main")
-                        .withSourcePathSuffixes(
-                                "3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト/src/main/java",
-                                "javaChild/src/main/java",
-                                "javaGrandson/src/main/java"),
                 Fixture.of("3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト")
                         .withClassPathSuffixes(
                                 "3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト/build/classes/java/main",
@@ -156,21 +144,6 @@ class GradleConfigurationTest {
         JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
         convention.getSourceSets().create("sub");
         return project;
-    }
-
-    /**
-     * 後方互換用: Gradle6サポートを切るまでは必要なテスト
-     */
-    private static Project _3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {
-        Project javaChild = withDependency(javaProjectOf("javaChild", tempDir),
-                "compile",
-                projectOf("nonJavaGrandson", tempDir),
-                javaProjectOf("javaGrandson", tempDir));
-
-        return withDependency(javaProjectOf("3階層構造でcompile依存Javaプロジェクトが２つあるJavaプロジェクト", tempDir),
-                "compile",
-                projectOf("nonJavaChild", tempDir),
-                javaChild);
     }
 
     private static Project _3階層構造でimplementation依存Javaプロジェクトが２つあるJavaプロジェクト(Path tempDir) {

@@ -3,11 +3,6 @@ plugins {
     id 'org.springframework.boot'
 }
 
-dependencies {
-    implementation project(':jig-core')
-    implementation 'org.springframework.boot:spring-boot-starter'
-}
-
 bootJar {
     metaInf { from(rootDir) { include 'LICENSE' } }
     archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()

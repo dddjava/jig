@@ -1,3 +1,10 @@
 plugins {
     id 'jig.cli-conventions'
 }
+
+dependencies {
+    implementation project(':jig-core')
+
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation 'org.springframework.boot:spring-boot-starter'
+}

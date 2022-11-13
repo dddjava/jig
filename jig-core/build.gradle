@@ -63,23 +63,27 @@ java {
 }
 
 dependencies {
-    api 'org.springframework:spring-context'
-    api 'org.slf4j:slf4j-api'
+    api libs.spring.context
+    api libs.slf4j.api
 
     // バイトコードの読み取り: infrastructure/asm
-    api 'org.ow2.asm:asm:9.4'
+    api libs.asm
     // SQLの取得: infrastructure/mybatis
-    api 'org.mybatis:mybatis:3.5.11'
+    api libs.mybatis
     // javadocコメントの取得: infrastructure/javaparser
-    api 'com.github.javaparser:javaparser-core:3.24.7'
-    // excel出力: presentation/poi
-    api 'org.apache.poi:poi:5.2.3'
-    api 'org.apache.poi:poi-ooxml:5.2.3'
-    // HTML出力
-    api 'org.thymeleaf:thymeleaf:3.0.15.RELEASE'
+    api libs.javaparser
 
-    testImplementation 'org.springframework:spring-web'
-    testRuntimeOnly 'ch.qos.logback:logback-classic:1.4.4'
+    // excel出力: presentation/poi
+    api libs.bundles.poi
+    // HTML出力
+    api libs.thymeleaf
+
+    testImplementation libs.spring.web
+    testRuntimeOnly libs.logback.classic
+
+    testImplementation libs.junit
+    testImplementation libs.mockito
+    testImplementation libs.assertj
 }
 
 build.dependsOn(publishToMavenLocal)

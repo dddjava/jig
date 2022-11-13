@@ -21,8 +21,9 @@ task createClasspathManifest {
 
 dependencies {
     implementation project(':jig-core')
-    implementation 'org.apache.logging.log4j:log4j-to-slf4j'
+    runtimeOnly libs.log4j.to.slf4j
 
+    testImplementation libs.junit
     testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }

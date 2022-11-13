@@ -4,3 +4,33 @@ include 'jig-core',
         'jig-cli',
         'jig-cli-kt',
         'jig-gradle-plugin'
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('slf4j-api', 'org.slf4j:slf4j-api:1.7.36')
+            library('log4j-to-slf4j', 'org.apache.logging.log4j:log4j-to-slf4j:2.17.2')
+            library('logback-classic', 'ch.qos.logback:logback-classic:1.4.4')
+
+            library('asm', 'org.ow2.asm:asm:9.4')
+            library('javaparser', 'com.github.javaparser:javaparser-core:3.24.7')
+            library('mybatis', 'org.mybatis:mybatis:3.5.11')
+
+            library('thymeleaf', 'org.thymeleaf:thymeleaf:3.0.15.RELEASE')
+
+            version('poi', '5.2.3')
+            library('poi', 'org.apache.poi', 'poi').versionRef('poi')
+            library('poi-ooxml', 'org.apache.poi', 'poi-ooxml').versionRef('poi')
+            bundle('poi', ['poi', 'poi-ooxml'])
+
+            version('spring', '5.3.23')
+            library('spring-context', 'org.springframework', 'spring-context').versionRef('spring')
+            library('spring-web', 'org.springframework', 'spring-web').versionRef('spring')
+            library('spring-test', 'org.springframework', 'spring-test').versionRef('spring')
+
+            library('junit', 'org.junit.jupiter:junit-jupiter:5.8.2')
+            library('mockito', 'org.mockito:mockito-core:4.5.1')
+            library('assertj', 'org.assertj:assertj-core:3.23.1')
+        }
+    }
+}

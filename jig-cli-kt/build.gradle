@@ -4,8 +4,15 @@ plugins {
 }
 
 dependencies {
+    implementation project(':jig-core')
+
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation 'org.springframework.boot:spring-boot-starter'
     api 'org.jetbrains.kotlin:kotlin-compiler-embeddable:1.7.21'
     api 'org.jetbrains.kotlin:kotlin-stdlib:1.7.21'
+
+    testImplementation libs.junit
+    testImplementation libs.mockito
 }
 
 bootJar {

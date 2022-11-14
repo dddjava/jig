@@ -2,7 +2,7 @@ plugins {
     id 'jig.java-conventions'
     id 'java-gradle-plugin'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '1.1.0'
+    alias libs.plugins.gradle.plugin.publish
     id 'groovy'
 }
 
@@ -24,7 +24,7 @@ dependencies {
     runtimeOnly libs.log4j.to.slf4j
 
     testImplementation libs.junit
-    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
+    testImplementation(libs.spock) {
         exclude group: 'org.codehaus.groovy'
     }
 }

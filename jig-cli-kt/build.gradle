@@ -1,6 +1,6 @@
 plugins {
     id 'jig.cli-conventions'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.21'
+    alias libs.plugins.kotlin
 }
 
 dependencies {

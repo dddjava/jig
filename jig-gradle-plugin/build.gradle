@@ -23,7 +23,7 @@ dependencies {
     implementation project(':jig-core')
     implementation 'org.apache.logging.log4j:log4j-to-slf4j'
 
-    testImplementation('org.spockframework:spock-core:2.3-groovy-3.0') {
+    testImplementation('org.spockframework:spock-core:2.3-groovy-4.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }

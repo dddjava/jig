@@ -1,0 +1,31 @@
+plugins {
+    id 'jig.java-conventions'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+java {
+    registerFeature('optional') {
+        usingSourceSet(sourceSets.main)
+    }
+}
+
+dependencies {
+    api project(':jig-core')
+    compileOnly 'org.apache.maven:maven-plugin-api:3.8.5'
+    compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.4'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+        }
+    }
+}
+
+build.dependsOn(publishToMavenLocal)

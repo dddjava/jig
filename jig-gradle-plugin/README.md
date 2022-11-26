@@ -29,10 +29,11 @@ $ gradle clean build jig
 
 `build/jig` ディレクトリにJIGドキュメントが出力されます。
 
-## 設定
+## JIGの設定
 
 `build.gradle` で指定できます。以下は例です。
-```
+
+```gradle
 jig {
     // パッケージにかかわらず全ての要素を出力する
     modelPattern = '.+'
@@ -45,8 +46,24 @@ jig {
 
 設定できる項目は [JigConfig.java](./src/main/java/org/dddjava/jig/gradle/JigConfig.java) を参照してください。
 
-### ログ出力
+### タスクの依存・前後設定
+JIGは `*.class` が出力されていることを前提にしています。
+そのため前述のように `clean` および `build` タスクを実行することで正しいドキュメントが得られます。
+`clean` を実行しなければ以前に出力された `*.class` ファイルが残っていると不正なドキュメントになる可能性があります。
+また、 `build` を実行しなければ「何も得られない」もしくは「コードを変えているのに何も変わらない」と言ったことが起こります。
+
+そのため以下のように `jigReports` タスク実行時は必ず `clean` および `classes` が実行されるようにしておくと安定したJIGドキュメントが得られます。
+
+```gradle
+classes.mustRunAfter(clean)
+jigReports.dependsOn(clean, classes)
+```
+
+
+## ログの見方
 期待した出力がされない場合など、ログを確認する際は `--info` などを指定してください。
+JIGの基本的なログは `INFO` で出力しています。
+Gradleのデフォルトログレベルは [LIFECYCLE以上](https://docs.gradle.org/current/userguide/logging.html) のため、 `INFO` は表示されません。
 
 ## プラグイン開発者向け
 

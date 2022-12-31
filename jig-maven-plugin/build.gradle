@@ -1,8 +1,7 @@
 plugins {
     id 'jig.java-conventions'
+    id 'jig.ossrh-conventions'
     id 'java-library'
-    id 'maven-publish'
-    id 'signing'
 }
 
 java {
@@ -17,15 +16,6 @@ dependencies {
     compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.4'
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.name
-            version project.version
-            from components.java
-        }
-    }
+ossrh {
+    description = "Maven plugin for JIG"
 }
-
-build.dependsOn(publishToMavenLocal)

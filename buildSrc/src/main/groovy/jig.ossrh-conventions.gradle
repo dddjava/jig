@@ -1,0 +1,71 @@
+// OSS Repository Hosting
+plugins {
+    id 'jig.java-conventions'
+    id 'maven-publish'
+    id 'signing'
+}
+
+interface OssrhExtension {
+    Property<String> getDescription()
+}
+def extension = project.extensions.create('ossrh', OssrhExtension)
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+            pom {
+                name = project.name
+                description = extension.description
+                url = "https://github.com/dddjava/jig"
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "irof"
+                        name = "irof"
+                        email = "irof.ocean@gmail.com"
+                    }
+                    developer {
+                        id = "haljik"
+                        name = "haljik"
+                        email = "seiji.kawakami@sora-works.com"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/dddjava/jig.git'
+                    developerConnection = 'scm:git:git://github.com/dddjava/jig.git'
+                    url = "https://github.com/dddjava/jig.git"
+                }
+            }
+        }
+    }
+}
+
+signing {
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    // keyがセットされている時のみ有効（通常のビルドができなくなるため）
+    if (signingKeyId && signingKey) {
+        def signingPassword = findProperty("signingPassword")
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign publishing.publications.mavenJava
+    }
+}
+
+
+java {
+    // Mavenリポジトリにデプロイするために必要なので追加
+    withJavadocJar()
+    withSourcesJar()
+}
+
+build.dependsOn(publishToMavenLocal)

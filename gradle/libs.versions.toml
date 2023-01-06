@@ -1,7 +1,7 @@
 [versions]
 poi = "5.2.3"
-spring = "5.3.23"
-spring-boot = "2.7.5"
+spring = "5.3.24"
+spring-boot = "2.7.7"
 
 [libraries]
 slf4j-api = "org.slf4j:slf4j-api:1.7.36"

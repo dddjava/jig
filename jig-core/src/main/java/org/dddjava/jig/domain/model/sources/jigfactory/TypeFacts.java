@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 import java.util.ArrayList;
 import java.util.List;

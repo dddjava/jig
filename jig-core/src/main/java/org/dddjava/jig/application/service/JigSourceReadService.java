@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.*;
 import org.springframework.stereotype.Service;

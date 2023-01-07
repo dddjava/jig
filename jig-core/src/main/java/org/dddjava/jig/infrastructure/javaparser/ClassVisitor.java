@@ -16,7 +16,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

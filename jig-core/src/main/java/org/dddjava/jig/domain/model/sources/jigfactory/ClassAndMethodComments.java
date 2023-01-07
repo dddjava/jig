@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.sources.jigreader;
+package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;

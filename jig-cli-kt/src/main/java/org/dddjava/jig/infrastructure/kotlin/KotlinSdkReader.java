@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.kotlin;
 
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
-import org.dddjava.jig.domain.model.sources.jigreader.ClassAndMethodComments;
+import org.dddjava.jig.domain.model.sources.jigfactory.ClassAndMethodComments;
 import org.dddjava.jig.domain.model.sources.jigreader.KotlinTextSourceReader;
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;

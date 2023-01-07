@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ParseProblemException;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;

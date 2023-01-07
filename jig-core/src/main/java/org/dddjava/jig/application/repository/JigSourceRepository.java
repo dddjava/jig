@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.Terms;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 public interface JigSourceRepository {
 

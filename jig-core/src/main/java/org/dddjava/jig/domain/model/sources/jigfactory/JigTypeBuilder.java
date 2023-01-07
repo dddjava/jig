@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.*;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;

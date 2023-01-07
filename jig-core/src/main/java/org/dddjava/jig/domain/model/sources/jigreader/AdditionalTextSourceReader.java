@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
+import org.dddjava.jig.domain.model.sources.jigfactory.ClassAndMethodComments;
+
 public class AdditionalTextSourceReader {
 
     KotlinTextSourceReader kotlinTextSourceReader;

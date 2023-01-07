@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.sources.jigreader;
 
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 
 /**
  * テキストソース読み取り機

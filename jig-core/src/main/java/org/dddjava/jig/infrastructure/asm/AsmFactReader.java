@@ -24,7 +24,7 @@ public class AsmFactReader implements FactReader {
 
     @Override
     public TypeFacts readTypeFacts(ClassSources classSources) {
-        return classSources.stream()
+        return classSources.list().stream()
                 .map(this::typeByteCode)
                 .flatMap(Optional::stream)
                 .collect(Collectors.collectingAndThen(Collectors.toList(), TypeFacts::new));

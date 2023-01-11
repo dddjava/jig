@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.sources.file.binary;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * バイナリソース
  */
@@ -25,11 +22,9 @@ public class BinarySource {
     }
 
     BinarySource merge(BinarySource other) {
-        List<ClassSource> list = new ArrayList<>(classSources.list());
-        list.addAll(other.classSources.list());
         return new BinarySource(
                 new BinarySourceLocation(),
-                new ClassSources(list));
+                classSources.merge(other.classSources));
     }
 
     public BinarySourceLocation sourceLocation() {

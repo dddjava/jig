@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.sources.file.binary;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,5 +25,11 @@ public class ClassSources {
 
     public boolean notFound() {
         return sources.isEmpty();
+    }
+
+    ClassSources merge(ClassSources other) {
+        List<ClassSource> list = new ArrayList<>(list());
+        list.addAll(other.list());
+        return new ClassSources(list);
     }
 }

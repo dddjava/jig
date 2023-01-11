@@ -10,8 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * 生ソース
  */
@@ -30,7 +28,7 @@ public class Sources {
     }
 
     public SqlSources sqlSources() {
-        URL[] urls = binarySources.list().stream()
+        URL[] classLocationUrls = binarySources.list().stream()
                 .map(binarySource -> {
                     try {
                         return binarySource.sourceLocation().uri().toURL();
@@ -39,12 +37,9 @@ public class Sources {
                     }
                 })
                 .toArray(URL[]::new);
-        List<String> classNames = binarySources.list().stream()
-                .flatMap(binarySource -> binarySource.classSources().list().stream())
-                .map(classSource -> classSource.className())
-                .filter(name -> name.endsWith("Mapper"))
-                .collect(toList());
-        return new SqlSources(urls, classNames);
+        List<String> mapperClassNames = binarySources.classNames(name -> name.endsWith("Mapper"));
+        // クラスのURLとクラス名を別のリストで渡しているけれど、クラスごとにURL明確なのでMapで渡したほうがよさそう
+        return new SqlSources(classLocationUrls, mapperClassNames);
     }
 
     public boolean nothingBinarySource() {

@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.sources.file.binary;
 
 import java.util.List;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * バイナリソース一覧
@@ -23,5 +26,13 @@ public class BinarySources {
 
     public boolean nothing() {
         return list.isEmpty();
+    }
+
+    public List<String> classNames(Predicate<String> nameMatcher) {
+        return list.stream()
+                .flatMap(binarySource -> binarySource.classSources().list().stream())
+                .map(classSource -> classSource.className())
+                .filter(nameMatcher)
+                .collect(toList());
     }
 }

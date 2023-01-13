@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * パッケージ関連図
- *
+ * <p>
  * 浅い階層は仕様記述、深い階層は実装に使用します。
  */
 public class PackageRelationDiagram implements DiagramSourceWriter {
@@ -63,29 +63,13 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         );
     }
 
-    public PackageDepth appliedDepth() {
-        return appliedDepth;
-    }
-
-    public boolean available() {
-        return packageDependencies().available();
-    }
-
-    public PackageDepth maxDepth() {
-        return packageIdentifiers.maxDepth();
-    }
-
-    public BidirectionalRelations bidirectionalRelations() {
-        return bidirectionalRelations;
-    }
-
     public DiagramSource dependencyDotText(JigDocumentContext jigDocumentContext) {
-        if (!available()) {
+        if (!packageDependencies().available()) {
             return DiagramSource.emptyUnit();
         }
 
         PackageRelations packageRelations = packageDependencies();
-        BidirectionalRelations bidirectionalRelations = bidirectionalRelations();
+        BidirectionalRelations bidirectionalRelations = this.bidirectionalRelations;
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         for (PackageRelation packageRelation : packageRelations.list()) {
@@ -153,13 +137,13 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(bidirectionalRelations.dotRelationText())
                 .add(stringJoiner.toString())
                 .toString();
-        PackageDepth packageDepth = appliedDepth();
+        PackageDepth packageDepth = appliedDepth;
 
         return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
     }
 
     private AdditionalText additionalText() {
-        if (bidirectionalRelations().none()) {
+        if (bidirectionalRelations.none()) {
             return AdditionalText.empty();
         }
         return new AdditionalText(bidirectionalRelationReasonText());
@@ -167,7 +151,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     private String bidirectionalRelationReasonText() {
         StringJoiner sj = new StringJoiner("\n");
-        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations().list()) {
+        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations.list()) {
             sj.add("# " + bidirectionalRelation.toString());
             for (ClassRelation classRelation : classRelations.list()) {
                 PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
@@ -181,7 +165,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        List<PackageDepth> depths = maxDepth().surfaceList();
+        List<PackageDepth> depths = packageIdentifiers.maxDepth().surfaceList();
 
         List<DiagramSource> diagramSources = depths.stream()
                 .map(this::applyDepth)

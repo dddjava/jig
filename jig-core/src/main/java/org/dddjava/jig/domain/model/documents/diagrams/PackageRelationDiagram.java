@@ -137,9 +137,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(bidirectionalRelations.dotRelationText())
                 .add(stringJoiner.toString())
                 .toString();
-        PackageDepth packageDepth = appliedDepth;
 
-        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + packageDepth.value()), text, additionalText());
+        return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText());
     }
 
     private AdditionalText additionalText() {

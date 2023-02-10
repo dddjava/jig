@@ -1,18 +1,18 @@
 [versions]
 poi = "5.2.3"
-spring = "5.3.24"
-spring-boot = "2.7.7"
+spring = "5.3.25"
+spring-boot = "2.7.8"
 
 [libraries]
-slf4j-api = "org.slf4j:slf4j-api:1.7.36"
-log4j-to-slf4j = "org.apache.logging.log4j:log4j-to-slf4j:2.17.2"
-logback-classic = "ch.qos.logback:logback-classic:1.4.4"
+slf4j-api = "org.slf4j:slf4j-api:2.0.6"
+log4j-to-slf4j = "org.apache.logging.log4j:log4j-to-slf4j:2.19.0"
+logback-classic = "ch.qos.logback:logback-classic:1.4.5"
 
 asm = "org.ow2.asm:asm:9.4"
-javaparser = "com.github.javaparser:javaparser-core:3.24.7"
+javaparser = "com.github.javaparser:javaparser-core:3.25.0"
 mybatis = "org.mybatis:mybatis:3.5.11"
 
-thymeleaf = "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
+thymeleaf = "org.thymeleaf:thymeleaf:3.1.1.RELEASE"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }
@@ -23,9 +23,9 @@ spring-context = { module = "org.springframework:spring-context", version.ref = 
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-junit = "org.junit.jupiter:junit-jupiter:5.8.2"
-mockito = "org.mockito:mockito-core:4.5.1"
-assertj = "org.assertj:assertj-core:3.23.1"
+junit = "org.junit.jupiter:junit-jupiter:5.9.2"
+mockito = "org.mockito:mockito-core:5.1.1"
+assertj = "org.assertj:assertj-core:3.24.2"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 
 [bundles]

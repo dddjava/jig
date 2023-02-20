@@ -162,6 +162,9 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         return sj.toString();
     }
 
+    /**
+     * TODO 浅 -> 深の順で並べる
+     */
     @Override
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
         List<PackageDepth> depths = packageIdentifiers.maxDepth().surfaceList();

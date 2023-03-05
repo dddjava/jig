@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@hpcc-js/wasm": "^2.8.0",
+    "marked": "^4.2.12"
+  }
+}

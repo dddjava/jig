@@ -27,7 +27,7 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 junit = "org.junit.jupiter:junit-jupiter:5.9.2"
 mockito = "org.mockito:mockito-core:5.2.0"
 assertj = "org.assertj:assertj-core:3.24.2"
-spock = "org.spockframework:spock-core:2.3-groovy-3.0"
+spock = "org.spockframework:spock-core:2.3-groovy-4.0"
 
 [bundles]
 poi = ['poi', 'poi-ooxml']

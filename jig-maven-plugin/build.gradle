@@ -1,12 +1,19 @@
 plugins {
     id 'jig.java-conventions'
     id 'jig.ossrh-conventions'
+    id 'java-library'
+}
+
+java {
+    registerFeature('optional') {
+        usingSourceSet(sourceSets.main)
+    }
 }
 
 dependencies {
-    implementation project(':jig-core')
-    implementation 'org.apache.maven:maven-plugin-api:3.9.0'
-    implementation 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.7.1'
+    api project(':jig-core')
+    compileOnly 'org.apache.maven:maven-plugin-api:3.9.0'
+    compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.8.1'
 }
 
 ossrh {

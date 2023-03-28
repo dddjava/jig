@@ -13,6 +13,7 @@ public enum JigDocumentType {
      * 一覧
      */
     LIST,
+    TABLE,
 
     /**
      * 図

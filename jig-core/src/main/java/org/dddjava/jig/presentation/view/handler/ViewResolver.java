@@ -8,6 +8,7 @@ import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.IndexView;
 import org.dddjava.jig.presentation.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.presentation.view.html.SummaryView;
+import org.dddjava.jig.presentation.view.html.TableView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -50,6 +51,8 @@ public class ViewResolver {
                 return new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
             case SUMMARY:
                 return new SummaryView(templateEngine, jigDocumentContext);
+            case TABLE:
+                return new TableView(templateEngine, jigDocumentContext);
         }
 
         throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);

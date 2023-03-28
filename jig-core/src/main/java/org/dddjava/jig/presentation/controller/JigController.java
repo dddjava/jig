@@ -173,6 +173,8 @@ public class JigController {
                 return enumListHtml();
             case SchemaSummary:
                 return schemaHtml();
+            case TermTable:
+                return businessRuleService.terms();
             case TermList:
                 return termList();
         }

@@ -62,11 +62,15 @@ section.schema .component {
     padding: 1em;
 }
 
+.treeMenuAndMain main table {
+    width: 80%;
+}
+
 main table {
     border-collapse: collapse;
-    width: 80%;
     margin-bottom: 0.5em;
 }
+
 main table tr > * {
     border: #000 solid 1px;
     padding-left: 0.5em;
@@ -127,4 +131,14 @@ main table thead.enum {
 .weak {
     font-size: 0.9em;
     color: gray;
+}
+
+.terms .identifier {
+    text-overflow: clip;
+    overflow: scroll;
+    white-space: nowrap;
+    max-width: 20em
+}
+.terms .term, .terms .kind {
+    white-space: nowrap;
 }

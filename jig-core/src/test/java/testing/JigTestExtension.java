@@ -31,10 +31,15 @@ public class JigTestExtension implements ParameterResolver {
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        if (parameterContext.getParameter().getType() == Configuration.class) return true;
-        if (parameterContext.getParameter().getType() == Sources.class) return true;
+        Class<?> parameterType = parameterContext.getParameter().getType();
+        if (parameterType == Configuration.class
+                || parameterType == Sources.class
+                || parameterType == SourcePaths.class) {
+            return true;
+        }
+
         for (Field field : Configuration.class.getDeclaredFields()) {
-            if (field.getType() == parameterContext.getParameter().getType()) {
+            if (field.getType() == parameterType) {
                 return true;
             }
         }
@@ -43,11 +48,13 @@ public class JigTestExtension implements ParameterResolver {
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        if (parameterContext.getParameter().getType() == Configuration.class) return configuration;
-        if (parameterContext.getParameter().getType() == Sources.class) return getTestRawSource();
+        Class<?> parameterType = parameterContext.getParameter().getType();
+        if (parameterType == Configuration.class) return configuration;
+        if (parameterType == Sources.class) return getTestRawSource();
+        if (parameterType == SourcePaths.class) return getRawSourceLocations();
 
         for (Field field : Configuration.class.getDeclaredFields()) {
-            if (field.getType() == parameterContext.getParameter().getType()) {
+            if (field.getType() == parameterType) {
                 try {
                     field.setAccessible(true);
                     return field.get(configuration);

@@ -6,18 +6,21 @@ import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatuses;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.presentation.view.handler.HandleResult;
+import org.dddjava.jig.presentation.view.handler.HandleResults;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 public class JigExecutor {
     static Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
     public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
+        return executeInternal(configuration, sourcePaths).toList();
+    }
 
+    static HandleResults executeInternal(Configuration configuration, SourcePaths sourcePaths) {
         JigSourceReadService jigSourceReadService = configuration.implementationService();
         JigDocumentHandlers jigDocumentHandlers = configuration.documentHandlers();
 
@@ -26,7 +29,7 @@ public class JigExecutor {
             for (ReadStatus readStatus : status.listErrors()) {
                 logger.error("{}", readStatus.localizedMessage());
             }
-            return Collections.emptyList();
+            return HandleResults.empty();
         }
         if (status.hasWarning()) {
             for (ReadStatus readStatus : status.listWarning()) {

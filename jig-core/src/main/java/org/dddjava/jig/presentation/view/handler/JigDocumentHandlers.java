@@ -36,7 +36,7 @@ public class JigDocumentHandlers {
         this.outputDirectory = outputDirectory;
     }
 
-    public List<HandleResult> handleJigDocuments() {
+    public HandleResults handleJigDocuments() {
         long startTime = System.currentTimeMillis();
         logger.info("[JIG] write jig documents: {}", jigDocuments);
 
@@ -49,7 +49,7 @@ public class JigDocumentHandlers {
         writeIndexHtml(outputDirectory, handleResultList);
         long takenTime = System.currentTimeMillis() - startTime;
         logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
-        return handleResultList;
+        return new HandleResults(handleResultList);
     }
 
     private void prepareOutputDirectory() {

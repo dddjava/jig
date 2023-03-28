@@ -29,6 +29,12 @@ public class HandleResult {
         this(jigDocument, Collections.emptyList(), failureMessage);
     }
 
+    boolean failure() {
+        return !success()
+                // 現状、skipかどうかはfailureMessageで見るしかない
+                && !failureMessage.equals("skip");
+    }
+
     public String outputFilePathsText() {
         return outputFilePaths.stream()
                 .map(Path::toAbsolutePath)
@@ -50,5 +56,13 @@ public class HandleResult {
                 .map(Path::getFileName)
                 .map(Path::toString)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString() {
+        if (success()) {
+            return String.format("%s: %s", jigDocument(), outputFileNames());
+        }
+        return String.format("%s: %s", jigDocument(), failureMessage);
     }
 }

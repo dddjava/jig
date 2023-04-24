@@ -12,7 +12,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version = { stric
 thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.0.15.RELEASE" } }
 
 asm = "org.ow2.asm:asm:9.5"
-javaparser = "com.github.javaparser:javaparser-core:3.25.1"
+javaparser = "com.github.javaparser:javaparser-core:3.25.2"
 mybatis = "org.mybatis:mybatis:3.5.13"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
@@ -25,7 +25,7 @@ spring-web = { module = "org.springframework:spring-web", version.ref = "spring"
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
 junit = "org.junit.jupiter:junit-jupiter:5.9.2"
-mockito = "org.mockito:mockito-core:5.2.0"
+mockito = "org.mockito:mockito-core:5.3.0"
 assertj = "org.assertj:assertj-core:3.24.2"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 
@@ -33,5 +33,5 @@ spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 poi = ['poi', 'poi-ooxml']
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.8.10" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.8.20" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }

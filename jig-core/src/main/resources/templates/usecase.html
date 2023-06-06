@@ -1,0 +1,74 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.min.js"></script>
+    <link rel="icon" href="./assets/favicon.ico">
+    <title th:text="${title}">application</title>
+</head>
+<body class="treeMenuAndMain">
+
+<nav class="tree" th:replace="fragment-nav :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+    パッケージツリーに置換
+</nav>
+
+<main class="usecase">
+    <h1 th:text="${title}">ユースケース概要</h1>
+
+    <details open>
+        <summary>ユースケース複合図（ハンドラ）</summary>
+        <a href="./composite-usecase-handler.svg">
+            <img src="./composite-usecase-handler.svg">
+        </a>
+    </details>
+    <details>
+        <summary>ユースケース複合図</summary>
+        <a href="./composite-usecase.svg">
+            <img src="./composite-usecase.svg">
+        </a>
+    </details>
+
+    <!--
+    <th:block th:each="item : ${jigPackages}">
+        <section th:replace="fragment-package :: item">
+            パッケージ表示
+        </section>
+    </th:block>
+    -->
+
+    <th:block th:each="item : ${jigTypes}">
+        <section class="type">
+            <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+            <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
+
+            <th:block th:with="description=${item.description()}">
+                <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスの **Javadoc** コメント</section>
+            </th:block>
+
+            <section class="method" th:each="method : ${item.instanceMethods().listRemarkable()}">
+                <h3 th:text="${method.labelText()}">XXXメソッド</h3>
+                <div class="fully-qualified-name" th:text="${method.declaration().asSignatureAndReturnTypeSimpleText()}">availableRoomList(OffsetDateTime):List</div>
+                <dl class="depends" th:with="methodReturn=${method.declaration().methodReturn()}">
+                    <dt th:unless="${method.listArguments().isEmpty()}">要求するもの（引数）</dt>
+                    <dd th:each="arg : ${method.listArguments()}">
+                        <a class="method-argument-item" th:href="${'./domain.html#' + arg.fullQualifiedName()}"
+                           th:text="${#jig.labelText(arg)}">xxx</a>
+                    </dd>
+                    <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
+                    <dd th:unless="${methodReturn.isVoid()}">
+                        <a th:href="${'./domain.html#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
+                           th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
+                            yyy
+                        </a>
+                    </dd>
+                </dl>
+
+                <section class="description markdown" th:utext="${method.description().content()}">メソッドの **Javadoc** コメント</section>
+            </section>
+        </section>
+    </th:block>
+</main>
+
+<script src="./assets/jig.js"></script>
+</body>
+</html>

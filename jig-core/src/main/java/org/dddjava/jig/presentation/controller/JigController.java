@@ -168,6 +168,7 @@ public class JigController {
             case DomainSummary:
                 return domainListHtml();
             case ApplicationSummary:
+            case UsecaseSummary:
                 return applicationSummary();
             case EnumSummary:
                 return enumListHtml();

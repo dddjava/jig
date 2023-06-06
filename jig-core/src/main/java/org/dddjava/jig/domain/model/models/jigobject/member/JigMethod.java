@@ -99,9 +99,15 @@ public class JigMethod {
         return JigMethodDescription.from(methodComment.documentationComment());
     }
 
+    /**
+     * 出力時に使用する名称
+     */
     public String labelTextWithSymbol() {
-        String name = methodComment.asTextOrDefault(declaration().methodSignature().methodName());
-        return visibility.symbol() + ' ' + name;
+        return visibility.symbol() + ' ' + labelText();
+    }
+
+    public String labelText() {
+        return methodComment.asTextOrDefault(declaration().methodSignature().methodName());
     }
 
     public List<TypeIdentifier> listArguments() {
@@ -120,6 +126,12 @@ public class JigMethod {
         return methodComment.exists();
     }
 
+    /**
+     * 注目に値するかの判定
+     *
+     * publicもしくはドキュメントコメントが記述されているものを「注目に値する」と識別する。
+     * privateでもドキュメントコメントが書かれているものは注目する。
+     */
     public boolean remarkable() {
         return visibility == Visibility.PUBLIC || documented();
     }

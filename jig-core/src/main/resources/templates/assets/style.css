@@ -37,7 +37,7 @@ body {
     margin-left: 30px;
 }
 
-section.package > h2, section.type> h2 {
+section.package > h2, section.type > h2, section.type {
     margin-bottom: 0px;
 }
 section.package, section.type {
@@ -125,6 +125,17 @@ main table thead.enum {
 }
 .index > main > section h3 {
     border-bottom:solid 1px #999;
+}
+
+/* ユースケース概要 */
+.usecase .depends {
+    background-color: #ddd;
+}
+.usecase h3 {
+    margin-bottom: 0px;
+}
+.usecase .method > :not(:first-child) {
+    margin-left: 2em;
 }
 
 /* 一般 */

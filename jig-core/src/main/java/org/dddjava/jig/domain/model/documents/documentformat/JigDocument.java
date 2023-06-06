@@ -123,6 +123,12 @@ public enum JigDocument {
     ApplicationSummary(
             JigDocumentLabel.of("アプリケーション概要", "application"),
             "application", JigDocumentType.SUMMARY),
+    /**
+     * ユースケース概要
+     */
+    UsecaseSummary(
+            JigDocumentLabel.of("ユースケース概要", "usecase"),
+            "usecase", JigDocumentType.SUMMARY),
 
     /**
      * 区分概要

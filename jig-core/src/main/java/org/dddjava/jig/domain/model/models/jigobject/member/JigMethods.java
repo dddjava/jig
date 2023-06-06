@@ -25,6 +25,12 @@ public class JigMethods {
         return list.stream().map(JigMethod::declaration).collect(MethodDeclarations.collector());
     }
 
+    /**
+     * 注目に値するメソッド一覧
+     *
+     * 「注目に値する」メソッドを可視性順で並べたもの。
+     * 主に概要での出力に使用する。
+     */
     public List<JigMethod> listRemarkable() {
         return list.stream()
                 .filter(JigMethod::remarkable)

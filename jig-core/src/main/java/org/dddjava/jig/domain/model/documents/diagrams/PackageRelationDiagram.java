@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * パッケージ関連図
- * <p>
+ *
  * 浅い階層は仕様記述、深い階層は実装に使用します。
  */
 public class PackageRelationDiagram implements DiagramSourceWriter {

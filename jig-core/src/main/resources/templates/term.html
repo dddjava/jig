@@ -7,25 +7,36 @@
     <title th:text="${title}">term</title>
 </head>
 <body class="table">
-<main>
+<main class="terms">
     <h1 th:text="${title}">用語集</h1>
 
-    <table class="terms">
+    <div>
+        表示切り替え:
+        <button onclick="toggleTableColumn('termTable', 0)">用語（物理名）</button>
+        <button onclick="toggleTableColumn('termTable', 3)">種類</button>
+        <button onclick="toggleTableColumn('termTable', 4)">識別子</button>
+    </div>
+    <div>
+        <label for="filterText">フィルタ: </label><input type="text" id="filterText" placeholder="部分一致" size="50">
+        <button onclick="filterTable('termTable', 'filterText')">実行</button>
+    </div>
+
+    <table id="termTable">
         <thead>
         <tr>
-            <th>用語</th>
-            <th>用語（別名）</th>
-            <th>種類</th>
+            <th onclick="sortTable('termTable', 0)">用語（物理名）</th>
+            <th onclick="sortTable('termTable', 1)">用語</th>
             <th>説明</th>
-            <th>識別子</th>
+            <th onclick="sortTable('termTable', 3)">種類</th>
+            <th onclick="sortTable('termTable', 4)">識別子</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="term : ${terms.list()}">
             <td th:text="${term.identifier.simpleText()}" class="term">ClassName</td>
             <td th:text="${term.title()}" class="term">用語の和名が表示されます</td>
-            <td th:text="${term.termKind()}" class="kind">クラス</td>
             <td th:utext="${term.description()}" class="markdown">ここには **マークダウン** での説明が記述されます。</td>
+            <td th:text="${term.termKind()}" class="kind">クラス</td>
             <td th:text="${term.identifier.asText()}" class="identifier">this.is.full.ClassName</td>
         </tr>
         </tbody>

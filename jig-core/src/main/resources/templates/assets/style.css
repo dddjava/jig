@@ -144,12 +144,16 @@ main table thead.enum {
     color: gray;
 }
 
+/* 用語集 */
 .terms .identifier {
     text-overflow: clip;
     overflow: scroll;
     white-space: nowrap;
-    max-width: 20em
 }
 .terms .term, .terms .kind {
     white-space: nowrap;
+}
+
+.terms #termTable .hidden {
+    display: none;
 }

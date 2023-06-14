@@ -89,10 +89,6 @@ public class JigController {
         return SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
     }
 
-    public SummaryModel schemaHtml() {
-        return SummaryModel.from(businessRuleService.businessRules());
-    }
-
     public ModelReports domainList() {
         MethodSmellList angles = businessRuleService.methodSmells();
         JigTypes jigTypes = businessRuleService.jigTypes();
@@ -172,8 +168,6 @@ public class JigController {
                 return applicationSummary();
             case EnumSummary:
                 return enumListHtml();
-            case SchemaSummary:
-                return schemaHtml();
             case TermTable:
                 return businessRuleService.terms();
             case TermList:

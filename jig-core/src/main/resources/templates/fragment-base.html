@@ -1,15 +1,17 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="head(title)">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
-    <title>共通</title>
+    <link rel="icon" href="./assets/favicon.ico">
+    <title th:text="${title}">共通</title>
 </head>
 <body>
+<header class="top" th:fragment="header(title)">
+    <a href="./index.html">[HOME]</a>
+    <b th:text="${title}">たいとる</b>
+</header>
 
 <nav class="tree" th:fragment="tree-navigation(node)">
-    <div>
-        <a href="./index.html">=> INDEX</a>
-    </div>
     <details th:fragment="tree-composite(node)" open>
         <summary class="package">
             <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
@@ -24,5 +26,11 @@
 <nav class="tree">
     <th:block th:fragment="tree-leaf(node)"><a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a><br></th:block>
 </nav>
+
+<th:block th:fragment="scripts">
+<script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
+<script src="./assets/jig.js"></script>
+</th:block>
 </body>
 </html>

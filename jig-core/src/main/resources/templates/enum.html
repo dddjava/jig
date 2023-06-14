@@ -1,66 +1,74 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="fragment-base::head(${title})">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
-    <script src="./assets/marked.min.js"></script>
-    <link rel="icon" href="./assets/favicon.ico">
-    <title th:text="${title}">enum</title>
+    <title>enum</title>
 </head>
-<body class="treeMenuAndMain">
+<body>
+<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+<div class="treeAndMain">
+    <nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+        パッケージツリーに置換
+    </nav>
 
-<nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
-    パッケージツリーに置換
-</nav>
+    <main>
+        <section class="type" th:each="item : ${jigTypes}">
+            <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+            <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
-<main>
-    <h1 th:text="${title}">enum概要</h1>
+            <th:block th:with="description=${item.description()}">
+                <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
+                    クラスのJavadocコメントが表示されます
+                </section>
+            </th:block>
 
-    <section class="type" th:each="item : ${jigTypes}">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
-        <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
+            <table th:if="${categoriesMap.containsKey(item.identifier())}"
+                   th:with="category=${categoriesMap.get(item.identifier())}, enumModel=${enumModels.select(item.identifier())}">
+                <thead class="enum">
+                <tr>
+                    <th>列挙定数名</th>
+                    <th th:each="name : ${enumModel.constructorArgumentNames()}" th:text="${name}">パラメータ</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="value : ${category.values().list()}"
+                    th:with="params=${enumModel.paramOf(value.nameText())}">
+                    <td class="method-name" th:text="${value.nameText()}">xxx</td>
+                    <td th:each="param: ${params}" th:text="${param}">xxx</td>
+                </tr>
+            </table>
 
-        <th:block th:with="description=${item.description()}">
-            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
-        </th:block>
+            <table th:unless="${item.instanceFields().empty()}">
+                <thead class="enum">
+                <tr>
+                    <th width="20%">フィールド</th>
+                    <th>フィールド型</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="field: ${item.instanceFields().list()}" th:with="it=${field.typeIdentifier()}">
+                    <td th:text="${field.nameText()}">xxx</td>
+                    <td th:switch="${#jig.fieldLinkType(it)}">
+                        <span th:case="none" class="weak" th:text="${it.fullQualifiedName()}">long</span>
+                        <a th:case="*" th:href="${'./domain.html#' + it.fullQualifiedName()}"
+                           th:text="${#jig.labelText(it)}">xxx</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-        <table th:if="${categoriesMap.containsKey(item.identifier())}"
-               th:with="category=${categoriesMap.get(item.identifier())}, enumModel=${enumModels.select(item.identifier())}">
-            <thead class="enum">
-            <tr>
-                <th>列挙定数名</th>
-                <th th:each="name : ${enumModel.constructorArgumentNames()}" th:text="${name}">パラメータ</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="value : ${category.values().list()}" th:with="params=${enumModel.paramOf(value.nameText())}">
-                <td class="method-name" th:text="${value.nameText()}">xxx</td>
-                <td th:each="param: ${params}" th:text="${param}">xxx</td>
-            </tr>
-        </table>
+            <th:block
+                    th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
+                メソッドテーブル
+            </th:block>
+            <th:block
+                    th:replace="fragment-method :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">
+                メソッドテーブル
+            </th:block>
+        </section>
+    </main>
+</div>
 
-        <table th:unless="${item.instanceFields().empty()}">
-            <thead class="enum">
-            <tr>
-                <th width="20%">フィールド</th>
-                <th>フィールド型</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="field: ${item.instanceFields().list()}" th:with="it=${field.typeIdentifier()}">
-                <td th:text="${field.nameText()}">xxx</td>
-                <td th:switch="${#jig.fieldLinkType(it)}">
-                    <span th:case="none" class="weak" th:text="${it.fullQualifiedName()}">long</span>
-                    <a th:case="*" th:href="${'./domain.html#' + it.fullQualifiedName()}" th:text="${#jig.labelText(it)}">xxx</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <th:block th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">メソッドテーブル</th:block>
-        <th:block th:replace="fragment-method :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">メソッドテーブル</th:block>
-    </section>
-</main>
-
-<script src="./assets/jig.js"></script>
+<th:block th:replace="fragment-base::scripts"></th:block>
 </body>
 </html>

@@ -1,3 +1,23 @@
+body {
+    margin: 0;
+}
+main {
+    margin: 0 1em;
+}
+
+header.top {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2em;
+    background-color: #243D1E;
+    color: #FFF;
+}
+header a {
+    color: #FFF;
+    font-size: 0.8em;
+}
+
 a {
     color: #000;
     text-decoration-line: none;
@@ -6,34 +26,31 @@ a:hover {
     text-decoration-line: underline;
 }
 
-body {
-    margin: 0 8px;
-}
-
-.treeMenuAndMain {
+.treeAndMain {
     display: flex;
     flex-wrap: nowrap;
 }
-.treeMenuAndMain > nav, .treeMenuAndMain > main {
-    height: 100%;
+.treeAndMain > nav, .treeAndMain > main {
+    height: 100vh;
     overflow: auto;
 }
-.treeMenuAndMain > main {
-    width: 80%;
+.treeAndMain > main {
     flex-grow: 1;
 }
-.tree {
+
+nav.tree {
+    margin: 0 0 0 1em;
     width: 20%;
     resize: horizontal;
 
     font-size: 0.8em;
     border-right: dashed 1px;
 }
-.tree a, .tree summary {
+nav.tree a, nav.tree summary {
     word-break: keep-all;
     white-space: nowrap;
 }
-.tree details > div {
+nav.tree details > div {
     margin-left: 30px;
 }
 
@@ -62,7 +79,7 @@ section.schema .component {
     padding: 1em;
 }
 
-.treeMenuAndMain main table {
+.treeAndMain main table {
     width: 80%;
 }
 

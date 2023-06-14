@@ -1,15 +1,13 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="fragment-base::head(${title})">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
-    <script src="./assets/marked.min.js"></script>
     <link rel="icon" href="./assets/favicon.ico">
-    <title th:text="${title}">term</title>
+    <title>term</title>
 </head>
-<body class="table">
+<body>
+<header class="top" th:replace="fragment-base::header(title=${title})"></header>
 <main class="terms">
-    <h1 th:text="${title}">用語集</h1>
-
     <div>
         表示切り替え:
         <button onclick="toggleTableColumn('termTable', 0)">用語（物理名）</button>
@@ -43,5 +41,6 @@
     </table>
 </main>
 
-<script src="./assets/jig.js"></script>
+<th:block th:replace="fragment-base::scripts"></th:block>
 </body>
+</html>

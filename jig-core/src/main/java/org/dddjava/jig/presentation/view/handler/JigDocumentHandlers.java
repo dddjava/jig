@@ -102,7 +102,6 @@ public class JigDocumentHandlers {
     private void copyAssets(Path outputDirectory) {
         Path assetsDirectory = createAssetsDirectory(outputDirectory);
         copyAsset("style.css", assetsDirectory);
-        copyAsset("marked.min.js", assetsDirectory);
         copyAsset("jig.js", assetsDirectory);
         copyAsset("favicon.ico", assetsDirectory);
     }

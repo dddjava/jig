@@ -53,6 +53,9 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 if (isolatedTypes.contains(businessRule.typeIdentifier())) {
                     node.warning();
                 }
+                if (businessRule.isDeprecated()) {
+                    node.deprecated();
+                }
                 subgraph.add(node.asText());
             }
 

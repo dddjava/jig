@@ -39,4 +39,8 @@ public class BusinessRule {
     public boolean markedCore() {
         return jigType.markedCore();
     }
+
+    public boolean isDeprecated() {
+        return jigType.hasAnnotation(TypeIdentifier.of(Deprecated.class));
+    }
 }

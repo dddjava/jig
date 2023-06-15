@@ -116,4 +116,8 @@ public class Node {
     public boolean identifierMatches(Predicate<String> predicate) {
         return predicate.test(identifier);
     }
+
+    public void deprecated() {
+        fillColor("gray");
+    }
 }

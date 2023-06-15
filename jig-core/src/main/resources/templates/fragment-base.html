@@ -7,30 +7,26 @@
 </head>
 <body>
 <header class="top" th:fragment="header(title)">
-    <a href="./index.html">[HOME]</a>
+    <a href="./index.html">[INDEX]</a>
     <b th:text="${title}">たいとる</b>
 </header>
 
-<nav class="tree" th:fragment="tree-navigation(node)">
-    <details th:fragment="tree-composite(node)" open>
-        <summary class="package">
-            <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
-        </summary>
-        <div>
-            <th:block th:each="child : ${node.expandChildren()}"><b
-                    th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
-        </div>
-    </details>
-</nav>
-
-<nav class="tree">
-    <th:block th:fragment="tree-leaf(node)"><a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a><br></th:block>
-</nav>
+<div class="sideNavMain">
+    <nav class="tree" th:fragment="tree-navigation(node)" th:remove="all-but-first">
+        <details th:fragment="tree-composite(node)" open>
+            <summary class="package">
+                <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
+            </summary>
+            <th:block th:each="child : ${node.expandChildren()}"><b th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
+        </details>
+        <div th:fragment="tree-leaf(node)"><a href="#" th:href="${node.href()}" th:text="${node.name()}">クラス名</a></div>
+    </nav>
+</div>
 
 <th:block th:fragment="scripts">
-<script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
-<script src="./assets/jig.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.3/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
 </th:block>
 </body>
 </html>

@@ -1,8 +1,17 @@
 body {
     margin: 0;
+    height: 100vh;
 }
-main {
-    margin: 0 1em;
+main, nav {
+    padding: 0 1em;
+}
+
+a {
+    color: #000;
+    text-decoration-line: none;
+}
+a:hover {
+    text-decoration-line: underline;
 }
 
 header.top {
@@ -18,40 +27,68 @@ header a {
     font-size: 0.8em;
 }
 
-a {
-    color: #000;
-    text-decoration-line: none;
+/* 一般 */
+.weak {
+    font-size: 0.9em;
+    color: gray;
 }
-a:hover {
-    text-decoration-line: underline;
+.fully-qualified-name {
+    font-size: 0.8em;
+    color: silver;
 }
 
-.treeAndMain {
+/* メインコンテンツ */
+/* テーブル */
+main table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 0.5em;
+}
+main table tr > * {
+    border: #000 solid 1px;
+    padding-left: 0.5em;
+    text-align: left;
+}
+main table thead {
+    color: #FFF;
+    background-color: #465DAA;
+}
+
+/* markdown */
+.markdown {
+    margin: 0.5em;
+}
+.markdown table thead {
+    color: #000;
+    background-color: #CCC;
+}
+
+/* サイドナビのあるコンテナ */
+.sideNavMain {
     display: flex;
     flex-wrap: nowrap;
 }
-.treeAndMain > nav, .treeAndMain > main {
-    height: 100vh;
+.sideNavMain > nav, .sideNavMain > main {
+    height: calc(100vh - 3em);
     overflow: auto;
 }
-.treeAndMain > main {
+.sideNavMain > nav {
+    resize: horizontal;
+    background-color: #EEE;
+    font-size: 0.8em;
+    border-right: solid 1px #AAA;
+}
+.sideNavMain > main {
     flex-grow: 1;
 }
 
-nav.tree {
-    margin: 0 0 0 1em;
-    width: 20%;
-    resize: horizontal;
-
-    font-size: 0.8em;
-    border-right: dashed 1px;
-}
-nav.tree a, nav.tree summary {
+/* ナビのツリー  */
+.sideNavMain > nav.tree a, .sideNavMain > nav.tree summary {
     word-break: keep-all;
     white-space: nowrap;
 }
-nav.tree details > div {
-    margin-left: 30px;
+.sideNavMain > nav.tree details > div {
+    margin-left: 1.5em;
 }
 
 section.package > h2, section.type > h2, section.type {
@@ -62,41 +99,7 @@ section.package, section.type {
     padding-left: 1em;
     padding-bottom: 1em;
 }
-section.markdown {
-    margin: 0.5em;
-}
-section.markdown table thead {
-    color: #000;
-    background-color: #CCC;
-}
-section.type table caption {
-    caption-side: top;
-    text-align: left;
-}
 
-section.schema .component {
-    border: #000 solid 1px;
-    padding: 1em;
-}
-
-.treeAndMain main table {
-    width: 80%;
-}
-
-main table {
-    border-collapse: collapse;
-    margin-bottom: 0.5em;
-}
-
-main table tr > * {
-    border: #000 solid 1px;
-    padding-left: 0.5em;
-    text-align: left;
-}
-main table thead {
-    color: #FFF;
-    background-color: #465DAA;
-}
 .method-name {
     white-space: nowrap;
 }
@@ -104,7 +107,7 @@ main table thead {
     display: block;
 }
 
-main table thead.enum {
+main table.fields thead {
     color: #FFF;
     background-color: #009900;
 }
@@ -113,11 +116,7 @@ main table thead.enum {
     white-space: nowrap;
 }
 
-.fully-qualified-name {
-    font-size: 0.8em;
-    color: silver;
-}
-
+/* index */
 .index > header {
     border-bottom:solid 2px #000;
 }
@@ -153,12 +152,6 @@ main table thead.enum {
 }
 .usecase .method > :not(:first-child) {
     margin-left: 2em;
-}
-
-/* 一般 */
-.weak {
-    font-size: 0.9em;
-    color: gray;
 }
 
 /* 用語集 */

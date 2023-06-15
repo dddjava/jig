@@ -6,7 +6,7 @@
 </head>
 <body>
 <header class="top" th:replace="fragment-base::header(title=${title})"></header>
-<div class="treeAndMain">
+<div class="sideNavMain">
     <nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
         パッケージツリーに置換
     </nav>
@@ -22,9 +22,9 @@
                 </section>
             </th:block>
 
-            <table th:if="${categoriesMap.containsKey(item.identifier())}"
+            <table class="fields" th:if="${categoriesMap.containsKey(item.identifier())}"
                    th:with="category=${categoriesMap.get(item.identifier())}, enumModel=${enumModels.select(item.identifier())}">
-                <thead class="enum">
+                <thead>
                 <tr>
                     <th>列挙定数名</th>
                     <th th:each="name : ${enumModel.constructorArgumentNames()}" th:text="${name}">パラメータ</th>
@@ -58,11 +58,11 @@
             </table>
 
             <th:block
-                    th:replace="fragment-method :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
+                    th:replace="fragment-type :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
                 メソッドテーブル
             </th:block>
             <th:block
-                    th:replace="fragment-method :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">
+                    th:replace="fragment-type :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">
                 メソッドテーブル
             </th:block>
         </section>

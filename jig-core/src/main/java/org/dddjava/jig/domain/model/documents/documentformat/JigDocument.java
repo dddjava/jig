@@ -104,13 +104,6 @@ public enum JigDocument {
             "architecture", JigDocumentType.DIAGRAM),
 
     /**
-     * コンポーネント関連図
-     */
-    ComponentRelationDiagram(
-            JigDocumentLabel.of("コンポーネント関連図", "ComponentRelationDiagram"),
-            "component-relation", JigDocumentType.DIAGRAM),
-
-    /**
      * ドメイン概要
      */
     DomainSummary(

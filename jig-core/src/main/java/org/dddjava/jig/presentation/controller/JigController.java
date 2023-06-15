@@ -68,10 +68,6 @@ public class JigController {
         return applicationService.architectureDiagram();
     }
 
-    public ComponentRelationDiagram componentRelation() {
-        return applicationService.componentRelationDiagram();
-    }
-
     public CompositeUsecaseDiagram useCaseDiagram() {
         return new CompositeUsecaseDiagram(applicationService.serviceAngles());
     }
@@ -159,8 +155,6 @@ public class JigController {
                 return useCaseDiagram();
             case ArchitectureDiagram:
                 return architecture();
-            case ComponentRelationDiagram:
-                return componentRelation();
             case DomainSummary:
                 return domainListHtml();
             case ApplicationSummary:

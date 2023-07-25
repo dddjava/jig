@@ -12,7 +12,7 @@ java {
 
 dependencies {
     api project(':jig-core')
-    compileOnly 'org.apache.maven:maven-plugin-api:3.9.2'
+    compileOnly 'org.apache.maven:maven-plugin-api:3.9.3'
     compileOnly 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.9.0'
 }
 

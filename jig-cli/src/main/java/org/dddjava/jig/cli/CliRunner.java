@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 @Component
 public class CliRunner {
-    private static Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final CliConfig cliConfig;
 

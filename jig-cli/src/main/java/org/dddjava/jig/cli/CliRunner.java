@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
  * JIG-CLI Runner
  */
 @Component
-public class CliRunner {
+class CliRunner {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final CliConfig cliConfig;
 
-    public CliRunner(CliConfig cliConfig) {
+    CliRunner(CliConfig cliConfig) {
         this.cliConfig = cliConfig;
     }
 

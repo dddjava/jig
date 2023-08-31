@@ -25,7 +25,7 @@ spring-web = { module = "org.springframework:spring-web", version.ref = "spring"
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.0"
-mockito = "org.mockito:mockito-core:5.4.0"
+mockito = "org.mockito:mockito-core:5.5.0"
 assertj = "org.assertj:assertj-core:3.24.2"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 
@@ -33,5 +33,5 @@ spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 poi = ['poi', 'poi-ooxml']
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.0" }
-gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.0" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.10" }
+gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.2.1" }

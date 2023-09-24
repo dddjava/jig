@@ -32,4 +32,8 @@ public class FieldType {
     public TypeIdentifier nonGenericTypeIdentifier() {
         return parameterizedType.typeIdentifier();
     }
+
+    public ParameterizedType parameterizedType() {
+        return parameterizedType;
+    }
 }

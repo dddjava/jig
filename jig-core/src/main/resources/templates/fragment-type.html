@@ -66,11 +66,7 @@
                         <a class="method-argument-item" th:each="arg : ${method.listArguments()}"
                            th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
                     </td>
-                    <td>
-                        <a th:href="${'#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                           th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                        </a>
-                    </td>
+                    <td th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</td>
                     <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
                 </tr>
             </table>

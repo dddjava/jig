@@ -2,8 +2,9 @@ package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldType;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeParameters;
 
@@ -29,11 +30,18 @@ class JigExpressionObject {
         return "other";
     }
 
+    public String methodReturnRawText(MethodReturn methodReturn) {
+        return parameterizedTypeLinkText(methodReturn.parameterizedType());
+    }
+
     public String fieldRawText(FieldDeclaration fieldDeclaration) {
-        FieldType fieldType = fieldDeclaration.fieldType();
-        TypeParameters typeParameters = fieldType.typeParameterTypeIdentifiers();
+        return parameterizedTypeLinkText(fieldDeclaration.fieldType().parameterizedType());
+    }
+
+    private String parameterizedTypeLinkText(ParameterizedType parameterizedType) {
+        TypeIdentifier typeIdentifier = parameterizedType.typeIdentifier();
+        TypeParameters typeParameters = parameterizedType.typeParameters();
         if (typeParameters.empty()) {
-            TypeIdentifier typeIdentifier = fieldDeclaration.typeIdentifier();
             if (typeIdentifier.isJavaLanguageType()) {
                 return unlinkText(typeIdentifier);
             }
@@ -42,15 +50,14 @@ class JigExpressionObject {
 
         // 型パラメータあり
         String typeParameterText = typeParameters.list().stream()
-                .map(typeIdentifier -> {
-                    if (typeIdentifier.isJavaLanguageType()) {
-                        return unlinkText(typeIdentifier);
+                .map(parameterTypeIdentifier -> {
+                    if (parameterTypeIdentifier.isJavaLanguageType()) {
+                        return unlinkText(parameterTypeIdentifier);
                     }
-                    return linkTypeText(typeIdentifier);
+                    return linkTypeText(parameterTypeIdentifier);
                 })
                 .collect(Collectors.joining(", ", "&lt;", "&gt;"));
 
-        TypeIdentifier typeIdentifier = fieldDeclaration.typeIdentifier();
         if (typeIdentifier.isJavaLanguageType()) {
             return unlinkText(typeIdentifier) + typeParameterText;
         }

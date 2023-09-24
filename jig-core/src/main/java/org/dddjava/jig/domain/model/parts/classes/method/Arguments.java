@@ -1,10 +1,12 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
+import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
 
@@ -21,6 +23,11 @@ public class Arguments {
 
     public static Arguments empty() {
         return new Arguments(Collections.emptyList());
+    }
+
+    public static Arguments from(List<ParameterizedType> parameterizedTypes) {
+        // TODO 引数の総称型対応
+        return new Arguments(parameterizedTypes.stream().map(parameterizedType -> parameterizedType.typeIdentifier()).collect(Collectors.toList()));
     }
 
     String argumentsAsText() {

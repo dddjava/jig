@@ -69,6 +69,6 @@ class JigExpressionObject {
     }
 
     private String linkTypeText(TypeIdentifier typeIdentifier) {
-        return String.format("<a href=\"#%s\">%s</a>", typeIdentifier.fullQualifiedName(), labelText(typeIdentifier));
+        return String.format("<a href=\"./domain.html#%s\">%s</a>", typeIdentifier.fullQualifiedName(), labelText(typeIdentifier));
     }
 }

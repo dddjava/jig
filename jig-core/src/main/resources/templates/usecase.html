@@ -59,12 +59,7 @@
                                th:text="${#jig.labelText(arg)}">xxx</a>
                         </dd>
                         <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
-                        <dd th:unless="${methodReturn.isVoid()}">
-                            <a th:href="${'./domain.html#' + method.declaration().methodReturn().typeIdentifier().fullQualifiedName()}"
-                               th:text="${#jig.labelText(method.declaration().methodReturn().typeIdentifier())}">
-                                yyy
-                            </a>
-                        </dd>
+                        <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</dd>
                     </dl>
 
                     <section class="description markdown" th:utext="${method.description().content()}">メソッドの **Javadoc**

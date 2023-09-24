@@ -36,7 +36,7 @@ class JigExpressionObjectTest {
 
         String actual = sut.fieldRawText(field);
 
-        assertEquals("<a href=\"#hoge.fuga.FieldType\">FieldType和名</a>", actual);
+        assertEquals("<a href=\"./domain.html#hoge.fuga.FieldType\">FieldType和名</a>", actual);
     }
 
     @Test
@@ -52,7 +52,7 @@ class JigExpressionObjectTest {
 
         String actual = sut.fieldRawText(field);
 
-        assertEquals("<a href=\"#hoge.fuga.FieldType\">FieldType</a>", actual);
+        assertEquals("<a href=\"./domain.html#hoge.fuga.FieldType\">FieldType</a>", actual);
     }
 
     @Test
@@ -108,7 +108,7 @@ class JigExpressionObjectTest {
         String actual = sut.fieldRawText(field);
 
         assertEquals("<span class=\"weak\">List</span>&lt;" +
-                        "<a href=\"#hoge.fuga.DomainType\">DomainType和名</a>" +
+                        "<a href=\"./domain.html#hoge.fuga.DomainType\">DomainType和名</a>" +
                         "&gt;"
                 , actual);
     }
@@ -131,8 +131,8 @@ class JigExpressionObjectTest {
 
         String actual = sut.fieldRawText(field);
 
-        assertEquals("<a href=\"#hoge.fuga.Hoge\">Hoge</a>&lt;" +
-                        "<a href=\"#hoge.fuga.Fuga\">ふが</a>" +
+        assertEquals("<a href=\"./domain.html#hoge.fuga.Hoge\">Hoge</a>&lt;" +
+                        "<a href=\"./domain.html#hoge.fuga.Fuga\">ふが</a>" +
                         "&gt;"
                 , actual);
     }

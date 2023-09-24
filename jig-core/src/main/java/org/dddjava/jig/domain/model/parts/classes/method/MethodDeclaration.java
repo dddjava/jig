@@ -30,7 +30,7 @@ public class MethodDeclaration {
     }
 
     public String asSignatureAndReturnTypeSimpleText() {
-        return asSignatureSimpleText() + ":" + methodReturn().typeIdentifier().asSimpleText();
+        return asSignatureSimpleText() + ":" + methodReturn().asSimpleText();
     }
 
     public TypeIdentifier declaringType() {

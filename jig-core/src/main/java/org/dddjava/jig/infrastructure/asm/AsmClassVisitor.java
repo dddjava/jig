@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeParameters;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeArgumentList;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;
@@ -447,7 +447,7 @@ class AsmClassVisitor extends ClassVisitor {
                 }
         );
 
-        return new ParameterizedType(new TypeIdentifier(superName), new TypeParameters(typeParameters));
+        return new ParameterizedType(new TypeIdentifier(superName), new TypeArgumentList(typeParameters));
     }
 
     private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {
@@ -501,7 +501,7 @@ class AsmClassVisitor extends ClassVisitor {
 
                             @Override
                             public void visitEnd() {
-                                parameterizedTypes.add(new ParameterizedType(new TypeIdentifier(interfaceName), new TypeParameters(typeParameters)));
+                                parameterizedTypes.add(new ParameterizedType(new TypeIdentifier(interfaceName), new TypeArgumentList(typeParameters)));
                             }
                         };
                     }

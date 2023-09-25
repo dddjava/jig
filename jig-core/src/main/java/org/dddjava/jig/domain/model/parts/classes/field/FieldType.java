@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.parts.classes.field;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeParameters;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeArgumentList;
 
 public class FieldType {
 
@@ -18,10 +18,10 @@ public class FieldType {
     }
 
     public FieldType(TypeIdentifier typeIdentifier, TypeIdentifiers typeParameters) {
-        this(new ParameterizedType(typeIdentifier, new TypeParameters(typeParameters.list())));
+        this(new ParameterizedType(typeIdentifier, new TypeArgumentList(typeParameters.list())));
     }
 
-    public TypeParameters typeParameterTypeIdentifiers() {
+    public TypeArgumentList typeParameterTypeIdentifiers() {
         return parameterizedType.typeParameters();
     }
 

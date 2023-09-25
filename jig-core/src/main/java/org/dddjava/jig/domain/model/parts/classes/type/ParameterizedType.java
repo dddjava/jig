@@ -12,24 +12,24 @@ import java.util.List;
 public class ParameterizedType {
 
     TypeIdentifier typeIdentifier;
-    TypeParameters actualTypeParameters;
+    TypeArgumentList actualTypeArgumentList;
 
-    public ParameterizedType(TypeIdentifier typeIdentifier, TypeParameters actualTypeParameters) {
+    public ParameterizedType(TypeIdentifier typeIdentifier, TypeArgumentList actualTypeArgumentList) {
         this.typeIdentifier = typeIdentifier;
-        this.actualTypeParameters = actualTypeParameters;
+        this.actualTypeArgumentList = actualTypeArgumentList;
     }
 
     public ParameterizedType(TypeIdentifier typeIdentifier) {
         // 非総称型
-        this(typeIdentifier, new TypeParameters(Collections.emptyList()));
+        this(typeIdentifier, new TypeArgumentList(Collections.emptyList()));
     }
 
     public ParameterizedType(TypeIdentifier typeIdentifier, TypeIdentifier typeParameter) {
-        this(typeIdentifier, new TypeParameters(Collections.singletonList(typeParameter)));
+        this(typeIdentifier, new TypeArgumentList(Collections.singletonList(typeParameter)));
     }
 
     public ParameterizedType(TypeIdentifier typeIdentifier, List<TypeIdentifier> actualTypeParameters) {
-        this(typeIdentifier, new TypeParameters(actualTypeParameters));
+        this(typeIdentifier, new TypeArgumentList(actualTypeParameters));
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -37,14 +37,14 @@ public class ParameterizedType {
     }
 
     public String asSimpleText() {
-        if (actualTypeParameters.empty()) {
+        if (actualTypeArgumentList.empty()) {
             return typeIdentifier.asSimpleText();
         }
-        return typeIdentifier.asSimpleText() + actualTypeParameters.asSimpleText();
+        return typeIdentifier.asSimpleText() + actualTypeArgumentList.asSimpleText();
     }
 
-    public TypeParameters typeParameters() {
-        return actualTypeParameters;
+    public TypeArgumentList typeParameters() {
+        return actualTypeArgumentList;
     }
 
     List<TypeIdentifier> listTypeIdentifiers() {

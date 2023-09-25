@@ -4,12 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 型パラメーター一覧
+ * 型引数リスト
  */
-public class TypeParameters {
-    List<TypeIdentifier> list;
+public class TypeArgumentList {
+    private final List<TypeIdentifier> list;
 
-    public TypeParameters(List<TypeIdentifier> list) {
+    public TypeArgumentList(List<TypeIdentifier> list) {
         this.list = list;
     }
 

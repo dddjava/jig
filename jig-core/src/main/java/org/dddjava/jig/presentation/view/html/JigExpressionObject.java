@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeParameters;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeArgumentList;
 
 import java.util.stream.Collectors;
 
@@ -40,8 +40,8 @@ class JigExpressionObject {
 
     private String parameterizedTypeLinkText(ParameterizedType parameterizedType) {
         TypeIdentifier typeIdentifier = parameterizedType.typeIdentifier();
-        TypeParameters typeParameters = parameterizedType.typeParameters();
-        if (typeParameters.empty()) {
+        TypeArgumentList typeArgumentList = parameterizedType.typeParameters();
+        if (typeArgumentList.empty()) {
             if (typeIdentifier.isJavaLanguageType()) {
                 return unlinkText(typeIdentifier);
             }
@@ -49,7 +49,7 @@ class JigExpressionObject {
         }
 
         // 型パラメータあり
-        String typeParameterText = typeParameters.list().stream()
+        String typeParameterText = typeArgumentList.list().stream()
                 .map(parameterTypeIdentifier -> {
                     if (parameterTypeIdentifier.isJavaLanguageType()) {
                         return unlinkText(parameterTypeIdentifier);

@@ -26,7 +26,7 @@ spring-test = { module = "org.springframework:spring-test", version.ref = "sprin
 
 junit = "org.junit.jupiter:junit-jupiter:5.10.1"
 mockito = "org.mockito:mockito-core:5.7.0"
-assertj = "org.assertj:assertj-core:3.24.2"
+assertj = "org.assertj:assertj-core:3.25.0"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 
 [bundles]

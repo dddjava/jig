@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
-import org.dddjava.jig.infrastructure.filesystem.LocalFileSourceReader;
+import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
@@ -54,7 +54,7 @@ public class Configuration {
                 new AsmFactReader(),
                 textSourceReader,
                 new MyBatisSqlReader(),
-                new LocalFileSourceReader()
+                new LocalClassFileSourceReader()
         );
 
         this.aliasService = new AliasService(commentRepository);

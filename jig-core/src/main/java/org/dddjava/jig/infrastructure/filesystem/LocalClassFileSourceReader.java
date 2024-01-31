@@ -21,9 +21,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalFileSourceReader implements SourceReader {
+/**
+ * ローカルのclassファイルを読み取るSourceReader
+ */
+public class LocalClassFileSourceReader implements SourceReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalFileSourceReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalClassFileSourceReader.class);
 
     BinarySources readBinarySources(SourcePaths sourcePaths) {
         List<BinarySource> list = new ArrayList<>();

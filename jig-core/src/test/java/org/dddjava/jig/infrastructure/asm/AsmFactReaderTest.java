@@ -39,9 +39,11 @@ import testing.TestSupport;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -271,7 +273,8 @@ public class AsmFactReaderTest {
     }
 
     private JigType JigType構築(Class<?> clz) throws URISyntaxException, IOException {
-        Path path = Paths.get(clz.getResource(clz.getSimpleName().concat(".class")).toURI());
+        URL url = Objects.requireNonNull(clz.getResource(clz.getSimpleName().concat(".class")));
+        Path path = Paths.get(url.toURI());
 
         AsmFactReader sut = new AsmFactReader();
         return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();

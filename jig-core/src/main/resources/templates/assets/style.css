@@ -36,6 +36,9 @@ header a {
     font-size: 0.8em;
     color: silver;
 }
+.deprecated {
+    text-decoration: line-through;
+}
 
 /* メインコンテンツ */
 /* テーブル */

@@ -9,4 +9,6 @@ public interface TreeComponent {
     default boolean isPackage() {
         return this instanceof TreeComposite;
     }
+
+    default boolean isDeprecated() { return false; }
 }

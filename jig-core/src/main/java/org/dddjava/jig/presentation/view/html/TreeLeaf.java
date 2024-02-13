@@ -19,4 +19,9 @@ public class TreeLeaf implements TreeComponent {
     public String href() {
         return "#" + jigType.typeDeclaration().identifier().fullQualifiedName();
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return jigType.isDeprecated();
+    }
 }

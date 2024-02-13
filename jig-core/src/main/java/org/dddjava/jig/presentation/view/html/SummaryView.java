@@ -19,6 +19,11 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
+/**
+ * 概要View
+ *
+ * 概要HTMLで出力するパッケージツリーと詳細のモデルを加工します。
+ */
 public class SummaryView implements JigView {
 
     final Map<String, Object> contextMap;

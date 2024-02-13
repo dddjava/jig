@@ -129,4 +129,8 @@ public class JigType {
     public boolean markedCore() {
         return jigTypeAttribute.alias().asText().startsWith("*");
     }
+
+    public boolean isDeprecated() {
+        return hasAnnotation(TypeIdentifier.of(Deprecated.class));
+    }
 }

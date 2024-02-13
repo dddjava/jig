@@ -41,6 +41,6 @@ public class BusinessRule {
     }
 
     public boolean isDeprecated() {
-        return jigType.hasAnnotation(TypeIdentifier.of(Deprecated.class));
+        return jigType.isDeprecated();
     }
 }

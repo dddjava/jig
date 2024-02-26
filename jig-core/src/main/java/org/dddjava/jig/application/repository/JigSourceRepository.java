@@ -18,6 +18,8 @@ public interface JigSourceRepository {
 
     void registerTerm(Term term);
 
+    void registerTextSourceModel(TextSourceModel textSourceModel);
+
     TypeFacts allTypeFacts();
 
     Sqls sqls();
@@ -25,6 +27,4 @@ public interface JigSourceRepository {
     Terms terms();
 
     EnumModels enumModels();
-
-    void registerTextSourceModel(TextSourceModel textSourceModel);
 }

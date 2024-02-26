@@ -3,7 +3,7 @@ plugins {
     id 'java'
 }
 
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 def defaultEncoding = 'UTF-8'
 [AbstractCompile, Javadoc].each {

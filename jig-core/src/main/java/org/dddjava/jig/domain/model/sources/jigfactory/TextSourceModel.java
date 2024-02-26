@@ -27,14 +27,6 @@ public class TextSourceModel {
         this.enumModels = enumModels;
     }
 
-    public TextSourceModel(ClassAndMethodComments classAndMethodComments) {
-        this(classAndMethodComments.list(),
-                classAndMethodComments.methodList().stream()
-                        .map(methodComment -> new MethodImplementation(methodComment.methodIdentifier(), methodComment))
-                        .collect(Collectors.toList()),
-                List.of());
-    }
-
     public static TextSourceModel empty() {
         return new TextSourceModel(List.of(), List.of(), List.of());
     }
@@ -46,7 +38,11 @@ public class TextSourceModel {
     public TextSourceModel addClassAndMethodComments(ClassAndMethodComments... others) {
         TextSourceModel result = this;
         for (ClassAndMethodComments other : others) {
-            result = result.merge(new TextSourceModel(other));
+            result = result.merge(new TextSourceModel(other.list(),
+                    other.methodList().stream()
+                            .map(methodComment -> new MethodImplementation(methodComment.methodIdentifier(), methodComment))
+                            .collect(Collectors.toList()),
+                    List.of()));
         }
         return result;
     }

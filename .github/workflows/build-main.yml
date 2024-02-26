@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        java-version: [ '11' ]
+        java-version: [ '17' ]
     name: build Java ${{ matrix.java-version }} (${{ matrix.os }})
     env:
       GRADLE_OPTS: '-Dorg.gradle.daemon=false'
@@ -35,7 +35,7 @@ jobs:
           name: test-failure-reports-${{ matrix.java-version }}-${{ runner.os }}
           path: jig-*/build/reports/tests/test/
           retention-days: 3
-  build-17:
+  build-17: # TODO update 21
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:

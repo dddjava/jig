@@ -17,9 +17,9 @@ public enum JigProperty {
     PATTERN_DOMAIN(".+\\.domain\\.(model|type)\\..+"),
 
     LINK_PREFIX(LinkPrefix.DISABLE),
+    ;
 
-    OMIT_PREFIX(".+\\.(service|domain\\.(model|type))\\.");
-    private String defaultValue;
+    private final String defaultValue;
 
     JigProperty(String defaultValue) {
         this.defaultValue = defaultValue;

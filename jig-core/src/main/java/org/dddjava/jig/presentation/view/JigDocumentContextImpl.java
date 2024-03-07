@@ -3,7 +3,6 @@ package org.dddjava.jig.presentation.view;
 import org.dddjava.jig.application.service.AliasService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
-import org.dddjava.jig.domain.model.documents.stationery.PackageIdentifierFormatter;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
@@ -15,12 +14,10 @@ public class JigDocumentContextImpl implements JigDocumentContext {
 
     AliasService aliasService;
     LinkPrefix linkPrefix;
-    PackageIdentifierFormatter packageIdentifierFormatter;
 
-    public JigDocumentContextImpl(AliasService aliasService, LinkPrefix linkPrefix, PackageIdentifierFormatter packageIdentifierFormatter) {
+    public JigDocumentContextImpl(AliasService aliasService, LinkPrefix linkPrefix) {
         this.aliasService = aliasService;
         this.linkPrefix = linkPrefix;
-        this.packageIdentifierFormatter = packageIdentifierFormatter;
     }
 
     @Override
@@ -33,11 +30,6 @@ public class JigDocumentContextImpl implements JigDocumentContext {
     public ClassComment classComment(TypeIdentifier typeIdentifier) {
         Objects.requireNonNull(aliasService);
         return aliasService.typeAliasOf(typeIdentifier);
-    }
-
-    @Override
-    public PackageIdentifierFormatter packageIdentifierFormatter() {
-        return packageIdentifierFormatter;
     }
 
     @Override

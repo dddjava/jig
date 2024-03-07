@@ -43,8 +43,9 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         for (BusinessRulePackage businessRulePackage : businessRulePackages.list()) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
-            Subgraph subgraph = new Subgraph(packageIdentifier.asText())
-                    .label(jigDocumentContext.packageIdentifierFormatter().format(packageIdentifier))
+            String fqpn = packageIdentifier.asText();
+            Subgraph subgraph = new Subgraph(fqpn)
+                    .label(fqpn)
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             BusinessRules businessRules = businessRulePackage.businessRules();

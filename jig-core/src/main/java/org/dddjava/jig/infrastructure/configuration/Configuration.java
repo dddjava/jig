@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
-import org.dddjava.jig.infrastructure.PrefixRemoveIdentifierFormatter;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
@@ -58,8 +57,7 @@ public class Configuration {
         );
 
         this.aliasService = new AliasService(commentRepository);
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(
-                aliasService, properties.linkPrefix(), new PrefixRemoveIdentifierFormatter(properties.getOutputOmitPrefix()));
+        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService, properties.linkPrefix());
 
         this.documentHandlers = new JigDocumentHandlers(
                 new ViewResolver(

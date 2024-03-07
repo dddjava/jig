@@ -101,6 +101,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         }
 
         Labeler labeler = new Labeler(jigDocumentContext);
+        labeler.applyContext(groupingPackages.keySet(), standalonePackages);
 
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
@@ -116,6 +117,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
             stringJoiner.add(subgraph.toString());
         }
+
         String labelsText = standalonePackages.stream()
                 .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                         .label(labeler.label(packageIdentifier))
@@ -124,6 +126,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         stringJoiner.add(labelsText);
 
         String summaryText = "summary[shape=note,label=\""
+                + labeler.contextDescription() + "\\l"
                 + allPackages().number().localizedLabel() + "\\l"
                 + packageRelations.number().localizedLabel() + "\\l"
                 + "\"]";
@@ -179,6 +182,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     static class Labeler {
         JigDocumentContext jigDocumentContext;
+        private Optional<String> commonPrefix = Optional.empty();
 
         Labeler(JigDocumentContext jigDocumentContext) {
             this.jigDocumentContext = jigDocumentContext;
@@ -186,16 +190,22 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         private String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
             if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
+                // 引数の食い違いがあった場合に予期しない編集を行わないための回避コード。
                 // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
                 return label(packageIdentifier);
             }
             // parentでくくる場合にパッケージ名をの重複を省く
-            String labelText = packageIdentifier.asText().substring(parent.asText().length() + 1);
-            return addAliasIfExists(packageIdentifier, labelText);
+            String labelText = packageIdentifier.asText().substring(parent.asText().length());
+            return addAliasIfExists(packageIdentifier, trimDot(labelText));
         }
 
         private String label(PackageIdentifier packageIdentifier) {
-            String labelText = jigDocumentContext.packageIdentifierFormatter().format(packageIdentifier);
+            String fqpn = packageIdentifier.asText();
+
+            System.out.println(commonPrefix + " : " + fqpn);
+            String labelText = commonPrefix.map(String::length).map(index -> trimDot(fqpn.substring(index)))
+                    .orElse(fqpn);
+
             return addAliasIfExists(packageIdentifier, labelText);
         }
 
@@ -205,6 +215,51 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 return packageComment.asText() + "\\n" + labelText;
             }
             return labelText;
+        }
+
+        void applyContext(Collection<PackageIdentifier> groupingPackages, List<PackageIdentifier> allStandalonePackageIdentifiers) {
+            // groupingPackagesとallStandalonePackageIdentifiersをまとめる
+            Collection<PackageIdentifier> collection = new HashSet<>();
+            collection.addAll(groupingPackages);
+            collection.addAll(allStandalonePackageIdentifiers);
+
+            // 引数が空ならreturn
+            if (collection.isEmpty()) {
+                return;
+            }
+
+            // 全てで共通する部分を抜き出す
+            String sameRootText = null;
+            for (PackageIdentifier currentPackageIdentifier : collection) {
+                PackageIdentifier currentParentPackageIdentifier = currentPackageIdentifier.parent();
+                String currentText = currentParentPackageIdentifier.asText();
+                if (sameRootText == null) {
+                    sameRootText = currentText;
+                    continue;
+                }
+
+                // sameRootTextとcurrentTextで前方から一致する部分の文字列を求める
+                int commonPrefixLength = 0;
+                for (int i = 0; i < Math.min(sameRootText.length(), currentText.length()); i++) {
+                    if (sameRootText.charAt(i) == currentText.charAt(i)) {
+                        commonPrefixLength++;
+                    } else {
+                        break;
+                    }
+                }
+
+                sameRootText = sameRootText.substring(0, commonPrefixLength);
+            }
+
+            this.commonPrefix = Optional.of(trimDot(sameRootText));
+        }
+
+        public String contextDescription() {
+            return "root: " + commonPrefix.orElse("(none)");
+        }
+
+        private String trimDot(String string) {
+            return string.replaceAll("^\\.|\\.$", "");
         }
     }
 }

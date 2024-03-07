@@ -2,6 +2,10 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import java.util.Objects;
 
+/**
+ * @deprecated 廃止しました。設定しても使用せず、このクラスは 2024.4.1 以降に削除されます。
+ */
+@Deprecated(since = "2024.3.1")
 public class OutputOmitPrefix {
     String pattern;
 

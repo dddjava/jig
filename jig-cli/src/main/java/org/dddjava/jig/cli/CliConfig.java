@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +29,6 @@ class CliConfig {
     String outputDirectory;
     @Value("${jig.output.diagram.format:svg}")
     JigDiagramFormat diagramFormat;
-    @Value("${jig.omit.prefix}")
-    String outputOmitPrefix;
     @Value("${jig.link.prefix:" + LinkPrefix.DISABLE + "}")
     String linkPrefix;
 
@@ -50,7 +47,6 @@ class CliConfig {
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
-                .add("jig.omit.prefix=" + outputOmitPrefix)
                 .add("jig.link.prefix=" + linkPrefix)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
@@ -69,7 +65,7 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
+                        modelPattern, Paths.get(this.outputDirectory), diagramFormat,
                         new LinkPrefix(linkPrefix)
                 ));
     }

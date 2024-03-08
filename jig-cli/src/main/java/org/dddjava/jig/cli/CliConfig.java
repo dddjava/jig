@@ -41,8 +41,12 @@ class CliConfig {
     @Value("${directory.sources}")
     String directorySources;
 
+    @Value("${mode:default}")
+    List<Mode> mode;
+
     public String propertiesText() {
         return new StringJoiner("\n")
+                .add("mode=" + mode)
                 .add("jig.document.types=" + documentTypeText)
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
@@ -62,6 +66,17 @@ class CliConfig {
     }
 
     Configuration configuration() {
+        // modeを適用
+        if (mode.contains(Mode.MAVEN)) {
+            directoryClasses = "target/classes";
+            directoryResources = "target/classes";
+            directorySources = "src/main/java";
+        }
+        if (mode.contains(Mode.LIGHT)) {
+            documentTypeText = "PackageRelationDiagram";
+            modelPattern = ".*";
+        }
+
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),

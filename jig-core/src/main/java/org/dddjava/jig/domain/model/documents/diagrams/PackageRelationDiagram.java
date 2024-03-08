@@ -201,8 +201,6 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
         private String label(PackageIdentifier packageIdentifier) {
             String fqpn = packageIdentifier.asText();
-
-            System.out.println(commonPrefix + " : " + fqpn);
             String labelText = commonPrefix.map(String::length).map(index -> trimDot(fqpn.substring(index)))
                     .orElse(fqpn);
 

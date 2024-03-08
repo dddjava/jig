@@ -17,5 +17,5 @@ public enum Mode {
     /**
      * 何もしない
      */
-    DEFAULT;
+    DEFAULT
 }

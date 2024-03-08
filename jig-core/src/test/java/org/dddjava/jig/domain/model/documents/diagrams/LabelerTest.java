@@ -5,9 +5,13 @@ import org.dddjava.jig.domain.model.parts.comment.Comment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,75 +20,30 @@ import static org.mockito.Mockito.when;
 
 public class LabelerTest {
 
-    @Test
-    public void コメントなしのラベル() {
-        PackageIdentifier identifier = new PackageIdentifier("package");
-
-        JigDocumentContext context = mock(JigDocumentContext.class);
-        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, Comment.empty()));
-
-        Labeler labeler = new Labeler(context);
-
-        String label = labeler.label(identifier);
-        assertEquals("package", label);
+    static Stream<Arguments> testLabeler() {
+        return Stream.of(
+                Arguments.of("root.package", "root", Comment.empty(), "package"),
+                Arguments.of("root.package", "root", Comment.fromCodeComment("コメント"), "コメント\\npackage"),
+                Arguments.of("grandparent.parent.child", "grandparent.parent", Comment.empty(), "child"),
+                Arguments.of("grandparent.parent.child.hoge", "grandparent.parent", Comment.empty(), "child.hoge"),
+                Arguments.of("grandparent.child", "grandparent.parent", Comment.empty(), "grandparent.child")
+        );
     }
 
-    @Test
-    public void コメントありのラベル() {
-        PackageIdentifier identifier = new PackageIdentifier("package");
+    @ParameterizedTest
+    @MethodSource
+    public void testLabeler(String identifierText, String parentText, Comment comment, String expectedLabel) {
+        PackageIdentifier identifier = new PackageIdentifier(identifierText);
+        PackageIdentifier parent = new PackageIdentifier(parentText);
 
         JigDocumentContext context = mock(JigDocumentContext.class);
-        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, Comment.fromCodeComment("コメント")));
+        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, comment));
 
         Labeler labeler = new Labeler(context);
 
-        String label = labeler.label(identifier);
-        assertEquals("コメント\\npackage", label);
-    }
+        String actualLabel = labeler.label(identifier, parent);
 
-    @Test
-    public void parentの部分が除去される() {
-        PackageIdentifier parent = new PackageIdentifier("grandparent.parent");
-        PackageIdentifier identifier = new PackageIdentifier("grandparent.parent.child");
-
-        JigDocumentContext context = mock(JigDocumentContext.class);
-        when(context.packageComment(any())).thenReturn(new PackageComment(parent, Comment.empty()));
-        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, Comment.empty()));
-
-        Labeler labeler = new Labeler(context);
-
-        String label = labeler.label(identifier, parent);
-        assertEquals("child", label);
-    }
-
-    @Test
-    public void parentの部分が除去される_途中まででも() {
-        PackageIdentifier parent = new PackageIdentifier("grandparent.parent");
-        PackageIdentifier identifier = new PackageIdentifier("grandparent.parent.child.hoge");
-
-        JigDocumentContext context = mock(JigDocumentContext.class);
-        when(context.packageComment(any())).thenReturn(new PackageComment(parent, Comment.empty()));
-        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, Comment.empty()));
-
-        Labeler labeler = new Labeler(context);
-
-        String label = labeler.label(identifier, parent);
-        assertEquals("child.hoge", label);
-    }
-
-    @Test
-    public void parentと重複していなかったら除去されない_この時点で異常系だけど() {
-        PackageIdentifier parent = new PackageIdentifier("grandparent.parent");
-        PackageIdentifier identifier = new PackageIdentifier("grandparent.child");
-
-        JigDocumentContext context = mock(JigDocumentContext.class);
-        when(context.packageComment(any())).thenReturn(new PackageComment(parent, Comment.empty()));
-        when(context.packageComment(any())).thenReturn(new PackageComment(identifier, Comment.empty()));
-
-        Labeler labeler = new Labeler(context);
-
-        String label = labeler.label(identifier, parent);
-        assertEquals("grandparent.child", label);
+        assertEquals(expectedLabel, actualLabel);
     }
 
     @Test

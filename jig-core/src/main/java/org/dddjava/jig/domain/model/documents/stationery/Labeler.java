@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.documents.diagrams;
+package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
@@ -9,15 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-class Labeler {
+public class Labeler {
     JigDocumentContext jigDocumentContext;
     private Optional<String> commonPrefix = Optional.empty();
 
-    Labeler(JigDocumentContext jigDocumentContext) {
+    public Labeler(JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
+    public String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
         if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
             // 引数の食い違いがあった場合に予期しない編集を行わないための回避コード。
             // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。
@@ -28,7 +27,7 @@ class Labeler {
         return addAliasIfExists(packageIdentifier, trimDot(labelText));
     }
 
-    String label(PackageIdentifier packageIdentifier) {
+    public String label(PackageIdentifier packageIdentifier) {
         String fqpn = packageIdentifier.asText();
         String labelText = commonPrefix.map(String::length).map(index -> trimDot(fqpn.substring(index)))
                 .orElse(fqpn);
@@ -44,7 +43,7 @@ class Labeler {
         return labelText;
     }
 
-    void applyContext(Collection<PackageIdentifier> groupingPackages, List<PackageIdentifier> allStandalonePackageIdentifiers) {
+    public void applyContext(Collection<PackageIdentifier> groupingPackages, List<PackageIdentifier> allStandalonePackageIdentifiers) {
         // groupingPackagesとallStandalonePackageIdentifiersをまとめる
         Collection<PackageIdentifier> collection = new HashSet<>();
         collection.addAll(groupingPackages);
@@ -53,7 +52,7 @@ class Labeler {
         applyContext(collection);
     }
 
-    void applyContext(Collection<PackageIdentifier> contextPackages) {
+    public void applyContext(Collection<PackageIdentifier> contextPackages) {
         // 引数が空ならreturn
         if (contextPackages.isEmpty()) {
             return;

@@ -1,6 +1,5 @@
-package org.dddjava.jig.domain.model.documents.diagrams;
+package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;

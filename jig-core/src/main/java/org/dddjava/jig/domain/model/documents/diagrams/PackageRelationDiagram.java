@@ -106,13 +106,13 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         StringJoiner stringJoiner = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
             PackageIdentifier parent = entry.getKey();
-            String labelsText = entry.getValue().stream()
+            String compositeNodesText = entry.getValue().stream()
                     .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                             .label(labeler.label(packageIdentifier, parent))
                             .url(packageIdentifier, jigDocumentContext, JigDocument.DomainSummary).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
-                    .add(labelsText)
+                    .add(compositeNodesText)
                     .label(labeler.label(parent))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
             stringJoiner.add(subgraph.toString());

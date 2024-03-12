@@ -50,35 +50,38 @@ class Labeler {
         collection.addAll(groupingPackages);
         collection.addAll(allStandalonePackageIdentifiers);
 
+        applyContext(collection);
+    }
+
+    void applyContext(Collection<PackageIdentifier> contextPackages) {
         // 引数が空ならreturn
-        if (collection.isEmpty()) {
+        if (contextPackages.isEmpty()) {
             return;
         }
 
         // 全てで共通する部分を抜き出す
-        String sameRootText = null;
-        for (PackageIdentifier currentPackageIdentifier : collection) {
+        String commonPrefix = null;
+        for (PackageIdentifier currentPackageIdentifier : contextPackages) {
             PackageIdentifier currentParentPackageIdentifier = currentPackageIdentifier.parent();
             String currentText = currentParentPackageIdentifier.asText();
-            if (sameRootText == null) {
-                sameRootText = currentText;
+            if (commonPrefix == null) {
+                commonPrefix = currentText;
                 continue;
             }
 
             // sameRootTextとcurrentTextで前方から一致する部分の文字列を求める
             int commonPrefixLength = 0;
-            for (int i = 0; i < Math.min(sameRootText.length(), currentText.length()); i++) {
-                if (sameRootText.charAt(i) == currentText.charAt(i)) {
+            for (int i = 0; i < Math.min(commonPrefix.length(), currentText.length()); i++) {
+                if (commonPrefix.charAt(i) == currentText.charAt(i)) {
                     commonPrefixLength++;
                 } else {
                     break;
                 }
             }
 
-            sameRootText = sameRootText.substring(0, commonPrefixLength);
+            commonPrefix = commonPrefix.substring(0, commonPrefixLength);
         }
-
-        this.commonPrefix = Optional.of(trimDot(sameRootText));
+        this.commonPrefix = Optional.of(trimDot(commonPrefix));
     }
 
     public String contextDescription() {

@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
+import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
@@ -98,8 +99,13 @@ public class JigType {
                 .excludeNotNoteworthyObjectMethod();
     }
 
+    @Deprecated // ドキュメントでフィールドのアノテーションを参照するためにinstanceJigFieldsに乗り換える
     public FieldDeclarations instanceFields() {
-        return instanceMember().instanceFields().fieldDeclarations();
+        return instanceJigFields().fieldDeclarations();
+    }
+
+    public JigFields instanceJigFields() {
+        return instanceMember().instanceFields();
     }
 
     public JigMethods staticMethods() {

@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.models.jigobject.member;
 import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 
@@ -35,5 +36,22 @@ public class JigField {
 
     public FieldAnnotations fieldAnnotations() {
         return fieldAnnotations;
+    }
+
+    public String nameText() {
+        return fieldDeclaration.nameText();
+    }
+
+    public boolean isDeprecated() {
+        return hasAnnotation(TypeIdentifier.of(Deprecated.class));
+    }
+
+    private boolean hasAnnotation(TypeIdentifier typeIdentifier) {
+        for (FieldAnnotation annotation : fieldAnnotations.list()) {
+            if (annotation.annotationType().equals(typeIdentifier)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

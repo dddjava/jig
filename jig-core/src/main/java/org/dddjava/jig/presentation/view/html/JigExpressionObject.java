@@ -1,6 +1,7 @@
 package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
@@ -32,6 +33,9 @@ class JigExpressionObject {
 
     public String methodReturnRawText(MethodReturn methodReturn) {
         return parameterizedTypeLinkText(methodReturn.parameterizedType());
+    }
+    public String fieldRawText(JigField jigField) {
+        return parameterizedTypeLinkText(jigField.fieldDeclaration().fieldType().parameterizedType());
     }
 
     public String fieldRawText(FieldDeclaration fieldDeclaration) {

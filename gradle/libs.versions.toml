@@ -11,7 +11,7 @@ log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version =
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.11" } }
 thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.0.15.RELEASE" } }
 
-asm = "org.ow2.asm:asm:9.6"
+asm = "org.ow2.asm:asm:9.7"
 javaparser = "com.github.javaparser:javaparser-core:3.25.9"
 mybatis = "org.mybatis:mybatis:3.5.15"
 

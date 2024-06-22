@@ -1,8 +1,5 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 
 /**
  * 使用しているメソッド一覧

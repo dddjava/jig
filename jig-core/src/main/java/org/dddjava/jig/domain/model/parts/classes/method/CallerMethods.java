@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
 import java.util.List;

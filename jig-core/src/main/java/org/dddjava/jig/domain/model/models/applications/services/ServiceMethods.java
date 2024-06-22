@@ -5,8 +5,8 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.function.Predicate;

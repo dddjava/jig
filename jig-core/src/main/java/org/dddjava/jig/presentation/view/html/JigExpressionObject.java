@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeArgumentList;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.stream.Collectors;
 
@@ -34,6 +34,7 @@ class JigExpressionObject {
     public String methodReturnRawText(MethodReturn methodReturn) {
         return parameterizedTypeLinkText(methodReturn.parameterizedType());
     }
+
     public String fieldRawText(JigField jigField) {
         return parameterizedTypeLinkText(jigField.fieldDeclaration().fieldType().parameterizedType());
     }

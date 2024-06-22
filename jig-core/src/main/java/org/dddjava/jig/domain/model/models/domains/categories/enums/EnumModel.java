@@ -12,7 +12,9 @@ import java.util.List;
 public class EnumModel {
     TypeIdentifier typeIdentifier;
 
-    /** 列挙定数 */
+    /**
+     * 列挙定数
+     */
     List<EnumConstant> enumConstants;
     List<List<String>> constructorArgumentNamesList = new ArrayList<>();
 

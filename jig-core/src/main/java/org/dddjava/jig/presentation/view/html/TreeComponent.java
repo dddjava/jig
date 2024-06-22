@@ -10,5 +10,7 @@ public interface TreeComponent {
         return this instanceof TreeComposite;
     }
 
-    default boolean isDeprecated() { return false; }
+    default boolean isDeprecated() {
+        return false;
+    }
 }

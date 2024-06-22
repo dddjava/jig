@@ -3,11 +3,11 @@ package org.dddjava.jig.domain.model.models.domains.businessrules;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.models.applications.backends;
 
-import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 
 import java.util.ArrayList;
 import java.util.Comparator;

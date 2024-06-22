@@ -196,8 +196,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
                 for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
 
-                    if (bootstrapMethodArgument instanceof Type) {
-                        Type type = (Type) bootstrapMethodArgument;
+                    if (bootstrapMethodArgument instanceof Type type) {
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
                             plainMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
@@ -208,8 +207,7 @@ class AsmClassVisitor extends ClassVisitor {
                     }
 
                     // lambdaで記述されているハンドラメソッド
-                    if (bootstrapMethodArgument instanceof Handle) {
-                        Handle handle = (Handle) bootstrapMethodArgument;
+                    if (bootstrapMethodArgument instanceof Handle handle) {
                         if (isMethodRef(handle)) {
                             plainMethodBuilder.addMethodInstruction(toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc()));
                         }
@@ -471,7 +469,7 @@ class AsmClassVisitor extends ClassVisitor {
                     public SignatureVisitor visitInterface() {
 
                         return new SignatureVisitor(this.api) {
-                            List<TypeIdentifier> typeParameters = new ArrayList<>();
+                            final List<TypeIdentifier> typeParameters = new ArrayList<>();
                             String interfaceName;
 
                             @Override
@@ -544,7 +542,7 @@ class AsmClassVisitor extends ClassVisitor {
         public AnnotationVisitor visitArray(String name) {
 
             return new AnnotationVisitor(api) {
-                List<Object> list = new ArrayList<>();
+                final List<Object> list = new ArrayList<>();
 
                 @Override
                 public void visit(String name, Object value) {

@@ -20,7 +20,7 @@ public class IndexView {
 
     private final Map<String, Object> contextMap;
     private final TemplateEngine templateEngine;
-    private JigDiagramFormat diagramFormat;
+    private final JigDiagramFormat diagramFormat;
 
     public IndexView(TemplateEngine templateEngine, JigDiagramFormat diagramFormat) {
         this.templateEngine = templateEngine;
@@ -53,7 +53,7 @@ public class IndexView {
         Path outputFilePath = outputDirectory.resolve("index.html");
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
-             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)
         ) {
             templateEngine.process("index", new Context(Locale.ROOT, contextMap), writer);
         } catch (IOException e) {

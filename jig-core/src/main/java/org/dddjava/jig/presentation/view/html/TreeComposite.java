@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class TreeComposite implements TreeComponent {
 
-    private JigPackage jigPackage;
+    private final JigPackage jigPackage;
 
     List<TreeComponent> list = new ArrayList<>();
 
@@ -42,8 +42,7 @@ public class TreeComposite implements TreeComponent {
     public List<TreeComponent> expandChildren() {
         if (list.size() == 1) {
             TreeComponent onlyOneChild = list.get(0);
-            if (onlyOneChild instanceof TreeComposite) {
-                TreeComposite composite = (TreeComposite) onlyOneChild;
+            if (onlyOneChild instanceof TreeComposite composite) {
                 return composite.children();
             }
         }

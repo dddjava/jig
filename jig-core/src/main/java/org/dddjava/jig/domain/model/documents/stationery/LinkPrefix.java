@@ -8,7 +8,7 @@ import java.util.Objects;
 public class LinkPrefix {
     public static final String DISABLE = "<disable>";
 
-    private String value;
+    private final String value;
 
     public LinkPrefix(String value) {
         this.value = value;

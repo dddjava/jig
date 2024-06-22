@@ -8,7 +8,7 @@ import org.dddjava.jig.presentation.view.report.ReportTitle;
 @ReportTitle("文字列比較箇所")
 public class StringComparingReport {
 
-    private JigMethod method;
+    private final JigMethod method;
 
     public StringComparingReport(JigMethod method) {
         this.method = method;

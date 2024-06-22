@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class JavaparserReader implements JavaTextSourceReader {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(JavaparserReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaparserReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
 

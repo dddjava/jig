@@ -45,7 +45,7 @@ public class ProcessExecutor {
 
             return result.get().withMessage(firstLine.get());
         } catch (ExecutionException | InterruptedException | IOException e) {
-            logger.warning("Execute " + command + " failed: " + e.toString() + "\n" +
+            logger.warning("Execute " + command + " failed: " + e + "\n" +
                     Stream.of(e.getStackTrace())
                             .map(element -> "    " + element.toString())
                             .collect(Collectors.joining("\n")));

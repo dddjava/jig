@@ -77,8 +77,7 @@ public class MyBatisSqlReader implements SqlReader {
         LOGGER.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
-            if (obj instanceof MappedStatement) {
-                MappedStatement mappedStatement = (MappedStatement) obj;
+            if (obj instanceof MappedStatement mappedStatement) {
 
                 SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
 
@@ -104,28 +103,25 @@ public class MyBatisSqlReader implements SqlReader {
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {
         SqlSource sqlSource = mappedStatement.getSqlSource();
 
-        if (!(sqlSource instanceof DynamicSqlSource)) {
+        if (!(sqlSource instanceof DynamicSqlSource dynamicSqlSource)) {
             return new Query(mappedStatement.getBoundSql(null).getSql());
         }
 
         // 動的クエリ（XMLで組み立てるもの）をエミュレート
-        DynamicSqlSource dynamicSqlSource = (DynamicSqlSource) sqlSource;
 
         Field rootSqlNode = DynamicSqlSource.class.getDeclaredField("rootSqlNode");
         rootSqlNode.setAccessible(true);
         SqlNode sqlNode = (SqlNode) rootSqlNode.get(dynamicSqlSource);
 
 
-        if (sqlNode instanceof MixedSqlNode) {
+        if (sqlNode instanceof MixedSqlNode mixedSqlNode) {
             StringBuilder sql = new StringBuilder();
-            MixedSqlNode mixedSqlNode = (MixedSqlNode) sqlNode;
             Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
             contents.setAccessible(true);
             List list = (List) contents.get(mixedSqlNode);
 
             for (Object content : list) {
-                if (content instanceof StaticTextSqlNode) {
-                    StaticTextSqlNode staticTextSqlNode = (StaticTextSqlNode) content;
+                if (content instanceof StaticTextSqlNode staticTextSqlNode) {
                     Field text = StaticTextSqlNode.class.getDeclaredField("text");
                     text.setAccessible(true);
                     String textSql = (String) text.get(staticTextSqlNode);

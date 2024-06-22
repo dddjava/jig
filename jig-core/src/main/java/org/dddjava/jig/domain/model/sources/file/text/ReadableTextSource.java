@@ -10,8 +10,8 @@ import java.nio.file.Path;
  */
 public class ReadableTextSource {
 
-    private TextSource textSource;
-    private byte[] bytes;
+    private final TextSource textSource;
+    private final byte[] bytes;
 
     public ReadableTextSource(TextSource textSource, byte[] bytes) {
         this.textSource = textSource;

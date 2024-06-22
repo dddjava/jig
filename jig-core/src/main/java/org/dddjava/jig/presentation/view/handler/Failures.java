@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Failures {
 
-    private List<HandleResult> handleResultList;
+    private final List<HandleResult> handleResultList;
 
     public Failures(List<HandleResult> handleResultList) {
         this.handleResultList = handleResultList;

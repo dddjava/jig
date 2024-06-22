@@ -35,7 +35,7 @@ public class SqlIdentifier {
             for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
                 boolean matches = methodDeclaration.matches(
                         new TypeIdentifier(value.substring(0, value.lastIndexOf('.'))),
-                        value.substring(value.lastIndexOf('.') + 1, value.length())
+                        value.substring(value.lastIndexOf('.') + 1)
                 );
                 if (matches) return true;
             }

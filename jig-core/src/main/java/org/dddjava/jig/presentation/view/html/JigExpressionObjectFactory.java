@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 class JigExpressionObjectFactory implements IExpressionObjectFactory {
-    private JigDocumentContext jigDocumentContext;
+    private final JigDocumentContext jigDocumentContext;
 
     public JigExpressionObjectFactory(JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;

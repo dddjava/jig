@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toList;
 public class ReportItemFormatter {
     static Logger logger = LoggerFactory.getLogger(ReportItemFormatter.class);
 
-    private JigDocumentContext jigDocumentContext;
+    private final JigDocumentContext jigDocumentContext;
 
     public ReportItemFormatter(JigDocumentContext jigDocumentContext) {
         this.jigDocumentContext = jigDocumentContext;

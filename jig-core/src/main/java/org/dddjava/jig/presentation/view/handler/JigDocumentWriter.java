@@ -35,7 +35,7 @@ public class JigDocumentWriter {
         Path outputFilePath = outputDirectory.resolve(fileName);
         try (OutputStream out = Files.newOutputStream(outputFilePath);
              OutputStream outputStream = new BufferedOutputStream(out);
-             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             Writer writer = new java.io.OutputStreamWriter(outputStream, StandardCharsets.UTF_8)
         ) {
             consumer.accept(writer);
         } catch (IOException e) {

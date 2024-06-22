@@ -34,9 +34,9 @@ public class JigMethodBuilder {
     Set<TypeIdentifier> useTypes = new HashSet<>();
 
     // 制御が飛ぶ処理がある（ifやbreak）
-    private int jumpInstructionNumber;
+    private final int jumpInstructionNumber;
     // switchがある
-    private int lookupSwitchInstructionNumber;
+    private final int lookupSwitchInstructionNumber;
     // nullを参照している
     private final boolean hasReferenceNull;
     // nullによる判定がある

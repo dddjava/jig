@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class TextSource {
 
-    private Path location;
+    private final Path location;
 
     public TextSource(Path location) {
         this.location = location;

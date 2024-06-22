@@ -42,7 +42,7 @@ public enum ReportItem {
     汎用真偽値("boolean"),
     汎用数値("number");
 
-    private String key;
+    private final String key;
 
     ReportItem(String key) {
         this.key = key;

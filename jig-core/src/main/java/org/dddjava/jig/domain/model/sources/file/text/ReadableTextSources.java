@@ -10,7 +10,7 @@ import java.util.List;
 public class ReadableTextSources {
     static Logger logger = LoggerFactory.getLogger(ReadableTextSources.class);
 
-    private List<TextSource> textSources;
+    private final List<TextSource> textSources;
 
     public ReadableTextSources(List<TextSource> textSources) {
         this.textSources = textSources;

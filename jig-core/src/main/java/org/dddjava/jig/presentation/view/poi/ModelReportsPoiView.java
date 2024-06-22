@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ModelReportsPoiView implements JigView {
 
-    private ReportItemFormatter reportItemFormatter;
+    private final ReportItemFormatter reportItemFormatter;
 
     public ModelReportsPoiView(JigDocumentContext jigDocumentContext) {
         this.reportItemFormatter = new ReportItemFormatter(jigDocumentContext);

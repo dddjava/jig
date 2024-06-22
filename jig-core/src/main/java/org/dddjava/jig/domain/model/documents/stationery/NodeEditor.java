@@ -64,8 +64,8 @@ public class NodeEditor {
 
     static class Editor {
 
-        private Predicate<Node> predicate;
-        private Function<Node, Node> editor;
+        private final Predicate<Node> predicate;
+        private final Function<Node, Node> editor;
 
         Editor(Predicate<Node> predicate, Function<Node, Node> editor) {
             this.predicate = predicate;

@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
@@ -8,7 +9,6 @@ import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.LocalClassDeclarationStmt;
 import com.github.javaparser.ast.stmt.LocalRecordDeclarationStmt;
-import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumConstant;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModel;
@@ -83,7 +83,7 @@ class ClassVisitor extends VoidVisitorAdapter<Void> {
         super.visit(n, arg);
     }
 
-    private <T extends NodeWithSimpleName<?> & NodeWithJavadoc<?> & Visitable> TypeIdentifier visitTopNode(T node) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitTopNode(T node) {
         if (typeIdentifier != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
             return typeIdentifier;

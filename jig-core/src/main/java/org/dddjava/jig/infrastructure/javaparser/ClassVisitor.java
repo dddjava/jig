@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ClassVisitor extends VoidVisitorAdapter<Void> {
+class ClassVisitor extends VoidVisitorAdapter<Void> {
     static Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
 
     private final String packageName;

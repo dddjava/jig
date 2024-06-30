@@ -1,6 +1,8 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class ClassVisitor extends VoidVisitorAdapter<Void> {
+class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
     static Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
 
     private final String packageName;
@@ -38,15 +40,22 @@ class ClassVisitor extends VoidVisitorAdapter<Void> {
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration node, Void arg) {
-        visitTopNode(node);
-        // クラスの中を読む必要が出てきたらこのコメントを外す
-        // super.visit(node, arg);
+    public void visit(PackageDeclaration packageDeclaration, AdditionalSourceModelBuilder arg) {
+        arg.setPackage(packageDeclaration);
+    }
+    @Override
+    public void visit(ImportDeclaration importDeclaration, AdditionalSourceModelBuilder arg) {
+        arg.addImport(importDeclaration);
     }
 
     @Override
-    public void visit(EnumDeclaration node, Void arg) {
-        TypeIdentifier typeIdentifier = visitTopNode(node);
+    public void visit(ClassOrInterfaceDeclaration node, AdditionalSourceModelBuilder arg) {
+        visitClassOrInterfaceOrEnumOrRecord(node, arg);
+    }
+
+    @Override
+    public void visit(EnumDeclaration node, AdditionalSourceModelBuilder arg) {
+        TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
                 .map(d -> new EnumConstant(d.getNameAsString(), d.getArguments().stream().map(expr -> expr.toString()).collect(Collectors.toList())))
@@ -56,7 +65,7 @@ class ClassVisitor extends VoidVisitorAdapter<Void> {
     }
 
     @Override
-    public void visit(ConstructorDeclaration n, Void arg) {
+    public void visit(ConstructorDeclaration n, AdditionalSourceModelBuilder arg) {
         // enumの時だけコンストラクタの引数名を取る
         if (enumModel != null) {
             enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
@@ -65,29 +74,29 @@ class ClassVisitor extends VoidVisitorAdapter<Void> {
     }
 
     @Override
-    public void visit(RecordDeclaration n, Void arg) {
-        visitTopNode(n);
-        // recordの中を読む必要がある場合
-        // super.visit(n, arg);
+    public void visit(RecordDeclaration n, AdditionalSourceModelBuilder arg) {
+        visitClassOrInterfaceOrEnumOrRecord(n, arg);
     }
 
     @Override
-    public void visit(LocalRecordDeclarationStmt n, Void arg) {
+    public void visit(LocalRecordDeclarationStmt n, AdditionalSourceModelBuilder arg) {
         // メソッド内のRecordに対応する必要がある場合
         super.visit(n, arg);
     }
 
     @Override
-    public void visit(LocalClassDeclarationStmt n, Void arg) {
+    public void visit(LocalClassDeclarationStmt n, AdditionalSourceModelBuilder arg) {
         // メソッド内のclassに対応する必要がある場合
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitTopNode(T node) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, AdditionalSourceModelBuilder arg) {
         if (typeIdentifier != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
             return typeIdentifier;
         }
+        arg.setTypeName(node.getNameAsString());
+
         typeIdentifier = new TypeIdentifier(packageName + node.getNameAsString());
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {

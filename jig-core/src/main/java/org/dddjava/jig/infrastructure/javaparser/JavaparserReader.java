@@ -72,7 +72,8 @@ public class JavaparserReader implements JavaTextSourceReader {
                 .orElse("");
 
         ClassVisitor typeVisitor = new ClassVisitor(packageName);
-        cu.accept(typeVisitor, null);
+        AdditionalSourceModelBuilder builder = new AdditionalSourceModelBuilder();
+        cu.accept(typeVisitor, builder);
         return typeVisitor.toTextSourceModel();
     }
 }

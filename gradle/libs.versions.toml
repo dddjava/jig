@@ -12,7 +12,7 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version = { stric
 thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.0.15.RELEASE" } }
 
 asm = "org.ow2.asm:asm:9.7"
-javaparser = "com.github.javaparser:javaparser-core:3.25.10"
+javaparser = "com.github.javaparser:javaparser-core:3.26.1"
 mybatis = "org.mybatis:mybatis:3.5.16"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
@@ -24,7 +24,7 @@ spring-context = { module = "org.springframework:spring-context", version.ref = 
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-junit = "org.junit.jupiter:junit-jupiter:5.10.2"
+junit = "org.junit.jupiter:junit-jupiter:5.10.3"
 mockito = "org.mockito:mockito-core:5.12.0"
 assertj = "org.assertj:assertj-core:3.26.0"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"

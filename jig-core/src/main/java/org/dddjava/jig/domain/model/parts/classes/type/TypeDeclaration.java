@@ -37,10 +37,6 @@ public class TypeDeclaration {
         return superType.typeIdentifier().equals(typeIdentifier) || interfaceTypes.listTypeIdentifiers().contains(typeIdentifier);
     }
 
-    public boolean hasSuperOrInterface() {
-        return !superType.typeIdentifier.equals(new TypeIdentifier(Object.class)) || interfaceTypes.exists();
-    }
-
     public ParameterizedType superType() {
         return superType;
     }

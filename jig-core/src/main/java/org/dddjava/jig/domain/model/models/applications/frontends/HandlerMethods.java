@@ -64,7 +64,7 @@ public class HandlerMethods {
 
     public Set<TypeIdentifier> controllerTypeIdentifiers() {
         return list.stream()
-                .map(handlerMethod -> handlerMethod.jigType.identifier())
+                .map(handlerMethod -> handlerMethod.typeIdentifier())
                 .collect(Collectors.toSet());
     }
 

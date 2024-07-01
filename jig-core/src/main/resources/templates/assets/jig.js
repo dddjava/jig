@@ -61,3 +61,12 @@ function sortTable(tableId, columnIndex) {
         tbody.appendChild(row);
     });
 }
+
+function javadocToHtml(text) {
+    // linkタグの置き換え
+    text = text.replace(/{@link\s([^\s}]+?)}/g, '<a href="#$1">$1</a>');
+    text = text.replace(/{@link\s([^\s}]+?)\s+([^\s}]+?)}/g, '<a href="#$1">$2</a>');
+    return text;
+}
+
+Array.from(document.getElementsByClassName("javadoc")).forEach(x => x.innerHTML = javadocToHtml(x.innerHTML))

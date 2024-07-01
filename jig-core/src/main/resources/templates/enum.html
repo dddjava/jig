@@ -17,7 +17,7 @@
             <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
             <th:block th:with="description=${item.description()}">
-                <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
+                <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">
                     クラスのJavadocコメントが表示されます
                 </section>
             </th:block>

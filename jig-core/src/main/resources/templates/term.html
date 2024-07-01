@@ -33,7 +33,7 @@
         <tr th:each="term : ${terms.list()}">
             <td th:text="${term.identifier.simpleText()}" class="term">ClassName</td>
             <td th:text="${term.title()}" class="term">用語の和名が表示されます</td>
-            <td th:utext="${term.description()}" class="markdown">ここには **マークダウン** での説明が記述されます。</td>
+            <td th:utext="${term.description()}" class="markdown javadoc">ここには **マークダウン** での説明が記述されます。</td>
             <td th:text="${term.termKind()}" class="kind">クラス</td>
             <td th:text="${term.identifier.asText()}" class="identifier">this.is.full.ClassName</td>
         </tr>

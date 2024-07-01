@@ -12,7 +12,7 @@
         <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
         <th:block th:with="description=${item.description()}">
-            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
+            <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">クラスのJavadocコメントが表示されます</section>
         </th:block>
 
         <section th:if="${categoriesMap.containsKey(item.identifier())}"
@@ -67,7 +67,7 @@
                            th:href="${'#' + arg.fullQualifiedName()}" th:text="${#jig.labelText(arg)}">xxx</a>
                     </td>
                     <td th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</td>
-                    <td class="markdown" th:utext="${method.description().content()}">javadoc comment</td>
+                    <td class="markdown javadoc" th:utext="${method.description().content()}">javadoc comment</td>
                 </tr>
             </table>
         </th:block>

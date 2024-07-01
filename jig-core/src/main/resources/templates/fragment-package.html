@@ -12,7 +12,7 @@
         <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
 
         <th:block th:with="description=${item.description()}">
-            <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
+            <section class="markdown javadoc" th:if="${description.hasContent()}" th:utext="${description.content()}">
 package-infoのJavadocコメントが表示されます
 
 - ここではMarkdownがmarkedによりHTML出力されます。

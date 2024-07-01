@@ -120,10 +120,6 @@ public class JigType {
         return jigTypeAttribute.hasAnnotation(typeIdentifier);
     }
 
-    public boolean implementing(TypeIdentifier typeIdentifier) {
-        return typeDeclaration.extendsOrImplements(typeIdentifier);
-    }
-
     public boolean markedCore() {
         return jigTypeAttribute.alias().asText().startsWith("*");
     }

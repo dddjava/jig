@@ -33,10 +33,6 @@ public class TypeDeclaration {
         return interfaceTypes;
     }
 
-    public boolean extendsOrImplements(TypeIdentifier typeIdentifier) {
-        return superType.typeIdentifier().equals(typeIdentifier) || interfaceTypes.listTypeIdentifiers().contains(typeIdentifier);
-    }
-
     public ParameterizedType superType() {
         return superType;
     }

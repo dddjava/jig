@@ -35,6 +35,10 @@ public class JigType {
         this.usingTypes = usingTypes;
     }
 
+    public TypeIdentifier identifier() {
+        return typeDeclaration().identifier();
+    }
+
     public TypeDeclaration typeDeclaration() {
         return typeDeclaration;
     }
@@ -49,10 +53,6 @@ public class JigType {
 
     public Visibility visibility() {
         return jigTypeAttribute.visibility();
-    }
-
-    public TypeIdentifier identifier() {
-        return typeDeclaration().identifier();
     }
 
     public JigInstanceMember instanceMember() {

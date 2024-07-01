@@ -18,14 +18,14 @@ import java.util.List;
  * JIGが識別する型
  */
 public class JigType {
-    TypeDeclaration typeDeclaration;
+    private final TypeDeclaration typeDeclaration;
 
-    JigTypeAttribute jigTypeAttribute;
+    private final JigTypeAttribute jigTypeAttribute;
 
-    JigStaticMember jigStaticMember;
-    JigInstanceMember jigInstanceMember;
+    private final JigStaticMember jigStaticMember;
+    private final JigInstanceMember jigInstanceMember;
 
-    List<TypeIdentifier> usingTypes;
+    private final List<TypeIdentifier> usingTypes;
 
     public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, List<TypeIdentifier> usingTypes) {
         this.typeDeclaration = typeDeclaration;

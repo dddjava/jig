@@ -13,9 +13,9 @@ import java.util.List;
  * コンストラクタはメンバではないが、実装上はstaticファクトリメソッドと同等の役割を担うのでここで扱う。
  */
 public class JigStaticMember {
-    JigMethods constructors;
-    JigMethods staticMethods;
-    StaticFieldDeclarations staticFieldDeclarations;
+    private final JigMethods constructors;
+    private final JigMethods staticMethods;
+    private final StaticFieldDeclarations staticFieldDeclarations;
 
     public JigStaticMember(JigMethods constructors, JigMethods staticMethods, StaticFieldDeclarations staticFieldDeclarations) {
         this.constructors = constructors;

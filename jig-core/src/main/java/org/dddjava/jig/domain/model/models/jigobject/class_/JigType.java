@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
@@ -120,10 +120,6 @@ public class JigType {
         return jigTypeAttribute.hasAnnotation(typeIdentifier);
     }
 
-    public List<Annotation> listAnnotations() {
-        return jigTypeAttribute.annotations;
-    }
-
     public boolean implementing(TypeIdentifier typeIdentifier) {
         return typeDeclaration.extendsOrImplements(typeIdentifier);
     }
@@ -138,5 +134,9 @@ public class JigType {
 
     public boolean isDeprecated() {
         return hasAnnotation(TypeIdentifier.of(Deprecated.class));
+    }
+
+    public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
+        return jigTypeAttribute.annotationsOf(typeIdentifier);
     }
 }

@@ -31,8 +31,7 @@ public class HandlerMethod {
         this.jigType = jigType;
         this.method = method;
 
-        Annotations annotations = new Annotations(jigType.listAnnotations());
-        this.requestMappingForClass = annotations.filterAny(
+        this.requestMappingForClass = jigType.annotationsOf(
                 new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
 
         this.requestMappingsForMethod = method.methodAnnotations().annotations().filterAny(

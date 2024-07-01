@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class JigTypes {
 
-    List<JigType> list;
+    private final List<JigType> list;
 
     public JigTypes(List<JigType> list) {
         this.list = list;

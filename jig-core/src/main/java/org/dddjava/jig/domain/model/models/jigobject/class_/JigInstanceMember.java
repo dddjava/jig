@@ -12,8 +12,8 @@ import java.util.List;
  * インスタンスに属するもの
  */
 public class JigInstanceMember {
-    JigFields instanceFields;
-    JigMethods instanceMethods;
+    private final JigFields instanceFields;
+    private final JigMethods instanceMethods;
 
     public JigInstanceMember(JigFields instanceFields, JigMethods instanceMethods) {
         this.instanceFields = instanceFields;

@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.parts.comment.Comment;
 
 public class JigTypeDescription {
 
-    String subject;
-    String content;
+    private final String subject;
+    private final String content;
 
     private JigTypeDescription(String subject, String content) {
         this.subject = subject;

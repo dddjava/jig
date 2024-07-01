@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
+import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -12,11 +13,11 @@ import java.util.stream.Collectors;
  * 型の属性
  */
 public class JigTypeAttribute {
-    ClassComment classComment;
-    TypeKind typeKind;
-    Visibility visibility;
+    private final ClassComment classComment;
+    private final TypeKind typeKind;
+    private final Visibility visibility;
 
-    List<Annotation> annotations;
+    private final List<Annotation> annotations;
 
     public JigTypeAttribute(ClassComment classComment, TypeKind typeKind, Visibility visibility, List<Annotation> annotations) {
         this.classComment = classComment;
@@ -51,5 +52,9 @@ public class JigTypeAttribute {
     public boolean hasAnnotation(TypeIdentifier typeIdentifier) {
         return annotations.stream()
                 .anyMatch(annotation -> annotation.is(typeIdentifier));
+    }
+
+    public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
+        return new Annotations(annotations).filterAny(typeIdentifier);
     }
 }

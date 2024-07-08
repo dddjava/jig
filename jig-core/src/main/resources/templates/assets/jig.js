@@ -70,3 +70,17 @@ function javadocToHtml(text) {
 }
 
 Array.from(document.getElementsByClassName("javadoc")).forEach(x => x.innerHTML = javadocToHtml(x.innerHTML))
+
+// ブラウザバックなどで該当要素に移動する
+// Safariなどではブラウザバックでも移動するが、ChromeやEdgeだと移動しない。
+// なのでpopstateイベントでlocationからhashを取得し、hashがある場合はその要素に移動する
+window.addEventListener("popstate", function(event) {
+    const hash = event.target.location.hash;
+
+    if (hash) {
+        const anchor = document.querySelector('a[name="' + hash.substring(1) + '"]');
+        if (anchor) {
+            anchor.scrollIntoView();
+        }
+    }
+});

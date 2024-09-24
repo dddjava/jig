@@ -131,43 +131,24 @@ public class JigController {
     }
 
     public Object handle(JigDocument jigDocument) {
-        // Java17でswitch式に変更
-        switch (jigDocument) {
-            case BusinessRuleList:
-                return domainList();
-            case PackageRelationDiagram:
-                return packageDependency();
-            case BusinessRuleRelationDiagram:
-                return businessRuleRelation();
-            case OverconcentrationBusinessRuleDiagram:
-                return overconcentrationBusinessRuleRelation();
-            case CoreBusinessRuleRelationDiagram:
-                return coreBusinessRuleRelation();
-            case CategoryDiagram:
-                return categories();
-            case CategoryUsageDiagram:
-                return categoryUsage();
-            case ApplicationList:
-                return applicationList();
-            case ServiceMethodCallHierarchyDiagram:
-                return serviceMethodCallHierarchy();
-            case CompositeUsecaseDiagram:
-                return useCaseDiagram();
-            case ArchitectureDiagram:
-                return architecture();
-            case DomainSummary:
-                return domainListHtml();
-            case ApplicationSummary:
-            case UsecaseSummary:
-                return applicationSummary();
-            case EnumSummary:
-                return enumListHtml();
-            case TermTable:
-                return businessRuleService.terms();
-            case TermList:
-                return termList();
-        }
+        return switch (jigDocument) {
+            case BusinessRuleList -> domainList();
+            case PackageRelationDiagram -> packageDependency();
+            case BusinessRuleRelationDiagram -> businessRuleRelation();
+            case OverconcentrationBusinessRuleDiagram -> overconcentrationBusinessRuleRelation();
+            case CoreBusinessRuleRelationDiagram -> coreBusinessRuleRelation();
+            case CategoryDiagram -> categories();
+            case CategoryUsageDiagram -> categoryUsage();
+            case ApplicationList -> applicationList();
+            case ServiceMethodCallHierarchyDiagram -> serviceMethodCallHierarchy();
+            case CompositeUsecaseDiagram -> useCaseDiagram();
+            case ArchitectureDiagram -> architecture();
+            case DomainSummary -> domainListHtml();
+            case ApplicationSummary, UsecaseSummary -> applicationSummary();
+            case EnumSummary -> enumListHtml();
+            case TermTable -> businessRuleService.terms();
+            case TermList -> termList();
+        };
 
-        throw new IllegalStateException("cannot find handler method for " + jigDocument);
     }
 }

@@ -69,6 +69,13 @@ public class MethodDeclaration {
         return methodIdentifier;
     }
 
+    /**
+     * パッケージおよび引数を省略した文字列表現。
+     * オーバーロードされる場合は使用しづらいものになります。
+     * あまり使わない方が良さそう。
+     *
+     * @return "ClassName.methodName"
+     */
     public String asSimpleText() {
         return methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.methodSignature().methodName();
     }

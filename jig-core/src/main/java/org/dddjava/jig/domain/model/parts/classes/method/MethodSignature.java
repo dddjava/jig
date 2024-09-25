@@ -28,7 +28,12 @@ public class MethodSignature {
         this(methodName, new Arguments(Collections.singletonList(argument)));
     }
 
-
+    /**
+     * メソッド文字列表現。引数型もFQNでになります。
+     *
+     * @return method(java.lang.String)
+     * @see #asSimpleText()
+     */
     public String asText() {
         return methodName + "(" + arguments.argumentsAsText() + ")";
     }
@@ -37,6 +42,12 @@ public class MethodSignature {
         return methodName;
     }
 
+    /**
+     * 人がよく目にする形のメソッド文字列表現。
+     * `asText()` との差は引数型のパッケージが省略されるところです。
+     *
+     * @return method(String)
+     */
     public String asSimpleText() {
         return methodName + "(" + arguments.argumentsAsSimpleText() + ")";
     }

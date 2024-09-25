@@ -11,10 +11,8 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.JigView;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
@@ -24,15 +22,12 @@ import static java.util.stream.Collectors.*;
  *
  * 概要HTMLで出力するパッケージツリーと詳細のモデルを加工します。
  */
-public class SummaryView implements JigView {
+public class SummaryView extends HtmlView implements JigView {
 
-    final Map<String, Object> contextMap;
-    final TemplateEngine templateEngine;
     JigDocumentContext jigDocumentContext;
 
     public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
-        this.templateEngine = templateEngine;
-        this.contextMap = new ConcurrentHashMap<>();
+        super(templateEngine);
         this.jigDocumentContext = jigDocumentContext;
     }
 
@@ -89,18 +84,5 @@ public class SummaryView implements JigView {
             }
             createTree(jigTypeMap, packageMap, composite);
         }
-    }
-
-    protected void write(JigDocumentWriter jigDocumentWriter) {
-        contextMap.put("title", jigDocumentWriter.jigDocument().label());
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
-    }
-
-    protected void putContext(String key, Object variable) {
-        contextMap.put(key, variable);
     }
 }

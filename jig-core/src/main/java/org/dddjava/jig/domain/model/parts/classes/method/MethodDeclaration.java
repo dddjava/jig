@@ -25,10 +25,17 @@ public class MethodDeclaration {
         return methodIdentifier.asText();
     }
 
+    /**
+     * パッケージを省略したシグネチャの文字列表現
+     * @return "methodName(ArgumentType)"
+     */
     public String asSignatureSimpleText() {
         return methodSignature().asSimpleText();
     }
 
+    /**
+     * @return "methodName(ArgumentType):ReturnType"
+     */
     public String asSignatureAndReturnTypeSimpleText() {
         return asSignatureSimpleText() + ":" + methodReturn().asSimpleText();
     }
@@ -53,6 +60,9 @@ public class MethodDeclaration {
         return methodSignature().isLambda();
     }
 
+    /**
+     * @return "ClassName.methodName(ArgumentType)"
+     */
     public String asSimpleTextWithDeclaringType() {
         return declaringType().asSimpleText() + "." + asSignatureSimpleText();
     }

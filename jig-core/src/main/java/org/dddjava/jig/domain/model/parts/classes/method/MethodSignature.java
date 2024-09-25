@@ -31,7 +31,7 @@ public class MethodSignature {
     /**
      * メソッド文字列表現。引数型もFQNでになります。
      *
-     * @return method(java.lang.String)
+     * @return "methodName(java.lang.String)"
      * @see #asSimpleText()
      */
     public String asText() {
@@ -46,7 +46,7 @@ public class MethodSignature {
      * 人がよく目にする形のメソッド文字列表現。
      * `asText()` との差は引数型のパッケージが省略されるところです。
      *
-     * @return method(String)
+     * @return "methodName(ArgumentType)"
      */
     public String asSimpleText() {
         return methodName + "(" + arguments.argumentsAsSimpleText() + ")";

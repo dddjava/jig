@@ -1,15 +1,30 @@
 package org.dddjava.jig.presentation.view.handler;
 
+import org.dddjava.jig.application.service.ApplicationService;
+import org.dddjava.jig.application.service.BusinessRuleService;
+import org.dddjava.jig.application.service.DependencyService;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.controller.JigController;
+import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
+import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.IndexView;
+import org.dddjava.jig.presentation.view.html.JigExpressionObjectDialect;
+import org.dddjava.jig.presentation.view.html.SummaryView;
+import org.dddjava.jig.presentation.view.html.TableView;
+import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -34,6 +49,18 @@ public class JigDocumentHandlers {
         this.jigController = jigController;
         this.jigDocuments = jigDocuments;
         this.outputDirectory = outputDirectory;
+    }
+
+    public static JigDocumentHandlers from(JigDocumentContext jigDocumentContext, DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
+        return new JigDocumentHandlers(
+                new ViewResolver(
+                        outputDiagramFormat,
+                        jigDocumentContext
+                ),
+                new JigController(dependencyService, businessRuleService, applicationService),
+                jigDocuments,
+                outputDirectory
+        );
     }
 
     public HandleResults handleJigDocuments() {
@@ -123,6 +150,53 @@ public class JigDocumentHandlers {
             Files.copy(Objects.requireNonNull(is), distDirectory.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    static class ViewResolver {
+
+        JigDiagramFormat diagramFormat;
+
+        JigDocumentContext jigDocumentContext;
+        DotCommandRunner dotCommandRunner;
+        TemplateEngine templateEngine;
+
+        public ViewResolver(JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
+            this.jigDocumentContext = jigDocumentContext;
+            this.diagramFormat = diagramFormat;
+
+            // setup Graphviz
+            this.dotCommandRunner = new DotCommandRunner();
+
+            // setup Thymeleaf
+            TemplateEngine templateEngine = new TemplateEngine();
+            ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+            templateResolver.setTemplateMode(TemplateMode.HTML);
+            templateResolver.setSuffix(".html");
+            templateResolver.setPrefix("templates/");
+            templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            templateEngine.setTemplateResolver(templateResolver);
+            templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
+            this.templateEngine = templateEngine;
+        }
+
+        JigView resolve(JigDocument jigDocument) {
+            switch (jigDocument.jigDocumentType()) {
+                case LIST:
+                    return new ModelReportsPoiView(jigDocumentContext);
+                case DIAGRAM:
+                    return new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
+                case SUMMARY:
+                    return new SummaryView(templateEngine, jigDocumentContext);
+                case TABLE:
+                    return new TableView(templateEngine, jigDocumentContext);
+            }
+
+            throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);
+        }
+
+        IndexView indexView() {
+            return new IndexView(templateEngine, diagramFormat);
         }
     }
 }

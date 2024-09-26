@@ -7,15 +7,7 @@ import java.util.Objects;
 /**
  * メソッドの識別子
  */
-public class MethodIdentifier {
-
-    private final TypeIdentifier declaringType;
-    private final MethodSignature methodSignature;
-
-    public MethodIdentifier(TypeIdentifier declaringType, MethodSignature methodSignature) {
-        this.declaringType = declaringType;
-        this.methodSignature = methodSignature;
-    }
+public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature methodSignature) {
 
     /**
      * @return "org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier#methodName(java.lang.String)"
@@ -44,14 +36,6 @@ public class MethodIdentifier {
 
     public boolean matchesIgnoreOverload(MethodIdentifier methodIdentifier) {
         return matches(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
-    }
-
-    public TypeIdentifier declaringType() {
-        return declaringType;
-    }
-
-    public MethodSignature methodSignature() {
-        return methodSignature;
     }
 
     @Override

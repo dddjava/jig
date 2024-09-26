@@ -13,10 +13,8 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
-import org.dddjava.jig.presentation.controller.JigController;
 import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
-import org.dddjava.jig.presentation.view.handler.ViewResolver;
 
 public class Configuration {
     JigProperties properties;
@@ -59,15 +57,8 @@ public class Configuration {
         this.aliasService = new AliasService(commentRepository);
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService, properties.linkPrefix());
 
-        this.documentHandlers = new JigDocumentHandlers(
-                new ViewResolver(
-                        properties.outputDiagramFormat,
-                        jigDocumentContext
-                ),
-                new JigController(dependencyService, businessRuleService, applicationService),
-                properties.jigDocuments,
-                properties.outputDirectory
-        );
+        this.documentHandlers = JigDocumentHandlers.from(
+                jigDocumentContext, dependencyService, businessRuleService, applicationService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
     }
 
     public JigSourceReadService implementationService() {

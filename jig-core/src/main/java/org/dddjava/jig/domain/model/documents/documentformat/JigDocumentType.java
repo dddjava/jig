@@ -18,10 +18,5 @@ public enum JigDocumentType {
     /**
      * 図
      */
-    DIAGRAM,
-
-    /**
-     * その他
-     */
-    CUSTOM
+    DIAGRAM
 }

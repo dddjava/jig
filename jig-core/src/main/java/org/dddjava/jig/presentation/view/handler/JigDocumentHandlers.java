@@ -82,12 +82,8 @@ public class JigDocumentHandlers {
             long startTime = System.currentTimeMillis();
             Object model = jigController.handle(jigDocument);
 
-            if (model instanceof ModelAndView mv) {
-                viewResolver.resolve(mv.viewClass()).render(model, jigDocumentWriter);
-            } else {
-                JigView jigView = viewResolver.resolve(jigDocument);
-                jigView.render(model, jigDocumentWriter);
-            }
+            JigView jigView = viewResolver.resolve(jigDocument);
+            jigView.render(model, jigDocumentWriter);
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);

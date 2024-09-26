@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.JigView;
-import org.dddjava.jig.presentation.view.handler.ModelAndView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -104,11 +103,5 @@ public class SummaryView implements JigView {
 
     protected void putContext(String key, Object variable) {
         contextMap.put(key, variable);
-    }
-
-    protected void renderInternal(Object model) {
-        if (model instanceof ModelAndView modelAndView) {
-            putContext("model", modelAndView.model());
-        }
     }
 }

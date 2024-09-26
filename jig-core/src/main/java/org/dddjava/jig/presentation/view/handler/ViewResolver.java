@@ -5,7 +5,10 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
-import org.dddjava.jig.presentation.view.html.*;
+import org.dddjava.jig.presentation.view.html.IndexView;
+import org.dddjava.jig.presentation.view.html.JigExpressionObjectDialect;
+import org.dddjava.jig.presentation.view.html.SummaryView;
+import org.dddjava.jig.presentation.view.html.TableView;
 import org.dddjava.jig.presentation.view.poi.ModelReportsPoiView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -57,13 +60,6 @@ public class ViewResolver {
 
     IndexView indexView() {
         return new IndexView(templateEngine, diagramFormat);
-    }
-
-    public JigView resolve(Class<? extends JigView> clz) {
-        if (clz == HtmlView.class) {
-            return new HtmlView(templateEngine, jigDocumentContext);
-        }
-        throw new UnsupportedOperationException("unsupported view: " + clz);
     }
 }
 

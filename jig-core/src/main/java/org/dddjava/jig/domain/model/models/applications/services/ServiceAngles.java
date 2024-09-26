@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -83,17 +82,13 @@ public class ServiceAngles {
         var relations = new StringJoiner("\n");
         extracted(key, relations, targets);
 
-        Function<String, String> escape = string -> string
-//                .replace('(', '（')
-//                .replace(')', '）')
-                ;
 
         var labels = list().stream()
                 // 処理したものだけラベル出力
                 .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
                 .map(serviceAngle -> "%s[\"%s\"]".formatted(
                         serviceAngle.method().asSimpleText(),
-                        escape.apply(serviceAngle.serviceMethod().method().labelTextOrLambda())
+                        serviceAngle.serviceMethod().method().labelTextOrLambda()
                 ))
                 .collect(Collectors.joining("\n"));
 

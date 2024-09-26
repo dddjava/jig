@@ -16,7 +16,10 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.term.Terms;
+import org.dddjava.jig.presentation.view.handler.ModelAndView;
+import org.dddjava.jig.presentation.view.html.HtmlView;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
@@ -126,6 +129,31 @@ public class JigController {
         );
     }
 
+    public ModelAndView mermaid() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
+
+        record Entry(JigMethod jigMethod, String mermaidText) {
+        }
+
+        var model = serviceAngles.list()
+                .stream()
+                // どのServiceMethodにも使用されていないものだけを起点にする
+                .filter(serviceAngle -> serviceAngle.userServiceMethods().empty())
+                // どのServiceMethodも使用していないものは除外する
+                .filter(serviceAngle -> !serviceAngle.usingServiceMethods().empty())
+                .map(rootServiceMethod -> {
+                    var key = rootServiceMethod.method().asSimpleText();
+
+                    return new Entry(
+                            rootServiceMethod.serviceMethod().method(),
+                            serviceAngles.mermaidText(key)
+                    );
+                })
+                .toList();
+
+        return new ModelAndView(model, HtmlView.class);
+    }
+
     public SummaryModel applicationSummary() {
         return SummaryModel.from(applicationService.serviceMethods());
     }
@@ -148,6 +176,7 @@ public class JigController {
             case EnumSummary -> enumListHtml();
             case TermTable -> businessRuleService.terms();
             case TermList -> termList();
+            case Mermaid -> mermaid();
         };
 
     }

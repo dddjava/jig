@@ -138,7 +138,12 @@ public enum JigDocument {
             "term", JigDocumentType.LIST),
     TermTable(
             JigDocumentLabel.of("用語集", "term"),
-            "term", JigDocumentType.TABLE);
+            "term", JigDocumentType.TABLE),
+
+    Mermaid(
+            JigDocumentLabel.of("Mermaid", "mermaid"),
+            "mermaid", JigDocumentType.CUSTOM)
+    ;
 
     private final JigDocumentLabel label;
     private final String documentFileName;

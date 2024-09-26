@@ -1,0 +1,36 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment-base::head(${title})">
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <title>domain</title>
+</head>
+<body>
+<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+
+<main>
+    <div>
+        <h1>サービスの呼び出し</h1>
+
+        <div th:each="entry : ${model}">
+            <h2><a th:name="${entry.jigMethod().labelText()}"
+                   th:text="${entry.jigMethod().labelText()}">XXXクラス</a></h2>
+            <div class="fully-qualified-name" th:text="${entry.jigMethod().fqn()}">org.dddjava.jig.package.Class</div>
+
+            <div class="mermaid" th:text="${entry.mermaidText()}">
+                graph LR
+                    a --> b
+                    a --> c
+                    b --> c
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+<th:block th:replace="fragment-base::scripts">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.2.1/dist/mermaid.min.js"></script>
+    <script src="./assets/jig.js"></script>
+</th:block>
+</body>
+</html>

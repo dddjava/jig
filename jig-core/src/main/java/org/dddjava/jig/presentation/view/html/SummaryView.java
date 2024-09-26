@@ -10,9 +10,12 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.JigView;
+import org.dddjava.jig.presentation.view.handler.ModelAndView;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
@@ -22,13 +25,16 @@ import static java.util.stream.Collectors.*;
  *
  * 概要HTMLで出力するパッケージツリーと詳細のモデルを加工します。
  */
-public class SummaryView extends HtmlView implements JigView {
+public class SummaryView implements JigView {
 
-    JigDocumentContext jigDocumentContext;
+    protected final JigDocumentContext jigDocumentContext;
+    private final TemplateEngine templateEngine;
+    private final Map<String, Object> contextMap;
 
     public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
-        super(templateEngine);
+        this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
+        this.contextMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -83,6 +89,25 @@ public class SummaryView extends HtmlView implements JigView {
                 composite.addComponent(new TreeLeaf(jigType));
             }
             createTree(jigTypeMap, packageMap, composite);
+        }
+    }
+
+    protected void write(JigDocumentWriter jigDocumentWriter) {
+        contextMap.put("title", jigDocumentWriter.jigDocument().label());
+        Context context = new Context(Locale.ROOT, contextMap);
+        String template = jigDocumentWriter.jigDocument().fileName();
+
+        jigDocumentWriter.writeTextAs(".html",
+                writer -> templateEngine.process(template, context, writer));
+    }
+
+    protected void putContext(String key, Object variable) {
+        contextMap.put(key, variable);
+    }
+
+    protected void renderInternal(Object model) {
+        if (model instanceof ModelAndView modelAndView) {
+            putContext("model", modelAndView.model());
         }
     }
 }

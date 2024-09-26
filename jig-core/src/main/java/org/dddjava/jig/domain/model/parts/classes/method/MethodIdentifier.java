@@ -17,6 +17,9 @@ public class MethodIdentifier {
         this.methodSignature = methodSignature;
     }
 
+    /**
+     * @return "org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier#methodName(java.lang.String)"
+     */
     public String asText() {
         return declaringType.fullQualifiedName() + "#" + methodSignature.asText();
     }

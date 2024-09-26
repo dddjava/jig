@@ -25,10 +25,18 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         return new TypeIdentifier(clz);
     }
 
+    /**
+     * @return "org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier"
+     */
     public String fullQualifiedName() {
         return format(value -> value);
     }
 
+    /**
+     * パッケージなしのクラス名
+     *
+     * @return "TypeIdentifier"
+     */
     public String asSimpleText() {
         return hasPackage() ? format(value -> value.substring(value.lastIndexOf(".") + 1)) : value;
     }

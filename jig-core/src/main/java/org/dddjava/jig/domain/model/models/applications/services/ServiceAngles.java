@@ -55,48 +55,52 @@ public class ServiceAngles {
         return map;
     }
 
-    public List<String> usings(String key) {
+    private List<String> usings(String key) {
         return list.stream().filter(serviceAngle -> serviceAngle.method().asSimpleText().equals(key))
                 .findAny()
                 .map(serviceAngle -> serviceAngle.usingServiceMethods().list().stream().map(MethodDeclaration::asSimpleText).toList())
                 .orElseGet(List::of);
     }
 
-    private void extracted(String key, StringJoiner relations, Set<String> stopper) {
+    private Optional<String> relationsText(String key, Set<String> stopper) {
         if (stopper.contains(key)) {
-            return;
+            // 処理済みなので抜ける。抜けないと無限ループになる。
+            return Optional.empty();
         }
         stopper.add(key);
+
         var usings = usings(key);
+        var relations = new StringJoiner("\n");
         relations.add(usings.stream()
                 .map(using -> "%s --> %s".formatted(key, using))
                 .collect(Collectors.joining("\n")));
         for (var using : usings) {
-            extracted(using, relations, stopper);
+            relationsText(using, stopper).ifPresent(relations::add);
         }
+        return Optional.of(relations.toString());
     }
 
     public String mermaidText(String key) {
         Set<String> targets = new HashSet<>();
 
-        var relations = new StringJoiner("\n");
-        extracted(key, relations, targets);
+        return relationsText(key, targets)
+                .map(relations -> {
+                    var labels = list().stream()
+                            // 処理したものだけラベル出力
+                            .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
+                            .map(serviceAngle -> "%s[\"%s\"]".formatted(
+                                    serviceAngle.method().asSimpleText(),
+                                    serviceAngle.serviceMethod().method().labelTextOrLambda()
+                            ))
+                            .collect(Collectors.joining("\n"));
 
+                    var mermaidText = new StringJoiner("\n");
+                    mermaidText.add("graph LR");
+                    mermaidText.add(relations);
+                    mermaidText.add(labels);
 
-        var labels = list().stream()
-                // 処理したものだけラベル出力
-                .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
-                .map(serviceAngle -> "%s[\"%s\"]".formatted(
-                        serviceAngle.method().asSimpleText(),
-                        serviceAngle.serviceMethod().method().labelTextOrLambda()
-                ))
-                .collect(Collectors.joining("\n"));
-
-        var mermaidText = new StringJoiner("\n");
-        mermaidText.add("graph LR");
-        mermaidText.add(relations.toString());
-        mermaidText.add(labels);
-
-        return mermaidText.toString();
+                    return mermaidText.toString();
+                })
+                .orElse("");
     }
 }

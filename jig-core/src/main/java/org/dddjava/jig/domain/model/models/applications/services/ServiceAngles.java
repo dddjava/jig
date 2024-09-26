@@ -45,16 +45,6 @@ public class ServiceAngles {
         return list.isEmpty();
     }
 
-
-    public Map<String, List<String>> collectRelation() {
-        var map = new HashMap<String, List<String>>();
-        for (ServiceAngle serviceAngle : list) {
-            map.put(serviceAngle.method().asSimpleText(),
-                    serviceAngle.usingServiceMethods().list().stream().map(MethodDeclaration::asSimpleText).toList());
-        }
-        return map;
-    }
-
     private List<String> usings(String key) {
         return list.stream().filter(serviceAngle -> serviceAngle.method().asSimpleText().equals(key))
                 .findAny()

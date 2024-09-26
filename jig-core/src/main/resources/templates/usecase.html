@@ -14,18 +14,6 @@
     </nav>
 
     <main class="usecase">
-        <details open>
-            <summary>ユースケース複合図（ハンドラ）</summary>
-            <a href="./composite-usecase-handler.svg">
-                <img src="./composite-usecase-handler.svg">
-            </a>
-        </details>
-        <details>
-            <summary>ユースケース複合図</summary>
-            <a href="./composite-usecase.svg">
-                <img src="./composite-usecase.svg">
-            </a>
-        </details>
 
         <!--
         <th:block th:each="item : ${jigPackages}">
@@ -52,6 +40,14 @@
                          th:text="${method.declaration().asSignatureAndReturnTypeSimpleText()}">
                         availableRoomList(OffsetDateTime):List
                     </div>
+
+                    <div class="mermaid" th:if="${model.mermaidMap().containsKey(method.fqn())}" th:utext="${model.mermaidMap().get(method.fqn())}">
+                            graph LR
+                            a --> b
+                            a --> c
+                            b --> c
+                    </div>
+
                     <dl class="depends" th:with="methodReturn=${method.declaration().methodReturn()}">
                         <dt th:unless="${method.listArguments().isEmpty()}">要求するもの（引数）</dt>
                         <dd th:each="arg : ${method.listArguments()}">

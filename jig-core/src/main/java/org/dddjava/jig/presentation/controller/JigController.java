@@ -27,6 +27,8 @@ import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
 import org.dddjava.jig.presentation.view.report.business_rule.*;
 
+import java.util.stream.Collectors;
+
 public class JigController {
 
     private final DependencyService dependencyService;
@@ -158,6 +160,36 @@ public class JigController {
         return SummaryModel.from(applicationService.serviceMethods());
     }
 
+    public SummaryModel usecaseSummary() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
+
+        record Entry(JigMethod jigMethod, String mermaidText) {
+        }
+
+        var mermaidMap = serviceAngles.list()
+                .stream()
+                // どのServiceMethodにも使用されていないものだけを起点にする
+                //.filter(serviceAngle -> serviceAngle.userServiceMethods().empty())
+                // どのServiceMethodも使用していないものは除外する
+                //.filter(serviceAngle -> !serviceAngle.usingServiceMethods().empty())
+                .map(rootServiceMethod -> {
+                    var key = rootServiceMethod.method().asSimpleText();
+
+                    return new Entry(
+                            rootServiceMethod.serviceMethod().method(),
+                            serviceAngles.mermaidText(key)
+                    );
+                })
+                .collect(Collectors.groupingBy(
+                        entry -> entry.jigMethod.fqn(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream().findFirst().map(entry -> entry.mermaidText()).orElse(null))
+                ));
+
+        return SummaryModel.from(applicationService.serviceMethods(), mermaidMap);
+    }
+
     public Object handle(JigDocument jigDocument) {
         return switch (jigDocument) {
             case BusinessRuleList -> domainList();
@@ -172,7 +204,8 @@ public class JigController {
             case CompositeUsecaseDiagram -> useCaseDiagram();
             case ArchitectureDiagram -> architecture();
             case DomainSummary -> domainListHtml();
-            case ApplicationSummary, UsecaseSummary -> applicationSummary();
+            case ApplicationSummary -> applicationSummary();
+            case UsecaseSummary -> usecaseSummary();
             case EnumSummary -> enumListHtml();
             case TermTable -> businessRuleService.terms();
             case TermList -> termList();

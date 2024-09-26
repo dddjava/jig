@@ -74,6 +74,7 @@ public class SummaryView implements JigView {
         putContext("jigTypes", jigTypes);
         putContext("categoriesMap", categoriesMap);
         putContext("enumModels", summaryModel.enumModels());
+        putContext("model", summaryModel);
         write(jigDocumentWriter);
     }
 

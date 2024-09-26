@@ -16,7 +16,7 @@
                    th:text="${entry.jigMethod().labelText()}">XXXクラス</a></h2>
             <div class="fully-qualified-name" th:text="${entry.jigMethod().fqn()}">org.dddjava.jig.package.Class</div>
 
-            <div class="mermaid" th:text="${entry.mermaidText()}">
+            <div class="mermaid" th:utext="${entry.mermaidText()}">
                 graph LR
                     a --> b
                     a --> c

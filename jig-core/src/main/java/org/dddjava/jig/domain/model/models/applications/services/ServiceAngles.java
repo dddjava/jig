@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -79,17 +80,22 @@ public class ServiceAngles {
     public String mermaidText(String key) {
         Set<String> targets = new HashSet<>();
 
-        var relations = new StringJoiner("\n", "    ", "");
+        var relations = new StringJoiner("\n");
         extracted(key, relations, targets);
+
+        Function<String, String> escape = string -> string
+//                .replace('(', '（')
+//                .replace(')', '）')
+                ;
 
         var labels = list().stream()
                 // 処理したものだけラベル出力
                 .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
-                .map(serviceAngle -> "%s[%s]".formatted(
+                .map(serviceAngle -> "%s[\"%s\"]".formatted(
                         serviceAngle.method().asSimpleText(),
-                        serviceAngle.serviceMethod().method().labelTextOrLambda()
+                        escape.apply(serviceAngle.serviceMethod().method().labelTextOrLambda())
                 ))
-                .collect(Collectors.joining("\n", "    ", ""));
+                .collect(Collectors.joining("\n"));
 
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");

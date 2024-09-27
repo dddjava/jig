@@ -31,13 +31,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JigDocumentHandlers {
+public class JigDocumentHandlers extends JigController {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
     private final JigDocumentContext jigDocumentContext;
     private final JigDiagramFormat diagramFormat;
-    private final JigController jigController;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
@@ -46,12 +45,12 @@ public class JigDocumentHandlers {
 
     public JigDocumentHandlers(JigDocumentContext jigDocumentContext,
                                JigDiagramFormat diagramFormat,
-                               JigController jigController,
+                               DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService,
                                List<JigDocument> jigDocuments,
                                Path outputDirectory) {
+        super(dependencyService, businessRuleService, applicationService);
         this.jigDocumentContext = jigDocumentContext;
         this.diagramFormat = diagramFormat;
-        this.jigController = jigController;
         this.jigDocuments = jigDocuments;
         this.outputDirectory = outputDirectory;
 
@@ -74,7 +73,7 @@ public class JigDocumentHandlers {
         return new JigDocumentHandlers(
                 jigDocumentContext,
                 outputDiagramFormat,
-                new JigController(dependencyService, businessRuleService, applicationService),
+                dependencyService, businessRuleService, applicationService,
                 jigDocuments,
                 outputDirectory
         );
@@ -124,7 +123,7 @@ public class JigDocumentHandlers {
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
             long startTime = System.currentTimeMillis();
-            Object model = jigController.handle(jigDocument);
+            Object model = handle(jigDocument);
 
             JigView jigView = resolve(jigDocument);
             jigView.render(model, jigDocumentWriter);

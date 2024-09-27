@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.handler;
+package org.dddjava.jig.presentation.handler;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
@@ -6,7 +6,6 @@ import org.dddjava.jig.application.service.DependencyService;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.presentation.controller.JigController;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.IndexView;

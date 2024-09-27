@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.view.handler;
+package org.dddjava.jig.presentation.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;

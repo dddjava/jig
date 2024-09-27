@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
-import org.dddjava.jig.presentation.view.handler.JigView;
+import org.dddjava.jig.presentation.handler.JigDocumentWriter;
+import org.dddjava.jig.presentation.handler.JigView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

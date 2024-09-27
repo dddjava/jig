@@ -3,7 +3,7 @@ package org.dddjava.jig.presentation.view.html;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
-import org.dddjava.jig.presentation.view.handler.HandleResult;
+import org.dddjava.jig.presentation.handler.HandleResult;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

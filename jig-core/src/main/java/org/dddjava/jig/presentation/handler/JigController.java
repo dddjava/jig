@@ -1,4 +1,4 @@
-package org.dddjava.jig.presentation.controller;
+package org.dddjava.jig.presentation.handler;
 
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;

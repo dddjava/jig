@@ -2,8 +2,8 @@ package org.dddjava.jig.presentation.view.html;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.term.Terms;
-import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
-import org.dddjava.jig.presentation.view.handler.JigView;
+import org.dddjava.jig.presentation.handler.JigDocumentWriter;
+import org.dddjava.jig.presentation.handler.JigView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

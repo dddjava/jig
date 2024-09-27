@@ -1,13 +1,10 @@
-package org.dddjava.jig.presentation.controller;
+package org.dddjava.jig.presentation.handler;
 
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatuses;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.presentation.view.handler.HandleResult;
-import org.dddjava.jig.presentation.view.handler.HandleResults;
-import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

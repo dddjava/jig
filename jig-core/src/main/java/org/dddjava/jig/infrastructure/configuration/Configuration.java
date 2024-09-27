@@ -14,7 +14,7 @@ import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
-import org.dddjava.jig.presentation.view.handler.JigDocumentHandlers;
+import org.dddjava.jig.presentation.handler.JigDocumentHandlers;
 
 public class Configuration {
     JigProperties properties;

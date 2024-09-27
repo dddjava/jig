@@ -1,8 +1,9 @@
-package org.dddjava.jig.presentation.controller;
+package org.dddjava.jig.presentation.handler;
 
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.presentation.view.handler.HandleResults;
+import org.dddjava.jig.presentation.handler.HandleResults;
+import org.dddjava.jig.presentation.handler.JigExecutor;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 

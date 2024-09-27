@@ -36,27 +36,45 @@ public class JigDocumentHandlers {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentHandlers.class);
 
-    private final ViewResolver viewResolver;
+    private final JigDocumentContext jigDocumentContext;
+    private final JigDiagramFormat diagramFormat;
     private final JigController jigController;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
-    public JigDocumentHandlers(ViewResolver viewResolver,
+    private final DotCommandRunner dotCommandRunner;
+    private final TemplateEngine templateEngine;
+
+    public JigDocumentHandlers(JigDocumentContext jigDocumentContext,
+                               JigDiagramFormat diagramFormat,
                                JigController jigController,
                                List<JigDocument> jigDocuments,
                                Path outputDirectory) {
-        this.viewResolver = viewResolver;
+        this.jigDocumentContext = jigDocumentContext;
+        this.diagramFormat = diagramFormat;
         this.jigController = jigController;
         this.jigDocuments = jigDocuments;
         this.outputDirectory = outputDirectory;
+
+        // setup Graphviz
+        this.dotCommandRunner = new DotCommandRunner();
+
+        // setup Thymeleaf
+        TemplateEngine templateEngine = new TemplateEngine();
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setTemplateMode(TemplateMode.HTML);
+        templateResolver.setSuffix(".html");
+        templateResolver.setPrefix("templates/");
+        templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
+        this.templateEngine = templateEngine;
     }
 
     public static JigDocumentHandlers from(JigDocumentContext jigDocumentContext, DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
         return new JigDocumentHandlers(
-                new ViewResolver(
-                        outputDiagramFormat,
-                        jigDocumentContext
-                ),
+                jigDocumentContext,
+                outputDiagramFormat,
                 new JigController(dependencyService, businessRuleService, applicationService),
                 jigDocuments,
                 outputDirectory
@@ -109,7 +127,7 @@ public class JigDocumentHandlers {
             long startTime = System.currentTimeMillis();
             Object model = jigController.handle(jigDocument);
 
-            JigView jigView = viewResolver.resolve(jigDocument);
+            JigView jigView = resolve(jigDocument);
             jigView.render(model, jigDocumentWriter);
 
             long takenTime = System.currentTimeMillis() - startTime;
@@ -122,7 +140,7 @@ public class JigDocumentHandlers {
     }
 
     void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
-        IndexView indexView = viewResolver.indexView();
+        IndexView indexView = indexView();
         indexView.render(handleResultList, outputDirectory);
         copyAssets(outputDirectory);
     }
@@ -153,50 +171,22 @@ public class JigDocumentHandlers {
         }
     }
 
-    static class ViewResolver {
-
-        JigDiagramFormat diagramFormat;
-
-        JigDocumentContext jigDocumentContext;
-        DotCommandRunner dotCommandRunner;
-        TemplateEngine templateEngine;
-
-        public ViewResolver(JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
-            this.jigDocumentContext = jigDocumentContext;
-            this.diagramFormat = diagramFormat;
-
-            // setup Graphviz
-            this.dotCommandRunner = new DotCommandRunner();
-
-            // setup Thymeleaf
-            TemplateEngine templateEngine = new TemplateEngine();
-            ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-            templateResolver.setTemplateMode(TemplateMode.HTML);
-            templateResolver.setSuffix(".html");
-            templateResolver.setPrefix("templates/");
-            templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
-            templateEngine.setTemplateResolver(templateResolver);
-            templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
-            this.templateEngine = templateEngine;
+    private JigView resolve(JigDocument jigDocument) {
+        switch (jigDocument.jigDocumentType()) {
+            case LIST:
+                return new ModelReportsPoiView(jigDocumentContext);
+            case DIAGRAM:
+                return new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
+            case SUMMARY:
+                return new SummaryView(templateEngine, jigDocumentContext);
+            case TABLE:
+                return new TableView(templateEngine, jigDocumentContext);
         }
 
-        JigView resolve(JigDocument jigDocument) {
-            switch (jigDocument.jigDocumentType()) {
-                case LIST:
-                    return new ModelReportsPoiView(jigDocumentContext);
-                case DIAGRAM:
-                    return new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
-                case SUMMARY:
-                    return new SummaryView(templateEngine, jigDocumentContext);
-                case TABLE:
-                    return new TableView(templateEngine, jigDocumentContext);
-            }
+        throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);
+    }
 
-            throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);
-        }
-
-        IndexView indexView() {
-            return new IndexView(templateEngine, diagramFormat);
-        }
+    private IndexView indexView() {
+        return new IndexView(templateEngine, diagramFormat);
     }
 }

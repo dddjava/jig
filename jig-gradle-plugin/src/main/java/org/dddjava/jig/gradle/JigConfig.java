@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.configuration.OutputOmitPrefix;
 import org.gradle.api.Project;
 
 import java.nio.file.Path;
@@ -53,7 +52,7 @@ public class JigConfig {
     public JigProperties asProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                modelPattern, resolveOutputDirectory(project), diagramFormat, new OutputOmitPrefix(outputOmitPrefix),
+                modelPattern, resolveOutputDirectory(project), diagramFormat,
                 new LinkPrefix(linkPrefix)
         );
     }

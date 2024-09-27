@@ -58,19 +58,6 @@ public class JigProperties {
     }
 
     /**
-     * @deprecated outputOmitPrefixは使用されなくなりました。
-     */
-    @Deprecated(since = "2024.3.1")
-    public JigProperties(List<JigDocument> jigDocuments,
-                         String domainPattern,
-                         Path outputDirectory,
-                         JigDiagramFormat outputDiagramFormat,
-                         OutputOmitPrefix outputOmitPrefix,
-                         LinkPrefix linkPrefix) {
-        this(jigDocuments, domainPattern, outputDirectory, outputDiagramFormat, linkPrefix);
-    }
-
-    /**
      * 実験的な項目も含むコンストラクタ。よく変わる。
      */
     public JigProperties(List<JigDocument> jigDocuments,

@@ -148,7 +148,26 @@ public class JigDocumentHandlers {
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
             long startTime = System.currentTimeMillis();
-            Object model = handle(jigDocument);
+
+            Object model = switch (jigDocument) {
+                case BusinessRuleList -> domainList();
+                case PackageRelationDiagram -> packageDependency();
+                case BusinessRuleRelationDiagram -> businessRuleRelation();
+                case OverconcentrationBusinessRuleDiagram -> overconcentrationBusinessRuleRelation();
+                case CoreBusinessRuleRelationDiagram -> coreBusinessRuleRelation();
+                case CategoryDiagram -> categories();
+                case CategoryUsageDiagram -> categoryUsage();
+                case ApplicationList -> applicationList();
+                case ServiceMethodCallHierarchyDiagram -> serviceMethodCallHierarchy();
+                case CompositeUsecaseDiagram -> useCaseDiagram();
+                case ArchitectureDiagram -> architecture();
+                case DomainSummary -> domainListHtml();
+                case ApplicationSummary -> applicationSummary();
+                case UsecaseSummary -> usecaseSummary();
+                case EnumSummary -> enumListHtml();
+                case TermTable -> businessRuleService.terms();
+                case TermList -> termList();
+            };
 
             JigView jigView = resolve(jigDocument);
             jigView.render(model, jigDocumentWriter);
@@ -337,26 +356,4 @@ public class JigDocumentHandlers {
         return SummaryModel.from(applicationService.serviceMethods(), mermaidMap);
     }
 
-    public Object handle(JigDocument jigDocument) {
-        return switch (jigDocument) {
-            case BusinessRuleList -> domainList();
-            case PackageRelationDiagram -> packageDependency();
-            case BusinessRuleRelationDiagram -> businessRuleRelation();
-            case OverconcentrationBusinessRuleDiagram -> overconcentrationBusinessRuleRelation();
-            case CoreBusinessRuleRelationDiagram -> coreBusinessRuleRelation();
-            case CategoryDiagram -> categories();
-            case CategoryUsageDiagram -> categoryUsage();
-            case ApplicationList -> applicationList();
-            case ServiceMethodCallHierarchyDiagram -> serviceMethodCallHierarchy();
-            case CompositeUsecaseDiagram -> useCaseDiagram();
-            case ArchitectureDiagram -> architecture();
-            case DomainSummary -> domainListHtml();
-            case ApplicationSummary -> applicationSummary();
-            case UsecaseSummary -> usecaseSummary();
-            case EnumSummary -> enumListHtml();
-            case TermTable -> businessRuleService.terms();
-            case TermList -> termList();
-        };
-
-    }
 }

@@ -169,7 +169,12 @@ public class JigDocumentHandlers {
                 case TermList -> termList();
             };
 
-            JigView jigView = resolve(jigDocument);
+            JigView jigView = switch (jigDocument.jigDocumentType()) {
+                case LIST -> new ModelReportsPoiView(jigDocumentContext);
+                case DIAGRAM -> new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
+                case SUMMARY -> new SummaryView(templateEngine, jigDocumentContext);
+                case TABLE -> new TableView(templateEngine, jigDocumentContext);
+            };
             jigView.render(model, jigDocumentWriter);
 
             long takenTime = System.currentTimeMillis() - startTime;
@@ -211,21 +216,6 @@ public class JigDocumentHandlers {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private JigView resolve(JigDocument jigDocument) {
-        switch (jigDocument.jigDocumentType()) {
-            case LIST:
-                return new ModelReportsPoiView(jigDocumentContext);
-            case DIAGRAM:
-                return new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
-            case SUMMARY:
-                return new SummaryView(templateEngine, jigDocumentContext);
-            case TABLE:
-                return new TableView(templateEngine, jigDocumentContext);
-        }
-
-        throw new IllegalArgumentException("View未定義のJigDocumentを出力しようとしています: " + jigDocument);
     }
 
     private IndexView indexView() {

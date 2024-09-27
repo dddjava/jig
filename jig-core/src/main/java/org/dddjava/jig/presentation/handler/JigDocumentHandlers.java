@@ -173,7 +173,7 @@ public class JigDocumentHandlers {
                 case LIST -> new ModelReportsPoiView(jigDocumentContext);
                 case DIAGRAM -> new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
                 case SUMMARY -> new SummaryView(templateEngine, jigDocumentContext);
-                case TABLE -> new TableView(templateEngine, jigDocumentContext);
+                case TABLE -> new TableView(templateEngine);
             };
             jigView.render(model, jigDocumentWriter);
 

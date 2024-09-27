@@ -14,11 +14,9 @@ import java.util.Map;
 public class TableView implements JigView {
 
     private final TemplateEngine templateEngine;
-    private final JigDocumentContext jigDocumentContext;
 
-    public TableView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public TableView(TemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
-        this.jigDocumentContext = jigDocumentContext;
     }
 
     @Override

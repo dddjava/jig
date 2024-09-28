@@ -3,7 +3,9 @@ package org.dddjava.jig.presentation.handler;
 import org.dddjava.jig.application.service.ApplicationService;
 import org.dddjava.jig.application.service.BusinessRuleService;
 import org.dddjava.jig.application.service.DependencyService;
-import org.dddjava.jig.domain.model.documents.diagrams.*;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -19,7 +21,6 @@ import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionType
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.presentation.view.graphviz.dot.DotView;
 import org.dddjava.jig.presentation.view.html.IndexView;
@@ -67,10 +68,10 @@ public class JigDocumentHandlers {
     private final ApplicationService applicationService;
 
     private JigDocumentHandlers(JigDocumentContext jigDocumentContext,
-                               JigDiagramFormat diagramFormat,
-                               DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService,
-                               List<JigDocument> jigDocuments,
-                               Path outputDirectory) {
+                                JigDiagramFormat diagramFormat,
+                                DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService,
+                                List<JigDocument> jigDocuments,
+                                Path outputDirectory) {
         this.dependencyService = dependencyService;
         this.businessRuleService = businessRuleService;
         this.applicationService = applicationService;
@@ -151,20 +152,20 @@ public class JigDocumentHandlers {
 
             Object model = switch (jigDocument) {
                 case BusinessRuleList -> domainList();
-                case PackageRelationDiagram -> packageDependency();
-                case BusinessRuleRelationDiagram -> businessRuleRelation();
-                case CategoryDiagram -> categories();
-                case CategoryUsageDiagram -> categoryUsage();
+                case PackageRelationDiagram -> dependencyService.packageDependencies();
+                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(dependencyService.businessRules());
+                case CategoryDiagram -> businessRuleService.categories();
+                case CategoryUsageDiagram -> businessRuleService.categoryUsages();
                 case ApplicationList -> applicationList();
-                case ServiceMethodCallHierarchyDiagram -> serviceMethodCallHierarchy();
-                case CompositeUsecaseDiagram -> useCaseDiagram();
-                case ArchitectureDiagram -> architecture();
-                case DomainSummary -> domainListHtml();
-                case ApplicationSummary -> applicationSummary();
+                case ServiceMethodCallHierarchyDiagram -> applicationService.serviceMethodCallHierarchy();
+                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(applicationService.serviceAngles());
+                case ArchitectureDiagram -> applicationService.architectureDiagram();
+                case DomainSummary -> SummaryModel.from(businessRuleService.businessRules());
+                case ApplicationSummary -> SummaryModel.from(applicationService.serviceMethods());
                 case UsecaseSummary -> usecaseSummary();
-                case EnumSummary -> enumListHtml();
+                case EnumSummary -> SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
                 case TermTable -> businessRuleService.terms();
-                case TermList -> termList();
+                case TermList -> new ModelReports(new ModelReport<>(businessRuleService.terms().list(), TermReport::new, TermReport.class));
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {
@@ -185,7 +186,7 @@ public class JigDocumentHandlers {
     }
 
     private void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
-        IndexView indexView = indexView();
+        IndexView indexView = new IndexView(templateEngine, diagramFormat);
         indexView.render(handleResultList, outputDirectory);
         copyAssets(outputDirectory);
     }
@@ -214,51 +215,6 @@ public class JigDocumentHandlers {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private IndexView indexView() {
-        return new IndexView(templateEngine, diagramFormat);
-    }
-
-    private PackageRelationDiagram packageDependency() {
-        return dependencyService.packageDependencies();
-    }
-
-    private ClassRelationDiagram businessRuleRelation() {
-        return new ClassRelationDiagram(dependencyService.businessRules());
-    }
-
-    private CategoryUsageDiagram categoryUsage() {
-        return businessRuleService.categoryUsages();
-    }
-
-    private CategoryDiagram categories() {
-        return businessRuleService.categories();
-    }
-
-    private ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
-        return applicationService.serviceMethodCallHierarchy();
-    }
-
-    private ArchitectureDiagram architecture() {
-        return applicationService.architectureDiagram();
-    }
-
-    private CompositeUsecaseDiagram useCaseDiagram() {
-        return new CompositeUsecaseDiagram(applicationService.serviceAngles());
-    }
-
-    private ModelReports termList() {
-        Terms terms = businessRuleService.terms();
-        return new ModelReports(new ModelReport<>(terms.list(), TermReport::new, TermReport.class));
-    }
-
-    private SummaryModel domainListHtml() {
-        return SummaryModel.from(businessRuleService.businessRules());
-    }
-
-    private SummaryModel enumListHtml() {
-        return SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
     }
 
     private ModelReports domainList() {
@@ -300,10 +256,6 @@ public class JigDocumentHandlers {
                 new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
                 new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );
-    }
-
-    private SummaryModel applicationSummary() {
-        return SummaryModel.from(applicationService.serviceMethods());
     }
 
     private SummaryModel usecaseSummary() {

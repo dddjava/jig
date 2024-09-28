@@ -66,7 +66,7 @@ public class JigDocumentHandlers {
     private final BusinessRuleService businessRuleService;
     private final ApplicationService applicationService;
 
-    public JigDocumentHandlers(JigDocumentContext jigDocumentContext,
+    private JigDocumentHandlers(JigDocumentContext jigDocumentContext,
                                JigDiagramFormat diagramFormat,
                                DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService,
                                List<JigDocument> jigDocuments,
@@ -143,7 +143,7 @@ public class JigDocumentHandlers {
         }
     }
 
-    HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
+    private HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
@@ -184,7 +184,7 @@ public class JigDocumentHandlers {
         }
     }
 
-    void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
+    private void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
         IndexView indexView = indexView();
         indexView.render(handleResultList, outputDirectory);
         copyAssets(outputDirectory);
@@ -220,48 +220,48 @@ public class JigDocumentHandlers {
         return new IndexView(templateEngine, diagramFormat);
     }
 
-    public PackageRelationDiagram packageDependency() {
+    private PackageRelationDiagram packageDependency() {
         return dependencyService.packageDependencies();
     }
 
-    public ClassRelationDiagram businessRuleRelation() {
+    private ClassRelationDiagram businessRuleRelation() {
         return new ClassRelationDiagram(dependencyService.businessRules());
     }
 
-    public CategoryUsageDiagram categoryUsage() {
+    private CategoryUsageDiagram categoryUsage() {
         return businessRuleService.categoryUsages();
     }
 
-    public CategoryDiagram categories() {
+    private CategoryDiagram categories() {
         return businessRuleService.categories();
     }
 
-    public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
+    private ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
         return applicationService.serviceMethodCallHierarchy();
     }
 
-    public ArchitectureDiagram architecture() {
+    private ArchitectureDiagram architecture() {
         return applicationService.architectureDiagram();
     }
 
-    public CompositeUsecaseDiagram useCaseDiagram() {
+    private CompositeUsecaseDiagram useCaseDiagram() {
         return new CompositeUsecaseDiagram(applicationService.serviceAngles());
     }
 
-    public ModelReports termList() {
+    private ModelReports termList() {
         Terms terms = businessRuleService.terms();
         return new ModelReports(new ModelReport<>(terms.list(), TermReport::new, TermReport.class));
     }
 
-    public SummaryModel domainListHtml() {
+    private SummaryModel domainListHtml() {
         return SummaryModel.from(businessRuleService.businessRules());
     }
 
-    public SummaryModel enumListHtml() {
+    private SummaryModel enumListHtml() {
         return SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
     }
 
-    public ModelReports domainList() {
+    private ModelReports domainList() {
         MethodSmellList angles = businessRuleService.methodSmells();
         JigTypes jigTypes = businessRuleService.jigTypes();
 
@@ -283,7 +283,7 @@ public class JigDocumentHandlers {
         );
     }
 
-    public ModelReports applicationList() {
+    private ModelReports applicationList() {
         ServiceAngles serviceAngles = applicationService.serviceAngles();
 
         DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
@@ -302,11 +302,11 @@ public class JigDocumentHandlers {
         );
     }
 
-    public SummaryModel applicationSummary() {
+    private SummaryModel applicationSummary() {
         return SummaryModel.from(applicationService.serviceMethods());
     }
 
-    public SummaryModel usecaseSummary() {
+    private SummaryModel usecaseSummary() {
         ServiceAngles serviceAngles = applicationService.serviceAngles();
 
         record Entry(JigMethod jigMethod, String mermaidText) {

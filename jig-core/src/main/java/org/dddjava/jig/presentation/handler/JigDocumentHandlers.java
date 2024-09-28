@@ -153,8 +153,6 @@ public class JigDocumentHandlers {
                 case BusinessRuleList -> domainList();
                 case PackageRelationDiagram -> packageDependency();
                 case BusinessRuleRelationDiagram -> businessRuleRelation();
-                case OverconcentrationBusinessRuleDiagram -> overconcentrationBusinessRuleRelation();
-                case CoreBusinessRuleRelationDiagram -> coreBusinessRuleRelation();
                 case CategoryDiagram -> categories();
                 case CategoryUsageDiagram -> categoryUsage();
                 case ApplicationList -> applicationList();
@@ -228,14 +226,6 @@ public class JigDocumentHandlers {
 
     public ClassRelationDiagram businessRuleRelation() {
         return new ClassRelationDiagram(dependencyService.businessRules());
-    }
-
-    public ClassRelationCoreDiagram coreBusinessRuleRelation() {
-        return new ClassRelationCoreDiagram(new ClassRelationDiagram(dependencyService.businessRules()));
-    }
-
-    public ClassRelationConcentrateDiagram overconcentrationBusinessRuleRelation() {
-        return new ClassRelationConcentrateDiagram(dependencyService.businessRules());
     }
 
     public CategoryUsageDiagram categoryUsage() {

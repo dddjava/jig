@@ -111,14 +111,20 @@ public class JigDocumentHandlers {
 
         prepareOutputDirectory();
 
-        List<HandleResult> handleResultList = jigDocuments
+        var writtenResults = writeJigDocuments();
+
+        writeIndexHtml(outputDirectory, writtenResults);
+
+        long takenTime = System.currentTimeMillis() - startTime;
+        logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
+        return new HandleResults(writtenResults);
+    }
+
+    private List<HandleResult> writeJigDocuments() {
+        return jigDocuments
                 .parallelStream()
                 .map(jigDocument -> handle(jigDocument, outputDirectory))
                 .collect(Collectors.toList());
-        writeIndexHtml(outputDirectory, handleResultList);
-        long takenTime = System.currentTimeMillis() - startTime;
-        logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
-        return new HandleResults(handleResultList);
     }
 
     private void prepareOutputDirectory() {
@@ -163,9 +169,11 @@ public class JigDocumentHandlers {
                 case DomainSummary -> SummaryModel.from(businessRuleService.businessRules());
                 case ApplicationSummary -> SummaryModel.from(applicationService.serviceMethods());
                 case UsecaseSummary -> usecaseSummary();
-                case EnumSummary -> SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
+                case EnumSummary ->
+                        SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
                 case TermTable -> businessRuleService.terms();
-                case TermList -> new ModelReports(new ModelReport<>(businessRuleService.terms().list(), TermReport::new, TermReport.class));
+                case TermList ->
+                        new ModelReports(new ModelReport<>(businessRuleService.terms().list(), TermReport::new, TermReport.class));
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {

@@ -90,7 +90,7 @@ public class MethodDeclaration {
      * @return "ClassName.methodName"
      */
     public String asSimpleText() {
-        return methodIdentifier.declaringType().asSimpleText() + "." + methodIdentifier.methodSignature().methodName();
+        return methodIdentifier.asSimpleText();
     }
 
     public TypeIdentifiers relateTypes() {

@@ -16,6 +16,13 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
         return declaringType.fullQualifiedName() + "#" + methodSignature.asText();
     }
 
+    /**
+     * @return "MethodIdentifier.methodName"
+     */
+    public String asSimpleText() {
+        return declaringType().asSimpleText() + "." + methodSignature().methodName();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

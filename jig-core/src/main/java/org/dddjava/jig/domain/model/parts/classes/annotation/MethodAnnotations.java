@@ -22,13 +22,13 @@ public class MethodAnnotations {
     }
 
     public Annotations annotations() {
-        return new Annotations(list.stream().map(e -> e.annotation).collect(toList()));
+        return new Annotations(list.stream().map(e -> e.annotation()).collect(toList()));
     }
 
     public MethodAnnotations filter(MethodDeclaration methodDeclaration) {
         return new MethodAnnotations(
                 list.stream()
-                        .filter(a -> a.methodDeclaration.sameIdentifier(methodDeclaration))
+                        .filter(a -> a.methodDeclaration().sameIdentifier(methodDeclaration))
                         .collect(toList())
         );
     }

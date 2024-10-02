@@ -6,15 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 /**
  * メソッドにつけられたアノテーション
  */
-public class MethodAnnotation {
-
-    final Annotation annotation;
-    final MethodDeclaration methodDeclaration;
-
-    public MethodAnnotation(Annotation annotation, MethodDeclaration methodDeclaration) {
-        this.annotation = annotation;
-        this.methodDeclaration = methodDeclaration;
-    }
+public record MethodAnnotation(Annotation annotation, MethodDeclaration methodDeclaration) {
 
     public TypeIdentifier annotationType() {
         return annotation.typeIdentifier;

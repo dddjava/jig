@@ -21,12 +21,16 @@ public class MethodDeclaration {
         this.methodIdentifier = new MethodIdentifier(declaringType, methodSignature);
     }
 
+    /**
+     * @return "org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration#asFullNameText()"
+     */
     public String asFullNameText() {
         return methodIdentifier.asText();
     }
 
     /**
      * パッケージを省略したシグネチャの文字列表現
+     *
      * @return "methodName(ArgumentType)"
      */
     public String asSignatureSimpleText() {
@@ -82,7 +86,6 @@ public class MethodDeclaration {
     /**
      * パッケージおよび引数を省略した文字列表現。
      * オーバーロードされる場合は使用しづらいものになります。
-     * あまり使わない方が良さそう。
      *
      * @return "ClassName.methodName"
      */

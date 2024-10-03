@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.presentation.view.report.business_rule.CategoryReport;
+import org.dddjava.jig.infrastructure.view.report.business_rule.CategoryReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 
@@ -30,41 +30,41 @@ public class CategoryReportTest {
                         categoryReport -> categoryReport.hasBehaviour(),
                         categoryReport -> categoryReport.isPolymorphism()
                 ).contains(
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
-                        "[A, B, C, D]", "[]", "[RelationEnum]",
-                        false, false, false
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.HasStaticFieldEnum"),
-                        "[A, B]", "[]", "[]",
-                        false, false, false
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
-                        "[A, B]", "[String param]", "[RelationEnum]",
-                        true, false, false
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
-                        "[A, B]", "[]", "[RelationEnum]",
-                        false, true, false
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
-                        "[A, B]", "[]", "[RelationEnum]",
-                        false, false, true
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.RelationEnum"),
-                        "[A, B, C]", "[RichEnum field]", "[]",
-                        true, false, false
-                ),
-                tuple(
-                        new TypeIdentifier("stub.domain.model.category.RichEnum"),
-                        "[A, B]", "[String param]", "[RelationEnum]",
-                        true, true, true
-                )
-        );
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
+                                "[A, B, C, D]", "[]", "[RelationEnum]",
+                                false, false, false
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.HasStaticFieldEnum"),
+                                "[A, B]", "[]", "[]",
+                                false, false, false
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
+                                "[A, B]", "[String param]", "[RelationEnum]",
+                                true, false, false
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
+                                "[A, B]", "[]", "[RelationEnum]",
+                                false, true, false
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
+                                "[A, B]", "[]", "[RelationEnum]",
+                                false, false, true
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.RelationEnum"),
+                                "[A, B, C]", "[RichEnum field]", "[]",
+                                true, false, false
+                        ),
+                        tuple(
+                                new TypeIdentifier("stub.domain.model.category.RichEnum"),
+                                "[A, B]", "[String param]", "[RelationEnum]",
+                                true, true, true
+                        )
+                );
     }
 }

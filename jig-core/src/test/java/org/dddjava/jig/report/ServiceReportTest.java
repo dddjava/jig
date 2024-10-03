@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.presentation.view.report.application.ServiceReport;
+import org.dddjava.jig.infrastructure.view.report.application.ServiceReport;
 import org.junit.jupiter.api.Test;
 import stub.application.service.CanonicalService;
 import stub.application.service.DecisionService;
@@ -32,41 +32,41 @@ public class ServiceReportTest {
                         serviceReport -> serviceReport.usingFromController(),
                         serviceReport -> serviceReport.usingRepositoryMethods()
                 ).contains(
-                tuple(
-                        new TypeIdentifier(CanonicalService.class),
-                        "fuga(FugaIdentifier)",
-                        new TypeIdentifier(Fuga.class),
-                        false,
-                        "[FugaRepository.get(FugaIdentifier), HogeRepository.method()]"
-                ),
-                tuple(
-                        new TypeIdentifier(DecisionService.class),
-                        "分岐のあるメソッド(Object)",
-                        new TypeIdentifier("void"),
-                        false,
-                        "[]"
-                ),
-                tuple(
-                        new TypeIdentifier(SimpleService.class),
-                        "RESTコントローラーから呼ばれる()",
-                        new TypeIdentifier("void"),
-                        true,
-                        "[]"
-                ),
-                tuple(
-                        new TypeIdentifier(SimpleService.class),
-                        "コントローラーから呼ばれない()",
-                        new TypeIdentifier("void"),
-                        false,
-                        "[]"
-                ),
-                tuple(
-                        new TypeIdentifier(SimpleService.class),
-                        "コントローラーから呼ばれる()",
-                        new TypeIdentifier("void"),
-                        true,
-                        "[]"
-                )
-        );
+                        tuple(
+                                new TypeIdentifier(CanonicalService.class),
+                                "fuga(FugaIdentifier)",
+                                new TypeIdentifier(Fuga.class),
+                                false,
+                                "[FugaRepository.get(FugaIdentifier), HogeRepository.method()]"
+                        ),
+                        tuple(
+                                new TypeIdentifier(DecisionService.class),
+                                "分岐のあるメソッド(Object)",
+                                new TypeIdentifier("void"),
+                                false,
+                                "[]"
+                        ),
+                        tuple(
+                                new TypeIdentifier(SimpleService.class),
+                                "RESTコントローラーから呼ばれる()",
+                                new TypeIdentifier("void"),
+                                true,
+                                "[]"
+                        ),
+                        tuple(
+                                new TypeIdentifier(SimpleService.class),
+                                "コントローラーから呼ばれない()",
+                                new TypeIdentifier("void"),
+                                false,
+                                "[]"
+                        ),
+                        tuple(
+                                new TypeIdentifier(SimpleService.class),
+                                "コントローラーから呼ばれる()",
+                                new TypeIdentifier("void"),
+                                true,
+                                "[]"
+                        )
+                );
     }
 }

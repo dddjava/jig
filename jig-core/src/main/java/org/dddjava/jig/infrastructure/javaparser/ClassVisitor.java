@@ -43,6 +43,7 @@ class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
     public void visit(PackageDeclaration packageDeclaration, AdditionalSourceModelBuilder arg) {
         arg.setPackage(packageDeclaration);
     }
+
     @Override
     public void visit(ImportDeclaration importDeclaration, AdditionalSourceModelBuilder arg) {
         arg.addImport(importDeclaration);

@@ -2,8 +2,8 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.presentation.handler.JigExecutor;
-import org.dddjava.jig.presentation.handler.HandleResult;
+import org.dddjava.jig.application.JigExecutor;
+import org.dddjava.jig.application.HandleResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

@@ -4,7 +4,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.presentation.view.report.application.ControllerReport;
+import org.dddjava.jig.infrastructure.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 

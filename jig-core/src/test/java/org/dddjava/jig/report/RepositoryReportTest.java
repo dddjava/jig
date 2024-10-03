@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
+import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.type.fuga.Fuga;
 import stub.domain.model.type.fuga.FugaRepository;
@@ -34,18 +34,18 @@ public class RepositoryReportTest {
                         datasourceAngle -> datasourceAngle.updateTables(),
                         datasourceAngle -> datasourceAngle.deleteTables()
                 ).contains(
-                tuple(
-                        new TypeIdentifier(FugaRepository.class),
-                        "get(FugaIdentifier)",
-                        new TypeIdentifier(Fuga.class),
-                        "[sut.piyo]", "[fuga]", "[]", "[]"
-                ),
-                tuple(
-                        new TypeIdentifier(FugaRepository.class),
-                        "register(Fuga)",
-                        new TypeIdentifier("void"),
-                        "[]", "[]", "[]", "[]"
-                )
-        );
+                        tuple(
+                                new TypeIdentifier(FugaRepository.class),
+                                "get(FugaIdentifier)",
+                                new TypeIdentifier(Fuga.class),
+                                "[sut.piyo]", "[fuga]", "[]", "[]"
+                        ),
+                        tuple(
+                                new TypeIdentifier(FugaRepository.class),
+                                "register(Fuga)",
+                                new TypeIdentifier("void"),
+                                "[]", "[]", "[]", "[]"
+                        )
+                );
     }
 }

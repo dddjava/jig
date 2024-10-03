@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.presentation.view.handler.JigDocumentWriter;
 import org.dddjava.jig.presentation.view.handler.JigView;
+import org.dddjava.jig.presentation.view.handler.ModelAndView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -26,14 +27,14 @@ import static java.util.stream.Collectors.*;
  */
 public class SummaryView implements JigView {
 
-    final Map<String, Object> contextMap;
-    final TemplateEngine templateEngine;
-    JigDocumentContext jigDocumentContext;
+    protected final JigDocumentContext jigDocumentContext;
+    private final TemplateEngine templateEngine;
+    private final Map<String, Object> contextMap;
 
     public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.templateEngine = templateEngine;
-        this.contextMap = new ConcurrentHashMap<>();
         this.jigDocumentContext = jigDocumentContext;
+        this.contextMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -73,6 +74,7 @@ public class SummaryView implements JigView {
         putContext("jigTypes", jigTypes);
         putContext("categoriesMap", categoriesMap);
         putContext("enumModels", summaryModel.enumModels());
+        putContext("model", summaryModel);
         write(jigDocumentWriter);
     }
 
@@ -102,5 +104,11 @@ public class SummaryView implements JigView {
 
     protected void putContext(String key, Object variable) {
         contextMap.put(key, variable);
+    }
+
+    protected void renderInternal(Object model) {
+        if (model instanceof ModelAndView modelAndView) {
+            putContext("model", modelAndView.model());
+        }
     }
 }

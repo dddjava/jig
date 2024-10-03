@@ -110,6 +110,17 @@ public class JigMethod {
         return methodComment.asTextOrDefault(declaration().methodSignature().methodName());
     }
 
+    public String fqn() {
+        return declaration().identifier().asText();
+    }
+
+    public String labelTextOrLambda() {
+        if (declaration().isLambda()) {
+            return "lambda";
+        }
+        return labelText();
+    }
+
     public List<TypeIdentifier> listArguments() {
         return declaration().methodSignature().arguments();
     }

@@ -77,12 +77,17 @@ public class JigDocumentHandlers {
 
     HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
+            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+
             long startTime = System.currentTimeMillis();
             Object model = jigController.handle(jigDocument);
 
-            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-            JigView jigView = viewResolver.resolve(jigDocument);
-            jigView.render(model, jigDocumentWriter);
+            if (model instanceof ModelAndView mv) {
+                viewResolver.resolve(mv.viewClass()).render(model, jigDocumentWriter);
+            } else {
+                JigView jigView = viewResolver.resolve(jigDocument);
+                jigView.render(model, jigDocumentWriter);
+            }
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);

@@ -16,13 +16,18 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.term.Terms;
+import org.dddjava.jig.presentation.view.handler.ModelAndView;
+import org.dddjava.jig.presentation.view.html.HtmlView;
 import org.dddjava.jig.presentation.view.poi.report.ModelReport;
 import org.dddjava.jig.presentation.view.poi.report.ModelReports;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;
 import org.dddjava.jig.presentation.view.report.application.RepositoryReport;
 import org.dddjava.jig.presentation.view.report.application.ServiceReport;
 import org.dddjava.jig.presentation.view.report.business_rule.*;
+
+import java.util.stream.Collectors;
 
 public class JigController {
 
@@ -126,48 +131,86 @@ public class JigController {
         );
     }
 
+    public ModelAndView mermaid() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
+
+        record Entry(JigMethod jigMethod, String mermaidText) {
+        }
+
+        var model = serviceAngles.list()
+                .stream()
+                // どのServiceMethodにも使用されていないものだけを起点にする
+                .filter(serviceAngle -> serviceAngle.userServiceMethods().empty())
+                // どのServiceMethodも使用していないものは除外する
+                .filter(serviceAngle -> !serviceAngle.usingServiceMethods().empty())
+                .map(rootServiceMethod -> {
+                    var key = rootServiceMethod.method().asSimpleText();
+
+                    return new Entry(
+                            rootServiceMethod.serviceMethod().method(),
+                            serviceAngles.mermaidText(key)
+                    );
+                })
+                .toList();
+
+        return new ModelAndView(model, HtmlView.class);
+    }
+
     public SummaryModel applicationSummary() {
         return SummaryModel.from(applicationService.serviceMethods());
     }
 
-    public Object handle(JigDocument jigDocument) {
-        // Java17でswitch式に変更
-        switch (jigDocument) {
-            case BusinessRuleList:
-                return domainList();
-            case PackageRelationDiagram:
-                return packageDependency();
-            case BusinessRuleRelationDiagram:
-                return businessRuleRelation();
-            case OverconcentrationBusinessRuleDiagram:
-                return overconcentrationBusinessRuleRelation();
-            case CoreBusinessRuleRelationDiagram:
-                return coreBusinessRuleRelation();
-            case CategoryDiagram:
-                return categories();
-            case CategoryUsageDiagram:
-                return categoryUsage();
-            case ApplicationList:
-                return applicationList();
-            case ServiceMethodCallHierarchyDiagram:
-                return serviceMethodCallHierarchy();
-            case CompositeUsecaseDiagram:
-                return useCaseDiagram();
-            case ArchitectureDiagram:
-                return architecture();
-            case DomainSummary:
-                return domainListHtml();
-            case ApplicationSummary:
-            case UsecaseSummary:
-                return applicationSummary();
-            case EnumSummary:
-                return enumListHtml();
-            case TermTable:
-                return businessRuleService.terms();
-            case TermList:
-                return termList();
+    public SummaryModel usecaseSummary() {
+        ServiceAngles serviceAngles = applicationService.serviceAngles();
+
+        record Entry(JigMethod jigMethod, String mermaidText) {
         }
 
-        throw new IllegalStateException("cannot find handler method for " + jigDocument);
+        var mermaidMap = serviceAngles.list()
+                .stream()
+                // どのServiceMethodにも使用されていないものだけを起点にする
+                //.filter(serviceAngle -> serviceAngle.userServiceMethods().empty())
+                // どのServiceMethodも使用していないものは除外する
+                //.filter(serviceAngle -> !serviceAngle.usingServiceMethods().empty())
+                .map(rootServiceMethod -> {
+                    var key = rootServiceMethod.method().asSimpleText();
+
+                    return new Entry(
+                            rootServiceMethod.serviceMethod().method(),
+                            serviceAngles.mermaidText(key)
+                    );
+                })
+                .collect(Collectors.groupingBy(
+                        entry -> entry.jigMethod.fqn(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream().findFirst().map(entry -> entry.mermaidText()).orElse(null))
+                ));
+
+        return SummaryModel.from(applicationService.serviceMethods(), mermaidMap);
+    }
+
+    public Object handle(JigDocument jigDocument) {
+        return switch (jigDocument) {
+            case BusinessRuleList -> domainList();
+            case PackageRelationDiagram -> packageDependency();
+            case BusinessRuleRelationDiagram -> businessRuleRelation();
+            case OverconcentrationBusinessRuleDiagram -> overconcentrationBusinessRuleRelation();
+            case CoreBusinessRuleRelationDiagram -> coreBusinessRuleRelation();
+            case CategoryDiagram -> categories();
+            case CategoryUsageDiagram -> categoryUsage();
+            case ApplicationList -> applicationList();
+            case ServiceMethodCallHierarchyDiagram -> serviceMethodCallHierarchy();
+            case CompositeUsecaseDiagram -> useCaseDiagram();
+            case ArchitectureDiagram -> architecture();
+            case DomainSummary -> domainListHtml();
+            case ApplicationSummary -> applicationSummary();
+            case UsecaseSummary -> usecaseSummary();
+            case EnumSummary -> enumListHtml();
+            case TermTable -> businessRuleService.terms();
+            case TermList -> termList();
+            case Mermaid -> mermaid();
+        };
+
     }
 }

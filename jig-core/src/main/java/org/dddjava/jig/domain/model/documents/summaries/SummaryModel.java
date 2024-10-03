@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class SummaryModel {
     Map<PackageIdentifier, List<JigType>> map;
     // FIXME enumModelsの持ち方・・・
     EnumModels enumModels;
+    Map<String, String> mermaidMap;
 
     SummaryModel(Map<PackageIdentifier, List<JigType>> map) {
         this(map, new EnumModels(List.of()));
@@ -26,6 +28,7 @@ public class SummaryModel {
     SummaryModel(Map<PackageIdentifier, List<JigType>> map, EnumModels enumModels) {
         this.map = map;
         this.enumModels = enumModels;
+        this.mermaidMap = Map.of();
     }
 
     public static SummaryModel from(BusinessRules businessRules) {
@@ -48,6 +51,12 @@ public class SummaryModel {
         return new SummaryModel(map, enumModels);
     }
 
+    public static SummaryModel from(ServiceMethods serviceMethods, Map<String, String> mermaidMap) {
+        var summaryModel = from(serviceMethods);
+        summaryModel.mermaidMap = mermaidMap;
+        return summaryModel;
+    }
+
     public Map<PackageIdentifier, List<JigType>> map() {
         return map;
     }
@@ -58,5 +67,9 @@ public class SummaryModel {
 
     public EnumModels enumModels() {
         return enumModels;
+    }
+
+    public Object mermaidMap() {
+        return mermaidMap;
     }
 }

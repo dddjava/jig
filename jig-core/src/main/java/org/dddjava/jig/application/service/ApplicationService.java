@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarch
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.applications.frontends.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
@@ -106,5 +107,12 @@ public class ApplicationService {
     public ServiceMethods serviceMethods() {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
+    }
+
+    public Entrypoint entrypoint() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return new Entrypoint(
+                typeFacts.jigTypes(),
+                ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations()));
     }
 }

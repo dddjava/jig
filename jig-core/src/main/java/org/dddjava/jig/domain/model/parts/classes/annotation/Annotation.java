@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.parts.classes.annotation;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
+import java.util.Optional;
+
 /**
  * アノテーション
  */
@@ -25,5 +27,9 @@ public class Annotation {
 
     public boolean is(TypeIdentifier typeIdentifier) {
         return this.typeIdentifier.equals(typeIdentifier);
+    }
+
+    public Optional<String> descriptionTextAnyOf(String... names) {
+        return description.textAnyOf(names);
     }
 }

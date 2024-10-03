@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.models.applications.frontends;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
@@ -10,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -26,25 +27,32 @@ public class HandlerMethods {
     }
 
     public static HandlerMethods from(JigTypes jigTypes) {
-        List<HandlerMethod> list = new ArrayList<>();
-
-        TypeIdentifier controller = new TypeIdentifier("org.springframework.stereotype.Controller");
-        TypeIdentifier restController = new TypeIdentifier("org.springframework.web.bind.annotation.RestController");
-        TypeIdentifier controllerAdvice = new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice");
-        List<JigType> frontends = jigTypes.listMatches(jigType ->
-                jigType.hasAnnotation(controller)
-                        || jigType.hasAnnotation(restController)
-                        || jigType.hasAnnotation(controllerAdvice));
-        for (JigType jigType : frontends) {
-            for (JigMethod jigMethod : jigType.instanceMember().instanceMethods().list()) {
-                HandlerMethod handlerMethod = new HandlerMethod(jigType, jigMethod);
-                if (handlerMethod.valid()) {
-                    list.add(handlerMethod);
-                }
-            }
-        }
-        return new HandlerMethods(list);
+        return new HandlerMethods(jigTypes.list().stream()
+                .filter(requestHandlerType)
+                .flatMap(HandlerMethods::collectHandlerMethod)
+                .toList());
     }
+
+    public static HandlerMethods from(JigType jigType) {
+        if (requestHandlerType.test(jigType)
+                // RabbitListenerはComponentに付与されている想定
+                || jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Component"))) {
+            return new HandlerMethods(collectHandlerMethod(jigType).toList());
+        }
+
+        return new HandlerMethods(List.of());
+    }
+
+    static Stream<HandlerMethod> collectHandlerMethod(JigType jigType) {
+        return jigType.instanceMember().instanceMethods().list()
+                .stream()
+                .map(jigMethod -> new HandlerMethod(jigType, jigMethod))
+                .filter(HandlerMethod::valid);
+    }
+
+    private static final Predicate<JigType> requestHandlerType = jigType -> jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Controller"))
+            || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.RestController"))
+            || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice"));
 
     public List<HandlerMethod> list() {
         return list.stream()

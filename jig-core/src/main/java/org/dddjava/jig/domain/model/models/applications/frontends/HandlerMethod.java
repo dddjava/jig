@@ -6,11 +6,14 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.UsingMethods;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * ハンドラ
@@ -103,7 +106,9 @@ public class HandlerMethod {
                                     || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
                                     || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
                                     || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
+                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping")
+                                    // RabbitListener
+                                    || annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
                         }
                 );
     }
@@ -126,5 +131,87 @@ public class HandlerMethod {
 
     public String typeLabel() {
         return jigType.label();
+    }
+
+
+    public static final String[] _RequestMapping = {
+            "org.springframework.web.bind.annotation.RequestMapping",
+            "org.springframework.web.bind.annotation.GetMapping",
+            "org.springframework.web.bind.annotation.PostMapping",
+            "org.springframework.web.bind.annotation.PutMapping",
+            "org.springframework.web.bind.annotation.DeleteMapping",
+            "org.springframework.web.bind.annotation.PatchMapping"
+    };
+
+    public static final String[] _RabbitListener = {
+            "org.springframework.amqp.rabbit.annotation.RabbitListener"
+    };
+
+    public String interfacePointDescription() {
+        var methodAnnotations = method.methodAnnotations();
+
+        var requestMappingPath = methodAnnotations.list().stream()
+                .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RequestMapping))
+                .map(methodAnnotation -> {
+                    var httpMethod = switch (methodAnnotation.annotationType().asSimpleText()) {
+                        case "GetMapping" -> "GET";
+                        case "PostMapping" -> "POST";
+                        case "PutMapping" -> "PUT";
+                        case "DeleteMapping" -> "DELETE";
+                        case "PatchMapping" -> "PATCH";
+                        default -> "???";
+                    };
+                    var pathDescription = methodAnnotation.annotation().descriptionTextAnyOf("value", "path")
+                            // valueもpathがなかったり空文字であってもRequestMappingがあれば "/" にバインドされるので明示しておく
+                            .filter(path -> !path.isEmpty()).orElse("/");
+
+                    return "%s %s".formatted(httpMethod, pathDescription);
+                })
+                // アノテーションは複数取れないはずなのでこれで。
+                .findFirst();
+
+        var rabbitListenerQueues = methodAnnotations.list().stream()
+                .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RabbitListener))
+                .map(methodAnnotation -> {
+                    // queue複数未対応
+                    var queueName = methodAnnotation.annotation().descriptionTextAnyOf("queues");
+                    return "queue: " + queueName;
+                })
+                // アノテーションは複数取れないはずなのでこれで。
+                .findFirst();
+
+        return requestMappingPath
+                .or(() -> rabbitListenerQueues)
+                .orElseGet(() -> {
+                    // 想定するdescriptionがなかった場合。想定が増えたら追加する。
+                    // api methodと判定されてるのにアノテーションがなかった場合もきちゃうけど、それは想定していない感じ
+                    return "???";
+                });
+    }
+
+    public String interfaceLabelText() {
+        if (isRequestMappingMethod()) {
+            var optOperationSummary = method.methodAnnotations().list().stream()
+                    .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals("io.swagger.v3.oas.annotations.Operation"))
+                    .map(methodAnnotation -> methodAnnotation.annotation().descriptionTextOf("summary"))
+                    .findFirst();
+
+            return optOperationSummary.orElseGet(method::labelText);
+        }
+
+        return method.labelText();
+    }
+
+    private boolean isRequestMappingMethod() {
+        return method.methodAnnotations().list().stream()
+                .anyMatch(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RequestMapping));
+    }
+
+    public MethodDeclaration declaration() {
+        return method.declaration();
+    }
+
+    public UsingMethods usingMethods() {
+        return method.usingMethods();
     }
 }

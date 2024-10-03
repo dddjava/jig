@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
+import org.dddjava.jig.domain.model.models.applications.frontends.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
@@ -7,7 +8,6 @@ import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
@@ -21,11 +21,7 @@ public class SummaryModel {
     EnumModels enumModels;
     Map<String, String> mermaidMap;
 
-    SummaryModel(Map<PackageIdentifier, List<JigType>> map) {
-        this(map, new EnumModels(List.of()));
-    }
-
-    SummaryModel(Map<PackageIdentifier, List<JigType>> map, EnumModels enumModels) {
+    private SummaryModel(Map<PackageIdentifier, List<JigType>> map, EnumModels enumModels) {
         this.map = map;
         this.enumModels = enumModels;
         this.mermaidMap = Map.of();
@@ -35,13 +31,13 @@ public class SummaryModel {
         Map<PackageIdentifier, List<JigType>> map = businessRules.list().stream()
                 .map(BusinessRule::jigType)
                 .collect(groupingBy(JigType::packageIdentifier));
-        return new SummaryModel(map);
+        return new SummaryModel(map, new EnumModels(List.of()));
     }
 
     public static SummaryModel from(ServiceMethods serviceMethods) {
         Map<PackageIdentifier, List<JigType>> map = serviceMethods.listJigTypes().stream()
                 .collect(groupingBy(JigType::packageIdentifier));
-        return new SummaryModel(map);
+        return new SummaryModel(map, new EnumModels(List.of()));
     }
 
     public static SummaryModel from(CategoryTypes categoryTypes, EnumModels enumModels) {
@@ -54,6 +50,16 @@ public class SummaryModel {
     public static SummaryModel from(ServiceMethods serviceMethods, Map<String, String> mermaidMap) {
         var summaryModel = from(serviceMethods);
         summaryModel.mermaidMap = mermaidMap;
+        return summaryModel;
+    }
+
+    public static SummaryModel from(Entrypoint entrypoint) {
+        Map<PackageIdentifier, List<JigType>> map = entrypoint.list().stream()
+                .map(entrypointGroup -> entrypointGroup.jigType())
+                .collect(groupingBy(JigType::packageIdentifier));
+
+        var summaryModel = new SummaryModel(map, new EnumModels(List.of()));
+        summaryModel.mermaidMap = entrypoint.mermaidMap();
         return summaryModel;
     }
 

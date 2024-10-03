@@ -1,8 +1,6 @@
 package org.dddjava.jig.domain.model.parts.classes.annotation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * アノテーションの記述
@@ -37,5 +35,12 @@ public class AnnotationDescription {
 
     public String textOf(String name) {
         return map.get(name);
+    }
+
+    public Optional<String> textAnyOf(String... names) {
+        return Arrays.stream(names)
+                .filter(name -> map.containsKey(name))
+                .map(name -> map.get(name))
+                .findFirst();
     }
 }

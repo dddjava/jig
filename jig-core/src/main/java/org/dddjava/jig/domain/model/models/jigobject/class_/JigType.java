@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JIGが識別する型
@@ -130,5 +131,22 @@ public class JigType {
 
     public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
         return jigTypeAttribute.annotationsOf(typeIdentifier);
+    }
+
+    public Optional<String> interfacePointDescription() {
+        var annotations = jigTypeAttribute.annotationsOf(new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
+        return annotations.list().stream()
+                // 複数はつけられないので一つで良い
+                .findFirst()
+                .map(annotation -> annotation.descriptionTextAnyOf("value", "path")
+                        // 空文字列や何も設定されていない場合は "/" として扱う
+                        .filter(value -> !value.isEmpty()).orElse("/"));
+    }
+
+    public String interfaceLabelText() {
+        var annotations = jigTypeAttribute.annotationsOf(new TypeIdentifier("io.swagger.v3.oas.annotations.tags.Tag"));
+        return annotations.list().stream().findFirst()
+                .flatMap(annotation -> annotation.descriptionTextAnyOf("description"))
+                .orElse(label());
     }
 }

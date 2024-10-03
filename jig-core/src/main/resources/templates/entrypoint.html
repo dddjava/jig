@@ -1,0 +1,43 @@
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <link href="./assets/style.css" rel="stylesheet">
+    <script src="./assets/marked.min.js"></script>
+    <link rel="icon" href="./assets/favicon.ico">
+    <title th:text="${title}">application</title>
+</head>
+<body>
+<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+<div class="sideNavMain">
+    <nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+        パッケージツリーに置換
+    </nav>
+
+    <main class="usecase">
+
+        <th:block th:each="item : ${jigTypes}">
+            <section class="type">
+                <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+                <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
+
+                <th:block th:with="description=${item.description()}">
+                    <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">
+                        クラスの **Javadoc** コメント
+                    </section>
+                </th:block>
+
+                <div class="mermaid" th:if="${model.mermaidMap().containsKey(item.fqn())}" th:utext="${model.mermaidMap().get(item.fqn())}">
+                    graph LR
+                    a --> b
+                    a --> c
+                    b --> c
+                </div>
+
+            </section>
+        </th:block>
+    </main>
+</div>
+
+<th:block th:replace="fragment-base::scripts"></th:block>
+</body>
+</html>

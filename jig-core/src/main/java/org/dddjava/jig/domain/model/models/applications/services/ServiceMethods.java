@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -66,5 +67,14 @@ public class ServiceMethods {
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
                 .filter(methodFilter)
                 .anyMatch(jigMethod -> methodDeclaration.sameIdentifier(jigMethod.declaration()));
+    }
+
+    public Optional<JigMethod> find(MethodDeclaration usingMethod) {
+        return serviceJigTypes.stream()
+                .filter(jigType -> jigType.identifier().equals(usingMethod.declaringType()))
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream())
+                .filter(methodFilter)
+                .filter(jigMethod -> jigMethod.declaration().sameIdentifier(usingMethod))
+                .findAny();
     }
 }

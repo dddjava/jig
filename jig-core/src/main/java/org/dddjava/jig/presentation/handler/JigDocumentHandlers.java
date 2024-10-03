@@ -169,6 +169,7 @@ public class JigDocumentHandlers {
                 case DomainSummary -> SummaryModel.from(businessRuleService.businessRules());
                 case ApplicationSummary -> SummaryModel.from(applicationService.serviceMethods());
                 case UsecaseSummary -> usecaseSummary();
+                case EntrypointSummary -> entrypointSummary();
                 case EnumSummary ->
                         SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
                 case TermTable -> businessRuleService.terms();
@@ -296,4 +297,7 @@ public class JigDocumentHandlers {
         return SummaryModel.from(applicationService.serviceMethods(), mermaidMap);
     }
 
+    private SummaryModel entrypointSummary() {
+        return SummaryModel.from(applicationService.entrypoint());
+    }
 }

@@ -119,4 +119,11 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public TypeIdentifier unarray() {
         return new TypeIdentifier(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
+
+    public boolean anyEquals(String... ids) {
+        for (String id : ids) {
+            if (fullQualifiedName().equals(id)) return true;
+        }
+        return false;
+    }
 }

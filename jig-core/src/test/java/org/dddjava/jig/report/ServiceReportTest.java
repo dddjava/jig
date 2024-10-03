@@ -1,7 +1,7 @@
 package org.dddjava.jig.report;
 
-import org.dddjava.jig.application.service.JigService;
-import org.dddjava.jig.application.service.JigSourceReadService;
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;

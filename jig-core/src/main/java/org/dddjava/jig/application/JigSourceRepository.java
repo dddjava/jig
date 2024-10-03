@@ -1,4 +1,4 @@
-package org.dddjava.jig.application.repository;
+package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;

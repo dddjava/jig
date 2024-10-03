@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
-import org.dddjava.jig.application.repository.JigSourceRepository;
+import org.dddjava.jig.application.JigSourceRepository;
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;

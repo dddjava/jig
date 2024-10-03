@@ -1,6 +1,5 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.application;
 
-import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;

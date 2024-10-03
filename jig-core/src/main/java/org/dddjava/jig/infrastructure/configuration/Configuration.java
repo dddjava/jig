@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.application.service.AliasService;
-import org.dddjava.jig.application.service.JigService;
-import org.dddjava.jig.application.service.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceRepository;
+import org.dddjava.jig.application.AliasService;
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;

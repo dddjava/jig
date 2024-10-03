@@ -1,6 +1,8 @@
 package org.dddjava.jig.application.service;
 
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.application.AliasService;
+import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;

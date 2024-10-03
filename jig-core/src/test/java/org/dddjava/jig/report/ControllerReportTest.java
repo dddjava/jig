@@ -1,7 +1,7 @@
 package org.dddjava.jig.report;
 
-import org.dddjava.jig.application.service.JigService;
-import org.dddjava.jig.application.service.JigSourceReadService;
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.presentation.view.report.application.ControllerReport;

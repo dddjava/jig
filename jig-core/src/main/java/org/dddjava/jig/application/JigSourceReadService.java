@@ -1,6 +1,5 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.application;
 
-import org.dddjava.jig.application.repository.JigSourceRepository;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;

@@ -1,5 +1,7 @@
 package org.dddjava.jig.application.service;
 
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSourceReadService;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;

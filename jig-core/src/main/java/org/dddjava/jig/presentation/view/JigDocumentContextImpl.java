@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.view;
 
-import org.dddjava.jig.application.service.AliasService;
+import org.dddjava.jig.application.AliasService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;

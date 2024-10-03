@@ -1,4 +1,4 @@
-package org.dddjava.jig.application.service;
+package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;

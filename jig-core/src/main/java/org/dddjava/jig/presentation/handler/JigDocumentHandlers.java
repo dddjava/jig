@@ -1,6 +1,6 @@
 package org.dddjava.jig.presentation.handler;
 
-import org.dddjava.jig.application.service.JigService;
+import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;

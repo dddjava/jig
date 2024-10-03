@@ -1,6 +1,6 @@
 package org.dddjava.jig.report;
 
-import org.dddjava.jig.application.service.ApplicationService;
+import org.dddjava.jig.application.service.JigService;
 import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ControllerReportTest {
 
     @Test
-    void test(ApplicationService applicationService, Sources sources, JigSourceReadService jigSourceReadService) {
+    void test(JigService jigService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
-        HandlerMethods handlerMethods = applicationService.controllerAngles();
+        HandlerMethods handlerMethods = jigService.controllerAngles();
 
         assertThat(handlerMethods.list().stream().map(ControllerReport::new))
                 .extracting(

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class BusinessRuleServiceTest {
 
     @Test
-    void ビジネスルールの可視性(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) throws Exception {
+    void ビジネスルールの可視性(JigService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) throws Exception {
         TypeFacts typeFacts = jigSourceReadService.readProjectData(sources);
         List<JigType> jigTypes = typeFacts.jigTypes().list();
 
@@ -45,7 +45,7 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void 注意メソッドの抽出(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+    void 注意メソッドの抽出(JigService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
         MethodSmellList methodSmellList = businessRuleService.methodSmells();
 
@@ -62,7 +62,7 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(BusinessRuleService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
+    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
         jigSourceReadService.readProjectData(sources);
         assertFalse(businessRuleService.businessRules().contains(new TypeIdentifier("stub.domain.model.annotation.package-info")));
     }

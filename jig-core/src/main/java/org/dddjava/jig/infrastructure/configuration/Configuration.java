@@ -1,7 +1,9 @@
 package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.application.service.*;
+import org.dddjava.jig.application.service.AliasService;
+import org.dddjava.jig.application.service.JigService;
+import org.dddjava.jig.application.service.JigSourceReadService;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
@@ -13,17 +15,15 @@ import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
-import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 import org.dddjava.jig.presentation.handler.JigDocumentHandlers;
+import org.dddjava.jig.presentation.view.JigDocumentContextImpl;
 
 public class Configuration {
     JigProperties properties;
 
     JigSourceReadService jigSourceReadService;
     JigDocumentHandlers documentHandlers;
-    ApplicationService applicationService;
-    DependencyService dependencyService;
-    BusinessRuleService businessRuleService;
+    JigService businessRuleService;
     AliasService aliasService;
 
     public Configuration(JigProperties jigProperties) {
@@ -39,9 +39,7 @@ public class Configuration {
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        this.businessRuleService = new BusinessRuleService(architecture, jigSourceRepository);
-        this.dependencyService = new DependencyService(businessRuleService);
-        this.applicationService = new ApplicationService(jigSourceRepository);
+        this.businessRuleService = new JigService(architecture, jigSourceRepository);
 
         JavaparserReader javaparserReader = new JavaparserReader(properties);
         TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
@@ -58,7 +56,7 @@ public class Configuration {
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService, properties.linkPrefix());
 
         this.documentHandlers = JigDocumentHandlers.from(
-                jigDocumentContext, dependencyService, businessRuleService, applicationService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
+                jigDocumentContext, businessRuleService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
     }
 
     public JigSourceReadService implementationService() {

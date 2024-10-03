@@ -1,8 +1,7 @@
 package org.dddjava.jig.application.service;
 
 import org.dddjava.jig.application.repository.JigSourceRepository;
-import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
@@ -11,10 +10,17 @@ import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
+import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
+import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +30,80 @@ import org.springframework.stereotype.Service;
  * 機能の分析サービス
  */
 @Service
-public class ApplicationService {
+public class JigService {
 
-    static Logger logger = LoggerFactory.getLogger(ApplicationService.class);
-    final JigSourceRepository jigSourceRepository;
+    static Logger logger = LoggerFactory.getLogger(JigService.class);
+    private final Architecture architecture;
+    private final JigSourceRepository jigSourceRepository;
 
-    public ApplicationService(JigSourceRepository jigSourceRepository) {
+    public JigService(Architecture architecture, JigSourceRepository jigSourceRepository) {
+        this.architecture = architecture;
         this.jigSourceRepository = jigSourceRepository;
+    }
+
+    /**
+     * ビジネスルール一覧を取得する
+     */
+    public BusinessRules businessRules() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return BusinessRules.from(architecture, typeFacts.toClassRelations(), typeFacts.jigTypes());
+    }
+
+    /**
+     * メソッドの不吉なにおい一覧を取得する
+     */
+    public MethodSmellList methodSmells() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        MethodRelations methodRelations = typeFacts.toMethodRelations();
+        return new MethodSmellList(businessRules(), methodRelations);
+    }
+
+    /**
+     * 区分一覧を取得する
+     */
+    public CategoryDiagram categories() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        CategoryTypes categoryTypes = categoryTypes();
+        return CategoryDiagram.create(categoryTypes, typeFacts.toClassRelations());
+    }
+
+    public CategoryTypes categoryTypes() {
+        return CategoryTypes.from(businessRules().jigTypes());
+    }
+
+    /**
+     * コレクションを分析する
+     */
+    public JigCollectionTypes collections() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+
+        return new JigCollectionTypes(businessRules().jigTypes(), typeFacts.toClassRelations());
+    }
+
+    /**
+     * 区分使用図
+     */
+    public CategoryUsageDiagram categoryUsages() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        JigTypes jigTypes = typeFacts.jigTypes();
+
+        BusinessRules businessRules = BusinessRules.from(architecture, typeFacts.toClassRelations(), jigTypes);
+        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
+
+        return new CategoryUsageDiagram(serviceMethods, businessRules);
+    }
+
+    public JigTypes jigTypes() {
+        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        return typeFacts.jigTypes();
+    }
+
+    public Terms terms() {
+        return jigSourceRepository.terms();
+    }
+
+    public EnumModels enumModels() {
+        return jigSourceRepository.enumModels();
     }
 
     /**
@@ -114,5 +187,19 @@ public class ApplicationService {
         return new Entrypoint(
                 typeFacts.jigTypes(),
                 ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations()));
+    }
+
+    /**
+     * パッケージの関連を取得する
+     */
+    public PackageRelationDiagram packageDependencies() {
+        BusinessRules businessRules = businessRules();
+
+        if (businessRules.empty()) {
+            logger.warn(Warning.ビジネスルールが見つからないので出力されない通知.localizedMessage());
+            return PackageRelationDiagram.empty();
+        }
+
+        return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
     }
 }

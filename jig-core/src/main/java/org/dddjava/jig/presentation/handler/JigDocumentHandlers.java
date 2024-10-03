@@ -1,8 +1,6 @@
 package org.dddjava.jig.presentation.handler;
 
-import org.dddjava.jig.application.service.ApplicationService;
-import org.dddjava.jig.application.service.BusinessRuleService;
-import org.dddjava.jig.application.service.DependencyService;
+import org.dddjava.jig.application.service.JigService;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
@@ -63,18 +61,14 @@ public class JigDocumentHandlers {
 
     private final DotCommandRunner dotCommandRunner;
     private final TemplateEngine templateEngine;
-    private final DependencyService dependencyService;
-    private final BusinessRuleService businessRuleService;
-    private final ApplicationService applicationService;
+    private final JigService jigService;
 
     private JigDocumentHandlers(JigDocumentContext jigDocumentContext,
                                 JigDiagramFormat diagramFormat,
-                                DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService,
+                                JigService jigService,
                                 List<JigDocument> jigDocuments,
                                 Path outputDirectory) {
-        this.dependencyService = dependencyService;
-        this.businessRuleService = businessRuleService;
-        this.applicationService = applicationService;
+        this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
         this.diagramFormat = diagramFormat;
         this.jigDocuments = jigDocuments;
@@ -95,11 +89,11 @@ public class JigDocumentHandlers {
         this.templateEngine = templateEngine;
     }
 
-    public static JigDocumentHandlers from(JigDocumentContext jigDocumentContext, DependencyService dependencyService, BusinessRuleService businessRuleService, ApplicationService applicationService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
+    public static JigDocumentHandlers from(JigDocumentContext jigDocumentContext, JigService jigService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
         return new JigDocumentHandlers(
                 jigDocumentContext,
                 outputDiagramFormat,
-                dependencyService, businessRuleService, applicationService,
+                jigService,
                 jigDocuments,
                 outputDirectory
         );
@@ -158,23 +152,23 @@ public class JigDocumentHandlers {
 
             Object model = switch (jigDocument) {
                 case BusinessRuleList -> domainList();
-                case PackageRelationDiagram -> dependencyService.packageDependencies();
-                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(dependencyService.businessRules());
-                case CategoryDiagram -> businessRuleService.categories();
-                case CategoryUsageDiagram -> businessRuleService.categoryUsages();
+                case PackageRelationDiagram -> jigService.packageDependencies();
+                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules());
+                case CategoryDiagram -> jigService.categories();
+                case CategoryUsageDiagram -> jigService.categoryUsages();
                 case ApplicationList -> applicationList();
-                case ServiceMethodCallHierarchyDiagram -> applicationService.serviceMethodCallHierarchy();
-                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(applicationService.serviceAngles());
-                case ArchitectureDiagram -> applicationService.architectureDiagram();
-                case DomainSummary -> SummaryModel.from(businessRuleService.businessRules());
-                case ApplicationSummary -> SummaryModel.from(applicationService.serviceMethods());
+                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy();
+                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles());
+                case ArchitectureDiagram -> jigService.architectureDiagram();
+                case DomainSummary -> SummaryModel.from(jigService.businessRules());
+                case ApplicationSummary -> SummaryModel.from(jigService.serviceMethods());
                 case UsecaseSummary -> usecaseSummary();
                 case EntrypointSummary -> entrypointSummary();
                 case EnumSummary ->
-                        SummaryModel.from(businessRuleService.categoryTypes(), businessRuleService.enumModels());
-                case TermTable -> businessRuleService.terms();
+                        SummaryModel.from(jigService.categoryTypes(), jigService.enumModels());
+                case TermTable -> jigService.terms();
                 case TermList ->
-                        new ModelReports(new ModelReport<>(businessRuleService.terms().list(), TermReport::new, TermReport.class));
+                        new ModelReports(new ModelReport<>(jigService.terms().list(), TermReport::new, TermReport.class));
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {
@@ -227,13 +221,13 @@ public class JigDocumentHandlers {
     }
 
     private ModelReports domainList() {
-        MethodSmellList angles = businessRuleService.methodSmells();
-        JigTypes jigTypes = businessRuleService.jigTypes();
+        MethodSmellList angles = jigService.methodSmells();
+        JigTypes jigTypes = jigService.jigTypes();
 
-        JigCollectionTypes jigCollectionTypes = businessRuleService.collections();
-        CategoryDiagram categoryDiagram = businessRuleService.categories();
-        BusinessRules businessRules = businessRuleService.businessRules();
-        BusinessRulePackages businessRulePackages = businessRuleService.businessRules().businessRulePackages();
+        JigCollectionTypes jigCollectionTypes = jigService.collections();
+        CategoryDiagram categoryDiagram = jigService.categories();
+        BusinessRules businessRules = jigService.businessRules();
+        BusinessRulePackages businessRulePackages = jigService.businessRules().businessRulePackages();
         return new ModelReports(
                 new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class),
                 new ModelReport<>(businessRules.list(),
@@ -249,11 +243,11 @@ public class JigDocumentHandlers {
     }
 
     private ModelReports applicationList() {
-        ServiceAngles serviceAngles = applicationService.serviceAngles();
+        ServiceAngles serviceAngles = jigService.serviceAngles();
 
-        DatasourceAngles datasourceAngles = applicationService.datasourceAngles();
-        StringComparingMethodList stringComparingMethodList = applicationService.stringComparing();
-        HandlerMethods handlerMethods = applicationService.controllerAngles();
+        DatasourceAngles datasourceAngles = jigService.datasourceAngles();
+        StringComparingMethodList stringComparingMethodList = jigService.stringComparing();
+        HandlerMethods handlerMethods = jigService.controllerAngles();
 
         return new ModelReports(
                 new ModelReport<>(handlerMethods.list(),
@@ -268,7 +262,7 @@ public class JigDocumentHandlers {
     }
 
     private SummaryModel usecaseSummary() {
-        ServiceAngles serviceAngles = applicationService.serviceAngles();
+        ServiceAngles serviceAngles = jigService.serviceAngles();
 
         record Entry(JigMethod jigMethod, String mermaidText) {
         }
@@ -294,10 +288,10 @@ public class JigDocumentHandlers {
                                 list -> list.stream().findFirst().map(entry -> entry.mermaidText()).orElse(null))
                 ));
 
-        return SummaryModel.from(applicationService.serviceMethods(), mermaidMap);
+        return SummaryModel.from(jigService.serviceMethods(), mermaidMap);
     }
 
     private SummaryModel entrypointSummary() {
-        return SummaryModel.from(applicationService.entrypoint());
+        return SummaryModel.from(jigService.entrypoint());
     }
 }

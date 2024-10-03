@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.view.html;
 
-import org.dddjava.jig.application.HandleResult;
+import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;

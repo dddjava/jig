@@ -2,8 +2,8 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
-import org.dddjava.jig.application.JigExecutor;
-import org.dddjava.jig.application.HandleResult;
+import org.dddjava.jig.JigExecutor;
+import org.dddjava.jig.HandleResult;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;

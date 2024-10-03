@@ -17,7 +17,7 @@ public class Configuration {
     JigProperties properties;
 
     JigSourceReadService jigSourceReadService;
-    JigDocumentHandlers documentHandlers;
+    JigDocumentGenerator documentHandlers;
     JigService businessRuleService;
     AliasService aliasService;
 
@@ -50,15 +50,15 @@ public class Configuration {
         this.aliasService = new AliasService(commentRepository);
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService, properties.linkPrefix());
 
-        this.documentHandlers = JigDocumentHandlers.from(
+        this.documentHandlers = JigDocumentGenerator.from(
                 jigDocumentContext, businessRuleService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
     }
 
-    public JigSourceReadService implementationService() {
+    public JigSourceReadService sourceReader() {
         return jigSourceReadService;
     }
 
-    public JigDocumentHandlers documentHandlers() {
+    public JigDocumentGenerator documentGenerator() {
         return documentHandlers;
     }
 

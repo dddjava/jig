@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
@@ -49,9 +50,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class JigDocumentHandlers {
+public class JigDocumentGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(JigDocumentHandlers.class);
+    private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
     private final JigDocumentContext jigDocumentContext;
     private final JigDiagramFormat diagramFormat;
@@ -62,11 +63,11 @@ public class JigDocumentHandlers {
     private final TemplateEngine templateEngine;
     private final JigService jigService;
 
-    private JigDocumentHandlers(JigDocumentContext jigDocumentContext,
-                                JigDiagramFormat diagramFormat,
-                                JigService jigService,
-                                List<JigDocument> jigDocuments,
-                                Path outputDirectory) {
+    private JigDocumentGenerator(JigDocumentContext jigDocumentContext,
+                                 JigDiagramFormat diagramFormat,
+                                 JigService jigService,
+                                 List<JigDocument> jigDocuments,
+                                 Path outputDirectory) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
         this.diagramFormat = diagramFormat;
@@ -88,8 +89,8 @@ public class JigDocumentHandlers {
         this.templateEngine = templateEngine;
     }
 
-    public static JigDocumentHandlers from(JigDocumentContext jigDocumentContext, JigService jigService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
-        return new JigDocumentHandlers(
+    public static JigDocumentGenerator from(JigDocumentContext jigDocumentContext, JigService jigService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
+        return new JigDocumentGenerator(
                 jigDocumentContext,
                 outputDiagramFormat,
                 jigService,
@@ -98,7 +99,7 @@ public class JigDocumentHandlers {
         );
     }
 
-    public HandleResults handleJigDocuments() {
+    public List<HandleResult> handleJigDocuments() {
         long startTime = System.currentTimeMillis();
         logger.info("[JIG] write jig documents: {}", jigDocuments);
 
@@ -110,7 +111,7 @@ public class JigDocumentHandlers {
 
         long takenTime = System.currentTimeMillis() - startTime;
         logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
-        return new HandleResults(writtenResults);
+        return writtenResults;
     }
 
     private List<HandleResult> writeJigDocuments() {

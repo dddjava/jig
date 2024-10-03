@@ -1,4 +1,4 @@
-package org.dddjava.jig.application;
+package org.dddjava.jig;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 

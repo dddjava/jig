@@ -146,8 +146,6 @@ public class JigDocumentGenerator {
 
     private HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
         try {
-            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-
             long startTime = System.currentTimeMillis();
 
             Object model = switch (jigDocument) {
@@ -176,6 +174,8 @@ public class JigDocumentGenerator {
                 case SUMMARY -> new SummaryView(templateEngine, jigDocumentContext);
                 case TABLE -> new TableView(templateEngine);
             };
+
+            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             jigView.render(model, jigDocumentWriter);
 
             long takenTime = System.currentTimeMillis() - startTime;

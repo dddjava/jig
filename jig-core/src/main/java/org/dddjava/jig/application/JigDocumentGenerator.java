@@ -216,7 +216,7 @@ public class JigDocumentGenerator {
     }
 
     private ModelReports domainList() {
-        MethodSmellList angles = jigService.methodSmells();
+        MethodSmellList methodSmellList = jigService.methodSmells();
         JigTypes jigTypes = jigService.jigTypes();
 
         JigCollectionTypes jigCollectionTypes = jigService.collections();
@@ -233,7 +233,7 @@ public class JigDocumentGenerator {
                         jigType -> new CollectionReport(jigType, jigCollectionTypes.classRelations()),
                         CollectionReport.class),
                 new ModelReport<>(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
-                new ModelReport<>(angles.list(), MethodSmellReport::new, MethodSmellReport.class)
+                new ModelReport<>(methodSmellList.list(), MethodSmellReport::new, MethodSmellReport.class)
         );
     }
 

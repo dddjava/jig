@@ -78,7 +78,7 @@ public class ServiceAngles {
                     var labels = list().stream()
                             // 処理したものだけラベル出力
                             .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
-                            .map(serviceAngle -> "%s[\"%s\"]".formatted(
+                            .map(serviceAngle -> "%s([\"%s\"])".formatted(
                                     serviceAngle.method().asSimpleText(),
                                     serviceAngle.serviceMethod().method().labelTextOrLambda()
                             ))

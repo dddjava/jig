@@ -15,10 +15,6 @@ public class JigExecutor {
     static Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
     public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
-        return executeInternal(configuration, sourcePaths);
-    }
-
-    static List<HandleResult> executeInternal(Configuration configuration, SourcePaths sourcePaths) {
         JigSourceReadService jigSourceReadService = configuration.sourceReader();
 
         ReadStatuses status = jigSourceReadService.readSourceFromPaths(sourcePaths);
@@ -37,4 +33,5 @@ public class JigExecutor {
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
         return jigDocumentGenerator.handleJigDocuments();
     }
+
 }

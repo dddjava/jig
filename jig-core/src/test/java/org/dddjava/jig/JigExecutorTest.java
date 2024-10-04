@@ -12,7 +12,7 @@ class JigExecutorTest {
 
     @Test
     void name(Configuration configuration, SourcePaths SourcePaths) {
-        var actual = JigExecutor.executeInternal(
+        var actual = JigExecutor.execute(
                 configuration,
                 SourcePaths
         );

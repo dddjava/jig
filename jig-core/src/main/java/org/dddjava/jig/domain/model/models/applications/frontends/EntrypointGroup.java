@@ -69,7 +69,7 @@ public record EntrypointGroup
                 mermaidText.add("    %s([\"%s\"])".formatted(methodMmdId, value.labelText()));
                 // サービスのノードをクリックしたらユースケース概要に移動する。
                 // メソッドにしたいけどとりあえずクラスに。
-                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(methodMmdId, key.fullQualifiedName()));
+                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(methodMmdId, value.htmlIdText()));
             });
             mermaidText.add("    end");
         });

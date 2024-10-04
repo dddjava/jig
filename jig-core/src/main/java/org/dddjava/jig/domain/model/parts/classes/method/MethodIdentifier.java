@@ -49,4 +49,9 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
     public String toString() {
         return "MethodIdentifier{" + asText() + '}';
     }
+
+    public String htmlIdText() {
+        // 英数字以外を_に置換する
+        return asText().replaceAll("[^a-zA-Z0-9]", "_");
+    }
 }

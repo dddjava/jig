@@ -35,7 +35,7 @@
                 </th:block>
 
                 <section class="method" th:each="method : ${item.instanceMethods().listRemarkable()}">
-                    <h3 th:text="${method.labelText()}">XXXメソッド</h3>
+                    <h3 th:id="${method.htmlIdText()}" th:text="${method.labelText()}">XXXメソッド</h3>
                     <div class="fully-qualified-name"
                          th:text="${method.declaration().asSignatureAndReturnTypeSimpleText()}">
                         availableRoomList(OffsetDateTime):List

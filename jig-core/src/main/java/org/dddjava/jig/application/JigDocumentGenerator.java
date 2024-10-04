@@ -268,10 +268,6 @@ public class JigDocumentGenerator {
 
         var mermaidMap = serviceAngles.list()
                 .stream()
-                // どのServiceMethodにも使用されていないものだけを起点にする
-                //.filter(serviceAngle -> serviceAngle.userServiceMethods().empty())
-                // どのServiceMethodも使用していないものは除外する
-                //.filter(serviceAngle -> !serviceAngle.usingServiceMethods().empty())
                 .map(rootServiceMethod -> {
                     var key = rootServiceMethod.method().asSimpleText();
 

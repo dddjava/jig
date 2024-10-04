@@ -3,11 +3,12 @@ package org.dddjava.jig.domain.model.models.applications.services;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * サービスの切り口一覧
@@ -45,43 +46,50 @@ public class ServiceAngles {
         return list.isEmpty();
     }
 
-    private List<String> usings(String key) {
-        return list.stream().filter(serviceAngle -> serviceAngle.method().asSimpleText().equals(key))
-                .findAny()
-                .map(serviceAngle -> serviceAngle.usingServiceMethods().list().stream().map(MethodDeclaration::asSimpleText).toList())
-                .orElseGet(List::of);
-    }
-
-    private Optional<String> relationsText(String key, Set<String> stopper) {
-        if (stopper.contains(key)) {
+    private Optional<String> relationsText(MethodIdentifier methodIdentifier, Set<MethodIdentifier> stopper) {
+        if (stopper.contains(methodIdentifier)) {
             // 処理済みなので抜ける。抜けないと無限ループになる。
             return Optional.empty();
         }
-        stopper.add(key);
+        stopper.add(methodIdentifier);
 
-        var usings = usings(key);
+        var usings = list.stream()
+                .filter(serviceAngle -> serviceAngle.method().identifier().equals(methodIdentifier))
+                .flatMap(serviceAngle -> serviceAngle.usingServiceMethods().list().stream()
+                        .map(methodDeclaration -> methodDeclaration.identifier()))
+                .toList();
+
         var relations = new StringJoiner("\n");
-        relations.add(usings.stream()
-                .map(using -> "%s --> %s".formatted(key, using))
-                .collect(Collectors.joining("\n")));
+        usings.stream()
+                .map(using -> "%s --> %s".formatted(methodIdentifier.htmlIdText(), using.htmlIdText()))
+                .forEach(relations::add);
         for (var using : usings) {
             relationsText(using, stopper).ifPresent(relations::add);
         }
         return Optional.of(relations.toString());
     }
 
-    public String mermaidText(String key) {
-        Set<String> targets = new HashSet<>();
+    public String mermaidText(MethodIdentifier methodIdentifier) {
+        Set<MethodIdentifier> targets = new HashSet<>();
 
-        return relationsText(key, targets)
+        return relationsText(methodIdentifier, targets)
                 .map(relations -> {
                     var labels = list().stream()
                             // 処理したものだけラベル出力
-                            .filter(serviceAngle -> targets.contains(serviceAngle.method().asSimpleText()))
-                            .map(serviceAngle -> "%s([\"%s\"])".formatted(
-                                    serviceAngle.method().asSimpleText(),
-                                    serviceAngle.serviceMethod().method().labelTextOrLambda()
-                            ))
+                            .filter(serviceAngle -> targets.contains(serviceAngle.method().identifier()))
+                            .flatMap(serviceAngle -> {
+                                var jigMethod = serviceAngle.serviceMethod().method();
+
+                                var htmlIdText = jigMethod.htmlIdText();
+                                String methodNode = "%s([\"%s\"])".formatted(
+                                        htmlIdText,
+                                        jigMethod.labelTextOrLambda()
+                                );
+                                return Stream.of(
+                                        methodNode,
+                                        "click %s \"#%s\"".formatted(htmlIdText, htmlIdText)
+                                );
+                            })
                             .collect(Collectors.joining("\n"));
 
                     var mermaidText = new StringJoiner("\n");

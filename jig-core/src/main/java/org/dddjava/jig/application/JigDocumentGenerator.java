@@ -269,11 +269,9 @@ public class JigDocumentGenerator {
         var mermaidMap = serviceAngles.list()
                 .stream()
                 .map(rootServiceMethod -> {
-                    var key = rootServiceMethod.method().asSimpleText();
-
                     return new Entry(
                             rootServiceMethod.serviceMethod().method(),
-                            serviceAngles.mermaidText(key)
+                            serviceAngles.mermaidText(rootServiceMethod.method().identifier())
                     );
                 })
                 .collect(Collectors.groupingBy(

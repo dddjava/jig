@@ -1,7 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class ServiceReportTest {
 
     @Test
-    void readProjectData(JigService jigService, Sources sources, JigSourceReadService jigSourceReadService) {
-        jigSourceReadService.readProjectData(sources);
+    void readProjectData(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+        jigSourceReader.readProjectData(sources);
         ServiceAngles serviceAngles = jigService.serviceAngles();
 
         assertThat(serviceAngles.list().stream().map(ServiceReport::new))

@@ -1,7 +1,7 @@
 package org.dddjava.jig;
 
 import org.dddjava.jig.application.JigDocumentGenerator;
-import org.dddjava.jig.application.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatuses;
@@ -15,9 +15,14 @@ public class JigExecutor {
     static Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
     public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
-        JigSourceReadService jigSourceReadService = configuration.sourceReader();
+        JigSourceReader jigSourceReader = configuration.sourceReader();
+        JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
-        ReadStatuses status = jigSourceReadService.readSourceFromPaths(sourcePaths);
+        return getHandleResults(sourcePaths, jigSourceReader, jigDocumentGenerator);
+    }
+
+    private static List<HandleResult> getHandleResults(SourcePaths sourcePaths, JigSourceReader jigSourceReader, JigDocumentGenerator jigDocumentGenerator) {
+        ReadStatuses status = jigSourceReader.readSourceFromPaths(sourcePaths);
         if (status.hasError()) {
             for (ReadStatus readStatus : status.listErrors()) {
                 logger.error("{}", readStatus.localizedMessage());
@@ -30,7 +35,6 @@ public class JigExecutor {
             }
         }
 
-        JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
         return jigDocumentGenerator.handleJigDocuments();
     }
 

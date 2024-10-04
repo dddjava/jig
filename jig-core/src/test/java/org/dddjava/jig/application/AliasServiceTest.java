@@ -27,16 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AliasServiceTest {
 
     AliasService sut;
-    JigSourceReadService jigSourceReadService;
+    JigSourceReader jigSourceReader;
 
-    public AliasServiceTest(AliasService aliasService, JigSourceReadService jigSourceReadService) {
+    public AliasServiceTest(AliasService aliasService, JigSourceReader jigSourceReader) {
         sut = aliasService;
-        this.jigSourceReadService = jigSourceReadService;
+        this.jigSourceReader = jigSourceReader;
     }
 
     @Test
     void パッケージ別名取得(Sources source) {
-        jigSourceReadService.readProjectData(source);
+        jigSourceReader.readProjectData(source);
 
         Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
@@ -45,7 +45,7 @@ class AliasServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
         ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
@@ -64,7 +64,7 @@ class AliasServiceTest {
 
     @Test
     void メソッド別名取得(Sources source) {
-        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
         TypeIdentifier テスト対象クラス = new TypeIdentifier(MethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 

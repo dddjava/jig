@@ -1,6 +1,6 @@
 package org.dddjava.jig.application.service;
 
-import org.dddjava.jig.application.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CommentTest {
 
-    JigSourceReadService jigSourceReadService;
+    JigSourceReader jigSourceReader;
 
     CommentTest() {
-        jigSourceReadService = new JigSourceReadService(
+        jigSourceReader = new JigSourceReader(
                 new OnMemoryJigSourceRepository(new OnMemoryCommentRepository()),
                 new AsmFactReader(),
                 new TextSourceReader(
@@ -56,7 +56,7 @@ public class CommentTest {
     @Test
     void クラス別名取得() {
         Sources source = getTestRawSource();
-        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
         ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
                 .map(jigType -> jigType.typeAlias())
@@ -69,7 +69,7 @@ public class CommentTest {
     @Test
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
-        TypeFacts typeFacts = jigSourceReadService.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
 
         TypeIdentifier テスト対象クラス = new TypeIdentifier(KotlinMethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);

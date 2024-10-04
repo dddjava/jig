@@ -1,7 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.tuple;
 public class RepositoryReportTest {
 
     @Test
-    void readProjectData(JigService jigService, Sources sources, JigSourceReadService jigSourceReadService) {
-        jigSourceReadService.readProjectData(sources);
-        jigSourceReadService.readSqlSource(sources.sqlSources());
+    void readProjectData(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+        jigSourceReader.readProjectData(sources);
+        jigSourceReader.readSqlSource(sources.sqlSources());
 
         DatasourceAngles datasourceAngles = jigService.datasourceAngles();
 

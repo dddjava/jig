@@ -21,7 +21,7 @@ import java.util.List;
  * 取り込みサービス
  */
 @Service
-public class JigSourceReadService {
+public class JigSourceReader {
 
     final JigSourceRepository jigSourceRepository;
 
@@ -31,7 +31,7 @@ public class JigSourceReadService {
     final TextSourceReader textSourceReader;
     final SqlReader sqlReader;
 
-    public JigSourceReadService(JigSourceRepository jigSourceRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReader(JigSourceRepository jigSourceRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.jigSourceRepository = jigSourceRepository;
         this.binarySourceReader = binarySourceReader;
         this.textSourceReader = textSourceReader;

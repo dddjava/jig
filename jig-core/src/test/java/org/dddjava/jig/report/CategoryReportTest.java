@@ -1,7 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSourceReadService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.tuple;
 public class CategoryReportTest {
 
     @Test
-    void test(JigService businessRuleService, Sources sources, JigSourceReadService jigSourceReadService) {
-        jigSourceReadService.readProjectData(sources);
+    void test(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
+        jigSourceReader.readProjectData(sources);
         CategoryDiagram categoryDiagram = businessRuleService.categories();
 
         assertThat(categoryDiagram.list().stream().map(CategoryReport::new))

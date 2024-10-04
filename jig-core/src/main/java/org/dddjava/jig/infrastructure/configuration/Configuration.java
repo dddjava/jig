@@ -16,7 +16,7 @@ import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceReposi
 public class Configuration {
     JigProperties properties;
 
-    JigSourceReadService jigSourceReadService;
+    JigSourceReader jigSourceReader;
     JigDocumentGenerator documentHandlers;
     JigService businessRuleService;
     AliasService aliasService;
@@ -39,7 +39,7 @@ public class Configuration {
         JavaparserReader javaparserReader = new JavaparserReader(properties);
         TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
 
-        this.jigSourceReadService = new JigSourceReadService(
+        this.jigSourceReader = new JigSourceReader(
                 jigSourceRepository,
                 new AsmFactReader(),
                 textSourceReader,
@@ -54,8 +54,8 @@ public class Configuration {
                 jigDocumentContext, businessRuleService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
     }
 
-    public JigSourceReadService sourceReader() {
-        return jigSourceReadService;
+    public JigSourceReader sourceReader() {
+        return jigSourceReader;
     }
 
     public JigDocumentGenerator documentGenerator() {

@@ -16,8 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DependencyServiceTest {
 
     @Test
-    void パッケージ依存(JigService jigService, Sources sources, JigSourceReadService jigSourceReadService) {
-        jigSourceReadService.readProjectData(sources);
+    void パッケージ依存(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+        jigSourceReader.readProjectData(sources);
         PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies();
 
         // パッケージのリストアップ

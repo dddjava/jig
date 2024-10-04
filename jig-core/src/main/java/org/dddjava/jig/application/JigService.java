@@ -44,7 +44,7 @@ public class JigService {
      * ビジネスルール一覧を取得する
      */
     public BusinessRules businessRules(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         return BusinessRules.from(architecture, typeFacts.toClassRelations(), typeFacts.jigTypes());
     }
 
@@ -52,7 +52,7 @@ public class JigService {
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellList methodSmells(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         MethodRelations methodRelations = typeFacts.toMethodRelations();
         return new MethodSmellList(businessRules(jigSource), methodRelations);
     }
@@ -61,7 +61,7 @@ public class JigService {
      * 区分一覧を取得する
      */
     public CategoryDiagram categories(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         CategoryTypes categoryTypes = categoryTypes(jigSource);
         return CategoryDiagram.create(categoryTypes, typeFacts.toClassRelations());
     }
@@ -74,7 +74,7 @@ public class JigService {
      * コレクションを分析する
      */
     public JigCollectionTypes collections(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
 
         return new JigCollectionTypes(businessRules(jigSource).jigTypes(), typeFacts.toClassRelations());
     }
@@ -83,7 +83,7 @@ public class JigService {
      * 区分使用図
      */
     public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
 
         BusinessRules businessRules = BusinessRules.from(architecture, typeFacts.toClassRelations(), jigTypes);
@@ -93,7 +93,7 @@ public class JigService {
     }
 
     public JigTypes jigTypes(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         return typeFacts.jigTypes();
     }
 
@@ -109,7 +109,7 @@ public class JigService {
      * コントローラーを分析する
      */
     public HandlerMethods controllerAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
 
         if (handlerMethods.empty()) {
@@ -128,7 +128,7 @@ public class JigService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
         ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
 
@@ -146,7 +146,7 @@ public class JigService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         DatasourceMethods datasourceMethods = DatasourceMethods.from(typeFacts.jigTypes());
 
         if (datasourceMethods.empty()) {
@@ -161,7 +161,7 @@ public class JigService {
      * 文字列比較を分析する
      */
     public StringComparingMethodList stringComparing(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
         ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
 
@@ -169,7 +169,7 @@ public class JigService {
     }
 
     public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         // TODO packageBasedArchitectureがjigTypeを受け取っているのでclassRelationを別に受け取らなくてもいけるはず
         PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
         ClassRelations classRelations = typeFacts.toClassRelations();
@@ -177,12 +177,12 @@ public class JigService {
     }
 
     public ServiceMethods serviceMethods(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
     }
 
     public Entrypoint entrypoint(JigSource jigSource) {
-        TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
+        TypeFacts typeFacts = jigSource.typeFacts();
         return new Entrypoint(
                 typeFacts.jigTypes(),
                 ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations()));

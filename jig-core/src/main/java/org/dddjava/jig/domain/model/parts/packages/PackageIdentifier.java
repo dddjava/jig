@@ -67,6 +67,9 @@ public class PackageIdentifier {
         return new PackageIdentifier(sj.toString());
     }
 
+    /**
+     * @return hoge.fuga.piyo => [hoge, hoge.fuga, hoge.fuga.piyo]
+     */
     public List<PackageIdentifier> genealogical() {
         if (!hasName()) {
             return Collections.emptyList();
@@ -95,5 +98,10 @@ public class PackageIdentifier {
     @Override
     public String toString() {
         return value;
+    }
+
+    public String htmlIdText() {
+        // 英数字以外を_に置換する
+        return value.replaceAll("[^a-zA-Z0-9]", "_");
     }
 }

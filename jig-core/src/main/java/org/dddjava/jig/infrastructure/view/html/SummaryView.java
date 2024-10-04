@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.view.html;
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.summaries.Summaries;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
@@ -38,7 +39,16 @@ public class SummaryView implements JigView {
 
     @Override
     public void render(Object model, JigDocumentWriter jigDocumentWriter) {
-        SummaryModel summaryModel = (SummaryModel) model;
+        if (model instanceof SummaryModel summaryModel) {
+            summaryModel(summaryModel, jigDocumentWriter);
+        } else if (model instanceof Summaries summaries) {
+            var treeNode = TreeNode.from(summaries.listJigTypes());
+
+            write(jigDocumentWriter);
+        }
+    }
+
+    private void summaryModel(SummaryModel summaryModel, JigDocumentWriter jigDocumentWriter) {
         if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
             return;

@@ -126,4 +126,9 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         }
         return false;
     }
+
+    public String htmlIdText() {
+        // 英数字以外を_に置換する
+        return value.replaceAll("[^a-zA-Z0-9]", "_");
+    }
 }

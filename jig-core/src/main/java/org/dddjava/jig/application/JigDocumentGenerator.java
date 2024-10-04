@@ -100,29 +100,21 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generate(JigSource jigSource) {
-        return handleJigDocuments();
-    }
-
-    public List<HandleResult> handleJigDocuments() {
         long startTime = System.currentTimeMillis();
         logger.info("[JIG] write jig documents: {}", jigDocuments);
 
         prepareOutputDirectory();
 
-        var writtenResults = writeJigDocuments();
+        var writtenResults = jigDocuments
+                .parallelStream()
+                .map(jigDocument -> handle(jigDocument, outputDirectory, jigSource))
+                .collect(Collectors.toList());
 
         writeIndexHtml(outputDirectory, writtenResults);
 
         long takenTime = System.currentTimeMillis() - startTime;
         logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
         return writtenResults;
-    }
-
-    private List<HandleResult> writeJigDocuments() {
-        return jigDocuments
-                .parallelStream()
-                .map(jigDocument -> handle(jigDocument, outputDirectory))
-                .collect(Collectors.toList());
     }
 
     private void prepareOutputDirectory() {
@@ -148,7 +140,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private HandleResult handle(JigDocument jigDocument, Path outputDirectory) {
+    private HandleResult handle(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
         try {
             long startTime = System.currentTimeMillis();
 

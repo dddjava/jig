@@ -9,6 +9,8 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import static java.util.stream.Collectors.toList;
  * 型の実装から読み取れること一覧
  */
 public class TypeFacts {
+    private static final Logger logger = LoggerFactory.getLogger(TypeFacts.class);
+
     private final List<JigTypeBuilder> list;
 
     public TypeFacts(List<JigTypeBuilder> list) {
@@ -64,31 +68,42 @@ public class TypeFacts {
         // TODO Packageを取得した際にくっつけて返せるようにする
     }
 
-    public AliasRegisterResult registerTypeAlias(ClassComment classComment) {
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            if (jigTypeBuilder.typeIdentifier().equals(classComment.typeIdentifier())) {
-                jigTypeBuilder.registerTypeAlias(classComment);
-                return AliasRegisterResult.成功;
-            }
-        }
-
-        return AliasRegisterResult.紐付け対象なし;
-    }
-
-    public AliasRegisterResult registerMethodAlias(MethodComment methodComment) {
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
-            if (jigTypeBuilder.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                return jigTypeBuilder.registerMethodAlias(methodComment);
-            }
-        }
-
-        return AliasRegisterResult.紐付け対象なし;
-    }
-
     public void applyTextSource(TextSourceModel textSourceModel) {
         for (JigTypeBuilder jigTypeBuilder : list) {
             jigTypeBuilder.applyTextSource(textSourceModel);
         }
+
+        for (ClassComment classComment : textSourceModel.classCommentList()) {
+            registerTypeAlias(classComment);
+        }
+        for (MethodComment methodComment : textSourceModel.methodCommentList()) {
+            registerMethodAlias(methodComment);
+        }
+    }
+
+    private void registerTypeAlias(ClassComment classComment) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
+            if (jigTypeBuilder.typeIdentifier().equals(classComment.typeIdentifier())) {
+                jigTypeBuilder.registerTypeAlias(classComment);
+                return;
+            }
+        }
+
+        logger.warn("{} のコメント追加に失敗しました。javaファイルに対応するclassファイルが見つかりません。コンパイルが正常に行われていない可能性があります。処理は続行します。",
+                classComment.typeIdentifier());
+    }
+
+    private void registerMethodAlias(MethodComment methodComment) {
+        for (JigTypeBuilder jigTypeBuilder : list) {
+            MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
+            if (jigTypeBuilder.typeIdentifier().equals(methodIdentifier.declaringType())) {
+                if (jigTypeBuilder.registerMethodAlias(methodComment)) {
+                    return;
+                }
+            }
+        }
+
+        logger.warn("{} のコメント追加に失敗しました。javaファイルとclassファイルがアンマッチの可能性があります。処理は続行します。",
+                methodComment.methodIdentifier().asText());
     }
 }

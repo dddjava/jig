@@ -79,7 +79,19 @@ public class JigSourceReader {
      */
     public JigSource readProjectData(Sources sources) {
         TypeFacts typeFacts = readBinarySources(sources.classSources());
-        readTextSources(sources.textSources());
+
+        TextSources textSources = sources.textSources();
+
+        TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
+        jigSourceRepository.registerTextSourceModel(textSourceModel);
+
+        // typeFactsにテキストソースの情報を適用する
+        typeFacts.applyTextSource(textSourceModel);
+
+        PackageComments packageComments = textSourceReader.readPackageComments(textSources);
+        for (PackageComment packageComment : packageComments.list()) {
+            jigSourceRepository.registerPackageComment(packageComment);
+        }
         return new JigSource(typeFacts);
     }
 
@@ -90,19 +102,6 @@ public class JigSourceReader {
         TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources);
         jigSourceRepository.registerTypeFact(typeFacts);
         return typeFacts;
-    }
-
-    /**
-     * ソースからテキストコードを読み取る
-     */
-    void readTextSources(TextSources textSources) {
-        TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
-        jigSourceRepository.registerTextSourceModel(textSourceModel);
-
-        PackageComments packageComments = textSourceReader.readPackageComments(textSources);
-        for (PackageComment packageComment : packageComments.list()) {
-            jigSourceRepository.registerPackageComment(packageComment);
-        }
     }
 
     /**

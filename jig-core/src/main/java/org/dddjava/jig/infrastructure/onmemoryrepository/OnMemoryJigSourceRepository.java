@@ -9,12 +9,9 @@ import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.TermIdentifier;
 import org.dddjava.jig.domain.model.parts.term.Terms;
-import org.dddjava.jig.domain.model.sources.jigfactory.AliasRegisterResult;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -24,7 +21,6 @@ import java.util.Map;
 
 @Repository
 public class OnMemoryJigSourceRepository implements JigSourceRepository {
-    static Logger logger = LoggerFactory.getLogger(OnMemoryJigSourceRepository.class);
 
     CommentRepository commentRepository;
     TypeFacts typeFacts = new TypeFacts(Collections.emptyList());
@@ -73,39 +69,17 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     @Override
     public void registerTextSourceModel(TextSourceModel textSourceModel) {
         for (ClassComment classComment : textSourceModel.classCommentList()) {
-            registerClassComment(classComment);
+            // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
+            commentRepository.register(classComment);
+
+            registerTerm(Term.fromClass(classComment.typeIdentifier(), classComment.asTextOrIdentifierSimpleText(), classComment.documentationComment().bodyText()));
         }
+
         for (MethodComment methodComment : textSourceModel.methodCommentList()) {
-            registerMethodComment(methodComment);
+            registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
+                    methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
         }
         this.enumModels = textSourceModel.enumModels();
-
-        typeFacts.applyTextSource(textSourceModel);
-    }
-
-    void registerClassComment(ClassComment classComment) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerTypeAlias(classComment);
-        // TODO typeFactsに登録したものを使用するようになれば要らなくなるはず
-        commentRepository.register(classComment);
-
-        if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のコメント登録が {} です。処理は続行します。",
-                    classComment.typeIdentifier().fullQualifiedName(), aliasRegisterResult);
-        }
-
-        registerTerm(Term.fromClass(classComment.typeIdentifier(), classComment.asTextOrIdentifierSimpleText(), classComment.documentationComment().bodyText()));
-    }
-
-    void registerMethodComment(MethodComment methodComment) {
-        AliasRegisterResult aliasRegisterResult = typeFacts.registerMethodAlias(methodComment);
-
-        if (aliasRegisterResult != AliasRegisterResult.成功) {
-            logger.warn("{} のコメント登録が {} です。処理は続行します。",
-                    methodComment.methodIdentifier().asText(), aliasRegisterResult);
-        }
-
-        registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
-                methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
     }
 
     @Override

@@ -20,8 +20,6 @@ public interface JigSourceRepository {
 
     void registerTextSourceModel(TextSourceModel textSourceModel);
 
-    TypeFacts allTypeFacts();
-
     Sqls sqls();
 
     Terms terms();

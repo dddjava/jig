@@ -109,11 +109,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     }
 
     @Override
-    public TypeFacts allTypeFacts() {
-        return typeFacts;
-    }
-
-    @Override
     public Sqls sqls() {
         return sqls;
     }

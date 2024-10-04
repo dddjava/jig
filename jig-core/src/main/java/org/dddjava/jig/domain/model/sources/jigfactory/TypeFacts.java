@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,10 +61,6 @@ public class TypeFacts {
             jigTypeBuilder.collectClassRelations(collector);
         }
         return classRelations = new ClassRelations(collector);
-    }
-
-    public void registerPackageAlias(PackageComment packageComment) {
-        // TODO Packageを取得した際にくっつけて返せるようにする
     }
 
     public void applyTextSource(TextSourceModel textSourceModel) {

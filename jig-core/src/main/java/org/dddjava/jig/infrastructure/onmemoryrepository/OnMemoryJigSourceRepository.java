@@ -42,7 +42,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
 
     @Override
     public void registerPackageComment(PackageComment packageComment) {
-        typeFacts.registerPackageAlias(packageComment);
         commentRepository.register(packageComment);
         registerTerm(Term.fromPackage(packageComment.packageIdentifier(), packageComment.summaryOrSimpleName(), packageComment.descriptionComment().bodyText()));
     }

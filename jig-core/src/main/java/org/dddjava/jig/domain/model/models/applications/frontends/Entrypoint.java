@@ -11,7 +11,7 @@ public record Entrypoint(List<EntrypointGroup> list, ServiceMethods serviceMetho
 
     public Entrypoint(JigTypes jigTypes, ServiceMethods serviceMethods) {
         this(jigTypes.list().stream()
-                        .map(jigType -> new EntrypointGroup(jigType, HandlerMethods.from(jigType)))
+                        .map(jigType -> EntrypointGroup.from(jigType))
                         .filter(entrypointGroup -> entrypointGroup.hasEntrypoint())
                         .toList(),
                 serviceMethods);

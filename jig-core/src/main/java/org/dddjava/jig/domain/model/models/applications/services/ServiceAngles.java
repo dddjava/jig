@@ -96,6 +96,7 @@ public class ServiceAngles {
                     mermaidText.add("graph LR");
                     mermaidText.add(relations);
                     mermaidText.add(labels);
+                    mermaidText.add("style %s font-weight:bold,stroke-width:2px".formatted(methodIdentifier.htmlIdText()));
 
                     return mermaidText.toString();
                 })

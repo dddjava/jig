@@ -12,8 +12,6 @@ public interface JigSourceRepository {
 
     void registerSqls(Sqls sqls);
 
-    void registerTypeFact(TypeFacts typeFacts);
-
     void registerPackageComment(PackageComment packageComment);
 
     void registerTerm(Term term);

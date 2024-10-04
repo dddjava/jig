@@ -78,7 +78,8 @@ public class JigSourceReader {
      * プロジェクト情報を読み取る
      */
     public JigSource readProjectData(Sources sources) {
-        TypeFacts typeFacts = readBinarySources(sources.classSources());
+        ClassSources classSources = sources.classSources();
+        TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources);
 
         TextSources textSources = sources.textSources();
 
@@ -93,15 +94,6 @@ public class JigSourceReader {
             jigSourceRepository.registerPackageComment(packageComment);
         }
         return new JigSource(typeFacts);
-    }
-
-    /**
-     * ソースからバイトコードを読み取る
-     */
-    TypeFacts readBinarySources(ClassSources classSources) {
-        TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources);
-        jigSourceRepository.registerTypeFact(typeFacts);
-        return typeFacts;
     }
 
     /**

@@ -23,7 +23,6 @@ import java.util.Map;
 public class OnMemoryJigSourceRepository implements JigSourceRepository {
 
     CommentRepository commentRepository;
-    TypeFacts typeFacts = new TypeFacts(Collections.emptyList());
     Sqls sqls;
 
     public OnMemoryJigSourceRepository(CommentRepository commentRepository) {
@@ -33,11 +32,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
     @Override
     public void registerSqls(Sqls sqls) {
         this.sqls = sqls;
-    }
-
-    @Override
-    public void registerTypeFact(TypeFacts typeFacts) {
-        this.typeFacts = typeFacts;
     }
 
     @Override

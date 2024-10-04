@@ -173,7 +173,7 @@ public class HandlerMethod {
                 .map(methodAnnotation -> {
                     // queue複数未対応
                     var queueName = methodAnnotation.annotation().descriptionTextAnyOf("queues");
-                    return "queue: " + queueName;
+                    return "queue: " + queueName.orElse("???");
                 })
                 // アノテーションは複数取れないはずなのでこれで。
                 .findFirst();

@@ -53,20 +53,24 @@ public class ServiceAngles {
         }
         stopper.add(methodIdentifier);
 
-        var usings = list.stream()
-                .filter(serviceAngle -> serviceAngle.method().identifier().equals(methodIdentifier))
-                .flatMap(serviceAngle -> serviceAngle.usingServiceMethods().list().stream()
-                        .map(methodDeclaration -> methodDeclaration.identifier()))
-                .toList();
+        return list.stream()
+                .filter(serviceAngle1 -> serviceAngle1.method().identifier().equals(methodIdentifier))
+                .findAny().map(serviceAngle -> {
+            var usingServices = serviceAngle.usingServiceMethods().list().stream()
+                    .map(methodDeclaration -> methodDeclaration.identifier())
+                    .toList();
 
-        var relations = new StringJoiner("\n");
-        usings.stream()
-                .map(using -> "%s --> %s".formatted(methodIdentifier.htmlIdText(), using.htmlIdText()))
-                .forEach(relations::add);
-        for (var using : usings) {
-            relationsText(using, stopper).ifPresent(relations::add);
-        }
-        return Optional.of(relations.toString());
+            var relations = new StringJoiner("\n");
+            usingServices.stream()
+                    .map(using -> "%s --> %s".formatted(methodIdentifier.htmlIdText(), using.htmlIdText()))
+                    .forEach(relations::add);
+            for (var using : usingServices) {
+                // 使用しているメソッドが使用しているメソッドを拾ってくる
+                relationsText(using, stopper).ifPresent(relations::add);
+            }
+
+            return relations.toString();
+        });
     }
 
     public String mermaidText(MethodIdentifier methodIdentifier) {
@@ -74,8 +78,16 @@ public class ServiceAngles {
 
         return relationsText(methodIdentifier, targets)
                 .map(relations -> {
-                    var labels = list().stream()
-                            // 処理したものだけラベル出力
+                    var mermaidText = new StringJoiner("\n");
+                    mermaidText.add("graph LR");
+                    mermaidText.add(relations);
+
+                    // 自身のスタイル
+                    mermaidText.add("style %s font-weight:bold,stroke-width:2px"
+                            .formatted(methodIdentifier.htmlIdText()));
+
+                    // サービスメソッドのラベル出力
+                    var serviceMethodNodes = list().stream()
                             .filter(serviceAngle -> targets.contains(serviceAngle.method().identifier()))
                             .flatMap(serviceAngle -> {
                                 var jigMethod = serviceAngle.serviceMethod().method();
@@ -91,12 +103,7 @@ public class ServiceAngles {
                                 );
                             })
                             .collect(Collectors.joining("\n"));
-
-                    var mermaidText = new StringJoiner("\n");
-                    mermaidText.add("graph LR");
-                    mermaidText.add(relations);
-                    mermaidText.add(labels);
-                    mermaidText.add("style %s font-weight:bold,stroke-width:2px".formatted(methodIdentifier.htmlIdText()));
+                    mermaidText.add(serviceMethodNodes);
 
                     return mermaidText.toString();
                 })

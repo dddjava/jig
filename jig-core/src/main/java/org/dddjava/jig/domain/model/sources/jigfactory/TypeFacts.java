@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
@@ -23,6 +24,7 @@ public class TypeFacts {
     private static final Logger logger = LoggerFactory.getLogger(TypeFacts.class);
 
     private final List<JigTypeBuilder> list;
+    private EnumModels enumModels = new EnumModels(List.of());
 
     public TypeFacts(List<JigTypeBuilder> list) {
         this.list = list;
@@ -74,6 +76,12 @@ public class TypeFacts {
         for (MethodComment methodComment : textSourceModel.methodCommentList()) {
             registerMethodAlias(methodComment);
         }
+
+        this.enumModels = textSourceModel.enumModels();
+    }
+
+    public EnumModels enumModels() {
+        return enumModels;
     }
 
     private void registerTypeAlias(ClassComment classComment) {

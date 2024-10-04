@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.models.applications.services.StringComparing
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.PackageBasedArchitecture;
@@ -99,10 +98,6 @@ public class JigService {
 
     public Terms terms(JigSource jigSource) {
         return jigSourceRepository.terms();
-    }
-
-    public EnumModels enumModels(JigSource jigSource) {
-        return jigSourceRepository.enumModels();
     }
 
     /**

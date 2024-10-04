@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
@@ -18,6 +19,10 @@ public record JigSource(TypeFacts typeFacts, MutableSource mutableSource) {
 
     public Sqls sqls() {
         return (Sqls) mutableSource().map().getOrDefault(Sqls.class, Sqls.empty());
+    }
+
+    public EnumModels enumModels() {
+        return typeFacts().enumModels();
     }
 
     private record MutableSource(Map<Class<?>, Object> map) {

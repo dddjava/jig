@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.Terms;
@@ -15,6 +14,4 @@ public interface JigSourceRepository {
     void registerTextSourceModel(TextSourceModel textSourceModel);
 
     Terms terms();
-
-    EnumModels enumModels();
 }

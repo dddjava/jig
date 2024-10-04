@@ -158,7 +158,7 @@ public class JigDocumentGenerator {
                 case ApplicationSummary -> SummaryModel.from(jigService.serviceMethods(jigSource));
                 case UsecaseSummary -> usecaseSummary(jigSource);
                 case EntrypointSummary -> entrypointSummary(jigSource);
-                case EnumSummary -> SummaryModel.from(jigService.categoryTypes(jigSource), jigService.enumModels(jigSource));
+                case EnumSummary -> SummaryModel.from(jigService.categoryTypes(jigSource), jigSource.enumModels());
                 case TermTable -> jigService.terms(jigSource);
                 case TermList ->
                         new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));

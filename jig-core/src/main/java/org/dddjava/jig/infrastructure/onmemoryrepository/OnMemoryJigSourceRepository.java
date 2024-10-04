@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
 import org.dddjava.jig.application.JigSourceRepository;
-import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
@@ -43,13 +42,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
         return new Terms(new ArrayList<>(termMap.values()));
     }
 
-    EnumModels enumModels;
-
-    @Override
-    public EnumModels enumModels() {
-        return enumModels;
-    }
-
     @Override
     public void registerTextSourceModel(TextSourceModel textSourceModel) {
         for (ClassComment classComment : textSourceModel.classCommentList()) {
@@ -63,7 +55,6 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
             registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
                     methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
         }
-        this.enumModels = textSourceModel.enumModels();
     }
 
 }

@@ -71,6 +71,7 @@ public class JigSourceReader {
         }
 
         var jigSource = readProjectData(source);
+        jigSource.addSqls(sqls);
         return Optional.of(jigSource);
     }
 
@@ -100,8 +101,6 @@ public class JigSourceReader {
      * ソースからSQLを読み取る
      */
     public Sqls readSqlSource(SqlSources sqlSources) {
-        Sqls sqls = sqlReader.readFrom(sqlSources);
-        jigSourceRepository.registerSqls(sqls);
-        return sqls;
+        return sqlReader.readFrom(sqlSources);
     }
 }

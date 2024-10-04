@@ -154,7 +154,7 @@ public class JigService {
         }
 
         MethodRelations methodRelations = typeFacts.toMethodRelations();
-        return new DatasourceAngles(datasourceMethods, jigSourceRepository.sqls(), methodRelations);
+        return new DatasourceAngles(datasourceMethods, jigSource.sqls(), methodRelations);
     }
 
     /**

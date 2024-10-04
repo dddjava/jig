@@ -23,6 +23,10 @@ public class Sqls {
         this.sqlReadStatus = sqlReadStatus;
     }
 
+    public static Sqls empty() {
+        return new Sqls(SqlReadStatus.未処理);
+    }
+
     public Tables tables(SqlType sqlType) {
         return list.stream()
                 .filter(sql -> sql.sqlType() == sqlType)

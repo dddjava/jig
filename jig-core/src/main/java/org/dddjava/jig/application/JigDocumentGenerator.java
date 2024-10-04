@@ -99,6 +99,10 @@ public class JigDocumentGenerator {
         );
     }
 
+    public List<HandleResult> generate(JigSource jigSource) {
+        return handleJigDocuments();
+    }
+
     public List<HandleResult> handleJigDocuments() {
         long startTime = System.currentTimeMillis();
         logger.info("[JIG] write jig documents: {}", jigDocuments);

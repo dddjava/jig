@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.JigExecutor;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComments;
@@ -12,16 +13,20 @@ import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 取り込みサービス
  */
 @Service
 public class JigSourceReader {
+    private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
     final JigSourceRepository jigSourceRepository;
 
@@ -37,6 +42,24 @@ public class JigSourceReader {
         this.textSourceReader = textSourceReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
+    }
+
+    public Optional<JigSource> readSource(SourcePaths sourcePaths) {
+        ReadStatuses status = readSourceFromPaths(sourcePaths);
+        if (status.hasError()) {
+            for (ReadStatus readStatus : status.listErrors()) {
+                JigExecutor.logger.error("{}", readStatus.localizedMessage());
+            }
+            return Optional.empty();
+        }
+        if (status.hasWarning()) {
+            for (ReadStatus readStatus : status.listWarning()) {
+                JigExecutor.logger.warn("{}", readStatus.localizedMessage());
+            }
+        }
+
+        var jigSource = new JigSource(jigSourceRepository.allTypeFacts());
+        return Optional.of(jigSource);
     }
 
     /**

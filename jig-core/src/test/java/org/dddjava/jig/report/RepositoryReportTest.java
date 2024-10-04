@@ -1,6 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -19,10 +20,10 @@ public class RepositoryReportTest {
 
     @Test
     void readProjectData(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        jigSourceReader.readProjectData(sources);
+        var jigSource = jigSourceReader.readProjectData(sources);
         jigSourceReader.readSqlSource(sources.sqlSources());
 
-        DatasourceAngles datasourceAngles = jigService.datasourceAngles();
+        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigSource);
 
         assertThat(datasourceAngles.list().stream().map(RepositoryReport::new))
                 .extracting(

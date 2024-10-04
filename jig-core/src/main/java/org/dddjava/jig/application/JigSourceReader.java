@@ -93,10 +93,10 @@ public class JigSourceReader {
     /**
      * プロジェクト情報を読み取る
      */
-    public TypeFacts readProjectData(Sources sources) {
+    public JigSource readProjectData(Sources sources) {
         TypeFacts typeFacts = readBinarySources(sources.classSources());
         readTextSources(sources.textSources());
-        return typeFacts;
+        return new JigSource(typeFacts);
     }
 
     /**

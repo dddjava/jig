@@ -1,6 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -17,8 +18,8 @@ public class CategoryReportTest {
 
     @Test
     void test(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
-        jigSourceReader.readProjectData(sources);
-        CategoryDiagram categoryDiagram = businessRuleService.categories();
+        var jigSource = jigSourceReader.readProjectData(sources);
+        CategoryDiagram categoryDiagram = businessRuleService.categories(jigSource);
 
         assertThat(categoryDiagram.list().stream().map(CategoryReport::new))
                 .extracting(

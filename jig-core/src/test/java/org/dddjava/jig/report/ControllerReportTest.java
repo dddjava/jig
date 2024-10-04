@@ -1,6 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -16,8 +17,8 @@ public class ControllerReportTest {
 
     @Test
     void test(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        jigSourceReader.readProjectData(sources);
-        HandlerMethods handlerMethods = jigService.controllerAngles();
+        var jigSource = jigSourceReader.readProjectData(sources);
+        HandlerMethods handlerMethods = jigService.controllerAngles(jigSource);
 
         assertThat(handlerMethods.list().stream().map(ControllerReport::new))
                 .extracting(

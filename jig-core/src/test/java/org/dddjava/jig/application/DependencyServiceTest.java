@@ -17,8 +17,8 @@ public class DependencyServiceTest {
 
     @Test
     void パッケージ依存(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        jigSourceReader.readProjectData(sources);
-        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies();
+        var jigSource = jigSourceReader.readProjectData(sources);
+        PackageRelationDiagram packageRelationDiagram = jigService.packageDependencies(jigSource);
 
         // パッケージのリストアップ
         List<String> packageNames = packageRelationDiagram.allPackages().list().stream()

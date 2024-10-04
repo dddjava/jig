@@ -1,6 +1,7 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -21,8 +22,8 @@ public class ServiceReportTest {
 
     @Test
     void readProjectData(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        jigSourceReader.readProjectData(sources);
-        ServiceAngles serviceAngles = jigService.serviceAngles();
+        var jigSource = jigSourceReader.readProjectData(sources);
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
 
         assertThat(serviceAngles.list().stream().map(ServiceReport::new))
                 .extracting(

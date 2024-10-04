@@ -145,23 +145,23 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             Object model = switch (jigDocument) {
-                case BusinessRuleList -> domainList();
-                case PackageRelationDiagram -> jigService.packageDependencies();
-                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules());
-                case CategoryDiagram -> jigService.categories();
-                case CategoryUsageDiagram -> jigService.categoryUsages();
-                case ApplicationList -> applicationList();
-                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy();
-                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles());
-                case ArchitectureDiagram -> jigService.architectureDiagram();
-                case DomainSummary -> SummaryModel.from(jigService.businessRules());
-                case ApplicationSummary -> SummaryModel.from(jigService.serviceMethods());
-                case UsecaseSummary -> usecaseSummary();
-                case EntrypointSummary -> entrypointSummary();
-                case EnumSummary -> SummaryModel.from(jigService.categoryTypes(), jigService.enumModels());
-                case TermTable -> jigService.terms();
+                case BusinessRuleList -> domainList(jigSource);
+                case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
+                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
+                case CategoryDiagram -> jigService.categories(jigSource);
+                case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
+                case ApplicationList -> applicationList(jigSource);
+                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
+                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
+                case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
+                case DomainSummary -> SummaryModel.from(jigService.businessRules(jigSource));
+                case ApplicationSummary -> SummaryModel.from(jigService.serviceMethods(jigSource));
+                case UsecaseSummary -> usecaseSummary(jigSource);
+                case EntrypointSummary -> entrypointSummary(jigSource);
+                case EnumSummary -> SummaryModel.from(jigService.categoryTypes(jigSource), jigService.enumModels(jigSource));
+                case TermTable -> jigService.terms(jigSource);
                 case TermList ->
-                        new ModelReports(new ModelReport<>(jigService.terms().list(), TermReport::new, TermReport.class));
+                        new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {
@@ -215,14 +215,14 @@ public class JigDocumentGenerator {
         }
     }
 
-    private ModelReports domainList() {
-        MethodSmellList methodSmellList = jigService.methodSmells();
-        JigTypes jigTypes = jigService.jigTypes();
+    private ModelReports domainList(JigSource jigSource) {
+        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
+        JigTypes jigTypes = jigService.jigTypes(jigSource);
 
-        JigCollectionTypes jigCollectionTypes = jigService.collections();
-        CategoryDiagram categoryDiagram = jigService.categories();
-        BusinessRules businessRules = jigService.businessRules();
-        BusinessRulePackages businessRulePackages = jigService.businessRules().businessRulePackages();
+        JigCollectionTypes jigCollectionTypes = jigService.collections(jigSource);
+        CategoryDiagram categoryDiagram = jigService.categories(jigSource);
+        BusinessRules businessRules = jigService.businessRules(jigSource);
+        BusinessRulePackages businessRulePackages = jigService.businessRules(jigSource).businessRulePackages();
         return new ModelReports(
                 new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class),
                 new ModelReport<>(businessRules.list(),
@@ -237,12 +237,12 @@ public class JigDocumentGenerator {
         );
     }
 
-    private ModelReports applicationList() {
-        ServiceAngles serviceAngles = jigService.serviceAngles();
+    private ModelReports applicationList(JigSource jigSource) {
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
 
-        DatasourceAngles datasourceAngles = jigService.datasourceAngles();
-        StringComparingMethodList stringComparingMethodList = jigService.stringComparing();
-        HandlerMethods handlerMethods = jigService.controllerAngles();
+        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigSource);
+        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigSource);
+        HandlerMethods handlerMethods = jigService.controllerAngles(jigSource);
 
         return new ModelReports(
                 new ModelReport<>(handlerMethods.list(),
@@ -256,8 +256,8 @@ public class JigDocumentGenerator {
         );
     }
 
-    private SummaryModel usecaseSummary() {
-        ServiceAngles serviceAngles = jigService.serviceAngles();
+    private SummaryModel usecaseSummary(JigSource jigSource) {
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
 
         record Entry(JigMethod jigMethod, String mermaidText) {
         }
@@ -277,10 +277,10 @@ public class JigDocumentGenerator {
                                 list -> list.stream().findFirst().map(entry -> entry.mermaidText()).orElse(null))
                 ));
 
-        return SummaryModel.from(jigService.serviceMethods(), mermaidMap);
+        return SummaryModel.from(jigService.serviceMethods(jigSource), mermaidMap);
     }
 
-    private SummaryModel entrypointSummary() {
-        return SummaryModel.from(jigService.entrypoint());
+    private SummaryModel entrypointSummary(JigSource jigSource) {
+        return SummaryModel.from(jigService.entrypoint(jigSource));
     }
 }

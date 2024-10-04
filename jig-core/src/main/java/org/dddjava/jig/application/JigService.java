@@ -43,7 +43,7 @@ public class JigService {
     /**
      * ビジネスルール一覧を取得する
      */
-    public BusinessRules businessRules() {
+    public BusinessRules businessRules(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return BusinessRules.from(architecture, typeFacts.toClassRelations(), typeFacts.jigTypes());
     }
@@ -51,38 +51,38 @@ public class JigService {
     /**
      * メソッドの不吉なにおい一覧を取得する
      */
-    public MethodSmellList methodSmells() {
+    public MethodSmellList methodSmells(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         MethodRelations methodRelations = typeFacts.toMethodRelations();
-        return new MethodSmellList(businessRules(), methodRelations);
+        return new MethodSmellList(businessRules(jigSource), methodRelations);
     }
 
     /**
      * 区分一覧を取得する
      */
-    public CategoryDiagram categories() {
+    public CategoryDiagram categories(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
-        CategoryTypes categoryTypes = categoryTypes();
+        CategoryTypes categoryTypes = categoryTypes(jigSource);
         return CategoryDiagram.create(categoryTypes, typeFacts.toClassRelations());
     }
 
-    public CategoryTypes categoryTypes() {
-        return CategoryTypes.from(businessRules().jigTypes());
+    public CategoryTypes categoryTypes(JigSource jigSource) {
+        return CategoryTypes.from(businessRules(jigSource).jigTypes());
     }
 
     /**
      * コレクションを分析する
      */
-    public JigCollectionTypes collections() {
+    public JigCollectionTypes collections(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
 
-        return new JigCollectionTypes(businessRules().jigTypes(), typeFacts.toClassRelations());
+        return new JigCollectionTypes(businessRules(jigSource).jigTypes(), typeFacts.toClassRelations());
     }
 
     /**
      * 区分使用図
      */
-    public CategoryUsageDiagram categoryUsages() {
+    public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
 
@@ -92,23 +92,23 @@ public class JigService {
         return new CategoryUsageDiagram(serviceMethods, businessRules);
     }
 
-    public JigTypes jigTypes() {
+    public JigTypes jigTypes(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return typeFacts.jigTypes();
     }
 
-    public Terms terms() {
+    public Terms terms(JigSource jigSource) {
         return jigSourceRepository.terms();
     }
 
-    public EnumModels enumModels() {
+    public EnumModels enumModels(JigSource jigSource) {
         return jigSourceRepository.enumModels();
     }
 
     /**
      * コントローラーを分析する
      */
-    public HandlerMethods controllerAngles() {
+    public HandlerMethods controllerAngles(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
 
@@ -119,15 +119,15 @@ public class JigService {
         return handlerMethods;
     }
 
-    public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy() {
-        ServiceAngles serviceAngles = serviceAngles();
+    public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy(JigSource jigSource) {
+        ServiceAngles serviceAngles = serviceAngles(jigSource);
         return new ServiceMethodCallHierarchyDiagram(serviceAngles);
     }
 
     /**
      * サービスを分析する
      */
-    public ServiceAngles serviceAngles() {
+    public ServiceAngles serviceAngles(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
         ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
@@ -145,7 +145,7 @@ public class JigService {
     /**
      * データソースを分析する
      */
-    public DatasourceAngles datasourceAngles() {
+    public DatasourceAngles datasourceAngles(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         DatasourceMethods datasourceMethods = DatasourceMethods.from(typeFacts.jigTypes());
 
@@ -160,7 +160,7 @@ public class JigService {
     /**
      * 文字列比較を分析する
      */
-    public StringComparingMethodList stringComparing() {
+    public StringComparingMethodList stringComparing(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
         ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
@@ -168,7 +168,7 @@ public class JigService {
         return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);
     }
 
-    public ArchitectureDiagram architectureDiagram() {
+    public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         // TODO packageBasedArchitectureがjigTypeを受け取っているのでclassRelationを別に受け取らなくてもいけるはず
         PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
@@ -176,12 +176,12 @@ public class JigService {
         return new ArchitectureDiagram(packageBasedArchitecture, classRelations);
     }
 
-    public ServiceMethods serviceMethods() {
+    public ServiceMethods serviceMethods(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
     }
 
-    public Entrypoint entrypoint() {
+    public Entrypoint entrypoint(JigSource jigSource) {
         TypeFacts typeFacts = jigSourceRepository.allTypeFacts();
         return new Entrypoint(
                 typeFacts.jigTypes(),
@@ -191,8 +191,8 @@ public class JigService {
     /**
      * パッケージの関連を取得する
      */
-    public PackageRelationDiagram packageDependencies() {
-        BusinessRules businessRules = businessRules();
+    public PackageRelationDiagram packageDependencies(JigSource jigSource) {
+        BusinessRules businessRules = businessRules(jigSource);
 
         if (businessRules.empty()) {
             logger.warn(Warning.ビジネスルールが見つからないので出力されない通知.localizedMessage());

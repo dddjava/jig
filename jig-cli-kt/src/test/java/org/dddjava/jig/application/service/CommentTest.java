@@ -56,7 +56,7 @@ public class CommentTest {
     @Test
     void クラス別名取得() {
         Sources source = getTestRawSource();
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
         ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
                 .map(jigType -> jigType.typeAlias())
@@ -69,7 +69,7 @@ public class CommentTest {
     @Test
     void Kotlinメソッドの和名取得() {
         Sources source = getTestRawSource();
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
 
         TypeIdentifier テスト対象クラス = new TypeIdentifier(KotlinMethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);

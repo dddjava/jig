@@ -45,7 +45,7 @@ class AliasServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
         ClassComment classComment = typeFacts.jigTypes().list()
                 .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
@@ -64,7 +64,7 @@ class AliasServiceTest {
 
     @Test
     void メソッド別名取得(Sources source) {
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source);
+        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
         TypeIdentifier テスト対象クラス = new TypeIdentifier(MethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 

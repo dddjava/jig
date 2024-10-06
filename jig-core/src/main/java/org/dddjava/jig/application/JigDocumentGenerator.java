@@ -63,16 +63,12 @@ public class JigDocumentGenerator {
     private final TemplateEngine templateEngine;
     private final JigService jigService;
 
-    private JigDocumentGenerator(JigDocumentContext jigDocumentContext,
-                                 JigDiagramFormat diagramFormat,
-                                 JigService jigService,
-                                 List<JigDocument> jigDocuments,
-                                 Path outputDirectory) {
+    private JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
-        this.diagramFormat = diagramFormat;
-        this.jigDocuments = jigDocuments;
-        this.outputDirectory = outputDirectory;
+        this.diagramFormat = jigDocumentContext.diagramFormat();
+        this.jigDocuments = jigDocumentContext.jigDocuments();
+        this.outputDirectory = jigDocumentContext.outputDirectory();
 
         // setup Graphviz
         this.dotCommandRunner = new DotCommandRunner();
@@ -89,14 +85,8 @@ public class JigDocumentGenerator {
         this.templateEngine = templateEngine;
     }
 
-    public static JigDocumentGenerator from(JigDocumentContext jigDocumentContext, JigService jigService, JigDiagramFormat outputDiagramFormat, List<JigDocument> jigDocuments, Path outputDirectory) {
-        return new JigDocumentGenerator(
-                jigDocumentContext,
-                outputDiagramFormat,
-                jigService,
-                jigDocuments,
-                outputDirectory
-        );
+    public static JigDocumentGenerator from(JigDocumentContext jigDocumentContext, JigService jigService) {
+        return new JigDocumentGenerator(jigDocumentContext, jigService);
     }
 
     public List<HandleResult> generate(JigSource jigSource) {

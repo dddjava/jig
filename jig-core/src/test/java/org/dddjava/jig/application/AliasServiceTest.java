@@ -1,6 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.assertj.core.api.Assertions;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
@@ -26,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @JigServiceTest
 class AliasServiceTest {
 
-    AliasService sut;
+    JigDocumentContext sut;
     JigSourceReader jigSourceReader;
 
-    public AliasServiceTest(AliasService aliasService, JigSourceReader jigSourceReader) {
-        sut = aliasService;
+    public AliasServiceTest(JigDocumentContext jigDocumentContext, JigSourceReader jigSourceReader) {
+        sut = jigDocumentContext;
         this.jigSourceReader = jigSourceReader;
     }
 
@@ -38,7 +39,7 @@ class AliasServiceTest {
     void パッケージ別名取得(Sources source) {
         jigSourceReader.readProjectData(source);
 
-        Assertions.assertThat(sut.packageAliasOf(new PackageIdentifier("stub")).asText())
+        Assertions.assertThat(sut.packageComment(new PackageIdentifier("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
     }
 

@@ -1,31 +1,49 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.application.AliasService;
+import org.dddjava.jig.application.CommentRepository;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
-import java.util.Objects;
+import java.nio.file.Path;
+import java.util.List;
 
 public class JigDocumentContextImpl implements JigDocumentContext {
 
-    AliasService aliasService;
+    private final CommentRepository commentRepository;
+    private final JigProperties properties;
 
-    public JigDocumentContextImpl(AliasService aliasService) {
-        this.aliasService = aliasService;
+    public JigDocumentContextImpl(CommentRepository commentRepository, JigProperties properties) {
+        this.commentRepository = commentRepository;
+        this.properties = properties;
     }
 
     @Override
     public PackageComment packageComment(PackageIdentifier packageIdentifier) {
-        Objects.requireNonNull(aliasService);
-        return aliasService.packageAliasOf(packageIdentifier);
+        return commentRepository.get(packageIdentifier);
     }
 
     @Override
     public ClassComment classComment(TypeIdentifier typeIdentifier) {
-        Objects.requireNonNull(aliasService);
-        return aliasService.typeAliasOf(typeIdentifier);
+        return commentRepository.get(typeIdentifier);
+    }
+
+    @Override
+    public Path outputDirectory() {
+        return properties.outputDirectory;
+    }
+
+    @Override
+    public List<JigDocument> jigDocuments() {
+        return properties.jigDocuments;
+    }
+
+    @Override
+    public JigDiagramFormat diagramFormat() {
+        return properties.outputDiagramFormat;
     }
 }

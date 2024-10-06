@@ -18,7 +18,7 @@ public class Configuration {
     JigSourceReader jigSourceReader;
     JigDocumentGenerator jigDocumentGenerator;
     JigService jigService;
-    AliasService aliasService;
+    JigDocumentContext jigDocumentContext;
 
     public Configuration(JigProperties jigProperties) {
         this(jigProperties, new AdditionalTextSourceReader());
@@ -46,11 +46,8 @@ public class Configuration {
                 new LocalClassFileSourceReader()
         );
 
-        this.aliasService = new AliasService(commentRepository);
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService);
-
-        this.jigDocumentGenerator = JigDocumentGenerator.from(
-                jigDocumentContext, jigService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
+        jigDocumentContext = new JigDocumentContextImpl(commentRepository, properties);
+        this.jigDocumentGenerator = JigDocumentGenerator.from(jigDocumentContext, jigService);
     }
 
     public JigSourceReader sourceReader() {

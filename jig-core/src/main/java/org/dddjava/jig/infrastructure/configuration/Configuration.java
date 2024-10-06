@@ -16,8 +16,8 @@ public class Configuration {
     JigProperties properties;
 
     JigSourceReader jigSourceReader;
-    JigDocumentGenerator documentHandlers;
-    JigService businessRuleService;
+    JigDocumentGenerator jigDocumentGenerator;
+    JigService jigService;
     AliasService aliasService;
 
     public Configuration(JigProperties jigProperties) {
@@ -33,7 +33,7 @@ public class Configuration {
 
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        this.businessRuleService = new JigService(architecture, jigSourceRepository);
+        this.jigService = new JigService(architecture, jigSourceRepository);
 
         JavaparserReader javaparserReader = new JavaparserReader(properties);
         TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
@@ -49,8 +49,8 @@ public class Configuration {
         this.aliasService = new AliasService(commentRepository);
         JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService);
 
-        this.documentHandlers = JigDocumentGenerator.from(
-                jigDocumentContext, businessRuleService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
+        this.jigDocumentGenerator = JigDocumentGenerator.from(
+                jigDocumentContext, jigService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);
     }
 
     public JigSourceReader sourceReader() {
@@ -58,7 +58,7 @@ public class Configuration {
     }
 
     public JigDocumentGenerator documentGenerator() {
-        return documentHandlers;
+        return jigDocumentGenerator;
     }
 
 }

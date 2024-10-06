@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
+import org.dddjava.jig.application.CommentRepository;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;

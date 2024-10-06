@@ -4,7 +4,6 @@ import org.dddjava.jig.application.*;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
-import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;

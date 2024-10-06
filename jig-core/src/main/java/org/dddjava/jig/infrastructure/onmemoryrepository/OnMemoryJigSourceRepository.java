@@ -1,5 +1,6 @@
 package org.dddjava.jig.infrastructure.onmemoryrepository;
 
+import org.dddjava.jig.application.CommentRepository;
 import org.dddjava.jig.application.JigSourceRepository;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
@@ -8,7 +9,6 @@ import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.TermIdentifier;
 import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
-import org.dddjava.jig.domain.model.sources.jigreader.CommentRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;

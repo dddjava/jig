@@ -2,7 +2,6 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.gradle.api.Project;
 
@@ -24,36 +23,33 @@ public class JigConfig {
 
     String outputOmitPrefix = ".+\\.(service|domain\\.(model|type))\\.";
 
-    String linkPrefix = LinkPrefix.disable().textValue();
-
     JigDiagramFormat diagramFormat = JigDiagramFormat.SVG;
 
     List<JigDocument> documentTypes() {
         List<JigDocument> toExclude = documentTypesToExclude();
         return documentTypesToInclude().stream()
-              .filter(each -> ! toExclude.contains(each))
-              .collect(Collectors.toList());
+                .filter(each -> !toExclude.contains(each))
+                .collect(Collectors.toList());
     }
 
     List<JigDocument> documentTypesToExclude() {
         if (documentTypesExclude.isEmpty()) return List.of();
         return documentTypesExclude.stream()
-              .map(JigDocument::valueOf)
-              .collect(Collectors.toList());
+                .map(JigDocument::valueOf)
+                .collect(Collectors.toList());
     }
 
     List<JigDocument> documentTypesToInclude() {
         if (documentTypes.isEmpty()) return JigDocument.canonical();
         return documentTypes.stream()
-              .map(JigDocument::valueOf)
-              .collect(Collectors.toList());
+                .map(JigDocument::valueOf)
+                .collect(Collectors.toList());
     }
 
     public JigProperties asProperties(Project project) {
         return new JigProperties(
                 documentTypes(),
-                modelPattern, resolveOutputDirectory(project), diagramFormat,
-                new LinkPrefix(linkPrefix)
+                modelPattern, resolveOutputDirectory(project), diagramFormat
         );
     }
 
@@ -113,14 +109,6 @@ public class JigConfig {
         this.outputOmitPrefix = outputOmitPrefix;
     }
 
-    public String getLinkPrefix() {
-        return linkPrefix;
-    }
-
-    public void setLinkPrefix(String linkPrefix) {
-        this.linkPrefix = linkPrefix;
-    }
-
     public String propertiesText() {
         return new StringJoiner("\n\t", "jig {\n\t", "\n}")
                 .add("documentTypes = '" + documentTypes + '\'')
@@ -128,7 +116,6 @@ public class JigConfig {
                 .add("outputDirectory = '" + outputDirectory + '\'')
                 .add("diagramFormat= '" + diagramFormat + '\'')
                 .add("outputOmitPrefix = '" + outputOmitPrefix + '\'')
-                .add("linkPrefix = '" + linkPrefix + '\'')
                 .toString();
     }
 }

@@ -1,7 +1,5 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
-
 import java.nio.file.Paths;
 
 public enum JigProperty {
@@ -15,8 +13,6 @@ public enum JigProperty {
     OUTPUT_DIAGRAM_FORMAT("SVG"),
 
     PATTERN_DOMAIN(".+\\.domain\\.(model|type)\\..+"),
-
-    LINK_PREFIX(LinkPrefix.DISABLE),
     ;
 
     private final String defaultValue;

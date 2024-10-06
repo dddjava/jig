@@ -67,35 +67,18 @@ public class Node {
     }
 
     public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
-        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
-        if (linkPrefix.disabled()) {
-            String ref = jigDocument.fileName() + ".html";
-            attributeMap.put("URL", "./" + ref + "#" + packageIdentifier.asText());
-            return this;
-        }
-        attributeMap.put("URL", linkPrefix.textValue() + '/' + packageIdentifier.asText().replaceAll("\\.", "/"));
+        String ref = jigDocument.fileName() + ".html";
+        attributeMap.put("URL", "./" + ref + "#" + packageIdentifier.asText());
         return this;
     }
 
     public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
-        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
-        if (linkPrefix.disabled()) {
-            return this;
-        }
-        // TODO CodeSourceから解決できるようにしたい。
-        attributeMap.put("URL", linkPrefix.textValue() + '/' + typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
         return this;
     }
 
     public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
-        LinkPrefix linkPrefix = jigDocumentContext.linkPrefix();
-        if (linkPrefix.disabled()) {
-            String ref = jigDocument.fileName() + ".html";
-            attributeMap.put("URL", "./" + ref + "#" + typeIdentifier.fullQualifiedName());
-            return this;
-        }
-        // TODO CodeSourceから解決できるようにしたい。
-        attributeMap.put("URL", linkPrefix.textValue() + '/' + typeIdentifier.fullQualifiedName().replaceAll("\\.", "/") + ".java");
+        String ref = jigDocument.fileName() + ".html";
+        attributeMap.put("URL", "./" + ref + "#" + typeIdentifier.fullQualifiedName());
         return this;
     }
 

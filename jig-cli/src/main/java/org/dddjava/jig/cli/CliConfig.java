@@ -2,7 +2,6 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
@@ -29,8 +28,6 @@ class CliConfig {
     String outputDirectory;
     @Value("${jig.output.diagram.format:svg}")
     JigDiagramFormat diagramFormat;
-    @Value("${jig.link.prefix:" + LinkPrefix.DISABLE + "}")
-    String linkPrefix;
 
     @Value("${project.path}")
     String projectPath;
@@ -51,7 +48,6 @@ class CliConfig {
                 .add("jig.pattern.domain=" + modelPattern)
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
-                .add("jig.link.prefix=" + linkPrefix)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
@@ -80,8 +76,7 @@ class CliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory), diagramFormat,
-                        new LinkPrefix(linkPrefix)
+                        modelPattern, Paths.get(this.outputDirectory), diagramFormat
                 ));
     }
 

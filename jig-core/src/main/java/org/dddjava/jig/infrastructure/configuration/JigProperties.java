@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.configuration;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +38,6 @@ public class JigProperties {
     List<JigDocument> jigDocuments;
 
     /**
-     * 実験的: 図のノードからリンクする場合に使用。
-     * SVGの限定かつうまく使うのが難しいのでなくすかもしれない。
-     */
-    LinkPrefix linkPrefix;
-
-    /**
      * 最小のコンストラクタ。あまり変更しない。
      */
     public JigProperties(List<JigDocument> jigDocuments, String domainPattern, Path outputDirectory) {
@@ -52,8 +45,7 @@ public class JigProperties {
                 jigDocuments,
                 domainPattern,
                 outputDirectory,
-                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue()),
-                LinkPrefix.disable()
+                JigDiagramFormat.valueOf(JigProperty.OUTPUT_DIAGRAM_FORMAT.defaultValue())
         );
     }
 
@@ -63,12 +55,10 @@ public class JigProperties {
     public JigProperties(List<JigDocument> jigDocuments,
                          String domainPattern,
                          Path outputDirectory,
-                         JigDiagramFormat outputDiagramFormat,
-                         LinkPrefix linkPrefix) {
+                         JigDiagramFormat outputDiagramFormat) {
         this.jigDocuments = jigDocuments;
 
         this.domainPattern = domainPattern;
-        this.linkPrefix = linkPrefix;
 
         this.outputDirectory = outputDirectory;
         this.outputDiagramFormat = outputDiagramFormat;
@@ -80,10 +70,6 @@ public class JigProperties {
 
     public String getDomainPattern() {
         return domainPattern;
-    }
-
-    public LinkPrefix linkPrefix() {
-        return linkPrefix;
     }
 
     public Path resolveOutputPath(DocumentName documentName) {
@@ -117,7 +103,6 @@ public class JigProperties {
     public String toString() {
         return "JigProperties{" +
                 "businessRulePattern='" + domainPattern + '\'' +
-                ", linkPrefix=" + linkPrefix +
                 ", outputDirectory=" + outputDirectory +
                 ", outputDiagramFormat=" + outputDiagramFormat +
                 '}';

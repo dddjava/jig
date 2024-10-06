@@ -2,7 +2,6 @@ package org.dddjava.jig.infrastructure.configuration;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.stationery.JigPropertyHolder;
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,9 +98,6 @@ public class JigPropertyLoader {
                 break;
             case PATTERN_DOMAIN:
                 jigProperties.domainPattern = value;
-                break;
-            case LINK_PREFIX:
-                jigProperties.linkPrefix = new LinkPrefix(value);
                 break;
         }
     }

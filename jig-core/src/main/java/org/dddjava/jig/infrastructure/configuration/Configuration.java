@@ -48,7 +48,7 @@ public class Configuration {
         );
 
         this.aliasService = new AliasService(commentRepository);
-        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService, properties.linkPrefix());
+        JigDocumentContext jigDocumentContext = new JigDocumentContextImpl(aliasService);
 
         this.documentHandlers = JigDocumentGenerator.from(
                 jigDocumentContext, businessRuleService, properties.outputDiagramFormat, properties.jigDocuments, properties.outputDirectory);

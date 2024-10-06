@@ -2,7 +2,6 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.LinkPrefix;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
 import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
@@ -33,8 +32,6 @@ class KotlinCliConfig {
     JigDiagramFormat diagramFormat;
     @Value("${jig.omit.prefix}")
     String outputOmitPrefix;
-    @Value("${jig.link.prefix:" + LinkPrefix.DISABLE + "}")
-    String linkPrefix;
 
     @Value("${project.path}")
     String projectPath;
@@ -52,12 +49,10 @@ class KotlinCliConfig {
                 .add("jig.output.directory=" + outputDirectory)
                 .add("jig.output.diagram.format=" + diagramFormat)
                 .add("jig.omit.prefix=" + outputOmitPrefix)
-                .add("jig.link.prefix=" + linkPrefix)
                 .add("project.path=" + projectPath)
                 .add("directory.classes=" + directoryClasses)
                 .add("directory.resources=" + directoryResources)
                 .add("directory.sources=" + directorySources)
-                .add("linkPrefix=" + linkPrefix)
                 .toString();
     }
 
@@ -76,8 +71,7 @@ class KotlinCliConfig {
         return new Configuration(
                 new JigProperties(
                         jigDocuments(),
-                        modelPattern, Paths.get(this.outputDirectory), diagramFormat,
-                        new LinkPrefix(linkPrefix)
+                        modelPattern, Paths.get(this.outputDirectory), diagramFormat
                 ),
                 new AdditionalTextSourceReader(new KotlinSdkReader())
         );

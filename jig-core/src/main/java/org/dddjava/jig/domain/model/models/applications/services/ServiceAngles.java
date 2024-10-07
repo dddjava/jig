@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.models.applications.services;
 
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 

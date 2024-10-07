@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
-import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;

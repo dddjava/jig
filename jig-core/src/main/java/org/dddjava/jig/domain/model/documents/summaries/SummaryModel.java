@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
-import org.dddjava.jig.domain.model.models.applications.frontends.Entrypoint;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;

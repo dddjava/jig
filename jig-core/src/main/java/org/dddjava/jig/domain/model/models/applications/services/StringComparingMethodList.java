@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.models.applications.services;
 
-import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;

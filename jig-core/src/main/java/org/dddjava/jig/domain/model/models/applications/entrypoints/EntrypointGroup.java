@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications.frontends;
+package org.dddjava.jig.domain.model.models.applications.entrypoints;
 
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;

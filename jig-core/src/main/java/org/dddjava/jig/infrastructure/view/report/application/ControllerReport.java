@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.view.report.application;
 
-import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethod;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
 import org.dddjava.jig.infrastructure.view.report.ReportItem;

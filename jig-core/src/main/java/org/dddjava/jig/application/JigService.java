@@ -32,11 +32,9 @@ public class JigService {
 
     static Logger logger = LoggerFactory.getLogger(JigService.class);
     private final Architecture architecture;
-    private final JigSourceRepository jigSourceRepository;
 
-    public JigService(Architecture architecture, JigSourceRepository jigSourceRepository) {
+    public JigService(Architecture architecture) {
         this.architecture = architecture;
-        this.jigSourceRepository = jigSourceRepository;
     }
 
     /**

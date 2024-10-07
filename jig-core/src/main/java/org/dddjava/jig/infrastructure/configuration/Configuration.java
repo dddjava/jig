@@ -1,6 +1,9 @@
 package org.dddjava.jig.infrastructure.configuration;
 
-import org.dddjava.jig.application.*;
+import org.dddjava.jig.application.CommentRepository;
+import org.dddjava.jig.application.JigDocumentGenerator;
+import org.dddjava.jig.application.JigService;
+import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
@@ -10,7 +13,6 @@ import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 
 public class Configuration {
     JigProperties properties;
@@ -29,17 +31,15 @@ public class Configuration {
 
         CommentRepository commentRepository = new OnMemoryCommentRepository();
 
-        JigSourceRepository jigSourceRepository = new OnMemoryJigSourceRepository(commentRepository);
-
         Architecture architecture = new PropertyArchitectureFactory(properties).architecture();
 
-        this.jigService = new JigService(architecture, jigSourceRepository);
+        this.jigService = new JigService(architecture);
 
         JavaparserReader javaparserReader = new JavaparserReader(properties);
         TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
 
         this.jigSourceReader = new JigSourceReader(
-                jigSourceRepository,
+                commentRepository,
                 new AsmFactReader(),
                 textSourceReader,
                 new MyBatisSqlReader(),

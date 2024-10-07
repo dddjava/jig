@@ -1,6 +1,8 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -28,7 +30,7 @@ import java.util.Optional;
 public class JigSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(JigSourceReader.class);
 
-    final JigSourceRepository jigSourceRepository;
+    final CommentRepository commentRepository;
 
     final SourceReader sourceReader;
 
@@ -36,8 +38,8 @@ public class JigSourceReader {
     final TextSourceReader textSourceReader;
     final SqlReader sqlReader;
 
-    public JigSourceReader(JigSourceRepository jigSourceRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
-        this.jigSourceRepository = jigSourceRepository;
+    public JigSourceReader(CommentRepository commentRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+        this.commentRepository = commentRepository;
         this.binarySourceReader = binarySourceReader;
         this.textSourceReader = textSourceReader;
         this.sqlReader = sqlReader;
@@ -83,7 +85,12 @@ public class JigSourceReader {
         TextSources textSources = sources.textSources();
 
         TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
-        jigSourceRepository.registerTextSourceModel(textSourceModel);
+        for (ClassComment classComment : textSourceModel.classCommentList()) {
+            commentRepository.register(classComment);
+        }
+        for (PackageComment packageComment : textSourceModel.packageComments()) {
+            commentRepository.register(packageComment);
+        }
 
         // typeFactsにテキストソースの情報を適用する
         typeFacts.applyTextSource(textSourceModel);

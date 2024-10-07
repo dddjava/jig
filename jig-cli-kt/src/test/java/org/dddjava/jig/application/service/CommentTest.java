@@ -21,7 +21,6 @@ import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
 import org.dddjava.jig.infrastructure.kotlin.KotlinSdkReader;
 import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryCommentRepository;
-import org.dddjava.jig.infrastructure.onmemoryrepository.OnMemoryJigSourceRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import stub.domain.model.KotlinMethodJavadocStub;
@@ -44,7 +43,7 @@ public class CommentTest {
 
     CommentTest() {
         jigSourceReader = new JigSourceReader(
-                new OnMemoryJigSourceRepository(new OnMemoryCommentRepository()),
+                new OnMemoryCommentRepository(),
                 new AsmFactReader(),
                 new TextSourceReader(
                         new JavaparserReader(Mockito.mock(JigProperties.class)),

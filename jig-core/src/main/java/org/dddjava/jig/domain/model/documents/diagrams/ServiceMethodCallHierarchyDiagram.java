@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethod;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.EntrypointMethod;
 import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngle;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
@@ -109,12 +109,12 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
 
         RelationText handlerToServiceMethodRelation = new RelationText();
         for (ServiceAngle serviceAngle : angles) {
-            for (HandlerMethod handlerMethod : serviceAngle.userControllerMethods().list()) {
-                handlerToServiceMethodRelation.add(handlerMethod.method().declaration(), serviceAngle.method());
+            for (EntrypointMethod entrypointMethod : serviceAngle.userControllerMethods().list()) {
+                handlerToServiceMethodRelation.add(entrypointMethod.method().declaration(), serviceAngle.method());
 
-                handlerMap.compute(handlerMethod.typeIdentifier(), (key, current) -> {
-                    if (current == null) return new HandlerMethods(Collections.singletonList(handlerMethod));
-                    return current.merge(handlerMethod);
+                handlerMap.compute(entrypointMethod.typeIdentifier(), (key, current) -> {
+                    if (current == null) return new HandlerMethods(Collections.singletonList(entrypointMethod));
+                    return current.merge(entrypointMethod);
                 });
             }
         }
@@ -125,9 +125,9 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                 .add("rank=same;")
                 .add("style=invis;");
         handlerMap.forEach((handlerType, handlerMethods) -> {
-            List<HandlerMethod> list = handlerMethods.list();
+            List<EntrypointMethod> list = handlerMethods.list();
             String requestHandlerMethods = list.stream()
-                    .map(HandlerMethod::method)
+                    .map(EntrypointMethod::method)
                     .map(JigMethod::declaration)
                     .map(method -> controllerNodeOf(method))
                     .map(Node::asText)

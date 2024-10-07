@@ -19,16 +19,16 @@ import java.util.List;
  * 外部からのリクエストを受け取る起点となるメソッドです。
  * 制限事項：RequestMappingをメタアノテーションとした独自アノテーションが付与されたメソッドは、ハンドラとして扱われません。
  */
-public class HandlerMethod {
+public class EntrypointMethod {
 
-    static Logger LOGGER = LoggerFactory.getLogger(HandlerMethod.class);
+    static Logger LOGGER = LoggerFactory.getLogger(EntrypointMethod.class);
 
     final JigType jigType;
     final JigMethod method;
     final Annotations requestMappingForClass;
     final Annotations requestMappingsForMethod;
 
-    public HandlerMethod(JigType jigType, JigMethod method) {
+    public EntrypointMethod(JigType jigType, JigMethod method) {
         this.jigType = jigType;
         this.method = method;
 
@@ -123,8 +123,8 @@ public class HandlerMethod {
         return jigType.identifier();
     }
 
-    public boolean same(HandlerMethod handlerMethod) {
-        return method.declaration().sameIdentifier(handlerMethod.method().declaration());
+    public boolean same(EntrypointMethod entrypointMethod) {
+        return method.declaration().sameIdentifier(entrypointMethod.method().declaration());
     }
 
     public String typeLabel() {

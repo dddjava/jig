@@ -20,9 +20,9 @@ import static java.util.stream.Collectors.toList;
  * ハンドラ一覧
  */
 public class HandlerMethods {
-    List<HandlerMethod> list;
+    List<EntrypointMethod> list;
 
-    public HandlerMethods(List<HandlerMethod> list) {
+    public HandlerMethods(List<EntrypointMethod> list) {
         this.list = list;
     }
 
@@ -43,20 +43,20 @@ public class HandlerMethods {
         return new HandlerMethods(List.of());
     }
 
-    static Stream<HandlerMethod> collectHandlerMethod(JigType jigType) {
+    static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
         return jigType.instanceMember().instanceMethods().list()
                 .stream()
-                .map(jigMethod -> new HandlerMethod(jigType, jigMethod))
-                .filter(HandlerMethod::valid);
+                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod))
+                .filter(EntrypointMethod::valid);
     }
 
     private static final Predicate<JigType> requestHandlerType = jigType -> jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Controller"))
             || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.RestController"))
             || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice"));
 
-    public List<HandlerMethod> list() {
+    public List<EntrypointMethod> list() {
         return list.stream()
-                .sorted(Comparator.comparing(requestHandlerMethod -> requestHandlerMethod.method().declaration().asFullNameText()))
+                .sorted(Comparator.comparing(requestEntrypointMethod -> requestEntrypointMethod.method().declaration().asFullNameText()))
                 .collect(toList());
     }
 
@@ -66,24 +66,24 @@ public class HandlerMethods {
 
     public HandlerMethods filter(CallerMethods callerMethods) {
         return list.stream()
-                .filter(requestHandlerMethod -> requestHandlerMethod.anyMatch(callerMethods))
+                .filter(requestEntrypointMethod -> requestEntrypointMethod.anyMatch(callerMethods))
                 .collect(collectingAndThen(toList(), HandlerMethods::new));
     }
 
     public Set<TypeIdentifier> controllerTypeIdentifiers() {
         return list.stream()
-                .map(handlerMethod -> handlerMethod.typeIdentifier())
+                .map(entrypointMethod -> entrypointMethod.typeIdentifier())
                 .collect(Collectors.toSet());
     }
 
-    public HandlerMethods merge(HandlerMethod handlerMethod) {
-        for (HandlerMethod method : list) {
-            if (method.same(handlerMethod)) {
+    public HandlerMethods merge(EntrypointMethod entrypointMethod) {
+        for (EntrypointMethod method : list) {
+            if (method.same(entrypointMethod)) {
                 return this;
             }
         }
-        ArrayList<HandlerMethod> newList = new ArrayList<>(this.list);
-        newList.add(handlerMethod);
+        ArrayList<EntrypointMethod> newList = new ArrayList<>(this.list);
+        newList.add(entrypointMethod);
         return new HandlerMethods(newList);
     }
 }

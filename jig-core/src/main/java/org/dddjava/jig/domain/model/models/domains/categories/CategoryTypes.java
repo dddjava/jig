@@ -1,8 +1,11 @@
 package org.dddjava.jig.domain.model.models.domains.categories;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +24,9 @@ public class CategoryTypes {
     }
 
     public static CategoryTypes from(JigTypes jigTypes) {
-        return jigTypes.listCategoryType().stream()
+        return jigTypes.list().stream()
+                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
+                .sorted(Comparator.comparing(JigType::identifier))
                 .map(CategoryType::new)
                 .collect(collectingAndThen(Collectors.toList(), CategoryTypes::new));
     }

@@ -20,13 +20,6 @@ public class JigTypes {
                 .collect(Collectors.toList());
     }
 
-    public List<JigType> listCategoryType() {
-        return list.stream()
-                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
-                .sorted(Comparator.comparing(JigType::identifier))
-                .collect(Collectors.toList());
-    }
-
     public List<JigType> list() {
         return list;
     }

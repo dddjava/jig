@@ -22,7 +22,7 @@ class CompositeUsecases {
 
     public CompositeUsecases(ServiceAngle serviceAngle) {
         this.usecase = new Usecase(serviceAngle);
-        this.controllerTypes = serviceAngle.userControllerMethods().controllerTypeIdentifiers();
+        this.controllerTypes = serviceAngle.userControllerTypeIdentifiers();
     }
 
     public String dotText(JigDocumentContext jigDocumentContext) {

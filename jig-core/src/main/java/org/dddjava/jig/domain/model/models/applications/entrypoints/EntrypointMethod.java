@@ -93,22 +93,27 @@ public class EntrypointMethod {
         return pathText;
     }
 
-    public boolean valid() {
+    public boolean isRequestHandler() {
         return method.methodAnnotations().list().stream()
                 .anyMatch(annotatedMethod -> {
-                            String annotationName = annotatedMethod.annotationType().fullQualifiedName();
-                            // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
-                            // そのため独自アノテーションに対応できない
-                            return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
-                                    || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping")
-                                    // RabbitListener
-                                    || annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
-                        }
-                );
+                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                    // RequestMappingをメタアノテーションとして使うものにしたいが、spring-webに依存させたくないので列挙にする
+                    // そのため独自アノテーションに対応できない
+                    return annotationName.equals("org.springframework.web.bind.annotation.RequestMapping")
+                            || annotationName.equals("org.springframework.web.bind.annotation.GetMapping")
+                            || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
+                            || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
+                            || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
+                            || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
+                });
+    }
+
+    public boolean isRabbitListener() {
+        return method.methodAnnotations().list().stream()
+                .anyMatch(annotatedMethod -> {
+                    String annotationName = annotatedMethod.annotationType().fullQualifiedName();
+                    return annotationName.equals("org.springframework.amqp.rabbit.annotation.RabbitListener");
+                });
     }
 
     public boolean anyMatch(CallerMethods callerMethods) {
@@ -121,10 +126,6 @@ public class EntrypointMethod {
 
     public TypeIdentifier typeIdentifier() {
         return jigType.identifier();
-    }
-
-    public boolean same(EntrypointMethod entrypointMethod) {
-        return method.declaration().sameIdentifier(entrypointMethod.method().declaration());
     }
 
     public String typeLabel() {

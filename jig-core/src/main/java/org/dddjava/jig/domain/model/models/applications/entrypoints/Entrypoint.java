@@ -2,8 +2,13 @@ package org.dddjava.jig.domain.model.models.applications.entrypoints;
 
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public record Entrypoint(List<EntrypointGroup> list, ServiceMethods serviceMethods) {
 
@@ -25,5 +30,31 @@ public record Entrypoint(List<EntrypointGroup> list, ServiceMethods serviceMetho
         }
 
         return map;
+    }
+
+    public List<EntrypointMethod> listRequestHandlerMethods() {
+        return requetHandlerMethodStream().toList();
+    }
+
+    private Stream<EntrypointMethod> requetHandlerMethodStream() {
+        return list.stream()
+                .filter(entrypointGroup -> entrypointGroup.isRequestHandler())
+                .flatMap(entrypointGroup -> entrypointGroup.entrypointMethod().stream());
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
+    public List<EntrypointMethod> collectEntrypointMethodOf(CallerMethods callerMethods) {
+        return requetHandlerMethodStream()
+                .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
+                .toList();
+    }
+
+    public List<TypeIdentifier> listTypeIdentifiers() {
+        return list.stream()
+                .map(entrypointGroup -> entrypointGroup.jigType().identifier())
+                .toList();
     }
 }

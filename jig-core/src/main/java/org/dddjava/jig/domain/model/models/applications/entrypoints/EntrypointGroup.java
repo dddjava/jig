@@ -6,6 +6,8 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * エントリーポイントメソッドのグループ。
@@ -15,14 +17,39 @@ import java.util.*;
  * - SpringRabbitのRabbitListener
  */
 public record EntrypointGroup
-        (JigType jigType, HandlerMethods handlerMethods) {
+        (JigType jigType, EntrypointKind entrypointKind, List<EntrypointMethod> entrypointMethod) {
+    enum EntrypointKind {
+        RequestHandler,
+        Others
+    }
+
+    static final Predicate<JigType> requestHandlerType = jigType ->
+            jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Controller"))
+                    || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.RestController"))
+                    || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice"));
 
     static EntrypointGroup from(JigType jigType) {
-        return new EntrypointGroup(jigType, HandlerMethods.from(jigType));
+        if (requestHandlerType.test(jigType)) {
+            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
+                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList());
+        } else if (jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Component"))) {
+            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
+                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList());
+        }
+
+        // not entrypoint
+        return new EntrypointGroup(jigType, EntrypointKind.RequestHandler, List.of());
+    }
+
+
+    private static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
+        return jigType.instanceMember().instanceMethods().list()
+                .stream()
+                .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
     }
 
     public boolean hasEntrypoint() {
-        return !handlerMethods().empty();
+        return !entrypointMethod().isEmpty();
     }
 
     String mermaid(ServiceMethods serviceMethods) {
@@ -32,7 +59,7 @@ public record EntrypointGroup
         var serviceMethodMap = new HashMap<TypeIdentifier, List<JigMethod>>();
         var apiPointMmdIds = new HashSet<String>();
 
-        handlerMethods().list().forEach(entrypointMethod -> {
+        entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
             var apiMethodMmdId = entrypointMethod.declaration().asSimpleText();
             var label = entrypointMethod.interfaceLabelText();
@@ -90,5 +117,9 @@ public record EntrypointGroup
         mermaidText.add("    end");
 
         return mermaidText.toString();
+    }
+
+    public boolean isRequestHandler() {
+        return entrypointKind == EntrypointKind.RequestHandler;
     }
 }

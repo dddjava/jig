@@ -1,11 +1,16 @@
 package org.dddjava.jig.domain.model.models.applications.services;
 
 import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.EntrypointMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * サービスの切り口
@@ -15,18 +20,18 @@ public class ServiceAngle {
     ServiceMethod serviceMethod;
 
     MethodDeclarations userServiceMethods;
-    HandlerMethods userHandlerMethods;
+    List<EntrypointMethod> entrypointMethods;
 
     MethodDeclarations usingServiceMethods;
     RepositoryMethods usingRepositoryMethods;
 
-    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, HandlerMethods userHandlerMethods, MethodDeclarations userServiceMethods) {
+    ServiceAngle(ServiceMethod serviceMethod, RepositoryMethods usingRepositoryMethods, MethodDeclarations usingServiceMethods, List<EntrypointMethod> entrypointMethods, MethodDeclarations userServiceMethods) {
         this.serviceMethod = serviceMethod;
 
         this.usingRepositoryMethods = usingRepositoryMethods;
         this.usingServiceMethods = usingServiceMethods;
 
-        this.userHandlerMethods = userHandlerMethods;
+        this.entrypointMethods = entrypointMethods;
         this.userServiceMethods = userServiceMethods;
     }
 
@@ -39,7 +44,7 @@ public class ServiceAngle {
     }
 
     public boolean usingFromController() {
-        return !userHandlerMethods.empty();
+        return !entrypointMethods.isEmpty();
     }
 
     public UsingFields usingFields() {
@@ -63,15 +68,17 @@ public class ServiceAngle {
         return userServiceMethods;
     }
 
-    public HandlerMethods userControllerMethods() {
-        return userHandlerMethods;
-    }
-
     public boolean isNotPublicMethod() {
         return !serviceMethod.isPublic();
     }
 
     public MethodDeclarations usingServiceMethods() {
         return usingServiceMethods;
+    }
+
+    public Set<TypeIdentifier> userControllerTypeIdentifiers() {
+        return entrypointMethods.stream()
+                .map(entrypointMethod -> entrypointMethod.typeIdentifier())
+                .collect(Collectors.toSet());
     }
 }

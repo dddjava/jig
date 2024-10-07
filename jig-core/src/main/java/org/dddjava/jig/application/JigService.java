@@ -92,8 +92,7 @@ public class JigService {
      * コントローラーを分析する
      */
     public HandlerMethods controllerAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
+        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
 
         if (handlerMethods.empty()) {
             logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
@@ -119,10 +118,10 @@ public class JigService {
             logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
-        HandlerMethods handlerMethods = HandlerMethods.from(jigTypes);
+        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
-        return ServiceAngles.from(serviceMethods, handlerMethods, datasourceMethods);
+        return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
     }
 
     /**
@@ -145,7 +144,7 @@ public class JigService {
      */
     public StringComparingMethodList stringComparing(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        HandlerMethods handlerMethods = HandlerMethods.from(typeFacts.jigTypes());
+        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
         ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
 
         return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);

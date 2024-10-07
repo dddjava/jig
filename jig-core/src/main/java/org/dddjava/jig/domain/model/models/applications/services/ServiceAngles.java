@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.models.applications.services;
 
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 
@@ -17,16 +17,15 @@ public class ServiceAngles {
 
     List<ServiceAngle> list;
 
-    public static ServiceAngles from(ServiceMethods serviceMethods, HandlerMethods handlerMethods, DatasourceMethods datasourceMethods) {
+    public static ServiceAngles from(ServiceMethods serviceMethods, Entrypoint entrypoint, DatasourceMethods datasourceMethods) {
         List<ServiceAngle> list = new ArrayList<>();
         for (ServiceMethod serviceMethod : serviceMethods.list()) {
             MethodDeclarations usingMethods = serviceMethod.usingMethods().methodDeclarations();
 
-            HandlerMethods userHandlerMethods = handlerMethods.filter(serviceMethod.callerMethods());
             MethodDeclarations userServiceMethods = serviceMethod.callerMethods().methodDeclarations().filter(methodDeclaration -> serviceMethods.contains(methodDeclaration));
             MethodDeclarations usingServiceMethods = usingMethods.filter(methodDeclaration -> serviceMethods.contains(methodDeclaration));
             RepositoryMethods usingRepositoryMethods = datasourceMethods.repositoryMethods().filter(usingMethods);
-            ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, userHandlerMethods, userServiceMethods);
+            ServiceAngle serviceAngle = new ServiceAngle(serviceMethod, usingRepositoryMethods, usingServiceMethods, entrypoint.collectEntrypointMethodOf(serviceMethod.callerMethods()), userServiceMethods);
             list.add(serviceAngle);
         }
         return new ServiceAngles(list);

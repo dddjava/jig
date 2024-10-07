@@ -5,9 +5,9 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
@@ -38,18 +38,9 @@ public class JavaparserReader implements JavaTextSourceReader {
     }
 
     @Override
-    public PackageComments readPackages(ReadableTextSources readableTextSources) {
-        List<PackageComment> names = new ArrayList<>();
-        for (ReadableTextSource readableTextSource : readableTextSources.list()) {
-            packageInfoReader.read(readableTextSource)
-                    .ifPresent(names::add);
-        }
-        return new PackageComments(names);
-    }
-
-    @Override
-    public TextSourceModel readClasses(ReadableTextSources readableTextSources) {
-        return readableTextSources.list().stream()
+    public TextSourceModel textSourceModel(TextSources textSources) {
+        ReadableTextSources readableTextSources = textSources.javaSources();
+        TextSourceModel javaTextSourceModel = readableTextSources.list().stream()
                 .map(readableTextSource -> {
                     try (InputStream inputStream = readableTextSource.toInputStream()) {
                         return read(inputStream);
@@ -61,6 +52,15 @@ public class JavaparserReader implements JavaTextSourceReader {
                 })
                 .reduce(TextSourceModel::merge)
                 .orElseGet(() -> TextSourceModel.empty());
+
+        List<PackageComment> names = new ArrayList<>();
+        for (ReadableTextSource readableTextSource : textSources.packageInfoSources().list()) {
+            packageInfoReader.read(readableTextSource)
+                    .ifPresent(names::add);
+        }
+        javaTextSourceModel.addPackageComment(names);
+
+        return javaTextSourceModel;
     }
 
     TextSourceModel read(InputStream inputStream) {

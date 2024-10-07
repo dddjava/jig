@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
-import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 
@@ -19,12 +18,8 @@ public class TextSourceReader {
         this.scalaSourceAliasReader = additionalTextSourceReader.scalaSourceAliasReader();
     }
 
-    public PackageComments readPackageComments(TextSources textSources) {
-        return javaTextSourceReader.readPackages(textSources.packageInfoSources());
-    }
-
     public TextSourceModel readTextSource(TextSources textSources) {
-        TextSourceModel javaTextSourceModel = javaTextSourceReader.readClasses(textSources.javaSources());
+        var javaTextSourceModel = javaTextSourceReader.textSourceModel(textSources);
         return javaTextSourceModel.addClassAndMethodComments(
                 kotlinTextSourceReader.readClasses(textSources.kotlinSources()),
                 scalaSourceAliasReader.readAlias(textSources.scalaSources())

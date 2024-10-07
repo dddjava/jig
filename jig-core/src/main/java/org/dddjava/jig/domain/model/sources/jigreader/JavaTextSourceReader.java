@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
-import org.dddjava.jig.domain.model.parts.packages.PackageComments;
-import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
+import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 
 /**
@@ -9,7 +8,5 @@ import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
  */
 public interface JavaTextSourceReader {
 
-    PackageComments readPackages(ReadableTextSources readableTextSources);
-
-    TextSourceModel readClasses(ReadableTextSources readableTextSources);
+    TextSourceModel textSourceModel(TextSources textSources);
 }

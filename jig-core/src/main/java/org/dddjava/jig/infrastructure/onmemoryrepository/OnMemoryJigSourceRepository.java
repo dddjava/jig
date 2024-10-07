@@ -24,16 +24,9 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
         this.commentRepository = commentRepository;
     }
 
-    @Override
-    public void registerPackageComment(PackageComment packageComment) {
-        commentRepository.register(packageComment);
-        registerTerm(Term.fromPackage(packageComment.packageIdentifier(), packageComment.summaryOrSimpleName(), packageComment.descriptionComment().bodyText()));
-    }
-
     Map<TermIdentifier, Term> termMap = new HashMap<>();
 
-    @Override
-    public void registerTerm(Term term) {
+    private void registerTerm(Term term) {
         termMap.put(term.identifier(), term);
     }
 
@@ -54,6 +47,11 @@ public class OnMemoryJigSourceRepository implements JigSourceRepository {
         for (MethodComment methodComment : textSourceModel.methodCommentList()) {
             registerTerm(Term.fromMethod(methodComment.methodIdentifier(),
                     methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()), methodComment.documentationComment().bodyText()));
+        }
+
+        for (PackageComment packageComment : textSourceModel.packageComments()) {
+            commentRepository.register(packageComment);
+            registerTerm(Term.fromPackage(packageComment.packageIdentifier(), packageComment.summaryOrSimpleName(), packageComment.descriptionComment().bodyText()));
         }
     }
 

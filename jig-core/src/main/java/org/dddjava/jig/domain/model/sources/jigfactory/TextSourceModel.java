@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,11 +21,17 @@ public class TextSourceModel {
     List<ClassComment> classComments;
     List<MethodImplementation> methodImplementations;
     List<EnumModel> enumModels;
+    private List<PackageComment> packageComments;
 
     public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
+        this(classComments, methodImplementations, enumModels, List.of());
+    }
+
+    public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
         this.classComments = classComments;
         this.methodImplementations = methodImplementations;
         this.enumModels = enumModels;
+        this.packageComments = packageComments;
     }
 
     public static TextSourceModel empty() {
@@ -51,7 +58,8 @@ public class TextSourceModel {
         return new TextSourceModel(
                 Stream.concat(classComments.stream(), other.classComments.stream()).collect(Collectors.toList()),
                 Stream.concat(methodImplementations.stream(), other.methodImplementations.stream()).collect(Collectors.toList()),
-                Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList())
+                Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList()),
+                this.packageComments
         );
     }
 
@@ -69,5 +77,13 @@ public class TextSourceModel {
         return methodImplementations.stream()
                 .filter(methodImplementation -> methodImplementation.matches(methodIdentifier))
                 .findAny();
+    }
+
+    public void addPackageComment(List<PackageComment> list) {
+        this.packageComments = list;
+    }
+
+    public List<PackageComment> packageComments() {
+        return packageComments;
     }
 }

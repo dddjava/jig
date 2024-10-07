@@ -1,8 +1,6 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageComments;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -90,10 +88,6 @@ public class JigSourceReader {
         // typeFactsにテキストソースの情報を適用する
         typeFacts.applyTextSource(textSourceModel);
 
-        PackageComments packageComments = textSourceReader.readPackageComments(textSources);
-        for (PackageComment packageComment : packageComments.list()) {
-            jigSourceRepository.registerPackageComment(packageComment);
-        }
         return new JigSource(typeFacts);
     }
 

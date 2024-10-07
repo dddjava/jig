@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngle
 import org.dddjava.jig.domain.model.models.applications.frontends.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
+import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
@@ -213,9 +213,9 @@ public class JigDocumentGenerator {
         BusinessRules businessRules = jigService.businessRules(jigSource);
 
         CategoryDiagram categoryDiagram = jigService.categories(jigSource);
-        BusinessRulePackages businessRulePackages = jigService.businessRules(jigSource).businessRulePackages();
+        List<BusinessRulePackage> businessRulePackages = jigService.businessRules(jigSource).listPackages();
         return new ModelReports(
-                new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class),
+                new ModelReport<>(businessRulePackages, PackageReport::new, PackageReport.class),
                 new ModelReport<>(businessRules.list(),
                         businessRule -> new BusinessRuleReport(businessRule, businessRules),
                         BusinessRuleReport.class),

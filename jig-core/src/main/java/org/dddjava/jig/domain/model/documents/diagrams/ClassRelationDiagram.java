@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
@@ -39,8 +38,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         TypeIdentifiers isolatedTypes = targetBusinessRules.isolatedTypes();
-        BusinessRulePackages businessRulePackages = targetBusinessRules.businessRulePackages();
-        for (BusinessRulePackage businessRulePackage : businessRulePackages.list()) {
+        for (BusinessRulePackage businessRulePackage : targetBusinessRules.listPackages()) {
             PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
 
             String fqpn = packageIdentifier.asText();

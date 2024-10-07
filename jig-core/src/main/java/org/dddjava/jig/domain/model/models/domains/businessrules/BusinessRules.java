@@ -76,17 +76,18 @@ public class BusinessRules {
                 .collect(TypeIdentifiers.collector());
     }
 
-    public BusinessRulePackages businessRulePackages() {
+    public List<BusinessRulePackage> listPackages() {
         Map<PackageIdentifier, List<BusinessRule>> map = list().stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));
-        List<BusinessRulePackage> list = map.entrySet().stream()
+        return map.entrySet().stream()
                 .map(entity -> new BusinessRulePackage(
                         entity.getKey(),
                         new BusinessRules(entity.getValue(), this.businessRuleRelations)
-                )).collect(toList());
-        return new BusinessRulePackages(list);
+                ))
+                .sorted(Comparator.comparing(businessRulePackage -> businessRulePackage.packageIdentifier().asText()))
+                .collect(toList());
     }
 
     public ClassRelations businessRuleRelations() {

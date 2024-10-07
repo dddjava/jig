@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ハンドラ
@@ -169,7 +170,7 @@ public class EntrypointMethod {
                 // アノテーションは複数取れないはずなのでこれで。
                 .findFirst();
 
-        var rabbitListenerQueues = methodAnnotations.list().stream()
+        Optional<String> rabbitListenerQueues = methodAnnotations.list().stream()
                 .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals(_RabbitListener))
                 .map(methodAnnotation -> {
                     // queue複数未対応

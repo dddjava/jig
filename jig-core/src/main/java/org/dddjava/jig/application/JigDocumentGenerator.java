@@ -15,7 +15,6 @@ import org.dddjava.jig.domain.model.models.applications.services.StringComparing
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackages;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
-import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
@@ -206,12 +205,14 @@ public class JigDocumentGenerator {
     }
 
     private ModelReports domainList(JigSource jigSource) {
+        var typeFacts = jigSource.typeFacts();
+
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
         JigTypes jigTypes = jigService.jigTypes(jigSource);
 
-        JigCollectionTypes jigCollectionTypes = jigService.collections(jigSource);
-        CategoryDiagram categoryDiagram = jigService.categories(jigSource);
         BusinessRules businessRules = jigService.businessRules(jigSource);
+
+        CategoryDiagram categoryDiagram = jigService.categories(jigSource);
         BusinessRulePackages businessRulePackages = jigService.businessRules(jigSource).businessRulePackages();
         return new ModelReports(
                 new ModelReport<>(businessRulePackages.list(), PackageReport::new, PackageReport.class),
@@ -219,8 +220,8 @@ public class JigDocumentGenerator {
                         businessRule -> new BusinessRuleReport(businessRule, businessRules),
                         BusinessRuleReport.class),
                 new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class),
-                new ModelReport<>(jigCollectionTypes.listJigType(),
-                        jigType -> new CollectionReport(jigType, jigCollectionTypes.classRelations()),
+                new ModelReport<>(businessRules.jigTypes().listCollectionType(),
+                        jigType -> new CollectionReport(jigType, typeFacts.toClassRelations()),
                         CollectionReport.class),
                 new ModelReport<>(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
                 new ModelReport<>(methodSmellList.list(), MethodSmellReport::new, MethodSmellReport.class)

@@ -12,7 +12,6 @@ import org.dddjava.jig.domain.model.models.applications.services.StringComparing
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.models.domains.collections.JigCollectionTypes;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -65,15 +64,6 @@ public class JigService {
 
     public CategoryTypes categoryTypes(JigSource jigSource) {
         return CategoryTypes.from(businessRules(jigSource).jigTypes());
-    }
-
-    /**
-     * コレクションを分析する
-     */
-    public JigCollectionTypes collections(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-
-        return new JigCollectionTypes(businessRules(jigSource).jigTypes(), typeFacts.toClassRelations());
     }
 
     /**

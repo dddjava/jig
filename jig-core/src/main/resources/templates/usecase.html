@@ -41,12 +41,12 @@
                         availableRoomList(OffsetDateTime):List
                     </div>
 
-                    <div class="mermaid" th:if="${model.mermaidMap().containsKey(method.fqn())}" th:utext="${model.mermaidMap().get(method.fqn())}">
+                    <pre class="mermaid" th:if="${model.mermaidMap().containsKey(method.fqn())}" th:utext="${model.mermaidMap().get(method.fqn())}">
                             graph LR
                             a --> b
                             a --> c
                             b --> c
-                    </div>
+                    </pre>
 
                     <dl class="depends" th:with="methodReturn=${method.declaration().methodReturn()}">
                         <dt th:unless="${method.listArguments().isEmpty()}">要求するもの（引数）</dt>

@@ -26,12 +26,12 @@
                     </section>
                 </th:block>
 
-                <div class="mermaid" th:if="${model.mermaidMap().containsKey(item.fqn())}" th:utext="${model.mermaidMap().get(item.fqn())}">
+                <pre class="mermaid" th:if="${model.mermaidMap().containsKey(item.fqn())}" th:utext="${model.mermaidMap().get(item.fqn())}">
                     graph LR
                     a --> b
                     a --> c
                     b --> c
-                </div>
+                </pre>
 
             </section>
         </th:block>

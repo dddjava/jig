@@ -2,7 +2,6 @@ package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReader;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.infrastructure.view.report.application.ControllerReport;
 import org.junit.jupiter.api.Test;
@@ -17,9 +16,9 @@ public class ControllerReportTest {
     @Test
     void test(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);
-        HandlerMethods handlerMethods = jigService.controllerAngles(jigSource);
+        var entrypoint = jigService.entrypoint(jigSource);
 
-        assertThat(handlerMethods.list().stream().map(ControllerReport::new))
+        assertThat(entrypoint.listRequestHandlerMethods().stream().map(ControllerReport::new))
                 .extracting(
                         controllerReport -> controllerReport.method().declaration().asFullNameText(),
                         controllerReport -> controllerReport.path()

@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
@@ -88,19 +87,6 @@ public class JigService {
         return jigSource.terms();
     }
 
-    /**
-     * コントローラーを分析する
-     */
-    public HandlerMethods controllerAngles(JigSource jigSource) {
-        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
-
-        if (handlerMethods.empty()) {
-            logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
-        }
-
-        return handlerMethods;
-    }
-
     public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy(JigSource jigSource) {
         ServiceAngles serviceAngles = serviceAngles(jigSource);
         return new ServiceMethodCallHierarchyDiagram(serviceAngles);
@@ -118,7 +104,6 @@ public class JigService {
             logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
-        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
         return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
@@ -144,10 +129,10 @@ public class JigService {
      */
     public StringComparingMethodList stringComparing(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        HandlerMethods handlerMethods = HandlerMethods.from(entrypoint(jigSource));
+        Entrypoint entrypoint = entrypoint(jigSource);
         ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
 
-        return StringComparingMethodList.createFrom(handlerMethods, serviceMethods);
+        return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
     }
 
     public ArchitectureDiagram architectureDiagram(JigSource jigSource) {

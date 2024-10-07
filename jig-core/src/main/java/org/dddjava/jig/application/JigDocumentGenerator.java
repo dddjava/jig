@@ -7,9 +7,9 @@ import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
@@ -233,10 +233,14 @@ public class JigDocumentGenerator {
 
         DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigSource);
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigSource);
-        HandlerMethods handlerMethods = jigService.controllerAngles(jigSource);
+
+        var entrypoint = jigService.entrypoint(jigSource);
+        if (entrypoint.isEmpty()) {
+            logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
+        }
 
         return new ModelReports(
-                new ModelReport<>(handlerMethods.list(),
+                new ModelReport<>(entrypoint.listRequestHandlerMethods(),
                         requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
                         ControllerReport.class),
                 new ModelReport<>(serviceAngles.list(),

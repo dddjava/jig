@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.models.applications.services;
 
-import org.dddjava.jig.domain.model.models.applications.entrypoints.HandlerMethods;
+import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
@@ -26,7 +26,7 @@ public class StringComparingMethodList {
         this.methods = methods;
     }
 
-    public static StringComparingMethodList createFrom(HandlerMethods handlerMethods, ServiceMethods serviceMethods) {
+    public static StringComparingMethodList createFrom(Entrypoint entrypoint, ServiceMethods serviceMethods) {
         // String#equals(Object)
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(
                 TypeIdentifier.of(String.class),
@@ -35,12 +35,12 @@ public class StringComparingMethodList {
         );
 
         List<JigMethod> methods = Stream.concat(
-                handlerMethods.list().stream()
-                        .filter(controllerMethod -> controllerMethod.isCall(stringEqualsMethod))
-                        .map(controllerMethod -> controllerMethod.method()),
+                entrypoint.listRequestHandlerMethods().stream()
+                        .filter(entrypointMethod -> entrypointMethod.isCall(stringEqualsMethod))
+                        .map(entrypointMethod -> entrypointMethod.method()),
                 serviceMethods.list().stream()
                         .filter(serviceMethod -> serviceMethod.isCall(stringEqualsMethod))
-                        .map(controllerMethod -> controllerMethod.method())
+                        .map(serviceMethod -> serviceMethod.method())
         ).collect(toList());
 
         return new StringComparingMethodList(methods);

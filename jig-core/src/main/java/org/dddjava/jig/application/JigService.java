@@ -97,7 +97,7 @@ public class JigService {
     }
 
     public Terms terms(JigSource jigSource) {
-        return jigSourceRepository.terms();
+        return jigSource.terms();
     }
 
     /**

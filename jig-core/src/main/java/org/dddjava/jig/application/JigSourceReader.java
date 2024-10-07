@@ -88,7 +88,7 @@ public class JigSourceReader {
         // typeFactsにテキストソースの情報を適用する
         typeFacts.applyTextSource(textSourceModel);
 
-        return new JigSource(typeFacts);
+        return new JigSource(typeFacts, textSourceModel.toTerms());
     }
 
     /**

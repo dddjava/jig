@@ -7,6 +7,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.parts.term.Term;
+import org.dddjava.jig.domain.model.parts.term.Terms;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,5 +87,29 @@ public class TextSourceModel {
 
     public List<PackageComment> packageComments() {
         return packageComments;
+    }
+
+    public Terms toTerms() {
+        var list = Stream.of(
+                        classCommentList().stream()
+                                .map(classComment -> Term.fromClass(
+                                        classComment.typeIdentifier(),
+                                        classComment.asTextOrIdentifierSimpleText(),
+                                        classComment.documentationComment().bodyText())),
+                        methodCommentList().stream()
+                                .map(methodComment -> Term.fromMethod(
+                                        methodComment.methodIdentifier(),
+                                        methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()),
+                                        methodComment.documentationComment().bodyText()
+                                )),
+                        packageComments().stream()
+                                .map(packageComment -> Term.fromPackage(
+                                        packageComment.packageIdentifier(),
+                                        packageComment.summaryOrSimpleName(),
+                                        packageComment.descriptionComment().bodyText()
+                                ))
+                ).flatMap(term -> term)
+                .toList();
+        return new Terms(list);
     }
 }

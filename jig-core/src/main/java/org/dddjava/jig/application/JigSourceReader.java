@@ -46,7 +46,7 @@ public class JigSourceReader {
         this.sourceReader = sourceReader;
     }
 
-    public Optional<JigSource> readSource(SourcePaths sourcePaths) {
+    public Optional<JigSource> readPathSource(SourcePaths sourcePaths) {
         List<ReadStatus> readEvents = new ArrayList<>();
 
         // ソースのチェック

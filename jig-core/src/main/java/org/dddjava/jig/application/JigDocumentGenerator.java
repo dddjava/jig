@@ -84,26 +84,17 @@ public class JigDocumentGenerator {
         this.templateEngine = templateEngine;
     }
 
-    public static JigDocumentGenerator from(JigDocumentContext jigDocumentContext, JigService jigService) {
-        return new JigDocumentGenerator(jigDocumentContext, jigService);
+    public void generateIndex(List<HandleResult> results) {
+        writeIndexHtml(outputDirectory, results);
     }
 
-    public List<HandleResult> generate(JigSource jigSource) {
-        long startTime = System.currentTimeMillis();
-        logger.info("[JIG] write jig documents: {}", jigDocuments);
-
+    public List<HandleResult> generateDocuments(JigSource jigSource) {
         prepareOutputDirectory();
 
-        var writtenResults = jigDocuments
+        return jigDocuments
                 .parallelStream()
                 .map(jigDocument -> handle(jigDocument, outputDirectory, jigSource))
                 .collect(Collectors.toList());
-
-        writeIndexHtml(outputDirectory, writtenResults);
-
-        long takenTime = System.currentTimeMillis() - startTime;
-        logger.info("[JIG] all JIG documents completed: {} ms", takenTime);
-        return writtenResults;
     }
 
     private void prepareOutputDirectory() {

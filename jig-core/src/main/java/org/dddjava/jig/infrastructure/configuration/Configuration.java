@@ -46,8 +46,8 @@ public class Configuration {
                 new LocalClassFileSourceReader()
         );
 
-        jigDocumentContext = new JigDocumentContextImpl(commentRepository, properties);
-        this.jigDocumentGenerator = JigDocumentGenerator.from(jigDocumentContext, jigService);
+        this.jigDocumentContext = new JigDocumentContextImpl(commentRepository, properties);
+        this.jigDocumentGenerator = new JigDocumentGenerator(jigDocumentContext, jigService);
     }
 
     public JigSourceReader sourceReader() {

@@ -62,7 +62,7 @@ public class JigDocumentGenerator {
     private final TemplateEngine templateEngine;
     private final JigService jigService;
 
-    private JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
+    public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
         this.jigDocumentContext = jigDocumentContext;
         this.diagramFormat = jigDocumentContext.diagramFormat();

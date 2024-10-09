@@ -95,7 +95,7 @@ public class JigDocumentGenerator {
 
         return jigDocuments
                 .parallelStream()
-                .map(jigDocument -> handle(jigDocument, outputDirectory, jigSource))
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigSource))
                 .collect(Collectors.toList());
     }
 
@@ -122,7 +122,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private HandleResult handle(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
+    private HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
         try {
             long startTime = System.currentTimeMillis();
 

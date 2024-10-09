@@ -31,12 +31,11 @@ class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
     private final ClassSource classSource;
-    private final JigTypeBuilder jigTypeBuilder;
+    private JigTypeBuilder jigTypeBuilder;
 
     AsmClassVisitor(ClassSource classSource) {
         super(Opcodes.ASM9);
         this.classSource = classSource;
-        this.jigTypeBuilder = new JigTypeBuilder();
     }
 
     @Override
@@ -54,7 +53,7 @@ class AsmClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
-        jigTypeBuilder.setHeaders(
+        jigTypeBuilder = JigTypeBuilder.constructWithHeaders(
                 new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
                 superType(superName, signature),
                 interfaceTypes(interfaces, signature),

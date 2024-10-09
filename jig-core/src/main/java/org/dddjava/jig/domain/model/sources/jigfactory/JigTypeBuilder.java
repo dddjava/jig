@@ -15,9 +15,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -26,11 +24,11 @@ import static java.util.stream.Collectors.toList;
  */
 public class JigTypeBuilder {
 
-    ParameterizedType type;
-    ParameterizedType superType;
-    List<ParameterizedType> interfaceTypes;
-    TypeKind typeKind;
-    Visibility visibility;
+    private final ParameterizedType type;
+    private final ParameterizedType superType;
+    private final List<ParameterizedType> interfaceTypes;
+    private final TypeKind typeKind;
+    private final Visibility visibility;
 
     final List<Annotation> annotations;
 
@@ -42,18 +40,25 @@ public class JigTypeBuilder {
 
     ClassComment classComment;
 
-    public JigTypeBuilder() {
-        this.type = null;
-        this.superType = null;
-        this.interfaceTypes = null;
-        this.typeKind = null;
-        this.visibility = null;
+    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
+        this.type = type;
+        this.superType = superType;
+        this.interfaceTypes = interfaceTypes;
+        this.typeKind = typeKind;
+        this.visibility = visibility;
+
+        // 空を準備
         this.annotations = new ArrayList<>();
         this.instanceJigMethodBuilders = new ArrayList<>();
         this.staticJigMethodBuilders = new ArrayList<>();
         this.constructorFacts = new ArrayList<>();
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
+        this.classComment = ClassComment.empty(type.typeIdentifier());
+    }
+
+    public static JigTypeBuilder constructWithHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, Visibility visibility, TypeKind typeKind) {
+        return new JigTypeBuilder(type, superType, interfaceTypes, typeKind, visibility);
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -126,20 +131,6 @@ public class JigTypeBuilder {
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             jigMethodBuilder.applyTextSource(textSourceModel);
         }
-    }
-
-    /**
-     * ヘッダから取得できる情報を適用する
-     */
-    public void setHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, Visibility visibility, TypeKind typeKind) {
-        this.type = type;
-        this.superType = superType;
-        this.interfaceTypes = interfaceTypes;
-        this.visibility = visibility;
-        this.typeKind = typeKind;
-
-        // 空を準備
-        this.classComment = ClassComment.empty(type.typeIdentifier());
     }
 
     public void addAnnotation(Annotation annotation) {

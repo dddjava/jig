@@ -40,7 +40,7 @@ public class JigTypeBuilder {
 
     ClassComment classComment;
 
-    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
+    private JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;

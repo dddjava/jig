@@ -69,10 +69,6 @@ public class JigTypeBuilder {
         return instanceJigMethodBuilders;
     }
 
-    public List<Annotation> listAnnotations() {
-        return annotations;
-    }
-
     public List<JigMethodBuilder> allMethodFacts() {
         ArrayList<JigMethodBuilder> list = new ArrayList<>();
         list.addAll(instanceJigMethodBuilders);
@@ -83,10 +79,6 @@ public class JigTypeBuilder {
 
     public ParameterizedType superType() {
         return superType;
-    }
-
-    public List<ParameterizedType> interfaceTypes() {
-        return interfaceTypes;
     }
 
     public void registerTypeAlias(ClassComment classComment) {

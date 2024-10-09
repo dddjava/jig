@@ -38,10 +38,6 @@ class AsmClassVisitor extends ClassVisitor {
         this.classSource = classSource;
     }
 
-    public PlainClassBuilder pureClassBuilder() {
-        return plainClassBuilder;
-    }
-
     JigTypeBuilder jigTypeBuilder;
 
     @Override

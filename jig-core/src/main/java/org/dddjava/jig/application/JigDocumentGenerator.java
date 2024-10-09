@@ -85,7 +85,9 @@ public class JigDocumentGenerator {
     }
 
     public void generateIndex(List<HandleResult> results) {
-        writeIndexHtml(outputDirectory, results);
+        IndexView indexView = new IndexView(templateEngine, diagramFormat);
+        indexView.render(results, outputDirectory);
+        copyAssets(outputDirectory);
     }
 
     public List<HandleResult> generateDocuments(JigSource jigSource) {
@@ -161,12 +163,6 @@ public class JigDocumentGenerator {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
-    }
-
-    private void writeIndexHtml(Path outputDirectory, List<HandleResult> handleResultList) {
-        IndexView indexView = new IndexView(templateEngine, diagramFormat);
-        indexView.render(handleResultList, outputDirectory);
-        copyAssets(outputDirectory);
     }
 
     private void copyAssets(Path outputDirectory) {

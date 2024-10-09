@@ -79,7 +79,7 @@ public class MethodInstructionTest {
     void メソッドの使用しているメソッドが取得できる() throws Exception {
         JigTypeBuilder actual = exercise(MethodInstruction.class);
 
-        assertThat(actual.instanceMethodFacts())
+        assertThat(actual.instanceJigMethodBuilders())
                 .extracting(
                         methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
                         methodByteCode -> methodByteCode.methodDepend().usingMethods().methodDeclarations().asSimpleText()

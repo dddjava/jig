@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeArgumentList;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
+import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
@@ -29,24 +30,22 @@ import java.util.stream.Collectors;
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
-    final PlainClassBuilder plainClassBuilder;
-    final ClassSource classSource;
+    private final ClassSource classSource;
+    private final JigTypeBuilder jigTypeBuilder;
 
     AsmClassVisitor(ClassSource classSource) {
         super(Opcodes.ASM9);
-        this.plainClassBuilder = new PlainClassBuilder(classSource);
         this.classSource = classSource;
+        this.jigTypeBuilder = new JigTypeBuilder();
     }
-
-    JigTypeBuilder jigTypeBuilder;
 
     @Override
     public void visitEnd() {
-        jigTypeBuilder = plainClassBuilder.build();
+        logger.info("visit {} end", classSource);
         super.visitEnd();
     }
 
-    public JigTypeBuilder typeFact() {
+    public JigTypeBuilder jigTypeBuilder() {
         // visitEnd後にしか呼んではいけない
         return Objects.requireNonNull(jigTypeBuilder);
     }
@@ -55,11 +54,13 @@ class AsmClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
-        plainClassBuilder
-                .withType(new ParameterizedType(new TypeIdentifier(name), actualTypeParameters))
-                .withParents(superType(superName, signature), interfaceTypes(interfaces, signature))
-                .withVisibility(resolveVisibility(access))
-                .withTypeKind(typeKind(access));
+        jigTypeBuilder.setHeaders(
+                new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
+                superType(superName, signature),
+                interfaceTypes(interfaces, signature),
+                resolveVisibility(access),
+                typeKind(access)
+        );
 
         super.visit(version, access, name, signature, superName, interfaces);
     }
@@ -84,37 +85,37 @@ class AsmClassVisitor extends ClassVisitor {
     @Override
     public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
         return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor), annotation ->
-                plainClassBuilder.addAnnotation(annotation)
+                jigTypeBuilder.addAnnotation(annotation)
         );
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(plainClassBuilder::addUsingType);
+        genericsTypes.forEach(jigTypeBuilder::addUsingType);
 
         // 配列フィールドの型
         if (descriptor.charAt(0) == '[') {
             Type elementType = Type.getType(descriptor).getElementType();
-            plainClassBuilder.addUsingType(toTypeIdentifier(elementType));
+            jigTypeBuilder.addUsingType(toTypeIdentifier(elementType));
         }
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールド
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
-            FieldDeclaration fieldDeclaration = plainClassBuilder.addInstanceField(fieldType, name);
+            FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    plainClassBuilder.addUsingType(annotationTypeIdentifier);
+                    jigTypeBuilder.addUsingType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationTypeIdentifier,
-                            annotation -> plainClassBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
+                            annotation -> jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }
             };
         } else if (!name.equals("$VALUES")) {
             // staticフィールドのうち、enumにコンパイル時に作成される $VALUES は除く
-            plainClassBuilder.addStaticField(name, typeDescriptorToIdentifier(descriptor));
+            jigTypeBuilder.addStaticField(name, typeDescriptorToIdentifier(descriptor));
         }
 
         return super.visitField(access, name, descriptor, signature, value);
@@ -133,7 +134,8 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
-        PlainMethodBuilder plainMethodBuilder = plainClassBuilder.createPlainMethodBuilder(
+        PlainMethodBuilder plainMethodBuilder = createPlainMethodBuilder(
+                jigTypeBuilder,
                 toMethodSignature(name, descriptor),
                 methodReturn,
                 access,
@@ -556,5 +558,48 @@ class AsmClassVisitor extends ClassVisitor {
         public void visitEnd() {
             finisher.accept(new Annotation(annotationType, annotationDescription));
         }
+    }
+
+
+    public PlainMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder, MethodSignature methodSignature,
+                                                       MethodReturn methodReturn,
+                                                       int access,
+                                                       Visibility visibility,
+                                                       List<TypeIdentifier> useTypes,
+                                                       List<TypeIdentifier> throwsTypes) {
+        MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
+
+        // 追加先のコレクションを判別
+        List<JigMethodBuilder> jigMethodBuilderCollector = jigTypeBuilder.instanceJigMethodBuilders();
+        if (methodDeclaration.isConstructor()) {
+            jigMethodBuilderCollector = jigTypeBuilder.constructorFacts();
+        } else if ((access & Opcodes.ACC_STATIC) != 0) {
+            jigMethodBuilderCollector = jigTypeBuilder.staticJigMethodBuilders();
+        }
+
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
+        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, jigMethodBuilderCollector, throwsTypes, methodDerivation);
+    }
+
+    private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, int access) {
+        String name = methodSignature.methodName();
+        if ("<init>".equals(name) || "<clinit>".equals(name)) {
+            return MethodDerivation.CONSTRUCTOR;
+        }
+
+        if ((access & Opcodes.ACC_BRIDGE) != 0 || (access & Opcodes.ACC_SYNTHETIC) != 0) {
+            return MethodDerivation.COMPILER_GENERATED;
+        }
+
+        if (jigTypeBuilder.superType().typeIdentifier().isEnum() && (access & Opcodes.ACC_STATIC) != 0) {
+            // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
+            if (methodSignature.isSame(new MethodSignature("values"))) {
+                return MethodDerivation.COMPILER_GENERATED;
+            } else if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.of(String.class)))) {
+                return MethodDerivation.COMPILER_GENERATED;
+            }
+        }
+
+        return MethodDerivation.PROGRAMMER;
     }
 }

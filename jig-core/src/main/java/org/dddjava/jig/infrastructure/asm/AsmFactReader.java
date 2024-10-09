@@ -37,7 +37,7 @@ public class AsmFactReader implements FactReader {
             ClassReader classReader = new ClassReader(classSource.value());
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);
 
-            return Optional.of(asmClassVisitor.typeFact());
+            return Optional.of(asmClassVisitor.jigTypeBuilder());
         } catch (Exception e) {
             logger.warn("クラスの読み取りに失敗しました。スキップして続行します。 {}", classSource, e);
             return Optional.empty();

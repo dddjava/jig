@@ -30,7 +30,7 @@ public class MethodInstructionTest {
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
         JigTypeBuilder actual = exercise(clz);
 
-        TypeIdentifiers identifiers = actual.useTypes();
+        TypeIdentifiers identifiers = actual.build().usingTypes();
         assertThat(identifiers.list())
                 .containsExactlyInAnyOrder(
                         // 標準

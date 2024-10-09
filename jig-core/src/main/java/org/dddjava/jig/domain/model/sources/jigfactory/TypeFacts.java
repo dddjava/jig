@@ -58,11 +58,14 @@ public class TypeFacts {
         if (classRelations != null) {
             return classRelations;
         }
-        List<ClassRelation> collector = new ArrayList<>();
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            jigTypeBuilder.collectClassRelations(collector);
-        }
-        return classRelations = new ClassRelations(collector);
+
+        this.classRelations = new ClassRelations(jigTypes().list().stream()
+                .flatMap(jigType ->
+                        jigType.usingTypes().list().stream().map(usingType ->
+                                new ClassRelation(jigType.identifier(), usingType)))
+                .filter(classRelation -> !classRelation.selfRelation())
+                .toList());
+        return this.classRelations;
     }
 
     public void applyTextSource(TextSourceModel textSourceModel) {

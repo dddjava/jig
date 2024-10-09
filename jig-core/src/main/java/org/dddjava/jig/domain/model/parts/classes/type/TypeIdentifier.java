@@ -131,4 +131,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         // 英数字以外を_に置換する
         return value.replaceAll("[^a-zA-Z0-9]", "_");
     }
+
+    public boolean isArray() {
+        return value.endsWith("[]");
+    }
 }

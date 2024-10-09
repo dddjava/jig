@@ -38,7 +38,7 @@ public class JigInstanceMember {
 
     List<TypeIdentifier> listUsingTypes() {
         List<TypeIdentifier> list = new ArrayList<>();
-        list.addAll(instanceFields.typeIdentifies().list());
+        list.addAll(instanceFields.listUsingTypes());
         list.addAll(instanceMethods.listUsingTypes());
         return list;
     }

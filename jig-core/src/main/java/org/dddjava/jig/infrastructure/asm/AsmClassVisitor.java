@@ -91,24 +91,16 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        List<TypeIdentifier> genericsTypes = extractClassTypeFromGenericsSignature(signature);
-        genericsTypes.forEach(jigTypeBuilder::addUsingType);
-
-        // 配列フィールドの型
-        if (descriptor.charAt(0) == '[') {
-            Type elementType = Type.getType(descriptor).getElementType();
-            jigTypeBuilder.addUsingType(toTypeIdentifier(elementType));
-        }
 
         if ((access & Opcodes.ACC_STATIC) == 0) {
             // インスタンスフィールド
             FieldType fieldType = typeDescriptorToFieldType(descriptor, signature);
+
             FieldDeclaration fieldDeclaration = jigTypeBuilder.addInstanceField(fieldType, name);
             return new FieldVisitor(this.api) {
                 @Override
                 public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                     TypeIdentifier annotationTypeIdentifier = typeDescriptorToIdentifier(descriptor);
-                    jigTypeBuilder.addUsingType(annotationTypeIdentifier);
                     return new MyAnnotationVisitor(this.api, annotationTypeIdentifier,
                             annotation -> jigTypeBuilder.addFieldAnnotation(new FieldAnnotation(annotation, fieldDeclaration)));
                 }

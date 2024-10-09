@@ -11,9 +11,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * JIGが識別する型
@@ -26,14 +24,11 @@ public class JigType {
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    private final List<TypeIdentifier> usingTypes;
-
-    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember, List<TypeIdentifier> usingTypes) {
+    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.typeDeclaration = typeDeclaration;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;
-        this.usingTypes = usingTypes;
     }
 
     public TypeIdentifier identifier() {
@@ -65,13 +60,12 @@ public class JigType {
     }
 
     public TypeIdentifiers usingTypes() {
-        List<TypeIdentifier> list = new ArrayList<>();
-        list.addAll(typeDeclaration.listTypeIdentifiers());
-        list.addAll(jigTypeAttribute.listUsingTypes());
-        list.addAll(jigStaticMember.listUsingTypes());
-        list.addAll(jigInstanceMember.listUsingTypes());
-        list.addAll(usingTypes);
-        return new TypeIdentifiers(list);
+        Set<TypeIdentifier> set = new HashSet<>();
+        set.addAll(typeDeclaration.listTypeIdentifiers());
+        set.addAll(jigTypeAttribute.listUsingTypes());
+        set.addAll(jigStaticMember.listUsingTypes());
+        set.addAll(jigInstanceMember.listUsingTypes());
+        return new TypeIdentifiers(new ArrayList<>(set));
     }
 
     public PackageIdentifier packageIdentifier() {

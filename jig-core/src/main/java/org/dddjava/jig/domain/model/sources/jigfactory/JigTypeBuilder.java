@@ -40,70 +40,24 @@ public class JigTypeBuilder {
     final List<JigMethodBuilder> staticJigMethodBuilders;
     final List<JigMethodBuilder> constructorFacts;
 
-    final List<TypeIdentifier> usingTypes;
-
-    final Set<TypeIdentifier> useTypes = new HashSet<>();
-
     ClassComment classComment;
 
     public JigTypeBuilder() {
-        this(
-                null, null, null, null, null,
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new ArrayList<>());
-    }
-
-    public JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes,
-                          TypeKind typeKind, Visibility visibility,
-                          List<Annotation> annotations,
-                          List<JigMethodBuilder> instanceJigMethodBuilders,
-                          List<JigMethodBuilder> staticJigMethodBuilders,
-                          List<JigMethodBuilder> constructorFacts,
-                          List<JigField> instanceFields,
-                          List<StaticFieldDeclaration> staticFieldDeclarations,
-                          List<TypeIdentifier> usingTypes) {
-        this.type = type;
-        this.superType = superType;
-        this.interfaceTypes = interfaceTypes;
-        this.typeKind = typeKind;
-        this.visibility = visibility;
-        this.annotations = annotations;
-        this.instanceJigMethodBuilders = instanceJigMethodBuilders;
-        this.staticJigMethodBuilders = staticJigMethodBuilders;
-        this.constructorFacts = constructorFacts;
-        this.instanceFields = instanceFields;
-        this.staticFieldDeclarations = staticFieldDeclarations;
-
-        this.usingTypes = usingTypes;
-        // TODO useTypes廃止したい。JigType.usingTypes()でいけるはず。
-        this.useTypes.addAll(usingTypes);
-        this.useTypes.addAll(type.typeParameters().list());
-        this.useTypes.add(superType.typeIdentifier());
-        for (ParameterizedType interfaceType : interfaceTypes) {
-            this.useTypes.add(interfaceType.typeIdentifier());
-        }
-        this.annotations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
-        this.instanceFields.forEach(e -> this.useTypes.add(e.fieldDeclaration().typeIdentifier()));
-        this.staticFieldDeclarations.forEach(e -> this.useTypes.add(e.typeIdentifier()));
-
-        this.classComment = ClassComment.empty(type.typeIdentifier());
+        this.type = null;
+        this.superType = null;
+        this.interfaceTypes = null;
+        this.typeKind = null;
+        this.visibility = null;
+        this.annotations = new ArrayList<>();
+        this.instanceJigMethodBuilders = new ArrayList<>();
+        this.staticJigMethodBuilders = new ArrayList<>();
+        this.constructorFacts = new ArrayList<>();
+        this.instanceFields = new ArrayList<>();
+        this.staticFieldDeclarations = new ArrayList<>();
     }
 
     public TypeIdentifier typeIdentifier() {
         return type.typeIdentifier();
-    }
-
-    public TypeIdentifiers useTypes() {
-        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            useTypes.addAll(jigMethodBuilder.methodDepend().collectUsingTypes());
-        }
-
-        return new TypeIdentifiers(new ArrayList<>(useTypes));
     }
 
     public List<JigMethodBuilder> instanceJigMethodBuilders() {
@@ -128,15 +82,6 @@ public class JigTypeBuilder {
 
     public List<ParameterizedType> interfaceTypes() {
         return interfaceTypes;
-    }
-
-    void collectClassRelations(List<ClassRelation> collector) {
-        TypeIdentifier form = typeIdentifier();
-        for (TypeIdentifier to : useTypes().list()) {
-            ClassRelation classRelation = new ClassRelation(form, to);
-            if (classRelation.selfRelation()) continue;
-            collector.add(classRelation);
-        }
     }
 
     public void registerTypeAlias(ClassComment classComment) {
@@ -173,7 +118,7 @@ public class JigTypeBuilder {
         JigMethods instanceMethods = new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
         JigInstanceMember jigInstanceMember = new JigInstanceMember(new JigFields(instanceFields), instanceMethods);
 
-        jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember, usingTypes);
+        jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
         return jigType;
     }
 
@@ -192,21 +137,19 @@ public class JigTypeBuilder {
         this.interfaceTypes = interfaceTypes;
         this.visibility = visibility;
         this.typeKind = typeKind;
+
+        // 空を準備
+        this.classComment = ClassComment.empty(type.typeIdentifier());
     }
 
     public void addAnnotation(Annotation annotation) {
         this.annotations.add(annotation);
     }
 
-    // 雑に収集して便利に使いすぎなので無くしたい
-    // 使うにしても導出にしたい
-    public void addUsingType(TypeIdentifier typeIdentifier) {
-        useTypes.add(typeIdentifier);
-    }
-
     public FieldDeclaration addInstanceField(FieldType fieldType, String name) {
         FieldDeclaration fieldDeclaration = new FieldDeclaration(type.typeIdentifier(), fieldType, name);
         instanceFields.add(new JigField(fieldDeclaration));
+
         return fieldDeclaration;
     }
 

@@ -65,10 +65,6 @@ public class JigTypeBuilder {
         return type.typeIdentifier();
     }
 
-    public List<JigMethodBuilder> instanceJigMethodBuilders() {
-        return instanceJigMethodBuilders;
-    }
-
     public List<JigMethodBuilder> allMethodFacts() {
         ArrayList<JigMethodBuilder> list = new ArrayList<>();
         list.addAll(instanceJigMethodBuilders);
@@ -150,11 +146,15 @@ public class JigTypeBuilder {
         staticFieldDeclarations.add(new StaticFieldDeclaration(type.typeIdentifier(), name, typeIdentifier));
     }
 
-    public List<JigMethodBuilder> constructorFacts() {
-        return constructorFacts;
+    public void instanceJigMethodBuilders(JigMethodBuilder jigMethodBuilder) {
+        instanceJigMethodBuilders.add(jigMethodBuilder);
     }
 
-    public List<JigMethodBuilder> staticJigMethodBuilders() {
-        return staticJigMethodBuilders;
+    public void constructorFacts(JigMethodBuilder jigMethodBuilder) {
+        constructorFacts.add(jigMethodBuilder);
+    }
+
+    public void staticJigMethodBuilders(JigMethodBuilder jigMethodBuilder) {
+        staticJigMethodBuilders.add(jigMethodBuilder);
     }
 }

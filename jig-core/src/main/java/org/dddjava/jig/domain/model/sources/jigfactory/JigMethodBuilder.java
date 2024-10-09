@@ -8,10 +8,13 @@ import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * メソッドの実装から読み取れること
@@ -34,18 +37,18 @@ public class JigMethodBuilder {
     Set<TypeIdentifier> useTypes = new HashSet<>();
 
     // 制御が飛ぶ処理がある（ifやbreak）
-    private final int jumpInstructionNumber;
+    private int jumpInstructionNumber;
     // switchがある
-    private final int lookupSwitchInstructionNumber;
+    private int lookupSwitchInstructionNumber;
     // nullを参照している
-    private final boolean hasReferenceNull;
+    private boolean hasReferenceNull;
     // nullによる判定がある
     boolean hasJudgeNull;
 
     private MethodComment methodComment = null;
     private MethodImplementation methodImplementation = null;
 
-    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<Annotation> annotations, List<TypeIdentifier> throwsTypes, List<FieldDeclaration> fieldInstructions, List<MethodDeclaration> methodInstructions, List<TypeIdentifier> classReferenceCalls, List<TypeIdentifier> invokeDynamicTypes, int lookupSwitchInstructionNumber, int jumpInstructionNumber, boolean hasJudgeNull, boolean hasReferenceNull) {
+    private JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
@@ -57,22 +60,25 @@ public class JigMethodBuilder {
         this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
         this.useTypes.addAll(useTypes);
 
-        this.annotations = annotations;
-        annotations.forEach(annotation -> this.useTypes.add(annotation.typeIdentifier()));
+        this.annotations = new ArrayList<>();
+        this.fieldInstructions = new ArrayList<>();
+        this.methodInstructions = new ArrayList<>();
+        this.classReferenceCalls = new ArrayList<>();
+        this.invokeDynamicTypes = new ArrayList<>();
 
-        this.fieldInstructions = fieldInstructions;
-        this.methodInstructions = methodInstructions;
+        this.lookupSwitchInstructionNumber = 0;
+        this.jumpInstructionNumber = 0;
+        this.hasJudgeNull = false;
+        this.hasReferenceNull = false;
+    }
 
-        this.classReferenceCalls = classReferenceCalls;
-        this.useTypes.addAll(classReferenceCalls);
-
-        this.invokeDynamicTypes = invokeDynamicTypes;
-        this.useTypes.addAll(invokeDynamicTypes);
-
-        this.lookupSwitchInstructionNumber = lookupSwitchInstructionNumber;
-        this.jumpInstructionNumber = jumpInstructionNumber;
-        this.hasJudgeNull = hasJudgeNull;
-        this.hasReferenceNull = hasReferenceNull;
+    public static JigMethodBuilder constructWithHeader(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation) {
+        return new JigMethodBuilder(
+                methodDeclaration,
+                useTypes,
+                visibility,
+                methodDerivation,
+                throwsTypes);
     }
 
     public JigMethod build() {
@@ -88,18 +94,26 @@ public class JigMethodBuilder {
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()));
     }
 
-    public MethodDepend methodDepend() {
+    private MethodDepend methodDepend() {
+        var useTypes = Stream.of(
+                        this.useTypes.stream(),
+                        annotations.stream().map(Annotation::typeIdentifier),
+                        classReferenceCalls.stream(),
+                        invokeDynamicTypes.stream()
+                ).flatMap(Function.identity())
+                .collect(Collectors.toSet());
+
         return new MethodDepend(useTypes, fieldInstructions, methodInstructions, hasReferenceNull);
     }
 
-    public MethodAnnotations annotatedMethods() {
+    private MethodAnnotations annotatedMethods() {
         List<MethodAnnotation> methodAnnotations = annotations.stream()
                 .map(annotation -> new MethodAnnotation(annotation, methodDeclaration))
                 .collect(Collectors.toList());
         return new MethodAnnotations(methodAnnotations);
     }
 
-    public DecisionNumber decisionNumber() {
+    private DecisionNumber decisionNumber() {
         return new DecisionNumber(jumpInstructionNumber + lookupSwitchInstructionNumber);
     }
 
@@ -125,5 +139,41 @@ public class JigMethodBuilder {
     public void applyTextSource(TextSourceModel textSourceModel) {
         textSourceModel.methodImplementation(methodDeclaration.identifier())
                 .ifPresent(methodImplementation -> this.methodImplementation = methodImplementation);
+    }
+
+    public void markReferenceNull() {
+        hasReferenceNull = true;
+    }
+
+    public void addAnnotation(Annotation annotation) {
+        annotations.add(annotation);
+    }
+
+    public void addFieldInstruction(FieldDeclaration fieldDeclaration) {
+        fieldInstructions.add(fieldDeclaration);
+    }
+
+    public void addMethodInstruction(MethodDeclaration methodDeclaration) {
+        methodInstructions.add(methodDeclaration);
+    }
+
+    public void addClassReferenceCall(TypeIdentifier typeIdentifier) {
+        classReferenceCalls.add(typeIdentifier);
+    }
+
+    public void addInvokeDynamicType(TypeIdentifier typeIdentifier) {
+        invokeDynamicTypes.add(typeIdentifier);
+    }
+
+    public void addLookupSwitch() {
+        lookupSwitchInstructionNumber++;
+    }
+
+    public void addJump() {
+        jumpInstructionNumber++;
+    }
+
+    public void markJudgeNull() {
+        hasJudgeNull = true;
     }
 }

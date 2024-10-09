@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MethodInstructionTest {
 
@@ -78,16 +78,25 @@ public class MethodInstructionTest {
     @Test
     void メソッドの使用しているメソッドが取得できる() throws Exception {
         JigTypeBuilder actual = exercise(MethodInstruction.class);
+        var jigMethods = actual.build().instanceMethods();
 
-        assertThat(actual.instanceJigMethodBuilders())
-                .extracting(
-                        methodByteCode -> methodByteCode.methodIdentifier().methodSignature().asSimpleText(),
-                        methodByteCode -> methodByteCode.methodDepend().usingMethods().methodDeclarations().asSimpleText()
-                )
-                .contains(
-                        tuple("method(MethodArgument)", "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]"),
-                        tuple("lambda()", "[MethodInstruction.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]")
-                );
+        var list = jigMethods.list().stream()
+                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("method(MethodArgument)"))
+                .toList();
+        assertEquals(
+                "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]",
+                list.get(0).usingMethods().methodDeclarations().asSimpleText()
+        );
+
+
+        var method2 = jigMethods.list().stream()
+                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
+                .toList();
+        assertEquals(
+                "[MethodInstruction.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]",
+                method2.get(0).usingMethods().methodDeclarations().asSimpleText()
+        );
+
     }
 
     private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {

@@ -125,7 +125,7 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
-        PlainMethodBuilder plainMethodBuilder = createPlainMethodBuilder(
+        JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                 jigTypeBuilder,
                 toMethodSignature(name, descriptor),
                 methodReturn,
@@ -139,7 +139,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitInsn(int opcode) {
                 if (opcode == Opcodes.ACONST_NULL) {
-                    plainMethodBuilder.markReferenceNull();
+                    jigMethodBuilder.markReferenceNull();
                 }
                 super.visitInsn(opcode);
             }
@@ -147,7 +147,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
                 return new MyAnnotationVisitor(this.api, typeDescriptorToIdentifier(descriptor),
-                        annotation -> plainMethodBuilder.addAnnotation(annotation));
+                        annotation -> jigMethodBuilder.addAnnotation(annotation));
             }
 
             @Override
@@ -159,14 +159,14 @@ class AsmClassVisitor extends ClassVisitor {
                 // FIXME: これをFieldDeclarationで扱うとFieldTypeに総称型が入っているのを期待しかねない
                 // このメソッドのdescriptorではフィールドの型パラメタが解決できないため、完全なFieldTypeを作成できない。
                 // UsingFieldでではFieldDeclarationと異なる形式で扱わなければならない。
-                plainMethodBuilder.addFieldInstruction(fieldDeclaration);
+                jigMethodBuilder.addFieldInstruction(fieldDeclaration);
 
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                plainMethodBuilder.addMethodInstruction(toMethodDeclaration(owner, name, descriptor));
+                jigMethodBuilder.addMethodInstruction(toMethodDeclaration(owner, name, descriptor));
 
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -175,7 +175,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    plainMethodBuilder.addClassReferenceCall(toTypeIdentifier((Type) value));
+                    jigMethodBuilder.addClassReferenceCall(toTypeIdentifier((Type) value));
                 }
 
                 super.visitLdcInsn(value);
@@ -188,9 +188,9 @@ class AsmClassVisitor extends ClassVisitor {
                     if (bootstrapMethodArgument instanceof Type type) {
                         if (type.getSort() == Type.METHOD) {
                             // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
-                            plainMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
+                            jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
-                                plainMethodBuilder.addInvokeDynamicType(toTypeIdentifier(argumentType));
+                                jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(argumentType));
                             }
                         }
                     }
@@ -198,7 +198,7 @@ class AsmClassVisitor extends ClassVisitor {
                     // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle handle) {
                         if (isMethodRef(handle)) {
-                            plainMethodBuilder.addMethodInstruction(toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc()));
+                            jigMethodBuilder.addMethodInstruction(toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc()));
                         }
                     }
                 }
@@ -232,7 +232,7 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                plainMethodBuilder.addLookupSwitch();
+                jigMethodBuilder.addLookupSwitch();
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
@@ -240,18 +240,18 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitJumpInsn(int opcode, Label label) {
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
-                    plainMethodBuilder.addJump();
+                    jigMethodBuilder.addJump();
                 }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-                    plainMethodBuilder.markJudgeNull();
+                    jigMethodBuilder.markJudgeNull();
                 }
                 super.visitJumpInsn(opcode, label);
             }
 
             @Override
             public void visitEnd() {
-                plainMethodBuilder.buildAndCollect();
+                super.visitEnd();
             }
         };
     }
@@ -552,24 +552,28 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
 
-    public PlainMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder, MethodSignature methodSignature,
-                                                       MethodReturn methodReturn,
-                                                       int access,
-                                                       Visibility visibility,
-                                                       List<TypeIdentifier> useTypes,
-                                                       List<TypeIdentifier> throwsTypes) {
+    public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder, MethodSignature methodSignature,
+                                                     MethodReturn methodReturn,
+                                                     int access,
+                                                     Visibility visibility,
+                                                     List<TypeIdentifier> useTypes,
+                                                     List<TypeIdentifier> throwsTypes) {
         MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
+        var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, useTypes, visibility, throwsTypes, methodDerivation);
 
-        // 追加先のコレクションを判別
-        List<JigMethodBuilder> jigMethodBuilderCollector = jigTypeBuilder.instanceJigMethodBuilders();
         if (methodDeclaration.isConstructor()) {
-            jigMethodBuilderCollector = jigTypeBuilder.constructorFacts();
+            // コンストラクタ
+            jigTypeBuilder.constructorFacts(jigMethodBuilder);
         } else if ((access & Opcodes.ACC_STATIC) != 0) {
-            jigMethodBuilderCollector = jigTypeBuilder.staticJigMethodBuilders();
+            // staticメソッド
+            jigTypeBuilder.staticJigMethodBuilders(jigMethodBuilder);
+        } else {
+            // コンストラクタでもstaticメソッドでもない＝インスタンスメソッド
+            jigTypeBuilder.instanceJigMethodBuilders(jigMethodBuilder);
         }
 
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
-        return new PlainMethodBuilder(methodDeclaration, useTypes, visibility, jigMethodBuilderCollector, throwsTypes, methodDerivation);
+        return jigMethodBuilder;
     }
 
     private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, int access) {

@@ -11,7 +11,7 @@ log4j-to-slf4j = { module = "org.apache.logging.log4j:log4j-to-slf4j", version =
 logback-classic = { module = "ch.qos.logback:logback-classic", version = { strictly = "1.2.11" } }
 thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.0.15.RELEASE" } }
 
-asm = "org.ow2.asm:asm:9.7"
+asm = "org.ow2.asm:asm:9.7.1"
 javaparser = "com.github.javaparser:javaparser-core:3.26.2"
 mybatis = "org.mybatis:mybatis:3.5.16"
 
@@ -24,7 +24,7 @@ spring-context = { module = "org.springframework:spring-context", version.ref = 
 spring-web = { module = "org.springframework:spring-web", version.ref = "spring" }
 spring-test = { module = "org.springframework:spring-test", version.ref = "spring" }
 
-junit = "org.junit.jupiter:junit-jupiter:5.11.1"
+junit = "org.junit.jupiter:junit-jupiter:5.11.2"
 mockito = "org.mockito:mockito-core:5.14.1"
 assertj = "org.assertj:assertj-core:3.26.3"
 spock = "org.spockframework:spock-core:2.3-groovy-3.0"

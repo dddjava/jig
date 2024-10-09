@@ -81,12 +81,12 @@ public class JigTypeBuilder {
         return superType;
     }
 
-    public void registerTypeAlias(ClassComment classComment) {
+    public void registerClassComment(ClassComment classComment) {
         this.classComment = classComment;
         this.jigType = null;
     }
 
-    public boolean registerMethodAlias(MethodComment methodComment) {
+    public boolean registerMethodComment(MethodComment methodComment) {
         boolean registered = false;
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {

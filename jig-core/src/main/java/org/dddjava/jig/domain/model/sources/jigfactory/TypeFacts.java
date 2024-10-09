@@ -74,10 +74,10 @@ public class TypeFacts {
         }
 
         for (ClassComment classComment : textSourceModel.classCommentList()) {
-            registerTypeAlias(classComment);
+            registerClassComment(classComment);
         }
         for (MethodComment methodComment : textSourceModel.methodCommentList()) {
-            registerMethodAlias(methodComment);
+            registerMethodComment(methodComment);
         }
 
         this.enumModels = textSourceModel.enumModels();
@@ -87,10 +87,10 @@ public class TypeFacts {
         return enumModels;
     }
 
-    private void registerTypeAlias(ClassComment classComment) {
+    private void registerClassComment(ClassComment classComment) {
         for (JigTypeBuilder jigTypeBuilder : list) {
             if (jigTypeBuilder.typeIdentifier().equals(classComment.typeIdentifier())) {
-                jigTypeBuilder.registerTypeAlias(classComment);
+                jigTypeBuilder.registerClassComment(classComment);
                 return;
             }
         }
@@ -99,11 +99,11 @@ public class TypeFacts {
                 classComment.typeIdentifier());
     }
 
-    private void registerMethodAlias(MethodComment methodComment) {
+    private void registerMethodComment(MethodComment methodComment) {
         for (JigTypeBuilder jigTypeBuilder : list) {
             MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
             if (jigTypeBuilder.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                if (jigTypeBuilder.registerMethodAlias(methodComment)) {
+                if (jigTypeBuilder.registerMethodComment(methodComment)) {
                     return;
                 }
             }

@@ -5,11 +5,19 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * メソッドシグネチャ
  */
-public record MethodSignature(String methodName, Arguments arguments) {
+public final class MethodSignature {
+    private final String methodName;
+    private final Arguments arguments;
+
+    public MethodSignature(String methodName, Arguments arguments) {
+        this.methodName = methodName;
+        this.arguments = arguments;
+    }
 
     public MethodSignature(String methodName) {
         this(methodName, Arguments.empty());
@@ -82,4 +90,30 @@ public record MethodSignature(String methodName, Arguments arguments) {
     public String packageAbbreviationText() {
         return methodName + "(" + arguments.packageAbbreviationText() + ")";
     }
+
+    public Arguments arguments() {
+        return arguments;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (MethodSignature) obj;
+        return Objects.equals(this.methodName, that.methodName) &&
+                Objects.equals(this.arguments, that.arguments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(methodName, arguments);
+    }
+
+    @Override
+    public String toString() {
+        return "MethodSignature[" +
+                "methodName=" + methodName + ", " +
+                "arguments=" + arguments + ']';
+    }
+
 }

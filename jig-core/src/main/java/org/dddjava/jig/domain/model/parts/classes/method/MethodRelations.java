@@ -1,8 +1,10 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +36,23 @@ public class MethodRelations {
     public String mermaidEdgeText() {
         return list.stream()
                 .map(MethodRelation::mermaidEdgeText)
+                .collect(Collectors.joining("\n"));
+    }
+
+    public String mermaidEdgeText(Set<MethodIdentifier> resolved) {
+        Function<MethodDeclaration, String> converter = methodDeclaration -> {
+            if (resolved.contains(methodDeclaration.identifier())) {
+                return methodDeclaration.htmlIdText();
+            }
+            // 解決できなかったものは関心が薄いとして、メソッドではなくクラスにする
+            return methodDeclaration.declaringType().htmlIdText();
+        };
+
+        // 型がMethodRelationではなくなるのでここで文字列化してしまう
+        return list.stream()
+                .map(methodRelation -> "%s --> %s".formatted(converter.apply(methodRelation.from()), converter.apply(methodRelation.to())))
+                .sorted()
+                .distinct()
                 .collect(Collectors.joining("\n"));
     }
 

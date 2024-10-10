@@ -6,10 +6,10 @@ import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.stream.Stream;
 
 /**
  * メソッド
@@ -162,7 +162,7 @@ public class JigMethod {
     /**
      * メソッド関連のダイアグラム
      */
-    public String usecaseMermaidText(JigTypes serviceJigTypes, MethodRelations methodRelations) {
+    public String usecaseMermaidText(JigTypes jigTypes, MethodRelations methodRelations) {
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
         // 自身のスタイル（太文字）
@@ -170,40 +170,51 @@ public class JigMethod {
         // 基点からの呼び出し全部 + 直近の呼び出し元
         var filteredRelations = methodRelations.filterFromRecursive(this.declaration())
                 .merge(methodRelations.filterTo(this.declaration()));
-        mermaidText.add(filteredRelations.mermaidEdgeText());
+
+        Set<MethodIdentifier> resolved = new HashSet<>();
+        Set<TypeIdentifier> others = new HashSet<>();
 
         // メソッドのスタイル
-        Set<MethodIdentifier> methodIdentifiers = filteredRelations.methodIdentifiers();
-        methodIdentifiers.stream()
-                .flatMap(methodIdentifier -> {
-                    // 自分は太字にする
-                    if (methodIdentifier.equals(declaration().identifier())) {
-                        return Stream.of(usecaseMermaidNodeText(),
-                                "style %s font-weight:bold".formatted(this.htmlIdText()));
-                    }
-                    return serviceJigTypes.resolveJigMethod(methodIdentifier)
-                            // JigMethodとして識別できるもの
-                            .map(jigMethod -> {
-                                if (jigMethod.remarkable()) {
-                                    // 出力対象のメソッドはusecase型＆クリックできるように
-                                    return Stream.of(jigMethod.usecaseMermaidNodeText(),
-                                            "click %s \"#%s\"".formatted(jigMethod.htmlIdText(), jigMethod.htmlIdText()));
-                                }
-                                return Stream.of(jigMethod.normalMermaidNodeText());
-                            })
-                            // JigMethodとして解決できなかったもの
-                            .orElseGet(() -> {
-                                return Stream.of("%s[%s]:::others".formatted(methodIdentifier.htmlIdText(), methodIdentifier.asSimpleText()));
-                            });
-                })
-                .forEach(mermaidText::add);
-        mermaidText.add("classDef others fill:#AAA");
+        filteredRelations.methodIdentifiers().forEach(methodIdentifier -> {
+            // 自分は太字にする
+            if (methodIdentifier.equals(declaration().identifier())) {
+                resolved.add(methodIdentifier);
+                mermaidText.add(usecaseMermaidNodeText());
+                mermaidText.add("style %s font-weight:bold".formatted(this.htmlIdText()));
+            } else {
+                jigTypes.resolveJigMethod(methodIdentifier).ifPresentOrElse(
+                        jigMethod -> {
+                            resolved.add(methodIdentifier);
+                            if (jigMethod.remarkable()) {
+                                // 出力対象のメソッドはusecase型＆クリックできるように
+                                mermaidText.add(jigMethod.usecaseMermaidNodeText());
+                                mermaidText.add("click %s \"#%s\"".formatted(jigMethod.htmlIdText(), jigMethod.htmlIdText()));
+                            } else {
+                                // remarkableでないものは普通の。privateメソッドなど該当。　
+                                mermaidText.add(jigMethod.normalMermaidNodeText());
+                            }
+                        },
+                        () -> others.add(methodIdentifier.declaringType()));
+            }
+        });
+
+        // JigMethodにならないものはクラスノードとして出力する
+        others.forEach(typeIdentifier ->
+                mermaidText.add("%s[%s]:::others".formatted(typeIdentifier.htmlIdText(), typeIdentifier.asSimpleText())));
+
+        mermaidText.add(filteredRelations.mermaidEdgeText(resolved));
+
+        mermaidText.add("classDef others fill:#AAA,font-size:90%;");
+        mermaidText.add("classDef lambda fill:#999,font-size:80%;");
 
         return mermaidText.toString();
     }
 
     private String normalMermaidNodeText() {
-        return "%s[\"%s\"]".formatted(htmlIdText(), labelTextOrLambda());
+        if (declaration().isLambda()) {
+            return "%s[\"%s\"]:::lambda".formatted(htmlIdText(), "(lambda)");
+        }
+        return "%s[\"%s\"]".formatted(htmlIdText(), labelText());
     }
 
     private String usecaseMermaidNodeText() {

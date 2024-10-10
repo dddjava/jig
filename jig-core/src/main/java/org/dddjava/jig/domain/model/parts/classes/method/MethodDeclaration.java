@@ -103,4 +103,8 @@ public class MethodDeclaration {
     List<TypeIdentifier> argumentsTypeIdentifiers() {
         return methodSignature().arguments();
     }
+
+    public String htmlIdText() {
+        return identifier().htmlIdText();
+    }
 }

@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,5 +22,11 @@ public class MethodRelations {
                 .map(MethodRelation::from)
                 .collect(toList());
         return new CallerMethods(callers);
+    }
+
+    public String mermaidEdgeText() {
+        return list.stream()
+                .map(e -> "%s --> %s".formatted(e.from().htmlIdText(), e.to().htmlIdText()))
+                .collect(Collectors.joining("\n"));
     }
 }

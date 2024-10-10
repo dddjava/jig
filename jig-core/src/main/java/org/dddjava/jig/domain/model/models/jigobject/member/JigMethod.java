@@ -115,7 +115,7 @@ public class JigMethod {
     }
 
     public String htmlIdText() {
-        return declaration().identifier().htmlIdText();
+        return declaration().htmlIdText();
     }
 
     public String labelTextOrLambda() {

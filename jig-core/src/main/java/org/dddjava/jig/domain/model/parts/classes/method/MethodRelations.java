@@ -33,7 +33,7 @@ public class MethodRelations {
 
     public String mermaidEdgeText() {
         return list.stream()
-                .map(e -> "%s --> %s".formatted(e.from().htmlIdText(), e.to().htmlIdText()))
+                .map(MethodRelation::mermaidEdgeText)
                 .collect(Collectors.joining("\n"));
     }
 

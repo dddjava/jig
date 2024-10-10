@@ -151,7 +151,7 @@ public class JigType {
     }
 
     public JigMethods methods() {
-        return Stream.concat(instanceMethods().list().stream(), staticMethods().list().stream())
+        return Stream.concat(instanceMethods().stream(), staticMethods().stream())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigMethods::new));
     }
 

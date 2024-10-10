@@ -41,7 +41,7 @@ public class DatasourceMethods {
             // インタフェースを抽出（通常1件）
             for (JigType interfaceJigType : jigTypes.listMatches(item -> implJigType.typeDeclaration().interfaceTypes().listTypeIdentifiers().contains(item.identifier()))) {
                 for (JigMethod interfaceJigMethod : interfaceJigType.instanceMember().instanceMethods().list()) {
-                    implJigType.instanceMember().instanceMethods().list().stream()
+                    implJigType.instanceMember().instanceMethods().stream()
                             // シグネチャが一致するもの
                             .filter(implJigMethod -> interfaceJigMethod.declaration().methodSignature().isSame(implJigMethod.declaration().methodSignature()))
                             .map(implJigMethod -> new DatasourceMethod(interfaceJigMethod, implJigMethod))

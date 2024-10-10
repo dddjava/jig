@@ -43,8 +43,7 @@ public record EntrypointGroup
 
 
     private static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
-        return jigType.instanceMember().instanceMethods().list()
-                .stream()
+        return jigType.instanceMember().instanceMethods().stream()
                 .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
     }
 

@@ -34,7 +34,7 @@ public class Validations {
 
     static Stream<ValidationAnnotatedMember> validationAnnotatedMembers(JigType jigType) {
         JigInstanceMember instanceMember = jigType.instanceMember();
-        Stream<ValidationAnnotatedMember> methodStream = instanceMember.instanceMethods().list().stream()
+        Stream<ValidationAnnotatedMember> methodStream = instanceMember.instanceMethods().stream()
                 .map(JigMethod::methodAnnotations)
                 .map(MethodAnnotations::list)
                 .flatMap(List::stream)

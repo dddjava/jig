@@ -80,7 +80,7 @@ public class MethodInstructionTest {
         JigTypeBuilder actual = exercise(MethodInstruction.class);
         var jigMethods = actual.build().instanceMethods();
 
-        var list = jigMethods.list().stream()
+        var list = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("method(MethodArgument)"))
                 .toList();
         assertEquals(
@@ -89,7 +89,7 @@ public class MethodInstructionTest {
         );
 
 
-        var method2 = jigMethods.list().stream()
+        var method2 = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
                 .toList();
         assertEquals(

@@ -41,13 +41,6 @@ public class JigTypes {
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
-    public List<JigMethod> collectJigMethods(Set<MethodIdentifier> methodIdentifiers) {
-        return list.stream()
-                .flatMap(jigType -> jigType.methods().list().stream())
-                .filter(jigMethod -> methodIdentifiers.contains(jigMethod.declaration().identifier()))
-                .toList();
-    }
-
     public Optional<JigMethod> resolveJigMethod(MethodIdentifier methodIdentifier) {
         return list.stream()
                 // 同じクラスでフィルタ

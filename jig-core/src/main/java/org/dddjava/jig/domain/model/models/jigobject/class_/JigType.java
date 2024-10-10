@@ -11,7 +11,12 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * JIGが識別する型
@@ -142,5 +147,10 @@ public class JigType {
         return annotations.list().stream().findFirst()
                 .flatMap(annotation -> annotation.descriptionTextAnyOf("description"))
                 .orElse(label());
+    }
+
+    public JigMethods methods() {
+        return Stream.concat(instanceMethods().list().stream(), staticMethods().list().stream())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), JigMethods::new));
     }
 }

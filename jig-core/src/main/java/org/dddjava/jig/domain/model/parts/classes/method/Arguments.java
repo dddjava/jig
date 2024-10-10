@@ -13,13 +13,7 @@ import static java.util.stream.Collectors.joining;
 /**
  * メソッド引数
  */
-public class Arguments {
-
-    private final List<TypeIdentifier> argumentTypes;
-
-    public Arguments(List<TypeIdentifier> argumentTypes) {
-        this.argumentTypes = argumentTypes;
-    }
+public record Arguments(List<TypeIdentifier> argumentTypes) {
 
     public static Arguments empty() {
         return new Arguments(Collections.emptyList());

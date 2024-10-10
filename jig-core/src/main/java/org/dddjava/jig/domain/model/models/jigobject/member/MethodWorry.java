@@ -16,7 +16,7 @@ public enum MethodWorry {
         @Override
         boolean judge(JigMethod jigMethod) {
             return jigMethod.declaration().methodReturn().isPrimitive()
-                    || jigMethod.declaration().methodSignature().arguments().stream().anyMatch(TypeIdentifier::isPrimitive);
+                    || jigMethod.declaration().methodSignature().listArgumentTypeIdentifiers().stream().anyMatch(TypeIdentifier::isPrimitive);
         }
     },
     NULLリテラルを使用している {

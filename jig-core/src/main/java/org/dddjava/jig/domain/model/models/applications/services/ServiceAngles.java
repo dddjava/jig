@@ -4,11 +4,11 @@ import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMetho
 import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
 import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * サービスの切り口一覧
@@ -43,69 +43,5 @@ public class ServiceAngles {
 
     public boolean none() {
         return list.isEmpty();
-    }
-
-    private Optional<String> relationsText(MethodIdentifier methodIdentifier, Set<MethodIdentifier> stopper) {
-        if (stopper.contains(methodIdentifier)) {
-            // 処理済みなので抜ける。抜けないと無限ループになる。
-            return Optional.empty();
-        }
-        stopper.add(methodIdentifier);
-
-        return list.stream()
-                .filter(serviceAngle1 -> serviceAngle1.method().identifier().equals(methodIdentifier))
-                .findAny().map(serviceAngle -> {
-            var usingServices = serviceAngle.usingServiceMethods().list().stream()
-                    .map(methodDeclaration -> methodDeclaration.identifier())
-                    .toList();
-
-            var relations = new StringJoiner("\n");
-            usingServices.stream()
-                    .map(using -> "%s --> %s".formatted(methodIdentifier.htmlIdText(), using.htmlIdText()))
-                    .forEach(relations::add);
-            for (var using : usingServices) {
-                // 使用しているメソッドが使用しているメソッドを拾ってくる
-                relationsText(using, stopper).ifPresent(relations::add);
-            }
-
-            return relations.toString();
-        });
-    }
-
-    public String mermaidText(MethodIdentifier methodIdentifier) {
-        Set<MethodIdentifier> targets = new HashSet<>();
-
-        return relationsText(methodIdentifier, targets)
-                .map(relations -> {
-                    var mermaidText = new StringJoiner("\n");
-                    mermaidText.add("graph LR");
-                    mermaidText.add(relations);
-
-                    // 自身のスタイル
-                    mermaidText.add("style %s font-weight:bold,stroke-width:2px"
-                            .formatted(methodIdentifier.htmlIdText()));
-
-                    // サービスメソッドのラベル出力
-                    var serviceMethodNodes = list().stream()
-                            .filter(serviceAngle -> targets.contains(serviceAngle.method().identifier()))
-                            .flatMap(serviceAngle -> {
-                                var jigMethod = serviceAngle.serviceMethod().method();
-
-                                var htmlIdText = jigMethod.htmlIdText();
-                                String methodNode = "%s([\"%s\"])".formatted(
-                                        htmlIdText,
-                                        jigMethod.labelTextOrLambda()
-                                );
-                                return Stream.of(
-                                        methodNode,
-                                        "click %s \"#%s\"".formatted(htmlIdText, htmlIdText)
-                                );
-                            })
-                            .collect(Collectors.joining("\n"));
-                    mermaidText.add(serviceMethodNodes);
-
-                    return mermaidText.toString();
-                })
-                .orElse("");
     }
 }

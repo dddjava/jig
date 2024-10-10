@@ -96,15 +96,19 @@ public class MethodDeclaration {
     public TypeIdentifiers relateTypes() {
         ArrayList<TypeIdentifier> types = new ArrayList<>();
         types.add(methodReturn().typeIdentifier());
-        types.addAll(methodSignature().arguments());
+        types.addAll(methodSignature().listArgumentTypeIdentifiers());
         return new TypeIdentifiers(types);
     }
 
     List<TypeIdentifier> argumentsTypeIdentifiers() {
-        return methodSignature().arguments();
+        return methodSignature().listArgumentTypeIdentifiers();
     }
 
     public String htmlIdText() {
         return identifier().htmlIdText();
+    }
+
+    public boolean isJSL() {
+        return declaringType().isJavaLanguageType();
     }
 }

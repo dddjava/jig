@@ -29,12 +29,12 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
         if (o == null || getClass() != o.getClass()) return false;
         MethodIdentifier that = (MethodIdentifier) o;
         return Objects.equals(declaringType, that.declaringType) &&
-                Objects.equals(methodSignature.asText(), that.methodSignature.asText());
+                Objects.equals(methodSignature, that.methodSignature);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(declaringType, methodSignature.asText());
+        return Objects.hash(declaringType, methodSignature);
     }
 
     public boolean matches(TypeIdentifier typeIdentifier, String methodName) {

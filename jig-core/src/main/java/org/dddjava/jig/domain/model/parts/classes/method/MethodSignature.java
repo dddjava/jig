@@ -9,16 +9,7 @@ import java.util.List;
 /**
  * メソッドシグネチャ
  */
-public class MethodSignature {
-
-    private final String methodName;
-
-    Arguments arguments;
-
-    public MethodSignature(String methodName, Arguments arguments) {
-        this.methodName = methodName;
-        this.arguments = arguments;
-    }
+public record MethodSignature(String methodName, Arguments arguments) {
 
     public MethodSignature(String methodName) {
         this(methodName, Arguments.empty());
@@ -52,7 +43,7 @@ public class MethodSignature {
         return methodName + "(" + arguments.argumentsAsSimpleText() + ")";
     }
 
-    public List<TypeIdentifier> arguments() {
+    public List<TypeIdentifier> listArgumentTypeIdentifiers() {
         return arguments.typeIdentifiers().list();
     }
 

@@ -16,6 +16,7 @@ import org.dddjava.jig.domain.model.models.jigobject.architectures.PackageBasedA
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
@@ -167,5 +168,11 @@ public class JigService {
         }
 
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
+    }
+
+    public JigTypes services(JigSource jigSource) {
+        var jigTypes = jigSource.typeFacts().jigTypes();
+
+        return jigTypes.filter(jigType -> jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
     }
 }

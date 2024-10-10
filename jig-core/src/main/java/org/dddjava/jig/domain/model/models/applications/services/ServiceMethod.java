@@ -76,7 +76,7 @@ public class ServiceMethod {
 
     // TODO type
     public List<TypeIdentifier> requireTypes() {
-        List<TypeIdentifier> arguments = methodDeclaration().methodSignature().arguments();
+        List<TypeIdentifier> arguments = methodDeclaration().methodSignature().listArgumentTypeIdentifiers();
         // primaryTypeは除く
         primaryType().ifPresent(arguments::remove);
         return arguments;

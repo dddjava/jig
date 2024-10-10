@@ -57,7 +57,7 @@ public class JigMethodBuilder {
 
         // TODO useTypesは曖昧なのでなくしたい
         this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
-        this.useTypes.addAll(methodDeclaration.methodSignature().arguments());
+        this.useTypes.addAll(methodDeclaration.methodSignature().listArgumentTypeIdentifiers());
         this.useTypes.addAll(useTypes);
 
         this.annotations = new ArrayList<>();

@@ -17,13 +17,13 @@ public class MethodDepend {
     // FIXME 取扱注意。AsmClassVisitorのvisitFieldInsnを参照。
     List<FieldDeclaration> usingFields;
 
-    List<MethodDeclaration> usingMethods;
+    List<MethodDeclaration> methodInstructions;
     boolean hasNullReference;
 
-    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, List<MethodDeclaration> usingMethods, boolean hasNullReference) {
+    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, List<MethodDeclaration> methodInstructions, boolean hasNullReference) {
         this.usingTypes = usingTypes;
         this.usingFields = usingFields;
-        this.usingMethods = usingMethods;
+        this.methodInstructions = methodInstructions;
         this.hasNullReference = hasNullReference;
     }
 
@@ -32,11 +32,15 @@ public class MethodDepend {
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(usingMethods.stream().collect(MethodDeclarations.collector()));
+        return new UsingMethods(methodInstructions.stream().collect(MethodDeclarations.collector()));
+    }
+
+    public List<MethodDeclaration> methodInstructions() {
+        return methodInstructions;
     }
 
     public boolean notUseMember() {
-        return usingFields.isEmpty() && usingMethods.isEmpty();
+        return usingFields.isEmpty() && methodInstructions.isEmpty();
     }
 
     public boolean hasNullReference() {
@@ -51,7 +55,7 @@ public class MethodDepend {
             typeIdentifiers.add(usingField.typeIdentifier());
         }
 
-        for (MethodDeclaration usingMethod : usingMethods) {
+        for (MethodDeclaration usingMethod : methodInstructions) {
             // メソッドやコンストラクタの持ち主
             // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
             typeIdentifiers.add(usingMethod.declaringType());

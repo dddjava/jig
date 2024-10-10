@@ -1,8 +1,12 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -16,6 +20,9 @@ public class MethodRelations {
         this.list = list;
     }
 
+    /**
+     * 呼び出し元メソッドのフィルタリング
+     */
     public CallerMethods callerMethodsOf(MethodDeclaration calleeMethod) {
         List<MethodDeclaration> callers = list.stream()
                 .filter(methodRelation -> methodRelation.calleeMethodIs(calleeMethod))
@@ -28,5 +35,46 @@ public class MethodRelations {
         return list.stream()
                 .map(e -> "%s --> %s".formatted(e.from().htmlIdText(), e.to().htmlIdText()))
                 .collect(Collectors.joining("\n"));
+    }
+
+    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration) {
+        var stopper = new HashSet<MethodIdentifier>();
+
+        return filterFromRecursiveInternal(methodDeclaration, stopper)
+                // Java標準ライブラリのメソッド呼び出しを除く
+                .filter(methodRelation -> !methodRelation.to().isJSL())
+                .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Set<MethodIdentifier> stopper) {
+        if (stopper.contains(baseMethod.identifier())) return Stream.empty();
+
+        return listFrom(baseMethod)
+                .flatMap(methodRelation -> Stream.concat(
+                        Stream.of(methodRelation),
+                        filterFromRecursiveInternal(methodRelation.to(), stopper)));
+    }
+
+    private Stream<MethodRelation> listFrom(MethodDeclaration methodDeclaration) {
+        return list.stream()
+                .filter(methodRelation -> methodRelation.from().sameIdentifier(methodDeclaration));
+    }
+
+    public Set<MethodIdentifier> methodIdentifiers() {
+        return list.stream()
+                .flatMap(methodRelation -> Stream.of(methodRelation.from(), methodRelation.to()))
+                .map(MethodDeclaration::identifier)
+                .collect(Collectors.toSet());
+    }
+
+    public MethodRelations filterTo(MethodDeclaration declaration) {
+        return list.stream()
+                .filter(methodRelation -> methodRelation.to().sameIdentifier(declaration))
+                .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+    public MethodRelations merge(MethodRelations others) {
+        return Stream.concat(list.stream(), others.list.stream())
+                .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 }

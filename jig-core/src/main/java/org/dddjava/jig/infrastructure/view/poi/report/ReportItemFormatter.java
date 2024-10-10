@@ -66,7 +66,7 @@ public class ReportItemFormatter {
                 return;
             case メソッド引数の型の別名: {
                 MethodDeclaration methodDeclaration = toMethodDeclaration(item);
-                List<ClassComment> list = methodDeclaration.methodSignature().arguments().stream()
+                List<ClassComment> list = methodDeclaration.methodSignature().listArgumentTypeIdentifiers().stream()
                         .map(jigDocumentContext::classComment)
                         .collect(toList());
                 writeLongString(cell, list.stream()

@@ -17,7 +17,6 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
@@ -137,8 +136,7 @@ public class JigDocumentGenerator {
                 case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
                 case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
                 case DomainSummary -> SummaryModel.from(jigService.businessRules(jigSource));
-                case ApplicationSummary -> SummaryModel.from(jigService.serviceMethods(jigSource));
-                case UsecaseSummary -> usecaseSummary(jigSource);
+                case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
                 case EntrypointSummary -> entrypointSummary(jigSource);
                 case EnumSummary -> SummaryModel.from(jigService.categoryTypes(jigSource), jigSource.enumModels());
                 case TermTable -> jigService.terms(jigSource);
@@ -236,30 +234,6 @@ public class JigDocumentGenerator {
                 new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
                 new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );
-    }
-
-    private SummaryModel usecaseSummary(JigSource jigSource) {
-        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
-
-        record Entry(JigMethod jigMethod, String mermaidText) {
-        }
-
-        var mermaidMap = serviceAngles.list()
-                .stream()
-                .map(rootServiceMethod -> {
-                    return new Entry(
-                            rootServiceMethod.serviceMethod().method(),
-                            serviceAngles.mermaidText(rootServiceMethod.method().identifier())
-                    );
-                })
-                .collect(Collectors.groupingBy(
-                        entry -> entry.jigMethod.fqn(),
-                        Collectors.collectingAndThen(
-                                Collectors.toList(),
-                                list -> list.stream().findFirst().map(entry -> entry.mermaidText()).orElse(null))
-                ));
-
-        return SummaryModel.from(jigService.serviceMethods(jigSource), mermaidMap);
     }
 
     private SummaryModel entrypointSummary(JigSource jigSource) {

@@ -150,12 +150,14 @@ public class JigType {
                 .orElse(label());
     }
 
-    public Stream<JigMethod> methodStream() {
-        return Stream.concat(instanceMethods().stream(), staticMethods().stream());
+    public Stream<JigMethod> allJigMethodStream() {
+        return Stream.concat(
+                instanceMember().jigMethodStream(),
+                staticMember().jigMethodStream());
     }
 
     Stream<MethodRelation> methodRelationStream() {
-        return methodStream()
+        return allJigMethodStream()
                 .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
                         .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
                         .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く

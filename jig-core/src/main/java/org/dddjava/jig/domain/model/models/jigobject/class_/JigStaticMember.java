@@ -1,11 +1,13 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * クラスに静的に属するもの
@@ -37,5 +39,12 @@ public class JigStaticMember {
 
     public JigMethods staticMethods() {
         return staticMethods;
+    }
+
+    public Stream<JigMethod> jigMethodStream() {
+        return Stream.concat(
+                constructors.stream(),
+                staticMethods.stream()
+        );
     }
 }

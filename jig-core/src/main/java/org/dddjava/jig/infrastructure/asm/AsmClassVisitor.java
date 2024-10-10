@@ -40,7 +40,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visitEnd() {
-        logger.info("visit {} end", classSource);
+        logger.debug("visit {} end", classSource);
         super.visitEnd();
     }
 

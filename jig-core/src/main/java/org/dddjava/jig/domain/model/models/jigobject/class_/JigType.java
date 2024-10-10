@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
@@ -152,5 +153,9 @@ public class JigType {
     public JigMethods methods() {
         return Stream.concat(instanceMethods().list().stream(), staticMethods().list().stream())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigMethods::new));
+    }
+
+    public Stream<JigMethod> methodStream() {
+        return Stream.concat(instanceMethods().stream(), staticMethods().stream());
     }
 }

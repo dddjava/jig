@@ -46,7 +46,7 @@ public class JigTypes {
                 // 同じクラスでフィルタ
                 .filter(jigType -> jigType.identifier().equals(methodIdentifier.declaringType()))
                 // メソッドに絞り込み
-                .flatMap(jigType -> jigType.methods().list().stream())
+                .flatMap(jigType -> jigType.methodStream())
                 .filter(jigMethod -> jigMethod.declaration().identifier().equals(methodIdentifier))
                 // 複数件Hitすることはないが、実装上はありえるのでany
                 .findAny();

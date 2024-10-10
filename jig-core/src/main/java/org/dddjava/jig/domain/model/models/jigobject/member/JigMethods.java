@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * メソッド一覧
@@ -84,5 +85,9 @@ public class JigMethods {
                 .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    public Stream<JigMethod> stream() {
+        return list.stream();
     }
 }

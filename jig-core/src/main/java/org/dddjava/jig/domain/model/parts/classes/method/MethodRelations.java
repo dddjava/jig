@@ -41,8 +41,6 @@ public class MethodRelations {
         var stopper = new HashSet<MethodIdentifier>();
 
         return filterFromRecursiveInternal(methodDeclaration, stopper)
-                // Java標準ライブラリのメソッド呼び出しを除く
-                .filter(methodRelation -> !methodRelation.to().isJSL())
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 

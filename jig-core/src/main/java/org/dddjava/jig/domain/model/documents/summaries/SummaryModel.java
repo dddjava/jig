@@ -86,7 +86,10 @@ public class SummaryModel {
         var methodRelations = serviceJigTypes.list().stream()
                 .flatMap(jigType -> jigType.methods().list().stream())
                 // メソッドの関連に変換
-                .flatMap(jigMethod -> jigMethod.methodInstructions().stream().map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)))
+                .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
+                        .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
+                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
+                        .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
 
         // 対象のメソッド単位に処理

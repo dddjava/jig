@@ -45,4 +45,8 @@ public class Arguments {
     public boolean isSame(Arguments other) {
         return argumentTypes.equals(other.argumentTypes);
     }
+
+    public String packageAbbreviationText() {
+        return argumentTypes.stream().map(TypeIdentifier::packageAbbreviationText).collect(joining(", "));
+    }
 }

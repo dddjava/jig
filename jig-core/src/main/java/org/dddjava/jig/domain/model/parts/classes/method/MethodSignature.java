@@ -83,4 +83,8 @@ public class MethodSignature {
         }
         return false;
     }
+
+    public String packageAbbreviationText() {
+        return methodName + "(" + arguments.packageAbbreviationText() + ")";
+    }
 }

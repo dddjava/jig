@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.parts.packages;
 
+import org.dddjava.jig.JigContext;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * パッケージ識別子
@@ -103,5 +106,28 @@ public class PackageIdentifier {
     public String htmlIdText() {
         // 英数字以外を_に置換する
         return value.replaceAll("[^a-zA-Z0-9]", "_");
+    }
+
+    /**
+     * 省略表記
+     */
+    public String abbreviationText() {
+        if (JigContext.packageAbbreviationMode.value().equalsIgnoreCase("numeric")) {
+            // internationalization -> i18n
+            if (value.length() <= 2) {
+                return value;
+            }
+            char firstChar = value.charAt(0);
+            char lastChar = value.charAt(value.length() - 1);
+            int middleCount = value.length() - 2;
+
+            return "%c%d%c".formatted(firstChar, middleCount, lastChar);
+        } else {
+            // hoge.fuga.piyo -> h.f.p
+            String[] parts = value.split("\\.");
+            return Arrays.stream(parts)
+                    .map(value -> String.valueOf(value.charAt(0)))
+                    .collect(Collectors.joining("."));
+        }
     }
 }

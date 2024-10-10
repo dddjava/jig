@@ -135,4 +135,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public boolean isArray() {
         return value.endsWith("[]");
     }
+
+    public String packageAbbreviationText() {
+        return packageIdentifier().abbreviationText() + "." + asSimpleText();
+    }
 }

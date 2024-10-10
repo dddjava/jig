@@ -84,7 +84,7 @@ public class SummaryModel {
 
         // 認識範囲のmethodの関連
         var methodRelations = serviceJigTypes.list().stream()
-                .flatMap(jigType -> jigType.methods().stream())
+                .flatMap(jigType -> jigType.methodStream())
                 // メソッドの関連に変換
                 .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
                         .filter(toMethod -> !toMethod.isJSL()) // JSLを除く

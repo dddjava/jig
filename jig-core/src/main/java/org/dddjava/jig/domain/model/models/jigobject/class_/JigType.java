@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -148,11 +147,6 @@ public class JigType {
         return annotations.list().stream().findFirst()
                 .flatMap(annotation -> annotation.descriptionTextAnyOf("description"))
                 .orElse(label());
-    }
-
-    public JigMethods methods() {
-        return Stream.concat(instanceMethods().stream(), staticMethods().stream())
-                .collect(Collectors.collectingAndThen(Collectors.toList(), JigMethods::new));
     }
 
     public Stream<JigMethod> methodStream() {

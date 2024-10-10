@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.models.jigobject.class_;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 
 import java.util.Comparator;
@@ -24,12 +23,7 @@ public class JigTypes {
 
     public MethodRelations methodRelations() {
         return list().stream()
-                .flatMap(jigType -> jigType.methodStream())
-                // メソッドの関連に変換
-                .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
-                        .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
-                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                        .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)))
+                .flatMap(JigType::methodRelationStream)
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 

@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeDeclaration;
@@ -151,5 +152,13 @@ public class JigType {
 
     public Stream<JigMethod> methodStream() {
         return Stream.concat(instanceMethods().stream(), staticMethods().stream());
+    }
+
+    Stream<MethodRelation> methodRelationStream() {
+        return methodStream()
+                .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
+                        .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
+                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
+                        .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)));
     }
 }

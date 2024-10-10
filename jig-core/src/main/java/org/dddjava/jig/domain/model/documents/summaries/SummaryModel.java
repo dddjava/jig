@@ -9,8 +9,6 @@ import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
@@ -83,17 +81,10 @@ public class SummaryModel {
                 .collect(collectingAndThen(toList(), JigTypes::new));
 
         // 認識範囲のmethodの関連
-        var methodRelations = serviceJigTypes.list().stream()
-                .flatMap(jigType -> jigType.methodStream())
-                // メソッドの関連に変換
-                .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
-                        .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
-                        .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
-                        .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)))
-                .collect(collectingAndThen(toList(), MethodRelations::new));
+        var methodRelations = serviceJigTypes.methodRelations();
 
         // 対象のメソッド単位に処理
-        var collect = serviceJigTypes.list().stream()
+        return serviceJigTypes.list().stream()
                 .flatMap(jigType -> jigType.instanceMethods().list().stream())
                 // 基点になるものだけ対象
                 .filter(JigMethod::remarkable)
@@ -101,6 +92,5 @@ public class SummaryModel {
                         jigMethod -> jigMethod.fqn(),
                         jigMethod -> jigMethod.usecaseMermaidText(serviceJigTypes, methodRelations)
                 ));
-        return collect;
     }
 }

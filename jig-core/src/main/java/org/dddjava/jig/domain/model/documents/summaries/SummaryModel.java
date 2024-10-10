@@ -13,9 +13,9 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
 
 public class SummaryModel {
     private final JigTypes jigTypes;
@@ -77,18 +77,15 @@ public class SummaryModel {
      */
     public Map<String, String> mermaidMap() {
         if (mermaidMap != null) return mermaidMap;
+        return Map.of();
+    }
 
+    public String mermaidDiagram(JigMethod jigMethod) {
         // 認識範囲のmethodの関連
         var methodRelations = jigTypes.methodRelations();
 
-        // 対象のメソッド単位に処理
-        return jigTypes.list().stream()
-                .flatMap(jigType -> jigType.instanceMethods().list().stream())
-                // 基点になるものだけ対象
-                .filter(JigMethod::remarkable)
-                .collect(toMap(
-                        jigMethod -> jigMethod.fqn(),
-                        jigMethod -> jigMethod.usecaseMermaidText(jigTypes, methodRelations)
-                ));
+        return jigTypes.resolveJigMethod(jigMethod.declaration().identifier())
+                .map(m -> m.usecaseMermaidText(jigTypes, methodRelations))
+                .orElse("");
     }
 }

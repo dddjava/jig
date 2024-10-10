@@ -21,10 +21,15 @@ public class JigTypes {
         this.list = list;
     }
 
+    private MethodRelations methodRelations;
+
     public MethodRelations methodRelations() {
-        return list().stream()
-                .flatMap(JigType::methodRelationStream)
-                .collect(collectingAndThen(toList(), MethodRelations::new));
+        if (methodRelations == null) {
+            methodRelations = list().stream()
+                    .flatMap(JigType::methodRelationStream)
+                    .collect(collectingAndThen(toList(), MethodRelations::new));
+        }
+        return methodRelations;
     }
 
     public List<JigType> listCollectionType() {

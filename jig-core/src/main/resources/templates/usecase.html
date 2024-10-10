@@ -40,7 +40,7 @@
                         availableRoomList(OffsetDateTime):List
                     </div>
 
-                    <pre class="mermaid" th:if="${model.mermaidMap().containsKey(method.fqn())}" th:utext="${model.mermaidMap().get(method.fqn())}">
+                    <pre class="mermaid" th:utext="${model.mermaidDiagram(method)}">
                             graph LR
                             a --> b
                             a --> c

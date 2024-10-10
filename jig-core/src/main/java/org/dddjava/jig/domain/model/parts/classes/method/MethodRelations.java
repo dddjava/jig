@@ -46,6 +46,7 @@ public class MethodRelations {
 
     private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Set<MethodIdentifier> stopper) {
         if (stopper.contains(baseMethod.identifier())) return Stream.empty();
+        stopper.add(baseMethod.identifier());
 
         return list.stream()
                 .filter(methodRelation -> methodRelation.from().sameIdentifier(baseMethod))

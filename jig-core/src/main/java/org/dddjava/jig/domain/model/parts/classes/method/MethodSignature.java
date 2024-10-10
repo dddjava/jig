@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.parts.classes.method;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,12 +18,8 @@ public final class MethodSignature {
         this.arguments = arguments;
     }
 
-    public MethodSignature(String methodName) {
-        this(methodName, Arguments.empty());
-    }
-
-    public MethodSignature(String methodName, TypeIdentifier argument) {
-        this(methodName, new Arguments(Collections.singletonList(argument)));
+    public MethodSignature(String methodName, TypeIdentifier... arguments) {
+        this(methodName, new Arguments(List.of(arguments)));
     }
 
     /**

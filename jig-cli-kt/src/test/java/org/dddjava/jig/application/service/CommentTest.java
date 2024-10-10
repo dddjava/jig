@@ -57,7 +57,7 @@ public class CommentTest {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
         ClassComment classComment = typeFacts.jigTypes().list()
-                .stream().filter(jigType -> jigType.identifier().equals(new TypeIdentifier(KotlinStub.class)))
+                .stream().filter(jigType -> jigType.identifier().equals(TypeIdentifier.from(KotlinStub.class)))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
 
@@ -70,7 +70,7 @@ public class CommentTest {
         Sources source = getTestRawSource();
         TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
 
-        TypeIdentifier テスト対象クラス = new TypeIdentifier(KotlinMethodJavadocStub.class);
+        TypeIdentifier テスト対象クラス = TypeIdentifier.from(KotlinMethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
         JigMethods jigMethods = jigType.instanceMember().instanceMethods();
@@ -79,7 +79,7 @@ public class CommentTest {
         assertEquals("メソッドのドキュメント", method.aliasTextOrBlank());
 
         JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(
-                new MethodSignature("overloadMethod", new Arguments(Arrays.asList(new TypeIdentifier(String.class), new TypeIdentifier(LocalDateTime.class)))));
+                new MethodSignature("overloadMethod", new Arguments(Arrays.asList(TypeIdentifier.from(String.class), TypeIdentifier.from(LocalDateTime.class)))));
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
         JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));

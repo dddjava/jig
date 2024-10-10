@@ -61,10 +61,14 @@ public record MethodSignature(String methodName, Arguments arguments) {
                 && arguments.isSame(other.arguments);
     }
 
-    static List<MethodSignature> objectMethods = Arrays.asList(
-            new MethodSignature("equals", TypeIdentifier.of(Object.class)),
-            new MethodSignature("hashCode"),
-            new MethodSignature("toString"));
+    static List<MethodSignature> objectMethods;
+
+    static {
+        objectMethods = Arrays.asList(
+                new MethodSignature("equals", TypeIdentifier.from(Object.class)),
+                new MethodSignature("hashCode"),
+                new MethodSignature("toString"));
+    }
 
     public boolean isObjectMethod() {
         for (MethodSignature objectMethod : objectMethods) {

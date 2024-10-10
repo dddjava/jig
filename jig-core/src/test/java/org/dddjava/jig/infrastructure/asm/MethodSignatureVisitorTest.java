@@ -22,7 +22,7 @@ class MethodSignatureVisitorTest {
         MethodSignatureVisitor sut = new MethodSignatureVisitor(Opcodes.ASM9);
         new SignatureReader(signature).accept(sut);
 
-        MethodDeclaration methodDeclaration = sut.methodDeclaration(new TypeIdentifier("Dummy"), "method");
+        MethodDeclaration methodDeclaration = sut.methodDeclaration(TypeIdentifier.valueOf("Dummy"), "method");
 
         assertEquals(expected, methodDeclaration.asSignatureAndReturnTypeSimpleText());
     }

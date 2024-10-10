@@ -35,15 +35,15 @@ public class RepositoryReportTest {
                         datasourceAngle -> datasourceAngle.deleteTables()
                 ).contains(
                         tuple(
-                                new TypeIdentifier(FugaRepository.class),
+                                TypeIdentifier.from(FugaRepository.class),
                                 "get(FugaIdentifier)",
-                                new TypeIdentifier(Fuga.class),
+                                TypeIdentifier.from(Fuga.class),
                                 "[sut.piyo]", "[fuga]", "[]", "[]"
                         ),
                         tuple(
-                                new TypeIdentifier(FugaRepository.class),
+                                TypeIdentifier.from(FugaRepository.class),
                                 "register(Fuga)",
-                                new TypeIdentifier("void"),
+                                TypeIdentifier.valueOf("void"),
                                 "[]", "[]", "[]", "[]"
                         )
                 );

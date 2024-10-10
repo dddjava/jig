@@ -43,7 +43,7 @@ public class JigField {
     }
 
     public boolean isDeprecated() {
-        return hasAnnotation(TypeIdentifier.of(Deprecated.class));
+        return hasAnnotation(TypeIdentifier.from(Deprecated.class));
     }
 
     private boolean hasAnnotation(TypeIdentifier typeIdentifier) {

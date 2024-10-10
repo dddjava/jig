@@ -34,7 +34,7 @@ public class SqlIdentifier {
         if (value.contains(".")) {
             for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
                 boolean matches = methodDeclaration.matches(
-                        new TypeIdentifier(value.substring(0, value.lastIndexOf('.'))),
+                        TypeIdentifier.valueOf(value.substring(0, value.lastIndexOf('.'))),
                         value.substring(value.lastIndexOf('.') + 1)
                 );
                 if (matches) return true;

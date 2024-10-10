@@ -57,16 +57,16 @@ class AliasServiceTest {
 
     static Stream<org.junit.jupiter.params.provider.Arguments> クラス別名取得() {
         return Stream.of(
-                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(ClassJavadocStub.class), "クラスのJavadoc"),
-                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(MethodJavadocStub.class), ""),
-                org.junit.jupiter.params.provider.Arguments.of(new TypeIdentifier(NotJavadocStub.class), "")
+                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(ClassJavadocStub.class), "クラスのJavadoc"),
+                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(MethodJavadocStub.class), ""),
+                org.junit.jupiter.params.provider.Arguments.of(TypeIdentifier.from(NotJavadocStub.class), "")
         );
     }
 
     @Test
     void メソッド別名取得(Sources source) {
         TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
-        TypeIdentifier テスト対象クラス = new TypeIdentifier(MethodJavadocStub.class);
+        TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
         JigMethods jigMethods = jigType.instanceMember().instanceMethods();
@@ -74,7 +74,7 @@ class AliasServiceTest {
         JigMethod method = jigMethods.resolveMethodBySignature(new MethodSignature("method"));
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
-        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.of(String.class)));
+        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.from(String.class)));
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
 
         JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));

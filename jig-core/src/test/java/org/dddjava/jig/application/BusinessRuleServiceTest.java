@@ -64,6 +64,6 @@ class BusinessRuleServiceTest {
     @Test
     void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);
-        assertFalse(businessRuleService.businessRules(jigSource).contains(new TypeIdentifier("stub.domain.model.annotation.package-info")));
+        assertFalse(businessRuleService.businessRules(jigSource).contains(TypeIdentifier.valueOf("stub.domain.model.annotation.package-info")));
     }
 }

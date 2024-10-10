@@ -98,7 +98,7 @@ class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
         }
         arg.setTypeName(node.getNameAsString());
 
-        typeIdentifier = new TypeIdentifier(packageName + node.getNameAsString());
+        typeIdentifier = TypeIdentifier.valueOf(packageName + node.getNameAsString());
         // クラスのJavadocが記述されていれば採用
         node.getJavadoc().ifPresent(javadoc -> {
             String javadocText = javadoc.getDescription().toText();

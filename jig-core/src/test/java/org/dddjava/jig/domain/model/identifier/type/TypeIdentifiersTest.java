@@ -20,7 +20,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void test(List<String> identifiers, String simpleText) {
-        TypeIdentifiers sut = identifiers.stream().map(TypeIdentifier::new).collect(TypeIdentifiers.collector());
+        TypeIdentifiers sut = identifiers.stream().map(TypeIdentifier::valueOf).collect(TypeIdentifiers.collector());
 
         assertThat(sut.asSimpleText()).isEqualTo(simpleText);
     }
@@ -38,7 +38,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void typeIdentifier_asSimpleText(String fullName, String simpleText) {
-        TypeIdentifier hoge = new TypeIdentifier(fullName);
+        TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
 
         assertThat(hoge.asSimpleText()).isEqualTo(simpleText);
     }
@@ -55,7 +55,7 @@ class TypeIdentifiersTest {
     @ParameterizedTest
     @MethodSource
     void typeIdentifier_packageIdentifier(String fullName, String packageName) {
-        TypeIdentifier hoge = new TypeIdentifier(fullName);
+        TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
 
         Assertions.assertThat(hoge.packageIdentifier()).isEqualTo(PackageIdentifier.valueOf(packageName));
     }

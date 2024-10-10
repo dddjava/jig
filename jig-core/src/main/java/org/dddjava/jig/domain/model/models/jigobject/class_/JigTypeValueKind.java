@@ -31,27 +31,27 @@ public enum JigTypeValueKind {
         if (isCollectionField(fieldDeclarations)) {
             return コレクション;
         }
-        if (fieldDeclarations.matches((TypeIdentifier.of(String.class)))) {
+        if (fieldDeclarations.matches((TypeIdentifier.from(String.class)))) {
             return 文字列;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.of(BigDecimal.class))
-                || fieldDeclarations.matches(TypeIdentifier.of(Long.class))
-                || fieldDeclarations.matches(TypeIdentifier.of(Integer.class))
-                || fieldDeclarations.matches(TypeIdentifier.of(long.class))
-                || fieldDeclarations.matches(TypeIdentifier.of(int.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.from(BigDecimal.class))
+                || fieldDeclarations.matches(TypeIdentifier.from(Long.class))
+                || fieldDeclarations.matches(TypeIdentifier.from(Integer.class))
+                || fieldDeclarations.matches(TypeIdentifier.from(long.class))
+                || fieldDeclarations.matches(TypeIdentifier.from(int.class))) {
             return 数値;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.of(LocalDate.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.from(LocalDate.class))) {
             return 日付;
         }
-        if (fieldDeclarations.matches(TypeIdentifier.of(LocalDate.class), TypeIdentifier.of(LocalDate.class))) {
+        if (fieldDeclarations.matches(TypeIdentifier.from(LocalDate.class), TypeIdentifier.from(LocalDate.class))) {
             return 期間;
         }
         return 不明;
     }
 
     private static boolean isCollectionField(FieldDeclarations fieldDeclarations) {
-        return (fieldDeclarations.matches(TypeIdentifier.of(List.class))
-                || fieldDeclarations.matches(TypeIdentifier.of(Set.class)));
+        if (fieldDeclarations.matches(TypeIdentifier.from(List.class))) return true;
+        return (fieldDeclarations.matches(TypeIdentifier.from(Set.class)));
     }
 }

@@ -34,44 +34,44 @@ public class MethodInstructionTest {
         assertThat(identifiers.list())
                 .containsExactlyInAnyOrder(
                         // 標準
-                        new TypeIdentifier(Object.class),
-                        new TypeIdentifier(String.class),
-                        new TypeIdentifier(List.class),
-                        new TypeIdentifier(Stream.class),
-                        new TypeIdentifier("void"),
-                        new TypeIdentifier(Exception.class),
+                        TypeIdentifier.from(Object.class),
+                        TypeIdentifier.from(String.class),
+                        TypeIdentifier.from(List.class),
+                        TypeIdentifier.from(Stream.class),
+                        TypeIdentifier.valueOf("void"),
+                        TypeIdentifier.from(Exception.class),
                         // 自身への参照（コンストラクタ？）
-                        new TypeIdentifier(clz),
+                        TypeIdentifier.from(clz),
                         // メソッド定義
-                        new TypeIdentifier(MethodAnnotation.class),
-                        new TypeIdentifier(MethodArgument.class),
-                        new TypeIdentifier(MethodReturn.class),
-                        new TypeIdentifier(ArgumentGenericsParameter.class),
-                        new TypeIdentifier(CheckedException.class),
+                        TypeIdentifier.from(MethodAnnotation.class),
+                        TypeIdentifier.from(MethodArgument.class),
+                        TypeIdentifier.from(MethodReturn.class),
+                        TypeIdentifier.from(ArgumentGenericsParameter.class),
+                        TypeIdentifier.from(CheckedException.class),
                         // メソッド内部
-                        new TypeIdentifier(InstructionField.class),
-                        new TypeIdentifier(UsedInstructionMethodReturn.class),
+                        TypeIdentifier.from(InstructionField.class),
+                        TypeIdentifier.from(UsedInstructionMethodReturn.class),
                         // TODO メソッドから戻ってくるだけの型は「使用している」から除外すべきかも
-                        new TypeIdentifier(UnusedInstructionMethodReturn.class),
-                        new TypeIdentifier(Instantiation.class),
-                        new TypeIdentifier(ReferenceConstantOwnerInMethod.class),
-                        new TypeIdentifier(ReferenceConstantInMethod.class),
-                        new TypeIdentifier(UseInLambda.class),
-                        new TypeIdentifier(MethodReference.class),
-                        new TypeIdentifier(UncheckedExceptionA.class),
-                        new TypeIdentifier(EnclosedClass.NestedClass.class),
-                        new TypeIdentifier(Integer.class),
-                        new TypeIdentifier(IntegerConstantFieldHolder.class)
+                        TypeIdentifier.from(UnusedInstructionMethodReturn.class),
+                        TypeIdentifier.from(Instantiation.class),
+                        TypeIdentifier.from(ReferenceConstantOwnerInMethod.class),
+                        TypeIdentifier.from(ReferenceConstantInMethod.class),
+                        TypeIdentifier.from(UseInLambda.class),
+                        TypeIdentifier.from(MethodReference.class),
+                        TypeIdentifier.from(UncheckedExceptionA.class),
+                        TypeIdentifier.from(EnclosedClass.NestedClass.class),
+                        TypeIdentifier.from(Integer.class),
+                        TypeIdentifier.from(IntegerConstantFieldHolder.class)
                 )
                 .doesNotContain(
                         // ローカル変数宣言だけで使用されている型は取得できない（コンパイルされたら消える）
-                        new TypeIdentifier(LocalValue.class),
+                        TypeIdentifier.from(LocalValue.class),
                         // ネストされた型のエンクローズド型は名前空間を提供しているだけなので取得できない
-                        new TypeIdentifier(EnclosedClass.class),
+                        TypeIdentifier.from(EnclosedClass.class),
                         // 呼び出し先のメソッドで宣言されているだけの例外
                         // throwsなどにも登場しなければ検出されない
-                        new TypeIdentifier(CheckedExceptionB.class),
-                        new TypeIdentifier(UncheckedExceptionB.class)
+                        TypeIdentifier.from(CheckedExceptionB.class),
+                        TypeIdentifier.from(UncheckedExceptionB.class)
                 );
     }
 

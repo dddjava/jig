@@ -35,7 +35,7 @@ public class DatasourceMethods {
 
     public static DatasourceMethods from(JigTypes jigTypes) {
         List<DatasourceMethod> list = new ArrayList<>();
-        TypeIdentifier repositoryAnnotation = new TypeIdentifier("org.springframework.stereotype.Repository");
+        TypeIdentifier repositoryAnnotation = TypeIdentifier.valueOf("org.springframework.stereotype.Repository");
         // backend実装となる@RepositoryのついているJigTypeを抽出
         for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.hasAnnotation(repositoryAnnotation))) {
             // インタフェースを抽出（通常1件）

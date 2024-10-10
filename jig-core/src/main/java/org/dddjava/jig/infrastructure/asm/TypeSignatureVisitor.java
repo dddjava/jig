@@ -61,8 +61,8 @@ class TypeSignatureVisitor extends SignatureVisitor {
 
     public ParameterizedType generateParameterizedType() {
         return new ParameterizedType(
-                new TypeIdentifier(className),
-                typeArgumentClassName.stream().map(TypeIdentifier::new).collect(Collectors.toList())
+                TypeIdentifier.valueOf(className),
+                typeArgumentClassName.stream().map(TypeIdentifier::valueOf).collect(Collectors.toList())
         );
     }
 }

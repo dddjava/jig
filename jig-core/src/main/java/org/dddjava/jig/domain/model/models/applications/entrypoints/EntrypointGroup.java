@@ -24,15 +24,15 @@ public record EntrypointGroup
     }
 
     static final Predicate<JigType> requestHandlerType = jigType ->
-            jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Controller"))
-                    || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.RestController"))
-                    || jigType.hasAnnotation(new TypeIdentifier("org.springframework.web.bind.annotation.ControllerAdvice"));
+            jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
+                    || jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
+                    || jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"));
 
     static EntrypointGroup from(JigType jigType) {
         if (requestHandlerType.test(jigType)) {
             return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
                     collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList());
-        } else if (jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Component"))) {
+        } else if (jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
             return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
                     collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList());
         }

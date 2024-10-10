@@ -32,7 +32,7 @@ public class ServiceMethods {
     public static ServiceMethods from(JigTypes jigTypes, MethodRelations methodRelations) {
         List<JigType> serviceJigTypes = jigTypes
                 .listMatches(jigType ->
-                        jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
+                        jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
         return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> true);
     }
 

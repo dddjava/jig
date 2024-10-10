@@ -14,7 +14,7 @@ class PackageStructureTest {
     @Test
     void test() {
         List<TypeIdentifier> typeIdentifiers = new ArrayList<>();
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.X"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);
@@ -24,8 +24,8 @@ class PackageStructureTest {
     @Test
     void test2() {
         List<TypeIdentifier> typeIdentifiers = new ArrayList<>();
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.Y"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.X"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.Y"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);
@@ -37,8 +37,8 @@ class PackageStructureTest {
     @Test
     void test3() {
         List<TypeIdentifier> typeIdentifiers = new ArrayList<>();
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.d.Y"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.X"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.d.Y"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);
@@ -52,10 +52,10 @@ class PackageStructureTest {
     @Test
     void test4() {
         List<TypeIdentifier> typeIdentifiers = new ArrayList<>();
-        typeIdentifiers.add(new TypeIdentifier("a.b.c.X"));
-        typeIdentifiers.add(new TypeIdentifier("a.b.d.Y"));
-        typeIdentifiers.add(new TypeIdentifier("a.b.d.Z"));
-        typeIdentifiers.add(new TypeIdentifier("a.b.d.f.L"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.c.X"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.d.Y"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.d.Z"));
+        typeIdentifiers.add(TypeIdentifier.valueOf("a.b.d.f.L"));
         PackageStructure packageStructure = PackageStructure.from(typeIdentifiers);
 
         String dotText = packageStructure.toDotText(Node::typeOf);

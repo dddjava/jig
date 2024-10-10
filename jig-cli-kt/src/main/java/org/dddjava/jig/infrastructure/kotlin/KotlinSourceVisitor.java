@@ -36,7 +36,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
         if (fullClassName == null) {
             return;
         }
-        TypeIdentifier identifier = new TypeIdentifier(fullClassName.asString());
+        TypeIdentifier identifier = TypeIdentifier.valueOf(fullClassName.asString());
         typeJapaneseAliases.add(new ClassComment(identifier, Comment.fromCodeComment(text)));
     }
 
@@ -55,7 +55,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
             return;
         }
         ArrayList<TypeIdentifier> args = new ArrayList<>();
-        TypeIdentifier identifier = new TypeIdentifier(ktClass.getFqName().asString());
+        TypeIdentifier identifier = TypeIdentifier.valueOf(ktClass.getFqName().asString());
 
         for (KtParameter parameter : function.getValueParameters()) {
             KtTypeReference typeReference = parameter.getTypeReference();
@@ -63,7 +63,7 @@ public class KotlinSourceVisitor extends KtTreeVisitorVoid {
                 continue;
             }
             String string = typeString(typeReference);
-            args.add(new TypeIdentifier(string));
+            args.add(TypeIdentifier.valueOf(string));
         }
 
         MethodIdentifier methodIdentifier = new MethodIdentifier(identifier, new MethodSignature(methodName, new Arguments(args)));

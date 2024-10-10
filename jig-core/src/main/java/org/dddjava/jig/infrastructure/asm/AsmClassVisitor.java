@@ -54,7 +54,7 @@ class AsmClassVisitor extends ClassVisitor {
         List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
         jigTypeBuilder = JigTypeBuilder.constructWithHeaders(
-                new ParameterizedType(new TypeIdentifier(name), actualTypeParameters),
+                new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters),
                 superType(superName, signature),
                 interfaceTypes(interfaces, signature),
                 resolveVisibility(access),
@@ -121,7 +121,7 @@ class AsmClassVisitor extends ClassVisitor {
         List<TypeIdentifier> throwsTypes = new ArrayList<>();
         if (exceptions != null) {
             for (String exception : exceptions) {
-                throwsTypes.add(new TypeIdentifier(exception));
+                throwsTypes.add(TypeIdentifier.valueOf(exception));
             }
         }
 
@@ -152,7 +152,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-                TypeIdentifier declaringType = new TypeIdentifier(owner);
+                TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
                 FieldType fieldType = typeDescriptorToFieldType(descriptor);
                 FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
 
@@ -226,7 +226,7 @@ class AsmClassVisitor extends ClassVisitor {
             }
 
             private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {
-                return new MethodDeclaration(new TypeIdentifier(owner), toMethodSignature(name, desc), new MethodReturn(methodDescriptorToReturnIdentifier(desc)));
+                return new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, desc), new MethodReturn(methodDescriptorToReturnIdentifier(desc)));
             }
 
             @Override
@@ -301,7 +301,7 @@ class AsmClassVisitor extends ClassVisitor {
                             return new SignatureVisitor(this.api) {
                                 @Override
                                 public void visitClassType(String name) {
-                                    typeParameters.add(new TypeIdentifier(name));
+                                    typeParameters.add(TypeIdentifier.valueOf(name));
                                 }
                             };
                         }
@@ -324,7 +324,7 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
     private TypeIdentifier toTypeIdentifier(Type type) {
-        return new TypeIdentifier(type.getClassName());
+        return TypeIdentifier.valueOf(type.getClassName());
     }
 
     private List<TypeIdentifier> extractClassTypeFromGenericsSignature(String signature) {
@@ -336,7 +336,7 @@ class AsmClassVisitor extends ClassVisitor {
                         @Override
                         public void visitClassType(String name) {
                             // 引数と戻り値に登場するクラスを収集
-                            useTypes.add(new TypeIdentifier(name));
+                            useTypes.add(TypeIdentifier.valueOf(name));
                         }
                     }
             );
@@ -358,7 +358,7 @@ class AsmClassVisitor extends ClassVisitor {
                                 @Override
                                 public void visitClassType(String name) {
                                     // 戻り値の型
-                                    collector[0] = new TypeIdentifier(name);
+                                    collector[0] = TypeIdentifier.valueOf(name);
                                 }
 
                                 @Override
@@ -371,7 +371,7 @@ class AsmClassVisitor extends ClassVisitor {
                                         @Override
                                         public void visitClassType(String name) {
                                             // 型引数の型
-                                            collector[1] = new TypeIdentifier(name);
+                                            collector[1] = TypeIdentifier.valueOf(name);
                                         }
                                     };
                                 }
@@ -395,7 +395,7 @@ class AsmClassVisitor extends ClassVisitor {
     private ParameterizedType superType(String superName, String signature) {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {
-            return new ParameterizedType(new TypeIdentifier(superName));
+            return new ParameterizedType(TypeIdentifier.valueOf(superName));
         }
 
         SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {
@@ -416,7 +416,7 @@ class AsmClassVisitor extends ClassVisitor {
                                     return new SignatureVisitor(this.api) {
                                         @Override
                                         public void visitClassType(String name) {
-                                            typeParameters.add(new TypeIdentifier(name));
+                                            typeParameters.add(TypeIdentifier.valueOf(name));
                                         }
 
                                         @Override
@@ -434,7 +434,7 @@ class AsmClassVisitor extends ClassVisitor {
                 }
         );
 
-        return new ParameterizedType(new TypeIdentifier(superName), new TypeArgumentList(typeParameters));
+        return new ParameterizedType(TypeIdentifier.valueOf(superName), new TypeArgumentList(typeParameters));
     }
 
     private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {
@@ -442,7 +442,7 @@ class AsmClassVisitor extends ClassVisitor {
         if (signature == null) {
             // 非総称型で作成
             List<ParameterizedType> list = Arrays.stream(interfaces)
-                    .map(TypeIdentifier::new)
+                    .map(TypeIdentifier::valueOf)
                     .map(ParameterizedType::new)
                     .collect(Collectors.toList());
             return list;
@@ -472,7 +472,7 @@ class AsmClassVisitor extends ClassVisitor {
                                     return new SignatureVisitor(this.api) {
                                         @Override
                                         public void visitClassType(String name) {
-                                            typeParameters.add(new TypeIdentifier(name));
+                                            typeParameters.add(TypeIdentifier.valueOf(name));
                                         }
 
                                         @Override
@@ -488,7 +488,7 @@ class AsmClassVisitor extends ClassVisitor {
 
                             @Override
                             public void visitEnd() {
-                                parameterizedTypes.add(new ParameterizedType(new TypeIdentifier(interfaceName), new TypeArgumentList(typeParameters)));
+                                parameterizedTypes.add(new ParameterizedType(TypeIdentifier.valueOf(interfaceName), new TypeArgumentList(typeParameters)));
                             }
                         };
                     }
@@ -590,8 +590,10 @@ class AsmClassVisitor extends ClassVisitor {
             // enumで生成されるstaticメソッド2つをコンパイラ生成として扱う
             if (methodSignature.isSame(new MethodSignature("values"))) {
                 return MethodDerivation.COMPILER_GENERATED;
-            } else if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.of(String.class)))) {
-                return MethodDerivation.COMPILER_GENERATED;
+            } else {
+                if (methodSignature.isSame(new MethodSignature("valueOf", TypeIdentifier.from(String.class)))) {
+                    return MethodDerivation.COMPILER_GENERATED;
+                }
             }
         }
 

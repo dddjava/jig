@@ -21,7 +21,7 @@ class AdditionalSourceModelBuilder {
     private String name;
 
     public AdditionalTypeModel build() {
-        var typeIdentifier = new TypeIdentifier(packageDeclaration != null
+        var typeIdentifier = TypeIdentifier.valueOf(packageDeclaration != null
                 ? packageDeclaration.getNameAsString() + '.' + name
                 : name);
         var imports = importDeclarations.stream()

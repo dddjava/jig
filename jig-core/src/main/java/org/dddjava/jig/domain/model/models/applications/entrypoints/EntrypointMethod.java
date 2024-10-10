@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,15 +34,15 @@ public class EntrypointMethod {
         this.method = method;
 
         this.requestMappingForClass = jigType.annotationsOf(
-                new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"));
 
         this.requestMappingsForMethod = method.methodAnnotations().annotations().filterAny(
-                new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.GetMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.PostMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.PutMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.DeleteMapping"),
-                new TypeIdentifier("org.springframework.web.bind.annotation.PatchMapping"));
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"),
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.GetMapping"),
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PostMapping"),
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PutMapping"),
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.DeleteMapping"),
+                TypeIdentifier.valueOf("org.springframework.web.bind.annotation.PatchMapping"));
     }
 
     public JigMethod method() {

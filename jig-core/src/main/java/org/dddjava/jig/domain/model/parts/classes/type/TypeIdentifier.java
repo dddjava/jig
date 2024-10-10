@@ -3,7 +3,9 @@ package org.dddjava.jig.domain.model.parts.classes.type;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -11,18 +13,23 @@ import java.util.stream.Stream;
  */
 public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
-    String value;
+    private final String value;
 
-    public TypeIdentifier(Class<?> clz) {
-        this(clz.getName());
-    }
-
-    public TypeIdentifier(String value) {
+    private TypeIdentifier(String value) {
         this.value = value.replace('/', '.');
     }
 
-    public static TypeIdentifier of(Class<?> clz) {
-        return new TypeIdentifier(clz);
+    private static final Map<String, TypeIdentifier> cache = new ConcurrentHashMap<>();
+
+    public static TypeIdentifier from(Class<?> clz) {
+        return valueOf(clz.getName());
+    }
+
+    public static TypeIdentifier valueOf(String value) {
+        if (cache.containsKey(value)) return cache.get(value);
+        var instance = new TypeIdentifier(value);
+        cache.put(value, instance);
+        return instance;
     }
 
     /**
@@ -82,7 +89,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         if (value.indexOf('$') == -1) {
             return this;
         }
-        return new TypeIdentifier(value.replaceFirst("\\$\\d+", ""));
+        return valueOf(value.replaceFirst("\\$\\d+", ""));
     }
 
     public boolean isBoolean() {
@@ -96,7 +103,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
 
     public boolean isStream() {
         // java.util.streamパッケージかで見たほうがいいかも？
-        return equals(TypeIdentifier.of(Stream.class));
+        return equals(from(Stream.class));
     }
 
     public boolean isVoid() {
@@ -108,7 +115,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     }
 
     public boolean isEnum() {
-        return equals(TypeIdentifier.of(Enum.class));
+        return equals(from(Enum.class));
     }
 
     @Override
@@ -117,7 +124,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     }
 
     public TypeIdentifier unarray() {
-        return new TypeIdentifier(value.replace("[L", "").replace(";", "").replace("[]", ""));
+        return valueOf(value.replace("[L", "").replace(";", "").replace("[]", ""));
     }
 
     public boolean anyEquals(String... ids) {

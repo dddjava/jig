@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.comment.Comment;
-import org.dddjava.jig.infrastructure.view.html.JigExpressionObject;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -26,9 +25,9 @@ class JigExpressionObjectTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
-        TypeIdentifier fieldTypeIdentifier = new TypeIdentifier("hoge.fuga.FieldType");
+        TypeIdentifier fieldTypeIdentifier = TypeIdentifier.valueOf("hoge.fuga.FieldType");
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
                 new FieldType(fieldTypeIdentifier),
                 "フィールド名");
 
@@ -45,9 +44,9 @@ class JigExpressionObjectTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class, in -> ClassComment.empty(in.getArgument(0)));
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
-        TypeIdentifier fieldTypeIdentifier = new TypeIdentifier("hoge.fuga.FieldType");
+        TypeIdentifier fieldTypeIdentifier = TypeIdentifier.valueOf("hoge.fuga.FieldType");
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
                 new FieldType(fieldTypeIdentifier),
                 "フィールド名");
 
@@ -62,8 +61,8 @@ class JigExpressionObjectTest {
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
-                new FieldType(new TypeIdentifier(String.class)),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
+                new FieldType(TypeIdentifier.from(String.class)),
                 "フィールド名");
 
         String actual = sut.fieldRawText(field);
@@ -77,12 +76,12 @@ class JigExpressionObjectTest {
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
                 new FieldType(
-                        new TypeIdentifier(Map.class),
+                        TypeIdentifier.from(Map.class),
                         new TypeIdentifiers(List.of(
-                                new TypeIdentifier(String.class),
-                                new TypeIdentifier(BigDecimal.class)))),
+                                TypeIdentifier.from(String.class),
+                                TypeIdentifier.from(BigDecimal.class)))),
                 "フィールド名");
 
         String actual = sut.fieldRawText(field);
@@ -95,11 +94,11 @@ class JigExpressionObjectTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class, in -> ClassComment.empty(in.getArgument(0)));
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
-        TypeIdentifier domainType = new TypeIdentifier("hoge.fuga.DomainType");
+        TypeIdentifier domainType = TypeIdentifier.valueOf("hoge.fuga.DomainType");
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
                 new FieldType(
-                        new TypeIdentifier(List.class),
+                        TypeIdentifier.from(List.class),
                         new TypeIdentifiers(List.of(domainType))),
                 "フィールド名");
 
@@ -119,11 +118,11 @@ class JigExpressionObjectTest {
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class, in -> ClassComment.empty(in.getArgument(0)));
         JigExpressionObject sut = new JigExpressionObject(jigDocumentContext);
 
-        TypeIdentifier domainType = new TypeIdentifier("hoge.fuga.Fuga");
+        TypeIdentifier domainType = TypeIdentifier.valueOf("hoge.fuga.Fuga");
         FieldDeclaration field = new FieldDeclaration(
-                new TypeIdentifier("hoge.fuga.DeclaringType"),
+                TypeIdentifier.valueOf("hoge.fuga.DeclaringType"),
                 new FieldType(
-                        new TypeIdentifier("hoge.fuga.Hoge"),
+                        TypeIdentifier.valueOf("hoge.fuga.Hoge"),
                         new TypeIdentifiers(List.of(domainType))),
                 "フィールド名");
 

@@ -29,9 +29,9 @@ public class StringComparingMethodList {
     public static StringComparingMethodList createFrom(Entrypoint entrypoint, ServiceMethods serviceMethods) {
         // String#equals(Object)
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(
-                TypeIdentifier.of(String.class),
-                new MethodSignature("equals", TypeIdentifier.of(Object.class)),
-                new MethodReturn(TypeIdentifier.of(boolean.class))
+                TypeIdentifier.from(String.class),
+                new MethodSignature("equals", TypeIdentifier.from(Object.class)),
+                new MethodReturn(TypeIdentifier.from(boolean.class))
         );
 
         List<JigMethod> methods = Stream.concat(

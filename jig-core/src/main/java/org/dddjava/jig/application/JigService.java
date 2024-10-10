@@ -173,6 +173,6 @@ public class JigService {
     public JigTypes services(JigSource jigSource) {
         var jigTypes = jigSource.typeFacts().jigTypes();
 
-        return jigTypes.filter(jigType -> jigType.hasAnnotation(new TypeIdentifier("org.springframework.stereotype.Service")));
+        return jigTypes.filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
     }
 }

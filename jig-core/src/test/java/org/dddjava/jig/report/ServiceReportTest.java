@@ -1,7 +1,6 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -34,37 +33,37 @@ public class ServiceReportTest {
                         serviceReport -> serviceReport.usingRepositoryMethods()
                 ).contains(
                         tuple(
-                                new TypeIdentifier(CanonicalService.class),
+                                TypeIdentifier.from(CanonicalService.class),
                                 "fuga(FugaIdentifier)",
-                                new TypeIdentifier(Fuga.class),
+                                TypeIdentifier.from(Fuga.class),
                                 false,
                                 "[FugaRepository.get(FugaIdentifier), HogeRepository.method()]"
                         ),
                         tuple(
-                                new TypeIdentifier(DecisionService.class),
+                                TypeIdentifier.from(DecisionService.class),
                                 "分岐のあるメソッド(Object)",
-                                new TypeIdentifier("void"),
+                                TypeIdentifier.valueOf("void"),
                                 false,
                                 "[]"
                         ),
                         tuple(
-                                new TypeIdentifier(SimpleService.class),
+                                TypeIdentifier.from(SimpleService.class),
                                 "RESTコントローラーから呼ばれる()",
-                                new TypeIdentifier("void"),
+                                TypeIdentifier.valueOf("void"),
                                 true,
                                 "[]"
                         ),
                         tuple(
-                                new TypeIdentifier(SimpleService.class),
+                                TypeIdentifier.from(SimpleService.class),
                                 "コントローラーから呼ばれない()",
-                                new TypeIdentifier("void"),
+                                TypeIdentifier.valueOf("void"),
                                 false,
                                 "[]"
                         ),
                         tuple(
-                                new TypeIdentifier(SimpleService.class),
+                                TypeIdentifier.from(SimpleService.class),
                                 "コントローラーから呼ばれる()",
-                                new TypeIdentifier("void"),
+                                TypeIdentifier.valueOf("void"),
                                 true,
                                 "[]"
                         )

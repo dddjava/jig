@@ -73,7 +73,7 @@ public class AsmFactReaderTest {
                 .flatMap(jigField -> jigField.fieldAnnotations().list().stream().findFirst())
                 .orElseThrow(AssertionError::new);
 
-        assertEquals(new TypeIdentifier(VariableAnnotation.class), fieldAnnotation.annotationType());
+        assertEquals(TypeIdentifier.from(VariableAnnotation.class), fieldAnnotation.annotationType());
 
         AnnotationDescription description = fieldAnnotation.description();
         assertThat(description.asText())
@@ -117,11 +117,11 @@ public class AsmFactReaderTest {
         TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(ClassAnnotation.class),
-                        new TypeIdentifier(SuperClass.class),
-                        new TypeIdentifier(ImplementA.class),
-                        new TypeIdentifier(ImplementB.class),
-                        new TypeIdentifier(GenericsParameter.class)
+                        TypeIdentifier.from(ClassAnnotation.class),
+                        TypeIdentifier.from(SuperClass.class),
+                        TypeIdentifier.from(ImplementA.class),
+                        TypeIdentifier.from(ImplementB.class),
+                        TypeIdentifier.from(GenericsParameter.class)
                 );
 
         ParameterizedType parameterizedSuperType = actual.typeDeclaration().superType();
@@ -132,7 +132,7 @@ public class AsmFactReaderTest {
                 )
                 .containsExactly(
                         "SuperClass<Integer, Long>",
-                        new TypeIdentifier(SuperClass.class)
+                        TypeIdentifier.from(SuperClass.class)
                 );
     }
 
@@ -143,9 +143,9 @@ public class AsmFactReaderTest {
         TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(ClassAnnotation.class),
-                        new TypeIdentifier(Comparable.class),
-                        new TypeIdentifier(GenericsParameter.class)
+                        TypeIdentifier.from(ClassAnnotation.class),
+                        TypeIdentifier.from(Comparable.class),
+                        TypeIdentifier.from(GenericsParameter.class)
                 );
 
         ParameterizedType parameterizedType = actual.typeDeclaration().interfaceTypes().list().get(0);
@@ -156,7 +156,7 @@ public class AsmFactReaderTest {
                 )
                 .containsExactly(
                         "Comparable<GenericsParameter>",
-                        new TypeIdentifier(Comparable.class)
+                        TypeIdentifier.from(Comparable.class)
                 );
     }
 
@@ -167,8 +167,8 @@ public class AsmFactReaderTest {
         TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(List.class),
-                        new TypeIdentifier(String.class)
+                        TypeIdentifier.from(List.class),
+                        TypeIdentifier.from(String.class)
                 );
 
         MethodReturn methodReturn = actual.instanceMethods()
@@ -190,15 +190,15 @@ public class AsmFactReaderTest {
         TypeIdentifiers identifiers = jigType.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(List.class),
-                        new TypeIdentifier(stub.domain.model.relation.field.FieldAnnotation.class),
-                        new TypeIdentifier(StaticField.class),
-                        new TypeIdentifier(InstanceField.class),
-                        new TypeIdentifier(GenericField.class),
-                        new TypeIdentifier(ArrayField.class.getName() + "[]"),
-                        new TypeIdentifier(ArrayField.class),
-                        new TypeIdentifier(ReferenceConstantOwnerAtFieldDefinition.class),
-                        new TypeIdentifier(ReferenceConstantAtFieldDefinition.class)
+                        TypeIdentifier.from(List.class),
+                        TypeIdentifier.from(stub.domain.model.relation.field.FieldAnnotation.class),
+                        TypeIdentifier.from(StaticField.class),
+                        TypeIdentifier.from(InstanceField.class),
+                        TypeIdentifier.from(GenericField.class),
+                        TypeIdentifier.valueOf(ArrayField.class.getName() + "[]"),
+                        TypeIdentifier.from(ArrayField.class),
+                        TypeIdentifier.from(ReferenceConstantOwnerAtFieldDefinition.class),
+                        TypeIdentifier.from(ReferenceConstantAtFieldDefinition.class)
                 );
     }
 
@@ -227,9 +227,9 @@ public class AsmFactReaderTest {
         TypeIdentifiers identifiers = actual.usingTypes();
         assertThat(identifiers.list())
                 .contains(
-                        new TypeIdentifier(EnumField.class),
-                        new TypeIdentifier(ConstructorArgument.class),
-                        new TypeIdentifier(ClassReference.class)
+                        TypeIdentifier.from(EnumField.class),
+                        TypeIdentifier.from(ConstructorArgument.class),
+                        TypeIdentifier.from(ClassReference.class)
                 );
     }
 

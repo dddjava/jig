@@ -126,7 +126,7 @@ public class JigType {
     }
 
     public boolean isDeprecated() {
-        return hasAnnotation(TypeIdentifier.of(Deprecated.class));
+        return hasAnnotation(TypeIdentifier.from(Deprecated.class));
     }
 
     public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
@@ -134,7 +134,7 @@ public class JigType {
     }
 
     public Optional<String> interfacePointDescription() {
-        var annotations = jigTypeAttribute.annotationsOf(new TypeIdentifier("org.springframework.web.bind.annotation.RequestMapping"));
+        var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"));
         return annotations.list().stream()
                 // 複数はつけられないので一つで良い
                 .findFirst()
@@ -144,7 +144,7 @@ public class JigType {
     }
 
     public String interfaceLabelText() {
-        var annotations = jigTypeAttribute.annotationsOf(new TypeIdentifier("io.swagger.v3.oas.annotations.tags.Tag"));
+        var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("io.swagger.v3.oas.annotations.tags.Tag"));
         return annotations.list().stream().findFirst()
                 .flatMap(annotation -> annotation.descriptionTextAnyOf("description"))
                 .orElse(label());

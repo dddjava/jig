@@ -1,7 +1,6 @@
 package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -32,37 +31,37 @@ public class CategoryReportTest {
                         categoryReport -> categoryReport.isPolymorphism()
                 ).contains(
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.SimpleEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.SimpleEnum"),
                                 "[A, B, C, D]", "[]", "[RelationEnum]",
                                 false, false, false
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.HasStaticFieldEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.HasStaticFieldEnum"),
                                 "[A, B]", "[]", "[]",
                                 false, false, false
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.ParameterizedEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.ParameterizedEnum"),
                                 "[A, B]", "[String param]", "[RelationEnum]",
                                 true, false, false
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.BehaviourEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.BehaviourEnum"),
                                 "[A, B]", "[]", "[RelationEnum]",
                                 false, true, false
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.PolymorphismEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.PolymorphismEnum"),
                                 "[A, B]", "[]", "[RelationEnum]",
                                 false, false, true
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.RelationEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.RelationEnum"),
                                 "[A, B, C]", "[RichEnum field]", "[]",
                                 true, false, false
                         ),
                         tuple(
-                                new TypeIdentifier("stub.domain.model.category.RichEnum"),
+                                TypeIdentifier.valueOf("stub.domain.model.category.RichEnum"),
                                 "[A, B]", "[String param]", "[RelationEnum]",
                                 true, true, true
                         )

@@ -25,7 +25,9 @@ public class ControllerReportTest {
                 )
                 .containsExactlyInAnyOrder(
                         tuple("stub.presentation.controller.SimpleController#getService()", "simple-class/simple-method"),
-                        tuple("stub.presentation.controller.SimpleRestController#getService()", "test-get")
+                        tuple("stub.presentation.controller.SimpleRestController#getService()", "test-get"),
+                        tuple("stub.presentation.controller.SimpleRestController#swaggerOperationAnnotated()", "swagger-operation-annotated"),
+                        tuple("stub.presentation.controller.SimpleRestController#swaggerOperationAnnotatedNoneSummary()", "swagger-operation-annotated-none-summary")
                 );
     }
 }

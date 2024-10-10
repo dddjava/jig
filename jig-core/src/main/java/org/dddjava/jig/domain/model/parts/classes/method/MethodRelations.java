@@ -47,15 +47,11 @@ public class MethodRelations {
     private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Set<MethodIdentifier> stopper) {
         if (stopper.contains(baseMethod.identifier())) return Stream.empty();
 
-        return listFrom(baseMethod)
+        return list.stream()
+                .filter(methodRelation -> methodRelation.from().sameIdentifier(baseMethod))
                 .flatMap(methodRelation -> Stream.concat(
                         Stream.of(methodRelation),
                         filterFromRecursiveInternal(methodRelation.to(), stopper)));
-    }
-
-    private Stream<MethodRelation> listFrom(MethodDeclaration methodDeclaration) {
-        return list.stream()
-                .filter(methodRelation -> methodRelation.from().sameIdentifier(methodDeclaration));
     }
 
     public Set<MethodIdentifier> methodIdentifiers() {

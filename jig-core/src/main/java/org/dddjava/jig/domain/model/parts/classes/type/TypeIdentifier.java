@@ -36,7 +36,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
      * @return "org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier"
      */
     public String fullQualifiedName() {
-        return format(value -> value);
+        return value;
     }
 
     /**
@@ -45,11 +45,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
      * @return "TypeIdentifier"
      */
     public String asSimpleText() {
-        return hasPackage() ? format(value -> value.substring(value.lastIndexOf(".") + 1)) : value;
-    }
-
-    public String format(TypeIdentifierFormatter formatter) {
-        return formatter.format(value);
+        return hasPackage() ? value.substring(value.lastIndexOf(".") + 1) : value;
     }
 
     private boolean hasPackage() {

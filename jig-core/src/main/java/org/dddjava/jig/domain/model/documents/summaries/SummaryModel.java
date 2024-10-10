@@ -81,7 +81,6 @@ public class SummaryModel {
     }
 
     public String mermaidDiagram(JigMethod jigMethod) {
-        // 認識範囲のmethodの関連
         var methodRelations = jigTypes.methodRelations();
 
         return jigTypes.resolveJigMethod(jigMethod.declaration().identifier())

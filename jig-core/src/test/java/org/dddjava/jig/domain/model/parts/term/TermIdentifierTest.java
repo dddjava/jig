@@ -13,7 +13,7 @@ class TermIdentifierTest {
     @Test
     void パッケージ() throws Exception {
         Term term = Term.fromPackage(
-                new PackageIdentifier("this.is.package"),
+                PackageIdentifier.valueOf("this.is.package"),
                 "title", "description");
         assertEquals("package", term.identifier().simpleText());
     }

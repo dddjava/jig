@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.parts.packages;
 import org.dddjava.jig.JigContext;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -10,10 +11,21 @@ import java.util.stream.Collectors;
  */
 public class PackageIdentifier {
 
-    String value;
+    private final String value;
+    private String abbreviationText = null;
 
-    public PackageIdentifier(String value) {
+    private PackageIdentifier(String value) {
         this.value = value;
+    }
+
+    private static final Map<String, PackageIdentifier> cache = new ConcurrentHashMap<>();
+
+    public static PackageIdentifier valueOf(String value) {
+        if (cache.containsKey(value)) return cache.get(value);
+
+        var instance = new PackageIdentifier(value);
+        cache.put(value, instance);
+        return instance;
     }
 
     public PackageIdentifier applyDepth(PackageDepth packageDepth) {
@@ -24,7 +36,7 @@ public class PackageIdentifier {
         for (int i = 0; i < packageDepth.value(); i++) {
             sj.add(split[i]);
         }
-        return new PackageIdentifier(sj.toString());
+        return valueOf(sj.toString());
     }
 
     public PackageDepth depth() {
@@ -32,7 +44,7 @@ public class PackageIdentifier {
     }
 
     public static PackageIdentifier defaultPackage() {
-        return new PackageIdentifier("(default)");
+        return valueOf("(default)");
     }
 
     public boolean contains(PackageIdentifier packageIdentifier) {
@@ -67,7 +79,7 @@ public class PackageIdentifier {
         for (int i = 0; i < split.length - 1; i++) {
             sj.add(split[i]);
         }
-        return new PackageIdentifier(sj.toString());
+        return valueOf(sj.toString());
     }
 
     /**
@@ -84,7 +96,7 @@ public class PackageIdentifier {
         StringJoiner currentPackageName = new StringJoiner(".");
         for (String packageParts : split) {
             currentPackageName.add(packageParts);
-            list.add(new PackageIdentifier(currentPackageName.toString()));
+            list.add(valueOf(currentPackageName.toString()));
         }
         return list;
     }
@@ -112,20 +124,23 @@ public class PackageIdentifier {
      * 省略表記
      */
     public String abbreviationText() {
+        if (abbreviationText != null) {
+            return abbreviationText;
+        }
         if (JigContext.packageAbbreviationMode.value().equalsIgnoreCase("numeric")) {
             // internationalization -> i18n
             if (value.length() <= 2) {
-                return value;
+                return abbreviationText = value;
             }
             char firstChar = value.charAt(0);
             char lastChar = value.charAt(value.length() - 1);
             int middleCount = value.length() - 2;
 
-            return "%c%d%c".formatted(firstChar, middleCount, lastChar);
+            return abbreviationText = "%c%d%c".formatted(firstChar, middleCount, lastChar);
         } else {
             // hoge.fuga.piyo -> h.f.p
             String[] parts = value.split("\\.");
-            return Arrays.stream(parts)
+            return abbreviationText = Arrays.stream(parts)
                     .map(value -> String.valueOf(value.charAt(0)))
                     .collect(Collectors.joining("."));
         }

@@ -15,9 +15,9 @@ class PackageRelationsTest {
     @Test
     void test() {
         List<PackageRelation> dependencies = new ArrayList<>();
-        dependencies.add(new PackageRelation(new PackageIdentifier("x.y.z.a"), new PackageIdentifier("x.y.z.b")));
-        dependencies.add(new PackageRelation(new PackageIdentifier("x.y.z.a"), new PackageIdentifier("x.y.z.c")));
-        dependencies.add(new PackageRelation(new PackageIdentifier("x.y.z.a"), new PackageIdentifier("x.y.z.d")));
+        dependencies.add(new PackageRelation(PackageIdentifier.valueOf("x.y.z.a"), PackageIdentifier.valueOf("x.y.z.b")));
+        dependencies.add(new PackageRelation(PackageIdentifier.valueOf("x.y.z.a"), PackageIdentifier.valueOf("x.y.z.c")));
+        dependencies.add(new PackageRelation(PackageIdentifier.valueOf("x.y.z.a"), PackageIdentifier.valueOf("x.y.z.d")));
 
         PackageRelations sut = new PackageRelations(dependencies);
 

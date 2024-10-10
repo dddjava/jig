@@ -20,7 +20,7 @@ class PackageInfoReader {
 
         Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
                 .map(NodeWithName::getNameAsString)
-                .map(PackageIdentifier::new);
+                .map(PackageIdentifier::valueOf);
 
         Optional<Comment> optAlias = getJavadoc(cu)
                 .map(Javadoc::getDescription)

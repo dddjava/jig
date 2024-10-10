@@ -39,7 +39,7 @@ class AliasServiceTest {
     void パッケージ別名取得(Sources source) {
         jigSourceReader.readProjectData(source);
 
-        Assertions.assertThat(sut.packageComment(new PackageIdentifier("stub")).asText())
+        Assertions.assertThat(sut.packageComment(PackageIdentifier.valueOf("stub")).asText())
                 .isEqualTo("テストで使用するスタブたち");
     }
 

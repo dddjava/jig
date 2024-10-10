@@ -53,7 +53,7 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
         if (!hasPackage()) {
             return PackageIdentifier.defaultPackage();
         }
-        return new PackageIdentifier(value.substring(0, value.lastIndexOf(".")));
+        return PackageIdentifier.valueOf(value.substring(0, value.lastIndexOf(".")));
     }
 
     @Override

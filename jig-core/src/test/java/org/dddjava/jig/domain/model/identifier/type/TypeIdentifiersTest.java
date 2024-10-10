@@ -57,7 +57,7 @@ class TypeIdentifiersTest {
     void typeIdentifier_packageIdentifier(String fullName, String packageName) {
         TypeIdentifier hoge = new TypeIdentifier(fullName);
 
-        Assertions.assertThat(hoge.packageIdentifier()).isEqualTo(new PackageIdentifier(packageName));
+        Assertions.assertThat(hoge.packageIdentifier()).isEqualTo(PackageIdentifier.valueOf(packageName));
     }
 
     static Stream<Arguments> typeIdentifier_packageIdentifier() {

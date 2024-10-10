@@ -60,7 +60,7 @@ public class PackageBasedArchitecture {
         String name = Arrays.stream(split)
                 .limit(split.length <= depth ? split.length - 1 : depth)
                 .collect(Collectors.joining("."));
-        return new PackageIdentifier(name);
+        return PackageIdentifier.valueOf(name);
     }
 
     public List<PackageIdentifier> architecturePackages() {

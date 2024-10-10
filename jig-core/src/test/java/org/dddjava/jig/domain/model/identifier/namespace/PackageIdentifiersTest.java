@@ -14,10 +14,10 @@ class PackageIdentifiersTest {
     @Test
     void MaxDepth() {
         PackageIdentifiers sut = new PackageIdentifiers(Arrays.asList(
-                new PackageIdentifier("a.b.c.d"),
-                new PackageIdentifier("a"),
-                new PackageIdentifier("a.b.c.d.e"),
-                new PackageIdentifier("a.b.c.d")
+                PackageIdentifier.valueOf("a.b.c.d"),
+                PackageIdentifier.valueOf("a"),
+                PackageIdentifier.valueOf("a.b.c.d.e"),
+                PackageIdentifier.valueOf("a.b.c.d")
         ));
         PackageDepth depth = sut.maxDepth();
         assertThat(depth.value()).isEqualTo(5);
@@ -26,10 +26,10 @@ class PackageIdentifiersTest {
     @Test
     void applyDepth1() {
         PackageIdentifiers sut = new PackageIdentifiers(Arrays.asList(
-                new PackageIdentifier("a.b.c.d"),
-                new PackageIdentifier("a"),
-                new PackageIdentifier("a.b.c.d.e"),
-                new PackageIdentifier("a.b.c.d")
+                PackageIdentifier.valueOf("a.b.c.d"),
+                PackageIdentifier.valueOf("a"),
+                PackageIdentifier.valueOf("a.b.c.d.e"),
+                PackageIdentifier.valueOf("a.b.c.d")
         )).applyDepth(new PackageDepth(3));
 
         assertThat(sut.maxDepth().value()).isEqualTo(3);
@@ -38,10 +38,10 @@ class PackageIdentifiersTest {
     @Test
     void applyDepth2() {
         PackageIdentifiers sut = new PackageIdentifiers(Arrays.asList(
-                new PackageIdentifier("a.b.c.d"),
-                new PackageIdentifier("a"),
-                new PackageIdentifier("a.b.c.d.e"),
-                new PackageIdentifier("a.b.c.d")
+                PackageIdentifier.valueOf("a.b.c.d"),
+                PackageIdentifier.valueOf("a"),
+                PackageIdentifier.valueOf("a.b.c.d.e"),
+                PackageIdentifier.valueOf("a.b.c.d")
         )).applyDepth(new PackageDepth(100));
 
         assertThat(sut.maxDepth().value()).isEqualTo(5);

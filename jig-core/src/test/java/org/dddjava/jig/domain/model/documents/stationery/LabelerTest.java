@@ -32,8 +32,8 @@ public class LabelerTest {
     @ParameterizedTest
     @MethodSource
     public void testLabeler(String identifierText, String parentText, Comment comment, String expectedLabel) {
-        PackageIdentifier identifier = new PackageIdentifier(identifierText);
-        PackageIdentifier parent = new PackageIdentifier(parentText);
+        PackageIdentifier identifier = PackageIdentifier.valueOf(identifierText);
+        PackageIdentifier parent = PackageIdentifier.valueOf(parentText);
 
         JigDocumentContext context = mock(JigDocumentContext.class);
         when(context.packageComment(any())).thenReturn(new PackageComment(identifier, comment));
@@ -50,8 +50,8 @@ public class LabelerTest {
         JigDocumentContext context = mock(JigDocumentContext.class);
         Labeler labeler = new Labeler(context);
 
-        List<PackageIdentifier> groupingPackage = Collections.singletonList(new PackageIdentifier("org.test.hoge"));
-        List<PackageIdentifier> standalonePackage = Collections.singletonList(new PackageIdentifier("org.test.standalone"));
+        List<PackageIdentifier> groupingPackage = Collections.singletonList(PackageIdentifier.valueOf("org.test.hoge"));
+        List<PackageIdentifier> standalonePackage = Collections.singletonList(PackageIdentifier.valueOf("org.test.standalone"));
 
         labeler.applyContext(groupingPackage, standalonePackage);
         assertEquals("root: org.test", labeler.contextDescription());

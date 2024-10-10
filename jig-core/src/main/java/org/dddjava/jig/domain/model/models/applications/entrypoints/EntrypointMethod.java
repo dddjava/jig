@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -193,8 +194,8 @@ public class EntrypointMethod {
         if (isRequestMappingMethod()) {
             var optOperationSummary = method.methodAnnotations().list().stream()
                     .filter(methodAnnotation -> methodAnnotation.annotationType().anyEquals("io.swagger.v3.oas.annotations.Operation"))
-                    .map(methodAnnotation -> methodAnnotation.annotation().descriptionTextOf("summary"))
-                    .findFirst();
+                    .flatMap(methodAnnotation -> methodAnnotation.annotation().descriptionTextAnyOf("summary").stream())
+                    .findAny();
 
             return optOperationSummary.orElseGet(method::labelText);
         }

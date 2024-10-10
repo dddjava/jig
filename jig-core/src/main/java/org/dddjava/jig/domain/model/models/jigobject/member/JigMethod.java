@@ -165,7 +165,6 @@ public class JigMethod {
     public String usecaseMermaidText(JigTypes jigTypes, MethodRelations methodRelations) {
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
-        // 自身のスタイル（太文字）
 
         // 基点からの呼び出し全部 + 直近の呼び出し元
         var filteredRelations = methodRelations.filterFromRecursive(this.declaration())

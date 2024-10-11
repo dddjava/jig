@@ -126,25 +126,30 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             Object model = switch (jigDocument) {
-                case BusinessRuleList -> domainList(jigSource);
+                // overview
                 case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
-                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
-                case CategoryDiagram -> jigService.categories(jigSource);
-                case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
-                case ApplicationList -> applicationList(jigSource);
-                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
                 case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
                 case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
-                case DomainSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
-                case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
-                case EntrypointSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
-                case EnumSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
                 case TermTable -> jigService.terms(jigSource);
                 case TermList ->
                         new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
+
+                // domain
+                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
+                case DomainSummary ->
+                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
+                case BusinessRuleList -> domainList(jigSource);
+                case CategoryDiagram -> jigService.categories(jigSource);
+                case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
+                case EnumSummary ->
+                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
+
+                // application & usecase
+                case ApplicationList -> applicationList(jigSource);
+                case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
+                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
+                case EntrypointSummary ->
+                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {

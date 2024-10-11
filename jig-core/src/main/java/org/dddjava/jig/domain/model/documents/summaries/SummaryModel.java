@@ -81,7 +81,7 @@ public class SummaryModel {
     }
 
     public String mermaidDiagram(JigMethod jigMethod) {
-        var methodRelations = jigTypes.methodRelations();
+        var methodRelations = jigTypes.methodRelations().inlineLambda();
 
         return jigTypes.resolveJigMethod(jigMethod.declaration().identifier())
                 .map(m -> m.usecaseMermaidText(jigTypes, methodRelations))

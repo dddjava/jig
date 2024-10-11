@@ -1,9 +1,6 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,5 +87,53 @@ public class MethodRelations {
     public MethodRelations merge(MethodRelations others) {
         return Stream.concat(list.stream(), others.list.stream())
                 .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+    /**
+     * lambdaの呼び出しを呼び出し元に展開する
+     */
+    public MethodRelations inlineLambda() {
+
+        Map<MethodIdentifier, MethodDeclaration> replace = new HashMap<>();
+
+        List<MethodRelation> inlined = new ArrayList<>();
+        List<MethodRelation> pending = new ArrayList<>();
+
+        for (MethodRelation methodRelation : list) {
+            if (methodRelation.to().isLambda()) {
+                // lambdaへの関連
+                // この関連自体は残らない。ここで示されるfromにlambdaからの関連を置き換える
+                replace.put(methodRelation.to().identifier(), methodRelation.from());
+            } else if (methodRelation.from().isLambda()) {
+                // lambdaからの関連
+                // 置き換え対象だが、この時点では何に置き換えたらいいか確定しないので一旦据え置く
+                pending.add(methodRelation);
+            } else {
+                // lambdaを含まないものはそのまま
+                inlined.add(methodRelation);
+            }
+        }
+
+        // 置き換え先がlambdaのものを展開する
+        for (var entry : replace.entrySet()) {
+            if (entry.getValue().isLambda()) {
+                replace.replace(entry.getKey(), replace.get(entry.getValue().identifier()));
+            }
+        }
+
+        var list2 = pending.stream()
+                .map(methodRelation ->
+                        new MethodRelation(
+                                replace.getOrDefault(methodRelation.from().identifier(), methodRelation.from()),
+                                replace.getOrDefault(methodRelation.to().identifier(), methodRelation.to())
+                        ))
+                .toList();
+
+        inlined.addAll(list2);
+        return new MethodRelations(inlined);
+    }
+
+    public List<MethodRelation> list() {
+        return list;
     }
 }

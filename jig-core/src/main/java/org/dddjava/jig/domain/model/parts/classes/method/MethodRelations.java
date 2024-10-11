@@ -36,18 +36,14 @@ public class MethodRelations {
                 .collect(Collectors.joining("\n"));
     }
 
-    public String mermaidEdgeText(Set<MethodIdentifier> resolved) {
-        Function<MethodDeclaration, String> converter = methodDeclaration -> {
-            if (resolved.contains(methodDeclaration.identifier())) {
-                return methodDeclaration.htmlIdText();
-            }
-            // 解決できなかったものは関心が薄いとして、メソッドではなくクラスにする
-            return methodDeclaration.declaringType().htmlIdText();
-        };
-
+    public String mermaidEdgeText(Function<MethodDeclaration, Optional<String>> converter) {
         // 型がMethodRelationではなくなるのでここで文字列化してしまう
         return list.stream()
-                .map(methodRelation -> "%s --> %s".formatted(converter.apply(methodRelation.from()), converter.apply(methodRelation.to())))
+                .flatMap(methodRelation ->
+                        converter.apply(methodRelation.from()).flatMap(fromText -> converter.apply(methodRelation.to()).map(toText ->
+                                "%s --> %s".formatted(fromText, toText))
+                        ).stream()
+                )
                 .sorted()
                 .distinct()
                 .collect(Collectors.joining("\n"));

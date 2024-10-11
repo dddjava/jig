@@ -6,10 +6,8 @@ import org.dddjava.jig.domain.model.parts.classes.method.*;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * メソッド
@@ -171,7 +169,6 @@ public class JigMethod {
                 .merge(methodRelations.filterTo(this.declaration()));
 
         Set<MethodIdentifier> resolved = new HashSet<>();
-        Set<TypeIdentifier> others = new HashSet<>();
 
         // メソッドのスタイル
         filteredRelations.methodIdentifiers().forEach(methodIdentifier -> {
@@ -181,7 +178,7 @@ public class JigMethod {
                 mermaidText.add(usecaseMermaidNodeText());
                 mermaidText.add("style %s font-weight:bold".formatted(this.htmlIdText()));
             } else {
-                jigTypes.resolveJigMethod(methodIdentifier).ifPresentOrElse(
+                jigTypes.resolveJigMethod(methodIdentifier).ifPresent(
                         jigMethod -> {
                             resolved.add(methodIdentifier);
                             if (jigMethod.remarkable()) {
@@ -192,16 +189,32 @@ public class JigMethod {
                                 // remarkableでないものは普通の。privateメソッドなど該当。　
                                 mermaidText.add(jigMethod.normalMermaidNodeText());
                             }
-                        },
-                        () -> others.add(methodIdentifier.declaringType()));
+                        });
             }
         });
+
+        Set<TypeIdentifier> others = new HashSet<>();
+
+        Function<MethodDeclaration, Optional<String>> converter = methodDeclaration -> {
+            if (resolved.contains(methodDeclaration.identifier())) {
+                return Optional.of(methodDeclaration.htmlIdText());
+            }
+            // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
+            var typeIdentifier = methodDeclaration.declaringType();
+            if (typeIdentifier.packageIdentifier().equals(declaration().declaringType().packageIdentifier())) {
+                // 暫定的に同じパッケージのもののみ出力する
+                // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
+                others.add(typeIdentifier);
+                return Optional.of(typeIdentifier.htmlIdText());
+            } else {
+                return Optional.empty();
+            }
+        };
+        mermaidText.add(filteredRelations.mermaidEdgeText(converter));
 
         // JigMethodにならないものはクラスノードとして出力する
         others.forEach(typeIdentifier ->
                 mermaidText.add("%s[%s]:::others".formatted(typeIdentifier.htmlIdText(), typeIdentifier.asSimpleText())));
-
-        mermaidText.add(filteredRelations.mermaidEdgeText(resolved));
 
         mermaidText.add("classDef others fill:#AAA,font-size:90%;");
         mermaidText.add("classDef lambda fill:#999,font-size:80%;");

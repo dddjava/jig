@@ -21,31 +21,29 @@ public class ServiceMethods {
 
     List<JigType> serviceJigTypes;
     MethodRelations methodRelations;
-    Predicate<JigMethod> methodFilter;
 
-    private ServiceMethods(List<JigType> serviceJigTypes, MethodRelations methodRelations, Predicate<JigMethod> methodFilter) {
+    private ServiceMethods(List<JigType> serviceJigTypes, MethodRelations methodRelations) {
         this.serviceJigTypes = serviceJigTypes;
         this.methodRelations = methodRelations;
-        this.methodFilter = methodFilter;
     }
 
     public static ServiceMethods from(JigTypes jigTypes, MethodRelations methodRelations) {
         List<JigType> serviceJigTypes = jigTypes
                 .listMatches(jigType ->
                         jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
-        return new ServiceMethods(serviceJigTypes, methodRelations, jigMethod -> true);
+        return new ServiceMethods(serviceJigTypes, methodRelations);
     }
 
     public boolean empty() {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .noneMatch(methodFilter);
+                .findAny()
+                .isEmpty();
     }
 
     public List<ServiceMethod> list() {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .filter(methodFilter)
                 .map(method -> new ServiceMethod(method, methodRelations))
                 .collect(toList());
     }
@@ -57,7 +55,6 @@ public class ServiceMethods {
     public MethodDeclarations toMethodDeclarations() {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .filter(methodFilter)
                 .map(jigMethod -> jigMethod.declaration())
                 .collect(MethodDeclarations.collector());
     }
@@ -65,7 +62,6 @@ public class ServiceMethods {
     public boolean contains(MethodDeclaration methodDeclaration) {
         return serviceJigTypes.stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .filter(methodFilter)
                 .anyMatch(jigMethod -> methodDeclaration.sameIdentifier(jigMethod.declaration()));
     }
 
@@ -73,7 +69,6 @@ public class ServiceMethods {
         return serviceJigTypes.stream()
                 .filter(jigType -> jigType.identifier().equals(usingMethod.declaringType()))
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .filter(methodFilter)
                 .filter(jigMethod -> jigMethod.declaration().sameIdentifier(usingMethod))
                 .findAny();
     }

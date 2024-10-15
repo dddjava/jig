@@ -32,5 +32,5 @@ spock = "org.spockframework:spock-core:2.3-groovy-3.0"
 poi = ['poi', 'poi-ooxml']
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version = "1.9.23" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version = "2.0.21" }
 gradle-plugin-publish = { id = "com.gradle.plugin-publish", version = "1.3.0" }

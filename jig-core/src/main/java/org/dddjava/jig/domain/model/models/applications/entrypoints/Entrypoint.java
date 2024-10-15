@@ -28,7 +28,7 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
 
         for (EntrypointGroup entrypointGroup : list()) {
             var jigType = entrypointGroup.jigType();
-            var mermaidText = entrypointGroup.mermaid(serviceMethods);
+            var mermaidText = entrypointGroup.mermaid(methodRelations, serviceMethods::find);
             map.put(jigType.fqn(), mermaidText);
         }
 

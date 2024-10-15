@@ -3,9 +3,13 @@ package org.dddjava.jig.domain.model.models.applications.entrypoints;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -51,7 +55,7 @@ public record EntrypointGroup
         return !entrypointMethod().isEmpty();
     }
 
-    String mermaid(ServiceMethods serviceMethods) {
+    String mermaid(MethodRelations methodRelations, Function<MethodDeclaration, Optional<JigMethod>> jigMethodResolver) {
 
         var apiMethodRelationText = new StringJoiner("\n");
 
@@ -73,7 +77,7 @@ public record EntrypointGroup
             // APIメソッドからServiceへの関連
             entrypointMethod.usingMethods().methodDeclarations().list()
                     .stream()
-                    .map(serviceMethods::find)
+                    .map(jigMethodResolver)
                     .flatMap(Optional::stream)
                     .forEach(usingJigMethod -> {
                         var key = usingJigMethod.declaration().declaringType();

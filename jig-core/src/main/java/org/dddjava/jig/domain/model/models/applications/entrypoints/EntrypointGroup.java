@@ -54,6 +54,7 @@ public record EntrypointGroup
         var apiMethodRelationText = new StringJoiner("\n");
 
         Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
+        Map<String, String> methodLabelMap = new HashMap<>();
 
         MethodRelations springComponentMethodRelations = methodRelations.filterSpringComponent(jigTypes).inlineLambda();
 
@@ -83,11 +84,20 @@ public record EntrypointGroup
                     .stream()
                     .map(MethodRelation::to)
                     .map(MethodDeclaration::identifier)
-                    .filter(jigTypes::isApplication)
                     .forEach(methodIdentifier -> {
-                        var key = methodIdentifier.declaringType();
-                        serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
-                        serviceMethodMap.get(key).add(methodIdentifier);
+                        if (jigTypes.isApplication(methodIdentifier)) {
+                            var key = methodIdentifier.declaringType();
+                            serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
+                            serviceMethodMap.get(key).add(methodIdentifier);
+                        } else {
+                            // controllerと同じクラスのメソッドはメソッド名だけ
+                            if (entrypointMethod.typeIdentifier().equals(methodIdentifier.declaringType())) {
+                                methodLabelMap.put(methodIdentifier.htmlIdText(), methodIdentifier.methodSignature().methodName());
+                            } else {
+                                // 他はクラス名+メソッド名
+                                methodLabelMap.put(methodIdentifier.htmlIdText(), methodIdentifier.asSimpleText());
+                            }
+                        }
                     });
         });
 
@@ -104,6 +114,10 @@ public record EntrypointGroup
                         });
             });
             mermaidText.add("    end");
+        });
+        // サービスメソッド以外のメソッド
+        methodLabelMap.forEach((key, value) -> {
+            mermaidText.add("    %s[%s]".formatted(key, value));
         });
 
         mermaidText.add(apiMethodRelationText.toString());

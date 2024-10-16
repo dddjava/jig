@@ -34,20 +34,18 @@ jar {
 }
 
 gradlePlugin {
+    website = 'https://github.com/dddjava/jig'
+    vcsUrl = 'https://github.com/dddjava/jig.git'
+
     plugins {
         jigGradlePlugin {
             id = "org.dddjava.${project.name}"
             implementationClass = 'org.dddjava.jig.gradle.JigGradlePlugin'
             displayName = 'JIG Gradle Plugin'
+            description = 'Visualizing code for DDD'
+            tags.set(['ddd', 'visualize'])
         }
     }
-}
-
-pluginBundle {
-    website = 'https://github.com/dddjava/jig'
-    vcsUrl = 'https://github.com/dddjava/jig.git'
-    description = 'Visualizing code for DDD'
-    tags = ['ddd', 'visualize']
 }
 
 publishing {

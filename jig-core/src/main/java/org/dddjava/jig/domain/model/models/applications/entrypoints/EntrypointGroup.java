@@ -54,9 +54,8 @@ public record EntrypointGroup
         var apiMethodRelationText = new StringJoiner("\n");
 
         Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
-        HashSet<String> apiPointMmdIds = new HashSet<>();
 
-        MethodRelations springComponentMethodRelations = methodRelations.filterSpringComponent(jigTypes); //.inlineLambda();
+        MethodRelations springComponentMethodRelations = methodRelations.filterSpringComponent(jigTypes).inlineLambda();
 
         entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
@@ -68,7 +67,6 @@ public record EntrypointGroup
             var description = entrypointMethod.interfacePointDescription();
             String apiPointMmdId = "__" + apiMethodMmdId;
             apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
-            apiPointMmdIds.add(apiPointMmdId);
 
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.declaration(),
@@ -108,21 +106,7 @@ public record EntrypointGroup
             mermaidText.add("    end");
         });
 
-        // classでグルーピング
-        var jigType = jigType();
-        mermaidText.add("    subgraph %s[\"%s\"]".formatted(jigType.simpleName(), jigType.interfaceLabelText()));
-
-        // classのRequestMappingのパスからメソッドのRequestMappingのパスにつなげる
-        jigType.interfacePointDescription().ifPresent(point -> {
-            mermaidText.add("    __>\"%s\"]".formatted(point));
-            apiPointMmdIds.forEach(apiPointMmdId -> {
-                mermaidText.add("    __ -.-> " + apiPointMmdId);
-            });
-        });
-
         mermaidText.add(apiMethodRelationText.toString());
-        mermaidText.add("    end");
-
         return mermaidText.toString();
     }
 

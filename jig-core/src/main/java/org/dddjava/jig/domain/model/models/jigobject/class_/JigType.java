@@ -133,7 +133,10 @@ public class JigType {
         return jigTypeAttribute.annotationsOf(typeIdentifier);
     }
 
-    public Optional<String> interfacePointDescription() {
+    /**
+     * TODO エントリーポイントでしか使えないものなのでどこかに移動する
+     */
+    public Optional<String> optHandlePath() {
         var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"));
         return annotations.list().stream()
                 // 複数はつけられないので一つで良い
@@ -143,11 +146,13 @@ public class JigType {
                         .filter(value -> !value.isEmpty()).orElse("/"));
     }
 
-    public String interfaceLabelText() {
+    /**
+     * TODO エントリーポイントでしか使えないものなのでどこかに移動する
+     */
+    public Optional<String> optTagDescription() {
         var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("io.swagger.v3.oas.annotations.tags.Tag"));
         return annotations.list().stream().findFirst()
-                .flatMap(annotation -> annotation.descriptionTextAnyOf("description"))
-                .orElse(label());
+                .flatMap(annotation -> annotation.descriptionTextAnyOf("description"));
     }
 
     public Stream<JigMethod> allJigMethodStream() {

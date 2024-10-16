@@ -56,7 +56,7 @@ public class SummaryModel {
                 .collect(groupingBy(JigType::packageIdentifier));
 
         var summaryModel = new SummaryModel(jigTypes, map, new EnumModels(List.of()));
-        summaryModel.mermaidMap = entrypoint.mermaidMap();
+        summaryModel.mermaidMap = entrypoint.mermaidMap(jigTypes);
         return summaryModel;
     }
 

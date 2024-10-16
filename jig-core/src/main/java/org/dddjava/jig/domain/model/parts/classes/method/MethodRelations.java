@@ -1,7 +1,12 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,16 +54,24 @@ public class MethodRelations {
                 .collect(Collectors.joining("\n"));
     }
 
-    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration) {
-        var stopper = new HashSet<MethodIdentifier>();
+    public MethodRelations filterFromRecursive(MethodDeclaration methodDeclaration, Predicate<MethodIdentifier> stopper) {
+        var processedMethodId = new HashSet<MethodIdentifier>();
 
-        return filterFromRecursiveInternal(methodDeclaration, stopper)
+        return filterFromRecursiveInternal(methodDeclaration, stopper.or(methodIdentifier -> {
+            if (processedMethodId.contains(methodIdentifier)) return true;
+            processedMethodId.add(methodIdentifier);
+            return false;
+        }))
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Set<MethodIdentifier> stopper) {
-        if (stopper.contains(baseMethod.identifier())) return Stream.empty();
-        stopper.add(baseMethod.identifier());
+    private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
+
+    private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Predicate<MethodIdentifier> stopper) {
+        if (stopper.test(baseMethod.identifier())) {
+            logger.info("stopped for {}", baseMethod.asFullNameText());
+            return Stream.empty();
+        }
 
         return list.stream()
                 .filter(methodRelation -> methodRelation.from().sameIdentifier(baseMethod))
@@ -131,5 +144,14 @@ public class MethodRelations {
 
     public List<MethodRelation> list() {
         return list;
+    }
+
+    public MethodRelations filterSpringComponent(JigTypes jigTypes) {
+        return list.stream()
+                .filter(methodRelation ->
+                        jigTypes.isEndpointOrApplication(methodRelation.from().declaringType())
+                                && jigTypes.isEndpointOrApplication(methodRelation.to().declaringType())
+                )
+                .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 }

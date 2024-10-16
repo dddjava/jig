@@ -165,7 +165,7 @@ public class JigMethod {
         mermaidText.add("graph LR");
 
         // 基点からの呼び出し全部 + 直近の呼び出し元
-        var filteredRelations = methodRelations.filterFromRecursive(this.declaration())
+        var filteredRelations = methodRelations.filterFromRecursive(this.declaration(), methodIdentifier -> false)
                 .merge(methodRelations.filterTo(this.declaration()));
 
         Set<MethodIdentifier> resolved = new HashSet<>();

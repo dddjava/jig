@@ -151,10 +151,7 @@ public class JigService {
 
     public Entrypoint entrypoint(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        return Entrypoint.from(
-                typeFacts.jigTypes(),
-                typeFacts.toMethodRelations(),
-                ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations()));
+        return Entrypoint.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
     }
 
     /**

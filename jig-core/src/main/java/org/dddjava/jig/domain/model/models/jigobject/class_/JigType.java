@@ -163,4 +163,20 @@ public class JigType {
                         .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
                         .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod)));
     }
+
+    public TypeCategory typeCategory() {
+        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))) {
+            return TypeCategory.Application;
+        }
+        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
+                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
+                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
+            return TypeCategory.RequestHandler;
+        }
+        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
+            return TypeCategory.FrameworkComponent;
+        }
+
+        return TypeCategory.Others;
+    }
 }

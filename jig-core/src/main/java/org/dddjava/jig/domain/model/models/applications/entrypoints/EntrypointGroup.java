@@ -1,16 +1,15 @@
 package org.dddjava.jig.domain.model.models.applications.entrypoints;
 
-import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.class_.TypeCategory;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -27,16 +26,11 @@ public record EntrypointGroup
         Others
     }
 
-    static final Predicate<JigType> requestHandlerType = jigType ->
-            jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
-                    || jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
-                    || jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"));
-
     static EntrypointGroup from(JigType jigType) {
-        if (requestHandlerType.test(jigType)) {
+        if (jigType.typeCategory() == TypeCategory.RequestHandler) {
             return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
                     collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList());
-        } else if (jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
+        } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
             return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
                     collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList());
         }
@@ -55,16 +49,18 @@ public record EntrypointGroup
         return !entrypointMethod().isEmpty();
     }
 
-    String mermaid(MethodRelations methodRelations, Function<MethodDeclaration, Optional<JigMethod>> jigMethodResolver) {
+    String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {
 
         var apiMethodRelationText = new StringJoiner("\n");
 
-        var serviceMethodMap = new HashMap<TypeIdentifier, List<JigMethod>>();
-        var apiPointMmdIds = new HashSet<String>();
+        Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
+        HashSet<String> apiPointMmdIds = new HashSet<>();
+
+        MethodRelations springComponentMethodRelations = methodRelations.filterSpringComponent(jigTypes); //.inlineLambda();
 
         entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形
-            var apiMethodMmdId = entrypointMethod.declaration().asSimpleText();
+            var apiMethodMmdId = entrypointMethod.declaration().htmlIdText();
             var label = entrypointMethod.interfaceLabelText();
             apiMethodRelationText.add("    %s{{\"%s\"}}".formatted(apiMethodMmdId, label));
 
@@ -74,37 +70,45 @@ public record EntrypointGroup
             apiMethodRelationText.add("    %s>\"%s\"] -.-> %s".formatted(apiPointMmdId, description, apiMethodMmdId));
             apiPointMmdIds.add(apiPointMmdId);
 
-            // APIメソッドからServiceへの関連
-            entrypointMethod.usingMethods().methodDeclarations().list()
+            // apiMethod -> others...
+            var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.declaration(),
+                    // @Serviceのクラスについたら終了
+                    methodIdentifier -> jigTypes.isApplication(methodIdentifier)
+            );
+            decraleMethodRelations.list()
                     .stream()
-                    .map(jigMethodResolver)
-                    .flatMap(Optional::stream)
-                    .forEach(usingJigMethod -> {
-                        var key = usingJigMethod.declaration().declaringType();
-                        serviceMethodMap.computeIfAbsent(key, k -> new ArrayList<>());
-                        serviceMethodMap.get(key).add(usingJigMethod);
+                    .map(methodRelation -> methodRelation.mermaidEdgeText())
+                    .forEach(apiMethodRelationText::add);
 
-                        // apiMethod -> serviceMethod
-                        apiMethodRelationText.add("    %s --> %s".formatted(apiMethodMmdId, usingJigMethod.declaration().asSimpleText()));
+            // Service表示＆リンクのための収集
+            decraleMethodRelations.list()
+                    .stream()
+                    .map(MethodRelation::to)
+                    .map(MethodDeclaration::identifier)
+                    .filter(jigTypes::isApplication)
+                    .forEach(methodIdentifier -> {
+                        var key = methodIdentifier.declaringType();
+                        serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
+                        serviceMethodMap.get(key).add(methodIdentifier);
                     });
         });
 
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
-        // サービスメソッドの形を整える
+        // サービスメソッドをクラス単位にグループ化して名前解決＆クリックで遷移できるようにする
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
             values.forEach(value -> {
-                var methodMmdId = value.declaration().asSimpleText();
-                mermaidText.add("    %s([\"%s\"])".formatted(methodMmdId, value.labelText()));
-                // サービスのノードをクリックしたらユースケース概要に移動する。
-                // メソッドにしたいけどとりあえずクラスに。
-                mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(methodMmdId, value.htmlIdText()));
+                jigTypes.resolveJigMethod(value)
+                        .ifPresent(jigMethod -> {
+                            mermaidText.add("    %s([\"%s\"])".formatted(value.htmlIdText(), jigMethod.labelText()));
+                            mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(value.htmlIdText(), value.htmlIdText()));
+                        });
             });
             mermaidText.add("    end");
         });
 
-        // api classでグルーピング
+        // classでグルーピング
         var jigType = jigType();
         mermaidText.add("    subgraph %s[\"%s\"]".formatted(jigType.simpleName(), jigType.interfaceLabelText()));
 

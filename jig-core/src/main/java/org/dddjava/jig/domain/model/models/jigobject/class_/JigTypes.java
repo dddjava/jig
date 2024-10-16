@@ -3,10 +3,13 @@ package org.dddjava.jig.domain.model.models.jigobject.class_;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -16,9 +19,11 @@ import static java.util.stream.Collectors.toList;
 public class JigTypes {
 
     private final List<JigType> list;
+    private final Map<TypeIdentifier, JigType> map;
 
     public JigTypes(List<JigType> list) {
         this.list = list;
+        this.map = list.stream().collect(Collectors.toMap(JigType::identifier, Function.identity()));
     }
 
     private MethodRelations methodRelations;
@@ -64,5 +69,21 @@ public class JigTypes {
                 .filter(jigMethod -> jigMethod.declaration().identifier().equals(methodIdentifier))
                 // 複数件Hitすることはないが、実装上はありえるのでany
                 .findAny();
+    }
+
+    public Optional<JigType> resolveJigType(TypeIdentifier typeIdentifier) {
+        return Optional.ofNullable(map.get(typeIdentifier));
+    }
+
+    public boolean isApplication(MethodIdentifier methodIdentifier) {
+        return resolveJigType(methodIdentifier.declaringType())
+                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Application);
+    }
+
+    public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
+        var typeCategory = resolveJigType(typeIdentifier)
+                .map(jigType -> jigType.typeCategory())
+                .orElse(TypeCategory.Others);
+        return typeCategory.isApplicationComponent();
     }
 }

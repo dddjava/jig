@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
  * メソッドの使用しているメソッド一覧
  */
 public class MethodRelations {
+    private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
     private final List<MethodRelation> list;
 
@@ -65,11 +66,9 @@ public class MethodRelations {
                 .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
-
     private Stream<MethodRelation> filterFromRecursiveInternal(MethodDeclaration baseMethod, Predicate<MethodIdentifier> stopper) {
         if (stopper.test(baseMethod.identifier())) {
-            logger.info("stopped for {}", baseMethod.asFullNameText());
+            logger.debug("stopped for {}", baseMethod.asFullNameText());
             return Stream.empty();
         }
 

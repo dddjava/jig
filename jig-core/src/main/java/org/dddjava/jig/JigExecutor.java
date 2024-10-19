@@ -18,6 +18,7 @@ public class JigExecutor {
         JigSourceReader jigSourceReader = configuration.sourceReader();
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
+        jigDocumentGenerator.prepareOutputDirectory();
         var results = jigSourceReader.readPathSource(sourcePaths)
                 .map(jigDocumentGenerator::generateDocuments)
                 .orElseGet(List::of);

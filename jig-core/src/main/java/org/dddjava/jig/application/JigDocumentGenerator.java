@@ -90,15 +90,13 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generateDocuments(JigSource jigSource) {
-        prepareOutputDirectory();
-
         return jigDocuments
                 .parallelStream()
                 .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigSource))
                 .collect(Collectors.toList());
     }
 
-    private void prepareOutputDirectory() {
+    public void prepareOutputDirectory() {
         File file = outputDirectory.toFile();
         if (file.exists()) {
             if (file.isDirectory() && file.canWrite()) {

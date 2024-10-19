@@ -1,4 +1,4 @@
-package org.dddjava.jig.gradle
+package jig
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.util.GradleVersion

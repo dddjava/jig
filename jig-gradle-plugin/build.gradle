@@ -3,7 +3,6 @@ plugins {
     id 'java-gradle-plugin'
     id 'maven-publish'
     alias libs.plugins.gradle.plugin.publish
-    id 'groovy'
 }
 
 // Write the plugin's classpath to a file to share with the tests
@@ -29,7 +28,6 @@ dependencies {
 
     functionalTestImplementation(project)
     functionalTestImplementation(libs.junit)
-    functionalTestImplementation(libs.spock)
 }
 
 def functionalTestTask = tasks.register("functionalTest", Test) {
@@ -39,6 +37,7 @@ def functionalTestTask = tasks.register("functionalTest", Test) {
     classpath = functionalTest.runtimeClasspath
     useJUnitPlatform()
     mustRunAfter(tasks.named('test'))
+    test
 }
 tasks.named('check') {
     dependsOn(functionalTestTask)

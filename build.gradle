@@ -31,3 +31,11 @@ reporting {
 tasks.register('build') {
     dependsOn tasks.named('testAggregateTestReport', TestReport)
 }
+
+subprojects {
+    plugins.withType(JavaPlugin).configureEach {
+        test {
+            reports.html.required = false
+        }
+    }
+}

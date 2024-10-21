@@ -76,9 +76,6 @@ public class JigSourceReader {
      * プロジェクト情報を読み取る
      */
     public JigSource readProjectData(Sources sources) {
-        ClassSources classSources = sources.classSources();
-        TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources);
-
         TextSources textSources = sources.textSources();
 
         TextSourceModel textSourceModel = javaTextSourceReader.textSourceModel(textSources);
@@ -89,8 +86,8 @@ public class JigSourceReader {
             commentRepository.register(packageComment);
         }
 
-        // typeFactsにテキストソースの情報を適用する
-        typeFacts.applyTextSource(textSourceModel);
+        ClassSources classSources = sources.classSources();
+        TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources, textSourceModel);
 
         return new JigSource(typeFacts, textSourceModel.toTerms());
     }

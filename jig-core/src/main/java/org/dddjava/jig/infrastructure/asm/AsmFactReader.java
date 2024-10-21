@@ -3,6 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
@@ -15,19 +16,18 @@ import java.util.stream.Collectors;
 
 /**
  * ASMを使用したFactFactoryの実装
- *
- * ClassSourceを読み取るので、JVM言語なら使用できると思います。
  */
 @Repository
 public class AsmFactReader implements FactReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmFactReader.class);
 
     @Override
-    public TypeFacts readTypeFacts(ClassSources classSources) {
+    public TypeFacts readTypeFacts(ClassSources classSources, TextSourceModel textSourceModel) {
         return classSources.list().stream()
-                .map(this::typeByteCode)
+                .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), TypeFacts::new));
+                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(textSourceModel))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new TypeFacts(list, textSourceModel.enumModels())));
     }
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {

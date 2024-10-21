@@ -2,15 +2,10 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,13 +16,13 @@ import static java.util.stream.Collectors.toList;
  * 型の実装から読み取れること一覧
  */
 public class TypeFacts {
-    private static final Logger logger = LoggerFactory.getLogger(TypeFacts.class);
 
     private final List<JigTypeBuilder> list;
-    private EnumModels enumModels = new EnumModels(List.of());
+    private final EnumModels enumModels;
 
-    public TypeFacts(List<JigTypeBuilder> list) {
+    public TypeFacts(List<JigTypeBuilder> list, EnumModels enumModels) {
         this.list = list;
+        this.enumModels = enumModels;
     }
 
     private ClassRelations classRelations;
@@ -68,48 +63,8 @@ public class TypeFacts {
         return this.classRelations;
     }
 
-    public void applyTextSource(TextSourceModel textSourceModel) {
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            jigTypeBuilder.applyTextSource(textSourceModel);
-        }
-
-        for (ClassComment classComment : textSourceModel.classCommentList()) {
-            registerClassComment(classComment);
-        }
-        for (MethodComment methodComment : textSourceModel.methodCommentList()) {
-            registerMethodComment(methodComment);
-        }
-
-        this.enumModels = textSourceModel.enumModels();
-    }
-
     public EnumModels enumModels() {
         return enumModels;
     }
 
-    private void registerClassComment(ClassComment classComment) {
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            if (jigTypeBuilder.typeIdentifier().equals(classComment.typeIdentifier())) {
-                jigTypeBuilder.registerClassComment(classComment);
-                return;
-            }
-        }
-
-        logger.warn("{} のコメント追加に失敗しました。javaファイルに対応するclassファイルが見つかりません。コンパイルが正常に行われていない可能性があります。処理は続行します。",
-                classComment.typeIdentifier());
-    }
-
-    private void registerMethodComment(MethodComment methodComment) {
-        for (JigTypeBuilder jigTypeBuilder : list) {
-            MethodIdentifier methodIdentifier = methodComment.methodIdentifier();
-            if (jigTypeBuilder.typeIdentifier().equals(methodIdentifier.declaringType())) {
-                if (jigTypeBuilder.registerMethodComment(methodComment)) {
-                    return;
-                }
-            }
-        }
-
-        logger.warn("{} のコメント追加に失敗しました。javaファイルとclassファイルがアンマッチの可能性があります。処理は続行します。",
-                methodComment.methodIdentifier().asText());
-    }
 }

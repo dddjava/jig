@@ -115,10 +115,17 @@ public class JigTypeBuilder {
         return jigType;
     }
 
-    public void applyTextSource(TextSourceModel textSourceModel) {
+    public JigTypeBuilder applyTextSource(TextSourceModel textSourceModel) {
+        // クラスのコメントを適用
+        textSourceModel.optClassComment(typeIdentifier())
+                .ifPresent(this::registerClassComment);
+
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             jigMethodBuilder.applyTextSource(textSourceModel);
         }
+        textSourceModel.streamMethodComment(typeIdentifier())
+                .forEach(methodComment -> registerMethodComment(methodComment));
+        return this;
     }
 
     public void addAnnotation(Annotation annotation) {

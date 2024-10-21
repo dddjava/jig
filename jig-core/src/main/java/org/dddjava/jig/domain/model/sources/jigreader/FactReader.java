@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 /**
@@ -8,5 +9,5 @@ import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
  */
 public interface FactReader {
 
-    TypeFacts readTypeFacts(ClassSources classSources);
+    TypeFacts readTypeFacts(ClassSources classSources, TextSourceModel textSourceModel);
 }

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.parts.term.Term;
 import org.dddjava.jig.domain.model.parts.term.Terms;
@@ -99,5 +100,17 @@ public class TextSourceModel {
                 ).flatMap(term -> term)
                 .toList();
         return new Terms(list);
+    }
+
+    Optional<ClassComment> optClassComment(TypeIdentifier typeIdentifier) {
+        return classCommentList().stream()
+                .filter(classComment -> classComment.typeIdentifier().equals(typeIdentifier))
+                .findAny();
+    }
+
+    Stream<MethodComment> streamMethodComment(TypeIdentifier typeIdentifier) {
+        return methodImplementations.stream()
+                .filter(methodImplementation -> methodImplementation.declaringTypeMatches(typeIdentifier))
+                .flatMap(methodImplementation -> methodImplementation.comment().stream());
     }
 }

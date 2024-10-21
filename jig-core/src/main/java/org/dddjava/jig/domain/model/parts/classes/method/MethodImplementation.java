@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+
 import java.util.Optional;
 
 /**
@@ -34,5 +36,9 @@ public class MethodImplementation {
     public boolean matches(MethodIdentifier methodIdentifier) {
         // テキストソース由来では引数型が確定しないのでクラスと名前で当てる
         return this.methodIdentifier.matches(methodIdentifier.declaringType(), methodIdentifier.methodSignature().methodName());
+    }
+
+    public boolean declaringTypeMatches(TypeIdentifier typeIdentifier) {
+        return methodIdentifier.declaringType().equals(typeIdentifier);
     }
 }

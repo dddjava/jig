@@ -66,5 +66,5 @@ jobs:
         if: failure()
         with:
           name: test-failure-reports-${{ matrix.java-version }}-${{ runner.os }}
-          path: jig-*/build/reports/tests/test/
+          path: jig-*/build/reports/tests/
           retention-days: 3

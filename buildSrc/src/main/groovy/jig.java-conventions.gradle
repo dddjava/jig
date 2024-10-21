@@ -5,9 +5,11 @@ plugins {
 
 sourceCompatibility = '17'
 
-def defaultEncoding = 'UTF-8'
-[AbstractCompile, Javadoc].each {
-    tasks.withType(it).each { it.options.encoding = defaultEncoding }
+project.afterEvaluate {
+    def defaultEncoding = 'UTF-8'
+    [AbstractCompile, Javadoc].each {
+        tasks.withType(it).each { it.options.encoding = defaultEncoding }
+    }
 }
 
 tasks.withType(JavaCompile) {

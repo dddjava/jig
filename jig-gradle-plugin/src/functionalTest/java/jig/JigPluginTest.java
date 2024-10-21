@@ -34,7 +34,7 @@ public class JigPluginTest {
 
         var taskResult = Objects.requireNonNull(result.task(":jigReports"));
         assertEquals(TaskOutcome.FAILED, taskResult.getOutcome());
-        assertTrue(result.getOutput().contains("Java プラグインが適用されていません。"));
+        assertTrue(result.getOutput().contains("Java プラグインが適用されていません。"), result.getOutput());
     }
 
     @ParameterizedTest

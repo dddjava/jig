@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 public enum TextSourceType {
     JAVA_PACKAGE_INFO("package-info\\.java"),
     JAVA(".+\\.java"),
-    KOTLIN(".+\\.kt"),
-    SCALA(".+\\.scala"),
     UNSUPPORTED("");
 
     private final Pattern pattern;

@@ -18,7 +18,6 @@ JIGはコードでの設計を支援するツールです。思い浮かんだ�
 実行方法はコマンドラインとGradleプラグインがあります。それぞれのREADMEを参照してください。
 
 - [コマンドラインでの使い方](./jig-cli)
-  - [Kotlin向け拡張版](./jig-cli-kt)
 - [Gradleプラグインでの使い方](./jig-gradle-plugin)
 
 実行には Java11以降 と [Graphviz](https://www.graphviz.org/) が必要です。

@@ -44,18 +44,6 @@ public class TextSourceModel {
         return new EnumModels(enumModels);
     }
 
-    public TextSourceModel addClassAndMethodComments(ClassAndMethodComments... others) {
-        TextSourceModel result = this;
-        for (ClassAndMethodComments other : others) {
-            result = result.merge(new TextSourceModel(other.list(),
-                    other.methodList().stream()
-                            .map(methodComment -> new MethodImplementation(methodComment.methodIdentifier(), methodComment))
-                            .collect(Collectors.toList()),
-                    List.of()));
-        }
-        return result;
-    }
-
     public TextSourceModel merge(TextSourceModel other) {
         return new TextSourceModel(
                 Stream.concat(classComments.stream(), other.classComments.stream()).collect(Collectors.toList()),

@@ -16,7 +16,6 @@ nexusPublishing {
 dependencies {
     testReportAggregation project(':jig-core')
     testReportAggregation project(':jig-cli')
-    testReportAggregation project(':jig-cli-kt')
     testReportAggregation project(':jig-gradle-plugin')
 }
 

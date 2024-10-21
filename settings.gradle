@@ -2,7 +2,6 @@ rootProject.name = 'jig'
 
 include 'jig-core'
 include 'jig-cli'
-include 'jig-cli-kt'
 include 'jig-gradle-plugin'
 
 // TODO mavenプラグインとして動くようにしてから有効にする

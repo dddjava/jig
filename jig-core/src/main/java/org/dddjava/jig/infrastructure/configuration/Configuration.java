@@ -6,7 +6,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
-import org.dddjava.jig.domain.model.sources.jigreader.AdditionalTextSourceReader;
 import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
@@ -23,10 +22,6 @@ public class Configuration {
     JigDocumentContext jigDocumentContext;
 
     public Configuration(JigProperties jigProperties) {
-        this(jigProperties, new AdditionalTextSourceReader());
-    }
-
-    public Configuration(JigProperties jigProperties, AdditionalTextSourceReader additionalTextSourceReader) {
         this.properties = new JigPropertyLoader(jigProperties).load();
 
         CommentRepository commentRepository = new OnMemoryCommentRepository();
@@ -36,7 +31,7 @@ public class Configuration {
         this.jigService = new JigService(architecture);
 
         JavaparserReader javaparserReader = new JavaparserReader(properties);
-        TextSourceReader textSourceReader = new TextSourceReader(javaparserReader, additionalTextSourceReader);
+        TextSourceReader textSourceReader = new TextSourceReader(javaparserReader);
 
         this.jigSourceReader = new JigSourceReader(
                 commentRepository,

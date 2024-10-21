@@ -11,10 +11,7 @@ import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
-import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
-import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
-import org.dddjava.jig.domain.model.sources.jigreader.SqlReader;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
+import org.dddjava.jig.domain.model.sources.jigreader.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,13 +32,13 @@ public class JigSourceReader {
     final SourceReader sourceReader;
 
     final FactReader binarySourceReader;
-    final TextSourceReader textSourceReader;
+    final JavaTextSourceReader javaTextSourceReader;
     final SqlReader sqlReader;
 
-    public JigSourceReader(CommentRepository commentRepository, FactReader binarySourceReader, TextSourceReader textSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReader(CommentRepository commentRepository, FactReader binarySourceReader, JavaTextSourceReader javaTextSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.commentRepository = commentRepository;
         this.binarySourceReader = binarySourceReader;
-        this.textSourceReader = textSourceReader;
+        this.javaTextSourceReader = javaTextSourceReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
     }
@@ -84,7 +81,7 @@ public class JigSourceReader {
 
         TextSources textSources = sources.textSources();
 
-        TextSourceModel textSourceModel = textSourceReader.readTextSource(textSources);
+        TextSourceModel textSourceModel = javaTextSourceReader.textSourceModel(textSources);
         for (ClassComment classComment : textSourceModel.classCommentList()) {
             commentRepository.register(classComment);
         }

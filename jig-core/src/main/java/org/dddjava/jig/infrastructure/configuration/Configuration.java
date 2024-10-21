@@ -6,7 +6,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
-import org.dddjava.jig.domain.model.sources.jigreader.TextSourceReader;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;
@@ -30,13 +29,10 @@ public class Configuration {
 
         this.jigService = new JigService(architecture);
 
-        JavaparserReader javaparserReader = new JavaparserReader(properties);
-        TextSourceReader textSourceReader = new TextSourceReader(javaparserReader);
-
         this.jigSourceReader = new JigSourceReader(
                 commentRepository,
                 new AsmFactReader(),
-                textSourceReader,
+                new JavaparserReader(properties),
                 new MyBatisSqlReader(),
                 new LocalClassFileSourceReader()
         );

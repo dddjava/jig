@@ -4,6 +4,8 @@ import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
@@ -17,13 +19,21 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 public class JigTypes {
+    private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
 
     private final List<JigType> list;
     private final Map<TypeIdentifier, JigType> map;
 
     public JigTypes(List<JigType> list) {
         this.list = list;
-        this.map = list.stream().collect(Collectors.toMap(JigType::identifier, Function.identity()));
+        this.map = list.stream().collect(Collectors.toMap(
+                JigType::identifier,
+                Function.identity(),
+                (left, right) -> {
+                    logger.warn("{} が重複しています。完全修飾名が同じクラスを一度にロードしていることが原因です。依存関係にない複数モジュール群でJIGを実行している場合、JIGの実行対象を減らすか、異なるクラスであれば該当クラスのパッケージ名もしくはクラス名を変更してください。依存関係にあるモジュール群で発生している場合は実行時に意図しないクラスが使用される可能性がある実装が懸念されます。JIGは片方を採用して処理は続行しますが、クラスの実装が異なる場合は意図せぬ出力になります。",
+                            left.identifier().fullQualifiedName());
+                    return left;
+                }));
     }
 
     private MethodRelations methodRelations;

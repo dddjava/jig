@@ -6,9 +6,9 @@
     <title th:text="${title}">application</title>
 </head>
 <body>
-<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
 <div class="sideNavMain">
-    <nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+    <nav class="tree" th:replace="~{fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})}">
         パッケージツリーに置換
     </nav>
 
@@ -39,6 +39,6 @@
     </main>
 </div>
 
-<th:block th:replace="fragment-base::scripts"></th:block>
+<th:block th:replace="~{fragment-base::scripts}"></th:block>
 </body>
 </html>

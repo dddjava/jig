@@ -1,30 +1,30 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment-base::head(${title})">
+<head th:replace="~{fragment-base::head(${title})}">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <title>application</title>
 </head>
 <body>
-<header class="top" th:replace="fragment-base::header(${title})"></header>
+<header class="top" th:replace="~{fragment-base::header(${title})}"></header>
 <div class="sideNavMain">
-    <nav class="tree" th:replace="fragment-base:: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+    <nav class="tree" th:replace="~{fragment-base:: tree-navigation(node=${baseComposite.resolveRootComposite()})}">
         パッケージツリーに置換
     </nav>
     <main>
         <th:block th:each="item : ${jigPackages}">
-            <section th:replace="fragment-package :: item">
+            <section th:replace="~{fragment-package :: item}">
                 パッケージ表示
             </section>
         </th:block>
 
         <th:block th:each="item : ${jigTypes}">
-            <section th:replace="fragment-type :: item">
+            <section th:replace="~{fragment-type :: item}">
                 クラス表示
             </section>
         </th:block>
     </main>
 </div>
 
-<th:block th:replace="fragment-base::scripts"></th:block>
+<th:block th:replace="~{fragment-base::scripts}"></th:block>
 </body>
 </html>

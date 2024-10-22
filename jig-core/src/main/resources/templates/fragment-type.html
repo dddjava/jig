@@ -38,10 +38,10 @@
             </tbody>
         </table>
 
-        <th:block th:replace="this::methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
+        <th:block th:replace="~{this::methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})}">
             メソッドテーブル
         </th:block>
-        <th:block th:replace="this::methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">
+        <th:block th:replace="~{this::methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})}">
             メソッドテーブル
         </th:block>
     </section>

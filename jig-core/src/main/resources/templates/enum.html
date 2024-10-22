@@ -1,13 +1,13 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment-base::head(${title})">
+<head th:replace="~{fragment-base::head(${title})}">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <title>enum</title>
 </head>
 <body>
-<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
 <div class="sideNavMain">
-    <nav class="tree" th:replace="fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})">
+    <nav class="tree" th:replace="~{fragment-base :: tree-navigation(node=${baseComposite.resolveRootComposite()})}">
         パッケージツリーに置換
     </nav>
 
@@ -58,17 +58,17 @@
             </table>
 
             <th:block
-                    th:replace="fragment-type :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})">
+                    th:replace="~{fragment-type :: methodTable(kind='メソッド', list=${item.instanceMethods().listRemarkable()})}">
                 メソッドテーブル
             </th:block>
             <th:block
-                    th:replace="fragment-type :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})">
+                    th:replace="~{fragment-type :: methodTable(kind='staticメソッド', list=${item.staticMethods().listRemarkable()})}">
                 メソッドテーブル
             </th:block>
         </section>
     </main>
 </div>
 
-<th:block th:replace="fragment-base::scripts"></th:block>
+<th:block th:replace="~{fragment-base::scripts}"></th:block>
 </body>
 </html>

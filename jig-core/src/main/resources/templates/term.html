@@ -1,12 +1,12 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment-base::head(${title})">
+<head th:replace="~{fragment-base::head(${title})}">
     <meta charset="UTF-8"/>
     <link href="./assets/style.css" rel="stylesheet">
     <link rel="icon" href="./assets/favicon.ico">
     <title>term</title>
 </head>
 <body>
-<header class="top" th:replace="fragment-base::header(title=${title})"></header>
+<header class="top" th:replace="~{fragment-base::header(title=${title})}"></header>
 <main class="terms">
     <div>
         表示切り替え:
@@ -41,7 +41,7 @@
     </table>
 </main>
 
-<th:block th:replace="fragment-base::scripts">
+<th:block th:replace="~{fragment-base::scripts}">
     <script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@11.3.0/dist/mermaid.min.js"></script>
     <script src="./assets/jig.js"></script>

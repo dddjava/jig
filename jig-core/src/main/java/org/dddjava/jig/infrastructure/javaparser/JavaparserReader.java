@@ -4,6 +4,7 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
@@ -13,6 +14,7 @@ import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,15 +25,17 @@ import java.util.List;
  */
 public class JavaparserReader implements JavaTextSourceReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JavaparserReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
 
     PackageInfoReader packageInfoReader = new PackageInfoReader();
 
     public JavaparserReader(JigProperties properties) {
-        if (Runtime.version().feature() >= 17) {
-            ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
-            configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
+        configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_17);
+        if (Runtime.version().feature() >= 21) {
+            configuration.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
         }
+        logger.info("javaparser language level: {}", configuration.getLanguageLevel());
 
         // TODO プロパティで指定してる場合だけ上書きするようにする
         // configuration.setCharacterEncoding(properties.inputEncoding());
@@ -45,8 +49,8 @@ public class JavaparserReader implements JavaTextSourceReader {
                     try (InputStream inputStream = readableTextSource.toInputStream()) {
                         return read(inputStream);
                     } catch (Exception e) {
-                        LOGGER.warn("{} のソースコード読み取りに失敗しました [{}]（処理は続行します）", readableTextSource, e.toString());
-                        LOGGER.debug("{}読み取り失敗の詳細", readableTextSource, e);
+                        logger.warn("{} のソースコード読み取りに失敗しました [{}]（処理は続行します）", readableTextSource, e.toString());
+                        logger.debug("{}読み取り失敗の詳細", readableTextSource, e);
                         return TextSourceModel.empty();
                     }
                 })

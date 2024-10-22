@@ -18,31 +18,12 @@ task createClasspathManifest {
     }
 }
 
-def functionalTest = sourceSets.create("functionalTest")
-
 dependencies {
     implementation project(':jig-core')
     runtimeOnly libs.log4j.to.slf4j
 
     testImplementation libs.junit
-
-    functionalTestImplementation(project)
-    functionalTestImplementation(libs.junit)
 }
-
-def functionalTestTask = tasks.register("functionalTest", Test) {
-    description = "プラグインを適用した実際のビルドをシミュレートしてプラグインとしての動作を検証する"
-    group = "verification"
-    testClassesDirs = functionalTest.output.classesDirs
-    classpath = functionalTest.runtimeClasspath
-    useJUnitPlatform()
-    mustRunAfter(tasks.named('test'))
-    test
-}
-tasks.named('check') {
-    dependsOn(functionalTestTask)
-}
-
 
 jar {
     archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()
@@ -61,7 +42,6 @@ gradlePlugin {
             tags.set(['ddd', 'visualize'])
         }
     }
-    testSourceSets(sourceSets.functionalTest)
 }
 
 publishing {

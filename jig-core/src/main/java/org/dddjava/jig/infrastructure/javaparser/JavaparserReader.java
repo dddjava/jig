@@ -45,7 +45,7 @@ public class JavaparserReader implements JavaTextSourceReader {
                     try (InputStream inputStream = readableTextSource.toInputStream()) {
                         return read(inputStream);
                     } catch (Exception e) {
-                        LOGGER.warn("{} のソースコード読み取りに失敗しました（処理は続行します）", readableTextSource);
+                        LOGGER.warn("{} のソースコード読み取りに失敗しました [{}]（処理は続行します）", readableTextSource, e.toString());
                         LOGGER.debug("{}読み取り失敗の詳細", readableTextSource, e);
                         return TextSourceModel.empty();
                     }

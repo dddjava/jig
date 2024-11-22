@@ -9,6 +9,7 @@ import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.smell.SmelledClass;
+import stub.domain.model.smell.SmelledRecord;
 import testing.JigServiceTest;
 
 import java.util.List;
@@ -70,6 +71,18 @@ class BusinessRuleServiceTest {
 
     private static MethodSmell extractMethod(List<MethodSmell> detectedSmells, String methodName) {
         return detectedSmells.stream().filter(methodSmell -> methodSmell.methodDeclaration().identifier().methodSignature().methodName().equals(methodName)).findAny().orElseThrow();
+    }
+
+    @Test
+    void 注意メソッドの抽出_record(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
+        var jigSource = jigSourceReader.readProjectData(sources);
+        MethodSmellList methodSmellList = businessRuleService.methodSmells(jigSource);
+
+        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
+
+        assertEquals(1, detectedSmells.size(), () -> detectedSmells.stream().map(methodSmell -> methodSmell.methodDeclaration().identifier()).toList().toString());
+
+        assertTrue(extractMethod(detectedSmells, "returnsVoid").returnsVoid());
     }
 
     @Test

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
-import stub.domain.model.smell.SmellMethods;
+import stub.domain.model.smell.SmelledClass;
 import testing.JigServiceTest;
 
 import java.util.List;
@@ -49,7 +49,7 @@ class BusinessRuleServiceTest {
         var jigSource = jigSourceReader.readProjectData(sources);
         MethodSmellList methodSmellList = businessRuleService.methodSmells(jigSource);
 
-        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmellMethods.class));
+        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
 
         assertEquals(9, detectedSmells.size(), () -> detectedSmells.stream().map(methodSmell -> methodSmell.methodDeclaration().identifier()).toList().toString());
 

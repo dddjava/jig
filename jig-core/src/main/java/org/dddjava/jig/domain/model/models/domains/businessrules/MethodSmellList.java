@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.models.domains.businessrules;
 
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,5 +35,11 @@ public class MethodSmellList {
         return list.stream()
                 .sorted(Comparator.comparing(methodSmell -> methodSmell.methodDeclaration().asFullNameText()))
                 .collect(Collectors.toList());
+    }
+
+    public List<MethodSmell> collectBy(TypeIdentifier typeIdentifier) {
+        return list.stream()
+                .filter(methodSmell -> methodSmell.methodDeclaration().declaringType().equals(typeIdentifier))
+                .toList();
     }
 }

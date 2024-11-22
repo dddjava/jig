@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmell;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
@@ -7,13 +8,12 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
+import stub.domain.model.smell.SmellMethods;
 import testing.JigServiceTest;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @JigServiceTest
 class BusinessRuleServiceTest {
@@ -49,16 +49,27 @@ class BusinessRuleServiceTest {
         var jigSource = jigSourceReader.readProjectData(sources);
         MethodSmellList methodSmellList = businessRuleService.methodSmells(jigSource);
 
-        assertThat(methodSmellList.list())
-                .filteredOn(methodSmellAngle -> methodSmellAngle.methodDeclaration().declaringType()
-                        .fullQualifiedName().equals("stub.domain.model.smell.SmellMethods"))
-                .extracting(methodSmellAngle -> methodSmellAngle.methodDeclaration().identifier().methodSignature().methodName())
-                .contains(
-                        "returnVoid",
-                        "returnInt",
-                        "longParameter",
-                        "judgeNull"
-                );
+        var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmellMethods.class));
+
+        assertEquals(9, detectedSmells.size(), () -> detectedSmells.stream().map(methodSmell -> methodSmell.methodDeclaration().identifier()).toList().toString());
+
+        assertTrue(extractMethod(detectedSmells, "returnVoid").returnsVoid());
+
+        assertTrue(extractMethod(detectedSmells, "returnInt").primitiveInterface());
+        assertTrue(extractMethod(detectedSmells, "returnLong").primitiveInterface());
+
+        assertTrue(extractMethod(detectedSmells, "returnBoolean").returnsBoolean());
+
+        assertTrue(extractMethod(detectedSmells, "intParameter").primitiveInterface());
+        assertTrue(extractMethod(detectedSmells, "longParameter").primitiveInterface());
+        assertTrue(extractMethod(detectedSmells, "booleanParameter").primitiveInterface());
+
+        assertTrue(extractMethod(detectedSmells, "useNullLiteral").referenceNull());
+        assertTrue(extractMethod(detectedSmells, "judgeNull").nullDecision());
+    }
+
+    private static MethodSmell extractMethod(List<MethodSmell> detectedSmells, String methodName) {
+        return detectedSmells.stream().filter(methodSmell -> methodSmell.methodDeclaration().identifier().methodSignature().methodName().equals(methodName)).findAny().orElseThrow();
     }
 
     @Test

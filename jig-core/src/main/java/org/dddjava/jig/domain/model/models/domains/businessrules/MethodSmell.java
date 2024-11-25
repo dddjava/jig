@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 
 /**
@@ -35,6 +36,11 @@ public class MethodSmell {
     }
 
     public boolean primitiveInterface() {
+        if (method.derivation() == MethodDerivation.RECORD_COMPONENT) {
+            // componentメソッドであれば基本型の授受を許容する
+            return false;
+        }
+
         return method.methodWorries().contains(MethodWorry.基本型の授受を行なっている);
     }
 
@@ -43,6 +49,11 @@ public class MethodSmell {
     }
 
     public boolean hasSmell() {
+        if (method.objectMethod()) {
+            // java.lang.Object由来は除外する
+            return false;
+        }
+
         // TODO このメソッドの並びと各実装がダメな感じなのでなんとかする。
         // 現状はここにメソッド追加するのと、列挙に追加するのと、判定メソッド作るのと、やってる。
         return notUseMember() || primitiveInterface() || returnsBoolean() || referenceNull() || nullDecision() || returnsVoid();

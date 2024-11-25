@@ -40,6 +40,8 @@ public class JigTypeBuilder {
 
     ClassComment classComment;
 
+    private final List<RecordComponentDefinition> recordComponentDefinition;
+
     private JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
         this.type = type;
         this.superType = superType;
@@ -55,6 +57,7 @@ public class JigTypeBuilder {
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
         this.classComment = ClassComment.empty(type.typeIdentifier());
+        this.recordComponentDefinition = new ArrayList<>();
     }
 
     public static JigTypeBuilder constructWithHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, Visibility visibility, TypeKind typeKind) {
@@ -163,5 +166,9 @@ public class JigTypeBuilder {
 
     public void staticJigMethodBuilders(JigMethodBuilder jigMethodBuilder) {
         staticJigMethodBuilders.add(jigMethodBuilder);
+    }
+
+    public void addRecordComponent(String name, TypeIdentifier typeIdentifier) {
+        recordComponentDefinition.add(new RecordComponentDefinition(name, typeIdentifier));
     }
 }

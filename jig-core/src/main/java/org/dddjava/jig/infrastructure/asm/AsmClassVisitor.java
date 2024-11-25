@@ -112,8 +112,25 @@ class AsmClassVisitor extends ClassVisitor {
         return super.visitField(access, name, descriptor, signature, value);
     }
 
+    /**
+     * {@link ClassReader} の読み取り順が recordComponent -> field -> method となっているので、
+     * ここで recordComponent の名前を記録して field/method の判定に使える。
+     */
+    @Override
+    public RecordComponentVisitor visitRecordComponent(String name, String descriptor, String signature) {
+        // name: 名前
+        // descriptor: Type
+        // ジェネリクスを使用している場合だけsignatureが入る
+
+        jigTypeBuilder.addRecordComponent(name, typeDescriptorToIdentifier(descriptor));
+
+        return super.visitRecordComponent(name, descriptor, signature);
+    }
+
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        // name: 名前
+        // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
         MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
         List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);

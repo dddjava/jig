@@ -576,7 +576,7 @@ class AsmClassVisitor extends ClassVisitor {
                                                      List<TypeIdentifier> useTypes,
                                                      List<TypeIdentifier> throwsTypes) {
         MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, access);
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, methodReturn, access);
         var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, useTypes, visibility, throwsTypes, methodDerivation);
 
         if (methodDeclaration.isConstructor()) {
@@ -593,7 +593,7 @@ class AsmClassVisitor extends ClassVisitor {
         return jigMethodBuilder;
     }
 
-    private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, int access) {
+    private MethodDerivation resolveMethodDerivation(MethodSignature methodSignature, MethodReturn methodReturn, int access) {
         String name = methodSignature.methodName();
         if ("<init>".equals(name) || "<clinit>".equals(name)) {
             return MethodDerivation.CONSTRUCTOR;
@@ -601,6 +601,10 @@ class AsmClassVisitor extends ClassVisitor {
 
         if ((access & Opcodes.ACC_BRIDGE) != 0 || (access & Opcodes.ACC_SYNTHETIC) != 0) {
             return MethodDerivation.COMPILER_GENERATED;
+        }
+
+        if (jigTypeBuilder.isRecordComponent(methodSignature, methodReturn)) {
+            return MethodDerivation.RECORD_COMPONENT;
         }
 
         if (jigTypeBuilder.superType().typeIdentifier().isEnum() && (access & Opcodes.ACC_STATIC) != 0) {

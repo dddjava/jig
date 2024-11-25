@@ -11,6 +11,8 @@ import org.dddjava.jig.domain.model.parts.classes.field.FieldType;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
+import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.*;
 
@@ -40,7 +42,7 @@ public class JigTypeBuilder {
 
     ClassComment classComment;
 
-    private final List<RecordComponentDefinition> recordComponentDefinition;
+    private final List<RecordComponentDefinition> recordComponentDefinitions;
 
     private JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
         this.type = type;
@@ -57,7 +59,7 @@ public class JigTypeBuilder {
         this.instanceFields = new ArrayList<>();
         this.staticFieldDeclarations = new ArrayList<>();
         this.classComment = ClassComment.empty(type.typeIdentifier());
-        this.recordComponentDefinition = new ArrayList<>();
+        this.recordComponentDefinitions = new ArrayList<>();
     }
 
     public static JigTypeBuilder constructWithHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, Visibility visibility, TypeKind typeKind) {
@@ -169,6 +171,15 @@ public class JigTypeBuilder {
     }
 
     public void addRecordComponent(String name, TypeIdentifier typeIdentifier) {
-        recordComponentDefinition.add(new RecordComponentDefinition(name, typeIdentifier));
+        recordComponentDefinitions.add(new RecordComponentDefinition(name, typeIdentifier));
+    }
+
+    public boolean isRecordComponent(MethodSignature methodSignature, MethodReturn methodReturn) {
+        return recordComponentDefinitions.stream()
+                .anyMatch(recordComponentDefinition ->
+                        methodSignature.methodName().equals(recordComponentDefinition.name())
+                                && methodReturn.typeIdentifier().equals(recordComponentDefinition.typeIdentifier())
+                );
+
     }
 }

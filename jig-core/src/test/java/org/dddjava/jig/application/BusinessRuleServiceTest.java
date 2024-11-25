@@ -73,6 +73,9 @@ class BusinessRuleServiceTest {
         return detectedSmells.stream().filter(methodSmell -> methodSmell.methodDeclaration().identifier().methodSignature().methodName().equals(methodName)).findAny().orElseThrow();
     }
 
+    /**
+     * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
+     */
     @Test
     void 注意メソッドの抽出_record(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);

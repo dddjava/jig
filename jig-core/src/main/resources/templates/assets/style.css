@@ -90,8 +90,11 @@ main table thead {
     word-break: keep-all;
     white-space: nowrap;
 }
-.sideNavMain > nav.tree details > div {
-    margin-left: 1.5em;
+.sideNavMain > nav.tree details > div, .sideNavMain > nav.tree details > details {
+    margin-left: 0.5em;
+}
+.sideNavMain > nav.tree details {
+    margin-bottom: 0.5em;
 }
 
 section.package > h2, section.type > h2, section.type {

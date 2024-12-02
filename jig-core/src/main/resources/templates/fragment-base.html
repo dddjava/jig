@@ -15,7 +15,7 @@
     <nav class="tree" th:fragment="tree-navigation(node)" th:remove="all-but-first">
         <details th:fragment="tree-composite(node)" open>
             <summary class="package">
-                <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>
+                <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>/
             </summary>
             <th:block th:each="child : ${node.expandChildren()}"><b th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
         </details>

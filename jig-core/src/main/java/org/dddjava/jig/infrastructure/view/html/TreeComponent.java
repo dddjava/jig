@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.view.html;
 
-public interface TreeComponent {
+public interface TreeComponent extends Comparable<TreeComponent> {
 
     String name();
 
@@ -12,5 +12,13 @@ public interface TreeComponent {
 
     default boolean isDeprecated() {
         return false;
+    }
+
+    @Override
+    default int compareTo(TreeComponent o) {
+        // パッケージを優先
+        if (isPackage() && !o.isPackage()) return -1;
+        // fqnで比較する
+        return href().compareTo(o.href());
     }
 }

@@ -17,7 +17,7 @@
             <summary class="package">
                 <a href="#" th:href="${node.href()}" th:text="${node.name()}">パッケージ名</a>/
             </summary>
-            <th:block th:each="child : ${node.expandChildren()}"><b th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
+            <th:block th:each="child : ${node.children()}"><b th:replace="${child.isPackage()} ? ~{this :: tree-composite(${child})} : ~{this :: tree-leaf(${child})}">パッケージかクラスに置換</b></th:block>
         </details>
         <div th:fragment="tree-leaf(node)"><a href="#" th:href="${node.href()}" th:text="${node.name()}" th:classappend="${node.isDeprecated()}? 'deprecated'">クラス名</a></div>
     </nav>

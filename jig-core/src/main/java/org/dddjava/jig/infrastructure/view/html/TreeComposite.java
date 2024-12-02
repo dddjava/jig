@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,17 +37,9 @@ public class TreeComposite implements TreeComponent {
     }
 
     public List<TreeComponent> children() {
-        return list;
-    }
-
-    public List<TreeComponent> expandChildren() {
-        if (list.size() == 1) {
-            TreeComponent onlyOneChild = list.get(0);
-            if (onlyOneChild instanceof TreeComposite composite) {
-                return composite.children();
-            }
-        }
-        return list;
+        return list.stream()
+                .sorted()
+                .toList();
     }
 
     public void addComponent(TreeComponent component) {

@@ -173,3 +173,8 @@ main table.fields thead {
 .terms #termTable .hidden {
     display: none;
 }
+
+/* Mermaidで画像が表示される前のテキストを表示しない */
+pre.mermaid {
+    font-size: 0;
+}

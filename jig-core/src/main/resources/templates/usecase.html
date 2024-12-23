@@ -24,7 +24,7 @@
 
         <th:block th:each="item : ${jigTypes}">
             <section class="type">
-                <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
+                <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
                 <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
 
                 <th:block th:with="description=${item.description()}">

@@ -8,7 +8,7 @@
 
 <main>
     <section class="package" th:fragment="item">
-        <h2><a th:name="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
+        <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXパッケージ</a></h2>
         <small class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package</small>
 
         <th:block th:with="description=${item.description()}">

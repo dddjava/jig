@@ -188,4 +188,16 @@ public class JigType {
 
         return TypeCategory.Others;
     }
+
+    public TypeIdentifier typeIdentifier() {
+        return identifier();
+    }
+
+    public String nodeLabel() {
+        return typeAlias().nodeLabel();
+    }
+
+    public JigType jigType() {
+        return this;
+    }
 }

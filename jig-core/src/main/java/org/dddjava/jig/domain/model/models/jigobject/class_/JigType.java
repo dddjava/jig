@@ -189,10 +189,6 @@ public class JigType {
         return identifier();
     }
 
-    public JigType jigType() {
-        return this;
-    }
-
     public ClassComment typeAlias() {
         return jigTypeAttribute.alias();
     }

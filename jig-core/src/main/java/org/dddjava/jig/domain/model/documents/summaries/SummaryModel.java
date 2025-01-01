@@ -30,7 +30,6 @@ public class SummaryModel {
 
     public static SummaryModel from(JigTypes jigTypes, BusinessRules businessRules) {
         Map<PackageIdentifier, List<JigType>> map = businessRules.list().stream()
-                .map(JigType::jigType)
                 .collect(groupingBy(JigType::packageIdentifier));
         return new SummaryModel(jigTypes, map, new EnumModels(List.of()));
     }

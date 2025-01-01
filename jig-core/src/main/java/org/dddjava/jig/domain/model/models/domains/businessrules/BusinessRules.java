@@ -144,6 +144,6 @@ public class BusinessRules {
     }
 
     public JigTypes jigTypes() {
-        return list.stream().map(JigType::jigType).collect(collectingAndThen(toList(), JigTypes::new));
+        return list.stream().collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

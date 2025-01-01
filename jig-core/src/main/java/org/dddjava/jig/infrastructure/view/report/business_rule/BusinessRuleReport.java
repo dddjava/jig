@@ -28,7 +28,7 @@ public class BusinessRuleReport {
     @ReportItemFor(ReportItem.クラス名)
     @ReportItemFor(ReportItem.クラス別名)
     public TypeDeclaration type() {
-        return jigType.jigType().typeDeclaration();
+        return jigType.typeDeclaration();
     }
 
     @ReportItemFor(value = ReportItem.汎用文字列, label = "ビジネスルールの種類", order = 11)
@@ -58,7 +58,7 @@ public class BusinessRuleReport {
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "非PUBLIC", order = 31)
     public boolean isNotPublic() {
-        return jigType.jigType().visibility() != Visibility.PUBLIC;
+        return jigType.visibility() != Visibility.PUBLIC;
     }
 
     @ReportItemFor(value = ReportItem.汎用真偽値, label = "同パッケージからのみ参照", order = 32)

@@ -19,10 +19,10 @@ public class MethodSmellList {
     public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
         for (JigType jigType : businessRules.list()) {
-            for (JigMethod method : jigType.jigType().instanceMember().instanceMethods().list()) {
+            for (JigMethod method : jigType.instanceMember().instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
-                        jigType.jigType().instanceMember().fieldDeclarations(),
+                        jigType.instanceMember().fieldDeclarations(),
                         methodRelations
                 );
                 if (methodSmell.hasSmell()) {

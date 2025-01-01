@@ -29,7 +29,7 @@ public class JigType {
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
-    
+
     protected JigType(JigType jigType) {
         this(jigType.typeDeclaration, jigType.jigTypeAttribute, jigType.jigStaticMember, jigType.jigInstanceMember);
     }
@@ -47,10 +47,6 @@ public class JigType {
 
     public TypeDeclaration typeDeclaration() {
         return typeDeclaration;
-    }
-
-    public ClassComment typeAlias() {
-        return jigTypeAttribute.alias();
     }
 
     public TypeKind typeKind() {
@@ -193,11 +189,19 @@ public class JigType {
         return identifier();
     }
 
+    public JigType jigType() {
+        return this;
+    }
+
+    public ClassComment typeAlias() {
+        return jigTypeAttribute.alias();
+    }
+
     public String nodeLabel() {
         return typeAlias().nodeLabel();
     }
 
-    public JigType jigType() {
-        return this;
+    public String nodeLabel(String delimiter) {
+        return typeAlias().nodeLabel(delimiter);
     }
 }

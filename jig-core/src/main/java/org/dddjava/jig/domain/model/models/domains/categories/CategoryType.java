@@ -40,11 +40,11 @@ public class CategoryType {
     }
 
     public String nodeLabel() {
-        return jigType.typeAlias().nodeLabel();
+        return jigType.nodeLabel();
     }
 
     public String nodeLabel(String delimiter) {
-        return jigType.typeAlias().nodeLabel(delimiter);
+        return jigType.nodeLabel(delimiter);
     }
 
     public StaticFieldDeclarations constantsDeclarations() {

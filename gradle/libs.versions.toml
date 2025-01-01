@@ -12,7 +12,7 @@ thymeleaf = { module = "org.thymeleaf:thymeleaf", version = { strictly = "3.1.2.
 
 asm = "org.ow2.asm:asm:9.7.1"
 javaparser = "com.github.javaparser:javaparser-core:3.26.3"
-mybatis = "org.mybatis:mybatis:3.5.17"
+mybatis = "org.mybatis:mybatis:3.5.18"
 
 poi = { module = "org.apache.poi:poi", version.ref = "poi" }
 poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poi" }

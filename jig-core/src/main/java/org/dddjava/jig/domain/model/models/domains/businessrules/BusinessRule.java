@@ -7,35 +7,21 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 /**
  * ビジネスルール
  */
-public class BusinessRule {
-
-    JigType jigType;
+public class BusinessRule extends JigType {
 
     public BusinessRule(JigType jigType) {
-        this.jigType = jigType;
+        super(jigType);
     }
 
     public TypeIdentifier typeIdentifier() {
-        return jigType.identifier();
-    }
-
-    public JigTypeValueKind toValueKind() {
-        return jigType.toValueKind();
+        return super.identifier();
     }
 
     public String nodeLabel() {
-        return jigType.typeAlias().nodeLabel();
+        return typeAlias().nodeLabel();
     }
 
     public JigType jigType() {
-        return jigType;
-    }
-
-    public boolean markedCore() {
-        return jigType.markedCore();
-    }
-
-    public boolean isDeprecated() {
-        return jigType.isDeprecated();
+        return this;
     }
 }

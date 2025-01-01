@@ -29,6 +29,10 @@ public class JigType {
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
+    
+    protected JigType(JigType jigType) {
+        this(jigType.typeDeclaration, jigType.jigTypeAttribute, jigType.jigStaticMember, jigType.jigInstanceMember);
+    }
 
     public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.typeDeclaration = typeDeclaration;

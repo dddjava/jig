@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.domains.businessrules;
 
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
@@ -17,11 +18,11 @@ public class MethodSmellList {
 
     public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
-        for (BusinessRule businessRule : businessRules.list()) {
-            for (JigMethod method : businessRule.jigType().instanceMember().instanceMethods().list()) {
+        for (JigType jigType : businessRules.list()) {
+            for (JigMethod method : jigType.jigType().instanceMember().instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,
-                        businessRule.jigType().instanceMember().fieldDeclarations(),
+                        jigType.jigType().instanceMember().fieldDeclarations(),
                         methodRelations
                 );
                 if (methodSmell.hasSmell()) {

@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.models.applications.services.ServiceMethod;
 import org.dddjava.jig.domain.model.models.applications.services.Usecase;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 
 public class Nodes {
@@ -31,9 +31,9 @@ public class Nodes {
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }
 
-    public static Node businessRuleNodeOf(BusinessRule businessRule, JigDocumentContext jigDocumentContext) {
-        return new Node(businessRule.typeIdentifier().fullQualifiedName())
-                .label(businessRule.nodeLabel())
-                .url(businessRule.typeIdentifier(), jigDocumentContext, JigDocument.DomainSummary);
+    public static Node businessRuleNodeOf(JigType jigType, JigDocumentContext jigDocumentContext) {
+        return new Node(jigType.typeIdentifier().fullQualifiedName())
+                .label(jigType.nodeLabel())
+                .url(jigType.typeIdentifier(), jigDocumentContext, JigDocument.DomainSummary);
     }
 }

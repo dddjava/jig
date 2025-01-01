@@ -20,11 +20,11 @@ import static java.util.stream.Collectors.toList;
  */
 public class BusinessRules {
 
-    List<BusinessRule> list;
+    List<JigType> list;
     ClassRelations businessRuleRelations;
     ClassRelations classRelations;
 
-    public BusinessRules(List<BusinessRule> list, ClassRelations classRelations) {
+    public BusinessRules(List<JigType> list, ClassRelations classRelations) {
         this.list = list;
         this.classRelations = classRelations;
 
@@ -42,7 +42,7 @@ public class BusinessRules {
     }
 
     public static BusinessRules from(Architecture architecture, ClassRelations classRelations, JigTypes jigTypes) {
-        List<BusinessRule> list = new ArrayList<>();
+        List<JigType> list = new ArrayList<>();
         for (JigType jigType : jigTypes.list()) {
             if (architecture.isBusinessRule(jigType)) {
                 list.add(new BusinessRule(jigType));
@@ -51,9 +51,9 @@ public class BusinessRules {
         return new BusinessRules(list, classRelations);
     }
 
-    public List<BusinessRule> list() {
+    public List<JigType> list() {
         return list.stream()
-                .sorted(Comparator.comparing(BusinessRule::typeIdentifier))
+                .sorted(Comparator.comparing(JigType::typeIdentifier))
                 .collect(toList());
     }
 
@@ -72,12 +72,12 @@ public class BusinessRules {
             return cache;
         }
         return cache = list.stream()
-                .map(BusinessRule::typeIdentifier)
+                .map(JigType::typeIdentifier)
                 .collect(TypeIdentifiers.collector());
     }
 
     public List<BusinessRulePackage> listPackages() {
-        Map<PackageIdentifier, List<BusinessRule>> map = list().stream()
+        Map<PackageIdentifier, List<JigType>> map = list().stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));
@@ -98,8 +98,8 @@ public class BusinessRules {
         return classRelations;
     }
 
-    public TypeIdentifiers allTypesRelatedTo(BusinessRule businessRule) {
-        return classRelations().collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
+    public TypeIdentifiers allTypesRelatedTo(JigType jigType) {
+        return classRelations().collectTypeIdentifierWhichRelationTo(jigType.typeIdentifier());
     }
 
     public ClassRelations internalClassRelations() {
@@ -109,13 +109,13 @@ public class BusinessRules {
         return new ClassRelations(internalList);
     }
 
-    public Map<BusinessRule, TypeIdentifiers> overconcentrationMap() {
+    public Map<JigType, TypeIdentifiers> overconcentrationMap() {
         int threshold = list.size() / 10;
-        Map<BusinessRule, TypeIdentifiers> overconcentrationBusinessRule = new HashMap<>();
-        for (BusinessRule businessRule : list) {
-            TypeIdentifiers typeIdentifiers = businessRuleRelations.collectTypeIdentifierWhichRelationTo(businessRule.typeIdentifier());
+        Map<JigType, TypeIdentifiers> overconcentrationBusinessRule = new HashMap<>();
+        for (JigType jigType : list) {
+            TypeIdentifiers typeIdentifiers = businessRuleRelations.collectTypeIdentifierWhichRelationTo(jigType.typeIdentifier());
             if (typeIdentifiers.size() > threshold) {
-                overconcentrationBusinessRule.put(businessRule, typeIdentifiers);
+                overconcentrationBusinessRule.put(jigType, typeIdentifiers);
             }
         }
         return overconcentrationBusinessRule;
@@ -144,6 +144,6 @@ public class BusinessRules {
     }
 
     public JigTypes jigTypes() {
-        return list.stream().map(BusinessRule::jigType).collect(collectingAndThen(toList(), JigTypes::new));
+        return list.stream().map(JigType::jigType).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

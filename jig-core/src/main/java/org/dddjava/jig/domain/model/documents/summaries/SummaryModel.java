@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
 import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
@@ -13,7 +12,6 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -32,7 +30,7 @@ public class SummaryModel {
 
     public static SummaryModel from(JigTypes jigTypes, BusinessRules businessRules) {
         Map<PackageIdentifier, List<JigType>> map = businessRules.list().stream()
-                .map(BusinessRule::jigType)
+                .map(JigType::jigType)
                 .collect(groupingBy(JigType::packageIdentifier));
         return new SummaryModel(jigTypes, map, new EnumModels(List.of()));
     }

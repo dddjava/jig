@@ -3,9 +3,9 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRule;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
@@ -47,12 +47,12 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
             BusinessRules businessRules = businessRulePackage.businessRules();
-            for (BusinessRule businessRule : businessRules.list()) {
-                Node node = Nodes.businessRuleNodeOf(businessRule, jigDocumentContext);
-                if (isolatedTypes.contains(businessRule.typeIdentifier())) {
+            for (JigType jigType : businessRules.list()) {
+                Node node = Nodes.businessRuleNodeOf(jigType, jigDocumentContext);
+                if (isolatedTypes.contains(jigType.typeIdentifier())) {
                     node.warning();
                 }
-                if (businessRule.isDeprecated()) {
+                if (jigType.isDeprecated()) {
                     node.deprecated();
                 }
                 subgraph.add(node.asText());

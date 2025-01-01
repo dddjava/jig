@@ -109,38 +109,11 @@ public class BusinessRules {
         return new ClassRelations(internalList);
     }
 
-    public Map<JigType, TypeIdentifiers> overconcentrationMap() {
-        int threshold = list.size() / 10;
-        Map<JigType, TypeIdentifiers> overconcentrationBusinessRule = new HashMap<>();
-        for (JigType jigType : list) {
-            TypeIdentifiers typeIdentifiers = businessRuleRelations.collectTypeIdentifierWhichRelationTo(jigType.typeIdentifier());
-            if (typeIdentifiers.size() > threshold) {
-                overconcentrationBusinessRule.put(jigType, typeIdentifiers);
-            }
-        }
-        return overconcentrationBusinessRule;
-    }
-
     public TypeIdentifiers isolatedTypes() {
         return list.stream()
                 .map(businessRule -> businessRule.typeIdentifier())
                 .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
-    }
-
-    public BusinessRules filterCore() {
-        TypeIdentifiers coreList = list.stream()
-                .filter(businessRule -> businessRule.markedCore())
-                .map(businessRule -> businessRule.typeIdentifier())
-                .collect(collectingAndThen(toList(), TypeIdentifiers::new));
-
-        ClassRelations coreRelations = classRelations.filterRelations(coreList);
-        // TODO classRelations作る段階でnormalizeしておきたい
-        TypeIdentifiers coreAndRelatedTypeIdentifiers = coreRelations.allTypeIdentifiers().normalize();
-
-        return list.stream()
-                .filter(businessRule -> coreAndRelatedTypeIdentifiers.contains(businessRule.typeIdentifier()))
-                .collect(collectingAndThen(toList(), businessRules -> new BusinessRules(businessRules, coreRelations)));
     }
 
     public JigTypes jigTypes() {

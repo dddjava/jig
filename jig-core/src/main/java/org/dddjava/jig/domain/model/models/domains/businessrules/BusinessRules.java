@@ -45,7 +45,7 @@ public class BusinessRules {
         List<JigType> list = new ArrayList<>();
         for (JigType jigType : jigTypes.list()) {
             if (architecture.isBusinessRule(jigType)) {
-                list.add(new BusinessRule(jigType));
+                list.add(jigType);
             }
         }
         return new BusinessRules(list, classRelations);

@@ -198,13 +198,32 @@ class AsmClassVisitor extends ClassVisitor {
                 super.visitLdcInsn(value);
             }
 
+            /**
+             * invokeDynamicを処理する。
+             * 通常はLambdaやメソッド参照を記述した場合だが、JVM言語を使用すると不意に現れる可能性がある。
+             * ここではJava言語でのLambdaやメソッド参照と想定して処理している。
+             */
             @Override
             public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+                // name, descriptorにはLambdaやメソッド参照を受ける型の情報。
+                // たとえばFunctionで受けるなら name=apply descriptor=()Ljava/util/function/Function; となる。
+                // invokeDynamic実行時点でのこの情報あまり意味がないので使用しない。（必要であれば他のメソッド呼び出し時の引数として登場するはず。）
+
+                // bootstrapMethodHandleはinvokedynamicの起動メソッドが入る。
+                // Lambdaの場合は LambdaMetafactory#metafactory になり、他にも以下のようなものがある。
+                // - 文字列の+での連結: StringConcatFactory#makeConcatWithConstants
+                // - recordのtoStringなど: ObjectMethods#bootstrap
+                // これ自体はアプリケーションコード実装者が意識するものでないので使用しない。
+                //
+                // Lambdaやメソッド参照のみを処理するために以下の条件を入れる方が良いかもしれない。
+                // if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())) {
+
                 for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
 
                     if (bootstrapMethodArgument instanceof Type type) {
                         if (type.getSort() == Type.METHOD) {
-                            // lambdaやメソッドリファレンスの引数と戻り値型を読み込む
+                            // lambdaやメソッドリファレンスの引数と戻り値型を読み込むつもりの実装。
+                            // メソッドのシグネチャにあるし、他のものも扱ってしまっているので、確認して削除してしまいたい。
                             jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
                             for (Type argumentType : type.getArgumentTypes()) {
                                 jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(argumentType));
@@ -212,10 +231,10 @@ class AsmClassVisitor extends ClassVisitor {
                         }
                     }
 
-                    // lambdaで記述されているハンドラメソッド
                     if (bootstrapMethodArgument instanceof Handle handle) {
                         if (isMethodRef(handle)) {
-                            jigMethodBuilder.addMethodInstruction(toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc()));
+                            var methodDeclaration = toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc());
+                            jigMethodBuilder.addMethodInstruction(methodDeclaration);
                         }
                     }
                 }

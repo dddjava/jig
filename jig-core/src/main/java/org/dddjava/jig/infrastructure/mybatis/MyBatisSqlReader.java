@@ -115,25 +115,30 @@ public class MyBatisSqlReader implements SqlReader {
 
 
         if (sqlNode instanceof MixedSqlNode mixedSqlNode) {
-            StringBuilder sql = new StringBuilder();
-            Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
-            contents.setAccessible(true);
-            List list = (List) contents.get(mixedSqlNode);
-
-            for (Object content : list) {
-                if (content instanceof StaticTextSqlNode staticTextSqlNode) {
-                    Field text = StaticTextSqlNode.class.getDeclaredField("text");
-                    text.setAccessible(true);
-                    String textSql = (String) text.get(staticTextSqlNode);
-                    sql.append(textSql);
-                }
-            }
-
-            String sqlText = sql.toString().trim();
+            var sqlText = getString(mixedSqlNode);
             LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
             LOGGER.debug("組み立てたSQL: [{}]", sqlText);
             return new Query(sqlText);
         }
         return new Query(mappedStatement.getBoundSql(null).getSql());
+    }
+
+    private static String getString(MixedSqlNode mixedSqlNode) throws NoSuchFieldException, IllegalAccessException {
+        StringBuilder sql = new StringBuilder();
+        Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
+        contents.setAccessible(true);
+        List list = (List) contents.get(mixedSqlNode);
+
+        for (Object content : list) {
+            if (content instanceof StaticTextSqlNode staticTextSqlNode) {
+                Field text = StaticTextSqlNode.class.getDeclaredField("text");
+                text.setAccessible(true);
+                String textSql = (String) text.get(staticTextSqlNode);
+                sql.append(textSql);
+            }
+        }
+
+        String sqlText = sql.toString().trim();
+        return sqlText;
     }
 }

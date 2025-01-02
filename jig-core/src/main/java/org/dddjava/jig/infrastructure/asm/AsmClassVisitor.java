@@ -224,22 +224,25 @@ class AsmClassVisitor extends ClassVisitor {
             }
 
             private boolean isMethodRef(Handle handle) {
-                switch (handle.getTag()) {
-                    case Opcodes.H_GETFIELD:
-                    case Opcodes.H_GETSTATIC:
-                    case Opcodes.H_PUTFIELD:
-                    case Opcodes.H_PUTSTATIC:
-                        return false;
-                    case Opcodes.H_INVOKEVIRTUAL:
-                    case Opcodes.H_INVOKESTATIC:
-                    case Opcodes.H_INVOKESPECIAL:
-                    case Opcodes.H_NEWINVOKESPECIAL:
-                    case Opcodes.H_INVOKEINTERFACE:
-                        return true;
-                    default:
-                        logger.warn("Handler tag={}, skipped. handler={}", handle.getTag(), handle);
-                        return false;
-                }
+                return switch (handle.getTag()) {
+                    // フィールドに対する操作なので無視
+                    case Opcodes.H_GETFIELD,
+                         Opcodes.H_GETSTATIC,
+                         Opcodes.H_PUTFIELD,
+                         Opcodes.H_PUTSTATIC -> false;
+                    // メソッドに関連するもの
+                    case Opcodes.H_INVOKEVIRTUAL,
+                         Opcodes.H_INVOKESTATIC,
+                         Opcodes.H_INVOKESPECIAL,
+                         Opcodes.H_NEWINVOKESPECIAL,
+                         Opcodes.H_INVOKEINTERFACE -> true;
+                    default -> {
+                        // JVMとASMの仕様上ここには来ないはずだが、来た場合に続行不能にしたいためにログ出力しておく。
+                        // 将来のJavaバージョンアップで追加された場合に
+                        logger.warn("予期しないHandler {} が検出されました。解析が部分的にスキップされます。このログが出力される場合、lambdaによるメソッド呼び出しが欠落する可能性があります。issueなどで再現コードをいただけると助かります。", handle);
+                        yield false;
+                    }
+                };
             }
 
             private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {

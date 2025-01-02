@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class MyBatisSqlReader implements SqlReader {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MyBatisSqlReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyBatisSqlReader.class);
 
     @Override
     public Sqls readFrom(SqlSources sqlSources) {
@@ -40,11 +40,11 @@ public class MyBatisSqlReader implements SqlReader {
 
             return extractSql(sqlSources, classLoader);
         } catch (IOException e) {
-            LOGGER.warn("SQLファイルの読み込みでIO例外が発生しました。" +
+            logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
             return new Sqls(SqlReadStatus.失敗);
         } catch (PersistenceException e) {
-            LOGGER.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
+            logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
                     "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
             return new Sqls(SqlReadStatus.失敗);
@@ -60,12 +60,12 @@ public class MyBatisSqlReader implements SqlReader {
                 Class<?> mapperClass = classLoader.loadClass(className);
                 config.addMapper(mapperClass);
             } catch (NoClassDefFoundError e) {
-                LOGGER.warn("{} がJIG実行時クラスパスに存在しないクラスに依存しているため読み取れませんでした。このMapperの読み取りはスキップします。" +
+                logger.warn("{} がJIG実行時クラスパスに存在しないクラスに依存しているため読み取れませんでした。このMapperの読み取りはスキップします。" +
                                 "メッセージ={}",
                         className, e.getLocalizedMessage());
                 sqlReadStatus = SqlReadStatus.読み取り失敗あり;
             } catch (Exception e) {
-                LOGGER.warn("なんらかの例外により {} の読み取りに失敗しました。このMapperの読み取りはスキップします。" +
+                logger.warn("なんらかの例外により {} の読み取りに失敗しました。このMapperの読み取りはスキップします。" +
                                 "例外メッセージを添えてIssueを作成していただけると、対応できるかもしれません。",
                         className, e);
                 sqlReadStatus = SqlReadStatus.読み取り失敗あり;
@@ -74,7 +74,7 @@ public class MyBatisSqlReader implements SqlReader {
 
         List<Sql> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
-        LOGGER.debug("MappedStatements: {}件", mappedStatements.size());
+        logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
@@ -85,7 +85,7 @@ public class MyBatisSqlReader implements SqlReader {
                 try {
                     query = getQuery(mappedStatement);
                 } catch (Exception e) {
-                    LOGGER.warn("クエリの取得に失敗しました", e);
+                    logger.warn("クエリの取得に失敗しました", e);
                     sqlReadStatus = SqlReadStatus.読み取り失敗あり;
                     query = Query.unsupported();
                 }
@@ -96,7 +96,7 @@ public class MyBatisSqlReader implements SqlReader {
             }
         }
 
-        LOGGER.debug("取得したSQL: {}件", list.size());
+        logger.debug("取得したSQL: {}件", list.size());
         return new Sqls(list, sqlReadStatus);
     }
 
@@ -113,11 +113,10 @@ public class MyBatisSqlReader implements SqlReader {
         rootSqlNode.setAccessible(true);
         SqlNode sqlNode = (SqlNode) rootSqlNode.get(dynamicSqlSource);
 
-
         if (sqlNode instanceof MixedSqlNode mixedSqlNode) {
             var sqlText = emulateSql(mixedSqlNode);
-            LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
-            LOGGER.debug("組み立てたSQL: [{}]", sqlText);
+            logger.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
+            logger.debug("組み立てたSQL: [{}]", sqlText);
             return new Query(sqlText);
         }
         return new Query(mappedStatement.getBoundSql(null).getSql());

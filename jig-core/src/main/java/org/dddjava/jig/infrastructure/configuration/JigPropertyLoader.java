@@ -64,7 +64,7 @@ public class JigPropertyLoader {
 
     private void loadConfigFromPath(Path configDirectoryPath) {
         Path jigPropertiesPath = configDirectoryPath.resolve("jig.properties");
-        logger.debug("try to load " + jigPropertiesPath.toAbsolutePath() + " ...");
+        logger.debug("try to load {} ...", jigPropertiesPath.toAbsolutePath());
         if (jigPropertiesPath.toFile().exists()) {
             try (InputStream is = Files.newInputStream(jigPropertiesPath)) {
                 Properties properties = new Properties();

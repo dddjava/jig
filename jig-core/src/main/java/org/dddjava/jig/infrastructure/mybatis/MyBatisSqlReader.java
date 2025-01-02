@@ -115,7 +115,7 @@ public class MyBatisSqlReader implements SqlReader {
 
 
         if (sqlNode instanceof MixedSqlNode mixedSqlNode) {
-            var sqlText = getString(mixedSqlNode);
+            var sqlText = emulateSql(mixedSqlNode);
             LOGGER.debug("動的SQLの組み立てをエミュレートしました。ID={}", mappedStatement.getId());
             LOGGER.debug("組み立てたSQL: [{}]", sqlText);
             return new Query(sqlText);
@@ -123,7 +123,7 @@ public class MyBatisSqlReader implements SqlReader {
         return new Query(mappedStatement.getBoundSql(null).getSql());
     }
 
-    private static String getString(MixedSqlNode mixedSqlNode) throws NoSuchFieldException, IllegalAccessException {
+    private static String emulateSql(MixedSqlNode mixedSqlNode) throws NoSuchFieldException, IllegalAccessException {
         StringBuilder sql = new StringBuilder();
         Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
         contents.setAccessible(true);

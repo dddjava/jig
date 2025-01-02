@@ -83,7 +83,7 @@ public class DotCommandRunner {
         try {
             String fileName = element.documentName().withExtension(JigDiagramFormat.DOT);
             Path sourcePath = workDirectory.get().resolve(fileName);
-            Files.write(sourcePath, element.text().getBytes(StandardCharsets.UTF_8));
+            Files.writeString(sourcePath, element.text());
             logger.fine("temporary DOT file: " + sourcePath.toAbsolutePath());
             return sourcePath;
         } catch (IOException e) {

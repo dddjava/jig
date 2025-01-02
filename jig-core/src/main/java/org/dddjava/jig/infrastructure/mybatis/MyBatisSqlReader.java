@@ -138,7 +138,6 @@ public class MyBatisSqlReader implements SqlReader {
             }
         }
 
-        String sqlText = sql.toString().trim();
-        return sqlText;
+        return sql.toString().trim();
     }
 }

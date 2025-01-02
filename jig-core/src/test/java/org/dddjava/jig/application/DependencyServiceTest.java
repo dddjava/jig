@@ -30,6 +30,7 @@ public class DependencyServiceTest {
                         "stub.domain.model.annotation",
                         "stub.domain.model.booleans",
                         "stub.domain.model.category",
+                        "stub.domain.model.record",
                         "stub.domain.model.relation",
                         "stub.domain.model.relation.clz",
                         "stub.domain.model.relation.method",

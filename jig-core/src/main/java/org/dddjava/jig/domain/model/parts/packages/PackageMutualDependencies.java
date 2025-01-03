@@ -32,7 +32,7 @@ public class PackageMutualDependencies {
             for (PackageRelation right : packageRelations.list()) {
                 if (packageRelation.from().equals(right.to()) && packageRelation.to().equals(right.from())) {
                     if (packageMutualDependencies.notContains(packageRelation)) {
-                        list.add(new PackageMutualDependency(packageRelation));
+                        list.add(PackageMutualDependency.from(packageRelation));
                     }
                 }
             }

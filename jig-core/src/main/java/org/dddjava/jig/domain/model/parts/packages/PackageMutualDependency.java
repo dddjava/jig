@@ -8,9 +8,13 @@ public class PackageMutualDependency {
     private final PackageIdentifier left;
     private final PackageIdentifier right;
 
-    public PackageMutualDependency(PackageRelation packageRelation) {
-        left = packageRelation.from;
-        right = packageRelation.to;
+    public static PackageMutualDependency from(PackageRelation packageRelation) {
+        return new PackageMutualDependency(packageRelation.from, packageRelation.to);
+    }
+    
+    private PackageMutualDependency(PackageIdentifier left, PackageIdentifier right) {
+        this.left = left;
+        this.right = right;
     }
 
     public boolean matches(PackageRelation packageRelation) {

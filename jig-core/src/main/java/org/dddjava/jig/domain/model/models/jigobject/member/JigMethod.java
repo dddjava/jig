@@ -160,7 +160,7 @@ public class JigMethod {
     /**
      * メソッド関連のダイアグラム
      */
-    public String usecaseMermaidText(JigTypes jigTypes, MethodRelations methodRelations) {
+    public String usecaseMermaidText(JigMethodFinder jigMethodFinder, MethodRelations methodRelations) {
         var mermaidText = new StringJoiner("\n");
         mermaidText.add("graph LR");
 
@@ -178,8 +178,8 @@ public class JigMethod {
                 mermaidText.add(usecaseMermaidNodeText());
                 mermaidText.add("style %s font-weight:bold".formatted(this.htmlIdText()));
             } else {
-                jigTypes.resolveJigMethod(methodIdentifier).ifPresent(
-                        jigMethod -> {
+                jigMethodFinder.find(methodIdentifier)
+                        .ifPresent( jigMethod -> {
                             resolved.add(methodIdentifier);
                             if (jigMethod.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように

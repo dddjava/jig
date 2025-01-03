@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethodFinder;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.List;
@@ -79,9 +80,10 @@ public class SummaryModel {
 
     public String mermaidDiagram(JigMethod jigMethod) {
         var methodRelations = jigTypes.methodRelations().inlineLambda();
+        JigMethodFinder jigMethodFinder = methodIdentifier -> jigTypes.resolveJigMethod(methodIdentifier);
 
         return jigTypes.resolveJigMethod(jigMethod.declaration().identifier())
-                .map(m -> m.usecaseMermaidText(jigTypes, methodRelations))
+                .map(m -> m.usecaseMermaidText(jigMethodFinder, methodRelations))
                 .orElse("");
     }
 }

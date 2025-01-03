@@ -56,7 +56,7 @@ public record EntrypointGroup
         Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
-        MethodRelations springComponentMethodRelations = methodRelations.filterSpringComponent(jigTypes).inlineLambda();
+        MethodRelations springComponentMethodRelations = jigTypes.filterSpringComponent(methodRelations).inlineLambda();
 
         entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形

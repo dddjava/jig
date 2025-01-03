@@ -96,4 +96,13 @@ public class JigTypes {
                 .orElse(TypeCategory.Others);
         return typeCategory.isApplicationComponent();
     }
+
+    public MethodRelations filterSpringComponent(MethodRelations methodRelations) {
+        return methodRelations.list().stream()
+                .filter(methodRelation ->
+                        isEndpointOrApplication(methodRelation.from().declaringType())
+                                && isEndpointOrApplication(methodRelation.to().declaringType())
+                )
+                .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
 }

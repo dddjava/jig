@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.parts.classes.method;
 
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,12 +144,4 @@ public class MethodRelations {
         return list;
     }
 
-    public MethodRelations filterSpringComponent(JigTypes jigTypes) {
-        return list.stream()
-                .filter(methodRelation ->
-                        jigTypes.isEndpointOrApplication(methodRelation.from().declaringType())
-                                && jigTypes.isEndpointOrApplication(methodRelation.to().declaringType())
-                )
-                .collect(collectingAndThen(toList(), MethodRelations::new));
-    }
 }

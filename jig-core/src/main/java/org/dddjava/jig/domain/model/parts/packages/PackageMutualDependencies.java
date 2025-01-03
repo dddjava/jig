@@ -7,11 +7,11 @@ import java.util.StringJoiner;
 /**
  * 相互依存一覧
  */
-public class BidirectionalRelations {
+public class PackageMutualDependencies {
 
     List<PackageMutualDependency> list;
 
-    private BidirectionalRelations(List<PackageMutualDependency> list) {
+    private PackageMutualDependencies(List<PackageMutualDependency> list) {
         this.list = list;
     }
 
@@ -24,20 +24,20 @@ public class BidirectionalRelations {
         return true;
     }
 
-    public static BidirectionalRelations from(PackageRelations packageRelations) {
+    public static PackageMutualDependencies from(PackageRelations packageRelations) {
         List<PackageMutualDependency> list = new ArrayList<>();
-        BidirectionalRelations bidirectionalRelations = new BidirectionalRelations(list);
+        PackageMutualDependencies packageMutualDependencies = new PackageMutualDependencies(list);
 
         for (PackageRelation packageRelation : packageRelations.list()) {
             for (PackageRelation right : packageRelations.list()) {
                 if (packageRelation.from().equals(right.to()) && packageRelation.to().equals(right.from())) {
-                    if (bidirectionalRelations.notContains(packageRelation)) {
+                    if (packageMutualDependencies.notContains(packageRelation)) {
                         list.add(new PackageMutualDependency(packageRelation));
                     }
                 }
             }
         }
-        return bidirectionalRelations;
+        return packageMutualDependencies;
     }
 
     public String dotRelationText() {

@@ -23,7 +23,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     PackageRelations packageRelations;
     ClassRelations classRelations;
     PackageDepth appliedDepth;
-    BidirectionalRelations bidirectionalRelations;
+    PackageMutualDependencies packageMutualDependencies;
 
     public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
         this(packageIdentifiers, classRelations.toPackageRelations(), classRelations, new PackageDepth(-1));
@@ -34,7 +34,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         this.packageRelations = packageRelations.filterBothMatch(packageIdentifiers);
         this.classRelations = classRelations;
         this.appliedDepth = appliedDepth;
-        this.bidirectionalRelations = BidirectionalRelations.from(this.packageRelations);
+        this.packageMutualDependencies = PackageMutualDependencies.from(this.packageRelations);
     }
 
     public static PackageRelationDiagram empty() {
@@ -69,11 +69,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         }
 
         PackageRelations packageRelations = packageDependencies();
-        BidirectionalRelations bidirectionalRelations = this.bidirectionalRelations;
+        PackageMutualDependencies packageMutualDependencies = this.packageMutualDependencies;
 
         RelationText unidirectionalRelation = new RelationText("edge [color=black];");
         for (PackageRelation packageRelation : packageRelations.list()) {
-            if (bidirectionalRelations.notContains(packageRelation)) {
+            if (packageMutualDependencies.notContains(packageRelation)) {
                 unidirectionalRelation.add(packageRelation.from(), packageRelation.to());
             }
         }
@@ -137,7 +137,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(summaryText)
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
-                .add(bidirectionalRelations.dotRelationText())
+                .add(packageMutualDependencies.dotRelationText())
                 .add(stringJoiner.toString())
                 .toString();
 
@@ -145,7 +145,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     }
 
     private AdditionalText additionalText() {
-        if (bidirectionalRelations.none()) {
+        if (packageMutualDependencies.none()) {
             return AdditionalText.empty();
         }
         return new AdditionalText(bidirectionalRelationReasonText());
@@ -153,7 +153,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     private String bidirectionalRelationReasonText() {
         StringJoiner sj = new StringJoiner("\n");
-        for (PackageMutualDependency packageMutualDependency : bidirectionalRelations.list()) {
+        for (PackageMutualDependency packageMutualDependency : packageMutualDependencies.list()) {
             sj.add("# " + packageMutualDependency.toString());
             for (ClassRelation classRelation : classRelations.list()) {
                 PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());

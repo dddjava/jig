@@ -28,6 +28,6 @@ public class PackageMutualDependency {
      * 双方向とするため、 edge[dir=both] で囲むこと。
      */
     String dotText() {
-        return '"' + left.asText() + '"' + " -> " + '"' + right.asText() + '"' + ';';
+        return "\"%s\" -> \"%s\";".formatted(left.asText(), right.asText());
     }
 }

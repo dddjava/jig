@@ -22,4 +22,12 @@ public class PackageMutualDependency {
     public String toString() {
         return left.asText() + " <-> " + right.asText();
     }
+
+    /**
+     * DOT言語での関連出力。
+     * 双方向とするため、 edge[dir=both] で囲むこと。
+     */
+    String dotText() {
+        return '"' + left.asText() + '"' + " -> " + '"' + right.asText() + '"' + ';';
+    }
 }

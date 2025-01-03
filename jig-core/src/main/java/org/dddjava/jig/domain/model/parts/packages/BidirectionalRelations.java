@@ -44,10 +44,7 @@ public class BidirectionalRelations {
         StringJoiner stringJoiner = new StringJoiner("\n")
                 .add("edge [color=red,dir=both,style=bold];");
         for (PackageMutualDependency packageMutualDependency : list) {
-            PackageIdentifier from = packageMutualDependency.packageRelation.from;
-            PackageIdentifier to = packageMutualDependency.packageRelation.to;
-            String line = '"' + from.asText() + '"' + " -> " + '"' + to.asText() + '"' + ';';
-            stringJoiner.add(line);
+            stringJoiner.add(packageMutualDependency.dotText());
         }
         return stringJoiner.toString();
     }

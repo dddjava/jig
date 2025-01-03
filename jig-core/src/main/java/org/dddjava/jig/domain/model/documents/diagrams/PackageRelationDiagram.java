@@ -153,11 +153,11 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
 
     private String bidirectionalRelationReasonText() {
         StringJoiner sj = new StringJoiner("\n");
-        for (BidirectionalRelation bidirectionalRelation : bidirectionalRelations.list()) {
-            sj.add("# " + bidirectionalRelation.toString());
+        for (PackageMutualDependency packageMutualDependency : bidirectionalRelations.list()) {
+            sj.add("# " + packageMutualDependency.toString());
             for (ClassRelation classRelation : classRelations.list()) {
                 PackageRelation packageRelation = new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
-                if (bidirectionalRelation.matches(packageRelation)) {
+                if (packageMutualDependency.matches(packageRelation)) {
                     sj.add("- " + classRelation.formatText());
                 }
             }

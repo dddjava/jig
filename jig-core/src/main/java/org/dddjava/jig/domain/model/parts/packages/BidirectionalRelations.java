@@ -9,15 +9,15 @@ import java.util.StringJoiner;
  */
 public class BidirectionalRelations {
 
-    List<BidirectionalRelation> list;
+    List<PackageMutualDependency> list;
 
-    private BidirectionalRelations(List<BidirectionalRelation> list) {
+    private BidirectionalRelations(List<PackageMutualDependency> list) {
         this.list = list;
     }
 
     public boolean notContains(PackageRelation packageRelation) {
-        for (BidirectionalRelation bidirectionalRelation : list) {
-            if (bidirectionalRelation.matches(packageRelation)) {
+        for (PackageMutualDependency packageMutualDependency : list) {
+            if (packageMutualDependency.matches(packageRelation)) {
                 return false;
             }
         }
@@ -25,14 +25,14 @@ public class BidirectionalRelations {
     }
 
     public static BidirectionalRelations from(PackageRelations packageRelations) {
-        List<BidirectionalRelation> list = new ArrayList<>();
+        List<PackageMutualDependency> list = new ArrayList<>();
         BidirectionalRelations bidirectionalRelations = new BidirectionalRelations(list);
 
         for (PackageRelation packageRelation : packageRelations.list()) {
             for (PackageRelation right : packageRelations.list()) {
                 if (packageRelation.from().equals(right.to()) && packageRelation.to().equals(right.from())) {
                     if (bidirectionalRelations.notContains(packageRelation)) {
-                        list.add(new BidirectionalRelation(packageRelation));
+                        list.add(new PackageMutualDependency(packageRelation));
                     }
                 }
             }
@@ -43,9 +43,9 @@ public class BidirectionalRelations {
     public String dotRelationText() {
         StringJoiner stringJoiner = new StringJoiner("\n")
                 .add("edge [color=red,dir=both,style=bold];");
-        for (BidirectionalRelation bidirectionalRelation : list) {
-            PackageIdentifier from = bidirectionalRelation.packageRelation.from;
-            PackageIdentifier to = bidirectionalRelation.packageRelation.to;
+        for (PackageMutualDependency packageMutualDependency : list) {
+            PackageIdentifier from = packageMutualDependency.packageRelation.from;
+            PackageIdentifier to = packageMutualDependency.packageRelation.to;
             String line = '"' + from.asText() + '"' + " -> " + '"' + to.asText() + '"' + ';';
             stringJoiner.add(line);
         }
@@ -56,7 +56,7 @@ public class BidirectionalRelations {
         return list.isEmpty();
     }
 
-    public List<BidirectionalRelation> list() {
+    public List<PackageMutualDependency> list() {
         return list;
     }
 }

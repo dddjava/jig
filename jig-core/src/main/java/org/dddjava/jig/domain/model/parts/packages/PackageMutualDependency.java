@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.parts.packages;
 
 /**
- * 相互依存
+ * パッケージの相互依存
  */
-public class BidirectionalRelation {
+public class PackageMutualDependency {
     PackageRelation packageRelation;
 
-    public BidirectionalRelation(PackageRelation packageRelation) {
+    public PackageMutualDependency(PackageRelation packageRelation) {
         this.packageRelation = packageRelation;
     }
 

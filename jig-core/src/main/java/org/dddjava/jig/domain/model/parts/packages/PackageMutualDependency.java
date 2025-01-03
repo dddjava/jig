@@ -3,18 +3,10 @@ package org.dddjava.jig.domain.model.parts.packages;
 /**
  * パッケージの相互依存
  */
-public class PackageMutualDependency {
-
-    private final PackageIdentifier left;
-    private final PackageIdentifier right;
+public record PackageMutualDependency(PackageIdentifier left, PackageIdentifier right) {
 
     public static PackageMutualDependency from(PackageRelation packageRelation) {
         return new PackageMutualDependency(packageRelation.from, packageRelation.to);
-    }
-    
-    private PackageMutualDependency(PackageIdentifier left, PackageIdentifier right) {
-        this.left = left;
-        this.right = right;
     }
 
     public boolean matches(PackageRelation packageRelation) {

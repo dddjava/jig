@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 public class PackageIdentifier {
 
     private final String value;
-    private String abbreviationText = null;
 
     private PackageIdentifier(String value) {
         this.value = value;
@@ -119,6 +118,14 @@ public class PackageIdentifier {
         // 英数字以外を_に置換する
         return value.replaceAll("[^a-zA-Z0-9]", "_");
     }
+
+    /**
+     * 省略表記フィールド
+     * FQNは長くなりすぎるため省略表記が必要な場合がある。
+     * 全てのパッケージで必要なものでもなく、それなりの計算量となるため、生成時にキャッシュする形とするためフィールドで持つ。
+     * このインスタンス自体に持たせない方がいい気はする。
+     */
+    private String abbreviationText = null;
 
     /**
      * 省略表記

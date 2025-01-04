@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.term;
+package org.dddjava.jig.domain.model.models.domains.term;
 
 /**
  * 用語の種類

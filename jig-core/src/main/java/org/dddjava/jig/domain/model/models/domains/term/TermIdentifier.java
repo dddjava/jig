@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.term;
+package org.dddjava.jig.domain.model.models.domains.term;
 
 import java.util.Objects;
 

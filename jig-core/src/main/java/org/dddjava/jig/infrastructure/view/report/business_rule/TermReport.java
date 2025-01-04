@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.view.report.business_rule;
 
-import org.dddjava.jig.domain.model.parts.term.Term;
+import org.dddjava.jig.domain.model.models.domains.term.Term;
 import org.dddjava.jig.infrastructure.view.report.ReportItem;
 import org.dddjava.jig.infrastructure.view.report.ReportItemFor;
 import org.dddjava.jig.infrastructure.view.report.ReportTitle;

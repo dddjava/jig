@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.parts.term;
+package org.dddjava.jig.domain.model.models.domains.term;
 
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;

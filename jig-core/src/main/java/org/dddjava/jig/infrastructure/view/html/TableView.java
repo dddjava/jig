@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
-import org.dddjava.jig.domain.model.parts.term.Terms;
+import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

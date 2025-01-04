@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 public class EntrypointMethod {
 
-    static Logger LOGGER = LoggerFactory.getLogger(EntrypointMethod.class);
+    static Logger logger = LoggerFactory.getLogger(EntrypointMethod.class);
 
     final JigType jigType;
     final JigMethod method;
@@ -72,7 +72,7 @@ public class EntrypointMethod {
         // メソッドにアノテーションが複数指定されている場合、最初の一つが優先される（SpringMVCの挙動）
         Annotation requestMappingForMethod = methodAnnotations.get(0);
         if (methodAnnotations.size() > 1) {
-            LOGGER.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。", method.declaration().asFullNameText());
+            logger.warn("{} にマッピングアノテーションが複数記述されているため、正しい検出が行えません。", method.declaration().asFullNameText());
         }
 
         String methodPath = requestMappingForMethod.descriptionTextOf("value");

@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class DirectoryCollector extends SimpleFileVisitor<Path> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryCollector.class);
+    private static final Logger logger = LoggerFactory.getLogger(DirectoryCollector.class);
 
     Predicate<Path> filter;
     List<Path> paths = new ArrayList<>();
@@ -27,7 +27,7 @@ public class DirectoryCollector extends SimpleFileVisitor<Path> {
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         if (filter.test(dir)) {
             paths.add(dir);
-            LOGGER.debug("classes: {}", dir);
+            logger.debug("classes: {}", dir);
             return FileVisitResult.SKIP_SUBTREE;
         }
         return FileVisitResult.CONTINUE;
@@ -37,7 +37,7 @@ public class DirectoryCollector extends SimpleFileVisitor<Path> {
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         Objects.requireNonNull(dir);
         if (exc != null) {
-            LOGGER.warn("skipped '{}'. (type={}, message={})", dir, exc.getClass().getName(), exc.getMessage());
+            logger.warn("skipped '{}'. (type={}, message={})", dir, exc.getClass().getName(), exc.getMessage());
         }
         return FileVisitResult.CONTINUE;
     }
@@ -45,7 +45,7 @@ public class DirectoryCollector extends SimpleFileVisitor<Path> {
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) {
         Objects.requireNonNull(file);
-        LOGGER.warn("skipped '{}'. (type={}, message={})", file, exc.getClass().getName(), exc.getMessage());
+        logger.warn("skipped '{}'. (type={}, message={})", file, exc.getClass().getName(), exc.getMessage());
         return FileVisitResult.CONTINUE;
     }
 

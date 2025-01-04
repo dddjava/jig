@@ -20,7 +20,7 @@ public enum SqlType {
     UPDATE("update\\s+([^\\s(]+)\\s.+"),
     DELETE("delete\\s+from\\s+([^\\s(]+)\\b.*");
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlType.class);
+    private static final Logger logger = LoggerFactory.getLogger(SqlType.class);
     private final List<Pattern> patterns;
 
     SqlType(String... patterns) {
@@ -37,7 +37,7 @@ public enum SqlType {
             }
         }
 
-        LOGGER.warn("{} としてテーブル名が解析できませんでした。 [{}]", this, sql);
+        logger.warn("{} としてテーブル名が解析できませんでした。 [{}]", this, sql);
         return unexpectedTable();
     }
 

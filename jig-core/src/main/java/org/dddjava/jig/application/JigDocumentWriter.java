@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class JigDocumentWriter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JigDocumentWriter.class);
+    private static final Logger logger = LoggerFactory.getLogger(JigDocumentWriter.class);
 
     JigDocument jigDocument;
     Path outputDirectory;
@@ -59,7 +59,7 @@ public class JigDocumentWriter {
     }
 
     public void markSkip() {
-        LOGGER.info("出力対象がないため {} をスキップしました。", jigDocument);
+        logger.info("出力対象がないため {} をスキップしました。", jigDocument);
     }
 
     public List<Path> outputFilePaths() {

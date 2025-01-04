@@ -2,7 +2,7 @@ package org.dddjava.jig.report;
 
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReader;
-import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceAngles;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;

@@ -2,12 +2,12 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
-import org.dddjava.jig.domain.model.models.applications.backends.DatasourceAngles;
-import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
-import org.dddjava.jig.domain.model.models.applications.services.ServiceAngles;
-import org.dddjava.jig.domain.model.models.applications.services.ServiceMethods;
-import org.dddjava.jig.domain.model.models.applications.services.StringComparingMethodList;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngles;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethods;
+import org.dddjava.jig.domain.model.models.applications.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;

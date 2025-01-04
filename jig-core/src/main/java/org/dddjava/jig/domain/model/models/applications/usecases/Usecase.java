@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications.services;
+package org.dddjava.jig.domain.model.models.applications.usecases;
 
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 

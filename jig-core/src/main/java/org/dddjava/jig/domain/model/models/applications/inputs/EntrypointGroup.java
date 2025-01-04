@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications.entrypoints;
+package org.dddjava.jig.domain.model.models.applications.inputs;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;

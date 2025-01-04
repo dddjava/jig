@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.models.applications.services.ServiceMethod;
-import org.dddjava.jig.domain.model.models.applications.services.Usecase;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethod;
+import org.dddjava.jig.domain.model.models.applications.usecases.Usecase;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 

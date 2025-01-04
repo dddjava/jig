@@ -1,7 +1,7 @@
-package org.dddjava.jig.domain.model.models.applications.services;
+package org.dddjava.jig.domain.model.models.applications.usecases;
 
-import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.EntrypointMethod;
+import org.dddjava.jig.domain.model.models.applications.outputs.RepositoryMethods;
+import org.dddjava.jig.domain.model.models.applications.inputs.EntrypointMethod;
 import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;

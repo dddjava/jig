@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications.services;
+package org.dddjava.jig.domain.model.models.applications.usecases;
 
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 

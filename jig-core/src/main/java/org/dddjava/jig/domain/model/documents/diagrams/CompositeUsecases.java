@@ -4,8 +4,8 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Node;
 import org.dddjava.jig.domain.model.documents.stationery.NodeRole;
 import org.dddjava.jig.domain.model.documents.stationery.Nodes;
-import org.dddjava.jig.domain.model.models.applications.services.ServiceAngle;
-import org.dddjava.jig.domain.model.models.applications.services.Usecase;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngle;
+import org.dddjava.jig.domain.model.models.applications.usecases.Usecase;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 

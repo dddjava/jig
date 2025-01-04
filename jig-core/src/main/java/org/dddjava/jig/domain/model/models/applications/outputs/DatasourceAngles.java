@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.models.applications.backends;
+package org.dddjava.jig.domain.model.models.applications.outputs;
 
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;

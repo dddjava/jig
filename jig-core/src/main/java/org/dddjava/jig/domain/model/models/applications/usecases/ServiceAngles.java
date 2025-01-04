@@ -1,8 +1,8 @@
-package org.dddjava.jig.domain.model.models.applications.services;
+package org.dddjava.jig.domain.model.models.applications.usecases;
 
-import org.dddjava.jig.domain.model.models.applications.backends.DatasourceMethods;
-import org.dddjava.jig.domain.model.models.applications.backends.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.entrypoints.Entrypoint;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.models.applications.outputs.RepositoryMethods;
+import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 
 import java.util.ArrayList;

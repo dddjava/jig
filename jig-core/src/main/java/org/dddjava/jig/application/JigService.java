@@ -2,9 +2,9 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
+import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
-import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethods;
 import org.dddjava.jig.domain.model.models.applications.usecases.StringComparingMethodList;

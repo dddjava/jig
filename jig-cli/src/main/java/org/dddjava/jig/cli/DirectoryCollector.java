@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DirectoryCollector implements FileVisitor<Path> {
     private static final Logger logger = LoggerFactory.getLogger(DirectoryCollector.class);
@@ -23,6 +24,8 @@ public class DirectoryCollector implements FileVisitor<Path> {
 
     private final List<Path> binarySourcePaths = new ArrayList<>();
     private final List<Path> textSourcesPaths = new ArrayList<>();
+    
+    private final AtomicLong visitCounter = new AtomicLong();
 
     public DirectoryCollector(String directoryClasses, String directoryResources, String directorySources) {
         this.directoryClasses = directoryClasses;
@@ -32,6 +35,16 @@ public class DirectoryCollector implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) {
+        visitCounter.incrementAndGet();
+
+        // pathの名前を取得する
+        String pathName = path.getFileName().toString();
+        if (pathName.startsWith(".")) {
+            // . で始まるディレクトリは中身を見ない
+            logger.debug("skip dot directory: {}", path);
+            return FileVisitResult.SKIP_SUBTREE;
+        }
+
         if (path.endsWith(directoryClasses) || path.endsWith(directoryResources)) {
             // 末尾が合致するディレクトリを見つけたら採用する
             binarySourcePaths.add(path);
@@ -50,6 +63,7 @@ public class DirectoryCollector implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+        visitCounter.incrementAndGet();
         // ファイルに対しては何もしない
         return FileVisitResult.CONTINUE;
     }
@@ -69,6 +83,7 @@ public class DirectoryCollector implements FileVisitor<Path> {
     }
 
     public SourcePaths toSourcePaths() {
+        logger.debug("visitCount: {}", visitCounter.get());
         return new SourcePaths(
                 new BinarySourcePaths(binarySourcePaths),
                 new CodeSourcePaths(textSourcesPaths));

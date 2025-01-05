@@ -80,7 +80,7 @@ class CliConfig {
 
     SourcePaths rawSourceLocations() {
         try {
-            Path projectRoot = Paths.get(projectPath);
+            Path projectRoot = Paths.get(projectPath).toAbsolutePath().normalize();
 
             DirectoryCollector sourcesCollector = new DirectoryCollector(directoryClasses, directoryResources, directorySources);
             Files.walkFileTree(projectRoot, sourcesCollector);

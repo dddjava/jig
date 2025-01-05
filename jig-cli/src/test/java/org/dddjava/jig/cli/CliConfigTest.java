@@ -100,5 +100,31 @@ class CliConfigTest {
                             () -> "[%s] がリスト [%s] に含まれていませんでした。".formatted(expected, actual)))
             );
         }
+
+        @Test
+        void ドット始まりを無視する() throws IOException {
+            // 準備
+            Files.createDirectories(tempDir.resolve("build/classes/java/main"));
+            Files.createDirectories(tempDir.resolve("build/resources/main"));
+            Files.createDirectories(tempDir.resolve("src/main/java"));
+            Files.createDirectories(tempDir.resolve(".jig/build/classes/java/main"));
+            Files.createDirectories(tempDir.resolve(".jig/build/resources/main"));
+            Files.createDirectories(tempDir.resolve(".jig/src/main/java"));
+
+            var sut = new CliConfig();
+            // . や .. などの相対記述を使用している場合にドット始まりとして無視されてしまう不具合の検出のため resolve(.) を入れる
+            sut.projectPath = tempDir.toAbsolutePath().resolve(".").toString();
+            sut.directoryClasses = "classes";
+            sut.directoryResources = "resources";
+            sut.directorySources = "src";
+
+            var sourcePaths = sut.rawSourceLocations();
+
+            assertPaths(sourcePaths.binarySourcePaths(),
+                    tempDir.resolve("build/classes"),
+                    tempDir.resolve("build/resources"));
+            assertPaths(sourcePaths.textSourcePaths(),
+                    tempDir.resolve("src"));
+        }
     }
 }

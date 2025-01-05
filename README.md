@@ -20,7 +20,10 @@ JIGはコードでの設計を支援するツールです。思い浮かんだ�
 - [コマンドラインでの使い方](./jig-cli)
 - [Gradleプラグインでの使い方](./jig-gradle-plugin)
 
-実行には Java17以降 と [Graphviz](https://www.graphviz.org/) が必要です。
+JIGの実行にはJava17以降が必要です。
+プロダクトはJava17以降である必要はありません。
+たとえばJava8のプロダクトであっても、Java21で実行するJIGで解析することは可能です。
+
 より詳しい情報は[Wiki](https://github.com/dddjava/jig/wiki)を参照してください。
 うまく動かない場合などは [issue](https://github.com/dddjava/jig/issues/new/choose) でお問い合わせください。
 

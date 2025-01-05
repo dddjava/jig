@@ -25,10 +25,6 @@ public class JigExecutor {
         this.sourcePaths = sourcePaths;
     }
 
-    /**
-     * @deprecated 2025.3.1以降で削除予定
-     */
-    @Deprecated(since = "2025.1.1")
     public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
         return new JigExecutor(configuration, sourcePaths).execute();
     }
@@ -50,6 +46,10 @@ public class JigExecutor {
         return results;
     }
 
+    /**
+     * 実装中
+     */
+    @Deprecated(since = "2025.1.1")
     public static JigExecutor standard(JigOptions jigOptions) {
         var targetRootPath = jigOptions.workingDirectory().toAbsolutePath();
 
@@ -78,6 +78,10 @@ public class JigExecutor {
         );
     }
 
+    /**
+     * 実装中
+     */
+    @Deprecated(since = "2025.1.1")
     public JigExecutor withSourcePaths(SourcePaths sourcePaths) {
         return new JigExecutor(configuration, sourcePaths);
     }

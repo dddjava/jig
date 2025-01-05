@@ -26,19 +26,22 @@ public record JigOptions(
     enum BuildTool {
         GRADLE {
             @Override
-            boolean isUsing(Path workingDirectory) {
-                return workingDirectory.resolve("build.gradle").toFile().exists()
-                        || workingDirectory.resolve("build.gradle.kts").toFile().exists();
+            boolean isUsing(Path rootPath) {
+                return rootPath.resolve("build.gradle").toFile().exists()
+                        || rootPath.resolve("build.gradle.kts").toFile().exists();
             }
         },
         MAVEN {
             @Override
-            boolean isUsing(Path workingDirectory) {
-                return workingDirectory.resolve("pom.xml").toFile().exists();
+            boolean isUsing(Path rootPath) {
+                return rootPath.resolve("pom.xml").toFile().exists();
             }
         };
 
-        abstract boolean isUsing(Path workingDirectory);
+        /**
+         * 渡されたパスをもとにこのビルドツールを使用しているか判別する
+         */
+        abstract boolean isUsing(Path rootPath);
     }
 
 }

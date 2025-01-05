@@ -1,6 +1,7 @@
 package org.dddjava.jig;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public record JigOptions(
         String domainPattern,
@@ -15,13 +16,11 @@ public record JigOptions(
     BuildTool resolveBuildTool() {
         if (buildTool != null) return buildTool;
 
-        for (var buildTool : BuildTool.values()) {
-            if (buildTool.isUsing(workingDirectory)) {
-                return buildTool;
-            }
-        }
-
-        return BuildTool.GRADLE;
+        return Arrays.stream(BuildTool.values())
+                .filter(buildTool -> buildTool.isUsing(workingDirectory))
+                .findAny()
+                // 該当しない場合はGradleとして扱う
+                .orElse(BuildTool.GRADLE);
     }
 
     enum BuildTool {

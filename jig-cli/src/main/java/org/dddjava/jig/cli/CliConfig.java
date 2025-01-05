@@ -3,8 +3,6 @@ package org.dddjava.jig.cli;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
-import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,17 +82,10 @@ class CliConfig {
         try {
             Path projectRoot = Paths.get(projectPath);
 
-            DirectoryCollector binaryCollector = new DirectoryCollector(path -> path.endsWith(directoryClasses) || path.endsWith(directoryResources));
-            Files.walkFileTree(projectRoot, binaryCollector);
-            List<Path> binarySourcePaths = binaryCollector.listPath();
-
-            DirectoryCollector sourcesCollector = new DirectoryCollector(path -> path.endsWith(directorySources));
+            DirectoryCollector sourcesCollector = new DirectoryCollector(directoryClasses, directoryResources, directorySources);
             Files.walkFileTree(projectRoot, sourcesCollector);
-            List<Path> textSourcesPaths = sourcesCollector.listPath();
 
-            return new SourcePaths(
-                    new BinarySourcePaths(binarySourcePaths),
-                    new CodeSourcePaths(textSourcesPaths));
+            return sourcesCollector.toSourcePaths();
         } catch (IOException e) {
             // TODO エラーメッセージ。たとえばルートパスの指定が変な時とかはここにくる。
             throw new UncheckedIOException(e);

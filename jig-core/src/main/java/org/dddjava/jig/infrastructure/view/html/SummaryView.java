@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -26,7 +27,7 @@ import static java.util.stream.Collectors.*;
  *
  * 概要HTMLで出力するパッケージツリーと詳細のモデルを加工します。
  */
-public class SummaryView implements JigView {
+public class SummaryView {
 
     protected final JigDocumentContext jigDocumentContext;
     private final JigDocument jigDocument;
@@ -40,12 +41,16 @@ public class SummaryView implements JigView {
         this.contextMap = new ConcurrentHashMap<>();
     }
 
-    @Override
     public JigDocument jigDocument() {
         return jigDocument;
     }
 
-    @Override
+    public List<Path> writeSummary(SummaryModel model, Path outputDirectory) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument(), outputDirectory);
+        summaryModel(model, jigDocumentWriter);
+        return jigDocumentWriter.outputFilePaths();
+    }
+
     public void render(Object model, JigDocumentWriter jigDocumentWriter) {
         if (model instanceof SummaryModel summaryModel) {
             summaryModel(summaryModel, jigDocumentWriter);

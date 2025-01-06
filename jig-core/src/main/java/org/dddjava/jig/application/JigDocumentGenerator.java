@@ -123,7 +123,31 @@ public class JigDocumentGenerator {
         try {
             long startTime = System.currentTimeMillis();
 
-            var outputFilePaths = output(jigDocument, outputDirectory, jigSource);
+            var outputFilePaths = switch (jigDocument) {
+                case DomainSummary -> {
+                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
+                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                }
+                case ApplicationSummary, UsecaseSummary -> {
+                    var summaryModel = SummaryModel.from(jigService.services(jigSource));
+                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                }
+                case EntrypointSummary -> {
+                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
+                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                }
+                case EnumSummary -> {
+                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
+                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                }
+
+                // いままでの動作
+                default -> output(jigDocument, outputDirectory, jigSource);
+            };
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);
@@ -146,31 +170,28 @@ public class JigDocumentGenerator {
 
             // domain
             case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
-            case DomainSummary ->
-                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
             case BusinessRuleList -> domainList(jigSource);
             case CategoryDiagram -> jigService.categories(jigSource);
             case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
-            case EnumSummary ->
-                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
 
             // application & usecase
             case ApplicationList -> applicationList(jigSource);
-            case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
             case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
-            case EntrypointSummary ->
-                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
+
+            // ハンドル済みのはず
+            default -> throw new IllegalStateException("Unhandled JigDocument: " + jigDocument);
         };
 
         JigView jigView = switch (jigDocument.jigDocumentType()) {
             case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
             case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
-            case SUMMARY -> new SummaryView(jigDocument, templateEngine, jigDocumentContext);
             case TABLE -> new TableView(jigDocument, templateEngine);
+
+            // ハンドル済みのはず
+            default -> throw new IllegalStateException("Unhandled JigDocumentType: " + jigDocument.jigDocumentType());
         };
 
-        var outputFilePaths = jigView.write(outputDirectory, model);
-        return outputFilePaths;
+        return jigView.write(outputDirectory, model);
     }
 
     private void copyAssets(Path outputDirectory) {

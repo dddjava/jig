@@ -157,9 +157,7 @@ public class JigDocumentGenerator {
                 case TABLE -> new TableView(templateEngine);
             };
 
-            JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-            jigView.render(model, jigDocumentWriter);
-            var outputFilePaths = jigDocumentWriter.outputFilePaths();
+            var outputFilePaths = jigView.write(jigDocument, outputDirectory, model);
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);

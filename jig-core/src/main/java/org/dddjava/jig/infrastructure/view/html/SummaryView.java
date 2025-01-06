@@ -28,29 +28,23 @@ import static java.util.stream.Collectors.*;
 public class SummaryView {
 
     protected final JigDocumentContext jigDocumentContext;
-    private final JigDocument jigDocument;
     private final TemplateEngine templateEngine;
     private final Map<String, Object> contextMap;
 
-    public SummaryView(JigDocument jigDocument, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
-        this.jigDocument = jigDocument;
+    public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
         this.contextMap = new ConcurrentHashMap<>();
     }
 
-    public static List<Path> getHandleResult(JigDocumentContext jigDocumentContext, TemplateEngine templateEngine, JigDocument jigDocument, Path outputDirectory, SummaryModel summaryModel) {
-        var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-        return summaryView.writeSummary(summaryModel, outputDirectory);
-    }
-
-    public List<Path> writeSummary(SummaryModel model, Path outputDirectory) {
+    public static List<Path> write(JigDocumentContext jigDocumentContext, TemplateEngine templateEngine, JigDocument jigDocument, Path outputDirectory, SummaryModel summaryModel) {
+        var summaryView = new SummaryView(templateEngine, jigDocumentContext);
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-        summaryModel(model, jigDocumentWriter);
+        summaryView.write(summaryModel, jigDocumentWriter);
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private void summaryModel(SummaryModel summaryModel, JigDocumentWriter jigDocumentWriter) {
+    private void write(SummaryModel summaryModel, JigDocumentWriter jigDocumentWriter) {
         if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
             return;

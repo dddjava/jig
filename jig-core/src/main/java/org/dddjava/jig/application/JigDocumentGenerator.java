@@ -144,6 +144,10 @@ public class JigDocumentGenerator {
                     var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
                     yield summaryView.writeSummary(summaryModel, outputDirectory);
                 }
+                case TermTable -> {
+                    var terms = jigService.terms(jigSource);
+                    yield new TableView(jigDocument, templateEngine).write(outputDirectory, terms);
+                }
 
                 // いままでの動作
                 default -> output(jigDocument, outputDirectory, jigSource);
@@ -164,7 +168,6 @@ public class JigDocumentGenerator {
             case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
             case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
             case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
-            case TermTable -> jigService.terms(jigSource);
             case TermList ->
                     new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
 
@@ -185,7 +188,6 @@ public class JigDocumentGenerator {
         JigView jigView = switch (jigDocument.jigDocumentType()) {
             case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
             case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
-            case TABLE -> new TableView(jigDocument, templateEngine);
 
             // ハンドル済みのはず
             default -> throw new IllegalStateException("Unhandled JigDocumentType: " + jigDocument.jigDocumentType());

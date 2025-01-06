@@ -1,17 +1,18 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
-import org.dddjava.jig.application.JigView;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class TableView implements JigView {
+public class TableView {
 
     private final JigDocument jigDocument;
     private final TemplateEngine templateEngine;
@@ -21,12 +22,16 @@ public class TableView implements JigView {
         this.templateEngine = templateEngine;
     }
 
-    @Override
     public JigDocument jigDocument() {
         return jigDocument;
     }
 
-    @Override
+    public List<Path> write(Path outputDirectory, Object model) throws IOException {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument(), outputDirectory);
+        render(model, jigDocumentWriter);
+        return jigDocumentWriter.outputFilePaths();
+    }
+
     public void render(Object model, JigDocumentWriter jigDocumentWriter) throws IOException {
         Terms terms = (Terms) model;
 

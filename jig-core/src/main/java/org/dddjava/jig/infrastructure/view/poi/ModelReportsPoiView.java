@@ -5,7 +5,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
+import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.dddjava.jig.infrastructure.view.poi.report.ReportItemFormatter;
 
@@ -39,9 +39,9 @@ public class ModelReportsPoiView {
         }
 
         try (Workbook book = new XSSFWorkbook()) {
-            List<ModelReport<?>> list = modelReports.list();
-            for (ModelReport<?> modelReport : list) {
-                modelReport.writeSheet(book, jigDocumentWriter, reportItemFormatter);
+            List<ModelReportInterface> list = modelReports.list();
+            for (ModelReportInterface modelReportInterface : list) {
+                modelReportInterface.writeSheet(book, jigDocumentWriter, reportItemFormatter);
             }
 
             jigDocumentWriter.writeXlsx(book::write);

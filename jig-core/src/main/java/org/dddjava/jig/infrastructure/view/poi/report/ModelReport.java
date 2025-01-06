@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
-public class ModelReport<MODEL> {
+public class ModelReport<MODEL> implements ModelReportInterface {
 
     static Logger logger = LoggerFactory.getLogger(ModelReport.class);
 
@@ -99,6 +99,7 @@ public class ModelReport<MODEL> {
         return new Header(reportItemMethods);
     }
 
+    @Override
     public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter) {
         if (pivotModels.isEmpty()) {
             JigDocument jigDocument = jigDocumentWriter.jigDocument();
@@ -109,6 +110,11 @@ public class ModelReport<MODEL> {
         writeHeader(sheet);
         writeBody(sheet, reportItemFormatter);
         updateSheetAttribute(sheet);
+    }
+
+    @Override
+    public boolean nothing() {
+        return pivotModels.isEmpty();
     }
 
     void writeHeader(Sheet sheet) {

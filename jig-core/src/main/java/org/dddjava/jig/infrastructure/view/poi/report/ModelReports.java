@@ -5,18 +5,18 @@ import java.util.List;
 
 public class ModelReports {
 
-    List<ModelReport<?>> list;
+    List<ModelReportInterface> list;
 
-    public ModelReports(ModelReport<?>... reporters) {
+    public ModelReports(ModelReportInterface... reporters) {
         this.list = Arrays.asList(reporters);
     }
 
-    public List<ModelReport<?>> list() {
+    public List<ModelReportInterface> list() {
         return list;
     }
 
     public boolean empty() {
         return list.stream()
-                .allMatch(modelReport -> modelReport.pivotModels.isEmpty());
+                .allMatch(modelReportInterface -> modelReportInterface.nothing());
     }
 }

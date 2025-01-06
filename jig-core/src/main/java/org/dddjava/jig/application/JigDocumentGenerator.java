@@ -124,6 +124,7 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
+                // 概要
                 case DomainSummary -> {
                     var summaryModel = jigService.domainSummary(jigSource);
                     yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
@@ -140,9 +141,39 @@ public class JigDocumentGenerator {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
                     yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
+                // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);
                     yield new TableView(jigDocument, templateEngine).write(outputDirectory, terms);
+                }
+                // ダイアグラム
+                case PackageRelationDiagram -> {
+                    var applicationDiagram = jigService.packageDependencies(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, applicationDiagram);
+                }
+                case CompositeUsecaseDiagram -> {
+                    var businessDiagram = new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, businessDiagram);
+                }
+                case ArchitectureDiagram -> {
+                    var validationDiagram = jigService.architectureDiagram(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                }
+                case BusinessRuleRelationDiagram -> {
+                    var validationDiagram = new ClassRelationDiagram(jigService.businessRules(jigSource));
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                }
+                case CategoryDiagram -> {
+                    var validationDiagram = jigService.categories(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                }
+                case CategoryUsageDiagram -> {
+                    var validationDiagram = jigService.categoryUsages(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                }
+                case ServiceMethodCallHierarchyDiagram -> {
+                    var validationDiagram = jigService.serviceMethodCallHierarchy(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
                 }
 
                 // いままでの動作
@@ -160,22 +191,10 @@ public class JigDocumentGenerator {
 
     private List<Path> output(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) throws IOException {
         Object model = switch (jigDocument) {
-            // overview
-            case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
-            case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
-            case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
             case TermList ->
                     new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
-
-            // domain
-            case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
             case BusinessRuleList -> domainList(jigSource);
-            case CategoryDiagram -> jigService.categories(jigSource);
-            case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
-
-            // application & usecase
             case ApplicationList -> applicationList(jigSource);
-            case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
 
             // ハンドル済みのはず
             default -> throw new IllegalStateException("Unhandled JigDocument: " + jigDocument);
@@ -183,7 +202,6 @@ public class JigDocumentGenerator {
 
         JigView jigView = switch (jigDocument.jigDocumentType()) {
             case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
-            case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
 
             // ハンドル済みのはず
             default -> throw new IllegalStateException("Unhandled JigDocumentType: " + jigDocument.jigDocumentType());

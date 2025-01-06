@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.documents.documentformat;
 
+import org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +20,7 @@ public enum JigDocument {
      */
     BusinessRuleList(
             JigDocumentLabel.of("ビジネスルール一覧", "BusinessRuleList"),
-            "business-rule", JigDocumentType.LIST),
+            "business-rule"),
 
     /**
      * パッケージ関連図
@@ -29,7 +31,7 @@ public enum JigDocument {
      */
     PackageRelationDiagram(
             JigDocumentLabel.of("パッケージ関連図", "PackageRelationDiagram"),
-            "package-relation", JigDocumentType.DIAGRAM),
+            "package-relation"),
 
     /**
      * ビジネスルール関連図
@@ -40,7 +42,7 @@ public enum JigDocument {
      */
     BusinessRuleRelationDiagram(
             JigDocumentLabel.of("ビジネスルール関連図", "BusinessRuleRelationDiagram"),
-            "business-rule-relation", JigDocumentType.DIAGRAM),
+            "business-rule-relation"),
 
     /**
      * 区分図
@@ -50,7 +52,7 @@ public enum JigDocument {
      */
     CategoryDiagram(
             JigDocumentLabel.of("区分図", "CategoryDiagram"),
-            "category", JigDocumentType.DIAGRAM),
+            "category"),
 
     /**
      * 区分使用図
@@ -59,7 +61,7 @@ public enum JigDocument {
      */
     CategoryUsageDiagram(
             JigDocumentLabel.of("区分使用図", "CategoryUsageDiagram"),
-            "category-usage", JigDocumentType.DIAGRAM),
+            "category-usage"),
 
     /**
      * 機能一覧
@@ -68,11 +70,11 @@ public enum JigDocument {
      * 三層（プレゼンテーション層、アプリケーション層、データソース層）の情報を提供する。
      * アプリケーションの状況把握に使用できる。
      *
-     * 制限事項: {@link org.dddjava.jig.infrastructure.mybatis.MyBatisSqlReader}
+     * 制限事項: {@link MyBatisSqlReader}
      */
     ApplicationList(
             JigDocumentLabel.of("機能一覧", "ApplicationList"),
-            "application", JigDocumentType.LIST),
+            "application"),
 
     /**
      * サービスメソッド呼び出し図
@@ -81,72 +83,69 @@ public enum JigDocument {
      */
     ServiceMethodCallHierarchyDiagram(
             JigDocumentLabel.of("サービスメソッド呼び出し図", "ServiceMethodCallHierarchyDiagram"),
-            "service-method-call-hierarchy", JigDocumentType.DIAGRAM),
+            "service-method-call-hierarchy"),
 
     /**
      * ユースケース複合図
      */
     CompositeUsecaseDiagram(
             JigDocumentLabel.of("ユースケース複合図", "CompositeUsecaseDiagram"),
-            "composite-usecase", JigDocumentType.DIAGRAM),
+            "composite-usecase"),
 
     /**
      * アーキテクチャ図
      */
     ArchitectureDiagram(
             JigDocumentLabel.of("アーキテクチャ図", "ArchitectureDiagram"),
-            "architecture", JigDocumentType.DIAGRAM),
+            "architecture"),
 
     /**
      * ドメイン概要
      */
     DomainSummary(
             JigDocumentLabel.of("ドメイン概要", "domain"),
-            "domain", JigDocumentType.SUMMARY),
+            "domain"),
 
     /**
      * アプリケーション概要
      */
     ApplicationSummary(
             JigDocumentLabel.of("アプリケーション概要", "application"),
-            "application", JigDocumentType.SUMMARY),
+            "application"),
     /**
      * ユースケース概要
      */
     UsecaseSummary(
             JigDocumentLabel.of("ユースケース概要", "usecase"),
-            "usecase", JigDocumentType.SUMMARY),
+            "usecase"),
 
     EntrypointSummary(
             JigDocumentLabel.of("エントリーポイント概要", "entrypoint"),
-            "entrypoint", JigDocumentType.SUMMARY),
+            "entrypoint"),
 
     /**
      * 区分概要
      */
     EnumSummary(
             JigDocumentLabel.of("区分概要", "enum"),
-            "enum", JigDocumentType.SUMMARY),
+            "enum"),
 
     /**
      * 用語集
      */
     TermList(
             JigDocumentLabel.of("用語集", "term"),
-            "term", JigDocumentType.LIST),
+            "term"),
     TermTable(
             JigDocumentLabel.of("用語集", "term"),
-            "term", JigDocumentType.TABLE);
+            "term");
 
     private final JigDocumentLabel label;
     private final String documentFileName;
-    private final JigDocumentType jigDocumentType;
 
-    JigDocument(
-            JigDocumentLabel label, String documentFileName, JigDocumentType jigDocumentType) {
+    JigDocument(JigDocumentLabel label, String documentFileName) {
         this.label = label;
         this.documentFileName = documentFileName;
-        this.jigDocumentType = jigDocumentType;
     }
 
     public static List<JigDocument> canonical() {
@@ -171,6 +170,23 @@ public enum JigDocument {
     }
 
     public boolean isDiagram() {
-        return jigDocumentType == JigDocumentType.DIAGRAM;
+        return switch (this) {
+            case PackageRelationDiagram,
+                 BusinessRuleRelationDiagram,
+                 CategoryDiagram,
+                 CategoryUsageDiagram,
+                 ServiceMethodCallHierarchyDiagram,
+                 CompositeUsecaseDiagram,
+                 ArchitectureDiagram -> true;
+            case ApplicationList,
+                 BusinessRuleList,
+                 DomainSummary,
+                 ApplicationSummary,
+                 UsecaseSummary,
+                 EntrypointSummary,
+                 EnumSummary,
+                 TermList,
+                 TermTable -> false;
+        };
     }
 }

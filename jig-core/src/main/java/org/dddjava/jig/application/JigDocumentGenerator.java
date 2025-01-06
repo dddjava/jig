@@ -123,41 +123,7 @@ public class JigDocumentGenerator {
         try {
             long startTime = System.currentTimeMillis();
 
-            Object model = switch (jigDocument) {
-                // overview
-                case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
-                case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
-                case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
-                case TermTable -> jigService.terms(jigSource);
-                case TermList ->
-                        new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
-
-                // domain
-                case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
-                case DomainSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
-                case BusinessRuleList -> domainList(jigSource);
-                case CategoryDiagram -> jigService.categories(jigSource);
-                case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
-                case EnumSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-
-                // application & usecase
-                case ApplicationList -> applicationList(jigSource);
-                case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
-                case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
-                case EntrypointSummary ->
-                        SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
-            };
-
-            JigView jigView = switch (jigDocument.jigDocumentType()) {
-                case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
-                case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
-                case SUMMARY -> new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-                case TABLE -> new TableView(jigDocument, templateEngine);
-            };
-
-            var outputFilePaths = jigView.write(outputDirectory, model);
+            var outputFilePaths = output(jigDocument, outputDirectory, jigSource);
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);
@@ -166,6 +132,45 @@ public class JigDocumentGenerator {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
+    }
+
+    private List<Path> output(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) throws IOException {
+        Object model = switch (jigDocument) {
+            // overview
+            case PackageRelationDiagram -> jigService.packageDependencies(jigSource);
+            case CompositeUsecaseDiagram -> new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
+            case ArchitectureDiagram -> jigService.architectureDiagram(jigSource);
+            case TermTable -> jigService.terms(jigSource);
+            case TermList ->
+                    new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
+
+            // domain
+            case BusinessRuleRelationDiagram -> new ClassRelationDiagram(jigService.businessRules(jigSource));
+            case DomainSummary ->
+                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
+            case BusinessRuleList -> domainList(jigSource);
+            case CategoryDiagram -> jigService.categories(jigSource);
+            case CategoryUsageDiagram -> jigService.categoryUsages(jigSource);
+            case EnumSummary ->
+                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
+
+            // application & usecase
+            case ApplicationList -> applicationList(jigSource);
+            case ApplicationSummary, UsecaseSummary -> SummaryModel.from(jigService.services(jigSource));
+            case ServiceMethodCallHierarchyDiagram -> jigService.serviceMethodCallHierarchy(jigSource);
+            case EntrypointSummary ->
+                    SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
+        };
+
+        JigView jigView = switch (jigDocument.jigDocumentType()) {
+            case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
+            case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
+            case SUMMARY -> new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+            case TABLE -> new TableView(jigDocument, templateEngine);
+        };
+
+        var outputFilePaths = jigView.write(outputDirectory, model);
+        return outputFilePaths;
     }
 
     private void copyAssets(Path outputDirectory) {

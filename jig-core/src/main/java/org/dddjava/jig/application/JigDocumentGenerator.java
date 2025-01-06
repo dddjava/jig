@@ -177,7 +177,7 @@ public class JigDocumentGenerator {
                 }
                 // 一覧
                 case TermList -> {
-                    var modelReports = new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
+                    var modelReports = new ModelReports(ModelReport.createModelReport(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
                     yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
                 }
                 case BusinessRuleList -> {
@@ -236,16 +236,16 @@ public class JigDocumentGenerator {
         CategoryDiagram categoryDiagram = jigService.categories(jigSource);
         List<BusinessRulePackage> businessRulePackages = jigService.businessRules(jigSource).listPackages();
         return new ModelReports(
-                new ModelReport<>(businessRulePackages, PackageReport::new, PackageReport.class),
-                new ModelReport<>(businessRules.list(),
+                ModelReport.createModelReport(businessRulePackages, PackageReport::new, PackageReport.class),
+                ModelReport.createModelReport(businessRules.list(),
                         businessRule -> new BusinessRuleReport(businessRule, businessRules),
                         BusinessRuleReport.class),
-                new ModelReport<>(categoryDiagram.list(), CategoryReport::new, CategoryReport.class),
-                new ModelReport<>(businessRules.jigTypes().listCollectionType(),
+                ModelReport.createModelReport(categoryDiagram.list(), CategoryReport::new, CategoryReport.class),
+                ModelReport.createModelReport(businessRules.jigTypes().listCollectionType(),
                         jigType -> new CollectionReport(jigType, typeFacts.toClassRelations()),
                         CollectionReport.class),
-                new ModelReport<>(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
-                new ModelReport<>(methodSmellList.list(), MethodSmellReport::new, MethodSmellReport.class)
+                ModelReport.createModelReport(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
+                ModelReport.createModelReport(methodSmellList.list(), MethodSmellReport::new, MethodSmellReport.class)
         );
     }
 
@@ -261,14 +261,14 @@ public class JigDocumentGenerator {
         }
 
         return new ModelReports(
-                new ModelReport<>(entrypoint.listRequestHandlerMethods(),
+                ModelReport.createModelReport(entrypoint.listRequestHandlerMethods(),
                         requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
                         ControllerReport.class),
-                new ModelReport<>(serviceAngles.list(),
+                ModelReport.createModelReport(serviceAngles.list(),
                         serviceAngle -> new ServiceReport(serviceAngle),
                         ServiceReport.class),
-                new ModelReport<>(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
-                new ModelReport<>(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
+                ModelReport.createModelReport(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
+                ModelReport.createModelReport(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );
     }
 }

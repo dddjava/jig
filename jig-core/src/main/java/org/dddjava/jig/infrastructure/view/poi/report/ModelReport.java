@@ -26,8 +26,17 @@ public class ModelReport<MODEL> implements ModelReportInterface {
     ModelReporter<?, MODEL> modelReporter;
     List<ReportItemMethod> reportItemMethods;
 
-    public <REPORT> ModelReport(List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
-        this(reportClass.getAnnotation(ReportTitle.class).value(), pivotModels, modelReporter, collectReportItemMethods(reportClass));
+    private ModelReport(String title, List<MODEL> pivotModels, ModelReporter<?, MODEL> modelReporter, List<ReportItemMethod> reportItemMethods) {
+        this.title = title;
+        this.pivotModels = pivotModels;
+        this.modelReporter = modelReporter;
+        this.reportItemMethods = reportItemMethods;
+    }
+
+    public static <MODEL, REPORT> ModelReport<MODEL> createModelReport(List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
+        var title = reportClass.getAnnotation(ReportTitle.class).value();
+        var reportItemMethods = collectReportItemMethods(reportClass);
+        return new ModelReport<>(title, pivotModels, modelReporter, reportItemMethods);
     }
 
     private static <REPORT> List<ReportItemMethod> collectReportItemMethods(Class<REPORT> reportClass) {
@@ -82,13 +91,6 @@ public class ModelReport<MODEL> implements ModelReportInterface {
                 return value.toString();
             }
         };
-    }
-
-    private ModelReport(String title, List<MODEL> pivotModels, ModelReporter<?, MODEL> modelReporter, List<ReportItemMethod> reportItemMethods) {
-        this.title = title;
-        this.pivotModels = pivotModels;
-        this.modelReporter = modelReporter;
-        this.reportItemMethods = reportItemMethods;
     }
 
     Header header() {

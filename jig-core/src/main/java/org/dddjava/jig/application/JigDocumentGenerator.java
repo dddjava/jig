@@ -151,13 +151,13 @@ public class JigDocumentGenerator {
             };
 
             JigView jigView = switch (jigDocument.jigDocumentType()) {
-                case LIST -> new ModelReportsPoiView(jigDocumentContext);
-                case DIAGRAM -> new DotView(diagramFormat, dotCommandRunner, jigDocumentContext);
-                case SUMMARY -> new SummaryView(templateEngine, jigDocumentContext);
-                case TABLE -> new TableView(templateEngine);
+                case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
+                case DIAGRAM -> new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext);
+                case SUMMARY -> new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+                case TABLE -> new TableView(jigDocument, templateEngine);
             };
 
-            var outputFilePaths = jigView.write(jigDocument, outputDirectory, model);
+            var outputFilePaths = jigView.write(outputDirectory, model);
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);

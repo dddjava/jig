@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -12,10 +13,17 @@ import java.util.Map;
 
 public class TableView implements JigView {
 
+    private final JigDocument jigDocument;
     private final TemplateEngine templateEngine;
 
-    public TableView(TemplateEngine templateEngine) {
+    public TableView(JigDocument jigDocument, TemplateEngine templateEngine) {
+        this.jigDocument = jigDocument;
         this.templateEngine = templateEngine;
+    }
+
+    @Override
+    public JigDocument jigDocument() {
+        return jigDocument;
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.AdditionalText;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSources;
@@ -14,14 +15,21 @@ import java.nio.file.Path;
 
 public class DotView implements JigView {
 
+    private final JigDocument jigDocument;
     JigDiagramFormat diagramFormat;
     DotCommandRunner dotCommandRunner;
     JigDocumentContext jigDocumentContext;
 
-    public DotView(JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
+    public DotView(JigDocument jigDocument, JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
+        this.jigDocument = jigDocument;
         this.diagramFormat = diagramFormat;
         this.dotCommandRunner = dotCommandRunner;
         this.jigDocumentContext = jigDocumentContext;
+    }
+
+    @Override
+    public JigDocument jigDocument() {
+        return jigDocument;
     }
 
     @Override

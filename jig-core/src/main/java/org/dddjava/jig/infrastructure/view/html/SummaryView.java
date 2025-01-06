@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.summaries.Summaries;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
@@ -28,13 +29,20 @@ import static java.util.stream.Collectors.*;
 public class SummaryView implements JigView {
 
     protected final JigDocumentContext jigDocumentContext;
+    private final JigDocument jigDocument;
     private final TemplateEngine templateEngine;
     private final Map<String, Object> contextMap;
 
-    public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public SummaryView(JigDocument jigDocument, TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+        this.jigDocument = jigDocument;
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
         this.contextMap = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public JigDocument jigDocument() {
+        return jigDocument;
     }
 
     @Override

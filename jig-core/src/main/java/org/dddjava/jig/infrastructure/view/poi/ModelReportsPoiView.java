@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.application.JigView;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
@@ -17,10 +18,17 @@ import java.util.List;
  */
 public class ModelReportsPoiView implements JigView {
 
+    private final JigDocument jigDocument;
     private final ReportItemFormatter reportItemFormatter;
 
-    public ModelReportsPoiView(JigDocumentContext jigDocumentContext) {
+    public ModelReportsPoiView(JigDocument jigDocument, JigDocumentContext jigDocumentContext) {
+        this.jigDocument = jigDocument;
         this.reportItemFormatter = new ReportItemFormatter(jigDocumentContext);
+    }
+
+    @Override
+    public JigDocument jigDocument() {
+        return jigDocument;
     }
 
     @Override

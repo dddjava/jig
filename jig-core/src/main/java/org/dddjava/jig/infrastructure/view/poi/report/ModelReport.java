@@ -27,11 +27,7 @@ public class ModelReport<MODEL> implements ModelReportInterface {
     List<ReportItemMethod> reportItemMethods;
 
     public <REPORT> ModelReport(List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
-        this(reportClass.getAnnotation(ReportTitle.class).value(), pivotModels, modelReporter, reportClass);
-    }
-
-    public <REPORT> ModelReport(String title, List<MODEL> pivotModels, ModelReporter<REPORT, MODEL> modelReporter, Class<REPORT> reportClass) {
-        this(title, pivotModels, modelReporter, collectReportItemMethods(reportClass));
+        this(reportClass.getAnnotation(ReportTitle.class).value(), pivotModels, modelReporter, collectReportItemMethods(reportClass));
     }
 
     private static <REPORT> List<ReportItemMethod> collectReportItemMethods(Class<REPORT> reportClass) {

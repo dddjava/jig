@@ -175,9 +175,19 @@ public class JigDocumentGenerator {
                     var diagram = jigService.serviceMethodCallHierarchy(jigSource);
                     yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
-
-                // いままでの動作
-                default -> output(jigDocument, outputDirectory, jigSource);
+                // 一覧
+                case TermList -> {
+                    var modelReports = new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
+                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                }
+                case BusinessRuleList -> {
+                    var modelReports = domainList(jigSource);
+                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                }
+                case ApplicationList -> {
+                    var modelReports = applicationList(jigSource);
+                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                }
             };
 
             long takenTime = System.currentTimeMillis() - startTime;
@@ -187,27 +197,6 @@ public class JigDocumentGenerator {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
-    }
-
-    private List<Path> output(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) throws IOException {
-        Object model = switch (jigDocument) {
-            case TermList ->
-                    new ModelReports(new ModelReport<>(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
-            case BusinessRuleList -> domainList(jigSource);
-            case ApplicationList -> applicationList(jigSource);
-
-            // ハンドル済みのはず
-            default -> throw new IllegalStateException("Unhandled JigDocument: " + jigDocument);
-        };
-
-        JigView jigView = switch (jigDocument.jigDocumentType()) {
-            case LIST -> new ModelReportsPoiView(jigDocument, jigDocumentContext);
-
-            // ハンドル済みのはず
-            default -> throw new IllegalStateException("Unhandled JigDocumentType: " + jigDocument.jigDocumentType());
-        };
-
-        return jigView.write(outputDirectory, model);
     }
 
     private void copyAssets(Path outputDirectory) {

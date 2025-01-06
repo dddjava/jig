@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -22,18 +21,8 @@ public class TableView {
         this.templateEngine = templateEngine;
     }
 
-    public JigDocument jigDocument() {
-        return jigDocument;
-    }
-
-    public List<Path> write(Path outputDirectory, Object model) throws IOException {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument(), outputDirectory);
-        render(model, jigDocumentWriter);
-        return jigDocumentWriter.outputFilePaths();
-    }
-
-    public void render(Object model, JigDocumentWriter jigDocumentWriter) throws IOException {
-        Terms terms = (Terms) model;
+    public List<Path> write(Path outputDirectory, Terms terms) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         Map<String, Object> contextMap = Map.of(
                 "title", jigDocumentWriter.jigDocument().label(),
@@ -45,5 +34,6 @@ public class TableView {
 
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
+        return jigDocumentWriter.outputFilePaths();
     }
 }

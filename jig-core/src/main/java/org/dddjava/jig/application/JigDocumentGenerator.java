@@ -126,23 +126,19 @@ public class JigDocumentGenerator {
             var outputFilePaths = switch (jigDocument) {
                 case DomainSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
-                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                    yield SummaryView.getHandleResult(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
                     var summaryModel = SummaryModel.from(jigService.services(jigSource));
-                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                    yield SummaryView.getHandleResult(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EntrypointSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
-                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                    yield SummaryView.getHandleResult(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EnumSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
-                    yield summaryView.writeSummary(summaryModel, outputDirectory);
+                    yield SummaryView.getHandleResult(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);

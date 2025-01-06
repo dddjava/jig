@@ -39,6 +39,11 @@ public class SummaryView {
         this.contextMap = new ConcurrentHashMap<>();
     }
 
+    public static List<Path> getHandleResult(JigDocumentContext jigDocumentContext, TemplateEngine templateEngine, JigDocument jigDocument, Path outputDirectory, SummaryModel summaryModel) {
+        var summaryView = new SummaryView(jigDocument, templateEngine, jigDocumentContext);
+        return summaryView.writeSummary(summaryModel, outputDirectory);
+    }
+
     public List<Path> writeSummary(SummaryModel model, Path outputDirectory) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
         summaryModel(model, jigDocumentWriter);

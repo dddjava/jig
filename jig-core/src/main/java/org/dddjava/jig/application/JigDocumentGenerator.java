@@ -148,32 +148,32 @@ public class JigDocumentGenerator {
                 }
                 // ダイアグラム
                 case PackageRelationDiagram -> {
-                    var applicationDiagram = jigService.packageDependencies(jigSource);
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, applicationDiagram);
+                    var diagram = jigService.packageDependencies(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case CompositeUsecaseDiagram -> {
-                    var businessDiagram = new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, businessDiagram);
+                    var diagram = new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case ArchitectureDiagram -> {
-                    var validationDiagram = jigService.architectureDiagram(jigSource);
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                    var diagram = jigService.architectureDiagram(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case BusinessRuleRelationDiagram -> {
-                    var validationDiagram = new ClassRelationDiagram(jigService.businessRules(jigSource));
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                    var diagram = new ClassRelationDiagram(jigService.businessRules(jigSource));
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case CategoryDiagram -> {
-                    var validationDiagram = jigService.categories(jigSource);
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                    var diagram = jigService.categories(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case CategoryUsageDiagram -> {
-                    var validationDiagram = jigService.categoryUsages(jigSource);
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                    var diagram = jigService.categoryUsages(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
                 case ServiceMethodCallHierarchyDiagram -> {
-                    var validationDiagram = jigService.serviceMethodCallHierarchy(jigSource);
-                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, validationDiagram);
+                    var diagram = jigService.serviceMethodCallHierarchy(jigSource);
+                    yield new DotView(jigDocument, diagramFormat, dotCommandRunner, jigDocumentContext).write(outputDirectory, diagram);
                 }
 
                 // いままでの動作

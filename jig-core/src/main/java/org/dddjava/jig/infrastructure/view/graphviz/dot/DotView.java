@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.view.graphviz.dot;
 
 import org.dddjava.jig.application.JigDocumentWriter;
-import org.dddjava.jig.application.JigView;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -12,8 +11,9 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
+import java.util.List;
 
-public class DotView implements JigView {
+public class DotView {
 
     private final JigDocument jigDocument;
     JigDiagramFormat diagramFormat;
@@ -27,14 +27,13 @@ public class DotView implements JigView {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    @Override
-    public JigDocument jigDocument() {
-        return jigDocument;
+    public List<Path> write(Path outputDirectory, DiagramSourceWriter model) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+        render(model, jigDocumentWriter);
+        return jigDocumentWriter.outputFilePaths();
     }
 
-    @Override
-    public void render(Object model, JigDocumentWriter jigDocumentWriter) {
-        DiagramSourceWriter sourceWriter = (DiagramSourceWriter) model;
+    public void render(DiagramSourceWriter sourceWriter, JigDocumentWriter jigDocumentWriter) {
 
         DiagramSources diagramSources = sourceWriter.sources(jigDocumentContext);
 

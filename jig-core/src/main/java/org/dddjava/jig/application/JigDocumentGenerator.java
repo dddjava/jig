@@ -159,10 +159,11 @@ public class JigDocumentGenerator {
 
             JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
             jigView.render(model, jigDocumentWriter);
+            var outputFilePaths = jigDocumentWriter.outputFilePaths();
 
             long takenTime = System.currentTimeMillis() - startTime;
             logger.info("[{}] completed: {} ms", jigDocument, takenTime);
-            return new HandleResult(jigDocument, jigDocumentWriter.outputFilePaths());
+            return new HandleResult(jigDocument, outputFilePaths);
         } catch (Exception e) {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());

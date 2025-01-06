@@ -3,7 +3,6 @@ package org.dddjava.jig.infrastructure.view.html;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocumentType;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -33,7 +32,7 @@ public class IndexView {
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 List<String> list = handleResult.outputFileNames();
-                if (handleResult.jigDocument().jigDocumentType() == JigDocumentType.DIAGRAM) {
+                if (handleResult.jigDocument().isDiagram()) {
                     diagrams.add(new DiagramComponent(handleResult.jigDocument(), list));
                 } else {
                     contextMap.put(handleResult.jigDocument().name(), list.get(0));

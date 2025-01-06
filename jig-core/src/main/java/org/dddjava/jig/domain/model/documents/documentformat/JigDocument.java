@@ -165,12 +165,12 @@ public enum JigDocument {
                 .collect(Collectors.toList());
     }
 
-    public JigDocumentType jigDocumentType() {
-        return jigDocumentType;
-    }
-
     public String label() {
         Locale locale = Locale.getDefault();
         return locale.getLanguage().equals("en") ? label.english : label.japanese;
+    }
+
+    public boolean isDiagram() {
+        return jigDocumentType == JigDocumentType.DIAGRAM;
     }
 }

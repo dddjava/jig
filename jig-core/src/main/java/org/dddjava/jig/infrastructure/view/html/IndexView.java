@@ -32,7 +32,7 @@ public class IndexView {
         for (HandleResult handleResult : handleResultList) {
             if (handleResult.success()) {
                 List<String> list = handleResult.outputFileNames();
-                if (handleResult.jigDocument().isDiagram()) {
+                if (handleResult.isOutputDiagram()) {
                     diagrams.add(new DiagramComponent(handleResult.jigDocument(), list));
                 } else {
                     contextMap.put(handleResult.jigDocument().name(), list.get(0));

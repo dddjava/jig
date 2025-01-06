@@ -29,6 +29,11 @@ public class HandleResult {
         this(jigDocument, Collections.emptyList(), failureMessage);
     }
 
+    public boolean isOutputDiagram() {
+        // TODO JigDocumentによって固定になっているが、実際の出力結果によって制御する
+        return jigDocument().isDiagram();
+    }
+
     boolean failure() {
         return !success()
                 // 現状、skipかどうかはfailureMessageで見るしかない

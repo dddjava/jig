@@ -125,15 +125,15 @@ public class JigDocumentGenerator {
 
             var outputFilePaths = switch (jigDocument) {
                 case DomainSummary -> {
-                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.businessRules(jigSource));
+                    var summaryModel = jigService.domainSummary(jigSource);
                     yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
-                    var summaryModel = SummaryModel.from(jigService.services(jigSource));
+                    var summaryModel = jigService.usecaseSummary(jigSource);
                     yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EntrypointSummary -> {
-                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.entrypoint(jigSource));
+                    var summaryModel = jigService.inputsSummary(jigSource);
                     yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EnumSummary -> {

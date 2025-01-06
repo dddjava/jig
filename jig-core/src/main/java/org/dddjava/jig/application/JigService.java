@@ -2,6 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
+import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
@@ -172,5 +173,17 @@ public class JigService {
         var jigTypes = jigSource.typeFacts().jigTypes();
 
         return jigTypes.filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
+    }
+
+    SummaryModel domainSummary(JigSource jigSource) {
+        return SummaryModel.from(jigTypes(jigSource), businessRules(jigSource));
+    }
+
+    SummaryModel inputsSummary(JigSource jigSource) {
+        return SummaryModel.from(jigTypes(jigSource), entrypoint(jigSource));
+    }
+
+    SummaryModel usecaseSummary(JigSource jigSource) {
+        return SummaryModel.from(services(jigSource));
     }
 }

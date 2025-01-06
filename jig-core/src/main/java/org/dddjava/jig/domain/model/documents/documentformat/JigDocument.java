@@ -168,25 +168,4 @@ public enum JigDocument {
         Locale locale = Locale.getDefault();
         return locale.getLanguage().equals("en") ? label.english : label.japanese;
     }
-
-    public boolean isDiagram() {
-        return switch (this) {
-            case PackageRelationDiagram,
-                 BusinessRuleRelationDiagram,
-                 CategoryDiagram,
-                 CategoryUsageDiagram,
-                 ServiceMethodCallHierarchyDiagram,
-                 CompositeUsecaseDiagram,
-                 ArchitectureDiagram -> true;
-            case ApplicationList,
-                 BusinessRuleList,
-                 DomainSummary,
-                 ApplicationSummary,
-                 UsecaseSummary,
-                 EntrypointSummary,
-                 EnumSummary,
-                 TermList,
-                 TermTable -> false;
-        };
-    }
 }

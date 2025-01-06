@@ -31,7 +31,24 @@ public class HandleResult {
 
     public boolean isOutputDiagram() {
         // TODO JigDocumentによって固定になっているが、実際の出力結果によって制御する
-        return jigDocument().isDiagram();
+        return switch (jigDocument()) {
+            case PackageRelationDiagram,
+                 BusinessRuleRelationDiagram,
+                 CategoryDiagram,
+                 CategoryUsageDiagram,
+                 ServiceMethodCallHierarchyDiagram,
+                 CompositeUsecaseDiagram,
+                 ArchitectureDiagram -> true;
+            case ApplicationList,
+                 BusinessRuleList,
+                 DomainSummary,
+                 ApplicationSummary,
+                 UsecaseSummary,
+                 EntrypointSummary,
+                 EnumSummary,
+                 TermList,
+                 TermTable -> false;
+        };
     }
 
     boolean failure() {

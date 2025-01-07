@@ -7,6 +7,8 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ public interface ModelReportInterface {
     }
 
     class MyModelReportInterface<T> implements ModelReportInterface {
+        private static final Logger logger = LoggerFactory.getLogger(MyModelReportInterface.class);
 
         private final String sheetName;
         private final List<Map.Entry<String, Function<T, Object>>> reporter;
@@ -75,6 +78,11 @@ public interface ModelReportInterface {
                     var value = bodyFunctions.get(i).apply(item);
                     if (value instanceof String stringValue) {
                         Cell cell = row.createCell(i, CellType.STRING);
+                        if (stringValue.length() > 10000) {
+                            logger.info("セル(row={}, column={})に出力する文字数が10,000文字を超えています。全ての文字は出力されません。",
+                                    cell.getRowIndex(), cell.getColumnIndex());
+                            stringValue = stringValue.substring(0, 10000) + "...(省略されました）";
+                        }
                         cell.setCellValue(stringValue);
                     } else if (value instanceof Number numberValue) {
                         Cell cell = row.createCell(i, CellType.NUMERIC);

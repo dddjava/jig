@@ -19,8 +19,10 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
+import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
@@ -29,10 +31,7 @@ import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
 import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
-import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
-import org.dddjava.jig.infrastructure.view.report.business_rule.BusinessRuleReport;
-import org.dddjava.jig.infrastructure.view.report.business_rule.CollectionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -258,15 +257,36 @@ public class JigDocumentGenerator {
                 Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
                 Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
         );
+        List<Map.Entry<String, Function<JigType, Object>>> allReporter = List.of(
+                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
+                Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
+                Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
+                Map.entry("関連元クラス数", item -> businessRules.allTypesRelatedTo(item).list().size()),
+                Map.entry("非PUBLIC", item -> item.visibility() != Visibility.PUBLIC ? "◯" : ""),
+                Map.entry("同パッケージからのみ参照", item -> {
+                    var list = businessRules.allTypesRelatedTo(item).packageIdentifiers().list();
+                    return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
+                }),
+                Map.entry("関連元クラス", item -> businessRules.allTypesRelatedTo(item).asSimpleText())
+        );
+        List<Map.Entry<String, Function<JigType, Object>>> collectionReporter = List.of(
+                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
+                Map.entry("使用箇所数", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
+                Map.entry("使用箇所", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
+                Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
+                Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
+        );
         return new ModelReports(
                 new GenericModelReport<>("PACKAGE", packageReporter, businessRulePackages),
-                ModelReport.createModelReport(businessRules.list(),
-                        businessRule -> new BusinessRuleReport(businessRule, businessRules),
-                        BusinessRuleReport.class),
+                new GenericModelReport<>("ALL", allReporter, businessRules.list()),
                 new GenericModelReport<>("ENUM", categoryReporter, categoryDiagram.list()),
-                ModelReport.createModelReport(businessRules.jigTypes().listCollectionType(),
-                        jigType -> new CollectionReport(jigType, typeFacts.toClassRelations()),
-                        CollectionReport.class),
+                new GenericModelReport<>("COLLECTION", collectionReporter, businessRules.jigTypes().listCollectionType()),
                 new GenericModelReport<>("VALIDATION", Validations.reporter(jigDocumentContext), Validations.from(jigTypes).list()),
                 new GenericModelReport<>("注意メソッド", MethodSmellList.reporter(jigDocumentContext), methodSmellList.list())
         );

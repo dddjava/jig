@@ -9,12 +9,14 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
+import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceAngles;
 import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.models.applications.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
@@ -24,8 +26,8 @@ import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
 import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
+import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
-import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
 import org.dddjava.jig.infrastructure.view.report.business_rule.*;
@@ -176,7 +178,8 @@ public class JigDocumentGenerator {
                 }
                 // 一覧
                 case TermList -> {
-                    var modelReports = new ModelReports(ModelReportInterface.fromTerm(jigService.terms(jigSource)));
+                    Terms terms = jigService.terms(jigSource);
+                    var modelReports = new ModelReports(new GenericModelReport<>("TERM", Terms.reporter(), terms.list()));
                     yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
                 }
                 case BusinessRuleList -> {
@@ -260,8 +263,8 @@ public class JigDocumentGenerator {
         }
 
         return new ModelReports(
-                ModelReportInterface.fromInputs(entrypoint),
-                ModelReportInterface.service(serviceAngles, jigDocumentContext),
+                new GenericModelReport<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
+                new GenericModelReport<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list()),
                 ModelReport.createModelReport(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
                 ModelReport.createModelReport(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );

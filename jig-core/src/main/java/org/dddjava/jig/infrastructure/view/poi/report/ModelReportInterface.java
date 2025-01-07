@@ -7,7 +7,7 @@ import org.dddjava.jig.application.JigDocumentWriter;
 
 public interface ModelReportInterface {
 
-    void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter);
+    void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter);
 
     boolean nothing();
 

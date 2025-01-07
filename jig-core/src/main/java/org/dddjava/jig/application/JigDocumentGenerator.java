@@ -183,15 +183,15 @@ public class JigDocumentGenerator {
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
                     var modelReports = new ModelReports(new GenericModelReport<>("TERM", Terms.reporter(), terms.list()));
-                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
                 }
                 case BusinessRuleList -> {
                     var modelReports = domainList(jigSource);
-                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
                 }
                 case ApplicationList -> {
                     var modelReports = applicationList(jigSource);
-                    yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
+                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
                 }
             };
 

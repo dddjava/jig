@@ -24,7 +24,7 @@ public class GenericModelReport<T> implements ModelReportInterface {
     }
 
     @Override
-    public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter) {
+    public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter) {
         if (items.isEmpty()) {
             JigDocument jigDocument = jigDocumentWriter.jigDocument();
             logger.info("[{}] 出力する情報がないため、{}/{}の出力を抑止します。", jigDocument, jigDocument.label(), sheetName);

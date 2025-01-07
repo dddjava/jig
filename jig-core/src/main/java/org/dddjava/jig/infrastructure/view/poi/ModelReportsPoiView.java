@@ -4,10 +4,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
-import org.dddjava.jig.infrastructure.view.poi.report.ReportItemFormatter;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,11 +17,9 @@ import java.util.List;
 public class ModelReportsPoiView {
 
     private final JigDocument jigDocument;
-    private final ReportItemFormatter reportItemFormatter;
 
-    public ModelReportsPoiView(JigDocument jigDocument, JigDocumentContext jigDocumentContext) {
+    public ModelReportsPoiView(JigDocument jigDocument) {
         this.jigDocument = jigDocument;
-        this.reportItemFormatter = new ReportItemFormatter(jigDocumentContext);
     }
 
     public List<Path> write(Path outputDirectory, ModelReports model) throws IOException {
@@ -41,7 +37,7 @@ public class ModelReportsPoiView {
         try (Workbook book = new XSSFWorkbook()) {
             List<ModelReportInterface> list = modelReports.list();
             for (ModelReportInterface modelReportInterface : list) {
-                modelReportInterface.writeSheet(book, jigDocumentWriter, reportItemFormatter);
+                modelReportInterface.writeSheet(book, jigDocumentWriter);
             }
 
             jigDocumentWriter.writeXlsx(book::write);

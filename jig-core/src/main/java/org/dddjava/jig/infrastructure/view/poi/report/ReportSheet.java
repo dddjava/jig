@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class GenericModelReport<T> {
-    private static final Logger logger = LoggerFactory.getLogger(GenericModelReport.class);
+public class ReportSheet<T> {
+    private static final Logger logger = LoggerFactory.getLogger(ReportSheet.class);
 
     private final String sheetName;
     private final List<Map.Entry<String, Function<T, Object>>> reporter;
     private final List<T> items;
 
-    public GenericModelReport(String sheetName, List<Map.Entry<String, Function<T, Object>>> reporter, List<T> items) {
+    public ReportSheet(String sheetName, List<Map.Entry<String, Function<T, Object>>> reporter, List<T> items) {
         this.sheetName = sheetName;
         this.reporter = reporter;
         this.items = items;
@@ -33,7 +33,7 @@ public class GenericModelReport<T> {
         writeSheet(book, sheetName, reporter, items);
     }
 
-    public boolean nothing() {
+    public boolean nothingToWriteContent() {
         return items.isEmpty();
     }
 

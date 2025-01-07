@@ -1,7 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
@@ -25,14 +23,15 @@ import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
+import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
 import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
-import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
-import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
+import org.dddjava.jig.infrastructure.view.poi.report.ReportBook;
+import org.dddjava.jig.infrastructure.view.poi.report.ReportSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -183,16 +182,16 @@ public class JigDocumentGenerator {
                 // 一覧
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
-                    var modelReports = new ModelReports(new GenericModelReport<>("TERM", Terms.reporter(), terms.list()));
-                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
+                    var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
+                    yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case BusinessRuleList -> {
-                    var modelReports = domainList(jigSource);
-                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
+                    var modelReports = businessRuleReports(jigSource.typeFacts(), jigService.methodSmells(jigSource), jigService.jigTypes(jigSource), jigService.businessRules(jigSource), jigService.categories(jigSource), jigService.businessRules(jigSource).listPackages());
+                    yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case ApplicationList -> {
-                    var modelReports = applicationList(jigSource);
-                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
+                    var modelReports = applicationReports(jigService.serviceAngles(jigSource), jigService.datasourceAngles(jigSource), jigService.stringComparing(jigSource), jigService.entrypoint(jigSource));
+                    yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
             };
 
@@ -231,16 +230,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private ModelReports domainList(JigSource jigSource) {
-        var typeFacts = jigSource.typeFacts();
-
-        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
-        JigTypes jigTypes = jigService.jigTypes(jigSource);
-
-        BusinessRules businessRules = jigService.businessRules(jigSource);
-
-        CategoryDiagram categoryDiagram = jigService.categories(jigSource);
-        List<BusinessRulePackage> businessRulePackages = jigService.businessRules(jigSource).listPackages();
+    private ReportBook businessRuleReports(TypeFacts typeFacts, MethodSmellList methodSmellList, JigTypes jigTypes, BusinessRules businessRules, CategoryDiagram categoryDiagram, List<BusinessRulePackage> businessRulePackages) {
         List<Map.Entry<String, Function<BusinessRulePackage, Object>>> packageReporter = List.of(
                 Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                 Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
@@ -283,23 +273,17 @@ public class JigDocumentGenerator {
                 Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
                 Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
         );
-        return new ModelReports(
-                new GenericModelReport<>("PACKAGE", packageReporter, businessRulePackages),
-                new GenericModelReport<>("ALL", allReporter, businessRules.list()),
-                new GenericModelReport<>("ENUM", categoryReporter, categoryDiagram.list()),
-                new GenericModelReport<>("COLLECTION", collectionReporter, businessRules.jigTypes().listCollectionType()),
-                new GenericModelReport<>("VALIDATION", Validations.reporter(jigDocumentContext), Validations.from(jigTypes).list()),
-                new GenericModelReport<>("注意メソッド", MethodSmellList.reporter(jigDocumentContext), methodSmellList.list())
+        return new ReportBook(
+                new ReportSheet<>("PACKAGE", packageReporter, businessRulePackages),
+                new ReportSheet<>("ALL", allReporter, businessRules.list()),
+                new ReportSheet<>("ENUM", categoryReporter, categoryDiagram.list()),
+                new ReportSheet<>("COLLECTION", collectionReporter, businessRules.jigTypes().listCollectionType()),
+                new ReportSheet<>("VALIDATION", Validations.reporter(jigDocumentContext), Validations.from(jigTypes).list()),
+                new ReportSheet<>("注意メソッド", MethodSmellList.reporter(jigDocumentContext), methodSmellList.list())
         );
     }
 
-    private ModelReports applicationList(JigSource jigSource) {
-        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
-
-        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigSource);
-        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigSource);
-
-        var entrypoint = jigService.entrypoint(jigSource);
+    private ReportBook applicationReports(ServiceAngles serviceAngles, DatasourceAngles datasourceAngles, StringComparingMethodList stringComparingMethodList, Entrypoint entrypoint) {
         if (entrypoint.isEmpty()) {
             logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
         }
@@ -309,30 +293,11 @@ public class JigDocumentGenerator {
                 Map.entry("クラス名", item -> item.declaration().declaringType().asSimpleText()),
                 Map.entry("メソッドシグネチャ", item -> item.declaration().asSignatureSimpleText())
         );
-        return new ModelReports(
-                new GenericModelReport<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
-                new GenericModelReport<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list()),
-                new GenericModelReport<>("REPOSITORY", DatasourceAngles.reporter(jigDocumentContext), datasourceAngles.list()),
-                new GenericModelReport<>("文字列比較箇所", stringReporter, stringComparingMethodList.list())
+        return new ReportBook(
+                new ReportSheet<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
+                new ReportSheet<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list()),
+                new ReportSheet<>("REPOSITORY", DatasourceAngles.reporter(jigDocumentContext), datasourceAngles.list()),
+                new ReportSheet<>("文字列比較箇所", stringReporter, stringComparingMethodList.list())
         );
-    }
-
-
-    public List<Path> writeXlsx(JigDocument jigDocument, Path outputDirectory, ModelReports model) throws IOException {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-
-        if (model.empty()) {
-            jigDocumentWriter.markSkip();
-        } else {
-            try (Workbook book = new XSSFWorkbook()) {
-                for (GenericModelReport<?> modelReportInterface : model.list()) {
-                    modelReportInterface.writeSheet(book, jigDocumentWriter);
-                }
-
-                jigDocumentWriter.writeXlsx(book::write);
-            }
-        }
-
-        return jigDocumentWriter.outputFilePaths();
     }
 }

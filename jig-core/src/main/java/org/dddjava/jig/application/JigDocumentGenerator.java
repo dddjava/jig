@@ -1,5 +1,7 @@
 package org.dddjava.jig.application;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
@@ -29,8 +31,8 @@ import org.dddjava.jig.infrastructure.view.html.IndexView;
 import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
-import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
+import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,15 +185,15 @@ public class JigDocumentGenerator {
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
                     var modelReports = new ModelReports(new GenericModelReport<>("TERM", Terms.reporter(), terms.list()));
-                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
+                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
                 }
                 case BusinessRuleList -> {
                     var modelReports = domainList(jigSource);
-                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
+                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
                 }
                 case ApplicationList -> {
                     var modelReports = applicationList(jigSource);
-                    yield new ModelReportsPoiView(jigDocument).write(outputDirectory, modelReports);
+                    yield writeXlsx(jigDocument, outputDirectory, modelReports);
                 }
             };
 
@@ -314,5 +316,25 @@ public class JigDocumentGenerator {
                 new GenericModelReport<>("REPOSITORY", DatasourceAngles.reporter(jigDocumentContext), datasourceAngles.list()),
                 new GenericModelReport<>("文字列比較箇所", stringReporter, stringComparingMethodList.list())
         );
+    }
+
+
+    public List<Path> writeXlsx(JigDocument jigDocument, Path outputDirectory, ModelReports model) throws IOException {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+
+        if (model.empty()) {
+            jigDocumentWriter.markSkip();
+        } else {
+            try (Workbook book = new XSSFWorkbook()) {
+                List<ModelReportInterface> list = model.list();
+                for (ModelReportInterface modelReportInterface : list) {
+                    modelReportInterface.writeSheet(book, jigDocumentWriter);
+                }
+
+                jigDocumentWriter.writeXlsx(book::write);
+            }
+        }
+
+        return jigDocumentWriter.outputFilePaths();
     }
 }

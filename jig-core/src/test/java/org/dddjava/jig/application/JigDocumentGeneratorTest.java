@@ -1,0 +1,51 @@
+package org.dddjava.jig.application;
+
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.models.domains.term.Term;
+import org.dddjava.jig.domain.model.models.domains.term.TermIdentifier;
+import org.dddjava.jig.domain.model.models.domains.term.TermKind;
+import org.dddjava.jig.domain.model.models.domains.term.Terms;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import testing.xlsx.XlsxAssertions;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class JigDocumentGeneratorTest {
+
+    @TempDir
+    Path tempDir;
+
+    @Test
+    void 用語一覧がtermをもとに出力できる() throws IOException {
+        // data
+        var terms = new Terms(List.of(
+                new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
+                new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
+        ));
+        JigSource jigSource = new JigSource(null, terms);
+        // environment
+        var jigDocumentContextMock = mock(JigDocumentContext.class);
+        var jigServiceMock = mock(JigService.class);
+        when(jigServiceMock.terms(jigSource)).thenReturn(terms);
+
+        var sut = new JigDocumentGenerator(jigDocumentContextMock, jigServiceMock);
+
+        var handleResult = sut.generateDocument(JigDocument.TermList, tempDir, jigSource);
+
+        assert handleResult.success();
+
+        XlsxAssertions.assertTextValues(tempDir.resolve("term.xlsx"),
+                List.of(
+                        List.of("用語（英名）", "用語", "説明", "種類", "識別子"),
+                        List.of("piyo", "PIYO", "package-description", "パッケージ", "hoge.fuga.piyo"),
+                        List.of("Fizz", "ふぃず", "テスト説明", "クラス", "hoge.fuga.piyo.Fizz")
+                ));
+    }
+}

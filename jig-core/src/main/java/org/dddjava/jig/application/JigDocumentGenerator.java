@@ -119,7 +119,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
+    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
         try {
             long startTime = System.currentTimeMillis();
 

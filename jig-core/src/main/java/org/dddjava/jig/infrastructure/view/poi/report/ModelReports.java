@@ -5,13 +5,13 @@ import java.util.List;
 
 public class ModelReports {
 
-    List<ModelReportInterface> list;
+    List<GenericModelReport<?>> list;
 
-    public ModelReports(ModelReportInterface... reporters) {
+    public ModelReports(GenericModelReport<?>... reporters) {
         this.list = Arrays.asList(reporters);
     }
 
-    public List<ModelReportInterface> list() {
+    public List<GenericModelReport<?>> list() {
         return list;
     }
 

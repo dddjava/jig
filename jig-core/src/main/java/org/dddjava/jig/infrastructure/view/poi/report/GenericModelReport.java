@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.view.poi.report;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class GenericModelReport<T> implements ModelReportInterface {
+public class GenericModelReport<T> {
     private static final Logger logger = LoggerFactory.getLogger(GenericModelReport.class);
 
     private final String sheetName;
@@ -23,7 +24,6 @@ public class GenericModelReport<T> implements ModelReportInterface {
         this.items = items;
     }
 
-    @Override
     public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter) {
         if (items.isEmpty()) {
             JigDocument jigDocument = jigDocumentWriter.jigDocument();
@@ -33,7 +33,6 @@ public class GenericModelReport<T> implements ModelReportInterface {
         writeSheet(book, sheetName, reporter, items);
     }
 
-    @Override
     public boolean nothing() {
         return items.isEmpty();
     }
@@ -74,5 +73,17 @@ public class GenericModelReport<T> implements ModelReportInterface {
             Cell cell = row.createCell(i, CellType.STRING);
             cell.setCellValue(header.get(i));
         }
+    }
+
+    public void applyAttribute(Sheet sheet, int columns) {
+        for (int i = 0; i < columns; i++) {
+            // 列幅を自動調整する
+            sheet.autoSizeColumn(i);
+        }
+        // オートフィルターを有効にする
+        sheet.setAutoFilter(new CellRangeAddress(
+                0, sheet.getLastRowNum(),
+                0, columns - 1
+        ));
     }
 }

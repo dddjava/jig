@@ -32,7 +32,6 @@ import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
 import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
-import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -326,8 +325,7 @@ public class JigDocumentGenerator {
             jigDocumentWriter.markSkip();
         } else {
             try (Workbook book = new XSSFWorkbook()) {
-                List<ModelReportInterface> list = model.list();
-                for (ModelReportInterface modelReportInterface : list) {
+                for (GenericModelReport<?> modelReportInterface : model.list()) {
                     modelReportInterface.writeSheet(book, jigDocumentWriter);
                 }
 

@@ -28,7 +28,6 @@ import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
-import org.dddjava.jig.infrastructure.view.report.application.ServiceReport;
 import org.dddjava.jig.infrastructure.view.report.business_rule.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,9 +261,7 @@ public class JigDocumentGenerator {
 
         return new ModelReports(
                 ModelReportInterface.fromInputs(entrypoint),
-                ModelReport.createModelReport(serviceAngles.list(),
-                        serviceAngle -> new ServiceReport(serviceAngle),
-                        ServiceReport.class),
+                ModelReportInterface.service(serviceAngles, jigDocumentContext),
                 ModelReport.createModelReport(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
                 ModelReport.createModelReport(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
         );

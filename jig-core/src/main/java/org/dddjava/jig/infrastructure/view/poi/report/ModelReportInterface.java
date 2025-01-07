@@ -3,7 +3,9 @@ package org.dddjava.jig.infrastructure.view.poi.report;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceAngles;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 
 import java.util.List;
@@ -15,6 +17,10 @@ public interface ModelReportInterface {
     void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter);
 
     boolean nothing();
+
+    static ModelReportInterface service(ServiceAngles serviceAngles, JigDocumentContext jigDocumentContext) {
+        return new MyModelReportInterface<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list());
+    }
 
     static ModelReportInterface fromInputs(Entrypoint entrypoint) {
         return new MyModelReportInterface<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods());

@@ -3,9 +3,12 @@ package org.dddjava.jig.infrastructure.view.poi.report;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.domain.model.models.domains.term.Term;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public interface ModelReportInterface {
 
@@ -14,31 +17,26 @@ public interface ModelReportInterface {
     boolean nothing();
 
     static ModelReportInterface fromTerm(Terms terms) {
+        var reporter = Terms.reporter();
+
         return new ModelReportInterface() {
 
             @Override
             public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter) {
                 Sheet sheet = book.createSheet("TERM");
-                var header = List.of("用語（英名）", "用語", "説明", "種類", "識別子");
-                writeHeader(sheet, header);
+                writeHeader(sheet, reporter.stream().map(Map.Entry::getKey).toList());
+                List<Function<Term, String>> bodyFunctions = reporter.stream().map(Map.Entry::getValue).toList();
 
                 terms.list().forEach(term -> {
                     Row row = sheet.createRow(sheet.getLastRowNum() + 1);
 
-                    var body = List.of(
-                            term.identifier().simpleText(),
-                            term.title(),
-                            term.description(),
-                            term.termKind().toString(),
-                            term.identifier().asText()
-                    );
-                    for (var i = 0; i < body.size(); i++) {
+                    for (var i = 0; i < bodyFunctions.size(); i++) {
                         Cell cell = row.createCell(i, CellType.STRING);
-                        cell.setCellValue(body.get(i));
+                        cell.setCellValue(bodyFunctions.get(i).apply(term));
                     }
                 });
 
-                applyAttribute(sheet, header.size());
+                applyAttribute(sheet, reporter.size());
             }
 
             @Override

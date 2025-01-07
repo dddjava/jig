@@ -18,7 +18,7 @@ public class DecisionNumber {
         return value > 0;
     }
 
-    public double intValue() {
+    public int intValue() {
         return value;
     }
 }

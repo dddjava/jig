@@ -19,7 +19,7 @@ public class Terms {
                 .collect(Collectors.toList());
     }
 
-    public static List<Map.Entry<String, Function<Term, String>>> reporter() {
+    public static List<Map.Entry<String, Function<Term, Object>>> reporter() {
         return List.of(
                 Map.entry("用語（英名）", term -> term.identifier().simpleText()),
                 Map.entry("用語", term -> term.title()),

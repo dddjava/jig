@@ -27,7 +27,6 @@ import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
-import org.dddjava.jig.infrastructure.view.report.application.ControllerReport;
 import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
 import org.dddjava.jig.infrastructure.view.report.application.ServiceReport;
 import org.dddjava.jig.infrastructure.view.report.business_rule.*;
@@ -262,9 +261,7 @@ public class JigDocumentGenerator {
         }
 
         return new ModelReports(
-                ModelReport.createModelReport(entrypoint.listRequestHandlerMethods(),
-                        requestHandlerMethod -> new ControllerReport(requestHandlerMethod),
-                        ControllerReport.class),
+                ModelReportInterface.fromInputs(entrypoint),
                 ModelReport.createModelReport(serviceAngles.list(),
                         serviceAngle -> new ServiceReport(serviceAngle),
                         ServiceReport.class),

@@ -139,14 +139,6 @@ public class ModelReport<MODEL> implements ModelReportInterface {
 
     void updateSheetAttribute(Sheet sheet) {
         int columns = header().size();
-        for (int i = 0; i < columns; i++) {
-            // 列幅を自動調整する
-            sheet.autoSizeColumn(i);
-        }
-        // オートフィルターを有効にする
-        sheet.setAutoFilter(new CellRangeAddress(
-                0, sheet.getLastRowNum(),
-                0, columns - 1
-        ));
+        applyAttribute(sheet, columns);
     }
 }

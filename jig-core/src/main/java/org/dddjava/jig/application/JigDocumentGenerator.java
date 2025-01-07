@@ -25,6 +25,7 @@ import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
 import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
+import org.dddjava.jig.infrastructure.view.poi.report.ModelReportInterface;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
 import org.dddjava.jig.infrastructure.view.report.application.ControllerReport;
 import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
@@ -177,7 +178,7 @@ public class JigDocumentGenerator {
                 }
                 // 一覧
                 case TermList -> {
-                    var modelReports = new ModelReports(ModelReport.createModelReport(jigService.terms(jigSource).list(), TermReport::new, TermReport.class));
+                    var modelReports = new ModelReports(ModelReportInterface.fromTerm(jigService.terms(jigSource)));
                     yield new ModelReportsPoiView(jigDocument, jigDocumentContext).write(outputDirectory, modelReports);
                 }
                 case BusinessRuleList -> {

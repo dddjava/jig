@@ -248,8 +248,8 @@ public class JigDocumentGenerator {
                 ModelReport.createModelReport(businessRules.jigTypes().listCollectionType(),
                         jigType -> new CollectionReport(jigType, typeFacts.toClassRelations()),
                         CollectionReport.class),
-                ModelReport.createModelReport(Validations.from(jigTypes).list(), ValidationReport::new, ValidationReport.class),
-                ModelReport.createModelReport(methodSmellList.list(), MethodSmellReport::new, MethodSmellReport.class)
+                new GenericModelReport<>("VALIDATION", Validations.reporter(jigDocumentContext), Validations.from(jigTypes).list()),
+                new GenericModelReport<>("注意メソッド", MethodSmellList.reporter(jigDocumentContext), methodSmellList.list())
         );
     }
 

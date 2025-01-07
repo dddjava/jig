@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.domains.validations;
 
+import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigInstanceMember;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -10,6 +11,8 @@ import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotations;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,6 +53,18 @@ public class Validations {
                 .map(ValidationAnnotatedMember::new);
 
         return Stream.concat(fieldStream, methodStream);
+    }
+
+    public static List<Map.Entry<String, Function<Validation, Object>>> reporter(JigDocumentContext jigDocumentContext) {
+        return List.of(
+                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                Map.entry("メンバ名", item -> item.memberName()),
+                Map.entry("メンバクラス名", item -> item.memberType().asSimpleText()),
+                Map.entry("アノテーションクラス名", item -> item.annotationType().asSimpleText()),
+                Map.entry("アノテーション記述", item -> item.annotationDescription())
+        );
     }
 
     public List<Validation> list() {

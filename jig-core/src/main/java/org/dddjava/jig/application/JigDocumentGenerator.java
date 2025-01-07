@@ -19,6 +19,7 @@ import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
@@ -29,7 +30,6 @@ import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
-import org.dddjava.jig.infrastructure.view.report.application.RepositoryReport;
 import org.dddjava.jig.infrastructure.view.report.business_rule.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
@@ -262,11 +264,16 @@ public class JigDocumentGenerator {
             logger.warn(Warning.ハンドラメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
+        List<Map.Entry<String, Function<JigMethod, Object>>> stringReporter = List.of(
+                Map.entry("パッケージ名", item -> item.declaration().declaringType().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.declaration().declaringType().asSimpleText()),
+                Map.entry("メソッドシグネチャ", item -> item.declaration().asSignatureSimpleText())
+        );
         return new ModelReports(
                 new GenericModelReport<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
                 new GenericModelReport<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list()),
-                ModelReport.createModelReport(datasourceAngles.list(), RepositoryReport::new, RepositoryReport.class),
-                ModelReport.createModelReport(stringComparingMethodList.list(), StringComparingReport::new, StringComparingReport.class)
+                new GenericModelReport<>("REPOSITORY", DatasourceAngles.reporter(jigDocumentContext), datasourceAngles.list()),
+                new GenericModelReport<>("文字列比較箇所", stringReporter, stringComparingMethodList.list())
         );
     }
 }

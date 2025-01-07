@@ -2,6 +2,7 @@ package org.dddjava.jig.infrastructure.view.poi.report;
 
 import org.apache.poi.ss.usermodel.*;
 import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,11 @@ public class GenericModelReport<T> implements ModelReportInterface {
 
     @Override
     public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter, ReportItemFormatter reportItemFormatter) {
+        if (items.isEmpty()) {
+            JigDocument jigDocument = jigDocumentWriter.jigDocument();
+            logger.info("[{}] 出力する情報がないため、{}/{}の出力を抑止します。", jigDocument, jigDocument.label(), sheetName);
+            return;
+        }
         writeSheet(book, sheetName, reporter, items);
     }
 

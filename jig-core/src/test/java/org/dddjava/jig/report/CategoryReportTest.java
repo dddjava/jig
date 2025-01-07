@@ -5,7 +5,6 @@ import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.infrastructure.view.report.business_rule.CategoryReport;
 import org.junit.jupiter.api.Test;
 import testing.JigServiceTest;
 

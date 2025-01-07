@@ -16,6 +16,7 @@ import org.dddjava.jig.domain.model.models.applications.usecases.StringComparing
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
@@ -30,7 +31,8 @@ import org.dddjava.jig.infrastructure.view.poi.ModelReportsPoiView;
 import org.dddjava.jig.infrastructure.view.poi.report.GenericModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReport;
 import org.dddjava.jig.infrastructure.view.poi.report.ModelReports;
-import org.dddjava.jig.infrastructure.view.report.business_rule.*;
+import org.dddjava.jig.infrastructure.view.report.business_rule.BusinessRuleReport;
+import org.dddjava.jig.infrastructure.view.report.business_rule.CollectionReport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -239,12 +241,29 @@ public class JigDocumentGenerator {
 
         CategoryDiagram categoryDiagram = jigService.categories(jigSource);
         List<BusinessRulePackage> businessRulePackages = jigService.businessRules(jigSource).listPackages();
+        List<Map.Entry<String, Function<BusinessRulePackage, Object>>> packageReporter = List.of(
+                Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
+                Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
+                Map.entry("クラス数", item -> item.businessRules().list().size())
+        );
+        List<Map.Entry<String, Function<CategoryAngle, Object>>> categoryReporter = List.of(
+                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                Map.entry("定数宣言", item -> item.constantsDeclarationsName()),
+                Map.entry("フィールド", item -> item.fieldDeclarations()),
+                Map.entry("使用箇所数", item -> item.userTypeIdentifiers().list().size()),
+                Map.entry("使用箇所", item -> item.userTypeIdentifiers().asSimpleText()),
+                Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),
+                Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
+                Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
+        );
         return new ModelReports(
-                ModelReport.createModelReport(businessRulePackages, PackageReport::new, PackageReport.class),
+                new GenericModelReport<>("PACKAGE", packageReporter, businessRulePackages),
                 ModelReport.createModelReport(businessRules.list(),
                         businessRule -> new BusinessRuleReport(businessRule, businessRules),
                         BusinessRuleReport.class),
-                ModelReport.createModelReport(categoryDiagram.list(), CategoryReport::new, CategoryReport.class),
+                new GenericModelReport<>("ENUM", categoryReporter, categoryDiagram.list()),
                 ModelReport.createModelReport(businessRules.jigTypes().listCollectionType(),
                         jigType -> new CollectionReport(jigType, typeFacts.toClassRelations()),
                         CollectionReport.class),

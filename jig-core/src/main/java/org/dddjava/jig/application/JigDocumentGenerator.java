@@ -20,7 +20,7 @@ import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.port.DatasourceAngles;
+import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;

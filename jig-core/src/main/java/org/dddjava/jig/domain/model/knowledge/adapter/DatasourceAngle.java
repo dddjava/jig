@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.knowledge.port;
+package org.dddjava.jig.domain.model.knowledge.adapter;
 
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;

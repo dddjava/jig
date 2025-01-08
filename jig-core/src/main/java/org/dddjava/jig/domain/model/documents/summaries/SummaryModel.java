@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.data.enums.EnumModels;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.information.domains.categories.enums.EnumModels;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethodFinder;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.List;
 import java.util.Map;

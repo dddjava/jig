@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.domains.categories.enums;
+package org.dddjava.jig.domain.model.data.enums;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 

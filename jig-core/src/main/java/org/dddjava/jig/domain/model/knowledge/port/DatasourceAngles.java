@@ -1,6 +1,8 @@
-package org.dddjava.jig.domain.model.models.applications.outputs;
+package org.dddjava.jig.domain.model.knowledge.port;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethod;
+import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;

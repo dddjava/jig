@@ -1,5 +1,6 @@
-package org.dddjava.jig.domain.model.models.domains.categories;
+package org.dddjava.jig.domain.model.knowledge.core;
 
+import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;

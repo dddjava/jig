@@ -1,5 +1,7 @@
 package org.dddjava.jig.domain.model.models.applications.usecases;
 
+import org.dddjava.jig.domain.model.knowledge.core.ServiceAngle;
+
 /**
  * ユースケースの種類
  */

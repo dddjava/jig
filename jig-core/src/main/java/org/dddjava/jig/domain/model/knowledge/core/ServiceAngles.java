@@ -1,9 +1,11 @@
-package org.dddjava.jig.domain.model.models.applications.usecases;
+package org.dddjava.jig.domain.model.knowledge.core;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.models.applications.outputs.RepositoryMethods;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethod;
+import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 

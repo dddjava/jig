@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.models.domains.categories.CategoryAngle;
+import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.models.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclaration;

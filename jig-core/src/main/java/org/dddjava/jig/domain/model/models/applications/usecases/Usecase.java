@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.models.applications.usecases;
 
+import org.dddjava.jig.domain.model.knowledge.core.ServiceAngle;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 
 import java.util.List;

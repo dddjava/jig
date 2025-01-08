@@ -214,4 +214,8 @@ public class EntrypointMethod {
     public UsingMethods usingMethods() {
         return method.usingMethods();
     }
+
+    public JigType jigType() {
+        return jigType;
+    }
 }

@@ -9,9 +9,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
-import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
-import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.port.DatasourceAngles;
 import org.dddjava.jig.domain.model.information.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.applications.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
@@ -21,6 +18,9 @@ import org.dddjava.jig.domain.model.information.domains.term.Terms;
 import org.dddjava.jig.domain.model.information.domains.validations.Validations;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
+import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
+import org.dddjava.jig.domain.model.knowledge.port.DatasourceAngles;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
@@ -311,30 +311,39 @@ public class JigDocumentGenerator {
         }
 
         return new ReportBook(
-                new ReportSheet<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
+                new ReportSheet<>("CONTROLLER", List.of(
+                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.method().declaration().asSignatureSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.method().declaration().methodReturn().asSimpleText()),
+                        Map.entry("クラス別名", item -> item.jigType().typeAlias().asText()),
+                        Map.entry("使用しているフィールドの型", item -> item.method().usingFields().typeIdentifiers().asSimpleText()),
+                        Map.entry("分岐数", item -> item.method().decisionNumber().intValue()),
+                        Map.entry("パス", item -> item.pathText())
+                ), entrypoint.listRequestHandlerMethods()),
                 new ReportSheet<>("SERVICE", List.of(
-                        Map.entry("パッケージ名", item1 -> item1.serviceMethod().declaringType().packageIdentifier().asText()),
-                        Map.entry("クラス名", item1 -> item1.serviceMethod().declaringType().asSimpleText()),
-                        Map.entry("メソッドシグネチャ", item1 -> item1.method().asSignatureSimpleText()),
-                        Map.entry("メソッド戻り値の型", item1 -> item1.method().methodReturn().asSimpleText()),
-                        Map.entry("イベントハンドラ", item1 -> item1.usingFromController() ? "◯" : ""),
-                        Map.entry("クラス別名", item1 -> jigDocumentContext.classComment(item1.serviceMethod().declaringType()).asText()),
-                        Map.entry("メソッド別名", item1 -> item1.serviceMethod().method().aliasTextOrBlank()),
-                        Map.entry("メソッド戻り値の型の別名", item1 ->
-                                jigDocumentContext.classComment(item1.serviceMethod().method().declaration().methodReturn().typeIdentifier()).asText()
+                        Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.method().methodReturn().asSimpleText()),
+                        Map.entry("イベントハンドラ", item -> item.usingFromController() ? "◯" : ""),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.serviceMethod().declaringType()).asText()),
+                        Map.entry("メソッド別名", item -> item.serviceMethod().method().aliasTextOrBlank()),
+                        Map.entry("メソッド戻り値の型の別名", item ->
+                                jigDocumentContext.classComment(item.serviceMethod().method().declaration().methodReturn().typeIdentifier()).asText()
                         ),
-                        Map.entry("メソッド引数の型の別名", item1 ->
-                                item1.serviceMethod().method().declaration().methodSignature().listArgumentTypeIdentifiers().stream()
+                        Map.entry("メソッド引数の型の別名", item ->
+                                item.serviceMethod().method().declaration().methodSignature().listArgumentTypeIdentifiers().stream()
                                         .map(jigDocumentContext::classComment)
                                         .map(ClassComment::asText)
                                         .collect(Collectors.joining(", ", "[", "]"))
                         ),
-                        Map.entry("使用しているフィールドの型", item1 -> item1.usingFields().typeIdentifiers().asSimpleText()),
-                        Map.entry("分岐数", item1 -> item1.serviceMethod().method().decisionNumber().intValue()),
-                        Map.entry("使用しているサービスのメソッド", item1 -> item1.usingServiceMethods().asSignatureAndReturnTypeSimpleText()),
-                        Map.entry("使用しているリポジトリのメソッド", item1 -> item1.usingRepositoryMethods().asSimpleText()),
-                        Map.entry("null使用", item1 -> item1.useNull() ? "◯" : ""),
-                        Map.entry("stream使用", item1 -> item1.useStream() ? "◯" : "")
+                        Map.entry("使用しているフィールドの型", item -> item.usingFields().typeIdentifiers().asSimpleText()),
+                        Map.entry("分岐数", item -> item.serviceMethod().method().decisionNumber().intValue()),
+                        Map.entry("使用しているサービスのメソッド", item -> item.usingServiceMethods().asSignatureAndReturnTypeSimpleText()),
+                        Map.entry("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),
+                        Map.entry("null使用", item -> item.useNull() ? "◯" : ""),
+                        Map.entry("stream使用", item -> item.useStream() ? "◯" : "")
                 ), serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", List.of(
                         Map.entry("パッケージ名", item -> item.method().declaringType().packageIdentifier().asText()),

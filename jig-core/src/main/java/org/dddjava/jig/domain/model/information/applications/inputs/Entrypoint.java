@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
@@ -59,16 +58,4 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
                 .toList();
     }
 
-    public static List<Map.Entry<String, Function<EntrypointMethod, Object>>> reporter() {
-        return List.of(
-                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
-                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                Map.entry("メソッドシグネチャ", item -> item.method().declaration().asSignatureSimpleText()),
-                Map.entry("メソッド戻り値の型", item -> item.method().declaration().methodReturn().asSimpleText()),
-                Map.entry("クラス別名", item -> item.jigType.typeAlias().asText()),
-                Map.entry("使用しているフィールドの型", item -> item.method().usingFields().typeIdentifiers().asSimpleText()),
-                Map.entry("分岐数", item -> item.method().decisionNumber().intValue()),
-                Map.entry("パス", item -> item.pathText())
-        );
-    }
 }

@@ -22,19 +22,17 @@ public class JigMethod {
     MethodAnnotations methodAnnotations;
     Visibility visibility;
 
-    MethodDepend methodDepend;
     MethodDerivation methodDerivation;
     MethodImplementation methodImplementation;
     private final MethodInstructions methodInstructions;
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
-        this.methodDepend = methodDepend;
         this.methodDerivation = methodDerivation;
         this.methodImplementation = methodImplementation;
         this.methodInstructions = methodInstructions;
@@ -63,11 +61,11 @@ public class JigMethod {
     }
 
     public UsingFields usingFields() {
-        return methodDepend.usingFields();
+        return new UsingFields(methodInstructions.fieldReferences());
     }
 
     public UsingMethods usingMethods() {
-        return methodDepend.usingMethods();
+        return new UsingMethods(methodInstructions.instructMethods());
     }
 
     public MethodWorries methodWorries() {
@@ -79,16 +77,16 @@ public class JigMethod {
     }
 
     public boolean referenceNull() {
-        return methodDepend.hasNullReference();
+        return methodInstructions.hasNullReference();
     }
 
     public boolean notUseMember() {
-        return methodDepend.notUseMember();
+        return methodInstructions.hasMemberInstruction();
     }
 
     public TypeIdentifiers usingTypes() {
         var list = Stream.of(
-                        methodDepend.collectUsingTypes(),
+                        methodInstructions.usingTypes(),
                         methodDeclaration.relateTypes(),
                         methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
                         throwsTypes,
@@ -165,7 +163,7 @@ public class JigMethod {
     }
 
     public List<MethodDeclaration> methodInstructions() {
-        return methodDepend.methodInstructions();
+        return methodInstructions.instructMethods().list();
     }
 
     /**

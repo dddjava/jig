@@ -64,7 +64,6 @@ public class JigMethodBuilder {
                 methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
                 annotatedMethods(),
                 visibility,
-                new MethodDepend(methodInstructions),
                 methodDerivation,
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()),
                 methodInstructions,

@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 /**
  * メソッドの気になるところ

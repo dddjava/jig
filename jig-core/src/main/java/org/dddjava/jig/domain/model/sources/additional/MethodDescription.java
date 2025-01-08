@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.sources.additional;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 
 /**
  * メソッドに対する説明

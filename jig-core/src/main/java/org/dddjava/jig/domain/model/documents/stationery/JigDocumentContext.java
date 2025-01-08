@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.documents.stationery;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.nio.file.Path;
 import java.util.List;

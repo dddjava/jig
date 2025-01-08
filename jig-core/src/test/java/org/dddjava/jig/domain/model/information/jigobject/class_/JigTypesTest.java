@@ -2,10 +2,10 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
-import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
-import org.dddjava.jig.domain.model.parts.classes.type.*;
-import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.Visibility;
+import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

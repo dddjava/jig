@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.parts.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.ArrayList;

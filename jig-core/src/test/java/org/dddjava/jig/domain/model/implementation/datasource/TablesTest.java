@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.implementation.datasource;
 
-import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Table;
-import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Tables;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.Table;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.Tables;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

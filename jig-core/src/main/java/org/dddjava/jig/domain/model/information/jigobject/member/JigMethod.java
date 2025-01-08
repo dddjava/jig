@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.parts.classes.method.*;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
+import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
 import java.util.*;
 import java.util.function.Function;

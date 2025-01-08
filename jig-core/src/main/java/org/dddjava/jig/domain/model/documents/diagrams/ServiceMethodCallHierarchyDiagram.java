@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.knowledge.core.ServiceAngle;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.Usecase;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.HashSet;
 import java.util.List;

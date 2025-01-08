@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;

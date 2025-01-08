@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.information.applications.outputs;
 
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 
 /**
  * データソースの構造

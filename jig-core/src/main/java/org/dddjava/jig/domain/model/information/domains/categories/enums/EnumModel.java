@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.information.domains.categories.enums;
 
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 import java.util.Comparator;

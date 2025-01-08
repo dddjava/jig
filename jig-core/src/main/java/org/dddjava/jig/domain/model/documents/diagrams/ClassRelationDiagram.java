@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.StringJoiner;
 

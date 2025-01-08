@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.identifier.namespace;
 
-import org.dddjava.jig.domain.model.parts.packages.PackageDepth;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageDepth;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

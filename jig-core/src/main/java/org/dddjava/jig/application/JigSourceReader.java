@@ -1,8 +1,8 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.parts.classes.rdbaccess.Sqls;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;

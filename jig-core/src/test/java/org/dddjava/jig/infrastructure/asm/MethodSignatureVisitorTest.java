@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

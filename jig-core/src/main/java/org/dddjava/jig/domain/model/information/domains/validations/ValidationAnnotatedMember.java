@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.domains.validations;
 
-import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
-import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.classes.annotation.MethodAnnotation;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
+import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 /**
  * バリデーションアノテーションのついたメンバ

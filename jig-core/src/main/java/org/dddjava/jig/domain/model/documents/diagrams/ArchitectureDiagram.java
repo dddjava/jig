@@ -4,9 +4,9 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.PackageBasedArchitecture;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.StringJoiner;
 import java.util.function.Function;

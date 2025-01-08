@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,9 +2,9 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.parts.classes.method.*;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.comment.Comment;
 
 import java.util.Collections;
 import java.util.List;

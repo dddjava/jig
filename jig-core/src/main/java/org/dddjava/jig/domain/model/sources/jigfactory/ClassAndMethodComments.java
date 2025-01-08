@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 
 import java.util.Collections;
 import java.util.List;

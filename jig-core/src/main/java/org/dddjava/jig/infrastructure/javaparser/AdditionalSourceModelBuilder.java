@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.PackageDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.additional.AdditionalTypeModel;
 import org.dddjava.jig.domain.model.sources.additional.TypeAlias;
 import org.dddjava.jig.domain.model.sources.additional.TypeDescription;

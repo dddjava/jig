@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldType;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.parts.comment.Comment;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.field.FieldType;
+import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.information.domains.categories;
 
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 /**
  * 区分

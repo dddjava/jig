@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.ArrayList;
 import java.util.List;

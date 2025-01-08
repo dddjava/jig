@@ -2,10 +2,10 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.information.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelation;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodRelation;
+import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 
 import java.util.ArrayList;
 import java.util.List;

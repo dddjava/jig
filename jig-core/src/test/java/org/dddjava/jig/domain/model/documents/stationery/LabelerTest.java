@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.parts.comment.Comment;
-import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

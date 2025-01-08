@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
+import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.Comparator;
 import java.util.List;

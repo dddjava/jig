@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.parts.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.parts.packages.PackageRelation;
-import org.dddjava.jig.domain.model.parts.packages.PackageRelations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageRelation;
+import org.dddjava.jig.domain.model.data.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.List;

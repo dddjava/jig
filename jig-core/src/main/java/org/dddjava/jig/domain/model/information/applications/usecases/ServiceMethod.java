@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.information.applications.usecases;
 
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.MethodWorries;
-import org.dddjava.jig.domain.model.parts.classes.method.*;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
 import java.util.List;
 import java.util.Optional;

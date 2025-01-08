@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.information.applications.outputs.DatasourceM
 import org.dddjava.jig.domain.model.information.applications.outputs.RepositoryMethods;
 import org.dddjava.jig.domain.model.information.applications.usecases.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.usecases.ServiceMethods;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 
 import java.util.ArrayList;
 import java.util.Comparator;

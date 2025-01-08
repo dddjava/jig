@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
-import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotations;
-import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
+import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotations;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
 

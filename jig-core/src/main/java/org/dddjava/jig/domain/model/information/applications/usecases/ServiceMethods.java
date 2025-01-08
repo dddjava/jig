@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.information.applications.usecases;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.List;
 import java.util.Optional;

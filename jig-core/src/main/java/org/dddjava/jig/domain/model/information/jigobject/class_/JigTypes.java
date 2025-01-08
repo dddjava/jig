@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

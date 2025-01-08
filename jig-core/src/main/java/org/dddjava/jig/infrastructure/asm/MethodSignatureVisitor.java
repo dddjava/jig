@@ -1,10 +1,10 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.parts.classes.method.Arguments;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.Arguments;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
+import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.ArrayList;

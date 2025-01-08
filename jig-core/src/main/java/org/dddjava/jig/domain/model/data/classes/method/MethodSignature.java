@@ -90,10 +90,6 @@ public final class MethodSignature {
         return methodName + "(" + arguments.packageAbbreviationText() + ")";
     }
 
-    public Arguments arguments() {
-        return arguments;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;

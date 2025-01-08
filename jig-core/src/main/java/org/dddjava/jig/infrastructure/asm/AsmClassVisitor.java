@@ -1,16 +1,18 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
@@ -142,6 +144,7 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
+        var methodInstructions = MethodInstructions.newInstance();
         JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                 jigTypeBuilder,
                 toMethodSignature(name, descriptor),
@@ -157,6 +160,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitInsn(int opcode) {
                 if (opcode == Opcodes.ACONST_NULL) {
                     jigMethodBuilder.markReferenceNull();
+                    methodInstructions.register(MethodInstructionType.NULL参照);
                 }
                 super.visitInsn(opcode);
             }
@@ -170,29 +174,36 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
                 TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
-                FieldType fieldType = typeDescriptorToFieldType(descriptor);
-                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
+                TypeIdentifier fieldTypeIdentifier = typeDescriptorToIdentifier(descriptor);
 
                 // FIXME: これをFieldDeclarationで扱うとFieldTypeに総称型が入っているのを期待しかねない
                 // このメソッドのdescriptorではフィールドの型パラメタが解決できないため、完全なFieldTypeを作成できない。
                 // UsingFieldでではFieldDeclarationと異なる形式で扱わなければならない。
+                FieldType fieldType = new FieldType(fieldTypeIdentifier);
+                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
+
                 jigMethodBuilder.addFieldInstruction(fieldDeclaration);
 
+                methodInstructions.registerField(declaringType, fieldTypeIdentifier, name);
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                jigMethodBuilder.addMethodInstruction(toMethodDeclaration(owner, name, descriptor));
+                var methodDeclaration = toMethodDeclaration(owner, name, descriptor);
+                jigMethodBuilder.addMethodInstruction(methodDeclaration);
 
+                methodInstructions.registerMethod(methodDeclaration);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
 
             @Override
             public void visitLdcInsn(Object value) {
-                if (value instanceof Type) {
+                if (value instanceof Type typeValue) {
                     // `Xxx.class` などのクラス参照を読み込む
-                    jigMethodBuilder.addClassReferenceCall(toTypeIdentifier((Type) value));
+                    var typeIdentifier = toTypeIdentifier(typeValue);
+                    jigMethodBuilder.addClassReferenceCall(typeIdentifier);
+                    methodInstructions.registerClassReference(typeIdentifier);
                 }
 
                 super.visitLdcInsn(value);
@@ -235,6 +246,7 @@ class AsmClassVisitor extends ClassVisitor {
                         if (isMethodRef(handle)) {
                             var methodDeclaration = toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc());
                             jigMethodBuilder.addMethodInstruction(methodDeclaration);
+                            methodInstructions.registerMethod(methodDeclaration);
                         }
                     }
                 }
@@ -272,6 +284,7 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
                 jigMethodBuilder.addLookupSwitch();
+                methodInstructions.register(MethodInstructionType.SWITCH);
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
 
@@ -280,10 +293,12 @@ class AsmClassVisitor extends ClassVisitor {
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
                     jigMethodBuilder.addJump();
+                    methodInstructions.register(MethodInstructionType.JUMP);
                 }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
                     jigMethodBuilder.markJudgeNull();
+                    methodInstructions.register(MethodInstructionType.NULL判定);
                 }
                 super.visitJumpInsn(opcode, label);
             }

@@ -9,20 +9,22 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
-import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
-import org.dddjava.jig.domain.model.knowledge.port.DatasourceAngles;
+import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
+import org.dddjava.jig.domain.model.knowledge.core.ServiceAngle;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
+import org.dddjava.jig.domain.model.knowledge.port.DatasourceAngles;
+import org.dddjava.jig.domain.model.models.applications.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.models.applications.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.models.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
-import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 import org.dddjava.jig.domain.model.models.domains.term.Terms;
 import org.dddjava.jig.domain.model.models.domains.validations.Validations;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.models.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
+import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
@@ -293,9 +295,34 @@ public class JigDocumentGenerator {
                 Map.entry("クラス名", item -> item.declaration().declaringType().asSimpleText()),
                 Map.entry("メソッドシグネチャ", item -> item.declaration().asSignatureSimpleText())
         );
+        // TODO jigDocumentContext を使わずに名前解決をできるようにしたい
+        List<Map.Entry<String, Function<ServiceAngle, Object>>> reporter = List.of(
+                Map.entry("パッケージ名", item -> item.serviceMethod().declaringType().packageIdentifier().asText()),
+                Map.entry("クラス名", item -> item.serviceMethod().declaringType().asSimpleText()),
+                Map.entry("メソッドシグネチャ", item -> item.method().asSignatureSimpleText()),
+                Map.entry("メソッド戻り値の型", item -> item.method().methodReturn().asSimpleText()),
+                Map.entry("イベントハンドラ", item -> item.usingFromController() ? "◯" : ""),
+                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.serviceMethod().declaringType()).asText()),
+                Map.entry("メソッド別名", item -> item.serviceMethod().method().aliasTextOrBlank()),
+                Map.entry("メソッド戻り値の型の別名", item ->
+                        jigDocumentContext.classComment(item.serviceMethod().method().declaration().methodReturn().typeIdentifier()).asText()
+                ),
+                Map.entry("メソッド引数の型の別名", item ->
+                        item.serviceMethod().method().declaration().methodSignature().listArgumentTypeIdentifiers().stream()
+                                .map(jigDocumentContext::classComment)
+                                .map(ClassComment::asText)
+                                .collect(Collectors.joining(", ", "[", "]"))
+                ),
+                Map.entry("使用しているフィールドの型", item -> item.usingFields().typeIdentifiers().asSimpleText()),
+                Map.entry("分岐数", item -> item.serviceMethod().method().decisionNumber().intValue()),
+                Map.entry("使用しているサービスのメソッド", item -> item.usingServiceMethods().asSignatureAndReturnTypeSimpleText()),
+                Map.entry("使用しているリポジトリのメソッド", item -> item.usingRepositoryMethods().asSimpleText()),
+                Map.entry("null使用", item -> item.useNull() ? "◯" : ""),
+                Map.entry("stream使用", item -> item.useStream() ? "◯" : "")
+        );
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", Entrypoint.reporter(), entrypoint.listRequestHandlerMethods()),
-                new ReportSheet<>("SERVICE", ServiceAngles.reporter(jigDocumentContext), serviceAngles.list()),
+                new ReportSheet<>("SERVICE", reporter, serviceAngles.list()),
                 new ReportSheet<>("REPOSITORY", DatasourceAngles.reporter(jigDocumentContext), datasourceAngles.list()),
                 new ReportSheet<>("文字列比較箇所", stringReporter, stringComparingMethodList.list())
         );

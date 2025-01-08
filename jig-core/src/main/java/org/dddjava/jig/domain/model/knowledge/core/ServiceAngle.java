@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.models.applications.inputs.EntrypointMethod;
-import org.dddjava.jig.domain.model.models.applications.outputs.RepositoryMethods;
-import org.dddjava.jig.domain.model.models.applications.usecases.ServiceMethod;
-import org.dddjava.jig.domain.model.models.jigobject.member.MethodWorry;
+import org.dddjava.jig.domain.model.information.applications.inputs.EntrypointMethod;
+import org.dddjava.jig.domain.model.information.applications.outputs.RepositoryMethods;
+import org.dddjava.jig.domain.model.information.applications.usecases.ServiceMethod;
+import org.dddjava.jig.domain.model.information.jigobject.member.MethodWorry;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.parts.classes.method.UsingFields;

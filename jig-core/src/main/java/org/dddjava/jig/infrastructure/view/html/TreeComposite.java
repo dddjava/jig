@@ -1,10 +1,9 @@
 package org.dddjava.jig.infrastructure.view.html;
 
-import org.dddjava.jig.domain.model.models.jigobject.package_.JigPackage;
+import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;
 import org.dddjava.jig.domain.model.parts.packages.PackageIdentifier;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 

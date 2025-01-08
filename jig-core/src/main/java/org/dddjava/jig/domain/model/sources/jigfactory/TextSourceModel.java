@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModel;
-import org.dddjava.jig.domain.model.models.domains.categories.enums.EnumModels;
+import org.dddjava.jig.domain.model.information.domains.categories.enums.EnumModel;
+import org.dddjava.jig.domain.model.information.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.parts.packages.PackageComment;
-import org.dddjava.jig.domain.model.models.domains.term.Term;
-import org.dddjava.jig.domain.model.models.domains.term.Terms;
+import org.dddjava.jig.domain.model.information.domains.term.Term;
+import org.dddjava.jig.domain.model.information.domains.term.Terms;
 
 import java.util.List;
 import java.util.Optional;

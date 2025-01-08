@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;

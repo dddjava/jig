@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.models.jigobject.class_.*;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.information.jigobject.class_.*;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.parts.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;

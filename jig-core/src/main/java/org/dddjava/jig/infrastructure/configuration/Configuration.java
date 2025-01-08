@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.models.jigobject.architectures.Architecture;
+import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;
 import org.dddjava.jig.infrastructure.asm.AsmFactReader;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
 import org.dddjava.jig.infrastructure.javaparser.JavaparserReader;

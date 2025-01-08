@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.models.jigobject.class_.TypeKind;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.junit.jupiter.api.Test;
 import testing.TestSupport;
 

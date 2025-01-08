@@ -1,7 +1,7 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigField;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.parts.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;

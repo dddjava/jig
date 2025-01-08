@@ -2,9 +2,9 @@ package org.dddjava.jig.application;
 
 import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.models.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.parts.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.parts.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;

@@ -1,8 +1,8 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmell;
-import org.dddjava.jig.domain.model.models.domains.businessrules.MethodSmellList;
-import org.dddjava.jig.domain.model.models.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmell;
+import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.parts.classes.method.Visibility;
 import org.dddjava.jig.domain.model.parts.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;

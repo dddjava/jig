@@ -31,7 +31,7 @@ public class TypeIdentifiers {
     }
 
     public String asSimpleText() {
-        return identifiers.stream().distinct().collect(Collectors.toList()).stream()
+        return identifiers.stream().distinct().toList().stream()
                 .map(TypeIdentifier::asSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));

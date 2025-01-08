@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.summaries;
 
-import org.dddjava.jig.domain.model.information.applications.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;

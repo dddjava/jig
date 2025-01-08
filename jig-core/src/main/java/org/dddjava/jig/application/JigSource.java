@@ -2,7 +2,7 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.information.domains.categories.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
-import org.dddjava.jig.domain.model.information.domains.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 import java.util.HashMap;

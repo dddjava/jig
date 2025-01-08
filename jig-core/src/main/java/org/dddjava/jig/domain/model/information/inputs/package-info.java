@@ -3,4 +3,4 @@
  *
  * HTTP APIのエンドポイントとなるController、キューなどのListener、スケジューラーなど、アプリケーションとして処理の起点となるところ。
  */
-package org.dddjava.jig.domain.model.information.applications.inputs;
+package org.dddjava.jig.domain.model.information.inputs;

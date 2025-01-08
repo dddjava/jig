@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
-import org.dddjava.jig.domain.model.information.domains.term.Term;
-import org.dddjava.jig.domain.model.information.domains.term.Terms;
+import org.dddjava.jig.domain.model.data.term.Term;
+import org.dddjava.jig.domain.model.data.term.Terms;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.domains.validations;
+package org.dddjava.jig.domain.model.information.validations;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.jigobject.architectures;
+package org.dddjava.jig.domain.model.knowledge.architecture;
 
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;

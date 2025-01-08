@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.jigobject.term;
 
-import org.dddjava.jig.domain.model.information.domains.term.Term;
+import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;

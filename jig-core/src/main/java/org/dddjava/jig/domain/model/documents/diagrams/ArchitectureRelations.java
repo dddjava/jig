@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.information.jigobject.architectures.PackageBasedArchitecture;
+import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;

@@ -1,6 +1,7 @@
-package org.dddjava.jig.domain.model.information.applications.usecases;
+package org.dddjava.jig.domain.model.knowledge.core.usecases;
 
-import org.dddjava.jig.domain.model.information.applications.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;

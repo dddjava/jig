@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.applications.inputs;
+package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;

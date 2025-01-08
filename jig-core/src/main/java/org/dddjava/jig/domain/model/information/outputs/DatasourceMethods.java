@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.applications.outputs;
+package org.dddjava.jig.domain.model.information.outputs;
 
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;

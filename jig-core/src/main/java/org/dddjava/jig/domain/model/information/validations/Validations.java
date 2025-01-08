@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.domains.validations;
+package org.dddjava.jig.domain.model.information.validations;
 
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigInstanceMember;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;

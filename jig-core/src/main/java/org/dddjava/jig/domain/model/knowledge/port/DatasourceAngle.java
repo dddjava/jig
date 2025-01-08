@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.port;
 
-import org.dddjava.jig.domain.model.information.applications.outputs.DatasourceMethod;
+import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;

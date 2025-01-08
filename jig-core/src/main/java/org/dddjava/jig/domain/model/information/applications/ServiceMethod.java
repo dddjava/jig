@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.applications.usecases;
+package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.MethodWorries;

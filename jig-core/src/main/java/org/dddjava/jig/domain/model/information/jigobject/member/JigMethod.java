@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.information.jigobject.member;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
@@ -16,26 +17,23 @@ public class JigMethod {
     MethodDeclaration methodDeclaration;
     MethodComment methodComment;
 
-    boolean nullDecision;
-
-    DecisionNumber decisionNumber;
     MethodAnnotations methodAnnotations;
     Visibility visibility;
 
     MethodDepend methodDepend;
     MethodDerivation methodDerivation;
     MethodImplementation methodImplementation;
+    private final MethodInstructions methodInstructions;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, boolean nullDecision, DecisionNumber decisionNumber, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
-        this.nullDecision = nullDecision;
-        this.decisionNumber = decisionNumber;
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDepend = methodDepend;
         this.methodDerivation = methodDerivation;
         this.methodImplementation = methodImplementation;
+        this.methodInstructions = methodInstructions;
     }
 
     public MethodDeclaration declaration() {
@@ -43,7 +41,7 @@ public class JigMethod {
     }
 
     public DecisionNumber decisionNumber() {
-        return decisionNumber;
+        return methodInstructions.decisionNumber();
     }
 
     public MethodAnnotations methodAnnotations() {
@@ -71,7 +69,7 @@ public class JigMethod {
     }
 
     public boolean conditionalNull() {
-        return nullDecision;
+        return methodInstructions.hasNullDecision();
     }
 
     public boolean referenceNull() {

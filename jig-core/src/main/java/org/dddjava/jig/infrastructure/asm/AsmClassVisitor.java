@@ -152,14 +152,14 @@ class AsmClassVisitor extends ClassVisitor {
                 access,
                 resolveMethodVisibility(access),
                 useTypes,
-                throwsTypes);
+                throwsTypes,
+                methodInstructions);
 
         return new MethodVisitor(this.api) {
 
             @Override
             public void visitInsn(int opcode) {
                 if (opcode == Opcodes.ACONST_NULL) {
-                    jigMethodBuilder.markReferenceNull();
                     methodInstructions.register(MethodInstructionType.NULL参照);
                 }
                 super.visitInsn(opcode);
@@ -182,8 +182,6 @@ class AsmClassVisitor extends ClassVisitor {
                 FieldType fieldType = new FieldType(fieldTypeIdentifier);
                 FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
 
-                jigMethodBuilder.addFieldInstruction(fieldDeclaration);
-
                 methodInstructions.registerField(declaringType, fieldTypeIdentifier, name);
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }
@@ -191,8 +189,6 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
                 var methodDeclaration = toMethodDeclaration(owner, name, descriptor);
-                jigMethodBuilder.addMethodInstruction(methodDeclaration);
-
                 methodInstructions.registerMethod(methodDeclaration);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -202,7 +198,6 @@ class AsmClassVisitor extends ClassVisitor {
                 if (value instanceof Type typeValue) {
                     // `Xxx.class` などのクラス参照を読み込む
                     var typeIdentifier = toTypeIdentifier(typeValue);
-                    jigMethodBuilder.addClassReferenceCall(typeIdentifier);
                     methodInstructions.registerClassReference(typeIdentifier);
                 }
 
@@ -245,7 +240,6 @@ class AsmClassVisitor extends ClassVisitor {
                     if (bootstrapMethodArgument instanceof Handle handle) {
                         if (isMethodRef(handle)) {
                             var methodDeclaration = toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc());
-                            jigMethodBuilder.addMethodInstruction(methodDeclaration);
                             methodInstructions.registerMethod(methodDeclaration);
                         }
                     }
@@ -283,7 +277,6 @@ class AsmClassVisitor extends ClassVisitor {
             @Override
             public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
                 // switchがある
-                jigMethodBuilder.addLookupSwitch();
                 methodInstructions.register(MethodInstructionType.SWITCH);
                 super.visitLookupSwitchInsn(dflt, keys, labels);
             }
@@ -292,12 +285,10 @@ class AsmClassVisitor extends ClassVisitor {
             public void visitJumpInsn(int opcode, Label label) {
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
-                    jigMethodBuilder.addJump();
                     methodInstructions.register(MethodInstructionType.JUMP);
                 }
 
                 if (opcode == Opcodes.IFNONNULL || opcode == Opcodes.IFNULL) {
-                    jigMethodBuilder.markJudgeNull();
                     methodInstructions.register(MethodInstructionType.NULL判定);
                 }
                 super.visitJumpInsn(opcode, label);
@@ -611,10 +602,11 @@ class AsmClassVisitor extends ClassVisitor {
                                                      int access,
                                                      Visibility visibility,
                                                      List<TypeIdentifier> useTypes,
-                                                     List<TypeIdentifier> throwsTypes) {
+                                                     List<TypeIdentifier> throwsTypes,
+                                                     MethodInstructions methodInstructions) {
         MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
         MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, methodReturn, access);
-        var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, useTypes, visibility, throwsTypes, methodDerivation);
+        var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, useTypes, visibility, throwsTypes, methodDerivation, methodInstructions);
 
         if (methodDeclaration.isConstructor()) {
             // コンストラクタ

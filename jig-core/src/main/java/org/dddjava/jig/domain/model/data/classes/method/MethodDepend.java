@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
@@ -12,19 +13,16 @@ import java.util.*;
  */
 public class MethodDepend {
 
+    private final MethodInstructions methodInstructions;
     Set<TypeIdentifier> usingTypes;
 
     // FIXME 取扱注意。AsmClassVisitorのvisitFieldInsnを参照。
     List<FieldDeclaration> usingFields;
 
-    List<MethodDeclaration> methodInstructions;
-    boolean hasNullReference;
-
-    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, List<MethodDeclaration> methodInstructions, boolean hasNullReference) {
+    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, MethodInstructions methodInstructions) {
         this.usingTypes = usingTypes;
         this.usingFields = usingFields;
         this.methodInstructions = methodInstructions;
-        this.hasNullReference = hasNullReference;
     }
 
     public UsingFields usingFields() {
@@ -32,19 +30,22 @@ public class MethodDepend {
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(methodInstructions.stream().collect(MethodDeclarations.collector()));
+        return new UsingMethods(methodInstructions.instructMethods());
     }
 
     public List<MethodDeclaration> methodInstructions() {
-        return methodInstructions;
+        // usingMethodsとかぶってるような
+        return methodInstructions.instructMethods().list();
     }
 
     public boolean notUseMember() {
-        return usingFields.isEmpty() && methodInstructions.isEmpty();
+        return methodInstructions.hasMemberInstruction();
+        // TODO 元の判定誤ってる気がする。メンバを使用していない判定で、他インスタンスのメンバの使用でセーフになってそう。
+        // return usingFields.isEmpty() && methodInstructions.isEmpty();
     }
 
     public boolean hasNullReference() {
-        return hasNullReference;
+        return methodInstructions.hasNullReference();
     }
 
     public Collection<TypeIdentifier> collectUsingTypes() {
@@ -55,7 +56,7 @@ public class MethodDepend {
             typeIdentifiers.add(usingField.typeIdentifier());
         }
 
-        for (MethodDeclaration usingMethod : methodInstructions) {
+        for (MethodDeclaration usingMethod : methodInstructions()) {
             // メソッドやコンストラクタの持ち主
             // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
             typeIdentifiers.add(usingMethod.declaringType());
@@ -63,6 +64,8 @@ public class MethodDepend {
             // 呼び出したメソッドの戻り値の型
             typeIdentifiers.add(usingMethod.methodReturn().typeIdentifier());
         }
+
+        typeIdentifiers.addAll(methodInstructions.usingTypes());
 
         return typeIdentifiers;
     }

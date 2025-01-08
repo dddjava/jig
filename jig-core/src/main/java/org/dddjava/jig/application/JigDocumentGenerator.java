@@ -273,13 +273,35 @@ public class JigDocumentGenerator {
                 Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
                 Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
         );
+        Function<Boolean, String> ox = b -> b ? "◯" : "";
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", packageReporter, businessRulePackages),
                 new ReportSheet<>("ALL", allReporter, businessRules.list()),
                 new ReportSheet<>("ENUM", categoryReporter, categoryDiagram.list()),
                 new ReportSheet<>("COLLECTION", collectionReporter, businessRules.jigTypes().listCollectionType()),
-                new ReportSheet<>("VALIDATION", Validations.reporter(jigDocumentContext), Validations.from(jigTypes).list()),
-                new ReportSheet<>("注意メソッド", MethodSmellList.reporter(jigDocumentContext), methodSmellList.list())
+                new ReportSheet<>("VALIDATION", List.of(
+                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("メンバ名", item -> item.memberName()),
+                        Map.entry("メンバクラス名", item -> item.memberType().asSimpleText()),
+                        Map.entry("アノテーションクラス名", item -> item.annotationType().asSimpleText()),
+                        Map.entry("アノテーション記述", item -> item.annotationDescription())
+                ), Validations.from(jigTypes).list()),
+                new ReportSheet<>("注意メソッド", List.of(
+                        Map.entry("パッケージ名", item -> item.methodDeclaration().declaringType().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.methodDeclaration().declaringType().asSimpleText()),
+                        Map.entry("メソッドシグネチャ", item -> item.methodDeclaration().asSignatureSimpleText()),
+                        Map.entry("メソッド戻り値の型", item -> item.methodDeclaration().methodReturn().asSimpleText()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.methodDeclaration().declaringType()).asText()),
+                        Map.entry("使用箇所数", item -> item.callerMethods().size()),
+                        Map.entry("メンバを使用していない", item -> ox.apply(item.notUseMember())),
+                        Map.entry("基本型の授受を行なっている", item -> ox.apply(item.primitiveInterface())),
+                        Map.entry("NULLリテラルを使用している", item -> ox.apply(item.referenceNull())),
+                        Map.entry("NULL判定をしている", item -> ox.apply(item.nullDecision())),
+                        Map.entry("真偽値を返している", item -> ox.apply(item.returnsBoolean())),
+                        Map.entry("voidを返している", item -> ox.apply(item.returnsVoid()))
+                ), methodSmellList.list())
         );
     }
 

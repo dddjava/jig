@@ -8,6 +8,10 @@ import java.util.Objects;
 
 /**
  * メソッドシグネチャ
+ *
+ * メソッドシグネチャはメソッド名と引数で構成され、戻り値型や定義されたクラスは含まない。
+ * オーバーライドは継承関係にあるクラスで同じシグネチャで定義されること。
+ * オーバーロードは同じクラスに同じ名前の異なるシグネチャで定義されること。
  */
 public final class MethodSignature {
     private final String methodName;

@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
@@ -135,7 +136,7 @@ class AsmClassVisitor extends ClassVisitor {
         // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
         MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
-        List<TypeIdentifier> useTypes = extractClassTypeFromGenericsSignature(signature);
+        List<TypeIdentifier> signatureContainedTypes = extractClassTypeFromGenericsSignature(signature);
 
         List<TypeIdentifier> throwsTypes = new ArrayList<>();
         if (exceptions != null) {
@@ -151,7 +152,7 @@ class AsmClassVisitor extends ClassVisitor {
                 methodReturn,
                 access,
                 resolveMethodVisibility(access),
-                useTypes,
+                signatureContainedTypes,
                 throwsTypes,
                 methodInstructions);
 
@@ -220,27 +221,29 @@ class AsmClassVisitor extends ClassVisitor {
                 // - 文字列の+での連結: StringConcatFactory#makeConcatWithConstants
                 // - recordのtoStringなど: ObjectMethods#bootstrap
                 // これ自体はアプリケーションコード実装者が意識するものでないので使用しない。
-                //
-                // Lambdaやメソッド参照のみを処理するために以下の条件を入れる方が良いかもしれない。
-                // if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())) {
 
-                for (Object bootstrapMethodArgument : bootstrapMethodArguments) {
-
-                    if (bootstrapMethodArgument instanceof Type type) {
-                        if (type.getSort() == Type.METHOD) {
-                            // lambdaやメソッドリファレンスの引数と戻り値型を読み込むつもりの実装。
-                            // メソッドのシグネチャにあるし、他のものも扱ってしまっているので、確認して削除してしまいたい。
-                            jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(type.getReturnType()));
-                            for (Type argumentType : type.getArgumentTypes()) {
-                                jigMethodBuilder.addInvokeDynamicType(toTypeIdentifier(argumentType));
-                            }
-                        }
-                    }
-
-                    if (bootstrapMethodArgument instanceof Handle handle) {
-                        if (isMethodRef(handle)) {
+                // JavaでのLambdaやメソッド参照のみを処理する
+                if ("java/lang/invoke/LambdaMetafactory".equals(bootstrapMethodHandle.getOwner())
+                        && "metafactory".equals(bootstrapMethodHandle.getName())) {
+                    if (bootstrapMethodArguments.length != 3) {
+                        logger.warn("想定外のInvokeDynamicが {} で検出されました。読み飛ばします。", jigMethodBuilder.methodIdentifier());
+                    } else {
+                        // 0: Type 実装時の型。ジェネリクスなどは無視されるため、Functionの場合は (LObject;)LObject となる。
+                        // 1: Handle: メソッド参照の場合は対象のメソッドのシグネチャ、Lambda式の場合は生成されたLambdaのシグネチャ
+                        // 2: Type 動的に適用される型。ジェネリクスなども解決される。Lambdaを受けるインタフェースがジェネリクスを使用していない場合は 0 と同じになる。
+                        // 0は無視して1,2を参照する。
+                        if (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
+                                && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD) {
                             var methodDeclaration = toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc());
-                            methodInstructions.registerMethod(methodDeclaration);
+
+                            var returnType = toTypeIdentifier(type.getReturnType());
+                            var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> toTypeIdentifier(t)).toList();
+
+                            methodInstructions.registerInvokeDynamic(new InvokeDynamicInstruction(
+                                    methodDeclaration,
+                                    returnType,
+                                    argumentTypes
+                            ));
                         }
                     }
                 }
@@ -601,12 +604,12 @@ class AsmClassVisitor extends ClassVisitor {
                                                      MethodReturn methodReturn,
                                                      int access,
                                                      Visibility visibility,
-                                                     List<TypeIdentifier> useTypes,
+                                                     List<TypeIdentifier> signatureContainedTypes,
                                                      List<TypeIdentifier> throwsTypes,
                                                      MethodInstructions methodInstructions) {
         MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
         MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, methodReturn, access);
-        var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, useTypes, visibility, throwsTypes, methodDerivation, methodInstructions);
+        var jigMethodBuilder = JigMethodBuilder.constructWithHeader(methodDeclaration, signatureContainedTypes, visibility, throwsTypes, methodDerivation, methodInstructions);
 
         if (methodDeclaration.isConstructor()) {
             // コンストラクタ

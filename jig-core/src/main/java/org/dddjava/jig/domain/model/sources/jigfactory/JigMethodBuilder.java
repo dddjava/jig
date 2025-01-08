@@ -26,12 +26,12 @@ public class JigMethodBuilder {
     Visibility visibility;
     MethodDerivation methodDerivation;
     List<TypeIdentifier> throwsTypes;
+    private final List<TypeIdentifier> signatureContainedTypes;
 
     List<Annotation> annotations;
 
     List<FieldDeclaration> fieldInstructions;
 
-    List<TypeIdentifier> classReferenceCalls;
     List<TypeIdentifier> invokeDynamicTypes;
 
     Set<TypeIdentifier> useTypes = new HashSet<>();
@@ -41,30 +41,25 @@ public class JigMethodBuilder {
     private MethodComment methodComment = null;
     private MethodImplementation methodImplementation = null;
 
-    private JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, MethodInstructions methodInstructions) {
+    private JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, MethodInstructions methodInstructions) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
-        this.throwsTypes = throwsTypes;
-        this.useTypes.addAll(throwsTypes);
 
-        // TODO useTypesは曖昧なのでなくしたい
-        this.useTypes.add(methodDeclaration.methodReturn().typeIdentifier());
-        this.useTypes.addAll(methodDeclaration.methodSignature().listArgumentTypeIdentifiers());
-        this.useTypes.addAll(useTypes);
+        this.throwsTypes = throwsTypes;
+        this.signatureContainedTypes = signatureContainedTypes;
 
         this.annotations = new ArrayList<>();
         this.fieldInstructions = new ArrayList<>();
-        this.classReferenceCalls = new ArrayList<>();
         this.invokeDynamicTypes = new ArrayList<>();
 
         this.methodInstructions = methodInstructions;
     }
 
-    public static JigMethodBuilder constructWithHeader(MethodDeclaration methodDeclaration, List<TypeIdentifier> useTypes, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation, MethodInstructions methodInstructions) {
+    public static JigMethodBuilder constructWithHeader(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation, MethodInstructions methodInstructions) {
         return new JigMethodBuilder(
                 methodDeclaration,
-                useTypes,
+                signatureContainedTypes,
                 visibility,
                 methodDerivation,
                 throwsTypes,
@@ -80,14 +75,15 @@ public class JigMethodBuilder {
                 methodDepend(),
                 methodDerivation,
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()),
-                methodInstructions);
+                methodInstructions,
+                throwsTypes,
+                signatureContainedTypes);
     }
 
     private MethodDepend methodDepend() {
         var useTypes = Stream.of(
                         this.useTypes.stream(),
                         annotations.stream().map(Annotation::typeIdentifier),
-                        classReferenceCalls.stream(),
                         invokeDynamicTypes.stream()
                 ).flatMap(Function.identity())
                 .collect(Collectors.toSet());

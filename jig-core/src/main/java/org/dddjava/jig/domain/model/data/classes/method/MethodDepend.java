@@ -1,12 +1,11 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 /**
  * メソッドが依存しているもの
@@ -14,19 +13,13 @@ import java.util.*;
 public class MethodDepend {
 
     private final MethodInstructions methodInstructions;
-    Set<TypeIdentifier> usingTypes;
-
-    // FIXME 取扱注意。AsmClassVisitorのvisitFieldInsnを参照。
-    List<FieldDeclaration> usingFields;
 
     public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, MethodInstructions methodInstructions) {
-        this.usingTypes = usingTypes;
-        this.usingFields = usingFields;
         this.methodInstructions = methodInstructions;
     }
 
     public UsingFields usingFields() {
-        return new UsingFields(new FieldDeclarations(usingFields));
+        return new UsingFields(methodInstructions.fieldReferences());
     }
 
     public UsingMethods usingMethods() {
@@ -48,29 +41,7 @@ public class MethodDepend {
         return methodInstructions.hasNullReference();
     }
 
-    public Collection<TypeIdentifier> collectUsingTypes() {
-        Set<TypeIdentifier> typeIdentifiers = new HashSet<>(usingTypes);
-
-        for (FieldDeclaration usingField : usingFields) {
-            typeIdentifiers.add(usingField.declaringType());
-            typeIdentifiers.add(usingField.typeIdentifier());
-        }
-
-        for (MethodDeclaration usingMethod : methodInstructions()) {
-            // メソッドやコンストラクタの持ち主
-            // new演算子で呼び出されるコンストラクタの持ち主をここで捕まえる
-            typeIdentifiers.add(usingMethod.declaringType());
-
-            // 呼び出したメソッドの戻り値の型
-            typeIdentifiers.add(usingMethod.methodReturn().typeIdentifier());
-        }
-
-        typeIdentifiers.addAll(methodInstructions.usingTypes());
-
-        return typeIdentifiers;
-    }
-
-    public TypeIdentifiers usingTypes() {
-        return new TypeIdentifiers(new ArrayList<>(collectUsingTypes()));
+    public Set<TypeIdentifier> collectUsingTypes() {
+        return methodInstructions.usingTypes();
     }
 }

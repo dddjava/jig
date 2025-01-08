@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.information.jigobject.member;
 
+import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
@@ -8,6 +9,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * メソッド
@@ -24,8 +26,10 @@ public class JigMethod {
     MethodDerivation methodDerivation;
     MethodImplementation methodImplementation;
     private final MethodInstructions methodInstructions;
+    private final List<TypeIdentifier> throwsTypes;
+    private final List<TypeIdentifier> signatureContainedTypes;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDepend methodDepend, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
         this.methodAnnotations = methodAnnotations;
@@ -34,6 +38,8 @@ public class JigMethod {
         this.methodDerivation = methodDerivation;
         this.methodImplementation = methodImplementation;
         this.methodInstructions = methodInstructions;
+        this.throwsTypes = throwsTypes;
+        this.signatureContainedTypes = signatureContainedTypes;
     }
 
     public MethodDeclaration declaration() {
@@ -81,7 +87,15 @@ public class JigMethod {
     }
 
     public TypeIdentifiers usingTypes() {
-        return methodDepend.usingTypes();
+        var list = Stream.of(
+                        methodDepend.collectUsingTypes(),
+                        methodDeclaration.relateTypes(),
+                        methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
+                        throwsTypes,
+                        signatureContainedTypes)
+                .flatMap(Collection::stream)
+                .toList();
+        return new TypeIdentifiers(list);
     }
 
     public String aliasTextOrBlank() {
@@ -176,7 +190,7 @@ public class JigMethod {
                 mermaidText.add("style %s font-weight:bold".formatted(this.htmlIdText()));
             } else {
                 jigMethodFinder.find(methodIdentifier)
-                        .ifPresent( jigMethod -> {
+                        .ifPresent(jigMethod -> {
                             resolved.add(methodIdentifier);
                             if (jigMethod.remarkable()) {
                                 // 出力対象のメソッドはusecase型＆クリックできるように

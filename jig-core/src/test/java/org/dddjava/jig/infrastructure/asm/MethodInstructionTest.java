@@ -18,6 +18,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +62,9 @@ public class MethodInstructionTest {
                         TypeIdentifier.from(UncheckedExceptionA.class),
                         TypeIdentifier.from(EnclosedClass.NestedClass.class),
                         TypeIdentifier.from(Integer.class),
-                        TypeIdentifier.from(IntegerConstantFieldHolder.class)
+                        TypeIdentifier.from(IntegerConstantFieldHolder.class),
+                        TypeIdentifier.from(Consumer.class), // lambdaを受けるインタフェース or 呼び出しているメソッドの引数型
+                        TypeIdentifier.from(int.class) // 参照しているフィールドの型
                 )
                 .doesNotContain(
                         // ローカル変数宣言だけで使用されている型は取得できない（コンパイルされたら消える）
@@ -76,7 +79,7 @@ public class MethodInstructionTest {
     }
 
     @Test
-    void メソッドの使用しているメソッドが取得できる() throws Exception {
+    void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
         JigTypeBuilder actual = exercise(MethodInstruction.class);
         var jigMethods = actual.build().instanceMethods();
 
@@ -87,7 +90,26 @@ public class MethodInstructionTest {
                 "[InstructionField.invokeMethod(), UsedInstructionMethodReturn.chainedInvokeMethod()]",
                 list.get(0).usingMethods().methodDeclarations().asSimpleText()
         );
+    }
 
+    @Test
+    void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
+        JigTypeBuilder actual = exercise(MethodInstruction.class);
+        var jigMethods = actual.build().instanceMethods();
+
+        var method3 = jigMethods.stream()
+                .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("methodRef()"))
+                .toList();
+        assertEquals(
+                "[Object.toString()]",
+                method3.get(0).usingMethods().methodDeclarations().asSimpleText()
+        );
+    }
+
+    @Test
+    void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
+        JigTypeBuilder actual = exercise(MethodInstruction.class);
+        var jigMethods = actual.build().instanceMethods();
 
         var method2 = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))

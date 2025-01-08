@@ -1,5 +1,8 @@
 package org.dddjava.jig.domain.model.data.classes.method.instruction;
 
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.DecisionNumber;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
@@ -38,10 +41,21 @@ public record MethodInstructions(List<MethodInstruction> values) {
         values.add(new MethodInstruction(MethodInstructionType.CLASS参照, typeIdentifier));
     }
 
+    public void registerInvokeDynamic(InvokeDynamicInstruction invokeDynamicInstruction) {
+        values.add(new MethodInstruction(MethodInstructionType.InvokeDynamic, invokeDynamicInstruction));
+    }
+
     public MethodDeclarations instructMethods() {
-        return values.stream()
-                .filter(instruction -> instruction.type() == MethodInstructionType.METHOD)
-                .map(instruction -> (MethodDeclaration) instruction.detail())
+        return filterType(MethodInstructionType.METHOD, MethodInstructionType.InvokeDynamic)
+                .map(instruction -> {
+                    if (instruction.detail() instanceof MethodDeclaration methodDeclaration) {
+                        return methodDeclaration;
+                    }
+                    if (instruction.detail() instanceof InvokeDynamicInstruction invokeDynamicInstruction) {
+                        return invokeDynamicInstruction.methodDeclaration();
+                    }
+                    throw new IllegalStateException();
+                })
                 .collect(MethodDeclarations.collector());
     }
 
@@ -74,14 +88,28 @@ public record MethodInstructions(List<MethodInstruction> values) {
                                     ((FieldReference) instruction.detail()).fieldTypeIdentifier(),
                                     ((FieldReference) instruction.detail()).declaringType()
                             );
-                            case METHOD -> Stream.of(
-                                    ((MethodDeclaration) instruction.detail()).declaringType(),
-                                    ((MethodDeclaration) instruction.detail()).methodReturn().typeIdentifier()
-                            );
+                            case METHOD -> ((MethodDeclaration) instruction.detail()).dependsTypes().stream();
                             case CLASS参照 -> Stream.of((TypeIdentifier) instruction.detail());
+                            case InvokeDynamic -> ((InvokeDynamicInstruction) instruction.detail()).usingTypes();
                             default -> Stream.empty();
                         }
                 )
                 .collect(Collectors.toSet());
     }
+
+    public FieldDeclarations fieldReferences() {
+        return new FieldDeclarations(filterType(MethodInstructionType.FIELD)
+                .map(instruction -> ((FieldReference) instruction.detail()))
+                .map(fieldReference -> new FieldDeclaration(
+                        fieldReference.declaringType(),
+                        new FieldType(fieldReference.fieldTypeIdentifier()),
+                        fieldReference.name()
+                ))
+                .toList());
+    }
+
+    private Stream<MethodInstruction> filterType(MethodInstructionType... methodInstructionTypes) {
+        return values.stream().filter(instruction -> Set.of(methodInstructionTypes).contains(instruction.type()));
+    }
+
 }

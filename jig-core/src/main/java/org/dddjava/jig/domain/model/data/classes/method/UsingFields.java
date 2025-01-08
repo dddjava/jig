@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
  */
 public class UsingFields {
 
+    // FIXME 使用フィールドは型パラメタをもてないのでおそらくFieldDeclarationを使うのは不適切
     FieldDeclarations fieldDeclarations;
 
     public UsingFields(FieldDeclarations fieldDeclarations) {

@@ -7,5 +7,5 @@ public enum MethodInstructionType {
     SWITCH,
     JUMP,
     NULL判定,
-    NULL参照
+    InvokeDynamic, NULL参照
 }

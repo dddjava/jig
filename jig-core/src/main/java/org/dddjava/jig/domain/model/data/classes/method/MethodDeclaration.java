@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * メソッド定義
@@ -93,11 +93,12 @@ public class MethodDeclaration {
         return methodIdentifier.asSimpleText();
     }
 
-    public TypeIdentifiers relateTypes() {
+    public List<TypeIdentifier> relateTypes() {
         ArrayList<TypeIdentifier> types = new ArrayList<>();
         types.add(methodReturn().typeIdentifier());
+        types.addAll(methodReturn().parameterizedType().typeParameters().list());
         types.addAll(methodSignature().listArgumentTypeIdentifiers());
-        return new TypeIdentifiers(types);
+        return types;
     }
 
     List<TypeIdentifier> argumentsTypeIdentifiers() {
@@ -110,5 +111,9 @@ public class MethodDeclaration {
 
     public boolean isJSL() {
         return declaringType().isJavaLanguageType();
+    }
+
+    public List<TypeIdentifier> dependsTypes() {
+        return Stream.concat(Stream.of(declaringType()), relateTypes().stream()).toList();
     }
 }

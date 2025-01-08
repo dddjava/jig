@@ -2,7 +2,10 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.MethodComment;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
+import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 
@@ -25,7 +28,7 @@ class MethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
                         // TODO 引数を取得したい
                         // n.getParameters() でパラメタは取れるが、fqnは直接とれず、もしとれたとしても確実ではない。
                         // Argumentとして候補を取り扱ってマッチさせる、といったのがあればいい？それともbyteCode由来のMethodをこのタイミングで探す？
-                        new Arguments(Collections.emptyList())
+                        Collections.emptyList()
                 ));
 
         collector.add(

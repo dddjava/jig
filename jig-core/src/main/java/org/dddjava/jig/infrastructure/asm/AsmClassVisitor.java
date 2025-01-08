@@ -319,7 +319,7 @@ class AsmClassVisitor extends ClassVisitor {
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(this::toTypeIdentifier)
                 .collect(Collectors.toList());
-        return new MethodSignature(name, new Arguments(argumentTypes));
+        return new MethodSignature(name, argumentTypes);
     }
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

@@ -1,10 +1,13 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * メソッドシグネチャ
@@ -15,15 +18,20 @@ import java.util.Objects;
  */
 public final class MethodSignature {
     private final String methodName;
-    private final Arguments arguments;
+    private final List<TypeIdentifier> arguments;
 
-    public MethodSignature(String methodName, Arguments arguments) {
+    public MethodSignature(String methodName, List<TypeIdentifier> arguments) {
         this.methodName = methodName;
         this.arguments = arguments;
     }
 
     public MethodSignature(String methodName, TypeIdentifier... arguments) {
-        this(methodName, new Arguments(List.of(arguments)));
+        this(methodName, List.of(arguments));
+    }
+
+    public static MethodSignature from(String methodName, List<ParameterizedType> arguments) {
+        // TODO ParameterizedTypeのまま持つようにする
+        return new MethodSignature(methodName, arguments.stream().map(ParameterizedType::typeIdentifier).toList());
     }
 
     /**
@@ -33,7 +41,8 @@ public final class MethodSignature {
      * @see #asSimpleText()
      */
     public String asText() {
-        return methodName + "(" + arguments.argumentsAsText() + ")";
+        var argumentsText = arguments.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
+        return methodName + "(" + argumentsText + ")";
     }
 
     public String methodName() {
@@ -47,11 +56,12 @@ public final class MethodSignature {
      * @return "methodName(ArgumentType)"
      */
     public String asSimpleText() {
-        return methodName + "(" + arguments.argumentsAsSimpleText() + ")";
+        var argumentsText = arguments.stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
+        return methodName + "(" + argumentsText + ")";
     }
 
     public List<TypeIdentifier> listArgumentTypeIdentifiers() {
-        return arguments.typeIdentifiers().list();
+        return arguments;
     }
 
     public boolean isLambda() {
@@ -65,7 +75,7 @@ public final class MethodSignature {
 
     public boolean isSame(MethodSignature other) {
         return methodName.equals(other.methodName)
-                && arguments.isSame(other.arguments);
+                && arguments.equals(other.arguments);
     }
 
     static List<MethodSignature> objectMethods;
@@ -87,7 +97,8 @@ public final class MethodSignature {
     }
 
     public String packageAbbreviationText() {
-        return methodName + "(" + arguments.packageAbbreviationText() + ")";
+        var argumentsText = arguments.stream().map(TypeIdentifier::packageAbbreviationText).collect(joining(", "));
+        return methodName + "(" + argumentsText + ")";
     }
 
     @Override

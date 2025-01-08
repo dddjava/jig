@@ -1,6 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.data.classes.method.Arguments;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
@@ -41,11 +40,11 @@ class MethodSignatureVisitor extends SignatureVisitor {
     MethodDeclaration methodDeclaration(TypeIdentifier declaringType, String methodName) {
         return new MethodDeclaration(
                 declaringType,
-                new MethodSignature(
+                MethodSignature.from(
                         methodName,
-                        Arguments.from(parameterVisitors.stream()
+                        parameterVisitors.stream()
                                 .map(parameterVisitor -> parameterVisitor.generateParameterizedType())
-                                .collect(Collectors.toList()))
+                                .collect(Collectors.toList())
                 ),
                 new MethodReturn(returnVisitor.generateParameterizedType())
         );

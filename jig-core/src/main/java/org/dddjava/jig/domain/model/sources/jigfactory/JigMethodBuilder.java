@@ -10,12 +10,8 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * メソッドの実装から読み取れること
@@ -32,9 +28,6 @@ public class JigMethodBuilder {
 
     List<FieldDeclaration> fieldInstructions;
 
-    List<TypeIdentifier> invokeDynamicTypes;
-
-    Set<TypeIdentifier> useTypes = new HashSet<>();
 
     private final MethodInstructions methodInstructions;
 
@@ -51,7 +44,6 @@ public class JigMethodBuilder {
 
         this.annotations = new ArrayList<>();
         this.fieldInstructions = new ArrayList<>();
-        this.invokeDynamicTypes = new ArrayList<>();
 
         this.methodInstructions = methodInstructions;
     }
@@ -72,7 +64,7 @@ public class JigMethodBuilder {
                 methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
                 annotatedMethods(),
                 visibility,
-                methodDepend(),
+                new MethodDepend(methodInstructions),
                 methodDerivation,
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()),
                 methodInstructions,
@@ -80,26 +72,11 @@ public class JigMethodBuilder {
                 signatureContainedTypes);
     }
 
-    private MethodDepend methodDepend() {
-        var useTypes = Stream.of(
-                        this.useTypes.stream(),
-                        annotations.stream().map(Annotation::typeIdentifier),
-                        invokeDynamicTypes.stream()
-                ).flatMap(Function.identity())
-                .collect(Collectors.toSet());
-
-        return new MethodDepend(useTypes, fieldInstructions, methodInstructions);
-    }
-
     private MethodAnnotations annotatedMethods() {
         List<MethodAnnotation> methodAnnotations = annotations.stream()
                 .map(annotation -> new MethodAnnotation(annotation, methodDeclaration))
                 .collect(Collectors.toList());
         return new MethodAnnotations(methodAnnotations);
-    }
-
-    public boolean sameSignature(JigMethodBuilder other) {
-        return methodDeclaration.methodSignature().isSame(other.methodDeclaration.methodSignature());
     }
 
     void collectUsingMethodRelations(List<MethodRelation> collector) {
@@ -124,9 +101,5 @@ public class JigMethodBuilder {
 
     public void addAnnotation(Annotation annotation) {
         annotations.add(annotation);
-    }
-
-    public void addInvokeDynamicType(TypeIdentifier typeIdentifier) {
-        invokeDynamicTypes.add(typeIdentifier);
     }
 }

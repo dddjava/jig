@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
@@ -14,7 +13,7 @@ public class MethodDepend {
 
     private final MethodInstructions methodInstructions;
 
-    public MethodDepend(Set<TypeIdentifier> usingTypes, List<FieldDeclaration> usingFields, MethodInstructions methodInstructions) {
+    public MethodDepend(MethodInstructions methodInstructions) {
         this.methodInstructions = methodInstructions;
     }
 

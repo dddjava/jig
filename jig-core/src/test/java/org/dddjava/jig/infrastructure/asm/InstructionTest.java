@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MethodInstructionTest {
+public class InstructionTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MethodInstructionTestStub.class, StaticMethodInstruction.class, ConstructorInstruction.class})

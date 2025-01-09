@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.information.jigobject.member;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 
@@ -24,18 +24,18 @@ public class JigMethod {
 
     MethodDerivation methodDerivation;
     MethodImplementation methodImplementation;
-    private final MethodInstructions methodInstructions;
+    private final Instructions instructions;
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodComment methodComment, MethodImplementation methodImplementation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodComment methodComment, MethodImplementation methodImplementation) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
         this.methodImplementation = methodImplementation;
-        this.methodInstructions = methodInstructions;
+        this.instructions = instructions;
         this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
     }
@@ -45,7 +45,7 @@ public class JigMethod {
     }
 
     public DecisionNumber decisionNumber() {
-        return methodInstructions.decisionNumber();
+        return instructions.decisionNumber();
     }
 
     public MethodAnnotations methodAnnotations() {
@@ -61,11 +61,11 @@ public class JigMethod {
     }
 
     public UsingFields usingFields() {
-        return new UsingFields(methodInstructions.fieldReferences());
+        return new UsingFields(instructions.fieldReferences());
     }
 
     public UsingMethods usingMethods() {
-        return new UsingMethods(methodInstructions.instructMethods());
+        return new UsingMethods(instructions.instructMethods());
     }
 
     public MethodWorries methodWorries() {
@@ -73,20 +73,20 @@ public class JigMethod {
     }
 
     public boolean conditionalNull() {
-        return methodInstructions.hasNullDecision();
+        return instructions.hasNullDecision();
     }
 
     public boolean referenceNull() {
-        return methodInstructions.hasNullReference();
+        return instructions.hasNullReference();
     }
 
     public boolean notUseMember() {
-        return methodInstructions.hasMemberInstruction();
+        return instructions.hasMemberInstruction();
     }
 
     public TypeIdentifiers usingTypes() {
         var list = Stream.of(
-                        methodInstructions.usingTypes(),
+                        instructions.usingTypes(),
                         methodDeclaration.relateTypes(),
                         methodAnnotations.list().stream().map(MethodAnnotation::annotationType).toList(),
                         throwsTypes,
@@ -163,7 +163,7 @@ public class JigMethod {
     }
 
     public List<MethodDeclaration> methodInstructions() {
-        return methodInstructions.instructMethods().list();
+        return instructions.instructMethods().list();
     }
 
     /**

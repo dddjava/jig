@@ -19,30 +19,30 @@ import java.util.stream.Stream;
  *
  * バイトコード上の順番を維持する
  */
-public record MethodInstructions(List<MethodInstruction> values) {
+public record Instructions(List<Instruction> values) {
 
-    public static MethodInstructions newInstance() {
-        return new MethodInstructions(new ArrayList<>());
+    public static Instructions newInstance() {
+        return new Instructions(new ArrayList<>());
     }
 
     public void register(MethodInstructionType type) {
-        values.add(new MethodInstruction(type, null));
+        values.add(new Instruction(type, null));
     }
 
     public void registerField(TypeIdentifier declaringType, TypeIdentifier fieldTypeIdentifier, String name) {
-        values.add(new MethodInstruction(MethodInstructionType.FIELD, new FieldReference(declaringType, fieldTypeIdentifier, name)));
+        values.add(new Instruction(MethodInstructionType.FIELD, new FieldReference(declaringType, fieldTypeIdentifier, name)));
     }
 
     public void registerMethod(MethodDeclaration methodDeclaration) {
-        values.add(new MethodInstruction(MethodInstructionType.METHOD, methodDeclaration));
+        values.add(new Instruction(MethodInstructionType.METHOD, methodDeclaration));
     }
 
     public void registerClassReference(TypeIdentifier typeIdentifier) {
-        values.add(new MethodInstruction(MethodInstructionType.CLASS参照, typeIdentifier));
+        values.add(new Instruction(MethodInstructionType.CLASS参照, typeIdentifier));
     }
 
     public void registerInvokeDynamic(InvokeDynamicInstruction invokeDynamicInstruction) {
-        values.add(new MethodInstruction(MethodInstructionType.InvokeDynamic, invokeDynamicInstruction));
+        values.add(new Instruction(MethodInstructionType.InvokeDynamic, invokeDynamicInstruction));
     }
 
     public MethodDeclarations instructMethods() {
@@ -108,7 +108,7 @@ public record MethodInstructions(List<MethodInstruction> values) {
                 .toList());
     }
 
-    private Stream<MethodInstruction> filterType(MethodInstructionType... methodInstructionTypes) {
+    private Stream<Instruction> filterType(MethodInstructionType... methodInstructionTypes) {
         return values.stream().filter(instruction -> Set.of(methodInstructionTypes).contains(instruction.type()));
     }
 

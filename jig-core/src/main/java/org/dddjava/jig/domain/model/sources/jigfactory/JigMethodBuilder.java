@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
@@ -26,12 +26,12 @@ public class JigMethodBuilder {
     List<Annotation> annotations;
 
 
-    private final MethodInstructions methodInstructions;
+    private final Instructions instructions;
 
     private MethodComment methodComment = null;
     private MethodImplementation methodImplementation = null;
 
-    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, MethodInstructions methodInstructions) {
+    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, Instructions instructions) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
@@ -40,13 +40,13 @@ public class JigMethodBuilder {
 
         this.annotations = new ArrayList<>();
 
-        this.methodInstructions = methodInstructions;
+        this.instructions = instructions;
     }
 
     public JigMethod build() {
         return new JigMethod(
                 methodDeclaration,
-                annotatedMethods(), visibility, methodDerivation, methodInstructions, throwsTypes, signatureContainedTypes,
+                annotatedMethods(), visibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes,
                 methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier())
         );
@@ -60,7 +60,7 @@ public class JigMethodBuilder {
     }
 
     void collectUsingMethodRelations(List<MethodRelation> collector) {
-        for (MethodDeclaration usingMethod : methodInstructions.instructMethods().list()) {
+        for (MethodDeclaration usingMethod : instructions.instructMethods().list()) {
             MethodRelation methodRelation = new MethodRelation(methodDeclaration, usingMethod);
             collector.add(methodRelation);
         }

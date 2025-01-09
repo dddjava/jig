@@ -5,5 +5,5 @@ package org.dddjava.jig.domain.model.data.classes.method.instruction;
  *
  * バイトコードの全てを転写するのではなく、JIGとして意味のあるものを持つ
  */
-public record MethodInstruction(MethodInstructionType type, Object detail) {
+public record Instruction(MethodInstructionType type, Object detail) {
 }

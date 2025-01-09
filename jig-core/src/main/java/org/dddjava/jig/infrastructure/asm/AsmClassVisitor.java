@@ -6,9 +6,9 @@ import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
-import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
@@ -139,7 +139,7 @@ class AsmClassVisitor extends ClassVisitor {
             }
         }
 
-        var methodInstructions = MethodInstructions.newInstance();
+        var methodInstructions = Instructions.newInstance();
         JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                 jigTypeBuilder,
                 toMethodSignature(name, descriptor),
@@ -177,6 +177,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
+                // opcode: INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE.
                 var methodDeclaration = toMethodDeclaration(owner, name, descriptor);
                 methodInstructions.registerMethod(methodDeclaration);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -594,10 +595,10 @@ class AsmClassVisitor extends ClassVisitor {
                                                      Visibility visibility,
                                                      List<TypeIdentifier> signatureContainedTypes,
                                                      List<TypeIdentifier> throwsTypes,
-                                                     MethodInstructions methodInstructions) {
+                                                     Instructions instructions) {
         MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
         MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, methodReturn, access);
-        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, methodInstructions);
+        var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, instructions);
 
         if (methodDeclaration.isConstructor()) {
             // コンストラクタ

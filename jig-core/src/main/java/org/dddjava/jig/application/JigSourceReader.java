@@ -1,6 +1,6 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
@@ -55,8 +55,8 @@ public class JigSourceReader {
         if (source.nothingTextSource()) readEvents.add(ReadStatus.テキストソースなし);
         // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない
 
-        Sqls sqls = readSqlSource(source.sqlSources());
-        if (sqls.status().not正常()) readEvents.add(ReadStatus.fromSqlReadStatus(sqls.status()));
+        MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
+        if (myBatisStatements.status().not正常()) readEvents.add(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         readEvents.forEach(readStatus -> {
             if (readStatus.isError()) {
@@ -71,7 +71,7 @@ public class JigSourceReader {
         }
 
         var jigSource = readProjectData(source);
-        jigSource.addSqls(sqls);
+        jigSource.addSqls(myBatisStatements);
         return Optional.of(jigSource);
     }
 
@@ -98,7 +98,7 @@ public class JigSourceReader {
     /**
      * ソースからSQLを読み取る
      */
-    public Sqls readSqlSource(SqlSources sqlSources) {
+    public MyBatisStatements readSqlSource(SqlSources sqlSources) {
         return sqlReader.readFrom(sqlSources);
     }
 }

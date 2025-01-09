@@ -3,13 +3,13 @@ package org.dddjava.jig.domain.model.data.classes.rdbaccess;
 /**
  * SQL
  */
-public class Sql {
+public class MyBatisStatement {
 
-    SqlIdentifier identifier;
+    MyBatisStatementId identifier;
     Query query;
     SqlType sqlType;
 
-    public Sql(SqlIdentifier identifier, Query query, SqlType sqlType) {
+    public MyBatisStatement(MyBatisStatementId identifier, Query query, SqlType sqlType) {
         this.identifier = identifier;
         this.query = query;
         this.sqlType = sqlType;
@@ -24,7 +24,7 @@ public class Sql {
 
     }
 
-    public SqlIdentifier identifier() {
+    public MyBatisStatementId identifier() {
         return identifier;
     }
 }

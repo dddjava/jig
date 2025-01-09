@@ -9,41 +9,41 @@ import java.util.stream.Collectors;
 /**
  * SQL一覧
  */
-public class Sqls {
+public class MyBatisStatements {
 
-    List<Sql> list;
+    List<MyBatisStatement> list;
     SqlReadStatus sqlReadStatus;
 
-    public Sqls(SqlReadStatus sqlReadStatus) {
+    public MyBatisStatements(SqlReadStatus sqlReadStatus) {
         this(Collections.emptyList(), sqlReadStatus);
     }
 
-    public Sqls(List<Sql> list, SqlReadStatus sqlReadStatus) {
+    public MyBatisStatements(List<MyBatisStatement> list, SqlReadStatus sqlReadStatus) {
         this.list = list;
         this.sqlReadStatus = sqlReadStatus;
     }
 
-    public static Sqls empty() {
-        return new Sqls(SqlReadStatus.未処理);
+    public static MyBatisStatements empty() {
+        return new MyBatisStatements(SqlReadStatus.未処理);
     }
 
     public Tables tables(SqlType sqlType) {
         return list.stream()
-                .filter(sql -> sql.sqlType() == sqlType)
-                .map(Sql::tables)
+                .filter(myBatisStatement -> myBatisStatement.sqlType() == sqlType)
+                .map(MyBatisStatement::tables)
                 .reduce(Tables::merge)
                 .orElse(Tables.nothing());
     }
 
-    public List<Sql> list() {
+    public List<MyBatisStatement> list() {
         return list;
     }
 
-    public Sqls filterRelationOn(MethodDeclarations methodDeclarations) {
-        List<Sql> sqls = list.stream()
-                .filter(sql -> sql.identifier().matches(methodDeclarations))
+    public MyBatisStatements filterRelationOn(MethodDeclarations methodDeclarations) {
+        List<MyBatisStatement> myBatisStatements = list.stream()
+                .filter(myBatisStatement -> myBatisStatement.identifier().matches(methodDeclarations))
                 .collect(Collectors.toList());
-        return new Sqls(sqls, sqlReadStatus);
+        return new MyBatisStatements(myBatisStatements, sqlReadStatus);
     }
 
     public SqlReadStatus status() {

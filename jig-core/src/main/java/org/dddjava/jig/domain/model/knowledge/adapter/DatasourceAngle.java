@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.adapter;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
@@ -14,15 +14,15 @@ import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 public class DatasourceAngle {
 
     MethodDeclaration methodDeclaration;
-    Sqls sqls;
+    MyBatisStatements myBatisStatements;
     JigMethod concreteMethod;
 
     CallerMethods callerMethods;
 
-    public DatasourceAngle(DatasourceMethod datasourceMethod, Sqls allSqls, CallerMethods callerMethods) {
+    public DatasourceAngle(DatasourceMethod datasourceMethod, MyBatisStatements allMyBatisStatements, CallerMethods callerMethods) {
         this.methodDeclaration = datasourceMethod.repositoryMethod().declaration();
         this.callerMethods = callerMethods;
-        this.sqls = allSqls.filterRelationOn(datasourceMethod.usingMethods());
+        this.myBatisStatements = allMyBatisStatements.filterRelationOn(datasourceMethod.usingMethods());
         this.concreteMethod = datasourceMethod.concreteMethod();
     }
 
@@ -35,19 +35,19 @@ public class DatasourceAngle {
     }
 
     public String insertTables() {
-        return sqls.tables(SqlType.INSERT).asText();
+        return myBatisStatements.tables(SqlType.INSERT).asText();
     }
 
     public String selectTables() {
-        return sqls.tables(SqlType.SELECT).asText();
+        return myBatisStatements.tables(SqlType.SELECT).asText();
     }
 
     public String updateTables() {
-        return sqls.tables(SqlType.UPDATE).asText();
+        return myBatisStatements.tables(SqlType.UPDATE).asText();
     }
 
     public String deleteTables() {
-        return sqls.tables(SqlType.DELETE).asText();
+        return myBatisStatements.tables(SqlType.DELETE).asText();
     }
 
     public JigMethod concreteMethod() {

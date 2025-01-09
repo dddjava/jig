@@ -7,13 +7,34 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import java.util.Objects;
 
 /**
- * SQL識別子
+ * MyBatisのステートメントID
+ *
+ * namespaceとidを.で連結したもの。
+ *
+ * 以下のMapperXMLとMapperインタフェースの場合、ステートメントIDは `com.example.mybatis.ExampleMapper.selectAll` となります。
+ * <pre>
+ * {@code
+ * <mapper namespace="com.example.mybatis.ExampleMapper">
+ *     <select id="selectAll">
+ *         SELECT * FROM EXAMPLE
+ *     </select>
+ * </mapper>
+ * }
+ * </pre>
+ * <pre>
+ * {@code
+ * package com.example.mybatis;
+ * interface ExampleMapper {
+ *     List selectAll();
+ * }
+ * }
+ * </pre>
  */
-public class SqlIdentifier {
+public class MyBatisStatementId {
 
     String value;
 
-    public SqlIdentifier(String value) {
+    public MyBatisStatementId(String value) {
         this.value = value;
     }
 
@@ -21,7 +42,7 @@ public class SqlIdentifier {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SqlIdentifier that = (SqlIdentifier) o;
+        MyBatisStatementId that = (MyBatisStatementId) o;
         return Objects.equals(value, that.value);
     }
 
@@ -33,7 +54,7 @@ public class SqlIdentifier {
     public boolean matches(MethodDeclarations methodDeclarations) {
         if (value.contains(".")) {
             for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
-                boolean matches = methodDeclaration.matches(
+                boolean matches = methodDeclaration.matchTypeAndMethodName(
                         TypeIdentifier.valueOf(value.substring(0, value.lastIndexOf('.'))),
                         value.substring(value.lastIndexOf('.') + 1)
                 );

@@ -34,7 +34,7 @@ public class MyBatisSqlReader implements SqlReader {
     private static final Logger logger = LoggerFactory.getLogger(MyBatisSqlReader.class);
 
     @Override
-    public Sqls readFrom(SqlSources sqlSources) {
+    public MyBatisStatements readFrom(SqlSources sqlSources) {
         try (URLClassLoader classLoader = new URLClassLoader(sqlSources.urls(), Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 
@@ -42,16 +42,16 @@ public class MyBatisSqlReader implements SqlReader {
         } catch (IOException e) {
             logger.warn("SQLファイルの読み込みでIO例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。", e);
-            return new Sqls(SqlReadStatus.失敗);
+            return new MyBatisStatements(SqlReadStatus.失敗);
         } catch (PersistenceException e) {
             logger.warn("SQL読み込み中にMyBatisに関する例外が発生しました。" +
                     "すべてのSQLは認識されません。リポジトリのCRUDは出力されませんが、他の出力には影響ありません。" +
                     "この例外は #228 #710 で確認していますが、情報が不足しています。発生条件をやスタックトレース等の情報をいただけると助かります。", e);
-            return new Sqls(SqlReadStatus.失敗);
+            return new MyBatisStatements(SqlReadStatus.失敗);
         }
     }
 
-    private Sqls extractSql(SqlSources sqlSources, URLClassLoader classLoader) {
+    private MyBatisStatements extractSql(SqlSources sqlSources, URLClassLoader classLoader) {
         SqlReadStatus sqlReadStatus = SqlReadStatus.成功;
 
         Configuration config = new Configuration();
@@ -72,14 +72,14 @@ public class MyBatisSqlReader implements SqlReader {
             }
         }
 
-        List<Sql> list = new ArrayList<>();
+        List<MyBatisStatement> list = new ArrayList<>();
         Collection<?> mappedStatements = config.getMappedStatements();
         logger.debug("MappedStatements: {}件", mappedStatements.size());
         for (Object obj : mappedStatements) {
             // config.getMappedStatementsにAmbiguityが入っていることがあったので型を確認する
             if (obj instanceof MappedStatement mappedStatement) {
 
-                SqlIdentifier sqlIdentifier = new SqlIdentifier(mappedStatement.getId());
+                MyBatisStatementId myBatisStatementId = new MyBatisStatementId(mappedStatement.getId());
 
                 Query query;
                 try {
@@ -91,13 +91,13 @@ public class MyBatisSqlReader implements SqlReader {
                 }
 
                 SqlType sqlType = SqlType.valueOf(mappedStatement.getSqlCommandType().name());
-                Sql sql = new Sql(sqlIdentifier, query, sqlType);
-                list.add(sql);
+                MyBatisStatement myBatisStatement = new MyBatisStatement(myBatisStatementId, query, sqlType);
+                list.add(myBatisStatement);
             }
         }
 
         logger.debug("取得したSQL: {}件", list.size());
-        return new Sqls(list, sqlReadStatus);
+        return new MyBatisStatements(list, sqlReadStatus);
     }
 
     private Query getQuery(MappedStatement mappedStatement) throws NoSuchFieldException, IllegalAccessException {

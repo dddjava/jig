@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.mybatis;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sql;
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlIdentifier;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatement;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,16 +16,16 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MyBatisSqlReaderTest {
+class MyBatisMyBatisStatementReaderTest {
 
     @Test
     void bindを使ってても解析できる() {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        Sqls sqls = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
+        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
 
-        Sql sql = sqls.list().get(0);
-        assertThat(sql.tables().asText()).isEqualTo("[fuga]");
+        MyBatisStatement myBatisStatement = myBatisStatements.list().get(0);
+        assertThat(myBatisStatement.tables().asText()).isEqualTo("[fuga]");
     }
 
     @ParameterizedTest
@@ -33,15 +33,15 @@ class MyBatisSqlReaderTest {
     void 標準的なパターン(String methodName, String tableName, SqlType sqlType) {
         MyBatisSqlReader sut = new MyBatisSqlReader();
 
-        Sqls sqls = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper")));
+        MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.CanonicalMapper")));
 
-        Sql sql = sqls.list().stream()
-                .filter(current -> current.identifier().equals(new SqlIdentifier("stub.infrastructure.datasource.CanonicalMapper." + methodName)))
+        MyBatisStatement myBatisStatement = myBatisStatements.list().stream()
+                .filter(current -> current.identifier().equals(new MyBatisStatementId("stub.infrastructure.datasource.CanonicalMapper." + methodName)))
                 .findFirst()
                 .orElseThrow(AssertionError::new);
 
-        assertThat(sql.tables().asText()).isEqualTo("[" + tableName + "]");
-        assertThat(sql.sqlType()).isEqualTo(sqlType);
+        assertThat(myBatisStatement.tables().asText()).isEqualTo("[" + tableName + "]");
+        assertThat(myBatisStatement.sqlType()).isEqualTo(sqlType);
     }
 
     static Stream<Arguments> 標準的なパターン() {

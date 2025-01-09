@@ -1,6 +1,6 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
@@ -14,12 +14,12 @@ public record JigSource(TypeFacts typeFacts, Terms terms, Map<Class<?>, Object> 
         this(typeFacts, terms, new HashMap<>());
     }
 
-    public void addSqls(Sqls sqls) {
-        map().put(Sqls.class, sqls);
+    public void addSqls(MyBatisStatements myBatisStatements) {
+        map().put(MyBatisStatements.class, myBatisStatements);
     }
 
-    public Sqls sqls() {
-        return (Sqls) map().getOrDefault(Sqls.class, Sqls.empty());
+    public MyBatisStatements sqls() {
+        return (MyBatisStatements) map().getOrDefault(MyBatisStatements.class, MyBatisStatements.empty());
     }
 
     public EnumModels enumModels() {

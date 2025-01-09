@@ -75,7 +75,10 @@ public class MethodDeclaration {
         return methodIdentifier.equals(methodDeclaration.methodIdentifier);
     }
 
-    public boolean matches(TypeIdentifier typeIdentifier, String methodName) {
+    /**
+     * メソッドが定義されている型とメソッド名だけでマッチする
+     */
+    public boolean matchTypeAndMethodName(TypeIdentifier typeIdentifier, String methodName) {
         return methodIdentifier.matches(typeIdentifier, methodName);
     }
 

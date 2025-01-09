@@ -1,6 +1,6 @@
 package org.dddjava.jig.domain.model.sources.jigreader;
 
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.Sqls;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 
 /**
@@ -8,5 +8,5 @@ import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
  */
 public interface SqlReader {
 
-    Sqls readFrom(SqlSources sources);
+    MyBatisStatements readFrom(SqlSources sources);
 }

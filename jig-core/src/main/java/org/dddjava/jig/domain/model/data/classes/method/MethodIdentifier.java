@@ -37,12 +37,8 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
         return Objects.hash(declaringType, methodSignature);
     }
 
-    public boolean matchTypeAndMethodName(TypeIdentifier typeIdentifier, String methodName) {
-        return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
-    }
-
     public boolean matchTypeAndMethodName(MethodIdentifier methodIdentifier) {
-        return matchTypeAndMethodName(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
+        return declaringType.equals(methodIdentifier.declaringType) && methodIdentifier.methodSignature.methodName().equals(methodSignature.methodName());
     }
 
     @Override

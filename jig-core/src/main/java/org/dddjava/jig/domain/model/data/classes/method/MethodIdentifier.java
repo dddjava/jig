@@ -37,12 +37,12 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
         return Objects.hash(declaringType, methodSignature);
     }
 
-    public boolean matches(TypeIdentifier typeIdentifier, String methodName) {
+    public boolean matchTypeAndMethodName(TypeIdentifier typeIdentifier, String methodName) {
         return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
     }
 
     public boolean matchesIgnoreOverload(MethodIdentifier methodIdentifier) {
-        return matches(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
+        return matchTypeAndMethodName(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
     }
 
     @Override

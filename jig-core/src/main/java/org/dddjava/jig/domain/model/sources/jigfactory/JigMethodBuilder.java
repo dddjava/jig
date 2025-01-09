@@ -61,14 +61,10 @@ public class JigMethodBuilder {
     public JigMethod build() {
         return new JigMethod(
                 methodDeclaration,
+                annotatedMethods(), visibility, methodDerivation, methodInstructions, throwsTypes, signatureContainedTypes,
                 methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
-                annotatedMethods(),
-                visibility,
-                methodDerivation,
-                methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier()),
-                methodInstructions,
-                throwsTypes,
-                signatureContainedTypes);
+                methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier())
+        );
     }
 
     private MethodAnnotations annotatedMethods() {

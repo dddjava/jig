@@ -28,7 +28,7 @@ public class JigMethod {
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodComment methodComment, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, MethodImplementation methodImplementation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, MethodInstructions methodInstructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodComment methodComment, MethodImplementation methodImplementation) {
         this.methodDeclaration = methodDeclaration;
         this.methodComment = methodComment;
         this.methodAnnotations = methodAnnotations;

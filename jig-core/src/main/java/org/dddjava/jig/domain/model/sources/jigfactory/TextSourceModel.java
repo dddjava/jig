@@ -100,10 +100,4 @@ public class TextSourceModel {
                 .filter(classComment -> classComment.typeIdentifier().equals(typeIdentifier))
                 .findAny();
     }
-
-    Stream<MethodComment> streamMethodComment(TypeIdentifier typeIdentifier) {
-        return methodImplementations.stream()
-                .filter(methodImplementation -> methodImplementation.declaringTypeMatches(typeIdentifier))
-                .flatMap(methodImplementation -> methodImplementation.comment().stream());
-    }
 }

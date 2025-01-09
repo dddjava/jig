@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
@@ -114,13 +113,14 @@ public class JigTypeBuilder {
                 .ifPresent(this::registerClassComment);
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            MethodIdentifier methodIdentifier = jigMethodBuilder.methodDeclaration.identifier();
             textSourceModel.methodImplementations.stream()
-                    .filter(methodImplementation1 -> methodImplementation1.matches(methodIdentifier))
+                    .filter(methodImplementation1 -> methodImplementation1.matches(jigMethodBuilder.methodIdentifier()))
                     .findAny()
                     .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
 
-            textSourceModel.streamMethodComment(typeIdentifier())
+            textSourceModel.methodImplementations.stream()
+                    .filter(methodImplementation -> methodImplementation.declaringTypeMatches(typeIdentifier()))
+                    .flatMap(methodImplementation -> methodImplementation.comment().stream())
                     .filter(methodComment -> methodComment.isAliasFor(jigMethodBuilder.methodIdentifier()))
                     .forEach(jigMethodBuilder::registerMethodAlias);
         }

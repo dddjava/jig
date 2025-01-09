@@ -109,7 +109,6 @@ public class JigTypeBuilder {
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             textSourceModel.methodImplementations.stream()
-                    // バイナリのメソッドと類似するメソッドに、その実装を登録する
                     .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
                     .findAny()
                     .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));

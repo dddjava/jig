@@ -1,6 +1,7 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementationDeclarator;
@@ -20,8 +21,16 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementati
     public void visit(MethodDeclaration n, List<MethodImplementation> collector) {
         var methodImplementationDeclarator = new MethodImplementationDeclarator(
                 n.getNameAsString(),
-                // TODO n.getParameters() から引数型にする。引数名はとりあえずいらない。
-                List.of()
+                n.getParameters().stream()
+                        .map(parameter -> {
+                            var type = parameter.getType();
+                            if (type.isClassOrInterfaceType()) {
+                                return type.asClassOrInterfaceType().getNameAsString();
+                            } else {
+                                return type.asString();
+                            }
+                        })
+                        .toList()
         );
 
         collector.add(

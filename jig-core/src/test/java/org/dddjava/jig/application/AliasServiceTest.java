@@ -75,9 +75,9 @@ class AliasServiceTest {
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
         JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.from(String.class)));
-        assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数ありのメソッド"));
 
         JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));
-        assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数(なし|あり)のメソッド"));
+        assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数なしのメソッド"));
     }
 }

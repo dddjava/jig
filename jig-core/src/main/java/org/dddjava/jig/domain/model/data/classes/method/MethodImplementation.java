@@ -31,8 +31,8 @@ public record MethodImplementation(
     }
 
     public boolean possiblyMatches(MethodIdentifier methodIdentifier) {
-        // テキストソース由来では引数型が確定しないのでクラスと名前で当てる
-        return methodIdentifier.declaringType().equals(typeIdentifier) && methodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
+        return methodIdentifier.declaringType().equals(typeIdentifier)
+                && methodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
     }
 
     public boolean hasComment() {

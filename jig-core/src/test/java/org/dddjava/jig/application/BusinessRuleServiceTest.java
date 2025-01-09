@@ -25,22 +25,22 @@ class BusinessRuleServiceTest {
         List<JigType> jigTypes = typeFacts.jigTypes().list();
 
         JigType publicType = jigTypes.stream()
-                .filter(businessRule -> businessRule.identifier().fullQualifiedName().endsWith("PublicType"))
+                .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.PUBLIC, publicType.visibility());
 
         JigType protectedType = jigTypes.stream()
-                .filter(businessRule -> businessRule.identifier().fullQualifiedName().endsWith("ProtectedType"))
+                .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("ProtectedType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.PUBLIC, protectedType.visibility());
 
         JigType defaultType = jigTypes.stream()
-                .filter(businessRule -> businessRule.identifier().fullQualifiedName().endsWith("DefaultType"))
+                .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("DefaultType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.NOT_PUBLIC, defaultType.visibility());
 
         JigType privateType = jigTypes.stream()
-                .filter(businessRule -> businessRule.identifier().fullQualifiedName().endsWith("PrivateType"))
+                .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PrivateType"))
                 .findAny().orElseThrow(AssertionError::new);
         assertEquals(Visibility.NOT_PUBLIC, privateType.visibility());
     }

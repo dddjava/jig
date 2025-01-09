@@ -6,20 +6,14 @@ import org.dddjava.jig.domain.model.data.comment.Comment;
  * メソッド別名
  */
 public class MethodComment {
-    MethodIdentifier methodIdentifier;
     Comment comment;
 
-    public MethodComment(MethodIdentifier methodIdentifier, Comment comment) {
-        this.methodIdentifier = methodIdentifier;
+    public MethodComment(Comment comment) {
         this.comment = comment;
     }
 
-    public static MethodComment empty(MethodIdentifier methodIdentifier) {
-        return new MethodComment(methodIdentifier, Comment.empty());
-    }
-
-    public MethodIdentifier methodIdentifier() {
-        return methodIdentifier;
+    public static MethodComment empty() {
+        return new MethodComment(Comment.empty());
     }
 
     public String asText() {

@@ -21,17 +21,15 @@ class TermIdentifierTest {
 
     @Test
     void 引数なしメソッド() throws Exception {
-        Term term = Term.fromMethod(
-                new MethodIdentifier(TypeIdentifier.valueOf("this.is.type"), new MethodSignature("method")),
-                "title", "description");
+        MethodIdentifier method = new MethodIdentifier(TypeIdentifier.valueOf("this.is.type"), new MethodSignature("method"));
+        Term term = Term.fromMethod(method.asText(), "title", "description");
         assertEquals("method", term.identifier().simpleText());
     }
 
     @Test
     void 引数ありメソッド() throws Exception {
-        Term term = Term.fromMethod(
-                new MethodIdentifier(TypeIdentifier.valueOf("this.is.type"), new MethodSignature("method", TypeIdentifier.from(String.class))),
-                "title", "description");
+        MethodIdentifier method = new MethodIdentifier(TypeIdentifier.valueOf("this.is.type"), new MethodSignature("method", TypeIdentifier.from(String.class)));
+        Term term = Term.fromMethod(method.asText(), "title", "description");
         assertEquals("method", term.identifier().simpleText(), () -> term.identifier().asText());
     }
 }

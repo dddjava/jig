@@ -7,24 +7,26 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
  *
  * テキストソース由来の情報
  */
-public class MethodImplementation {
-    MethodIdentifier methodIdentifier;
-    MethodComment methodComment;
-
-    public MethodImplementation(MethodIdentifier methodIdentifier, MethodComment methodComment) {
-        this.methodIdentifier = methodIdentifier;
-        this.methodComment = methodComment;
-    }
-
-    public MethodImplementation(MethodIdentifier methodIdentifier) {
-        this(methodIdentifier, MethodComment.empty(methodIdentifier));
-    }
+public record MethodImplementation(
+        TypeIdentifier typeIdentifier,
+        MethodImplementationDeclarator methodDeclarator,
+        MethodComment methodComment
+) {
 
     /**
      * ソースコードなしの場合
+     *
+     * これ作らなくてもいいようにできるはず
      */
     public static MethodImplementation unknown(MethodIdentifier methodIdentifier) {
-        return new MethodImplementation(methodIdentifier);
+        return new MethodImplementation(
+                methodIdentifier.declaringType(),
+                new MethodImplementationDeclarator(
+                        methodIdentifier.methodSignature().methodName(),
+                        methodIdentifier.methodSignature().listArgumentTypeIdentifiers().stream().map(TypeIdentifier::fullQualifiedName).toList()
+                ),
+                MethodComment.empty()
+        );
     }
 
     public MethodComment comment() {
@@ -33,10 +35,14 @@ public class MethodImplementation {
 
     public boolean possiblyMatches(MethodIdentifier methodIdentifier) {
         // テキストソース由来では引数型が確定しないのでクラスと名前で当てる
-        return this.methodIdentifier.possiblyMatches(methodIdentifier);
+        return methodIdentifier.declaringType().equals(typeIdentifier) && methodDeclarator.possiblyMatches(methodIdentifier.methodSignature());
     }
 
-    public boolean declaringTypeMatches(TypeIdentifier typeIdentifier) {
-        return methodIdentifier.declaringType().equals(typeIdentifier);
+    public boolean hasComment() {
+        return methodComment.exists();
+    }
+
+    public String methodIdentifierText() {
+        return typeIdentifier().fullQualifiedName() + "#" + methodDeclarator().asText();
     }
 }

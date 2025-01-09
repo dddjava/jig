@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.data.term;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
@@ -29,8 +28,8 @@ public class Term {
         return new Term(new TermIdentifier(typeIdentifier.fullQualifiedName()), title, description, TermKind.クラス);
     }
 
-    public static Term fromMethod(MethodIdentifier methodIdentifier, String title, String description) {
-        return new Term(new TermIdentifier(methodIdentifier.asText()), title, description, TermKind.メソッド);
+    public static Term fromMethod(String identifier, String title, String description) {
+        return new Term(new TermIdentifier(identifier), title, description, TermKind.メソッド);
     }
 
     public TermIdentifier identifier() {

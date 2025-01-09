@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
@@ -57,13 +56,6 @@ public class TextSourceModel {
         return classComments;
     }
 
-    public List<MethodComment> methodCommentList() {
-        return methodImplementations.stream()
-                .map(methodImplementation -> methodImplementation.comment())
-                .filter(MethodComment::exists)
-                .collect(Collectors.toList());
-    }
-
     public void addPackageComment(List<PackageComment> list) {
         this.packageComments = list;
     }
@@ -79,11 +71,12 @@ public class TextSourceModel {
                                         classComment.typeIdentifier(),
                                         classComment.asTextOrIdentifierSimpleText(),
                                         classComment.documentationComment().bodyText())),
-                        methodCommentList().stream()
-                                .map(methodComment -> Term.fromMethod(
-                                        methodComment.methodIdentifier(),
-                                        methodComment.asTextOrDefault(methodComment.methodIdentifier().methodSignature().methodName()),
-                                        methodComment.documentationComment().bodyText()
+                        methodImplementations.stream()
+                                .filter(MethodImplementation::hasComment)
+                                .map(methodImplementation -> Term.fromMethod(
+                                        methodImplementation.methodIdentifierText(),
+                                        methodImplementation.comment().asText(),
+                                        methodImplementation.comment().documentationComment().bodyText()
                                 )),
                         packageComments().stream()
                                 .map(packageComment -> Term.fromPackage(

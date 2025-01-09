@@ -39,6 +39,9 @@ public class MyBatisStatements {
         return list;
     }
 
+    /**
+     * 引数のメソッドに関連するステートメントに絞り込む
+     */
     public MyBatisStatements filterRelationOn(MethodDeclarations methodDeclarations) {
         List<MyBatisStatement> myBatisStatements = list.stream()
                 .filter(myBatisStatement -> myBatisStatement.identifier().matches(methodDeclarations))

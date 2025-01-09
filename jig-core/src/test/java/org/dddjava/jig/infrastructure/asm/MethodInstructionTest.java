@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import stub.domain.model.relation.ConstructorInstruction;
-import stub.domain.model.relation.MethodInstruction;
+import stub.domain.model.relation.MethodInstructionTestStub;
 import stub.domain.model.relation.StaticMethodInstruction;
 import stub.domain.model.relation.constant.to_primitive_wrapper_constant.IntegerConstantFieldHolder;
 import stub.domain.model.relation.method.*;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MethodInstructionTest {
 
     @ParameterizedTest
-    @ValueSource(classes = {MethodInstruction.class, StaticMethodInstruction.class, ConstructorInstruction.class})
+    @ValueSource(classes = {MethodInstructionTestStub.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
         JigTypeBuilder actual = exercise(clz);
 
@@ -80,7 +80,7 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstruction.class);
+        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
         var jigMethods = actual.build().instanceMethods();
 
         var list = jigMethods.stream()
@@ -94,7 +94,7 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstruction.class);
+        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
         var jigMethods = actual.build().instanceMethods();
 
         var method3 = jigMethods.stream()
@@ -108,14 +108,14 @@ public class MethodInstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstruction.class);
+        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
         var jigMethods = actual.build().instanceMethods();
 
         var method2 = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
                 .toList();
         assertEquals(
-                "[MethodInstruction.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]",
+                "[MethodInstructionTestStub.lambda$lambda$0(Object), Stream.empty(), Stream.forEach(Consumer)]",
                 method2.get(0).usingMethods().methodDeclarations().asSimpleText()
         );
 

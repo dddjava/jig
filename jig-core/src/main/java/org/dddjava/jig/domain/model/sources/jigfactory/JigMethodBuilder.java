@@ -26,36 +26,22 @@ public class JigMethodBuilder {
 
     List<Annotation> annotations;
 
-    List<FieldDeclaration> fieldInstructions;
-
 
     private final MethodInstructions methodInstructions;
 
     private MethodComment methodComment = null;
     private MethodImplementation methodImplementation = null;
 
-    private JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, MethodInstructions methodInstructions) {
+    public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, MethodInstructions methodInstructions) {
         this.methodDeclaration = methodDeclaration;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
-
         this.throwsTypes = throwsTypes;
         this.signatureContainedTypes = signatureContainedTypes;
 
         this.annotations = new ArrayList<>();
-        this.fieldInstructions = new ArrayList<>();
 
         this.methodInstructions = methodInstructions;
-    }
-
-    public static JigMethodBuilder constructWithHeader(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, List<TypeIdentifier> throwsTypes, MethodDerivation methodDerivation, MethodInstructions methodInstructions) {
-        return new JigMethodBuilder(
-                methodDeclaration,
-                signatureContainedTypes,
-                visibility,
-                methodDerivation,
-                throwsTypes,
-                methodInstructions);
     }
 
     public JigMethod build() {

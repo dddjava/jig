@@ -53,13 +53,10 @@ class AsmClassVisitor extends ClassVisitor {
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
 
-        jigTypeBuilder = JigTypeBuilder.constructWithHeaders(
-                new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters),
-                superType(superName, signature),
-                interfaceTypes(interfaces, signature),
-                resolveVisibility(access),
-                typeKind(access)
-        );
+        ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
+        ParameterizedType superType = superType(superName, signature);
+        List<ParameterizedType> interfaceTypes = interfaceTypes(interfaces, signature);
+        jigTypeBuilder = new JigTypeBuilder(type, superType, interfaceTypes, typeKind(access), resolveVisibility(access));
 
         super.visit(version, access, name, signature, superName, interfaces);
     }

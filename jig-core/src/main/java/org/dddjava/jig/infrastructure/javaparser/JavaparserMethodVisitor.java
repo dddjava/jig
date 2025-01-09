@@ -12,10 +12,10 @@ import org.dddjava.jig.domain.model.data.comment.Comment;
 import java.util.Collections;
 import java.util.List;
 
-class MethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
+class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
     private final TypeIdentifier typeIdentifier;
 
-    public MethodVisitor(TypeIdentifier typeIdentifier) {
+    public JavaparserMethodVisitor(TypeIdentifier typeIdentifier) {
         this.typeIdentifier = typeIdentifier;
     }
 

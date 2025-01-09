@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
-    static Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
+class JavaparserClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
+    static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
     ClassComment classComment;
@@ -35,7 +35,7 @@ class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
     EnumModel enumModel;
     TypeIdentifier typeIdentifier;
 
-    public ClassVisitor(String packageName) {
+    public JavaparserClassVisitor(String packageName) {
         this.packageName = packageName;
     }
 
@@ -104,7 +104,7 @@ class ClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
             String javadocText = javadoc.getDescription().toText();
             classComment = new ClassComment(typeIdentifier, Comment.fromCodeComment(javadocText));
         });
-        node.accept(new MethodVisitor(typeIdentifier), methods);
+        node.accept(new JavaparserMethodVisitor(typeIdentifier), methods);
 
         return typeIdentifier;
     }

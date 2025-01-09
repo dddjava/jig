@@ -73,7 +73,7 @@ public class JavaparserReader implements JavaTextSourceReader {
                 .map(name -> name + ".")
                 .orElse("");
 
-        ClassVisitor typeVisitor = new ClassVisitor(packageName);
+        JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
         AdditionalSourceModelBuilder builder = new AdditionalSourceModelBuilder();
         cu.accept(typeVisitor, builder);
         return typeVisitor.toTextSourceModel();

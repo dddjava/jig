@@ -9,10 +9,7 @@ import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructions;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
@@ -312,9 +309,9 @@ class AsmClassVisitor extends ClassVisitor {
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
      */
-    private Visibility resolveVisibility(int access) {
-        if ((access & Opcodes.ACC_PUBLIC) != 0) return Visibility.PUBLIC;
-        return Visibility.NOT_PUBLIC;
+    private TypeVisibility resolveVisibility(int access) {
+        if ((access & Opcodes.ACC_PUBLIC) != 0) return TypeVisibility.PUBLIC;
+        return TypeVisibility.NOT_PUBLIC;
     }
 
     private Visibility resolveMethodVisibility(int access) {

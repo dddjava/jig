@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.information.jigobject.class_.*;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
@@ -29,7 +28,7 @@ public class JigTypeBuilder {
     private final ParameterizedType superType;
     private final List<ParameterizedType> interfaceTypes;
     private final TypeKind typeKind;
-    private final Visibility visibility;
+    private final TypeVisibility visibility;
 
     final List<Annotation> annotations;
 
@@ -43,7 +42,7 @@ public class JigTypeBuilder {
 
     private final List<RecordComponentDefinition> recordComponentDefinitions;
 
-    private JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, Visibility visibility) {
+    private JigTypeBuilder(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeKind typeKind, TypeVisibility visibility) {
         this.type = type;
         this.superType = superType;
         this.interfaceTypes = interfaceTypes;
@@ -61,7 +60,7 @@ public class JigTypeBuilder {
         this.recordComponentDefinitions = new ArrayList<>();
     }
 
-    public static JigTypeBuilder constructWithHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, Visibility visibility, TypeKind typeKind) {
+    public static JigTypeBuilder constructWithHeaders(ParameterizedType type, ParameterizedType superType, List<ParameterizedType> interfaceTypes, TypeVisibility visibility, TypeKind typeKind) {
         return new JigTypeBuilder(type, superType, interfaceTypes, typeKind, visibility);
     }
 

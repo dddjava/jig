@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,11 +16,11 @@ import java.util.stream.Collectors;
 public class JigTypeAttribute {
     private final ClassComment classComment;
     private final TypeKind typeKind;
-    private final Visibility visibility;
+    private final TypeVisibility visibility;
 
     private final List<Annotation> annotations;
 
-    public JigTypeAttribute(ClassComment classComment, TypeKind typeKind, Visibility visibility, List<Annotation> annotations) {
+    public JigTypeAttribute(ClassComment classComment, TypeKind typeKind, TypeVisibility visibility, List<Annotation> annotations) {
         this.classComment = classComment;
         this.typeKind = typeKind;
         this.visibility = visibility;
@@ -34,7 +35,7 @@ public class JigTypeAttribute {
         return typeKind;
     }
 
-    public Visibility visibility() {
+    public TypeVisibility visibility() {
         return visibility;
     }
 

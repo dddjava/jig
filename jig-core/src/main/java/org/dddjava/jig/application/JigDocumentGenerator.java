@@ -1,6 +1,9 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
+import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
@@ -9,20 +12,17 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
-import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
-import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
-import org.dddjava.jig.domain.model.data.term.Terms;
-import org.dddjava.jig.domain.model.information.validations.Validations;
+import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.information.validations.Validations;
+import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
-import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
-import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
@@ -256,7 +256,7 @@ public class JigDocumentGenerator {
                 Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
                 Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
                 Map.entry("関連元クラス数", item -> businessRules.allTypesRelatedTo(item).list().size()),
-                Map.entry("非PUBLIC", item -> item.visibility() != Visibility.PUBLIC ? "◯" : ""),
+                Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                 Map.entry("同パッケージからのみ参照", item -> {
                     var list = businessRules.allTypesRelatedTo(item).packageIdentifiers().list();
                     return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";

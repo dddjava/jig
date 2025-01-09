@@ -1,11 +1,10 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.comment.Comment;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +66,7 @@ class JigTypesTest {
                                 Comment.empty()
                         ),
                         TypeKind.通常型,
-                        Visibility.PUBLIC,
+                        TypeVisibility.PUBLIC,
                         List.of()
                 ),
                 new JigStaticMember(

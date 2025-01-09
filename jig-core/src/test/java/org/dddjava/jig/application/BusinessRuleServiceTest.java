@@ -1,10 +1,10 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmell;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
@@ -20,29 +20,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void ビジネスルールの可視性(Sources sources, JigSourceReader jigSourceReader) throws Exception {
+    void クラス可視性の判定(Sources sources, JigSourceReader jigSourceReader) throws Exception {
         TypeFacts typeFacts = jigSourceReader.readProjectData(sources).typeFacts();
         List<JigType> jigTypes = typeFacts.jigTypes().list();
 
         JigType publicType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(Visibility.PUBLIC, publicType.visibility());
+        assertEquals(TypeVisibility.PUBLIC, publicType.visibility());
 
         JigType protectedType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("ProtectedType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(Visibility.PUBLIC, protectedType.visibility());
+        assertEquals(TypeVisibility.PUBLIC, protectedType.visibility());
 
         JigType defaultType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("DefaultType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(Visibility.NOT_PUBLIC, defaultType.visibility());
+        assertEquals(TypeVisibility.NOT_PUBLIC, defaultType.visibility());
 
         JigType privateType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PrivateType"))
                 .findAny().orElseThrow(AssertionError::new);
-        assertEquals(Visibility.NOT_PUBLIC, privateType.visibility());
+        assertEquals(TypeVisibility.NOT_PUBLIC, privateType.visibility());
     }
 
     @Test

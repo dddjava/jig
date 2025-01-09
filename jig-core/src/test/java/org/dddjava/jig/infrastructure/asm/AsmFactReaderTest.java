@@ -1,11 +1,5 @@
 package org.dddjava.jig.infrastructure.asm;
 
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.annotation.AnnotationDescription;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
@@ -15,6 +9,12 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

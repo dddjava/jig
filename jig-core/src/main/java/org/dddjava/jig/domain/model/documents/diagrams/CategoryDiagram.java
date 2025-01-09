@@ -1,14 +1,14 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
+import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 
 import java.util.*;
 import java.util.function.Function;

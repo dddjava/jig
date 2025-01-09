@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
-import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;

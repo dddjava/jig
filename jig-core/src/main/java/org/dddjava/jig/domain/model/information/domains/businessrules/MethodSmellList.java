@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.domains.businessrules;
 
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 import java.util.ArrayList;
 import java.util.Comparator;

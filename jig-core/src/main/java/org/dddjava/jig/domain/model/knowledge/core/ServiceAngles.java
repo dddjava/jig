@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
+import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
-import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
-import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 
 import java.util.ArrayList;
 import java.util.Comparator;

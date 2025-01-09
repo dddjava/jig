@@ -1,13 +1,13 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
-import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelation;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 
 import java.util.ArrayList;
 import java.util.HashSet;

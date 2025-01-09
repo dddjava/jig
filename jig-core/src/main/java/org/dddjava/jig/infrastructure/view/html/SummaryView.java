@@ -1,6 +1,8 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
@@ -8,8 +10,6 @@ import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypeValueKind;
 import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

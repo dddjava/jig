@@ -1,8 +1,8 @@
 package org.dddjava.jig.infrastructure.view.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
-import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 

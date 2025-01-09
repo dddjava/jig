@@ -1,12 +1,12 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.data.packages.PackageComment;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.StringJoiner;
 import java.util.function.Function;

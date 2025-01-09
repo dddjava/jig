@@ -19,7 +19,7 @@ public class MethodImplementation {
     }
 
     public MethodImplementation(MethodIdentifier methodIdentifier) {
-        this(methodIdentifier, null);
+        this(methodIdentifier, MethodComment.empty(methodIdentifier));
     }
 
     /**
@@ -29,8 +29,8 @@ public class MethodImplementation {
         return new MethodImplementation(methodIdentifier);
     }
 
-    public Optional<MethodComment> comment() {
-        return Optional.ofNullable(methodComment);
+    public MethodComment comment() {
+        return methodComment;
     }
 
     public boolean matches(MethodIdentifier methodIdentifier) {

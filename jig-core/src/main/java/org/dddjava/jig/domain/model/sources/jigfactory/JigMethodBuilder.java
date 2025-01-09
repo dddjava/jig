@@ -28,7 +28,6 @@ public class JigMethodBuilder {
 
     private final Instructions instructions;
 
-    private MethodComment methodComment = null;
     private MethodImplementation methodImplementation = null;
 
     public JigMethodBuilder(MethodDeclaration methodDeclaration, List<TypeIdentifier> signatureContainedTypes, Visibility visibility, MethodDerivation methodDerivation, List<TypeIdentifier> throwsTypes, Instructions instructions) {
@@ -47,7 +46,6 @@ public class JigMethodBuilder {
         return new JigMethod(
                 methodDeclaration,
                 annotatedMethods(), visibility, methodDerivation, instructions, throwsTypes, signatureContainedTypes,
-                methodComment != null ? methodComment : MethodComment.empty(methodDeclaration.identifier()),
                 methodImplementation != null ? methodImplementation : MethodImplementation.unknown(methodDeclaration.identifier())
         );
     }
@@ -68,10 +66,6 @@ public class JigMethodBuilder {
 
     public MethodIdentifier methodIdentifier() {
         return methodDeclaration.identifier();
-    }
-
-    public void registerMethodAlias(MethodComment methodComment) {
-        this.methodComment = methodComment;
     }
 
     public void registerMethodImplementation(MethodImplementation methodImplementation) {

@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 public class JigMethod {
 
     MethodDeclaration methodDeclaration;
-    MethodComment methodComment;
 
     MethodAnnotations methodAnnotations;
     Visibility visibility;
@@ -28,9 +27,8 @@ public class JigMethod {
     private final List<TypeIdentifier> throwsTypes;
     private final List<TypeIdentifier> signatureContainedTypes;
 
-    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodComment methodComment, MethodImplementation methodImplementation) {
+    public JigMethod(MethodDeclaration methodDeclaration, MethodAnnotations methodAnnotations, Visibility visibility, MethodDerivation methodDerivation, Instructions instructions, List<TypeIdentifier> throwsTypes, List<TypeIdentifier> signatureContainedTypes, MethodImplementation methodImplementation) {
         this.methodDeclaration = methodDeclaration;
-        this.methodComment = methodComment;
         this.methodAnnotations = methodAnnotations;
         this.visibility = visibility;
         this.methodDerivation = methodDerivation;
@@ -97,17 +95,17 @@ public class JigMethod {
     }
 
     public String aliasTextOrBlank() {
-        return methodComment.asText();
+        return methodImplementation.comment().asText();
     }
 
     public String aliasText() {
-        return methodComment
+        return methodImplementation.comment()
                 .asTextOrDefault(declaration().declaringType().asSimpleText() + "\\n"
                         + declaration().methodSignature().methodName());
     }
 
     public JigMethodDescription description() {
-        return JigMethodDescription.from(methodComment.documentationComment());
+        return JigMethodDescription.from(methodImplementation.comment().documentationComment());
     }
 
     /**
@@ -118,7 +116,7 @@ public class JigMethod {
     }
 
     public String labelText() {
-        return methodComment.asTextOrDefault(declaration().methodSignature().methodName());
+        return methodImplementation.comment().asTextOrDefault(declaration().methodSignature().methodName());
     }
 
     public String fqn() {
@@ -149,7 +147,7 @@ public class JigMethod {
     }
 
     public boolean documented() {
-        return methodComment.exists();
+        return methodImplementation.comment().exists();
     }
 
     /**

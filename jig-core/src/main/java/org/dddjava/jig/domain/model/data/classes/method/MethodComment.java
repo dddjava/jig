@@ -33,12 +33,6 @@ public class MethodComment {
         return defaultText;
     }
 
-    public boolean isAliasFor(MethodIdentifier methodIdentifier) {
-        // TODO オーバーロードに対応するときはここでやる。
-        // MethodAliasのフィールドを硬いmethodIdentifierを持つのではなく、引数も含めてある程度マッチする感じのやつを作る。
-        return methodIdentifier.matchTypeAndMethodName(this.methodIdentifier);
-    }
-
     public Comment documentationComment() {
         return comment;
     }

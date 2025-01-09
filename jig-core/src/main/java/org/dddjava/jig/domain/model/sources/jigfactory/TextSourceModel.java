@@ -59,7 +59,8 @@ public class TextSourceModel {
 
     public List<MethodComment> methodCommentList() {
         return methodImplementations.stream()
-                .flatMap(methodImplementation -> methodImplementation.comment().stream())
+                .map(methodImplementation -> methodImplementation.comment())
+                .filter(MethodComment::exists)
                 .collect(Collectors.toList());
     }
 

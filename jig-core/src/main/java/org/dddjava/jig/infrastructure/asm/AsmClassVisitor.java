@@ -478,11 +478,10 @@ class AsmClassVisitor extends ClassVisitor {
         // ジェネリクスを使用している場合だけsignatureが入る
         if (signature == null) {
             // 非総称型で作成
-            List<ParameterizedType> list = Arrays.stream(interfaces)
+            return Arrays.stream(interfaces)
                     .map(TypeIdentifier::valueOf)
                     .map(ParameterizedType::new)
                     .collect(Collectors.toList());
-            return list;
         }
 
         SignatureVisitor noOpVisitor = new SignatureVisitor(this.api) {

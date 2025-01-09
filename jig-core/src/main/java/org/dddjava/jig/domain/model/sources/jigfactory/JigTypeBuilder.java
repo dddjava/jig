@@ -87,16 +87,13 @@ public class JigTypeBuilder {
         this.jigType = null;
     }
 
-    public boolean registerMethodComment(MethodComment methodComment) {
-        boolean registered = false;
+    private void registerMethodComment(MethodComment methodComment) {
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {
                 jigMethodBuilder.registerMethodAlias(methodComment);
                 // オーバーロードの正確な識別ができないので、同じ名前のメソッドすべてに適用するため、ここでreturnしてはいけない
-                registered = true;
             }
         }
-        return registered;
     }
 
     JigType jigType;

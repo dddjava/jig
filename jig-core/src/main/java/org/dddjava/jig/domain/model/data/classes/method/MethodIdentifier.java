@@ -41,7 +41,7 @@ public record MethodIdentifier(TypeIdentifier declaringType, MethodSignature met
         return declaringType.equals(typeIdentifier) && methodName.equals(methodSignature.methodName());
     }
 
-    public boolean matchesIgnoreOverload(MethodIdentifier methodIdentifier) {
+    public boolean matchTypeAndMethodName(MethodIdentifier methodIdentifier) {
         return matchTypeAndMethodName(methodIdentifier.declaringType, methodIdentifier.methodSignature.methodName());
     }
 

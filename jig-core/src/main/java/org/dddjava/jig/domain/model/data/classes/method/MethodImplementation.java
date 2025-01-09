@@ -35,7 +35,7 @@ public class MethodImplementation {
 
     public boolean matches(MethodIdentifier methodIdentifier) {
         // テキストソース由来では引数型が確定しないのでクラスと名前で当てる
-        return this.methodIdentifier.matchTypeAndMethodName(methodIdentifier.declaringType(), methodIdentifier.methodSignature().methodName());
+        return this.methodIdentifier.matchTypeAndMethodName(methodIdentifier);
     }
 
     public boolean declaringTypeMatches(TypeIdentifier typeIdentifier) {

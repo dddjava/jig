@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void ビジネスルールの可視性(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) throws Exception {
+    void ビジネスルールの可視性(Sources sources, JigSourceReader jigSourceReader) throws Exception {
         TypeFacts typeFacts = jigSourceReader.readProjectData(sources).typeFacts();
         List<JigType> jigTypes = typeFacts.jigTypes().list();
 
@@ -46,9 +46,9 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void 注意メソッドの抽出(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
+    void 注意メソッドの抽出(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);
-        MethodSmellList methodSmellList = businessRuleService.methodSmells(jigSource);
+        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
 

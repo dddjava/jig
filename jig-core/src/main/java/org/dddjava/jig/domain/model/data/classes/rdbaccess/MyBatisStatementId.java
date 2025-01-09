@@ -53,11 +53,12 @@ public class MyBatisStatementId {
 
     public boolean matches(MethodDeclarations methodDeclarations) {
         if (value.contains(".")) {
+            // 連結されているnamespaceとidを分離する
+            var namespace = value.substring(0, value.lastIndexOf('.'));
+            var id = value.substring(value.lastIndexOf('.') + 1);
+
             for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
-                boolean matches = methodDeclaration.matchTypeAndMethodName(
-                        TypeIdentifier.valueOf(value.substring(0, value.lastIndexOf('.'))),
-                        value.substring(value.lastIndexOf('.') + 1)
-                );
+                boolean matches = methodDeclaration.matchTypeAndMethodName(TypeIdentifier.valueOf(namespace), id);
                 if (matches) return true;
             }
         }

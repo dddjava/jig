@@ -171,12 +171,6 @@ class AsmClassVisitor extends ClassVisitor {
                 TypeIdentifier declaringType = TypeIdentifier.valueOf(owner);
                 TypeIdentifier fieldTypeIdentifier = typeDescriptorToIdentifier(descriptor);
 
-                // FIXME: これをFieldDeclarationで扱うとFieldTypeに総称型が入っているのを期待しかねない
-                // このメソッドのdescriptorではフィールドの型パラメタが解決できないため、完全なFieldTypeを作成できない。
-                // UsingFieldでではFieldDeclarationと異なる形式で扱わなければならない。
-                FieldType fieldType = new FieldType(fieldTypeIdentifier);
-                FieldDeclaration fieldDeclaration = new FieldDeclaration(declaringType, fieldType, name);
-
                 methodInstructions.registerField(declaringType, fieldTypeIdentifier, name);
                 super.visitFieldInsn(opcode, owner, name, descriptor);
             }

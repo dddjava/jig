@@ -114,13 +114,17 @@ public class JigTypeBuilder {
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             textSourceModel.methodImplementations.stream()
+                    // バイナリのメソッドと類似するメソッドに、その実装を登録する
                     .filter(methodImplementation1 -> methodImplementation1.matches(jigMethodBuilder.methodIdentifier()))
                     .findAny()
                     .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
 
             textSourceModel.methodImplementations.stream()
+                    // このクラスと同じメソッド実装に絞って
                     .filter(methodImplementation -> methodImplementation.declaringTypeMatches(typeIdentifier()))
+                    // コメントがあったら
                     .flatMap(methodImplementation -> methodImplementation.comment().stream())
+                    // メソッドが同じっぽかったら
                     .filter(methodComment -> methodComment.isAliasFor(jigMethodBuilder.methodIdentifier()))
                     .forEach(jigMethodBuilder::registerMethodAlias);
         }

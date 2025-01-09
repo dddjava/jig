@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodComment;
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
@@ -62,12 +61,6 @@ public class TextSourceModel {
         return methodImplementations.stream()
                 .flatMap(methodImplementation -> methodImplementation.comment().stream())
                 .collect(Collectors.toList());
-    }
-
-    public Optional<MethodImplementation> methodImplementation(MethodIdentifier methodIdentifier) {
-        return methodImplementations.stream()
-                .filter(methodImplementation -> methodImplementation.matches(methodIdentifier))
-                .findAny();
     }
 
     public void addPackageComment(List<PackageComment> list) {

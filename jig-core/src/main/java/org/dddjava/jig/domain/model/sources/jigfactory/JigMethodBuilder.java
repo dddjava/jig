@@ -89,9 +89,8 @@ public class JigMethodBuilder {
         this.methodComment = methodComment;
     }
 
-    public void applyTextSource(TextSourceModel textSourceModel) {
-        textSourceModel.methodImplementation(methodDeclaration.identifier())
-                .ifPresent(methodImplementation -> this.methodImplementation = methodImplementation);
+    public void registerMethodImplementation(MethodImplementation methodImplementation) {
+        this.methodImplementation = methodImplementation;
     }
 
     public void addAnnotation(Annotation annotation) {

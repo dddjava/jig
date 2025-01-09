@@ -1,19 +1,20 @@
 package org.dddjava.jig.domain.model.sources.jigfactory;
 
-import org.dddjava.jig.domain.model.information.jigobject.class_.*;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
 import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.information.jigobject.class_.*;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,11 +114,15 @@ public class JigTypeBuilder {
                 .ifPresent(this::registerClassComment);
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            jigMethodBuilder.applyTextSource(textSourceModel);
-        
+            MethodIdentifier methodIdentifier = jigMethodBuilder.methodDeclaration.identifier();
+            textSourceModel.methodImplementations.stream()
+                    .filter(methodImplementation1 -> methodImplementation1.matches(methodIdentifier))
+                    .findAny()
+                    .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));
+
             textSourceModel.streamMethodComment(typeIdentifier())
-                .filter(methodComment -> methodComment.isAliasFor(jigMethodBuilder.methodIdentifier()))
-                .forEach(jigMethodBuilder::registerMethodAlias);
+                    .filter(methodComment -> methodComment.isAliasFor(jigMethodBuilder.methodIdentifier()))
+                    .forEach(jigMethodBuilder::registerMethodAlias);
         }
         return this;
     }

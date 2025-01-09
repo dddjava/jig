@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.MethodComment;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.method.Visibility;
@@ -87,15 +86,6 @@ public class JigTypeBuilder {
         this.jigType = null;
     }
 
-    private void registerMethodComment(MethodComment methodComment) {
-        for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {
-                jigMethodBuilder.registerMethodAlias(methodComment);
-                // オーバーロードの正確な識別ができないので、同じ名前のメソッドすべてに適用するため、ここでreturnしてはいけない
-            }
-        }
-    }
-
     JigType jigType;
 
     public JigType build() {
@@ -126,7 +116,14 @@ public class JigTypeBuilder {
             jigMethodBuilder.applyTextSource(textSourceModel);
         }
         textSourceModel.streamMethodComment(typeIdentifier())
-                .forEach(methodComment -> registerMethodComment(methodComment));
+                .forEach(methodComment -> {
+                    for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
+                        if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {
+                            jigMethodBuilder.registerMethodAlias(methodComment);
+                            // オーバーロードの正確な識別ができないので、同じ名前のメソッドすべてに適用するため、ここでreturnしてはいけない
+                        }
+                    }
+                });
         return this;
     }
 

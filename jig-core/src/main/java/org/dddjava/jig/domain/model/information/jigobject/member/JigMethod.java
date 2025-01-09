@@ -95,7 +95,7 @@ public class JigMethod {
     }
 
     public String aliasTextOrBlank() {
-        return methodImplementation.comment().asText();
+        return methodImplementation.comment().summaryText();
     }
 
     public String aliasText() {
@@ -105,7 +105,7 @@ public class JigMethod {
     }
 
     public JigMethodDescription description() {
-        return JigMethodDescription.from(methodImplementation.comment().documentationComment());
+        return JigMethodDescription.from(methodImplementation.comment());
     }
 
     /**

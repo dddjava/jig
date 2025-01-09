@@ -45,6 +45,17 @@ public class Comment {
         return new Comment(sourceText);
     }
 
+    public String asText() {
+        return summaryText();
+    }
+
+    public String asTextOrDefault(String defaultText) {
+        if (exists()) {
+            return summaryText();
+        }
+        return defaultText;
+    }
+
     public String fullText() {
         return value;
     }

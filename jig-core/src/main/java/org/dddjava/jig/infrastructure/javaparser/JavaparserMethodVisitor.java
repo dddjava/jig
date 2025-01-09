@@ -2,11 +2,11 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
+import org.dddjava.jig.domain.model.data.classes.method.MethodImplementationDeclarator;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 
-import java.util.Collections;
 import java.util.List;
 
 class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementation>> {
@@ -27,10 +27,10 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementati
         collector.add(
                 n.getJavadoc().map(javadoc ->
                         new MethodImplementation(typeIdentifier, methodImplementationDeclarator,
-                                new MethodComment(Comment.fromCodeComment(javadoc.getDescription().toText()))
+                                Comment.fromCodeComment(javadoc.getDescription().toText())
                         )).orElseGet(() ->
                         new MethodImplementation(typeIdentifier, methodImplementationDeclarator,
-                                MethodComment.empty()))
+                                Comment.empty()))
         );
     }
 }

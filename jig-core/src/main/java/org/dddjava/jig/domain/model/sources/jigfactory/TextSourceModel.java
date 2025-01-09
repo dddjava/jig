@@ -76,7 +76,7 @@ public class TextSourceModel {
                                 .map(methodImplementation -> Term.fromMethod(
                                         methodImplementation.methodIdentifierText(),
                                         methodImplementation.comment().asText(),
-                                        methodImplementation.comment().documentationComment().bodyText()
+                                        methodImplementation.comment().bodyText()
                                 )),
                         packageComments().stream()
                                 .map(packageComment -> Term.fromPackage(

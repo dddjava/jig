@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.comment.Comment;
 
 /**
  * 実装されたメソッド
@@ -10,7 +11,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 public record MethodImplementation(
         TypeIdentifier typeIdentifier,
         MethodImplementationDeclarator methodDeclarator,
-        MethodComment methodComment
+        Comment comment
 ) {
 
     /**
@@ -25,12 +26,8 @@ public record MethodImplementation(
                         methodIdentifier.methodSignature().methodName(),
                         methodIdentifier.methodSignature().listArgumentTypeIdentifiers().stream().map(TypeIdentifier::fullQualifiedName).toList()
                 ),
-                MethodComment.empty()
+                Comment.empty()
         );
-    }
-
-    public MethodComment comment() {
-        return methodComment;
     }
 
     public boolean possiblyMatches(MethodIdentifier methodIdentifier) {
@@ -39,7 +36,7 @@ public record MethodImplementation(
     }
 
     public boolean hasComment() {
-        return methodComment.exists();
+        return comment.exists();
     }
 
     public String methodIdentifierText() {

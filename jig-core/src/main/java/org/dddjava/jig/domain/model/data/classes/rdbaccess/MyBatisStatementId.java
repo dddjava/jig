@@ -58,7 +58,7 @@ public class MyBatisStatementId {
             var id = value.substring(value.lastIndexOf('.') + 1);
 
             for (MethodDeclaration methodDeclaration : methodDeclarations.list()) {
-                boolean matches = methodDeclaration.matchTypeAndMethodName(TypeIdentifier.valueOf(namespace), id);
+                boolean matches = methodDeclaration.identifier().matchTypeAndMethodName(TypeIdentifier.valueOf(namespace), id);
                 if (matches) return true;
             }
         }

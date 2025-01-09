@@ -114,16 +114,11 @@ public class JigTypeBuilder {
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
             jigMethodBuilder.applyTextSource(textSourceModel);
+        
+            textSourceModel.streamMethodComment(typeIdentifier())
+                .filter(methodComment -> methodComment.isAliasFor(jigMethodBuilder.methodIdentifier()))
+                .forEach(jigMethodBuilder::registerMethodAlias);
         }
-        textSourceModel.streamMethodComment(typeIdentifier())
-                .forEach(methodComment -> {
-                    for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-                        if (methodComment.isAliasFor(jigMethodBuilder.methodIdentifier())) {
-                            jigMethodBuilder.registerMethodAlias(methodComment);
-                            // オーバーロードの正確な識別ができないので、同じ名前のメソッドすべてに適用するため、ここでreturnしてはいけない
-                        }
-                    }
-                });
         return this;
     }
 

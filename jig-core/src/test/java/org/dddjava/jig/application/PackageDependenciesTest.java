@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(JigTestExtension.class)
-public class DependencyServiceTest {
+public class PackageDependenciesTest {
 
     @Test
     void パッケージ依存(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {

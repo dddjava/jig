@@ -1,5 +1,5 @@
 [versions]
-poi = "5.3.0"
+poi = "5.4.0"
 spring-boot = { strictly = "3.3.4" }
 spring = { strictly = "6.1.13" }
 

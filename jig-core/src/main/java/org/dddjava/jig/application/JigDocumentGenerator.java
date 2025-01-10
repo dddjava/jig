@@ -68,7 +68,7 @@ public class JigDocumentGenerator {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
-        this.graphvizDiagramWriter = new GraphvizDiagramWriter(diagramFormat, jigDocumentContext);
+        this.graphvizDiagramWriter = new GraphvizDiagramWriter(jigDocumentContext);
 
         // setup Thymeleaf
         TemplateEngine templateEngine = new TemplateEngine();

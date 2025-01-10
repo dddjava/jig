@@ -19,8 +19,8 @@ public class GraphvizDiagramWriter {
     DotCommandRunner dotCommandRunner;
     JigDocumentContext jigDocumentContext;
 
-    public GraphvizDiagramWriter(JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
-        this.diagramFormat = diagramFormat;
+    public GraphvizDiagramWriter(JigDocumentContext jigDocumentContext) {
+        this.diagramFormat = jigDocumentContext.diagramFormat();
         this.dotCommandRunner = new DotCommandRunner();
         this.jigDocumentContext = jigDocumentContext;
     }

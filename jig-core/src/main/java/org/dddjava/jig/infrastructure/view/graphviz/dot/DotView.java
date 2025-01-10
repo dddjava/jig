@@ -15,19 +15,17 @@ import java.util.List;
 
 public class DotView {
 
-    private final JigDocument jigDocument;
     JigDiagramFormat diagramFormat;
     DotCommandRunner dotCommandRunner;
     JigDocumentContext jigDocumentContext;
 
-    public DotView(JigDocument jigDocument, JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
-        this.jigDocument = jigDocument;
+    public DotView(JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
         this.diagramFormat = diagramFormat;
         this.dotCommandRunner = dotCommandRunner;
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    public List<Path> write(Path outputDirectory, DiagramSourceWriter model) {
+    public List<Path> write(Path outputDirectory, DiagramSourceWriter model, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
         render(model, jigDocumentWriter);
         return jigDocumentWriter.outputFilePaths();

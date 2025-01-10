@@ -24,9 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-/**
- * 機能の分析サービス
- */
 @Service
 public class JigService {
 

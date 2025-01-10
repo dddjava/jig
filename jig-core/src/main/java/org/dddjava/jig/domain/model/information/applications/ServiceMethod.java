@@ -39,7 +39,7 @@ public class ServiceMethod {
     }
 
     public MethodWorries methodWorries() {
-        return method.methodWorries();
+        return new MethodWorries(method);
     }
 
     public JigMethod method() {

@@ -31,7 +31,7 @@ public class MethodSmell {
         if (!fieldDeclarations.empty()) {
             return false;
         }
-        return method.methodWorries().contains(MethodWorry.メンバを使用していない);
+        return new MethodWorries(method).contains(MethodWorry.メンバを使用していない);
     }
 
     public boolean primitiveInterface() {
@@ -40,11 +40,11 @@ public class MethodSmell {
             return false;
         }
 
-        return method.methodWorries().contains(MethodWorry.基本型の授受を行なっている);
+        return new MethodWorries(method).contains(MethodWorry.基本型の授受を行なっている);
     }
 
     public boolean returnsBoolean() {
-        return method.methodWorries().contains(MethodWorry.真偽値を返している);
+        return new MethodWorries(method).contains(MethodWorry.真偽値を返している);
     }
 
     public boolean hasSmell() {
@@ -59,11 +59,11 @@ public class MethodSmell {
     }
 
     public boolean referenceNull() {
-        return method.methodWorries().contains(MethodWorry.NULLリテラルを使用している);
+        return new MethodWorries(method).contains(MethodWorry.NULLリテラルを使用している);
     }
 
     public boolean nullDecision() {
-        return method.methodWorries().contains(MethodWorry.NULL判定をしている);
+        return new MethodWorries(method).contains(MethodWorry.NULL判定をしている);
     }
 
     public CallerMethods callerMethods() {
@@ -71,6 +71,6 @@ public class MethodSmell {
     }
 
     public boolean returnsVoid() {
-        return method.methodWorries().contains(MethodWorry.voidを返している);
+        return new MethodWorries(method).contains(MethodWorry.voidを返している);
     }
 }

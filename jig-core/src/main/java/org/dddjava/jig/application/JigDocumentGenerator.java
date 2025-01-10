@@ -1,7 +1,11 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.adapter.*;
+import org.dddjava.jig.adapter.Adapter;
+import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.ListAdapter;
+import org.dddjava.jig.adapter.SummaryAdapter;
+import org.dddjava.jig.adapter.diagram.DiagramAdapter;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -23,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -147,12 +152,23 @@ public class JigDocumentGenerator {
     }
 
     private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource, Function<T, List<Path>> modelWriter) {
-        return Arrays.stream(adapter.getClass().getMethods())
-                .filter(method ->
-                        Optional.ofNullable(method.getAnnotation(HandleDocument.class))
-                                .map(HandleDocument::value)
-                                .filter(values -> Arrays.asList(values).contains(jigDocument))
-                                .isPresent())
+        List<Method> invokeTargetMethod = Arrays.stream(adapter.getClass().getMethods())
+                .filter(method -> Optional.ofNullable(method.getAnnotation(HandleDocument.class))
+                        .map(HandleDocument::value)
+                        .filter(values -> Arrays.asList(values).contains(jigDocument))
+                        .isPresent())
+                .toList();
+        if (invokeTargetMethod.isEmpty()) {
+            logger.error("{} に対応するハンドラが {} に見つかりませんでした。ドキュメントは生成されません。他のバージョンを使用するか、Issueで報告してください。",
+                    jigDocument, adapter.getClass().getName());
+            return List.of();
+        }
+        if (invokeTargetMethod.size() > 1) {
+            logger.error("{} に対応するハンドラが {} に複数見つかりました。ドキュメントは生成されますが、意図したものにならない可能性があります。他のバージョンを使用するか、Issueで報告してください。",
+                    jigDocument, adapter.getClass().getName());
+        }
+
+        return invokeTargetMethod.stream().findFirst()
                 .map(method -> {
                     try {
                         return adapter.convertMethodResultToAdapterModel(method.invoke(adapter, jigSource));
@@ -161,7 +177,6 @@ public class JigDocumentGenerator {
                     }
                 })
                 .map(modelWriter)
-                .findAny()
                 .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
     }
 

@@ -6,6 +6,7 @@ import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ public class ReportBook {
         this.sheets = Arrays.asList(reporters);
     }
 
-    public List<Path> writeXlsx(JigDocument jigDocument, Path outputDirectory) throws IOException {
+    public List<Path> writeXlsx(JigDocument jigDocument, Path outputDirectory) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
 
         if (sheets.stream().allMatch(sheet -> sheet.nothingToWriteContent())) {
@@ -32,6 +33,8 @@ public class ReportBook {
             }
 
             jigDocumentWriter.writeXlsx(book::write);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
 
         return jigDocumentWriter.outputFilePaths();

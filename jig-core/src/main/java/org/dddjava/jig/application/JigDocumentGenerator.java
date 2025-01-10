@@ -60,6 +60,7 @@ public class JigDocumentGenerator {
     private final TemplateEngine thymeleafTemplateEngine;
     private final JigService jigService;
     private final GraphvizDiagramWriter graphvizDiagramWriter;
+    private final SummaryView summaryView;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
@@ -80,6 +81,7 @@ public class JigDocumentGenerator {
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
         this.thymeleafTemplateEngine = templateEngine;
+        this.summaryView = new SummaryView(thymeleafTemplateEngine, jigDocumentContext);
     }
 
     public void generateIndex(List<HandleResult> results) {
@@ -126,19 +128,19 @@ public class JigDocumentGenerator {
                 // 概要
                 case DomainSummary -> {
                     var summaryModel = jigService.domainSummary(jigSource);
-                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, summaryModel);
+                    yield summaryView.write(jigDocument, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
                     var summaryModel = jigService.usecaseSummary(jigSource);
-                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, summaryModel);
+                    yield summaryView.write(jigDocument, summaryModel);
                 }
                 case EntrypointSummary -> {
                     var summaryModel = jigService.inputsSummary(jigSource);
-                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, summaryModel);
+                    yield summaryView.write(jigDocument, summaryModel);
                 }
                 case EnumSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, summaryModel);
+                    yield summaryView.write(jigDocument, summaryModel);
                 }
                 // テーブル
                 case TermTable -> {

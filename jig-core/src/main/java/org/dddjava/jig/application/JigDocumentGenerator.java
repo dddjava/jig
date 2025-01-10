@@ -57,7 +57,7 @@ public class JigDocumentGenerator {
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
-    private final TemplateEngine templateEngine;
+    private final TemplateEngine thymeleafTemplateEngine;
     private final JigService jigService;
     private final GraphvizDiagramWriter graphvizDiagramWriter;
 
@@ -79,11 +79,11 @@ public class JigDocumentGenerator {
         templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
-        this.templateEngine = templateEngine;
+        this.thymeleafTemplateEngine = templateEngine;
     }
 
     public void generateIndex(List<HandleResult> results) {
-        IndexView indexView = new IndexView(templateEngine, diagramFormat);
+        IndexView indexView = new IndexView(thymeleafTemplateEngine, diagramFormat);
         indexView.render(results, outputDirectory);
         copyAssets(outputDirectory);
     }
@@ -126,24 +126,24 @@ public class JigDocumentGenerator {
                 // 概要
                 case DomainSummary -> {
                     var summaryModel = jigService.domainSummary(jigSource);
-                    yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
+                    yield SummaryView.write(jigDocumentContext, thymeleafTemplateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
                     var summaryModel = jigService.usecaseSummary(jigSource);
-                    yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
+                    yield SummaryView.write(jigDocumentContext, thymeleafTemplateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EntrypointSummary -> {
                     var summaryModel = jigService.inputsSummary(jigSource);
-                    yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
+                    yield SummaryView.write(jigDocumentContext, thymeleafTemplateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 case EnumSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    yield SummaryView.write(jigDocumentContext, templateEngine, jigDocument, outputDirectory, summaryModel);
+                    yield SummaryView.write(jigDocumentContext, thymeleafTemplateEngine, jigDocument, outputDirectory, summaryModel);
                 }
                 // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);
-                    yield new TableView(jigDocument, templateEngine).write(outputDirectory, terms);
+                    yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // ダイアグラム
                 case PackageRelationDiagram -> {

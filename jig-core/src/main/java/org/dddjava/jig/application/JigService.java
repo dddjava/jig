@@ -85,11 +85,6 @@ public class JigService {
         return jigSource.terms();
     }
 
-    public ServiceMethodCallHierarchyDiagram serviceMethodCallHierarchy(JigSource jigSource) {
-        ServiceAngles serviceAngles = serviceAngles(jigSource);
-        return new ServiceMethodCallHierarchyDiagram(serviceAngles);
-    }
-
     /**
      * サービスを分析する
      */

@@ -6,8 +6,10 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -54,7 +56,8 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)
     public DiagramSourceWriter serviceMethodCallHierarchy(JigSource jigSource) {
-        return jigService.serviceMethodCallHierarchy(jigSource);
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
+        return new ServiceMethodCallHierarchyDiagram(serviceAngles);
     }
 
     @Override

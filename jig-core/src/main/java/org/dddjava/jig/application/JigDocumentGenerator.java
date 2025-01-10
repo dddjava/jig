@@ -147,32 +147,29 @@ public class JigDocumentGenerator {
     }
 
     private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource) {
-        List<Method> invokeTargetMethod = Arrays.stream(adapter.getClass().getMethods())
+        List<Method> adapterMethods = Arrays.stream(adapter.getClass().getMethods())
                 .filter(method -> Optional.ofNullable(method.getAnnotation(HandleDocument.class))
                         .map(HandleDocument::value)
                         .filter(values -> Arrays.asList(values).contains(jigDocument))
                         .isPresent())
                 .toList();
-        if (invokeTargetMethod.isEmpty()) {
+        if (adapterMethods.isEmpty()) {
             logger.error("{} に対応するハンドラが {} に見つかりませんでした。ドキュメントは生成されません。他のバージョンを使用するか、Issueで報告してください。",
                     jigDocument, adapter.getClass().getName());
             return List.of();
         }
-        if (invokeTargetMethod.size() > 1) {
+        if (adapterMethods.size() > 1) {
             logger.error("{} に対応するハンドラが {} に複数見つかりました。ドキュメントは生成されますが、意図したものにならない可能性があります。他のバージョンを使用するか、Issueで報告してください。",
                     jigDocument, adapter.getClass().getName());
         }
 
-        return invokeTargetMethod.stream().findFirst()
-                .map(method -> {
-                    try {
-                        return adapter.convertMethodResultToAdapterModel(method.invoke(adapter, jigSource));
-                    } catch (ReflectiveOperationException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .map(result -> adapter.write(result, jigDocument))
-                .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
+        try {
+            Method adapterMethod = adapterMethods.get(0);
+            T model = adapter.convertMethodResultToAdapterModel(adapterMethod.invoke(adapter, jigSource));
+            return adapter.write(model, jigDocument);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void copyAssets(Path outputDirectory) {

@@ -1,5 +1,10 @@
 package org.dddjava.jig.adapter;
 
+import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
+
+import java.nio.file.Path;
+import java.util.List;
+
 /**
  * Adapterのインタフェース。
  * このインタフェースを実装したクラスの {@link HandleDocument} メソッドを呼び出してwriterに引き渡す。
@@ -16,4 +21,6 @@ public interface Adapter<T> {
     default T convertMethodResultToAdapterModel(Object resultModel) {
         return (T) resultModel;
     }
+
+    List<Path> write(T result, JigDocument jigDocument);
 }

@@ -23,6 +23,7 @@ import org.dddjava.jig.infrastructure.view.poi.report.ReportSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -190,5 +191,10 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("メソッドシグネチャ", item2 -> item2.declaration().asSignatureSimpleText())
                 ), stringComparingMethodList.list())
         );
+    }
+
+    @Override
+    public List<Path> write(ReportBook result, JigDocument jigDocument) {
+        return result.writeXlsx(jigDocument, jigDocumentContext.outputDirectory());
     }
 }

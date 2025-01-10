@@ -1,18 +1,26 @@
-package org.dddjava.jig.adapter;
+package org.dddjava.jig.adapter.diagram;
 
+import org.dddjava.jig.adapter.Adapter;
+import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
+import org.dddjava.jig.infrastructure.view.graphviz.dot.GraphvizDiagramWriter;
+
+import java.nio.file.Path;
+import java.util.List;
 
 public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     private final JigService jigService;
+    private final GraphvizDiagramWriter graphvizDiagramWriter;
 
-    public DiagramAdapter(JigService jigService) {
+    public DiagramAdapter(JigService jigService, GraphvizDiagramWriter graphvizDiagramWriter) {
         this.jigService = jigService;
+        this.graphvizDiagramWriter = graphvizDiagramWriter;
     }
 
     @HandleDocument(JigDocument.PackageRelationDiagram)
@@ -48,5 +56,10 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)
     public DiagramSourceWriter serviceMethodCallHierarchy(JigSource jigSource) {
         return jigService.serviceMethodCallHierarchy(jigSource);
+    }
+
+    @Override
+    public List<Path> write(DiagramSourceWriter result, JigDocument jigDocument) {
+        return graphvizDiagramWriter.write(result, jigDocument);
     }
 }

@@ -36,31 +36,28 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JigDocumentGenerator.class);
 
-    private final JigDocumentContext jigDocumentContext;
     private final JigDiagramFormat diagramFormat;
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
     private final TemplateEngine thymeleafTemplateEngine;
     private final JigService jigService;
-    private final GraphvizDiagramWriter graphvizDiagramWriter;
-    private final ThymeleafSummaryWriter thymeleafSummaryWriter;
+
+    private final DiagramAdapter diagramAdapter;
+    private final ListAdapter listAdapter;
+    private final SummaryAdapter summaryAdapter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
-        this.jigDocumentContext = jigDocumentContext;
         this.diagramFormat = jigDocumentContext.diagramFormat();
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
-
-        this.graphvizDiagramWriter = new GraphvizDiagramWriter(jigDocumentContext);
 
         // setup Thymeleaf
         TemplateEngine templateEngine = new TemplateEngine();
@@ -72,7 +69,10 @@ public class JigDocumentGenerator {
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
         this.thymeleafTemplateEngine = templateEngine;
-        this.thymeleafSummaryWriter = new ThymeleafSummaryWriter(thymeleafTemplateEngine, jigDocumentContext);
+
+        diagramAdapter = new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext));
+        listAdapter = new ListAdapter(jigDocumentContext, jigService);
+        summaryAdapter = new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext));
     }
 
     public void generateIndex(List<HandleResult> results) {
@@ -118,8 +118,7 @@ public class JigDocumentGenerator {
             var outputFilePaths = switch (jigDocument) {
                 // 概要
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
-                        invokeAdapter(new SummaryAdapter(jigService), jigDocument, jigSource,
-                                summaryModel -> thymeleafSummaryWriter.write(jigDocument, summaryModel));
+                        invokeAdapter(summaryAdapter, jigDocument, jigSource);
                 // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);
@@ -128,18 +127,14 @@ public class JigDocumentGenerator {
                 // ダイアグラム
                 case PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram ->
-                        invokeAdapter(new DiagramAdapter(jigService), jigDocument, jigSource,
-                                diagram -> graphvizDiagramWriter.write(diagram, jigDocument)
-                        );
+                        invokeAdapter(diagramAdapter, jigDocument, jigSource);
                 // 一覧
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
-                case BusinessRuleList, ApplicationList ->
-                        invokeAdapter(new ListAdapter(jigDocumentContext, jigService), jigDocument, jigSource,
-                                reportBook -> reportBook.writeXlsx(jigDocument, outputDirectory));
+                case BusinessRuleList, ApplicationList -> invokeAdapter(listAdapter, jigDocument, jigSource);
             };
 
             long takenTime = System.currentTimeMillis() - startTime;
@@ -151,7 +146,7 @@ public class JigDocumentGenerator {
         }
     }
 
-    private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource, Function<T, List<Path>> modelWriter) {
+    private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource) {
         List<Method> invokeTargetMethod = Arrays.stream(adapter.getClass().getMethods())
                 .filter(method -> Optional.ofNullable(method.getAnnotation(HandleDocument.class))
                         .map(HandleDocument::value)
@@ -176,7 +171,7 @@ public class JigDocumentGenerator {
                         throw new RuntimeException(e);
                     }
                 })
-                .map(modelWriter)
+                .map(result -> adapter.write(result, jigDocument))
                 .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
     }
 

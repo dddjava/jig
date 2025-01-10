@@ -1,6 +1,8 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.SummaryAdapter;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.data.term.Terms;
@@ -43,9 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
@@ -124,24 +124,27 @@ public class JigDocumentGenerator {
         try {
             long startTime = System.currentTimeMillis();
 
+            SummaryAdapter summaryAdapter = new SummaryAdapter(jigService);
+
             var outputFilePaths = switch (jigDocument) {
                 // 概要
-                case DomainSummary -> {
-                    var summaryModel = jigService.domainSummary(jigSource);
-                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
-                }
-                case ApplicationSummary, UsecaseSummary -> {
-                    var summaryModel = jigService.usecaseSummary(jigSource);
-                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
-                }
-                case EntrypointSummary -> {
-                    var summaryModel = jigService.inputsSummary(jigSource);
-                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
-                }
-                case EnumSummary -> {
-                    var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
-                }
+                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
+                        Arrays.stream(SummaryAdapter.class.getMethods())
+                                .filter(method ->
+                                        Optional.ofNullable(method.getAnnotation(HandleDocument.class))
+                                                .map(HandleDocument::value)
+                                                .filter(values -> Arrays.asList(values).contains(jigDocument))
+                                                .isPresent())
+                                .map(method -> {
+                                    try {
+                                        return (SummaryModel) method.invoke(summaryAdapter, jigSource);
+                                    } catch (ReflectiveOperationException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                })
+                                .map(summaryModel -> thymeleafSummaryWriter.write(jigDocument, summaryModel))
+                                .findAny()
+                                .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
                 // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);

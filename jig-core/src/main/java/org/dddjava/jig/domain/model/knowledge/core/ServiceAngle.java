@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.method.UsingFields;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethod;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodWorries;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodWorry;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
 
@@ -57,11 +58,11 @@ public class ServiceAngle {
     }
 
     public boolean useStream() {
-        return serviceMethod.methodWorries().contains(MethodWorry.StreamAPIを使用している);
+        return new MethodWorries(serviceMethod.method()).contains(MethodWorry.StreamAPIを使用している);
     }
 
     public boolean useNull() {
-        return serviceMethod.methodWorries().contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
+        return new MethodWorries(serviceMethod.method()).contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
     }
 
 

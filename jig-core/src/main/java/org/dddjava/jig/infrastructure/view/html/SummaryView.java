@@ -37,8 +37,8 @@ public class SummaryView {
         this.contextMap = new ConcurrentHashMap<>();
     }
 
-    public List<Path> write(JigDocument jigDocument, Path outputDirectory, SummaryModel summaryModel) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+    public List<Path> write(JigDocument jigDocument, SummaryModel summaryModel) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
         } else {

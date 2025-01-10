@@ -27,41 +27,36 @@ public class DotView {
 
     public List<Path> write(Path outputDirectory, DiagramSourceWriter model, JigDocument jigDocument) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-        render(model, jigDocumentWriter);
-        return jigDocumentWriter.outputFilePaths();
-    }
-
-    public void render(DiagramSourceWriter sourceWriter, JigDocumentWriter jigDocumentWriter) {
-
-        DiagramSources diagramSources = sourceWriter.sources(jigDocumentContext);
+        DiagramSources diagramSources = model.sources(jigDocumentContext);
 
         if (diagramSources.noEntity()) {
             jigDocumentWriter.markSkip();
-            return;
+        } else {
+            diagramSources.each(element -> {
+                DocumentName documentName = element.documentName();
+                Path sourcePath = dotCommandRunner.writeSource(element);
+
+                jigDocumentWriter.writePath((directory, outputPaths) -> {
+                    String fileName = documentName.withExtension(diagramFormat);
+                    Path resultPath = dotCommandRunner.run(diagramFormat, sourcePath, directory.resolve(fileName));
+                    outputPaths.add(resultPath);
+                });
+
+                // 追加のテキストファイル
+                AdditionalText additionalText = element.additionalText();
+                if (additionalText.enable()) {
+                    jigDocumentWriter.write(
+                            outputStream -> {
+                                try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                                    writer.write(additionalText.value());
+                                }
+                            },
+                            documentName.fileName() + ".additional.txt"
+                    );
+                }
+            });
         }
 
-        diagramSources.each(element -> {
-            DocumentName documentName = element.documentName();
-            Path sourcePath = dotCommandRunner.writeSource(element);
-
-            jigDocumentWriter.writePath((directory, outputPaths) -> {
-                String fileName = documentName.withExtension(diagramFormat);
-                Path resultPath = dotCommandRunner.run(diagramFormat, sourcePath, directory.resolve(fileName));
-                outputPaths.add(resultPath);
-            });
-
-            // 追加のテキストファイル
-            AdditionalText additionalText = element.additionalText();
-            if (additionalText.enable()) {
-                jigDocumentWriter.write(
-                        outputStream -> {
-                            try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-                                writer.write(additionalText.value());
-                            }
-                        },
-                        documentName.fileName() + ".additional.txt"
-                );
-            }
-        });
+        return jigDocumentWriter.outputFilePaths();
     }
 }

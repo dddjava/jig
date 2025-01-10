@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
+import org.dddjava.jig.adapter.diagram.DotCommandRunner;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.TaskAction;

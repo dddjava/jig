@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.graphviz.process;
+package org.dddjava.jig.adapter.diagram;
 
 
 public class ProcessResult {

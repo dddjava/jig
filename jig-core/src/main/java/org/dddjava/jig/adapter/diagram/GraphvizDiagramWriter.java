@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.graphviz.dot;
+package org.dddjava.jig.adapter.diagram;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;

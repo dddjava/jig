@@ -1,9 +1,7 @@
-package org.dddjava.jig.infrastructure.view.graphviz.dot;
+package org.dddjava.jig.adapter.diagram;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSource;
-import org.dddjava.jig.infrastructure.view.graphviz.process.ProcessExecutor;
-import org.dddjava.jig.infrastructure.view.graphviz.process.ProcessResult;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

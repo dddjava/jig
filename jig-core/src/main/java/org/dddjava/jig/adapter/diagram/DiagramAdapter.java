@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
-import org.dddjava.jig.infrastructure.view.graphviz.dot.GraphvizDiagramWriter;
 
 import java.nio.file.Path;
 import java.util.List;

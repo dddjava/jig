@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.html;
+package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;

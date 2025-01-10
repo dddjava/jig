@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.html;
+package org.dddjava.jig.adapter.html;
 
 public interface TreeComponent extends Comparable<TreeComponent> {
 

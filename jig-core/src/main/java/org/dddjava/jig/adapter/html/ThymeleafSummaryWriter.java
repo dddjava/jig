@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.html;
+package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;

@@ -39,47 +39,37 @@ public class SummaryView {
 
     public List<Path> write(JigDocument jigDocument, Path outputDirectory, SummaryModel summaryModel) {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
-        write(summaryModel, jigDocumentWriter);
-        return jigDocumentWriter.outputFilePaths();
-    }
-
-    private void write(SummaryModel summaryModel, JigDocumentWriter jigDocumentWriter) {
         if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
-            return;
+        } else {
+            Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
+            Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
+                    .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
+                    .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
+            TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
+            createTree(jigTypeMap, packageMap, baseComposite);
+            List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
+                    .sorted(Comparator.comparing(JigType::fqn))
+                    .collect(toList());
+            List<JigPackage> jigPackages = packageMap.values().stream()
+                    .flatMap(Set::stream)
+                    .sorted(Comparator.comparing(PackageIdentifier::asText))
+                    .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
+                    .collect(toList());
+            Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
+                    .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
+                    .map(CategoryType::new)
+                    .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
+            putContext("baseComposite", baseComposite);
+            putContext("jigPackages", jigPackages);
+            putContext("jigTypes", jigTypes);
+            putContext("categoriesMap", categoriesMap);
+            putContext("enumModels", summaryModel.enumModels());
+            putContext("model", summaryModel);
+            write(jigDocumentWriter);
         }
-        Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
 
-        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
-                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
-                .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
-
-        TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
-
-        createTree(jigTypeMap, packageMap, baseComposite);
-
-        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
-                .sorted(Comparator.comparing(JigType::fqn))
-                .collect(toList());
-
-        List<JigPackage> jigPackages = packageMap.values().stream()
-                .flatMap(Set::stream)
-                .sorted(Comparator.comparing(PackageIdentifier::asText))
-                .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
-                .collect(toList());
-
-        Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
-                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
-                .map(CategoryType::new)
-                .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
-
-        putContext("baseComposite", baseComposite);
-        putContext("jigPackages", jigPackages);
-        putContext("jigTypes", jigTypes);
-        putContext("categoriesMap", categoriesMap);
-        putContext("enumModels", summaryModel.enumModels());
-        putContext("model", summaryModel);
-        write(jigDocumentWriter);
+        return jigDocumentWriter.outputFilePaths();
     }
 
     private void createTree(Map<PackageIdentifier, List<JigType>> jigTypeMap,

@@ -1,19 +1,18 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.HandleResult;
+import org.dddjava.jig.adapter.Adapter;
+import org.dddjava.jig.adapter.DiagramAdapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.adapter.SummaryAdapter;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.ClassRelationDiagram;
-import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
-import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
@@ -46,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
@@ -124,61 +124,22 @@ public class JigDocumentGenerator {
         try {
             long startTime = System.currentTimeMillis();
 
-            SummaryAdapter summaryAdapter = new SummaryAdapter(jigService);
-
             var outputFilePaths = switch (jigDocument) {
                 // 概要
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
-                        Arrays.stream(SummaryAdapter.class.getMethods())
-                                .filter(method ->
-                                        Optional.ofNullable(method.getAnnotation(HandleDocument.class))
-                                                .map(HandleDocument::value)
-                                                .filter(values -> Arrays.asList(values).contains(jigDocument))
-                                                .isPresent())
-                                .map(method -> {
-                                    try {
-                                        return (SummaryModel) method.invoke(summaryAdapter, jigSource);
-                                    } catch (ReflectiveOperationException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                })
-                                .map(summaryModel -> thymeleafSummaryWriter.write(jigDocument, summaryModel))
-                                .findAny()
-                                .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
+                        invokeAdapter(new SummaryAdapter(jigService), jigDocument, jigSource,
+                                summaryModel -> thymeleafSummaryWriter.write(jigDocument, summaryModel));
                 // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // ダイアグラム
-                case PackageRelationDiagram -> {
-                    var diagram = jigService.packageDependencies(jigSource);
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case CompositeUsecaseDiagram -> {
-                    var diagram = new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case ArchitectureDiagram -> {
-                    var diagram = jigService.architectureDiagram(jigSource);
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case BusinessRuleRelationDiagram -> {
-                    var diagram = new ClassRelationDiagram(jigService.businessRules(jigSource));
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case CategoryDiagram -> {
-                    var diagram = jigService.categories(jigSource);
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case CategoryUsageDiagram -> {
-                    var diagram = jigService.categoryUsages(jigSource);
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
-                case ServiceMethodCallHierarchyDiagram -> {
-                    var diagram = jigService.serviceMethodCallHierarchy(jigSource);
-                    yield graphvizDiagramWriter.write(diagram, jigDocument);
-                }
+                case PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
+                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram ->
+                        invokeAdapter(new DiagramAdapter(jigService), jigDocument, jigSource,
+                                diagram -> graphvizDiagramWriter.write(diagram, jigDocument)
+                        );
                 // 一覧
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
@@ -202,6 +163,25 @@ public class JigDocumentGenerator {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
         }
+    }
+
+    private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource, Function<T, List<Path>> modelWriter) {
+        return Arrays.stream(adapter.getClass().getMethods())
+                .filter(method ->
+                        Optional.ofNullable(method.getAnnotation(HandleDocument.class))
+                                .map(HandleDocument::value)
+                                .filter(values -> Arrays.asList(values).contains(jigDocument))
+                                .isPresent())
+                .map(method -> {
+                    try {
+                        return adapter.convertMethodResultToAdapterModel(method.invoke(adapter, jigSource));
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(modelWriter)
+                .findAny()
+                .orElseThrow(() -> new UnsupportedOperationException("no adapter method found for %s".formatted(jigDocument)));
     }
 
     private void copyAssets(Path outputDirectory) {

@@ -5,7 +5,7 @@ import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 
-public class SummaryAdapter {
+public class SummaryAdapter implements Adapter<SummaryModel> {
 
     private final JigService jigService;
 

@@ -22,8 +22,7 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
-import org.dddjava.jig.infrastructure.view.graphviz.dot.DotCommandRunner;
-import org.dddjava.jig.infrastructure.view.graphviz.dot.DotView;
+import org.dddjava.jig.infrastructure.view.graphviz.dot.GraphvizDiagramWriter;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
 import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
 import org.dddjava.jig.infrastructure.view.html.SummaryView;
@@ -58,9 +57,9 @@ public class JigDocumentGenerator {
     private final List<JigDocument> jigDocuments;
     private final Path outputDirectory;
 
-    private final DotCommandRunner dotCommandRunner;
     private final TemplateEngine templateEngine;
     private final JigService jigService;
+    private final GraphvizDiagramWriter graphvizDiagramWriter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
@@ -69,8 +68,7 @@ public class JigDocumentGenerator {
         this.jigDocuments = jigDocumentContext.jigDocuments();
         this.outputDirectory = jigDocumentContext.outputDirectory();
 
-        // setup Graphviz
-        this.dotCommandRunner = new DotCommandRunner();
+        this.graphvizDiagramWriter = new GraphvizDiagramWriter(diagramFormat, jigDocumentContext);
 
         // setup Thymeleaf
         TemplateEngine templateEngine = new TemplateEngine();
@@ -150,31 +148,31 @@ public class JigDocumentGenerator {
                 // ダイアグラム
                 case PackageRelationDiagram -> {
                     var diagram = jigService.packageDependencies(jigSource);
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case CompositeUsecaseDiagram -> {
                     var diagram = new CompositeUsecaseDiagram(jigService.serviceAngles(jigSource));
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case ArchitectureDiagram -> {
                     var diagram = jigService.architectureDiagram(jigSource);
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case BusinessRuleRelationDiagram -> {
                     var diagram = new ClassRelationDiagram(jigService.businessRules(jigSource));
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case CategoryDiagram -> {
                     var diagram = jigService.categories(jigSource);
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case CategoryUsageDiagram -> {
                     var diagram = jigService.categoryUsages(jigSource);
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 case ServiceMethodCallHierarchyDiagram -> {
                     var diagram = jigService.serviceMethodCallHierarchy(jigSource);
-                    yield new DotView(diagramFormat, dotCommandRunner, jigDocumentContext).write(diagram, jigDocument);
+                    yield graphvizDiagramWriter.write(diagram, jigDocument);
                 }
                 // 一覧
                 case TermList -> {

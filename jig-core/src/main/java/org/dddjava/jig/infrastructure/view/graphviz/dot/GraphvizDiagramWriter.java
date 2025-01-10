@@ -13,15 +13,15 @@ import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.util.List;
 
-public class DotView {
+public class GraphvizDiagramWriter {
 
     JigDiagramFormat diagramFormat;
     DotCommandRunner dotCommandRunner;
     JigDocumentContext jigDocumentContext;
 
-    public DotView(JigDiagramFormat diagramFormat, DotCommandRunner dotCommandRunner, JigDocumentContext jigDocumentContext) {
+    public GraphvizDiagramWriter(JigDiagramFormat diagramFormat, JigDocumentContext jigDocumentContext) {
         this.diagramFormat = diagramFormat;
-        this.dotCommandRunner = dotCommandRunner;
+        this.dotCommandRunner = new DotCommandRunner();
         this.jigDocumentContext = jigDocumentContext;
     }
 

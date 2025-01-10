@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;

@@ -1,6 +1,7 @@
-package org.dddjava.jig.domain.model.information.jigobject.member;
+package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 /**
  * メソッドの気になるところ

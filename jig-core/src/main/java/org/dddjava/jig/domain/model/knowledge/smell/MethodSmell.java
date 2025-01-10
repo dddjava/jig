@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.domains.businessrules;
+package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.MethodWorry;
 
 /**
  * メソッドの不吉なにおい

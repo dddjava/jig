@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.validations.Validations;

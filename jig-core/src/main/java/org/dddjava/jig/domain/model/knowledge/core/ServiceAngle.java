@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.method.UsingFields;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.inputs.EntrypointMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.MethodWorry;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodWorry;
 import org.dddjava.jig.domain.model.information.outputs.RepositoryMethods;
 
 import java.util.List;

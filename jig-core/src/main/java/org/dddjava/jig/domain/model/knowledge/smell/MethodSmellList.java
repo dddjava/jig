@@ -1,7 +1,8 @@
-package org.dddjava.jig.domain.model.information.domains.businessrules;
+package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 

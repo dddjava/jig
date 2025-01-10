@@ -231,54 +231,50 @@ public class JigDocumentGenerator {
     }
 
     private ReportBook businessRuleReports(TypeFacts typeFacts, MethodSmellList methodSmellList, JigTypes jigTypes, BusinessRules businessRules, CategoryDiagram categoryDiagram, List<BusinessRulePackage> businessRulePackages) {
-        List<Map.Entry<String, Function<BusinessRulePackage, Object>>> packageReporter = List.of(
-                Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
-                Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
-                Map.entry("クラス数", item -> item.businessRules().list().size())
-        );
-        List<Map.Entry<String, Function<CategoryAngle, Object>>> categoryReporter = List.of(
-                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
-                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
-                Map.entry("定数宣言", item -> item.constantsDeclarationsName()),
-                Map.entry("フィールド", item -> item.fieldDeclarations()),
-                Map.entry("使用箇所数", item -> item.userTypeIdentifiers().list().size()),
-                Map.entry("使用箇所", item -> item.userTypeIdentifiers().asSimpleText()),
-                Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),
-                Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
-                Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
-        );
-        List<Map.Entry<String, Function<JigType, Object>>> allReporter = List.of(
-                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
-                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
-                Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
-                Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
-                Map.entry("関連元クラス数", item -> businessRules.allTypesRelatedTo(item).list().size()),
-                Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
-                Map.entry("同パッケージからのみ参照", item -> {
-                    var list = businessRules.allTypesRelatedTo(item).packageIdentifiers().list();
-                    return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
-                }),
-                Map.entry("関連元クラス", item -> businessRules.allTypesRelatedTo(item).asSimpleText())
-        );
-        List<Map.Entry<String, Function<JigType, Object>>> collectionReporter = List.of(
-                Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
-                Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
-                Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
-                Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
-                Map.entry("使用箇所数", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
-                Map.entry("使用箇所", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
-                Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
-                Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
-        );
         Function<Boolean, String> ox = b -> b ? "◯" : "";
         return new ReportBook(
-                new ReportSheet<>("PACKAGE", packageReporter, businessRulePackages),
-                new ReportSheet<>("ALL", allReporter, businessRules.list()),
-                new ReportSheet<>("ENUM", categoryReporter, categoryDiagram.list()),
-                new ReportSheet<>("COLLECTION", collectionReporter, businessRules.jigTypes().listCollectionType()),
+                new ReportSheet<>("PACKAGE", List.of(
+                        Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
+                        Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
+                        Map.entry("クラス数", item -> item.businessRules().list().size())
+                ), businessRulePackages),
+                new ReportSheet<>("ALL", List.of(
+                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
+                        Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
+                        Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
+                        Map.entry("関連元クラス数", item -> businessRules.allTypesRelatedTo(item).list().size()),
+                        Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
+                        Map.entry("同パッケージからのみ参照", item -> {
+                            var list = businessRules.allTypesRelatedTo(item).packageIdentifiers().list();
+                            return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
+                        }),
+                        Map.entry("関連元クラス", item -> businessRules.allTypesRelatedTo(item).asSimpleText())
+                ), businessRules.list()),
+                new ReportSheet<>("ENUM", List.of(
+                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("定数宣言", item -> item.constantsDeclarationsName()),
+                        Map.entry("フィールド", item -> item.fieldDeclarations()),
+                        Map.entry("使用箇所数", item -> item.userTypeIdentifiers().list().size()),
+                        Map.entry("使用箇所", item -> item.userTypeIdentifiers().asSimpleText()),
+                        Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),
+                        Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
+                        Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
+                ), categoryDiagram.list()),
+                new ReportSheet<>("COLLECTION", List.of(
+                        Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
+                        Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
+                        Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
+                        Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
+                        Map.entry("使用箇所数", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
+                        Map.entry("使用箇所", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
+                        Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
+                        Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
+                ), businessRules.jigTypes().listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

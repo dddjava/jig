@@ -56,8 +56,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.ServiceMethodCallHierarchyDiagram)
     public DiagramSourceWriter serviceMethodCallHierarchy(JigSource jigSource) {
-        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
-        return new ServiceMethodCallHierarchyDiagram(serviceAngles);
+        return new ServiceMethodCallHierarchyDiagram(jigService.serviceAngles(jigSource));
     }
 
     @Override

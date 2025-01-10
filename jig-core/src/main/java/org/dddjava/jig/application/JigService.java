@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.*;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
-import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
@@ -142,11 +141,6 @@ public class JigService {
         return new ArchitectureDiagram(packageBasedArchitecture, classRelations);
     }
 
-    public ServiceMethods serviceMethods(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
-    }
-
     public Entrypoint entrypoint(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
         return Entrypoint.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
@@ -170,17 +164,5 @@ public class JigService {
         var jigTypes = jigSource.typeFacts().jigTypes();
 
         return jigTypes.filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
-    }
-
-    SummaryModel domainSummary(JigSource jigSource) {
-        return SummaryModel.from(jigTypes(jigSource), businessRules(jigSource));
-    }
-
-    SummaryModel inputsSummary(JigSource jigSource) {
-        return SummaryModel.from(jigTypes(jigSource), entrypoint(jigSource));
-    }
-
-    SummaryModel usecaseSummary(JigSource jigSource) {
-        return SummaryModel.from(services(jigSource));
     }
 }

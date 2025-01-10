@@ -25,8 +25,8 @@ public class DotView {
         this.jigDocumentContext = jigDocumentContext;
     }
 
-    public List<Path> write(Path outputDirectory, DiagramSourceWriter model, JigDocument jigDocument) {
-        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, outputDirectory);
+    public List<Path> write(DiagramSourceWriter model, JigDocument jigDocument) {
+        JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         DiagramSources diagramSources = model.sources(jigDocumentContext);
 
         if (diagramSources.noEntity()) {

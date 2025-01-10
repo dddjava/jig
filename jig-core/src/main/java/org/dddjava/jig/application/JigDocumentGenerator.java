@@ -16,11 +16,9 @@ import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRu
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.businessrules.MethodSmellList;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
-import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
@@ -49,7 +47,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
@@ -231,7 +228,6 @@ public class JigDocumentGenerator {
     }
 
     private ReportBook businessRuleReports(TypeFacts typeFacts, MethodSmellList methodSmellList, JigTypes jigTypes, BusinessRules businessRules, CategoryDiagram categoryDiagram, List<BusinessRulePackage> businessRulePackages) {
-        Function<Boolean, String> ox = b -> b ? "◯" : "";
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
@@ -291,12 +287,12 @@ public class JigDocumentGenerator {
                         Map.entry("メソッド戻り値の型", item -> item.methodDeclaration().methodReturn().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.methodDeclaration().declaringType()).asText()),
                         Map.entry("使用箇所数", item -> item.callerMethods().size()),
-                        Map.entry("メンバを使用していない", item -> ox.apply(item.notUseMember())),
-                        Map.entry("基本型の授受を行なっている", item -> ox.apply(item.primitiveInterface())),
-                        Map.entry("NULLリテラルを使用している", item -> ox.apply(item.referenceNull())),
-                        Map.entry("NULL判定をしている", item -> ox.apply(item.nullDecision())),
-                        Map.entry("真偽値を返している", item -> ox.apply(item.returnsBoolean())),
-                        Map.entry("voidを返している", item -> ox.apply(item.returnsVoid()))
+                        Map.entry("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
+                        Map.entry("基本型の授受を行なっている", item -> item.primitiveInterface() ? "◯" : ""),
+                        Map.entry("NULLリテラルを使用している", item -> item.referenceNull() ? "◯" : ""),
+                        Map.entry("NULL判定をしている", item -> item.nullDecision() ? "◯" : ""),
+                        Map.entry("真偽値を返している", item -> item.returnsBoolean() ? "◯" : ""),
+                        Map.entry("voidを返している", item -> item.returnsVoid() ? "◯" : "")
                 ), methodSmellList.list())
         );
     }

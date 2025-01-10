@@ -126,19 +126,19 @@ public class JigDocumentGenerator {
                 // 概要
                 case DomainSummary -> {
                     var summaryModel = jigService.domainSummary(jigSource);
-                    yield SummaryView.write(jigDocument, outputDirectory, summaryModel, new SummaryView(thymeleafTemplateEngine, jigDocumentContext));
+                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, outputDirectory, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
                     var summaryModel = jigService.usecaseSummary(jigSource);
-                    yield SummaryView.write(jigDocument, outputDirectory, summaryModel, new SummaryView(thymeleafTemplateEngine, jigDocumentContext));
+                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, outputDirectory, summaryModel);
                 }
                 case EntrypointSummary -> {
                     var summaryModel = jigService.inputsSummary(jigSource);
-                    yield SummaryView.write(jigDocument, outputDirectory, summaryModel, new SummaryView(thymeleafTemplateEngine, jigDocumentContext));
+                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, outputDirectory, summaryModel);
                 }
                 case EnumSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    yield SummaryView.write(jigDocument, outputDirectory, summaryModel, new SummaryView(thymeleafTemplateEngine, jigDocumentContext));
+                    yield new SummaryView(thymeleafTemplateEngine, jigDocumentContext).write(jigDocument, outputDirectory, summaryModel);
                 }
                 // テーブル
                 case TermTable -> {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.poi.report;
+package org.dddjava.jig.adapter.excel;
 
 public interface ModelReporter<REPORT, MODEL> {
 

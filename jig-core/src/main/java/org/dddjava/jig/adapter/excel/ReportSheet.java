@@ -1,4 +1,4 @@
-package org.dddjava.jig.infrastructure.view.poi.report;
+package org.dddjava.jig.adapter.excel;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;

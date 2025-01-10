@@ -1,5 +1,7 @@
-package org.dddjava.jig.adapter;
+package org.dddjava.jig.adapter.excel;
 
+import org.dddjava.jig.adapter.Adapter;
+import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
@@ -18,8 +20,6 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
-import org.dddjava.jig.infrastructure.view.poi.report.ReportBook;
-import org.dddjava.jig.infrastructure.view.poi.report.ReportSheet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,8 +25,8 @@ import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.infrastructure.view.graphviz.dot.GraphvizDiagramWriter;
 import org.dddjava.jig.infrastructure.view.html.IndexView;
 import org.dddjava.jig.infrastructure.view.html.JigExpressionObjectDialect;
-import org.dddjava.jig.infrastructure.view.html.SummaryView;
 import org.dddjava.jig.infrastructure.view.html.TableView;
+import org.dddjava.jig.infrastructure.view.html.ThymeleafSummaryWriter;
 import org.dddjava.jig.infrastructure.view.poi.report.ReportBook;
 import org.dddjava.jig.infrastructure.view.poi.report.ReportSheet;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class JigDocumentGenerator {
     private final TemplateEngine thymeleafTemplateEngine;
     private final JigService jigService;
     private final GraphvizDiagramWriter graphvizDiagramWriter;
-    private final SummaryView summaryView;
+    private final ThymeleafSummaryWriter thymeleafSummaryWriter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
@@ -81,7 +81,7 @@ public class JigDocumentGenerator {
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
         this.thymeleafTemplateEngine = templateEngine;
-        this.summaryView = new SummaryView(thymeleafTemplateEngine, jigDocumentContext);
+        this.thymeleafSummaryWriter = new ThymeleafSummaryWriter(thymeleafTemplateEngine, jigDocumentContext);
     }
 
     public void generateIndex(List<HandleResult> results) {
@@ -128,19 +128,19 @@ public class JigDocumentGenerator {
                 // 概要
                 case DomainSummary -> {
                     var summaryModel = jigService.domainSummary(jigSource);
-                    yield summaryView.write(jigDocument, summaryModel);
+                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
                 }
                 case ApplicationSummary, UsecaseSummary -> {
                     var summaryModel = jigService.usecaseSummary(jigSource);
-                    yield summaryView.write(jigDocument, summaryModel);
+                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
                 }
                 case EntrypointSummary -> {
                     var summaryModel = jigService.inputsSummary(jigSource);
-                    yield summaryView.write(jigDocument, summaryModel);
+                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
                 }
                 case EnumSummary -> {
                     var summaryModel = SummaryModel.from(jigService.jigTypes(jigSource), jigService.categoryTypes(jigSource), jigSource.enumModels());
-                    yield summaryView.write(jigDocument, summaryModel);
+                    yield thymeleafSummaryWriter.write(jigDocument, summaryModel);
                 }
                 // テーブル
                 case TermTable -> {

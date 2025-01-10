@@ -25,13 +25,13 @@ import static java.util.stream.Collectors.*;
  *
  * 概要HTMLで出力するパッケージツリーと詳細のモデルを加工します。
  */
-public class SummaryView {
+public class ThymeleafSummaryWriter {
 
     protected final JigDocumentContext jigDocumentContext;
     private final TemplateEngine templateEngine;
     private final Map<String, Object> contextMap;
 
-    public SummaryView(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
+    public ThymeleafSummaryWriter(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
         this.contextMap = new ConcurrentHashMap<>();

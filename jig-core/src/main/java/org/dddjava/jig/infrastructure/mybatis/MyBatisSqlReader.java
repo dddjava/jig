@@ -126,7 +126,7 @@ public class MyBatisSqlReader implements SqlReader {
         StringBuilder sql = new StringBuilder();
         Field contents = mixedSqlNode.getClass().getDeclaredField("contents");
         contents.setAccessible(true);
-        List list = (List) contents.get(mixedSqlNode);
+        List<?> list = (List<?>) contents.get(mixedSqlNode);
 
         for (Object content : list) {
             if (content instanceof StaticTextSqlNode staticTextSqlNode) {

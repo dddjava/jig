@@ -164,4 +164,8 @@ public class JigService {
 
         return jigTypes.filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
     }
+
+    public JigTypes domainCoreTypes(JigSource jigSource) {
+        return jigTypes(jigSource).filter(architecture::isBusinessRule);
+    }
 }

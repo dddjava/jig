@@ -29,7 +29,7 @@ public class SummaryModel {
         this.enumModels = enumModels;
     }
 
-    public static SummaryModel from(JigTypes jigTypes, BusinessRules businessRules) {
+    public static SummaryModel from(JigTypes jigTypes, JigTypes businessRules) {
         Map<PackageIdentifier, List<JigType>> map = businessRules.list().stream()
                 .collect(groupingBy(JigType::packageIdentifier));
         return new SummaryModel(jigTypes, map, new EnumModels(List.of()));

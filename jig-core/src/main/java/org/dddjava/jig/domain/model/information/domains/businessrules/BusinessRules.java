@@ -22,12 +22,10 @@ public class BusinessRules {
 
     JigTypes jigTypes;
 
-    ClassRelations classRelations;
     private ClassRelations internalClassRelations;
 
     public BusinessRules(JigTypes jigTypes, ClassRelations classRelations) {
         this.jigTypes = jigTypes;
-        this.classRelations = classRelations;
 
         this.internalClassRelations = classRelations.list().stream()
                 .filter(classRelation -> jigTypes.contains(classRelation.from()) && jigTypes.contains(classRelation.to()))

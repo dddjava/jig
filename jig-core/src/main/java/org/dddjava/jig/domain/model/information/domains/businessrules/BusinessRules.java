@@ -21,6 +21,8 @@ import static java.util.stream.Collectors.toList;
 public class BusinessRules {
 
     JigTypes jigTypes;
+    TypeIdentifiers typeIdentifiers;
+
     ClassRelations businessRuleRelations;
     ClassRelations classRelations;
 
@@ -28,6 +30,9 @@ public class BusinessRules {
         this.jigTypes = jigTypes;
         this.classRelations = classRelations;
 
+        typeIdentifiers = jigTypes.stream()
+                .map(JigType::typeIdentifier)
+                .collect(TypeIdentifiers.collector());
         Set<TypeIdentifier> businessRuleTypeSet = this.jigTypes.stream()
                 .map(jigType -> jigType.typeIdentifier())
                 .collect(Collectors.toSet());
@@ -51,15 +56,8 @@ public class BusinessRules {
         return jigTypes.empty();
     }
 
-    transient TypeIdentifiers cache;
-
     public TypeIdentifiers identifiers() {
-        if (cache != null) {
-            return cache;
-        }
-        return cache = jigTypes.stream()
-                .map(JigType::typeIdentifier)
-                .collect(TypeIdentifiers.collector());
+        return typeIdentifiers;
     }
 
     public List<PackageJigTypes> listPackages() {

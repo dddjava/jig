@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.domains.businessrules;
+package org.dddjava.jig.domain.model.information.jigobject.package_;
 
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;

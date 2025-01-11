@@ -7,8 +7,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.information.domains.businessrules.PackageJigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
 import java.util.StringJoiner;
 

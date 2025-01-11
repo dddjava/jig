@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;

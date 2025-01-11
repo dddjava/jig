@@ -37,15 +37,12 @@ public enum ReadStatus {
     }
 
     public static ReadStatus fromSqlReadStatus(SqlReadStatus sqlReadStatus) {
-        switch (sqlReadStatus) {
-            case SQLなし:
-                return SQLなし;
-            case 読み取り失敗あり:
-                return SQL読み込み一部失敗;
-            case 失敗:
-                return SQL読み込み失敗;
-        }
-        throw new IllegalArgumentException(sqlReadStatus.toString());
+        return switch (sqlReadStatus) {
+            case SQLなし -> SQLなし;
+            case 読み取り失敗あり -> SQL読み込み一部失敗;
+            case 失敗 -> SQL読み込み失敗;
+            default -> throw new IllegalArgumentException(sqlReadStatus.toString());
+        };
     }
 
     public boolean isError() {

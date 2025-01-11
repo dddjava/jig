@@ -2,11 +2,8 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,19 +15,14 @@ public class MethodSmellList {
     List<MethodSmell> list;
 
     public MethodSmellList(JigTypes jigTypes, MethodRelations methodRelations) {
-        this.list = new ArrayList<>();
-        for (JigType jigType : jigTypes.list()) {
-            for (JigMethod method : jigType.instanceMember().instanceMethods().list()) {
-                MethodSmell methodSmell = new MethodSmell(
-                        method,
-                        jigType.instanceMember().fieldDeclarations(),
-                        methodRelations
-                );
-                if (methodSmell.hasSmell()) {
-                    list.add(methodSmell);
-                }
-            }
-        }
+        this.list = jigTypes.list().stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream()
+                        .map(method -> new MethodSmell(
+                                method,
+                                jigType.instanceMember().fieldDeclarations(),
+                                methodRelations))
+                        .filter(MethodSmell::hasSmell))
+                .collect(Collectors.toList());
     }
 
     public List<MethodSmell> list() {

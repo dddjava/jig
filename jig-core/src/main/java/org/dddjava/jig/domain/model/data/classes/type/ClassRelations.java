@@ -92,7 +92,7 @@ public class ClassRelations {
 
     public ClassRelations filterRelations(TypeIdentifiers typeIdentifiers) {
         List<ClassRelation> collect = list.stream()
-                .filter(classRelation -> classRelation.or(typeIdentifiers))
+                .filter(classRelation -> typeIdentifiers.contains(classRelation.from()) || typeIdentifiers.contains(classRelation.to()))
                 .collect(Collectors.toList());
         return new ClassRelations(collect);
     }

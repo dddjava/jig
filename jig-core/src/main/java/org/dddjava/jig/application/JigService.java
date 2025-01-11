@@ -162,6 +162,6 @@ public class JigService {
     }
 
     public JigTypes domainCoreTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(architecture::isBusinessRule);
+        return jigTypes(jigSource).filter(architecture::isDomainCore);
     }
 }

@@ -12,5 +12,5 @@ public interface Architecture {
         return jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"));
     }
 
-    boolean isBusinessRule(JigType jigType);
+    boolean isDomainCore(JigType jigType);
 }

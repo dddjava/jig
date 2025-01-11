@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.information.domains.businessrules.PackageJigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 
 import java.util.StringJoiner;
@@ -38,15 +38,15 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         TypeIdentifiers isolatedTypes = targetBusinessRules.isolatedTypes();
-        for (BusinessRulePackage businessRulePackage : targetBusinessRules.listPackages()) {
-            PackageIdentifier packageIdentifier = businessRulePackage.packageIdentifier();
+        for (PackageJigTypes packageJigTypes : targetBusinessRules.listPackages()) {
+            PackageIdentifier packageIdentifier = packageJigTypes.packageIdentifier();
 
             String fqpn = packageIdentifier.asText();
             Subgraph subgraph = new Subgraph(fqpn)
                     .label(fqpn)
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
 
-            for (JigType jigType : businessRulePackage.businessRules()) {
+            for (JigType jigType : packageJigTypes.jigTypes()) {
                 Node node = Nodes.businessRuleNodeOf(jigType, jigDocumentContext);
                 if (isolatedTypes.contains(jigType.typeIdentifier())) {
                     node.warning();

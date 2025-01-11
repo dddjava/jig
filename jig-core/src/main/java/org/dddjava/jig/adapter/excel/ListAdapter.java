@@ -10,15 +10,15 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRulePackage;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
+import org.dddjava.jig.domain.model.information.domains.businessrules.PackageJigTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +46,13 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes jigTypes = jigService.jigTypes(jigSource);
         BusinessRules businessRules = jigService.businessRules(jigSource);
         CategoryDiagram categoryDiagram = jigService.categories(jigSource);
-        List<BusinessRulePackage> businessRulePackages = businessRules.listPackages();
+        List<PackageJigTypes> packageJigTypes = businessRules.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
-                        Map.entry("クラス数", item -> item.businessRules().size())
-                ), businessRulePackages),
+                        Map.entry("クラス数", item -> item.jigTypes().size())
+                ), packageJigTypes),
                 new ReportSheet<>("ALL", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

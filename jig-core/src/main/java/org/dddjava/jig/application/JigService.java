@@ -48,7 +48,7 @@ public class JigService {
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellList methodSmells(JigSource jigSource) {
-        return new MethodSmellList(businessRules(jigSource).jigTypes());
+        return new MethodSmellList(domainCoreTypes(jigSource));
     }
 
     /**
@@ -61,7 +61,7 @@ public class JigService {
     }
 
     public CategoryTypes categoryTypes(JigSource jigSource) {
-        return CategoryTypes.from(businessRules(jigSource).jigTypes());
+        return CategoryTypes.from(domainCoreTypes(jigSource));
     }
 
     /**

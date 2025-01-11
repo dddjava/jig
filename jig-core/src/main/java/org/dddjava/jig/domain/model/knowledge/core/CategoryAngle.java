@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.core;
 
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 
@@ -10,11 +9,9 @@ import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 public class CategoryAngle {
 
     public CategoryType categoryType;
-    ClassRelations classRelations;
 
-    public CategoryAngle(CategoryType categoryType, ClassRelations classRelations) {
+    public CategoryAngle(CategoryType categoryType) {
         this.categoryType = categoryType;
-        this.classRelations = classRelations;
     }
 
     public TypeIdentifier typeIdentifier() {

@@ -55,9 +55,8 @@ public class JigService {
      * 区分一覧を取得する
      */
     public CategoryDiagram categories(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
         CategoryTypes categoryTypes = categoryTypes(jigSource);
-        return CategoryDiagram.create(categoryTypes, typeFacts.toClassRelations());
+        return CategoryDiagram.create(categoryTypes);
     }
 
     public CategoryTypes categoryTypes(JigSource jigSource) {

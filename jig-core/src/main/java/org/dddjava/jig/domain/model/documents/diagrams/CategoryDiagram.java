@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -27,10 +26,10 @@ public class CategoryDiagram implements DiagramSourceWriter {
         this.list = list;
     }
 
-    public static CategoryDiagram create(CategoryTypes categoryTypes, ClassRelations classRelations) {
+    public static CategoryDiagram create(CategoryTypes categoryTypes) {
         List<CategoryAngle> list = new ArrayList<>();
         for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType, classRelations));
+            list.add(new CategoryAngle(categoryType));
         }
         return new CategoryDiagram(list);
     }

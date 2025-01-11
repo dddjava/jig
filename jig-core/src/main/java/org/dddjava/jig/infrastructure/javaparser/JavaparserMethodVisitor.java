@@ -1,7 +1,6 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementationDeclarator;

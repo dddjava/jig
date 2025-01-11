@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.CompositeUsecaseDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.ServiceMethodCallHierarchyDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
-import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 
 import java.nio.file.Path;
 import java.util.List;

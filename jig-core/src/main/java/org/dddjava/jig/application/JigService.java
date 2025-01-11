@@ -158,7 +158,7 @@ public class JigService {
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
     }
 
-    public JigTypes services(JigSource jigSource) {
+    public JigTypes serviceTypes(JigSource jigSource) {
         return jigTypes(jigSource).filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
     }
 

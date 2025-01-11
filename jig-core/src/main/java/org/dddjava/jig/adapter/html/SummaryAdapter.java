@@ -29,7 +29,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
 
     @HandleDocument({JigDocument.ApplicationSummary, JigDocument.UsecaseSummary})
     public SummaryModel servicesSummary(JigSource jigSource) {
-        return SummaryModel.from(jigService.services(jigSource));
+        return SummaryModel.from(jigService.serviceTypes(jigSource));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)

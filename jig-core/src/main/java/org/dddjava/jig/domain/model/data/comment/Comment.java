@@ -22,7 +22,7 @@ public class Comment {
     }
 
     public boolean exists() {
-        return value.length() > 0;
+        return !value.isEmpty();
     }
 
     public String summaryText() {

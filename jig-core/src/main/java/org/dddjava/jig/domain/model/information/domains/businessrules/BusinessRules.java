@@ -25,6 +25,7 @@ public class BusinessRules {
 
     ClassRelations businessRuleRelations;
     ClassRelations classRelations;
+    private ClassRelations internalClassRelations;
 
     public BusinessRules(JigTypes jigTypes, ClassRelations classRelations) {
         this.jigTypes = jigTypes;
@@ -44,6 +45,14 @@ public class BusinessRules {
             }
         }
         this.businessRuleRelations = new ClassRelations(businessRuleRelationList);
+
+        this.internalClassRelations = classRelations.list().stream()
+                .filter(classRelation -> {
+                    // 両端ともbusinessRuleの型であるものに絞りこむ
+                    TypeIdentifiers typeIdentifiers = identifiers();
+                    return typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to());
+                })
+                .collect(collectingAndThen(toList(), ClassRelations::new));
     }
 
     public List<JigType> list() {
@@ -84,13 +93,7 @@ public class BusinessRules {
     }
 
     public ClassRelations internalClassRelations() {
-        return classRelations.list().stream()
-                .filter(classRelation -> {
-                    // 両端ともbusinessRuleの型であるものに絞りこむ
-                    TypeIdentifiers typeIdentifiers = identifiers();
-                    return typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to());
-                })
-                .collect(collectingAndThen(toList(), ClassRelations::new));
+        return internalClassRelations;
     }
 
     public TypeIdentifiers isolatedTypes() {

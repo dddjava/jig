@@ -23,7 +23,6 @@ public class BusinessRules {
     JigTypes jigTypes;
     TypeIdentifiers typeIdentifiers;
 
-    ClassRelations businessRuleRelations;
     ClassRelations classRelations;
     private ClassRelations internalClassRelations;
 
@@ -34,18 +33,9 @@ public class BusinessRules {
         this.typeIdentifiers = jigTypes.stream()
                 .map(JigType::typeIdentifier)
                 .collect(TypeIdentifiers.collector());
-        this.businessRuleRelations = classRelations.distinctList().stream()
-                .filter(classRelation -> {
-                    return typeIdentifiers.contains(classRelation.from())
-                            && typeIdentifiers.contains(classRelation.to());
-                })
-                .collect(collectingAndThen(toList(), ClassRelations::new));
 
         this.internalClassRelations = classRelations.list().stream()
-                .filter(classRelation -> {
-                    // 両端ともbusinessRuleの型であるものに絞りこむ
-                    return typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to());
-                })
+                .filter(classRelation -> typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to()))
                 .collect(collectingAndThen(toList(), ClassRelations::new));
     }
 
@@ -75,7 +65,7 @@ public class BusinessRules {
     }
 
     public ClassRelations businessRuleRelations() {
-        return businessRuleRelations;
+        return new ClassRelations(internalClassRelations.distinctList());
     }
 
     public ClassRelations classRelations() {

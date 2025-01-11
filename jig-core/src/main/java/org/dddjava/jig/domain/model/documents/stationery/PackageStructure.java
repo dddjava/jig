@@ -71,7 +71,6 @@ public class PackageStructure {
         for (TypeIdentifier typeIdentifier : belongTypeMap.getOrDefault(packageIdentifier, Collections.emptyList())) {
             types.add(typeToNode.apply(typeIdentifier).asText());
         }
-        String typesText = types.toString();
-        return typesText;
+        return types.toString();
     }
 }

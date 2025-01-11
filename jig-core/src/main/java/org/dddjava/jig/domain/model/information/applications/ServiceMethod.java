@@ -51,14 +51,13 @@ public class ServiceMethod {
 
     // TODO type
     public List<TypeIdentifier> internalUsingTypes() {
-        List<TypeIdentifier> list = usingMethods().methodDeclarations().list().stream()
+        return usingMethods().methodDeclarations().list().stream()
                 .flatMap(methodDeclaration -> methodDeclaration.relateTypes().stream())
                 .filter(typeIdentifier -> !typeIdentifier.isJavaLanguageType())
                 .filter(typeIdentifier -> !primaryType().filter(primaryType -> primaryType.equals(typeIdentifier)).isPresent())
                 .filter(typeIdentifier -> !requireTypes().contains(typeIdentifier))
                 .distinct()
                 .collect(Collectors.toList());
-        return list;
     }
 
     // TODO type

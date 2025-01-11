@@ -36,13 +36,12 @@ public class PackageBasedArchitecture {
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.depth().value()));
 
         // 最初に同じ深さに2件以上入っているものが出てきたらアーキテクチャパッケージとして扱う
-        List<PackageIdentifier> packages = depthMap.entrySet().stream()
+        return depthMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .filter(entry -> entry.getValue().size() > 1)
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElse(Collections.emptyList());
-        return packages;
     }
 
     public PackageIdentifier packageIdentifier(TypeIdentifier arg) {

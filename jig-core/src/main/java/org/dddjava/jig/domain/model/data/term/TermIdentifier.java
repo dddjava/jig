@@ -34,9 +34,8 @@ public class TermIdentifier {
         int methodStart = value.indexOf('#');
         if (methodStart == -1) {
             int lastDot = value.lastIndexOf('.');
-            String temp = lastDot != -1 ? value.substring(lastDot + 1) : value;
 
-            return temp;
+            return lastDot != -1 ? value.substring(lastDot + 1) : value;
         }
 
         int argStart = value.indexOf('(');

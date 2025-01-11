@@ -4,11 +4,13 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.term.Terms;
-import org.dddjava.jig.domain.model.documents.diagrams.*;
+import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
+import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
-import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;
@@ -18,6 +20,7 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
+import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +41,8 @@ public class JigService {
      */
     public BusinessRules businessRules(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        return BusinessRules.from(architecture, typeFacts.toClassRelations(), typeFacts.jigTypes());
+        var jigTypes = typeFacts.jigTypes();
+        return new BusinessRules(jigTypes.filter(jigType -> architecture.isBusinessRule(jigType)).list(), typeFacts.toClassRelations());
     }
 
     /**

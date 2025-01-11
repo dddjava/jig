@@ -18,7 +18,7 @@ public class ArchitectureRelations {
 
     List<PackageRelation> list;
 
-    public ArchitectureRelations(List<PackageRelation> list) {
+    private ArchitectureRelations(List<PackageRelation> list) {
         this.list = list;
     }
 

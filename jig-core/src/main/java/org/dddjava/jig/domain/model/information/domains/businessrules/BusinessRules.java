@@ -63,14 +63,6 @@ public class BusinessRules {
         return new ClassRelations(internalClassRelations.distinctList());
     }
 
-    public ClassRelations classRelations() {
-        return classRelations;
-    }
-
-    public TypeIdentifiers allTypesRelatedTo(JigType jigType) {
-        return classRelations().collectTypeIdentifierWhichRelationTo(jigType.typeIdentifier());
-    }
-
     public ClassRelations internalClassRelations() {
         return internalClassRelations;
     }

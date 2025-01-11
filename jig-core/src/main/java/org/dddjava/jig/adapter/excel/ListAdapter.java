@@ -42,6 +42,8 @@ public class ListAdapter implements Adapter<ReportBook> {
     @HandleDocument(JigDocument.BusinessRuleList)
     public ReportBook businessRuleReports(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
+        var allClassRelations = typeFacts.toClassRelations();
+
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
         JigTypes jigTypes = jigService.jigTypes(jigSource);
         BusinessRules businessRules = jigService.businessRules(jigSource);
@@ -60,13 +62,13 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
                         Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
                         Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
-                        Map.entry("関連元クラス数", item -> businessRules.allTypesRelatedTo(item).list().size()),
+                        Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {
-                            var list = businessRules.allTypesRelatedTo(item).packageIdentifiers().list();
+                            var list = allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).packageIdentifiers().list();
                             return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
                         }),
-                        Map.entry("関連元クラス", item -> businessRules.allTypesRelatedTo(item).asSimpleText())
+                        Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText())
                 ), businessRules.list()),
                 new ReportSheet<>("ENUM", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
@@ -85,8 +87,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("フィールドの型", item -> item.instanceMember().fieldDeclarations().onlyOneField().fieldType().asSimpleText()), // TODO: onlyOne複数に対応する。型引数を出力したいのでFieldTypeを使用している。
-                        Map.entry("使用箇所数", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
-                        Map.entry("使用箇所", item -> typeFacts.toClassRelations().collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
+                        Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).size()),
+                        Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
                         Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
                         Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
                 ), businessRules.jigTypes().listCollectionType()),

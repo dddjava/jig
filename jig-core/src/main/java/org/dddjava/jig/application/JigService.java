@@ -2,7 +2,6 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
@@ -159,7 +158,7 @@ public class JigService {
     }
 
     public JigTypes serviceTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
+        return jigTypes(jigSource).filter(architecture::isService);
     }
 
     public JigTypes domainCoreTypes(JigSource jigSource) {

@@ -81,8 +81,7 @@ public class JigService {
     }
 
     public JigTypes jigTypes(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        return typeFacts.jigTypes();
+        return jigSource.typeFacts().jigTypes();
     }
 
     public Terms terms(JigSource jigSource) {
@@ -160,9 +159,7 @@ public class JigService {
     }
 
     public JigTypes services(JigSource jigSource) {
-        var jigTypes = jigSource.typeFacts().jigTypes();
-
-        return jigTypes.filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
+        return jigTypes(jigSource).filter(jigType -> jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
     }
 
     public JigTypes domainCoreTypes(JigSource jigSource) {

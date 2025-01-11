@@ -70,7 +70,7 @@ public class JigService {
         TypeFacts typeFacts = jigSource.typeFacts();
         JigTypes jigTypes = typeFacts.jigTypes();
 
-        BusinessRules businessRules = BusinessRules.from(architecture, typeFacts.toClassRelations(), jigTypes);
+        BusinessRules businessRules = businessRules(jigSource);
         ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
 
         return new CategoryUsageDiagram(serviceMethods, businessRules);

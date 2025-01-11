@@ -106,19 +106,15 @@ public record EntrypointGroup
         // サービスメソッドをクラス単位にグループ化して名前解決＆クリックで遷移できるようにする
         serviceMethodMap.forEach((key, values) -> {
             mermaidText.add("    subgraph %s".formatted(key.asSimpleText()));
-            values.forEach(value -> {
-                jigTypes.resolveJigMethod(value)
-                        .ifPresent(jigMethod -> {
-                            mermaidText.add("    %s([\"%s\"])".formatted(value.htmlIdText(), jigMethod.labelText()));
-                            mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(value.htmlIdText(), value.htmlIdText()));
-                        });
-            });
+            values.forEach(value -> jigTypes.resolveJigMethod(value)
+                    .ifPresent(jigMethod -> {
+                        mermaidText.add("    %s([\"%s\"])".formatted(value.htmlIdText(), jigMethod.labelText()));
+                        mermaidText.add("    click %s \"./usecase.html#%s\"".formatted(value.htmlIdText(), value.htmlIdText()));
+                    }));
             mermaidText.add("    end");
         });
         // サービスメソッド以外のメソッド
-        methodLabelMap.forEach((key, value) -> {
-            mermaidText.add("    %s[%s]".formatted(key, value));
-        });
+        methodLabelMap.forEach((key, value) -> mermaidText.add("    %s[%s]".formatted(key, value)));
 
         mermaidText.add(apiMethodRelationText.toString());
         return mermaidText.toString();

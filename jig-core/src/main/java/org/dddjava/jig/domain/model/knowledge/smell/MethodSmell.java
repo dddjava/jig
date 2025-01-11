@@ -7,6 +7,8 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
+import java.util.Optional;
+
 /**
  * メソッドの不吉なにおい
  */
@@ -16,10 +18,16 @@ public class MethodSmell {
     FieldDeclarations fieldDeclarations;
     CallerMethods callerMethods;
 
-    public MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
+    private MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, CallerMethods callerMethods) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
-        this.callerMethods = methodRelations.callerMethodsOf(method.declaration());
+        this.callerMethods = callerMethods;
+    }
+
+    public static Optional<MethodSmell> createMethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
+        var instance = new MethodSmell(method, fieldDeclarations, methodRelations.callerMethodsOf(method.declaration()));
+        if (!instance.hasSmell()) return Optional.empty();
+        return Optional.of(instance);
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -47,7 +55,7 @@ public class MethodSmell {
         return new MethodWorries(method).contains(MethodWorry.真偽値を返している);
     }
 
-    public boolean hasSmell() {
+    private boolean hasSmell() {
         if (method.objectMethod()) {
             // java.lang.Object由来は除外する
             return false;

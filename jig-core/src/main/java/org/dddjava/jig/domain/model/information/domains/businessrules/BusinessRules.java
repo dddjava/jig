@@ -78,10 +78,7 @@ public class BusinessRules {
                         businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));
         return map.entrySet().stream()
-                .map(entity -> new BusinessRulePackage(
-                        entity.getKey(),
-                        new BusinessRules(entity.getValue(), this.businessRuleRelations)
-                ))
+                .map(entity -> new BusinessRulePackage(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(businessRulePackage -> businessRulePackage.packageIdentifier().asText()))
                 .collect(toList());
     }

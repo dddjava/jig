@@ -107,7 +107,6 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("メソッドシグネチャ", item -> item.methodDeclaration().asSignatureSimpleText()),
                         Map.entry("メソッド戻り値の型", item -> item.methodDeclaration().methodReturn().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.methodDeclaration().declaringType()).asText()),
-                        Map.entry("使用箇所数", item -> item.callerMethods().size()),
                         Map.entry("メンバを使用していない", item -> item.notUseMember() ? "◯" : ""),
                         Map.entry("基本型の授受を行なっている", item -> item.primitiveInterface() ? "◯" : ""),
                         Map.entry("NULLリテラルを使用している", item -> item.referenceNull() ? "◯" : ""),

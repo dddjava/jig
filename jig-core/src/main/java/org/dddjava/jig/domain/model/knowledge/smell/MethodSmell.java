@@ -1,10 +1,8 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 import java.util.Optional;
@@ -16,16 +14,14 @@ public class MethodSmell {
 
     JigMethod method;
     FieldDeclarations fieldDeclarations;
-    CallerMethods callerMethods;
 
-    private MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, CallerMethods callerMethods) {
+    private MethodSmell(JigMethod method, FieldDeclarations fieldDeclarations) {
         this.method = method;
         this.fieldDeclarations = fieldDeclarations;
-        this.callerMethods = callerMethods;
     }
 
-    public static Optional<MethodSmell> createMethodSmell(JigMethod method, FieldDeclarations fieldDeclarations, MethodRelations methodRelations) {
-        var instance = new MethodSmell(method, fieldDeclarations, methodRelations.callerMethodsOf(method.declaration()));
+    public static Optional<MethodSmell> createMethodSmell(JigMethod method, FieldDeclarations fieldDeclarations) {
+        var instance = new MethodSmell(method, fieldDeclarations);
         if (!instance.hasSmell()) return Optional.empty();
         return Optional.of(instance);
     }
@@ -72,10 +68,6 @@ public class MethodSmell {
 
     public boolean nullDecision() {
         return new MethodWorries(method).contains(MethodWorry.NULL判定をしている);
-    }
-
-    public CallerMethods callerMethods() {
-        return callerMethods;
     }
 
     public boolean returnsVoid() {

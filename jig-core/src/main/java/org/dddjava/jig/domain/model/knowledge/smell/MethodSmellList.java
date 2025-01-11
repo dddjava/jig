@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
@@ -14,10 +13,10 @@ import java.util.stream.Collectors;
 public class MethodSmellList {
     List<MethodSmell> list;
 
-    public MethodSmellList(JigTypes jigTypes, MethodRelations methodRelations) {
+    public MethodSmellList(JigTypes jigTypes) {
         this.list = jigTypes.list().stream()
                 .flatMap(jigType -> jigType.instanceMember().instanceMethods().list().stream()
-                        .flatMap(method -> MethodSmell.createMethodSmell(method, jigType.instanceMember().fieldDeclarations(), methodRelations).stream())
+                        .flatMap(method -> MethodSmell.createMethodSmell(method, jigType.instanceMember().fieldDeclarations()).stream())
                 )
                 .collect(Collectors.toList());
     }

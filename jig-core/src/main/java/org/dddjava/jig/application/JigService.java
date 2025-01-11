@@ -48,9 +48,7 @@ public class JigService {
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellList methodSmells(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        MethodRelations methodRelations = typeFacts.toMethodRelations();
-        return new MethodSmellList(businessRules(jigSource).jigTypes(), methodRelations);
+        return new MethodSmellList(businessRules(jigSource).jigTypes());
     }
 
     /**

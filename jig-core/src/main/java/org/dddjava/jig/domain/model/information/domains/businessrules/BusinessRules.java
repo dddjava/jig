@@ -86,14 +86,13 @@ public class BusinessRules {
     }
 
     public ClassRelations internalClassRelations() {
-        List<ClassRelation> internalList = classRelations.list().stream()
+        return classRelations.list().stream()
                 .filter(classRelation -> {
                     // 両端ともbusinessRuleの型であるものに絞りこむ
                     TypeIdentifiers typeIdentifiers = identifiers();
                     return typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to());
                 })
-                .collect(toList());
-        return new ClassRelations(internalList);
+                .collect(collectingAndThen(toList(), ClassRelations::new));
     }
 
     public TypeIdentifiers isolatedTypes() {

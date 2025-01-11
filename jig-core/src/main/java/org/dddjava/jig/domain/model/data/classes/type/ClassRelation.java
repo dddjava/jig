@@ -34,6 +34,7 @@ public class ClassRelation {
     }
 
     public boolean selfRelation() {
+        // TODO selfRelationは最初から除外する
         return from.normalize().equals(to.normalize());
     }
 

@@ -33,7 +33,7 @@ public class LocalClassFileSourceReader implements SourceReader {
         for (Path path : sourcePaths.binarySourcePaths()) {
             try {
                 List<ClassSource> sources = new ArrayList<>();
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         if (file.toString().endsWith(".class")) {
@@ -62,7 +62,7 @@ public class LocalClassFileSourceReader implements SourceReader {
         List<TextSource> list = new ArrayList<>();
         for (Path path : sourcePaths.textSourcePaths()) {
             try {
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
                         TextSource textSource = new TextSource(path);

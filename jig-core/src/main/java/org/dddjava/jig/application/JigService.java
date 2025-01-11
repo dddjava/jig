@@ -40,8 +40,8 @@ public class JigService {
      */
     public BusinessRules businessRules(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        var jigTypes = typeFacts.jigTypes();
-        return new BusinessRules(jigTypes.filter(jigType -> architecture.isBusinessRule(jigType)).list(), typeFacts.toClassRelations());
+        JigTypes jigTypes = domainCoreTypes(jigSource);
+        return new BusinessRules(jigTypes, typeFacts.toClassRelations());
     }
 
     /**

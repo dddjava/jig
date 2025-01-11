@@ -24,8 +24,8 @@ public class BusinessRules {
     ClassRelations businessRuleRelations;
     ClassRelations classRelations;
 
-    public BusinessRules(List<JigType> list, ClassRelations classRelations) {
-        this.list = list;
+    public BusinessRules(JigTypes jigTypes, ClassRelations classRelations) {
+        this.list = jigTypes.list();
         this.classRelations = classRelations;
 
         Set<TypeIdentifier> businessRuleTypeSet = list.stream()

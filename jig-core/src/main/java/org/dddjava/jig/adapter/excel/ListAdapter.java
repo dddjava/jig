@@ -75,7 +75,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("定数宣言", item -> item.constantsDeclarationsName()),
-                        Map.entry("フィールド", item -> item.fieldDeclarations()),
+                        Map.entry("フィールド", item -> item.fieldDeclarations().toSignatureText()),
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText()),
                         Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),

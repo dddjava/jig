@@ -58,4 +58,8 @@ public class CategoryType {
     public StaticFieldDeclarations values() {
         return constantsDeclarations().selfDefineOnly();
     }
+
+    public String constantsDeclarationsName() {
+        return values().toNameText();
+    }
 }

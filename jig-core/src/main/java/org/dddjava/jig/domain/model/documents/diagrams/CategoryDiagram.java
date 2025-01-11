@@ -7,12 +7,13 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
-import org.dddjava.jig.domain.model.knowledge.core.CategoryAngle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -20,43 +21,37 @@ import static java.util.stream.Collectors.toMap;
  */
 public class CategoryDiagram implements DiagramSourceWriter {
 
-    List<CategoryAngle> list;
+    private final CategoryTypes categoryTypes;
 
-    CategoryDiagram(List<CategoryAngle> list) {
-        this.list = list;
+    CategoryDiagram(CategoryTypes categoryTypes) {
+        this.categoryTypes = categoryTypes;
     }
 
     public static CategoryDiagram create(CategoryTypes categoryTypes) {
-        List<CategoryAngle> list = new ArrayList<>();
-        for (CategoryType categoryType : categoryTypes.list()) {
-            list.add(new CategoryAngle(categoryType));
-        }
-        return new CategoryDiagram(list);
+        return new CategoryDiagram(categoryTypes);
     }
 
-    public List<CategoryAngle> list() {
-        return list.stream()
-                .sorted(Comparator.comparing(categoryAngle -> categoryAngle.typeIdentifier()))
-                .collect(toList());
+    public List<CategoryType> list() {
+        return categoryTypes.list();
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        if (list.isEmpty()) {
+        if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }
 
-        Map<TypeIdentifier, CategoryAngle> map = list.stream()
-                .collect(toMap(CategoryAngle::typeIdentifier, Function.identity()));
+        Map<TypeIdentifier, CategoryType> map = categoryTypes.list().stream()
+                .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
 
         PackageStructure packageStructure = PackageStructure.from(new ArrayList<>(map.keySet()));
 
         String structureText = packageStructure.toDotText(
                 typeIdentifier -> {
-                    CategoryAngle categoryAngle = map.get(typeIdentifier);
+                    CategoryType categoryType = map.get(typeIdentifier);
 
                     StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
 
-                    List<StaticFieldDeclaration> list = categoryAngle.categoryType.values().list();
+                    List<StaticFieldDeclaration> list = categoryType.values().list();
                     for (int i = 0; i < list.size(); i++) {
                         if (i > 20) {
                             categoryValues.add("... more");
@@ -65,12 +60,12 @@ public class CategoryDiagram implements DiagramSourceWriter {
                         String nameText = list.get(i).nameText();
                         categoryValues.add(nameText);
                     }
-                    String categoryName = categoryAngle.nodeLabel("<br/>");
+                    String categoryName = categoryType.nodeLabel("<br/>");
 
                     Node node = Node.typeOf(typeIdentifier)
                             .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")
                             .url(typeIdentifier, jigDocumentContext, JigDocument.EnumSummary);
-                    return node.as(categoryAngle.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
+                    return node.as(categoryType.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
                 }
         );
 

@@ -80,10 +80,6 @@ public class JigService {
         return new CategoryUsageDiagram(serviceMethods, businessRules);
     }
 
-    public JigTypes jigTypes(JigSource jigSource) {
-        return jigSource.typeFacts().jigTypes();
-    }
-
     public Terms terms(JigSource jigSource) {
         return jigSource.terms();
     }
@@ -156,6 +152,10 @@ public class JigService {
         }
 
         return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
+    }
+
+    public JigTypes jigTypes(JigSource jigSource) {
+        return jigSource.typeFacts().jigTypes();
     }
 
     public JigTypes serviceTypes(JigSource jigSource) {

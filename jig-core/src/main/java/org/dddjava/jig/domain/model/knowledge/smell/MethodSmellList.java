@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 public class MethodSmellList {
     List<MethodSmell> list;
 
-    public MethodSmellList(BusinessRules businessRules, MethodRelations methodRelations) {
+    public MethodSmellList(JigTypes jigTypes, MethodRelations methodRelations) {
         this.list = new ArrayList<>();
-        for (JigType jigType : businessRules.list()) {
+        for (JigType jigType : jigTypes.list()) {
             for (JigMethod method : jigType.instanceMember().instanceMethods().list()) {
                 MethodSmell methodSmell = new MethodSmell(
                         method,

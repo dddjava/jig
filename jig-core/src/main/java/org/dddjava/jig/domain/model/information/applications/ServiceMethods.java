@@ -20,13 +20,9 @@ public class ServiceMethods {
     JigTypes serviceJigTypes;
     MethodRelations methodRelations;
 
-    private ServiceMethods(JigTypes serviceJigTypes, MethodRelations methodRelations) {
+    public ServiceMethods(JigTypes serviceJigTypes, MethodRelations methodRelations) {
         this.serviceJigTypes = serviceJigTypes;
         this.methodRelations = methodRelations;
-    }
-
-    public static ServiceMethods from(JigTypes serviceJigTypes, MethodRelations methodRelations) {
-        return new ServiceMethods(serviceJigTypes, methodRelations);
     }
 
     public boolean empty() {

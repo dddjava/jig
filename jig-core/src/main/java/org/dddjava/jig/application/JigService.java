@@ -78,7 +78,8 @@ public class JigService {
 
     private ServiceMethods serviceMethods(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        return ServiceMethods.from(serviceTypes(jigSource), typeFacts.toMethodRelations());
+        JigTypes serviceJigTypes = serviceTypes(jigSource);
+        return new ServiceMethods(serviceJigTypes, typeFacts.toMethodRelations());
     }
 
     public Terms terms(JigSource jigSource) {

@@ -30,9 +30,7 @@ public class BusinessRules {
         this.jigTypes = jigTypes;
         this.classRelations = classRelations;
 
-        this.typeIdentifiers = jigTypes.stream()
-                .map(JigType::typeIdentifier)
-                .collect(TypeIdentifiers.collector());
+        this.typeIdentifiers = jigTypes.typeIdentifiers();
 
         this.internalClassRelations = classRelations.list().stream()
                 .filter(classRelation -> typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to()))

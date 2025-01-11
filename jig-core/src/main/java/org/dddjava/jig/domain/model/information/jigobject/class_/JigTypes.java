@@ -3,6 +3,7 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,5 +114,9 @@ public class JigTypes {
 
     public Stream<JigType> stream() {
         return list.stream();
+    }
+
+    public TypeIdentifiers typeIdentifiers() {
+        return TypeIdentifiers.from(map.keySet());
     }
 }

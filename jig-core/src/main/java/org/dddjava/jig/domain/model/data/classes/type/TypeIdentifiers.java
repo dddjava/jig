@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collector;
@@ -18,6 +19,10 @@ public class TypeIdentifiers {
 
     public TypeIdentifiers(List<TypeIdentifier> identifiers) {
         this.identifiers = identifiers;
+    }
+
+    public static TypeIdentifiers from(Collection<TypeIdentifier> typeIdentifiers) {
+        return new TypeIdentifiers(new ArrayList<>(typeIdentifiers));
     }
 
     public List<TypeIdentifier> list() {

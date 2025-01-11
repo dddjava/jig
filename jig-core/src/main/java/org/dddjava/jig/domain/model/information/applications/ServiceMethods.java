@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.information.applications;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
@@ -18,18 +17,15 @@ import static java.util.stream.Collectors.toList;
  */
 public class ServiceMethods {
 
-    List<JigType> serviceJigTypes;
+    JigTypes serviceJigTypes;
     MethodRelations methodRelations;
 
-    private ServiceMethods(List<JigType> serviceJigTypes, MethodRelations methodRelations) {
+    private ServiceMethods(JigTypes serviceJigTypes, MethodRelations methodRelations) {
         this.serviceJigTypes = serviceJigTypes;
         this.methodRelations = methodRelations;
     }
 
-    public static ServiceMethods from(JigTypes jigTypes, MethodRelations methodRelations) {
-        List<JigType> serviceJigTypes = jigTypes
-                .listMatches(jigType ->
-                        jigType.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service")));
+    public static ServiceMethods from(JigTypes serviceJigTypes, MethodRelations methodRelations) {
         return new ServiceMethods(serviceJigTypes, methodRelations);
     }
 
@@ -48,7 +44,7 @@ public class ServiceMethods {
     }
 
     public List<JigType> listJigTypes() {
-        return serviceJigTypes;
+        return serviceJigTypes.list();
     }
 
     public MethodDeclarations toMethodDeclarations() {

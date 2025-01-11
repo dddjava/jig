@@ -57,10 +57,6 @@ public class BusinessRules {
                 .collect(toList());
     }
 
-    public boolean contains(TypeIdentifier typeIdentifier) {
-        return identifiers().contains(typeIdentifier);
-    }
-
     public boolean empty() {
         return list.isEmpty();
     }

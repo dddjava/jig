@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -104,5 +105,13 @@ public class JigTypes {
                                 && isEndpointOrApplication(methodRelation.to().declaringType())
                 )
                 .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+    public boolean empty() {
+        return list.isEmpty();
+    }
+
+    public Stream<JigType> stream() {
+        return list.stream();
     }
 }

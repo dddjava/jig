@@ -20,15 +20,15 @@ import static java.util.stream.Collectors.toList;
  */
 public class BusinessRules {
 
-    List<JigType> list;
+    JigTypes jigTypes;
     ClassRelations businessRuleRelations;
     ClassRelations classRelations;
 
     public BusinessRules(JigTypes jigTypes, ClassRelations classRelations) {
-        this.list = jigTypes.list();
+        this.jigTypes = jigTypes;
         this.classRelations = classRelations;
 
-        Set<TypeIdentifier> businessRuleTypeSet = list.stream()
+        Set<TypeIdentifier> businessRuleTypeSet = this.jigTypes.stream()
                 .map(jigType -> jigType.typeIdentifier())
                 .collect(Collectors.toSet());
         List<ClassRelation> businessRuleRelationList = new ArrayList<>();
@@ -42,13 +42,13 @@ public class BusinessRules {
     }
 
     public List<JigType> list() {
-        return list.stream()
+        return jigTypes.stream()
                 .sorted(Comparator.comparing(JigType::typeIdentifier))
                 .collect(toList());
     }
 
     public boolean empty() {
-        return list.isEmpty();
+        return jigTypes.empty();
     }
 
     transient TypeIdentifiers cache;
@@ -57,7 +57,7 @@ public class BusinessRules {
         if (cache != null) {
             return cache;
         }
-        return cache = list.stream()
+        return cache = jigTypes.stream()
                 .map(JigType::typeIdentifier)
                 .collect(TypeIdentifiers.collector());
     }
@@ -96,13 +96,13 @@ public class BusinessRules {
     }
 
     public TypeIdentifiers isolatedTypes() {
-        return list.stream()
+        return jigTypes.stream()
                 .map(jigType -> jigType.typeIdentifier())
                 .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }
 
     public JigTypes jigTypes() {
-        return new JigTypes(list);
+        return jigTypes;
     }
 }

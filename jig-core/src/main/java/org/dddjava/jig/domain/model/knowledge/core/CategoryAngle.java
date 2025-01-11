@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.knowledge.core;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 
 /**
@@ -28,10 +27,6 @@ public class CategoryAngle {
 
     public String fieldDeclarations() {
         return categoryType.fieldDeclarations().toSignatureText();
-    }
-
-    public TypeIdentifiers userTypeIdentifiers() {
-        return classRelations.collectTypeIdentifierWhichRelationTo(categoryType.typeIdentifier());
     }
 
     public boolean hasParameter() {

@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRu
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 import java.util.StringJoiner;
 
@@ -25,11 +26,13 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     ServiceMethods serviceMethods;
     BusinessRules businessRules;
     CategoryTypes categoryTypes;
+    private final JigTypes domainCoreJigTypes;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules, CategoryTypes categoryTypes, JigTypes domainCoreJigTypes) {
         this.serviceMethods = serviceMethods;
         this.businessRules = businessRules;
-        this.categoryTypes = CategoryTypes.from(businessRules.jigTypes());
+        this.categoryTypes = categoryTypes;
+        this.domainCoreJigTypes = domainCoreJigTypes;
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
@@ -77,17 +80,17 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(nonCategoryBusinessRuleNodeTexts(categoryRelatedTypes, jigDocumentContext))
+                .add(nonCategoryNodeTexts(categoryRelatedTypes, jigDocumentContext))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String nonCategoryBusinessRuleNodeTexts(TypeIdentifiers categoryRelatedTypes, JigDocumentContext jigDocumentContext) {
-        return businessRules.list().stream()
-                .filter(businessRule -> businessRule.toValueKind() != JigTypeValueKind.区分)
-                .filter(businessRule -> categoryRelatedTypes.contains(businessRule.typeIdentifier()))
-                .map(businessRule -> Nodes.businessRuleNodeOf(businessRule, jigDocumentContext))
+    private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes, JigDocumentContext jigDocumentContext) {
+        return domainCoreJigTypes.list().stream()
+                .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
+                .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))
+                .map(jigType -> Nodes.businessRuleNodeOf(jigType, jigDocumentContext))
                 .map(Node::asText)
                 .collect(joining("\n"));
     }

@@ -67,13 +67,18 @@ public class JigService {
      * 区分使用図
      */
     public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        JigTypes jigTypes = typeFacts.jigTypes();
+        CategoryTypes categoryTypes = categoryTypes(jigSource);
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
+        JigTypes domainCoreJigTypes = domainCoreTypes(jigSource);
 
         BusinessRules businessRules = businessRules(jigSource);
-        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
 
-        return new CategoryUsageDiagram(serviceMethods, businessRules);
+        return new CategoryUsageDiagram(serviceMethods, businessRules, categoryTypes, domainCoreJigTypes);
+    }
+
+    private ServiceMethods serviceMethods(JigSource jigSource) {
+        TypeFacts typeFacts = jigSource.typeFacts();
+        return ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
     }
 
     public Terms terms(JigSource jigSource) {

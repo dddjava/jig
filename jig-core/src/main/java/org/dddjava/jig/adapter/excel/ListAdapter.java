@@ -6,11 +6,11 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
-import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
+import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
@@ -47,7 +47,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
         JigTypes jigTypes = jigService.jigTypes(jigSource);
         BusinessRules businessRules = jigService.businessRules(jigSource);
-        CategoryDiagram categoryDiagram = jigService.categories(jigSource);
+        CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
         List<PackageJigTypes> packageJigTypes = businessRules.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
@@ -81,7 +81,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),
                         Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
                         Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
-                ), categoryDiagram.list()),
+                ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

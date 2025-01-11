@@ -119,9 +119,4 @@ public class ClassRelations {
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }
-
-    public boolean unrelated(TypeIdentifier typeIdentifier) {
-        return list.stream()
-                .allMatch(classRelation -> classRelation.unrelated(typeIdentifier));
-    }
 }

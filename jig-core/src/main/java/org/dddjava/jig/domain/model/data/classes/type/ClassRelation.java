@@ -64,10 +64,6 @@ public class ClassRelation {
         return Objects.hash(from, to);
     }
 
-    public boolean unrelated(TypeIdentifier typeIdentifier) {
-        return !from.equals(typeIdentifier) && !to.equals(typeIdentifier);
-    }
-
     public String formatText() {
         return toString();
     }

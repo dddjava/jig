@@ -76,8 +76,10 @@ public class BusinessRules {
     }
 
     public TypeIdentifiers isolatedTypes() {
+        var relatedTypeIdentifiers = internalClassRelations().allTypeIdentifiers();
+
         return jigTypes.typeIdentifiers().list().stream()
-                .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
+                .filter(typeIdentifier -> !relatedTypeIdentifiers.contains(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }
 

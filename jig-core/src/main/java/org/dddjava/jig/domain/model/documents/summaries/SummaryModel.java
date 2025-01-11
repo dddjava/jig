@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.documents.summaries;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
@@ -17,42 +16,46 @@ import java.util.Map;
 import static java.util.stream.Collectors.groupingBy;
 
 public class SummaryModel {
-    private final JigTypes jigTypes;
+    /**
+     * 補助に使用するJigType。メソッドの引数など、サマリ対象の外側にいるものの解決に使用する。
+     */
+    private final JigTypes supportJigTypes;
+
     Map<PackageIdentifier, List<JigType>> map;
     // FIXME enumModelsの持ち方・・・
     EnumModels enumModels;
     Map<String, String> mermaidMap;
 
-    private SummaryModel(JigTypes jigTypes, Map<PackageIdentifier, List<JigType>> map, EnumModels enumModels) {
-        this.jigTypes = jigTypes;
+    private SummaryModel(JigTypes supportJigTypes, Map<PackageIdentifier, List<JigType>> map, EnumModels enumModels) {
+        this.supportJigTypes = supportJigTypes;
         this.map = map;
         this.enumModels = enumModels;
     }
 
-    public static SummaryModel from(JigTypes jigTypes, JigTypes businessRules) {
+    public static SummaryModel from(JigTypes supportJigTypes, JigTypes businessRules) {
         Map<PackageIdentifier, List<JigType>> map = businessRules.list().stream()
                 .collect(groupingBy(JigType::packageIdentifier));
-        return new SummaryModel(jigTypes, map, new EnumModels(List.of()));
+        return new SummaryModel(supportJigTypes, map, new EnumModels(List.of()));
     }
 
     public static SummaryModel from(JigTypes jigTypes) {
         return from(jigTypes, jigTypes);
     }
 
-    public static SummaryModel from(JigTypes jigTypes, CategoryTypes categoryTypes, EnumModels enumModels) {
+    public static SummaryModel from(JigTypes supportJigTypes, CategoryTypes categoryTypes, EnumModels enumModels) {
         Map<PackageIdentifier, List<JigType>> map = categoryTypes.list().stream()
                 .map(CategoryType::jigType)
                 .collect(groupingBy(JigType::packageIdentifier));
-        return new SummaryModel(jigTypes, map, enumModels);
+        return new SummaryModel(supportJigTypes, map, enumModels);
     }
 
-    public static SummaryModel from(JigTypes jigTypes, Entrypoint entrypoint) {
+    public static SummaryModel from(JigTypes supportJigTypes, Entrypoint entrypoint) {
         Map<PackageIdentifier, List<JigType>> map = entrypoint.list().stream()
                 .map(entrypointGroup -> entrypointGroup.jigType())
                 .collect(groupingBy(JigType::packageIdentifier));
 
-        var summaryModel = new SummaryModel(jigTypes, map, new EnumModels(List.of()));
-        summaryModel.mermaidMap = entrypoint.mermaidMap(jigTypes);
+        var summaryModel = new SummaryModel(supportJigTypes, map, new EnumModels(List.of()));
+        summaryModel.mermaidMap = entrypoint.mermaidMap(supportJigTypes);
         return summaryModel;
     }
 
@@ -77,10 +80,10 @@ public class SummaryModel {
     }
 
     public String mermaidDiagram(JigMethod jigMethod) {
-        var methodRelations = jigTypes.methodRelations().inlineLambda();
-        JigMethodFinder jigMethodFinder = methodIdentifier -> jigTypes.resolveJigMethod(methodIdentifier);
+        var methodRelations = supportJigTypes.methodRelations().inlineLambda();
+        JigMethodFinder jigMethodFinder = methodIdentifier -> supportJigTypes.resolveJigMethod(methodIdentifier);
 
-        return jigTypes.resolveJigMethod(jigMethod.declaration().identifier())
+        return supportJigTypes.resolveJigMethod(jigMethod.declaration().identifier())
                 .map(m -> m.usecaseMermaidText(jigMethodFinder, methodRelations))
                 .orElse("");
     }

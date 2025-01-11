@@ -89,14 +89,13 @@ public class JigService {
      * サービスを分析する
      */
     public ServiceAngles serviceAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        JigTypes jigTypes = typeFacts.jigTypes();
-        ServiceMethods serviceMethods = ServiceMethods.from(jigTypes, typeFacts.toMethodRelations());
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
 
         if (serviceMethods.empty()) {
             logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
+        JigTypes jigTypes = jigSource.typeFacts().jigTypes();
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
         return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
@@ -121,9 +120,8 @@ public class JigService {
      * 文字列比較を分析する
      */
     public StringComparingMethodList stringComparing(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
         Entrypoint entrypoint = entrypoint(jigSource);
-        ServiceMethods serviceMethods = ServiceMethods.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
 
         return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
     }

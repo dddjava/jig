@@ -94,8 +94,7 @@ public class BusinessRules {
     }
 
     public TypeIdentifiers isolatedTypes() {
-        return jigTypes.stream()
-                .map(jigType -> jigType.typeIdentifier())
+        return typeIdentifiers.list().stream()
                 .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }

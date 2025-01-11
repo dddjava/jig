@@ -92,7 +92,7 @@ class BusinessRuleServiceTest {
      * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
      */
     @Test
-    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
         var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
 
         var jigSource = jigSourceReader.readProjectData(sources);
@@ -100,9 +100,8 @@ class BusinessRuleServiceTest {
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
-        var businessRules = jigService.businessRules(jigSource);
-        var identifiers = businessRules.identifiers();
-        assertFalse(identifiers.contains(typeIdentifier), "businessRulesには存在しない");
+        var domainCoreTypes = jigService.domainCoreTypes(jigSource);
+        assertFalse(domainCoreTypes.contains(typeIdentifier), "domain coreには存在しない");
 
     }
 }

@@ -143,14 +143,16 @@ public class JigService {
      * パッケージの関連を取得する
      */
     public PackageRelationDiagram packageDependencies(JigSource jigSource) {
-        BusinessRules businessRules = businessRules(jigSource);
+        JigTypes domainCoreTypes = domainCoreTypes(jigSource);
 
-        if (businessRules.empty()) {
+        if (domainCoreTypes.empty()) {
             logger.warn(Warning.ビジネスルールが見つからないので出力されない通知.localizedMessage());
             return PackageRelationDiagram.empty();
         }
 
-        return new PackageRelationDiagram(businessRules.identifiers().packageIdentifiers(), businessRules.classRelations());
+        ClassRelations allClassRelations = jigSource.typeFacts().toClassRelations();
+
+        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), allClassRelations);
     }
 
     public JigTypes jigTypes(JigSource jigSource) {

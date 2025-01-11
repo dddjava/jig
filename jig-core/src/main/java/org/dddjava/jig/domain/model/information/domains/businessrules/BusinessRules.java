@@ -21,7 +21,6 @@ import static java.util.stream.Collectors.toList;
 public class BusinessRules {
 
     JigTypes jigTypes;
-    TypeIdentifiers typeIdentifiers;
 
     ClassRelations classRelations;
     private ClassRelations internalClassRelations;
@@ -30,10 +29,8 @@ public class BusinessRules {
         this.jigTypes = jigTypes;
         this.classRelations = classRelations;
 
-        this.typeIdentifiers = jigTypes.typeIdentifiers();
-
         this.internalClassRelations = classRelations.list().stream()
-                .filter(classRelation -> typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to()))
+                .filter(classRelation -> jigTypes.contains(classRelation.from()) && jigTypes.contains(classRelation.to()))
                 .collect(collectingAndThen(toList(), ClassRelations::new));
     }
 
@@ -48,7 +45,7 @@ public class BusinessRules {
     }
 
     public TypeIdentifiers identifiers() {
-        return typeIdentifiers;
+        return jigTypes.typeIdentifiers();
     }
 
     public List<PackageJigTypes> listPackages() {
@@ -79,7 +76,7 @@ public class BusinessRules {
     }
 
     public TypeIdentifiers isolatedTypes() {
-        return typeIdentifiers.list().stream()
+        return jigTypes.typeIdentifiers().list().stream()
                 .filter(typeIdentifier -> businessRuleRelations().unrelated(typeIdentifier))
                 .collect(collectingAndThen(toList(), TypeIdentifiers::new));
     }

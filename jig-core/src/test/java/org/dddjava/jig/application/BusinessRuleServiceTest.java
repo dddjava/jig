@@ -77,9 +77,9 @@ class BusinessRuleServiceTest {
      * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
      */
     @Test
-    void 注意メソッドの抽出_record(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
+    void 注意メソッドの抽出_record(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);
-        MethodSmellList methodSmellList = businessRuleService.methodSmells(jigSource);
+        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
 
@@ -89,8 +89,8 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService businessRuleService, Sources sources, JigSourceReader jigSourceReader) {
+    void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
         var jigSource = jigSourceReader.readProjectData(sources);
-        assertFalse(businessRuleService.businessRules(jigSource).contains(TypeIdentifier.valueOf("stub.domain.model.annotation.package-info")));
+        assertFalse(jigService.businessRules(jigSource).contains(TypeIdentifier.valueOf("stub.domain.model.annotation.package-info")));
     }
 }

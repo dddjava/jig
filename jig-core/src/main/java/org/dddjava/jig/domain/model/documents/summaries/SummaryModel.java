@@ -36,9 +36,7 @@ public class SummaryModel {
     }
 
     public static SummaryModel from(JigTypes jigTypes) {
-        Map<PackageIdentifier, List<JigType>> map = jigTypes.list().stream()
-                .collect(groupingBy(JigType::packageIdentifier));
-        return new SummaryModel(jigTypes, map, new EnumModels(List.of()));
+        return from(jigTypes, jigTypes);
     }
 
     public static SummaryModel from(JigTypes jigTypes, CategoryTypes categoryTypes, EnumModels enumModels) {

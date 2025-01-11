@@ -29,7 +29,7 @@ public class BusinessRules {
         this.classRelations = classRelations;
 
         Set<TypeIdentifier> businessRuleTypeSet = list.stream()
-                .map(businessRule -> businessRule.typeIdentifier())
+                .map(jigType -> jigType.typeIdentifier())
                 .collect(Collectors.toSet());
         List<ClassRelation> businessRuleRelationList = new ArrayList<>();
         for (ClassRelation classRelation : classRelations.distinctList()) {

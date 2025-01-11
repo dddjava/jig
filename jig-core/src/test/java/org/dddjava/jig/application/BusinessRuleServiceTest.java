@@ -2,9 +2,9 @@ package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
@@ -88,9 +88,21 @@ class BusinessRuleServiceTest {
         assertTrue(extractMethod(detectedSmells, "returnsVoid").returnsVoid());
     }
 
+    /**
+     * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
+     */
     @Test
     void アノテーションつきのpackage_infoをビジネスルールとして扱わない(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+        var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
+
         var jigSource = jigSourceReader.readProjectData(sources);
-        assertFalse(jigService.businessRules(jigSource).contains(TypeIdentifier.valueOf("stub.domain.model.annotation.package-info")));
+        var jigTypes = jigService.jigTypes(jigSource);
+
+        assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
+
+        var businessRules = jigService.businessRules(jigSource);
+        var identifiers = businessRules.identifiers();
+        assertFalse(identifiers.contains(typeIdentifier), "businessRulesには存在しない");
+
     }
 }

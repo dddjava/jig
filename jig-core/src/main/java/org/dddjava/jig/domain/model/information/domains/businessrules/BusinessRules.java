@@ -1,15 +1,15 @@
 package org.dddjava.jig.domain.model.information.domains.businessrules;
 
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -31,25 +31,19 @@ public class BusinessRules {
         this.jigTypes = jigTypes;
         this.classRelations = classRelations;
 
-        typeIdentifiers = jigTypes.stream()
+        this.typeIdentifiers = jigTypes.stream()
                 .map(JigType::typeIdentifier)
                 .collect(TypeIdentifiers.collector());
-        Set<TypeIdentifier> businessRuleTypeSet = this.jigTypes.stream()
-                .map(jigType -> jigType.typeIdentifier())
-                .collect(Collectors.toSet());
-        List<ClassRelation> businessRuleRelationList = new ArrayList<>();
-        for (ClassRelation classRelation : classRelations.distinctList()) {
-            if (businessRuleTypeSet.contains(classRelation.from())
-                    && businessRuleTypeSet.contains(classRelation.to())) {
-                businessRuleRelationList.add(classRelation);
-            }
-        }
-        this.businessRuleRelations = new ClassRelations(businessRuleRelationList);
+        this.businessRuleRelations = classRelations.distinctList().stream()
+                .filter(classRelation -> {
+                    return typeIdentifiers.contains(classRelation.from())
+                            && typeIdentifiers.contains(classRelation.to());
+                })
+                .collect(collectingAndThen(toList(), ClassRelations::new));
 
         this.internalClassRelations = classRelations.list().stream()
                 .filter(classRelation -> {
                     // 両端ともbusinessRuleの型であるものに絞りこむ
-                    TypeIdentifiers typeIdentifiers = identifiers();
                     return typeIdentifiers.contains(classRelation.from()) && typeIdentifiers.contains(classRelation.to());
                 })
                 .collect(collectingAndThen(toList(), ClassRelations::new));

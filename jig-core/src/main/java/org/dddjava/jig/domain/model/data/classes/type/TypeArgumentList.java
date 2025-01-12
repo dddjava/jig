@@ -11,7 +11,7 @@ public record TypeArgumentList(List<TypeIdentifier> list) {
     public String asSimpleText() {
         // <Hoge, Fuga> の形
         return list.stream()
-                .map(e -> e.asSimpleText())
+                .map(TypeIdentifier::asSimpleText)
                 .collect(Collectors.joining(", ", "<", ">"));
     }
 

@@ -28,9 +28,9 @@ public class Labeler {
     }
 
     public String label(PackageIdentifier packageIdentifier) {
-        String jqn = packageIdentifier.asText();
-        String labelText = commonPrefix.map(String::length).map(index -> trimDot(jqn.substring(index)))
-                .orElse(jqn);
+        String fqn = packageIdentifier.asText();
+        String labelText = commonPrefix.map(String::length).map(index -> trimDot(fqn.substring(index)))
+                .orElse(fqn);
 
         return addAliasIfExists(packageIdentifier, labelText);
     }

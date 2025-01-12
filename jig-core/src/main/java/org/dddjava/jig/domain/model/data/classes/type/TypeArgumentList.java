@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 /**
  * 型引数リスト
+ *
+ * TODO この形だと {@code A<B<C>>} などのネストに対応できない
  */
 public record TypeArgumentList(List<TypeIdentifier> list) {
 

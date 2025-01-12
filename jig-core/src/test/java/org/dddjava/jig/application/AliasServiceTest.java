@@ -40,7 +40,7 @@ class AliasServiceTest {
         jigSourceReader.readProjectData(source);
 
         Assertions.assertThat(sut.packageComment(PackageIdentifier.valueOf("stub")).asText())
-                .isEqualTo("テストで使用するスタブたち");
+                .isEqualTo("テストでJIGに読み取らせる実装");
     }
 
     @ParameterizedTest

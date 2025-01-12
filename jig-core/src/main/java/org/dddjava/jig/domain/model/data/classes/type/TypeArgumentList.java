@@ -6,16 +6,7 @@ import java.util.stream.Collectors;
 /**
  * 型引数リスト
  */
-public class TypeArgumentList {
-    private final List<TypeIdentifier> list;
-
-    public TypeArgumentList(List<TypeIdentifier> list) {
-        this.list = list;
-    }
-
-    public List<TypeIdentifier> list() {
-        return list;
-    }
+public record TypeArgumentList(List<TypeIdentifier> list) {
 
     public String asSimpleText() {
         // <Hoge, Fuga> の形

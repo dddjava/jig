@@ -1,8 +1,7 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.HandleResult;
-import org.dddjava.jig.adapter.Adapter;
-import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.CompositeAdapter;
 import org.dddjava.jig.adapter.diagram.DiagramAdapter;
 import org.dddjava.jig.adapter.diagram.GraphvizDiagramWriter;
 import org.dddjava.jig.adapter.excel.ListAdapter;
@@ -23,15 +22,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JigDocumentGenerator {
@@ -45,9 +41,7 @@ public class JigDocumentGenerator {
     private final TemplateEngine thymeleafTemplateEngine;
     private final JigService jigService;
 
-    private final DiagramAdapter diagramAdapter;
-    private final ListAdapter listAdapter;
-    private final SummaryAdapter summaryAdapter;
+    private final CompositeAdapter compositeAdapter;
 
     public JigDocumentGenerator(JigDocumentContext jigDocumentContext, JigService jigService) {
         this.jigService = jigService;
@@ -66,9 +60,10 @@ public class JigDocumentGenerator {
         templateEngine.addDialect(new JigExpressionObjectDialect(jigDocumentContext));
         this.thymeleafTemplateEngine = templateEngine;
 
-        diagramAdapter = new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext));
-        listAdapter = new ListAdapter(jigDocumentContext, jigService);
-        summaryAdapter = new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext));
+        compositeAdapter = new CompositeAdapter();
+        compositeAdapter.register(new DiagramAdapter(jigService, new GraphvizDiagramWriter(jigDocumentContext)));
+        compositeAdapter.register(new ListAdapter(jigDocumentContext, jigService));
+        compositeAdapter.register(new SummaryAdapter(jigService, new ThymeleafSummaryWriter(templateEngine, jigDocumentContext)));
     }
 
     public void generateIndex(List<HandleResult> results) {
@@ -123,14 +118,10 @@ public class JigDocumentGenerator {
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
-                // 概要
-                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
-                        invokeAdapter(summaryAdapter, jigDocument, jigSource);
-                // ダイアグラム
-                case PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
-                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram ->
-                        invokeAdapter(diagramAdapter, jigDocument, jigSource);
-                case BusinessRuleList, ApplicationList -> invokeAdapter(listAdapter, jigDocument, jigSource);
+                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
+                     PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
+                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
+                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigSource);
             };
 
             long takenTime = System.currentTimeMillis() - startTime;
@@ -139,32 +130,6 @@ public class JigDocumentGenerator {
         } catch (Exception e) {
             logger.warn("[{}] failed to write document.", jigDocument, e);
             return new HandleResult(jigDocument, e.getMessage());
-        }
-    }
-
-    private <T> List<Path> invokeAdapter(Adapter<T> adapter, JigDocument jigDocument, JigSource jigSource) {
-        List<Method> adapterMethods = Arrays.stream(adapter.getClass().getMethods())
-                .filter(method -> Optional.ofNullable(method.getAnnotation(HandleDocument.class))
-                        .map(HandleDocument::value)
-                        .filter(values -> Arrays.asList(values).contains(jigDocument))
-                        .isPresent())
-                .toList();
-        if (adapterMethods.isEmpty()) {
-            logger.error("{} に対応するハンドラが {} に見つかりませんでした。ドキュメントは生成されません。他のバージョンを使用するか、Issueで報告してください。",
-                    jigDocument, adapter.getClass().getName());
-            return List.of();
-        }
-        if (adapterMethods.size() > 1) {
-            logger.error("{} に対応するハンドラが {} に複数見つかりました。ドキュメントは生成されますが、意図したものにならない可能性があります。他のバージョンを使用するか、Issueで報告してください。",
-                    jigDocument, adapter.getClass().getName());
-        }
-
-        try {
-            Method adapterMethod = adapterMethods.get(0);
-            T model = adapter.convertMethodResultToAdapterModel(adapterMethod.invoke(adapter, jigSource));
-            return adapter.write(model, jigDocument);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
         }
     }
 

@@ -11,33 +11,22 @@ import static java.util.stream.Collectors.toList;
 /**
  * サービスメソッド一覧
  */
-public class ServiceMethods {
+public record ServiceMethods(List<ServiceMethod> list) {
 
-    JigTypes serviceJigTypes;
-    MethodRelations methodRelations;
-
-    public ServiceMethods(JigTypes serviceJigTypes, MethodRelations methodRelations) {
-        this.serviceJigTypes = serviceJigTypes;
-        this.methodRelations = methodRelations;
+    public static ServiceMethods from(JigTypes serviceJigTypes, MethodRelations methodRelations) {
+        var list = serviceJigTypes.stream()
+                .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
+                .map(method -> ServiceMethod.from(method, methodRelations))
+                .toList();
+        return new ServiceMethods(list);
     }
 
     public boolean empty() {
-        return serviceJigTypes.stream()
-                .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .findAny()
-                .isEmpty();
-    }
-
-    public List<ServiceMethod> list() {
-        return serviceJigTypes.stream()
-                .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .map(method -> new ServiceMethod(method, methodRelations))
-                .collect(toList());
+        return list().isEmpty();
     }
 
     public boolean contains(MethodDeclaration methodDeclaration) {
-        return serviceJigTypes.stream()
-                .flatMap(jigType -> jigType.instanceMember().instanceMethods().stream())
-                .anyMatch(jigMethod -> methodDeclaration.sameIdentifier(jigMethod.declaration()));
+        return list().stream()
+                .anyMatch(serviceMethod -> serviceMethod.sameIdentifier(methodDeclaration));
     }
 }

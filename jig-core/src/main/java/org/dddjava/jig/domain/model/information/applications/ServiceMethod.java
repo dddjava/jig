@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 /**
  * サービスメソッド
  */
-public class ServiceMethod {
-    final JigMethod method;
-    final MethodRelations methodRelations;
+public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
 
-    public ServiceMethod(JigMethod method, MethodRelations methodRelations) {
-        this.method = method;
-        this.methodRelations = methodRelations;
+    public static ServiceMethod from(JigMethod jigMethod, MethodRelations methodRelations) {
+        return new ServiceMethod(
+                jigMethod,
+                methodRelations.callerMethodsOf(jigMethod.declaration())
+        );
     }
 
     public MethodDeclaration methodDeclaration() {
@@ -80,7 +80,7 @@ public class ServiceMethod {
         return method().usingTypes();
     }
 
-    public CallerMethods callerMethods() {
-        return methodRelations.callerMethodsOf(methodDeclaration());
+    public boolean sameIdentifier(MethodDeclaration methodDeclaration) {
+        return methodDeclaration().sameIdentifier(methodDeclaration);
     }
 }

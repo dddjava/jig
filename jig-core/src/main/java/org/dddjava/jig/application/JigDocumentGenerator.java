@@ -112,24 +112,24 @@ public class JigDocumentGenerator {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
-                // 概要
-                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
-                        invokeAdapter(summaryAdapter, jigDocument, jigSource);
                 // テーブル
                 case TermTable -> {
                     var terms = jigService.terms(jigSource);
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
-                // ダイアグラム
-                case PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
-                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram ->
-                        invokeAdapter(diagramAdapter, jigDocument, jigSource);
                 // 一覧
                 case TermList -> {
                     Terms terms = jigService.terms(jigSource);
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
+                // 概要
+                case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary ->
+                        invokeAdapter(summaryAdapter, jigDocument, jigSource);
+                // ダイアグラム
+                case PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
+                     ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram ->
+                        invokeAdapter(diagramAdapter, jigDocument, jigSource);
                 case BusinessRuleList, ApplicationList -> invokeAdapter(listAdapter, jigDocument, jigSource);
             };
 

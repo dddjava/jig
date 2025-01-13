@@ -66,9 +66,7 @@ public class JigTypes {
     }
 
     public JigTypes filter(Predicate<JigType> predicate) {
-        return list.stream()
-                .filter(predicate)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
+        return new JigTypes(listMatches(predicate));
     }
 
     public Optional<JigMethod> resolveJigMethod(MethodIdentifier methodIdentifier) {

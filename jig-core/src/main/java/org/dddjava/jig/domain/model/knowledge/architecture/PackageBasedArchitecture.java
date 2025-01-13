@@ -26,7 +26,7 @@ public class PackageBasedArchitecture {
     }
 
     private static List<PackageIdentifier> getArchitecturePackages(JigTypes jigTypes) {
-        Map<PackageIdentifier, List<JigType>> packageIdentifierListMap = jigTypes.list().stream()
+        Map<PackageIdentifier, List<JigType>> packageIdentifierListMap = jigTypes.stream()
                 .collect(groupingBy(JigType::packageIdentifier));
         // depth単位にリストにする
         Map<Integer, List<PackageIdentifier>> depthMap = packageIdentifierListMap.keySet().stream()

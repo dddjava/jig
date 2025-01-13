@@ -87,7 +87,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     }
 
     private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes, JigDocumentContext jigDocumentContext) {
-        return domainCoreJigTypes.list().stream()
+        return domainCoreJigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))
                 .map(jigType -> Nodes.businessRuleNodeOf(jigType, jigDocumentContext))

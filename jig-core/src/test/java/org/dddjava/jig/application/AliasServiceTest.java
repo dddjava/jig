@@ -47,8 +47,8 @@ class AliasServiceTest {
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
         TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
-        ClassComment classComment = typeFacts.jigTypes().list()
-                .stream().filter(jigType -> jigType.identifier().equals(typeIdentifier))
+        ClassComment classComment = typeFacts.jigTypes().stream()
+                .filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
 

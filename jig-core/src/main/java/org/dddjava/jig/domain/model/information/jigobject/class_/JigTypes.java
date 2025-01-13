@@ -42,7 +42,7 @@ public class JigTypes {
 
     public MethodRelations methodRelations() {
         if (methodRelations == null) {
-            methodRelations = list().stream()
+            methodRelations = stream()
                     .flatMap(JigType::methodRelationStream)
                     .collect(collectingAndThen(toList(), MethodRelations::new));
         }

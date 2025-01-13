@@ -24,7 +24,7 @@ public class CategoryTypes {
     }
 
     public static CategoryTypes from(JigTypes jigTypes) {
-        return jigTypes.list().stream()
+        return jigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
                 .sorted(Comparator.comparing(JigType::identifier))
                 .map(CategoryType::new)

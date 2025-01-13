@@ -54,7 +54,7 @@ public class TypeFacts {
             return classRelations;
         }
 
-        this.classRelations = new ClassRelations(jigTypes().list().stream()
+        this.classRelations = new ClassRelations(jigTypes().stream()
                 .flatMap(jigType ->
                         jigType.usingTypes().list().stream().map(usingType ->
                                 new ClassRelation(jigType.identifier(), usingType)))

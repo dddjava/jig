@@ -25,7 +25,7 @@ public class Validations {
     }
 
     public static Validations from(JigTypes jigTypes) {
-        List<Validation> list = jigTypes.list().stream()
+        List<Validation> list = jigTypes.stream()
                 .flatMap(Validations::validationAnnotatedMembers)
                 .map(Validation::new)
                 .collect(Collectors.toList());

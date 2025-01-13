@@ -47,7 +47,7 @@ public class BusinessRules {
     }
 
     public List<PackageJigTypes> listPackages() {
-        Map<PackageIdentifier, List<JigType>> map = list().stream()
+        Map<PackageIdentifier, List<JigType>> map = jigTypes.stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));

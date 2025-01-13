@@ -6,6 +6,7 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.summaries.SummaryModel;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,7 +30,8 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
 
     @HandleDocument({JigDocument.ApplicationSummary, JigDocument.UsecaseSummary})
     public SummaryModel servicesSummary(JigSource jigSource) {
-        return SummaryModel.from(jigService.serviceTypes(jigSource));
+        JigTypes jigTypes = jigService.serviceTypes(jigSource);
+        return SummaryModel.from(jigTypes, jigTypes);
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)

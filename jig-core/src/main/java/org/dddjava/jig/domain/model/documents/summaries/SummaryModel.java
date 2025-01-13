@@ -38,10 +38,6 @@ public class SummaryModel {
         return new SummaryModel(supportJigTypes, map, new EnumModels(List.of()));
     }
 
-    public static SummaryModel from(JigTypes jigTypes) {
-        return from(jigTypes, jigTypes);
-    }
-
     public static SummaryModel from(JigTypes supportJigTypes, CategoryTypes categoryTypes, EnumModels enumModels) {
         Map<PackageIdentifier, List<JigType>> map = categoryTypes.list().stream()
                 .map(CategoryType::jigType)

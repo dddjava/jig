@@ -27,7 +27,7 @@ public class JigTypes {
     private final Map<TypeIdentifier, JigType> map;
 
     public JigTypes(List<JigType> list) {
-        this.list = list;
+        this.list = list.stream().sorted(Comparator.comparing(JigType::identifier)).toList();
         this.map = list.stream().collect(Collectors.toMap(
                 JigType::identifier,
                 Function.identity(),
@@ -52,7 +52,6 @@ public class JigTypes {
     public List<JigType> listCollectionType() {
         return list.stream()
                 .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.コレクション)
-                .sorted(Comparator.comparing(JigType::identifier))
                 .collect(Collectors.toList());
     }
 

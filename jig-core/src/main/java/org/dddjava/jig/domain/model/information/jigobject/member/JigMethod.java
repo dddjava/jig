@@ -74,6 +74,10 @@ public class JigMethod {
         return instructions.hasNullReference();
     }
 
+    public boolean useNull() {
+        return referenceNull() || conditionalNull();
+    }
+
     public boolean notUseMember() {
         return instructions.hasMemberInstruction();
     }

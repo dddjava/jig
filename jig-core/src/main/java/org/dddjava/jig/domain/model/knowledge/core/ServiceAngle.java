@@ -58,13 +58,12 @@ public class ServiceAngle {
     }
 
     public boolean useStream() {
-        return new MethodWorries(serviceMethod.method()).contains(MethodWorry.StreamAPIを使用している);
+        return serviceMethod.method().usingMethods().containsStream();
     }
 
     public boolean useNull() {
-        return new MethodWorries(serviceMethod.method()).contains(MethodWorry.NULLリテラルを使用している, MethodWorry.NULL判定をしている);
+        return serviceMethod.method().useNull();
     }
-
 
     public MethodDeclarations userServiceMethods() {
         return userServiceMethods;

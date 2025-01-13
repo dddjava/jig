@@ -38,12 +38,6 @@ public enum MethodWorry {
             return method.declaration().methodReturn().typeIdentifier().isBoolean();
         }
     },
-    StreamAPIを使用している {
-        @Override
-        boolean judge(JigMethod jigMethod) {
-            return jigMethod.usingMethods().containsStream();
-        }
-    },
     voidを返している {
         @Override
         boolean judge(JigMethod jigMethod) {

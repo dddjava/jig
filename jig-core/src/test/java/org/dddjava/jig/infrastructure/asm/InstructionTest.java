@@ -2,7 +2,7 @@ package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,9 +29,9 @@ public class InstructionTest {
     @ParameterizedTest
     @ValueSource(classes = {MethodInstructionTestStub.class, StaticMethodInstruction.class, ConstructorInstruction.class})
     void メソッドで使用している型が取得できる(Class<?> clz) throws Exception {
-        JigTypeBuilder actual = exercise(clz);
+        var jigType = buildJigType(clz);
 
-        TypeIdentifiers identifiers = actual.build().usingTypes();
+        TypeIdentifiers identifiers = jigType.usingTypes();
         assertThat(identifiers.list())
                 .containsExactlyInAnyOrder(
                         // 標準
@@ -80,8 +80,8 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_通常のメソッド呼び出し() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
-        var jigMethods = actual.build().instanceMethods();
+        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigMethods = jigType.instanceMethods();
 
         var list = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("method(MethodArgument)"))
@@ -94,8 +94,8 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_メソッド参照() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
-        var jigMethods = actual.build().instanceMethods();
+        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigMethods = jigType.instanceMethods();
 
         var method3 = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("methodRef()"))
@@ -108,8 +108,8 @@ public class InstructionTest {
 
     @Test
     void メソッドの使用しているメソッドが取得できる_lambda式() throws Exception {
-        JigTypeBuilder actual = exercise(MethodInstructionTestStub.class);
-        var jigMethods = actual.build().instanceMethods();
+        var jigType = buildJigType(MethodInstructionTestStub.class);
+        var jigMethods = jigType.instanceMethods();
 
         var method2 = jigMethods.stream()
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("lambda()"))
@@ -121,10 +121,10 @@ public class InstructionTest {
 
     }
 
-    private JigTypeBuilder exercise(Class<?> definitionClass) throws URISyntaxException, IOException {
+    private JigType buildJigType(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
         AsmFactReader sut = new AsmFactReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow();
+        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
     }
 }

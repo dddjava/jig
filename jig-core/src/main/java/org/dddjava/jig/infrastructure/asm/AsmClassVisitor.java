@@ -274,6 +274,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitJumpInsn(int opcode, Label label) {
+                // TODO なんで抜いたっけ？のコメントを入れる。GOTOはforがらみでifeqと二重カウントされたから一旦退けたっぽい https://github.com/dddjava/jig/issues/320 けど、JSRは不明。
                 if (opcode != Opcodes.GOTO && opcode != Opcodes.JSR) {
                     // 何かしらの分岐がある
                     methodInstructions.register(MethodInstructionType.JUMP);

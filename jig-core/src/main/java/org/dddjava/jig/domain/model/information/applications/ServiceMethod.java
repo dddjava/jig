@@ -5,6 +5,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
 
     // TODO type
     public List<TypeIdentifier> requireTypes() {
-        List<TypeIdentifier> arguments = methodDeclaration().methodSignature().listArgumentTypeIdentifiers();
+        List<TypeIdentifier> arguments = new ArrayList<>(methodDeclaration().methodSignature().listArgumentTypeIdentifiers());
         // primaryTypeは除く
         primaryType().ifPresent(arguments::remove);
         return arguments;

@@ -14,9 +14,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * ASMを使用したFactFactoryの実装
- */
 @Repository
 public class AsmFactReader implements FactReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmFactReader.class);

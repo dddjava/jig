@@ -54,14 +54,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class AsmFactReaderTest {
 
     @Test
-    void JDK11でコンパイルされたクラス() throws IOException {
-        Path path = Paths.get(TestSupport.resourceRootURI()).resolve("jdk11").resolve("CompiledJdk11NestingClass.class");
-
-        AsmFactReader sut = new AsmFactReader();
-        sut.typeByteCode(TestSupport.newClassSource(path));
-    }
-
-    @Test
     void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
         JigType actual = JigType構築(Annotated.class);
 

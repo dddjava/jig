@@ -6,7 +6,7 @@ import stub.domain.model.relation.annotation.VariableAnnotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class Annotated {
+public class MemberAnnotatedClass {
 
     @VariableAnnotation(string = "af", arrayString = "bf", number = 13, clz = Field.class, arrayClz = {Object.class, Object.class}, enumValue = UseInAnnotation.DUMMY1, annotation = @Deprecated)
     Object field;

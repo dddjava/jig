@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import stub.domain.model.Annotated;
+import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.annotation.RuntimeRetainedAnnotation;
 import stub.domain.model.category.*;
 import stub.domain.model.relation.ClassDefinition;
@@ -163,7 +163,7 @@ public class AsmFactReaderTest {
     class フィールド {
         @Test
         void フィールドに付与されているアノテーションと記述が取得できる() throws Exception {
-            JigType actual = JigType構築(Annotated.class);
+            JigType actual = JigType構築(MemberAnnotatedClass.class);
 
             JigFields jigFields = actual.instanceMember().instanceFields();
 
@@ -219,7 +219,7 @@ public class AsmFactReaderTest {
     class メソッド {
         @Test
         void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
-            JigType actual = JigType構築(Annotated.class);
+            JigType actual = JigType構築(MemberAnnotatedClass.class);
 
             JigMethod method = actual.instanceMethods().resolveMethodBySignature(new MethodSignature("method"));
             MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);

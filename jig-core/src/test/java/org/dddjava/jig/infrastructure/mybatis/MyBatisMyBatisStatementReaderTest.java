@@ -2,8 +2,8 @@ package org.dddjava.jig.infrastructure.mybatis;
 
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatementId;
-import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +14,7 @@ import testing.TestSupport;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MyBatisMyBatisStatementReaderTest {
 
@@ -25,7 +25,7 @@ class MyBatisMyBatisStatementReaderTest {
         MyBatisStatements myBatisStatements = sut.readFrom(new SqlSources(TestSupport.getTestResourceRootURLs(), Collections.singletonList("stub.infrastructure.datasource.SampleMapper")));
 
         MyBatisStatement myBatisStatement = myBatisStatements.list().get(0);
-        assertThat(myBatisStatement.tables().asText()).isEqualTo("[fuga]");
+        assertEquals("[fuga]", myBatisStatement.tables().asText());
     }
 
     @ParameterizedTest
@@ -40,8 +40,8 @@ class MyBatisMyBatisStatementReaderTest {
                 .findFirst()
                 .orElseThrow(AssertionError::new);
 
-        assertThat(myBatisStatement.tables().asText()).isEqualTo("[" + tableName + "]");
-        assertThat(myBatisStatement.sqlType()).isEqualTo(sqlType);
+        assertEquals("[" + tableName + "]", myBatisStatement.tables().asText());
+        assertEquals(sqlType, myBatisStatement.sqlType());
     }
 
     static Stream<Arguments> 標準的なパターン() {

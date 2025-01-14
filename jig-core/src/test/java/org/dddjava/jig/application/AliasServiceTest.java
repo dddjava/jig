@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
@@ -39,8 +38,7 @@ class AliasServiceTest {
     void パッケージ別名取得(Sources source) {
         jigSourceReader.readProjectData(source);
 
-        Assertions.assertThat(sut.packageComment(PackageIdentifier.valueOf("stub")).asText())
-                .isEqualTo("テストでJIGに読み取らせる実装");
+        assertEquals("テストでJIGに読み取らせる実装", sut.packageComment(PackageIdentifier.valueOf("stub")).asText());
     }
 
     @ParameterizedTest

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PackageIdentifiersTest {
 
@@ -20,7 +20,7 @@ class PackageIdentifiersTest {
                 PackageIdentifier.valueOf("a.b.c.d")
         ));
         PackageDepth depth = sut.maxDepth();
-        assertThat(depth.value()).isEqualTo(5);
+        assertEquals(5, depth.value());
     }
 
     @Test
@@ -32,7 +32,7 @@ class PackageIdentifiersTest {
                 PackageIdentifier.valueOf("a.b.c.d")
         )).applyDepth(new PackageDepth(3));
 
-        assertThat(sut.maxDepth().value()).isEqualTo(3);
+        assertEquals(3, sut.maxDepth().value());
     }
 
     @Test
@@ -44,6 +44,6 @@ class PackageIdentifiersTest {
                 PackageIdentifier.valueOf("a.b.c.d")
         )).applyDepth(new PackageDepth(100));
 
-        assertThat(sut.maxDepth().value()).isEqualTo(5);
+        assertEquals(5, sut.maxDepth().value());
     }
 }

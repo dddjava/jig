@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.rdbaccess.Table;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.Tables;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TablesTest {
 
@@ -18,6 +18,6 @@ class TablesTest {
                 .merge(new Tables(fuga1))
                 .merge(new Tables(fuga2));
 
-        assertThat(sut.asText()).isEqualTo("[fuga, hoge]");
+        assertEquals("[fuga, hoge]", sut.asText());
     }
 }

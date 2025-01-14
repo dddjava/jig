@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.identifier.type;
 
-import org.assertj.core.api.Assertions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
@@ -13,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TypeIdentifiersTest {
 
@@ -22,7 +21,7 @@ class TypeIdentifiersTest {
     void test(List<String> identifiers, String simpleText) {
         TypeIdentifiers sut = identifiers.stream().map(TypeIdentifier::valueOf).collect(TypeIdentifiers.collector());
 
-        assertThat(sut.asSimpleText()).isEqualTo(simpleText);
+        assertEquals(simpleText, sut.asSimpleText());
     }
 
     static Stream<Arguments> test() {
@@ -40,7 +39,7 @@ class TypeIdentifiersTest {
     void typeIdentifier_asSimpleText(String fullName, String simpleText) {
         TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
 
-        assertThat(hoge.asSimpleText()).isEqualTo(simpleText);
+        assertEquals(simpleText, hoge.asSimpleText());
     }
 
     static Stream<Arguments> typeIdentifier_asSimpleText() {
@@ -57,7 +56,7 @@ class TypeIdentifiersTest {
     void typeIdentifier_packageIdentifier(String fullName, String packageName) {
         TypeIdentifier hoge = TypeIdentifier.valueOf(fullName);
 
-        Assertions.assertThat(hoge.packageIdentifier()).isEqualTo(PackageIdentifier.valueOf(packageName));
+        assertEquals(PackageIdentifier.valueOf(packageName), hoge.packageIdentifier());
     }
 
     static Stream<Arguments> typeIdentifier_packageIdentifier() {

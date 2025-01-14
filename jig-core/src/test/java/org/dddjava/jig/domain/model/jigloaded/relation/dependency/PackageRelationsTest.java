@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PackageRelationsTest {
 
@@ -21,6 +21,6 @@ class PackageRelationsTest {
 
         PackageRelations sut = new PackageRelations(dependencies);
 
-        assertThat(sut.number().asText()).isEqualTo("3");
+        assertEquals("3", sut.number().asText());
     }
 }

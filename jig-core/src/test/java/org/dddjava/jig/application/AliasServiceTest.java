@@ -7,7 +7,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
 import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import stub.domain.model.MethodJavadocStub;
 import stub.domain.model.NotJavadocStub;
 import testing.JigServiceTest;
 
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,15 +67,20 @@ class AliasServiceTest {
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
         JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
-        JigMethods jigMethods = jigType.instanceMember().instanceMethods();
-
-        JigMethod method = jigMethods.resolveMethodBySignature(new MethodSignature("method"));
+        JigMethod method = resolveMethodBySignature(jigType, new MethodSignature("method"));
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());
 
-        JigMethod overloadedMethod = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod", TypeIdentifier.from(String.class)));
+        JigMethod overloadedMethod = resolveMethodBySignature(jigType, new MethodSignature("overloadMethod", TypeIdentifier.from(String.class)));
         assertTrue(overloadedMethod.aliasTextOrBlank().matches("引数ありのメソッド"));
 
-        JigMethod overloadedMethod2 = jigMethods.resolveMethodBySignature(new MethodSignature("overloadMethod"));
+        JigMethod overloadedMethod2 = resolveMethodBySignature(jigType, new MethodSignature("overloadMethod"));
         assertTrue(overloadedMethod2.aliasTextOrBlank().matches("引数なしのメソッド"));
+    }
+
+    JigMethod resolveMethodBySignature(JigType jigType, MethodSignature methodSignature) {
+        return jigType.allJigMethodStream()
+                .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 }

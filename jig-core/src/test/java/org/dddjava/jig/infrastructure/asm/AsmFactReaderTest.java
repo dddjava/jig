@@ -44,6 +44,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -221,7 +222,7 @@ public class AsmFactReaderTest {
         void メソッドに付与されているアノテーションと記述が取得できる() throws Exception {
             JigType actual = JigType構築(MemberAnnotatedClass.class);
 
-            JigMethod method = actual.instanceMethods().resolveMethodBySignature(new MethodSignature("method"));
+            JigMethod method = resolveMethodBySignature(actual, new MethodSignature("method"));
             MethodAnnotation methodAnnotation = method.methodAnnotations().list().get(0);
 
             assertThat(methodAnnotation.annotationType().fullQualifiedName()).isEqualTo(VariableAnnotation.class.getTypeName());
@@ -248,8 +249,8 @@ public class AsmFactReaderTest {
                             TypeIdentifier.from(String.class)
                     );
 
-            MethodReturn methodReturn = actual.instanceMethods()
-                    .resolveMethodBySignature(new MethodSignature("parameterizedListMethod"))
+
+            MethodReturn methodReturn = resolveMethodBySignature(actual, new MethodSignature("parameterizedListMethod"))
                     .declaration().methodReturn();
             ParameterizedType parameterizedType = methodReturn.parameterizedType();
 
@@ -282,5 +283,12 @@ public class AsmFactReaderTest {
 
         AsmFactReader sut = new AsmFactReader();
         return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
+    }
+
+    JigMethod resolveMethodBySignature(JigType jigType, MethodSignature methodSignature) {
+        return jigType.allJigMethodStream()
+                .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
     }
 }

@@ -9,15 +9,7 @@ import java.util.List;
  *
  * 総称型 {@code Hoge<T>} に対する {@code Hoge<Fuga>} 。
  */
-public class ParameterizedType {
-
-    TypeIdentifier typeIdentifier;
-    TypeArgumentList actualTypeArgumentList;
-
-    public ParameterizedType(TypeIdentifier typeIdentifier, TypeArgumentList actualTypeArgumentList) {
-        this.typeIdentifier = typeIdentifier;
-        this.actualTypeArgumentList = actualTypeArgumentList;
-    }
+public record ParameterizedType(TypeIdentifier typeIdentifier, TypeArgumentList actualTypeArgumentList) {
 
     public ParameterizedType(TypeIdentifier typeIdentifier) {
         // 非総称型

@@ -258,6 +258,7 @@ class AsmClassVisitor extends ClassVisitor {
             }
 
             private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {
+                // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
                 return new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, desc), new MethodReturn(methodDescriptorToReturnIdentifier(desc)));
             }
 
@@ -313,7 +314,7 @@ class AsmClassVisitor extends ClassVisitor {
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
                 .map(this::toTypeIdentifier)
                 .collect(Collectors.toList());
-        return new MethodSignature(name, argumentTypes);
+        return MethodSignature.fromTypeIdentifier(name, argumentTypes);
     }
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

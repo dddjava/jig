@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 
@@ -18,20 +19,24 @@ import static java.util.stream.Collectors.joining;
  */
 public final class MethodSignature {
     private final String methodName;
-    private final List<TypeIdentifier> arguments;
+    private final List<ParameterizedType> arguments;
 
-    public MethodSignature(String methodName, List<TypeIdentifier> arguments) {
+    public MethodSignature(String methodName, List<ParameterizedType> arguments) {
         this.methodName = methodName;
         this.arguments = arguments;
     }
 
     public MethodSignature(String methodName, TypeIdentifier... arguments) {
-        this(methodName, List.of(arguments));
+        this(methodName, Stream.of(arguments).map(ParameterizedType::new).toList());
     }
 
     public static MethodSignature from(String methodName, List<ParameterizedType> arguments) {
-        // TODO ParameterizedTypeのまま持つようにする
-        return new MethodSignature(methodName, arguments.stream().map(ParameterizedType::typeIdentifier).toList());
+        return new MethodSignature(methodName, arguments);
+    }
+
+    @Deprecated(since = "これで生成されるものは絶対ジェネリクスがないものになっているので、MethodSignatureとは異なる型にする")
+    public static MethodSignature fromTypeIdentifier(String methodName, List<TypeIdentifier> arguments) {
+        return new MethodSignature(methodName, arguments.stream().map(ParameterizedType::new).toList());
     }
 
     /**
@@ -41,7 +46,7 @@ public final class MethodSignature {
      * @see #asSimpleText()
      */
     public String asText() {
-        var argumentsText = arguments.stream().map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
+        var argumentsText = arguments.stream().map(ParameterizedType::typeIdentifier).map(TypeIdentifier::fullQualifiedName).collect(joining(", "));
         return methodName + "(" + argumentsText + ")";
     }
 
@@ -56,11 +61,16 @@ public final class MethodSignature {
      * @return "methodName(ArgumentType)"
      */
     public String asSimpleText() {
-        var argumentsText = arguments.stream().map(TypeIdentifier::asSimpleText).collect(joining(", "));
+        var argumentsText = arguments.stream().map(ParameterizedType::typeIdentifier).map(TypeIdentifier::asSimpleText).collect(joining(", "));
         return methodName + "(" + argumentsText + ")";
     }
 
+    @Deprecated(since = "型パラメタがない引数リストが欲しい場合だが、廃止してargumentsを使っていきたい")
     public List<TypeIdentifier> listArgumentTypeIdentifiers() {
+        return arguments.stream().map(ParameterizedType::typeIdentifier).toList();
+    }
+
+    public List<ParameterizedType> arguments() {
         return arguments;
     }
 
@@ -97,7 +107,7 @@ public final class MethodSignature {
     }
 
     public String packageAbbreviationText() {
-        var argumentsText = arguments.stream().map(TypeIdentifier::packageAbbreviationText).collect(joining(", "));
+        var argumentsText = arguments.stream().map(ParameterizedType::typeIdentifier).map(TypeIdentifier::packageAbbreviationText).collect(joining(", "));
         return methodName + "(" + argumentsText + ")";
     }
 

@@ -177,7 +177,6 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                // opcode: INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE.
                 var methodDeclaration = toMethodDeclaration(owner, name, descriptor);
                 methodInstructions.registerMethod(methodDeclaration);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);

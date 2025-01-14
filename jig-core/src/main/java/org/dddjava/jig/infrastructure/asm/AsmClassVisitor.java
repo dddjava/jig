@@ -11,7 +11,6 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynami
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
-import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;
@@ -30,17 +29,14 @@ import java.util.stream.Collectors;
 class AsmClassVisitor extends ClassVisitor {
     static Logger logger = LoggerFactory.getLogger(AsmClassVisitor.class);
 
-    private final ClassSource classSource;
     private JigTypeBuilder jigTypeBuilder;
 
-    AsmClassVisitor(ClassSource classSource) {
+    AsmClassVisitor() {
         super(Opcodes.ASM9);
-        this.classSource = classSource;
     }
 
     @Override
     public void visitEnd() {
-        logger.debug("visit {} end", classSource);
         super.visitEnd();
     }
 

@@ -29,7 +29,7 @@ public class AsmFactReader implements FactReader {
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {
         try {
-            AsmClassVisitor asmClassVisitor = new AsmClassVisitor(classSource);
+            AsmClassVisitor asmClassVisitor = new AsmClassVisitor();
 
             ClassReader classReader = new ClassReader(classSource.value());
             classReader.accept(asmClassVisitor, ClassReader.SKIP_DEBUG);

@@ -43,6 +43,10 @@ class JigExpressionObject {
         return parameterizedTypeLinkText(fieldDeclaration.fieldType().parameterizedType());
     }
 
+    public String methodArgumentRawText(ParameterizedType parameterizedType) {
+        return parameterizedTypeLinkText(parameterizedType);
+    }
+
     private String parameterizedTypeLinkText(ParameterizedType parameterizedType) {
         TypeIdentifier typeIdentifier = parameterizedType.typeIdentifier();
         TypeArgumentList typeArgumentList = parameterizedType.typeParameters();

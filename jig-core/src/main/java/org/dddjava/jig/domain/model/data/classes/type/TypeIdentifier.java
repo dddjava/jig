@@ -142,4 +142,8 @@ public class TypeIdentifier implements Comparable<TypeIdentifier> {
     public String packageAbbreviationText() {
         return packageIdentifier().abbreviationText() + "." + asSimpleText();
     }
+
+    public TypeIdentifier convertArray() {
+        return valueOf(value + "[]");
+    }
 }

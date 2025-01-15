@@ -17,7 +17,7 @@ class AsmClassSignatureVisitorTest {
 
     @Test
     void name() throws IOException {
-        Class<Hoge> clz = Hoge.class;
+        Class<JigSupportClassSignatureImplementation> clz = JigSupportClassSignatureImplementation.class;
         var map = new HashMap<Class<?>, String>();
 
         new ClassReader(clz.getName())
@@ -37,7 +37,7 @@ class AsmClassSignatureVisitorTest {
         assertEquals("extends [Object] implements [Iterable<Optional<String>>]", sut.simpleText());
     }
 
-    static class Hoge implements Iterable<Optional<String>> {
+    static class JigSupportClassSignatureImplementation implements Iterable<Optional<String>> {
 
         @Override
         public Iterator<Optional<String>> iterator() {

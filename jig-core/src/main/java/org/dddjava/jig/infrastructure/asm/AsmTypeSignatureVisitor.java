@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TypeSignature = visitBaseType
@@ -22,13 +23,48 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         super(api);
     }
 
-    private String className;
-    private final List<AsmTypeSignatureVisitor> argumentAsmTypeSignatureVisitors = new ArrayList<>();
+    record ClassType(String name, List<AsmTypeSignatureVisitor> arguments, List<ClassType> innerClasses) {
+        ClassType(String name) {
+            this(name, new ArrayList<>(), new ArrayList<>());
+        }
+
+        void addCurrentArguments(AsmTypeSignatureVisitor typeSignatureVisitor) {
+            if (innerClasses.isEmpty()) {
+                arguments.add(typeSignatureVisitor);
+            } else {
+                lastInnerClass().arguments().add(typeSignatureVisitor);
+            }
+        }
+
+        ClassType lastInnerClass() {
+            return innerClasses.get(innerClasses.size() - 1);
+        }
+    }
+
+    /**
+     * ClassTypeSignature
+     */
+    private ClassType classType = null;
+
+    /**
+     * VoidDescriptor or BaseType
+     */
+    private String baseTypeIdentifier = null;
+
+    /**
+     * TypeVariableSignature
+     */
+    private String typeVariableIdentifier = null;
+
+    /**
+     * ArrayTypeSignature
+     */
+    private AsmTypeSignatureVisitor arrayAsmTypeSignatureVisitor = null; // 配列の時だけ入る
 
     @Override
     public void visitBaseType(char descriptor) {
         logger.debug("visitBaseType:{}", descriptor);
-        className = switch (descriptor) {
+        baseTypeIdentifier = switch (descriptor) {
             case 'Z' -> "boolean";
             case 'C' -> "char";
             case 'B' -> "byte";
@@ -43,28 +79,22 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         };
     }
 
-    /**
-     * 型引数名。
-     * nameはSignatureで T と ; に挟まれたもの。
-     * - T: TT;
-     * - T1: TT1;
-     *
-     * <pre><code>
-     * TypeVariableSignature:
-     *   T Identifier ;
-     * </code></pre>
-     */
     @Override
     public void visitTypeVariable(String name) {
         logger.debug("visitTypeVariable:{}", name);
-        // TODO: TypeIdentifierではないんだよなぁ……
-        this.className = name;
+        this.typeVariableIdentifier = name;
+    }
+
+    @Override
+    public SignatureVisitor visitArrayType() {
+        logger.debug("visitArrayType");
+        return arrayAsmTypeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
     }
 
     @Override
     public void visitClassType(String name) {
         logger.debug("visitClassType:{}", name);
-        className = name;
+        classType = new ClassType(name);
     }
 
     @Override
@@ -83,14 +113,15 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
         // 一旦考慮しないことにする
 
         var typeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
-        argumentAsmTypeSignatureVisitors.add(typeSignatureVisitor);
+        // この時点でClassTypeがnullの場合は落ちて良い。
+        classType.addCurrentArguments(typeSignatureVisitor);
         return typeSignatureVisitor;
     }
 
     @Override
     public void visitInnerClassType(String name) {
         logger.debug("visitInnerClassType:{}", name);
-        super.visitInnerClassType(name);
+        classType.innerClasses().add(new ClassType(name));
     }
 
     @Override
@@ -100,9 +131,32 @@ class AsmTypeSignatureVisitor extends SignatureVisitor {
     }
 
     public ParameterizedType generateParameterizedType() {
-        var argumentParameterizedTypes = argumentAsmTypeSignatureVisitors.stream()
-                .map(AsmTypeSignatureVisitor::generateParameterizedType)
-                .toList();
-        return new ParameterizedType(TypeIdentifier.valueOf(className), argumentParameterizedTypes);
+        if (baseTypeIdentifier != null) {
+            return new ParameterizedType(TypeIdentifier.valueOf(baseTypeIdentifier));
+        } else if (typeVariableIdentifier != null) {
+            return new ParameterizedType(TypeIdentifier.valueOf(typeVariableIdentifier));
+        } else if (arrayAsmTypeSignatureVisitor != null) {
+            return new ParameterizedType(arrayAsmTypeSignatureVisitor.generateParameterizedType().typeIdentifier().convertArray());
+        } else if (classType != null) {
+
+            if (classType.innerClasses().isEmpty()) {
+                TypeIdentifier typeIdentifier = TypeIdentifier.valueOf(classType.name());
+                var argumentParameterizedTypes = classType.arguments().stream()
+                        .map(AsmTypeSignatureVisitor::generateParameterizedType)
+                        .toList();
+                return new ParameterizedType(typeIdentifier, argumentParameterizedTypes);
+            }
+            // InnerClassがある場合、このシグネチャの指すクラスは末尾になるので、そのように組み立てる。
+            // この場合の途中のParameter型をうまく表現する方法が思い当たらない。とりあえず無視する。
+            var innerClassName = classType.innerClasses().stream().map(ClassType::name).collect(Collectors.joining("."));
+            TypeIdentifier typeIdentifier = TypeIdentifier.valueOf(classType.name() + "." + innerClassName);
+            // 末尾のinnerClassの型パラメタを採用。
+            var argumentParameterizedTypes = classType.lastInnerClass().arguments().stream()
+                    .map(AsmTypeSignatureVisitor::generateParameterizedType)
+                    .toList();
+            return new ParameterizedType(typeIdentifier, argumentParameterizedTypes);
+        }
+
+        throw new IllegalStateException("想定していたシグネチャではありませんでした。TypeSignatureでないところにAsmTypeSignatureVisitorが使用された？");
     }
 }

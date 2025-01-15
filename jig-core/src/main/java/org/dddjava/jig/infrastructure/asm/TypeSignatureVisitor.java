@@ -3,10 +3,11 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * TypeSignature = visitBaseType
@@ -15,20 +16,60 @@ import java.util.stream.Collectors;
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
  */
 class TypeSignatureVisitor extends SignatureVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(TypeSignatureVisitor.class);
+
     public TypeSignatureVisitor(int api) {
         super(api);
     }
 
     private String className;
-    private final List<String> typeArgumentClassName = new ArrayList<>();
+    private final List<TypeSignatureVisitor> argumentTypeSignatureVisitors = new ArrayList<>();
+
+    @Override
+    public void visitBaseType(char descriptor) {
+        logger.debug("visitBaseType:{}", descriptor);
+        className = switch (descriptor) {
+            case 'Z' -> "boolean";
+            case 'C' -> "char";
+            case 'B' -> "byte";
+            case 'S' -> "short";
+            case 'I' -> "int";
+            case 'F' -> "float";
+            case 'J' -> "long";
+            case 'D' -> "double";
+            // methodのResultのときは（BaseTypeではないけど）ここに入ってくる
+            case 'V' -> "void";
+            default -> throw new IllegalArgumentException("%s is not base type".formatted(descriptor));
+        };
+    }
+
+    /**
+     * 型引数名。
+     * nameはSignatureで T と ; に挟まれたもの。
+     * - T: TT;
+     * - T1: TT1;
+     *
+     * <pre><code>
+     * TypeVariableSignature:
+     *   T Identifier ;
+     * </code></pre>
+     */
+    @Override
+    public void visitTypeVariable(String name) {
+        logger.debug("visitTypeVariable:{}", name);
+        // TODO: TypeIdentifierではないんだよなぁ……
+        this.className = name;
+    }
 
     @Override
     public void visitClassType(String name) {
+        logger.debug("visitClassType:{}", name);
         className = name;
     }
 
     @Override
     public void visitTypeArgument() {
+        logger.debug("visitTypeArgument");
         // <?> などで指定された場合。シグネチャでは * となる。
         // 特に処理はしないがこのメソッドが何かのコメントのためにオーバーライドしておく。
         super.visitTypeArgument();
@@ -36,33 +77,32 @@ class TypeSignatureVisitor extends SignatureVisitor {
 
     @Override
     public SignatureVisitor visitTypeArgument(char wildcard) {
+        logger.debug("visitTypeArgument:{}", wildcard);
         // wildcardは '+', '-' or '='.
         // 境界型を使用しない場合は = になる。
         // 一旦考慮しないことにする
 
-        return new SignatureVisitor(this.api) {
+        var typeSignatureVisitor = new TypeSignatureVisitor(this.api);
+        argumentTypeSignatureVisitors.add(typeSignatureVisitor);
+        return typeSignatureVisitor;
+    }
 
-            @Override
-            public void visitClassType(String name) {
-                typeArgumentClassName.add(name);
-            }
+    @Override
+    public void visitInnerClassType(String name) {
+        logger.debug("visitInnerClassType:{}", name);
+        super.visitInnerClassType(name);
+    }
 
-            @Override
-            public SignatureVisitor visitTypeArgument(char wildcard) {
-                // 二段階以上のジェネリクスは無視する
-                // デフォルトが return this のため、
-                // このメソッドをオーバーライドしないと List<Map<String, String>> のパラメタ型が Map,String,String の3つ並列になってしまう。
-                // 現在は Map のみ取れれば良いとして、ここでは上書き。
-                return new SignatureVisitor(this.api) {
-                };
-            }
-        };
+    @Override
+    public void visitEnd() {
+        logger.debug("visitEnd");
+        super.visitEnd();
     }
 
     public ParameterizedType generateParameterizedType() {
-        return new ParameterizedType(
-                TypeIdentifier.valueOf(className),
-                typeArgumentClassName.stream().map(TypeIdentifier::valueOf).collect(Collectors.toList())
-        );
+        var argumentParameterizedTypes = argumentTypeSignatureVisitors.stream()
+                .map(TypeSignatureVisitor::generateParameterizedType)
+                .toList();
+        return new ParameterizedType(TypeIdentifier.valueOf(className), argumentParameterizedTypes);
     }
 }

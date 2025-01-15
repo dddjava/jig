@@ -9,7 +9,10 @@ import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
-import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.information.jigobject.class_.TypeKind;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
@@ -47,7 +50,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        List<TypeIdentifier> actualTypeParameters = extractClassTypeFromGenericsSignature(signature);
+        List<ParameterizedType> actualTypeParameters = extractClassTypeFromGenericsSignature(signature).stream().map(ParameterizedType::new).collect(Collectors.toList());
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
         ParameterizedType superType = superType(superName, signature);
@@ -468,7 +471,7 @@ class AsmClassVisitor extends ClassVisitor {
                 }
         );
 
-        return new ParameterizedType(TypeIdentifier.valueOf(superName), new TypeArgumentList(typeParameters));
+        return ParameterizedType.convert(TypeIdentifier.valueOf(superName), typeParameters);
     }
 
     private List<ParameterizedType> interfaceTypes(String[] interfaces, String signature) {
@@ -521,7 +524,7 @@ class AsmClassVisitor extends ClassVisitor {
 
                             @Override
                             public void visitEnd() {
-                                parameterizedTypes.add(new ParameterizedType(TypeIdentifier.valueOf(interfaceName), new TypeArgumentList(typeParameters)));
+                                parameterizedTypes.add(ParameterizedType.convert(TypeIdentifier.valueOf(interfaceName), typeParameters));
                             }
                         };
                     }

@@ -5,6 +5,8 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.objectweb.asm.signature.SignatureVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
  * (visitParameterType* visitReturnType visitExceptionType* )
  */
 class MethodSignatureVisitor extends SignatureVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(MethodSignatureVisitor.class);
     List<TypeSignatureVisitor> parameterVisitors;
     TypeSignatureVisitor returnVisitor;
 
@@ -25,8 +28,30 @@ class MethodSignatureVisitor extends SignatureVisitor {
         returnVisitor = new TypeSignatureVisitor(this.api);
     }
 
+    /**
+     * 型の仮引数名。ジェネリクスメソッドで登場。バインドした場合は出てこない。
+     */
+    @Override
+    public void visitFormalTypeParameter(String name) {
+        logger.debug("visitFormalTypeParameter:{}", name);
+        super.visitFormalTypeParameter(name);
+    }
+
+    @Override
+    public SignatureVisitor visitClassBound() {
+        logger.debug("visitClassBound");
+        return super.visitClassBound();
+    }
+
+    @Override
+    public SignatureVisitor visitInterfaceBound() {
+        logger.debug("visitInterfaceBound");
+        return super.visitInterfaceBound();
+    }
+
     @Override
     public SignatureVisitor visitParameterType() {
+        logger.debug("visitParameterType");
         TypeSignatureVisitor visitor = new TypeSignatureVisitor(this.api);
         parameterVisitors.add(visitor);
         return visitor;
@@ -34,7 +59,14 @@ class MethodSignatureVisitor extends SignatureVisitor {
 
     @Override
     public SignatureVisitor visitReturnType() {
+        logger.debug("visitReturnType");
         return returnVisitor;
+    }
+
+    @Override
+    public SignatureVisitor visitExceptionType() {
+        logger.debug("visitExceptionType");
+        return super.visitExceptionType();
     }
 
     MethodDeclaration methodDeclaration(TypeIdentifier declaringType, String methodName) {

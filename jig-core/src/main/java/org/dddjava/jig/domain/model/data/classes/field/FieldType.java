@@ -18,7 +18,7 @@ public class FieldType {
     }
 
     public FieldType(TypeIdentifier typeIdentifier, TypeIdentifiers typeParameters) {
-        this(new ParameterizedType(typeIdentifier, new TypeArgumentList(typeParameters.list())));
+        this(ParameterizedType.convert(typeIdentifier, typeParameters.list()));
     }
 
     public TypeArgumentList typeParameterTypeIdentifiers() {

@@ -3,25 +3,24 @@ package org.dddjava.jig.domain.model.data.classes.type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * パラメータ化された型
- *
- * 総称型 {@code Hoge<T>} に対する {@code Hoge<Fuga>} 。
  */
-public record ParameterizedType(TypeIdentifier typeIdentifier, TypeArgumentList actualTypeArgumentList) {
+public record ParameterizedType(TypeIdentifier typeIdentifier, List<ParameterizedType> _typeParameters) {
 
     public ParameterizedType(TypeIdentifier typeIdentifier) {
         // 非総称型
-        this(typeIdentifier, new TypeArgumentList(Collections.emptyList()));
+        this(typeIdentifier, Collections.emptyList());
     }
 
     public ParameterizedType(TypeIdentifier typeIdentifier, TypeIdentifier typeParameter) {
-        this(typeIdentifier, new TypeArgumentList(Collections.singletonList(typeParameter)));
+        this(typeIdentifier, List.of(new ParameterizedType(typeParameter)));
     }
 
-    public ParameterizedType(TypeIdentifier typeIdentifier, List<TypeIdentifier> actualTypeParameters) {
-        this(typeIdentifier, new TypeArgumentList(actualTypeParameters));
+    public static ParameterizedType convert(TypeIdentifier typeIdentifier, List<TypeIdentifier> list) {
+        return new ParameterizedType(typeIdentifier, list.stream().map(ParameterizedType::new).toList());
     }
 
     public TypeIdentifier typeIdentifier() {
@@ -29,14 +28,16 @@ public record ParameterizedType(TypeIdentifier typeIdentifier, TypeArgumentList 
     }
 
     public String asSimpleText() {
-        if (actualTypeArgumentList.empty()) {
+        if (_typeParameters.isEmpty()) {
             return typeIdentifier.asSimpleText();
         }
-        return typeIdentifier.asSimpleText() + actualTypeArgumentList.asSimpleText();
+        return typeIdentifier.asSimpleText() + _typeParameters.stream()
+                .map(ParameterizedType::asSimpleText)
+                .collect(Collectors.joining(", ", "<", ">"));
     }
 
     public TypeArgumentList typeParameters() {
-        return actualTypeArgumentList;
+        return new TypeArgumentList(_typeParameters.stream().map(ParameterizedType::typeIdentifier).toList());
     }
 
     List<TypeIdentifier> listTypeIdentifiers() {

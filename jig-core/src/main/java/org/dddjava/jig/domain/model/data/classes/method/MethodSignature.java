@@ -61,7 +61,7 @@ public final class MethodSignature {
      * @return "methodName(ArgumentType)"
      */
     public String asSimpleText() {
-        var argumentsText = arguments.stream().map(ParameterizedType::typeIdentifier).map(TypeIdentifier::asSimpleText).collect(joining(", "));
+        var argumentsText = arguments.stream().map(ParameterizedType::asSimpleText).collect(joining(", "));
         return methodName + "(" + argumentsText + ")";
     }
 

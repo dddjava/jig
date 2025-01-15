@@ -17,15 +17,15 @@ import java.util.stream.Collectors;
  * ( visitFormalTypeParameter visitClassBound? visitInterfaceBound* )*
  * (visitParameterType* visitReturnType visitExceptionType* )
  */
-class MethodSignatureVisitor extends SignatureVisitor {
-    private static final Logger logger = LoggerFactory.getLogger(MethodSignatureVisitor.class);
-    List<TypeSignatureVisitor> parameterVisitors;
-    TypeSignatureVisitor returnVisitor;
+class AsmMethodSignatureVisitor extends SignatureVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(AsmMethodSignatureVisitor.class);
+    List<AsmTypeSignatureVisitor> parameterVisitors;
+    AsmTypeSignatureVisitor returnVisitor;
 
-    public MethodSignatureVisitor(int api) {
+    public AsmMethodSignatureVisitor(int api) {
         super(api);
         parameterVisitors = new ArrayList<>();
-        returnVisitor = new TypeSignatureVisitor(this.api);
+        returnVisitor = new AsmTypeSignatureVisitor(this.api);
     }
 
     /**
@@ -52,7 +52,7 @@ class MethodSignatureVisitor extends SignatureVisitor {
     @Override
     public SignatureVisitor visitParameterType() {
         logger.debug("visitParameterType");
-        TypeSignatureVisitor visitor = new TypeSignatureVisitor(this.api);
+        AsmTypeSignatureVisitor visitor = new AsmTypeSignatureVisitor(this.api);
         parameterVisitors.add(visitor);
         return visitor;
     }

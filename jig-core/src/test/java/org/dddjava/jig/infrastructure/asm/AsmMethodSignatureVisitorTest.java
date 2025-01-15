@@ -23,8 +23,8 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-class MethodSignatureVisitorTest {
-    private static final Logger logger = LoggerFactory.getLogger(MethodSignatureVisitorTest.class);
+class AsmMethodSignatureVisitorTest {
+    private static final Logger logger = LoggerFactory.getLogger(AsmMethodSignatureVisitorTest.class);
 
     @MethodSource
     @ParameterizedTest
@@ -44,7 +44,7 @@ class MethodSignatureVisitorTest {
         var actualSignature = map.get(methodName);
         assertEquals(expectedSignature, actualSignature);
 
-        MethodSignatureVisitor sut = new MethodSignatureVisitor(Opcodes.ASM9);
+        AsmMethodSignatureVisitor sut = new AsmMethodSignatureVisitor(Opcodes.ASM9);
         logger.debug("read signature:{}", actualSignature);
         new SignatureReader(actualSignature).accept(sut);
 

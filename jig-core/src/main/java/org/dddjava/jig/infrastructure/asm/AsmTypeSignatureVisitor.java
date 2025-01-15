@@ -15,15 +15,15 @@ import java.util.List;
  * | visitArrayType
  * | ( visitClassType visitTypeArgument* ( visitInnerClassType visitTypeArgument* )* visitEnd ) )
  */
-class TypeSignatureVisitor extends SignatureVisitor {
-    private static final Logger logger = LoggerFactory.getLogger(TypeSignatureVisitor.class);
+class AsmTypeSignatureVisitor extends SignatureVisitor {
+    private static final Logger logger = LoggerFactory.getLogger(AsmTypeSignatureVisitor.class);
 
-    public TypeSignatureVisitor(int api) {
+    public AsmTypeSignatureVisitor(int api) {
         super(api);
     }
 
     private String className;
-    private final List<TypeSignatureVisitor> argumentTypeSignatureVisitors = new ArrayList<>();
+    private final List<AsmTypeSignatureVisitor> argumentAsmTypeSignatureVisitors = new ArrayList<>();
 
     @Override
     public void visitBaseType(char descriptor) {
@@ -82,8 +82,8 @@ class TypeSignatureVisitor extends SignatureVisitor {
         // 境界型を使用しない場合は = になる。
         // 一旦考慮しないことにする
 
-        var typeSignatureVisitor = new TypeSignatureVisitor(this.api);
-        argumentTypeSignatureVisitors.add(typeSignatureVisitor);
+        var typeSignatureVisitor = new AsmTypeSignatureVisitor(this.api);
+        argumentAsmTypeSignatureVisitors.add(typeSignatureVisitor);
         return typeSignatureVisitor;
     }
 
@@ -100,8 +100,8 @@ class TypeSignatureVisitor extends SignatureVisitor {
     }
 
     public ParameterizedType generateParameterizedType() {
-        var argumentParameterizedTypes = argumentTypeSignatureVisitors.stream()
-                .map(TypeSignatureVisitor::generateParameterizedType)
+        var argumentParameterizedTypes = argumentAsmTypeSignatureVisitors.stream()
+                .map(AsmTypeSignatureVisitor::generateParameterizedType)
                 .toList();
         return new ParameterizedType(TypeIdentifier.valueOf(className), argumentParameterizedTypes);
     }

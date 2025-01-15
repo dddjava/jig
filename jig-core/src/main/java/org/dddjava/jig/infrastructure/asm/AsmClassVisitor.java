@@ -50,6 +50,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        // accessは https://docs.oracle.com/javase/specs/jvms/se17/html/jvms-4.html#jvms-4.1-200-E.1
         List<ParameterizedType> actualTypeParameters = extractClassTypeFromGenericsSignature(signature).stream().map(ParameterizedType::new).collect(Collectors.toList());
 
         ParameterizedType type = new ParameterizedType(TypeIdentifier.valueOf(name), actualTypeParameters);
@@ -70,6 +71,7 @@ class AsmClassVisitor extends ClassVisitor {
 
         // FIXME: アノテーション、インタフェース、抽象型の判定が足りない
 
+        // この判定できるのはASM固有
         if ((access & Opcodes.ACC_RECORD) != 0) {
             return TypeKind.レコード型;
         }

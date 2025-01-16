@@ -178,7 +178,8 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                var methodDeclaration = toMethodDeclaration(owner, name, descriptor);
+                // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
+                var methodDeclaration = new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, descriptor), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor)));
                 methodInstructions.registerMethod(methodDeclaration);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
@@ -223,7 +224,9 @@ class AsmClassVisitor extends ClassVisitor {
                         // 0は無視して1,2を参照する。
                         if (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                                 && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD) {
-                            var methodDeclaration = toMethodDeclaration(handle.getOwner(), handle.getName(), handle.getDesc());
+                            String desc = handle.getDesc();
+                            // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
+                            var methodDeclaration = new MethodDeclaration(TypeIdentifier.valueOf(handle.getOwner()), toMethodSignature(handle.getName(), desc), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(desc)));
 
                             var returnType = toTypeIdentifier(type.getReturnType());
                             var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> toTypeIdentifier(t)).toList();
@@ -260,11 +263,6 @@ class AsmClassVisitor extends ClassVisitor {
                         yield false;
                     }
                 };
-            }
-
-            private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {
-                // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
-                return new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, desc), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(desc)));
             }
 
             @Override

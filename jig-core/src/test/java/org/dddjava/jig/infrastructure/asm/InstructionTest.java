@@ -101,7 +101,7 @@ public class InstructionTest {
                 .filter(jigMethod -> jigMethod.declaration().asSignatureSimpleText().equals("methodRef()"))
                 .toList();
         assertEquals(
-                "[Object.toString()]",
+                "[MethodReference.referenceMethod()]",
                 method3.get(0).usingMethods().methodDeclarations().asSimpleText()
         );
     }

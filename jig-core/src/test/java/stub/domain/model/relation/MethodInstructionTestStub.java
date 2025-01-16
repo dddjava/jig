@@ -36,7 +36,7 @@ public class MethodInstructionTestStub {
 
     void methodRef() {
         // メソッド参照
-        Function<MethodReference, String> method = MethodReference::toString;
+        Function<MethodReference, String> method = MethodReference::referenceMethod;
     }
 
     MethodReturn method(List<ArgumentGenericsParameter> list) throws CheckedException {

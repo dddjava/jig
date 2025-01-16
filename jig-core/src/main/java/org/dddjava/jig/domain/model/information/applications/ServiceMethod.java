@@ -50,7 +50,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         return methodDeclaration().declaringType();
     }
 
-    // TODO type
     public List<TypeIdentifier> internalUsingTypes() {
         return usingMethods().methodDeclarations().list().stream()
                 .flatMap(methodDeclaration -> methodDeclaration.relateTypes().stream())
@@ -61,7 +60,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
                 .collect(Collectors.toList());
     }
 
-    // TODO type
     public Optional<TypeIdentifier> primaryType() {
         // 戻り値型が主要な関心
         TypeIdentifier typeIdentifier = methodDeclaration().methodReturn().typeIdentifier();
@@ -69,7 +67,6 @@ public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
         return Optional.of(typeIdentifier);
     }
 
-    // TODO type
     public List<TypeIdentifier> requireTypes() {
         List<TypeIdentifier> arguments = new ArrayList<>(methodDeclaration().methodSignature().listArgumentTypeIdentifiers());
         // primaryTypeは除く

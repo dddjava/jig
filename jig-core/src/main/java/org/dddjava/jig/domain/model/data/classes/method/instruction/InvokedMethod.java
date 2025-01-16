@@ -2,6 +2,7 @@ package org.dddjava.jig.domain.model.data.classes.method.instruction;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,4 +13,11 @@ import java.util.List;
 public record InvokedMethod(TypeIdentifier methodOwner, String methodName,
                             List<TypeIdentifier> argumentTypes,
                             TypeIdentifier returnType) {
+
+    public List<TypeIdentifier> extractTypeIdentifiers() {
+        List<TypeIdentifier> extractedTypes = new ArrayList<>(argumentTypes);
+        extractedTypes.add(methodOwner);
+        extractedTypes.add(returnType);
+        return extractedTypes;
+    }
 }

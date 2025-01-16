@@ -90,7 +90,7 @@ public record Instructions(List<Instruction> values) {
                                     ((FieldReference) instruction.detail()).fieldTypeIdentifier(),
                                     ((FieldReference) instruction.detail()).declaringType()
                             );
-                            case METHOD -> ((MethodDeclaration) instruction.detail()).dependsTypes().stream();
+                            case METHOD -> ((InvokedMethod) instruction.detail()).extractTypeIdentifiers().stream();
                             case CLASS参照 -> Stream.of((TypeIdentifier) instruction.detail());
                             case InvokeDynamic -> ((InvokeDynamicInstruction) instruction.detail()).usingTypes();
                             default -> Stream.empty();

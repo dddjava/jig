@@ -8,6 +8,7 @@ import org.dddjava.jig.domain.model.data.classes.field.FieldType;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
+import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
@@ -178,9 +179,13 @@ class AsmClassVisitor extends ClassVisitor {
 
             @Override
             public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
-                var methodDeclaration = new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, descriptor), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor)));
-                methodInstructions.registerMethod(methodDeclaration);
+                List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                        .map(AsmClassVisitor::toTypeIdentifier)
+                        .toList();
+                TypeIdentifier returnType = methodDescriptorToReturnIdentifier(descriptor);
+
+                InvokedMethod invokedMethod = new InvokedMethod(TypeIdentifier.valueOf(owner), name, argumentTypes, returnType);
+                methodInstructions.registerMethod(invokedMethod);
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
             }
 
@@ -296,7 +301,7 @@ class AsmClassVisitor extends ClassVisitor {
     /**
      * Visibilityに持っていきたいが、accessの定数はasmが持っているのでここに置いておく。
      * 実際はバイトコードの固定値。
-     *
+     * <p>
      * classの場合、ソースコードではpublic,protected,default,privateは定義できるが、
      * バイトコードではpublicか否かしか識別できない。
      * さらにprotectedもpublicになる。（パッケージ外から参照可能なので。）
@@ -315,7 +320,7 @@ class AsmClassVisitor extends ClassVisitor {
 
     private MethodSignature toMethodSignature(String name, String descriptor) {
         List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(this::toTypeIdentifier)
+                .map(AsmClassVisitor::toTypeIdentifier)
                 .collect(Collectors.toList());
         return MethodSignature.fromTypeIdentifier(name, argumentTypes);
     }
@@ -360,7 +365,7 @@ class AsmClassVisitor extends ClassVisitor {
         return toTypeIdentifier(type);
     }
 
-    private TypeIdentifier toTypeIdentifier(Type type) {
+    private static TypeIdentifier toTypeIdentifier(Type type) {
         return TypeIdentifier.valueOf(type.getClassName());
     }
 

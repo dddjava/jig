@@ -3,9 +3,8 @@ package org.dddjava.jig.domain.model.data.classes.method.instruction;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.method.DecisionNumber;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
+import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -33,8 +32,8 @@ public record Instructions(List<Instruction> values) {
         values.add(new Instruction(MethodInstructionType.FIELD, new FieldReference(declaringType, fieldTypeIdentifier, name)));
     }
 
-    public void registerMethod(MethodDeclaration methodDeclaration) {
-        values.add(new Instruction(MethodInstructionType.METHOD, methodDeclaration));
+    public void registerMethod(InvokedMethod invokedMethod) {
+        values.add(new Instruction(MethodInstructionType.METHOD, invokedMethod));
     }
 
     public void registerClassReference(TypeIdentifier typeIdentifier) {
@@ -48,8 +47,11 @@ public record Instructions(List<Instruction> values) {
     public MethodDeclarations instructMethods() {
         return filterType(MethodInstructionType.METHOD, MethodInstructionType.InvokeDynamic)
                 .map(instruction -> {
-                    if (instruction.detail() instanceof MethodDeclaration methodDeclaration) {
-                        return methodDeclaration;
+                    if (instruction.detail() instanceof InvokedMethod invokedMethod) {
+                        // 一旦変換しておく
+                        return new MethodDeclaration(invokedMethod.methodOwner(),
+                                new MethodSignature(invokedMethod.methodName(), invokedMethod.argumentTypes().toArray(TypeIdentifier[]::new)),
+                                new MethodReturn(new ParameterizedType(invokedMethod.returnType())));
                     }
                     if (instruction.detail() instanceof InvokeDynamicInstruction invokeDynamicInstruction) {
                         return invokeDynamicInstruction.methodDeclaration();

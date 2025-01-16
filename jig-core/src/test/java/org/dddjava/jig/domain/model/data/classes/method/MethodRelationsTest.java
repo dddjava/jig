@@ -57,11 +57,11 @@ class MethodRelationsTest {
                 new MethodDeclaration(
                         TypeIdentifier.valueOf("dummy"),
                         new MethodSignature(from),
-                        new MethodReturn(TypeIdentifier.valueOf("void"))),
+                        MethodReturn.fromTypeOnly(TypeIdentifier.valueOf("void"))),
                 new MethodDeclaration(
                         TypeIdentifier.valueOf("dummy"),
                         new MethodSignature(to),
-                        new MethodReturn(TypeIdentifier.valueOf("void")))
+                        MethodReturn.fromTypeOnly(TypeIdentifier.valueOf("void")))
         );
     }
 }

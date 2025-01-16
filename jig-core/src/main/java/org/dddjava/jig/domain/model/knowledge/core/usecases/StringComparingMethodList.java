@@ -32,7 +32,7 @@ public class StringComparingMethodList {
         MethodDeclaration stringEqualsMethod = new MethodDeclaration(
                 TypeIdentifier.from(String.class),
                 new MethodSignature("equals", TypeIdentifier.from(Object.class)),
-                new MethodReturn(TypeIdentifier.from(boolean.class))
+                MethodReturn.fromTypeOnly(TypeIdentifier.from(boolean.class))
         );
 
         List<JigMethod> methods = Stream.concat(

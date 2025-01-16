@@ -264,7 +264,7 @@ class AsmClassVisitor extends ClassVisitor {
 
             private MethodDeclaration toMethodDeclaration(String owner, String name, String desc) {
                 // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
-                return new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, desc), new MethodReturn(methodDescriptorToReturnIdentifier(desc)));
+                return new MethodDeclaration(TypeIdentifier.valueOf(owner), toMethodSignature(name, desc), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(desc)));
             }
 
             @Override
@@ -425,7 +425,7 @@ class AsmClassVisitor extends ClassVisitor {
         if (戻り値型が解決できない || 型引数がバインドされていない) {
             // signatureではなくdescriptorから取得する
             TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
-            return new MethodReturn(returnTypeIdentifier);
+            return MethodReturn.fromTypeOnly(returnTypeIdentifier);
         }
 
         return new MethodReturn(new ParameterizedType(collector[0], collector[1]));

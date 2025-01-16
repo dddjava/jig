@@ -10,12 +10,15 @@ public class MethodReturn {
 
     ParameterizedType parameterizedType;
 
-    public MethodReturn(TypeIdentifier typeIdentifier) {
-        this(new ParameterizedType(typeIdentifier));
-    }
-
     public MethodReturn(ParameterizedType parameterizedType) {
         this.parameterizedType = parameterizedType;
+    }
+
+    /**
+     * ジェネリクスが解決できない場合のファクトリ
+     */
+    public static MethodReturn fromTypeOnly(TypeIdentifier typeIdentifier) {
+        return new MethodReturn(new ParameterizedType(typeIdentifier));
     }
 
     public ParameterizedType parameterizedType() {

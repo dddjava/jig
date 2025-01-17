@@ -45,8 +45,13 @@ public class IndexView {
         write(outputDirectory);
     }
 
+    private String resolveJigVersion() {
+        return this.getClass().getPackage().getImplementationVersion();
+    }
+
     private void write(Path outputDirectory) {
         contextMap.put("title", "JIG");
+        contextMap.put("jigVersion", resolveJigVersion());
         contextMap.put("timestamp", ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 
         Path outputFilePath = outputDirectory.resolve("index.html");

@@ -1,7 +1,5 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -53,22 +51,6 @@ public class MethodDeclarations {
                 .map(MethodDeclaration::asSignatureAndReturnTypeSimpleText)
                 .sorted()
                 .collect(Collectors.joining(", ", "[", "]"));
-    }
-
-    public TypeIdentifiers returnTypeIdentifiers() {
-        return list.stream()
-                .map(MethodDeclaration::methodReturn)
-                .map(MethodReturn::typeIdentifier)
-                // voidは除く
-                .filter(typeIdentifier -> !typeIdentifier.isVoid())
-                .collect(TypeIdentifiers.collector());
-    }
-
-    public TypeIdentifiers argumentsTypeIdentifiers() {
-        return list.stream()
-                .map(MethodDeclaration::argumentsTypeIdentifiers)
-                .flatMap(List::stream)
-                .collect(TypeIdentifiers.collector());
     }
 
     public MethodDeclarations filter(Predicate<MethodDeclaration> predicate) {

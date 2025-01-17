@@ -46,4 +46,8 @@ public record ParameterizedType(TypeIdentifier typeIdentifier, List<Parameterize
         list.addAll(typeParameters().list());
         return list;
     }
+
+    public boolean isPrimitive() {
+        return typeIdentifier.isPrimitive();
+    }
 }

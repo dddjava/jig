@@ -175,7 +175,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 jigDocumentContext.classComment(item.method().methodReturn().typeIdentifier()).asText()
                         ),
                         Map.entry("メソッド引数の型の別名", item ->
-                                item.method().methodSignature().listArgumentTypeIdentifiers().stream()
+                                item.method().methodSignature().arguments().stream()
+                                        .map(ParameterizedType::typeIdentifier)
                                         .map(jigDocumentContext::classComment)
                                         .map(ClassComment::asText)
                                         .collect(Collectors.joining(", ", "[", "]"))

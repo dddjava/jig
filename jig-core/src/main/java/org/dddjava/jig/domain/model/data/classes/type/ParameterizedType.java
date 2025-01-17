@@ -27,6 +27,15 @@ public record ParameterizedType(TypeIdentifier typeIdentifier, List<Parameterize
         return typeIdentifier;
     }
 
+    public String asFullNameText() {
+        if (_typeParameters.isEmpty()) {
+            return typeIdentifier.fullQualifiedName();
+        }
+        return typeIdentifier.fullQualifiedName() + _typeParameters.stream()
+                .map(ParameterizedType::asFullNameText)
+                .collect(Collectors.joining(", ", "<", ">"));
+    }
+
     public String asSimpleText() {
         if (_typeParameters.isEmpty()) {
             return typeIdentifier.asSimpleText();

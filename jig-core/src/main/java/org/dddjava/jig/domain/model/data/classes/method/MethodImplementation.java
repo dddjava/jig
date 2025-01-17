@@ -10,7 +10,7 @@ import org.dddjava.jig.domain.model.data.comment.Comment;
  */
 public record MethodImplementation(
         TypeIdentifier typeIdentifier,
-        MethodImplementationDeclarator methodDeclarator,
+        JavaMethodDeclarator methodDeclarator,
         Comment comment
 ) {
 
@@ -22,7 +22,7 @@ public record MethodImplementation(
     public static MethodImplementation unknown(MethodIdentifier methodIdentifier) {
         return new MethodImplementation(
                 methodIdentifier.declaringType(),
-                new MethodImplementationDeclarator(
+                new JavaMethodDeclarator(
                         methodIdentifier.methodSignature().methodName(),
                         methodIdentifier.methodSignature().listArgumentTypeIdentifiers().stream().map(TypeIdentifier::fullQualifiedName).toList()
                 ),

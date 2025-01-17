@@ -2,8 +2,8 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import org.dddjava.jig.domain.model.data.classes.method.JavaMethodDeclarator;
 import org.dddjava.jig.domain.model.data.classes.method.MethodImplementation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodImplementationDeclarator;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 
@@ -18,7 +18,7 @@ class JavaparserMethodVisitor extends VoidVisitorAdapter<List<MethodImplementati
 
     @Override
     public void visit(MethodDeclaration n, List<MethodImplementation> collector) {
-        var methodImplementationDeclarator = new MethodImplementationDeclarator(
+        var methodImplementationDeclarator = new JavaMethodDeclarator(
                 n.getNameAsString(),
                 n.getParameters().stream()
                         .map(parameter -> {

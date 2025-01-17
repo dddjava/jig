@@ -79,7 +79,7 @@ dependencies {
     api libs.thymeleaf
 
     testImplementation libs.spring.web
-    testImplementation "io.swagger.core.v3:swagger-annotations-jakarta:2.2.27"
+    testImplementation "io.swagger.core.v3:swagger-annotations-jakarta:2.2.28"
     testRuntimeOnly libs.logback.classic
 
     testImplementation libs.junit

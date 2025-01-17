@@ -97,10 +97,6 @@ public class MethodDeclaration {
         return types;
     }
 
-    List<TypeIdentifier> argumentsTypeIdentifiers() {
-        return methodSignature().listArgumentTypeIdentifiers();
-    }
-
     public String htmlIdText() {
         return identifier().htmlIdText();
     }

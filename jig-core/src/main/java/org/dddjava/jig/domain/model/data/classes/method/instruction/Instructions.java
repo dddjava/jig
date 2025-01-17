@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 /**
  * メソッドで実施されている命令
- *
+ * <p>
  * バイトコード上の順番を維持する
  */
 public record Instructions(List<Instruction> values) {
@@ -48,15 +48,18 @@ public record Instructions(List<Instruction> values) {
         return filterType(MethodInstructionType.METHOD, MethodInstructionType.InvokeDynamic)
                 .map(instruction -> {
                     if (instruction.detail() instanceof InvokedMethod invokedMethod) {
-                        // 一旦変換しておく
-                        return new MethodDeclaration(invokedMethod.methodOwner(),
-                                new MethodSignature(invokedMethod.methodName(), invokedMethod.argumentTypes().toArray(TypeIdentifier[]::new)),
-                                new MethodReturn(new ParameterizedType(invokedMethod.returnType())));
+                        return invokedMethod;
                     }
                     if (instruction.detail() instanceof InvokeDynamicInstruction invokeDynamicInstruction) {
-                        return invokeDynamicInstruction.methodDeclaration();
+                        return invokeDynamicInstruction.invokedMethod();
                     }
                     throw new IllegalStateException();
+                })
+                .map(invokedMethod -> {
+                    // 一旦変換しておく
+                    return new MethodDeclaration(invokedMethod.methodOwner(),
+                            new MethodSignature(invokedMethod.methodName(), invokedMethod.argumentTypes().toArray(TypeIdentifier[]::new)),
+                            new MethodReturn(new ParameterizedType(invokedMethod.returnType())));
                 })
                 .collect(MethodDeclarations.collector());
     }

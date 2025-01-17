@@ -229,18 +229,18 @@ class AsmClassVisitor extends ClassVisitor {
                         // 0は無視して1,2を参照する。
                         if (bootstrapMethodArguments[1] instanceof Handle handle && isMethodRef(handle)
                                 && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD) {
-                            String desc = handle.getDesc();
-                            // TODO ここに来るパターンはInstructionでsignatureがないため引数や戻り値のGenericsが解決できない。MethodDeclarationではない型にする必要がある。
-                            var methodDeclaration = new MethodDeclaration(TypeIdentifier.valueOf(handle.getOwner()), toMethodSignature(handle.getName(), desc), MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(desc)));
+                            var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
+                            var handleMethodName = handle.getName();
+                            var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                                    .map(AsmClassVisitor::toTypeIdentifier)
+                                    .collect(Collectors.toList());
+                            var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());
+                            var handleInvokeMethod = new InvokedMethod(handleOwnerType, handleMethodName, handleArgumentTypes, handleReturnType);
 
                             var returnType = toTypeIdentifier(type.getReturnType());
                             var argumentTypes = Arrays.stream(type.getArgumentTypes()).map(t -> toTypeIdentifier(t)).toList();
 
-                            methodInstructions.registerInvokeDynamic(new InvokeDynamicInstruction(
-                                    methodDeclaration,
-                                    returnType,
-                                    argumentTypes
-                            ));
+                            methodInstructions.registerInvokeDynamic(new InvokeDynamicInstruction(handleInvokeMethod, returnType, argumentTypes));
                         }
                     }
                 }

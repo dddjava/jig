@@ -4,12 +4,14 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -69,7 +71,7 @@ class AsmMethodSignatureVisitor extends SignatureVisitor {
         return super.visitExceptionType();
     }
 
-    MethodDeclaration methodDeclaration(TypeIdentifier declaringType, String methodName) {
+    public MethodDeclaration buildMethodDeclaration(TypeIdentifier declaringType, String methodName) {
         return new MethodDeclaration(
                 declaringType,
                 MethodSignature.from(
@@ -80,5 +82,16 @@ class AsmMethodSignatureVisitor extends SignatureVisitor {
                 ),
                 new MethodReturn(returnVisitor.generateParameterizedType())
         );
+    }
+
+    static Optional<MethodDeclaration> buildMethodDeclaration(int api, String name, TypeIdentifier declaringType, String signature) {
+        try {
+            AsmMethodSignatureVisitor methodSignatureVisitor = new AsmMethodSignatureVisitor(api);
+            new SignatureReader(signature).accept(methodSignatureVisitor);
+            return Optional.of(methodSignatureVisitor.buildMethodDeclaration(declaringType, name));
+        } catch (Exception e) {
+            logger.warn("exception occurred reading method signature {} for {} {}", signature, declaringType, name, e);
+            return Optional.empty();
+        }
     }
 }

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.annotation.RuntimeRetainedAnnotation;
 import stub.domain.model.category.*;
@@ -38,8 +39,6 @@ import stub.domain.model.type.SimpleNumber;
 import stub.misc.DecisionClass;
 import testing.TestSupport;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class AsmFactReaderTest {
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AsmFactReaderTest.class);
 
     @Nested
     class クラス {
@@ -249,12 +249,21 @@ public class AsmFactReaderTest {
                             TypeIdentifier.from(String.class)
                     );
 
-
             MethodReturn methodReturn = resolveMethodBySignature(actual, new MethodSignature("parameterizedListMethod"))
                     .declaration().methodReturn();
             ParameterizedType parameterizedType = methodReturn.parameterizedType();
 
             assertThat(parameterizedType.asSimpleText()).isEqualTo("List<String>");
+        }
+
+        @Test
+        void resolveArgumentGenerics() {
+            JigType jigType = JigType構築(ResolveArgumentGenerics.class);
+
+            JigMethod actual = resolveMethodByName(jigType, "method");
+
+            assertThat(actual.declaration().methodSignature().asText())
+                    .isEqualTo("method(java.util.List<java.lang.String>)");
         }
 
         @Test
@@ -276,13 +285,18 @@ public class AsmFactReaderTest {
         }
     }
 
+    private JigType JigType構築(Class<?> clz) {
+        try {
+            String resourcePath = clz.getName().replace('.', '/') + ".class";
+            logger.info(resourcePath);
+            URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
+            Path path = Paths.get(url.toURI());
 
-    private JigType JigType構築(Class<?> clz) throws URISyntaxException, IOException {
-        URL url = Objects.requireNonNull(clz.getResource(clz.getSimpleName().concat(".class")));
-        Path path = Paths.get(url.toURI());
-
-        AsmFactReader sut = new AsmFactReader();
-        return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
+            AsmFactReader sut = new AsmFactReader();
+            return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     JigMethod resolveMethodBySignature(JigType jigType, MethodSignature methodSignature) {
@@ -290,5 +304,17 @@ public class AsmFactReaderTest {
                 .filter(jigMethod -> jigMethod.declaration().methodSignature().isSame(methodSignature))
                 .findFirst()
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    private JigMethod resolveMethodByName(JigType jigType, String name) {
+        return jigType.allJigMethodStream()
+                .filter(jigMethod -> jigMethod.name().equals(name))
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    static class ResolveArgumentGenerics {
+        public void method(List<String> list) {
+        }
     }
 }

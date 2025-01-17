@@ -240,4 +240,8 @@ public class JigMethod {
     private String usecaseMermaidNodeText() {
         return "%s([\"%s\"])".formatted(htmlIdText(), labelTextOrLambda());
     }
+
+    public String name() {
+        return declaration().methodSignature().methodName();
+    }
 }

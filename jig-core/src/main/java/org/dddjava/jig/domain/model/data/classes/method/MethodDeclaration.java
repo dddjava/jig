@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.ArrayList;
@@ -93,7 +94,8 @@ public class MethodDeclaration {
         ArrayList<TypeIdentifier> types = new ArrayList<>();
         types.add(methodReturn().typeIdentifier());
         types.addAll(methodReturn().parameterizedType().typeParameters().list());
-        types.addAll(methodSignature().listArgumentTypeIdentifiers());
+        types.addAll(methodSignature().arguments().stream().map(ParameterizedType::typeIdentifier).toList());
+        // TODO add arguments type parameter
         return types;
     }
 

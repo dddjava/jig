@@ -65,11 +65,6 @@ public final class MethodSignature {
         return methodName + "(" + argumentsText + ")";
     }
 
-    @Deprecated(since = "型パラメタがない引数リストが欲しい場合だが、廃止してargumentsを使っていきたい")
-    public List<TypeIdentifier> listArgumentTypeIdentifiers() {
-        return arguments.stream().map(ParameterizedType::typeIdentifier).toList();
-    }
-
     public List<ParameterizedType> arguments() {
         return arguments;
     }

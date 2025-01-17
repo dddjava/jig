@@ -48,11 +48,8 @@
                     </pre>
 
                     <dl class="depends" th:with="methodReturn=${method.declaration().methodReturn()}">
-                        <dt th:unless="${method.listArguments().isEmpty()}">要求するもの（引数）</dt>
-                        <dd th:each="arg : ${method.listArguments()}">
-                            <a class="method-argument-item" th:href="${'./domain.html#' + arg.fullQualifiedName()}"
-                               th:text="${#jig.labelText(arg)}">xxx</a>
-                        </dd>
+                        <dt th:unless="${method.argumentTypes().isEmpty()}">要求するもの（引数）</dt>
+                        <dd th:each="arg : ${method.argumentTypes()}" th:utext="${#jig.methodArgumentRawText(arg)}">xxx</dd>
                         <dt th:unless="${methodReturn.isVoid()}">得られるもの（戻り値）</dt>
                         <dd th:unless="${methodReturn.isVoid()}" th:utext="${#jig.methodReturnRawText(method.declaration().methodReturn())}">xxxx</dd>
                     </dl>

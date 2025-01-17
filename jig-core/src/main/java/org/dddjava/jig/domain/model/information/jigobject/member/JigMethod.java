@@ -135,10 +135,6 @@ public class JigMethod {
         return labelText();
     }
 
-    public List<TypeIdentifier> listArguments() {
-        return declaration().methodSignature().listArgumentTypeIdentifiers();
-    }
-
     public List<ParameterizedType> argumentTypes() {
         return declaration().methodSignature().arguments();
     }

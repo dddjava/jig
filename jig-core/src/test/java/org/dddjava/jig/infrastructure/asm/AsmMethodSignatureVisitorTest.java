@@ -48,7 +48,7 @@ class AsmMethodSignatureVisitorTest {
         logger.debug("read signature:{}", actualSignature);
         new SignatureReader(actualSignature).accept(sut);
 
-        MethodDeclaration methodDeclaration = sut.methodDeclaration(TypeIdentifier.from(JigSupportMethodSignatureImplementations.class), methodName);
+        MethodDeclaration methodDeclaration = sut.buildMethodDeclaration(TypeIdentifier.from(JigSupportMethodSignatureImplementations.class), methodName);
 
         assertEquals(expectedJigMethodSignatureSimpleText, methodDeclaration.asSignatureAndReturnTypeSimpleText());
     }

@@ -23,10 +23,7 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -131,7 +128,17 @@ class AsmClassVisitor extends ClassVisitor {
         // name: 名前
         // descriptor: (Type)Type 引数と戻り値の型ひとまとまり
 
-        MethodReturn methodReturn = extractParameterizedReturnType(signature, descriptor);
+        MethodDeclaration methodDeclaration = Optional.ofNullable(signature)
+                .flatMap(nonNullSignature ->
+                        // signatureがあればこちらから構築する
+                        AsmMethodSignatureVisitor.buildMethodDeclaration(this.api, name, this.jigTypeBuilder.typeIdentifier(), nonNullSignature)
+                ).orElseGet(() -> {
+                    // signatureがないもしくは失敗した場合はdescriptorから構築する
+                    TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
+                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(returnTypeIdentifier);
+                    return new MethodDeclaration(jigTypeBuilder.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
+                });
+
         List<TypeIdentifier> signatureContainedTypes = extractClassTypeFromGenericsSignature(signature);
 
         List<TypeIdentifier> throwsTypes = new ArrayList<>();
@@ -144,13 +151,12 @@ class AsmClassVisitor extends ClassVisitor {
         var methodInstructions = Instructions.newInstance();
         JigMethodBuilder jigMethodBuilder = createPlainMethodBuilder(
                 jigTypeBuilder,
-                toMethodSignature(name, descriptor),
-                methodReturn,
                 access,
                 resolveMethodVisibility(access),
                 signatureContainedTypes,
                 throwsTypes,
-                methodInstructions);
+                methodInstructions,
+                methodDeclaration);
 
         return new MethodVisitor(this.api) {
 
@@ -593,15 +599,13 @@ class AsmClassVisitor extends ClassVisitor {
     }
 
 
-    public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder, MethodSignature methodSignature,
-                                                     MethodReturn methodReturn,
+    public JigMethodBuilder createPlainMethodBuilder(JigTypeBuilder jigTypeBuilder,
                                                      int access,
                                                      Visibility visibility,
                                                      List<TypeIdentifier> signatureContainedTypes,
                                                      List<TypeIdentifier> throwsTypes,
-                                                     Instructions instructions) {
-        MethodDeclaration methodDeclaration = new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
-        MethodDerivation methodDerivation = resolveMethodDerivation(methodSignature, methodReturn, access);
+                                                     Instructions instructions, MethodDeclaration methodDeclaration) {
+        MethodDerivation methodDerivation = resolveMethodDerivation(methodDeclaration.methodSignature(), methodDeclaration.methodReturn(), access);
         var jigMethodBuilder = new JigMethodBuilder(methodDeclaration, signatureContainedTypes, visibility, methodDerivation, throwsTypes, instructions);
 
         if (methodDeclaration.isConstructor()) {

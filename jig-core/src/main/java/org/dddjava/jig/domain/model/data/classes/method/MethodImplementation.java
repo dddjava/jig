@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.data.classes.method;
 
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 
@@ -24,7 +25,9 @@ public record MethodImplementation(
                 methodIdentifier.declaringType(),
                 new JavaMethodDeclarator(
                         methodIdentifier.methodSignature().methodName(),
-                        methodIdentifier.methodSignature().listArgumentTypeIdentifiers().stream().map(TypeIdentifier::fullQualifiedName).toList()
+                        methodIdentifier.methodSignature().arguments().stream()
+                                .map(ParameterizedType::typeIdentifier)
+                                .map(TypeIdentifier::fullQualifiedName).toList()
                 ),
                 Comment.empty()
         );

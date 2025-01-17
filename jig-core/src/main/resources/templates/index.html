@@ -9,7 +9,7 @@
 
 <header>
     <h1 th:text="${title}">JIG</h1>
-    <p>出力日時: <i th:text="${timestamp}">2012-03-04T05:06:07</i></p>
+    <p th:inline="text">出力日時: [[${timestamp}]] [# th:if="${jigVersion}"]Version: [[${jigVersion}]][/]</p>
 </header>
 
 <main>

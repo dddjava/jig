@@ -6,14 +6,7 @@ plugins {
 bootJar {
     metaInf { from(rootDir) { include 'LICENSE' } }
     archiveFileName = archiveBaseName.get() + "." + archiveExtension.get()
-    manifest {
-        attributes "Implementation-Version": (project.version ?: localSnapshotVersion())
-    }
 }
 
 // *-plain.jarを作らない
 jar.enabled = false
-
-static def localSnapshotVersion() {
-    return java.time.LocalDate.now().format("uuuu.M.W") + "." + java.time.LocalDateTime.now().format("MMddHHmm") + ".LOCAL-SNAPSHOT"
-}

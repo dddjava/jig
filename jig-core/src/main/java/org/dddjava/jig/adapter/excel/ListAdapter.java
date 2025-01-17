@@ -5,6 +5,7 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
+import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
@@ -151,7 +152,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                                 jigDocumentContext.classComment(item.serviceMethod().method().declaration().methodReturn().typeIdentifier()).asText()
                         ),
                         Map.entry("メソッド引数の型の別名", item ->
-                                item.serviceMethod().method().declaration().methodSignature().listArgumentTypeIdentifiers().stream()
+                                item.serviceMethod().method().declaration().methodSignature().arguments().stream()
+                                        .map(ParameterizedType::typeIdentifier)
                                         .map(jigDocumentContext::classComment)
                                         .map(ClassComment::asText)
                                         .collect(Collectors.joining(", ", "[", "]"))

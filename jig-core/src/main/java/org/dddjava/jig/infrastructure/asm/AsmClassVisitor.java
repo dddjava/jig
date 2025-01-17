@@ -231,7 +231,7 @@ class AsmClassVisitor extends ClassVisitor {
                                 && bootstrapMethodArguments[2] instanceof Type type && type.getSort() == Type.METHOD) {
                             var handleOwnerType = TypeIdentifier.valueOf(handle.getOwner());
                             var handleMethodName = handle.getName();
-                            var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                            var handleArgumentTypes = Arrays.stream(Type.getArgumentTypes(handle.getDesc()))
                                     .map(AsmClassVisitor::toTypeIdentifier)
                                     .collect(Collectors.toList());
                             var handleReturnType = methodDescriptorToReturnIdentifier(handle.getDesc());

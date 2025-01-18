@@ -65,32 +65,41 @@ class PackageRelationDiagramTest {
                                 new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.Bar"))
                         )),
                         3,
-                        "\"a.aa.aaa\" -> \"a.aa.aab\";"
+                        List.of(
+                                "\"a.aa.aaa\" -> \"a.aa.aab\";"
+                        )
                 ),
                 Arguments.argumentSet("階層がずれた関連がある",
                         new PackageIdentifiers(List.of(
                                 PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.aa.aab.aaba")
+                                PackageIdentifier.valueOf("a.aa.aab.aaba"),
+                                PackageIdentifier.valueOf("b")
                         )),
                         new ClassRelations(List.of(
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar"))
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
                         )),
                         3,
-                        "\"a.aa.aaa\" -> \"a.aa.aab\";"
+                        List.of(
+                                "\"a.aa.aaa\" -> \"a.aa.aab\";",
+                                "\"a.aa.aaa\" -> \"b\";"
+                        )
                 )
         );
     }
 
     @MethodSource
     @ParameterizedTest
-    void 出力されるパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations, int depth, String expectedContains) {
+    void 出力されるパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations, int depth, List<String> expectedContainsTexts) {
         var sut = new PackageRelationDiagram(packageIdentifiers, classRelations).applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageComment(any())).thenReturn(PackageComment.empty(null));
         var actual = sut.dependencyDotText(jigDocumentContext);
 
-        assertTrue(actual.text().contains(expectedContains), actual.text());
+        for (String expectedContains : expectedContainsTexts) {
+            assertTrue(actual.text().contains(expectedContains), actual.text());
+        }
 
         logger.debug(actual.text());
     }

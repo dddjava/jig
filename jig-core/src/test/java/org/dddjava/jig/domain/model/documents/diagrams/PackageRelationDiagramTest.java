@@ -98,6 +98,22 @@ class PackageRelationDiagramTest {
                         List.of(
                                 "\"a.aa\" -> \"b\";"
                         )
+                ),
+                Arguments.argumentSet("デフォルトパッケージを扱える",
+                        new PackageIdentifiers(List.of(
+                                PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa"),
+                                PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaab"),
+                                PackageIdentifier.defaultPackage(),
+                                PackageIdentifier.valueOf("a")
+                        )),
+                        new ClassRelations(List.of(
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaab.Fuga")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("DefaultPackageClass"))
+                        )),
+                        4,
+                        List.of(
+                                "\"a.aa.aaa.aaaa\" -> \"(default)\";"
+                        )
                 )
         );
     }

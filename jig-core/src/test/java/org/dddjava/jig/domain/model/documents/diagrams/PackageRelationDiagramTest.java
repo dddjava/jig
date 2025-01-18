@@ -82,7 +82,8 @@ class PackageRelationDiagramTest {
                         3,
                         List.of(
                                 "\"a.aa.aaa\" -> \"a.aa.aab\";",
-                                "\"a.aa.aaa\" -> \"b\";"
+                                "\"a.aa.aaa\" -> \"b\";",
+                                "subgraph \"cluster_a.aa\""
                         )
                 )
         );

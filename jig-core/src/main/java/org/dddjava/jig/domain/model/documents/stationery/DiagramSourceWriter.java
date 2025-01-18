@@ -5,5 +5,11 @@ package org.dddjava.jig.domain.model.documents.stationery;
  */
 public interface DiagramSourceWriter {
 
-    DiagramSources sources(JigDocumentContext jigDocumentContext);
+    default DiagramSources sources(JigDocumentContext jigDocumentContext) {
+        return sources();
+    }
+
+    default DiagramSources sources() {
+        throw new UnsupportedOperationException();
+    }
 }

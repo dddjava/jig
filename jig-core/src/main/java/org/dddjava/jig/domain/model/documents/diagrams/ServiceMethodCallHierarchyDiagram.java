@@ -53,7 +53,7 @@ public class ServiceMethodCallHierarchyDiagram implements DiagramSourceWriter {
                     }
                     Usecase usecase = new Usecase(serviceAngle);
 
-                    Node useCaseNode = Nodes.usecase(jigDocumentContext, usecase);
+                    Node useCaseNode = Nodes.usecase(usecase);
 
                     // 非publicは色なし
                     if (serviceAngle.isNotPublicMethod()) {

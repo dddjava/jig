@@ -8,22 +8,22 @@ import org.dddjava.jig.domain.model.knowledge.core.Usecase;
 
 public class Nodes {
 
-    public static Node usecase(JigDocumentContext jigDocumentContext, Usecase usecase) {
+    public static Node usecase(Usecase usecase) {
         return new Node(usecase.usecaseIdentifier())
                 .shape("ellipse")
                 .label(usecase.usecaseLabel())
                 .tooltip(usecase.simpleTextWithDeclaringType())
                 .as(usecase.isHandler() ? NodeRole.主役 : NodeRole.準主役)
-                .url(usecase.declaringType(), jigDocumentContext, JigDocument.ApplicationSummary);
+                .url(usecase.declaringType(), JigDocument.ApplicationSummary);
     }
 
-    public static Node usecase(JigDocumentContext jigDocumentContext, ServiceMethod serviceMethod) {
+    public static Node usecase(ServiceMethod serviceMethod) {
         return new Node(serviceMethod.methodDeclaration().asFullNameText())
                 .shape("ellipse")
                 .label(serviceMethod.method().aliasText())
                 .tooltip(serviceMethod.methodDeclaration().asSimpleTextWithDeclaringType())
                 .as(NodeRole.準主役)
-                .url(serviceMethod.methodDeclaration().declaringType(), jigDocumentContext, JigDocument.ApplicationSummary);
+                .url(serviceMethod.methodDeclaration().declaringType(), JigDocument.ApplicationSummary);
     }
 
     public static Node lambda(MethodDeclaration method) {
@@ -31,9 +31,9 @@ public class Nodes {
                 .label("(lambda)").as(NodeRole.モブ).shape("ellipse");
     }
 
-    public static Node businessRuleNodeOf(JigType jigType, JigDocumentContext jigDocumentContext) {
+    public static Node businessRuleNodeOf(JigType jigType) {
         return new Node(jigType.typeIdentifier().fullQualifiedName())
                 .label(jigType.nodeLabel())
-                .url(jigType.typeIdentifier(), jigDocumentContext, JigDocument.DomainSummary);
+                .url(jigType.typeIdentifier(), JigDocument.DomainSummary);
     }
 }

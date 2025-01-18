@@ -62,7 +62,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
             if (related) {
                 // enumに関連しているサービスメソッドだけ出力する
-                useCaseText.add(Nodes.usecase(jigDocumentContext, serviceMethod).asText());
+                useCaseText.add(Nodes.usecase(serviceMethod).asText());
             }
         }
 
@@ -90,7 +90,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         return domainCoreJigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))
-                .map(jigType -> Nodes.businessRuleNodeOf(jigType, jigDocumentContext))
+                .map(jigType -> Nodes.businessRuleNodeOf(jigType))
                 .map(Node::asText)
                 .collect(joining("\n"));
     }

@@ -109,7 +109,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             String compositeNodesText = entry.getValue().stream()
                     .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                             .label(labeler.label(packageIdentifier, parent))
-                            .url(packageIdentifier, jigDocumentContext, JigDocument.DomainSummary).asText())
+                            .url(packageIdentifier, JigDocument.DomainSummary).asText())
                     .collect(joining("\n"));
             Subgraph subgraph = new Subgraph(parent.asText())
                     .add(compositeNodesText)
@@ -121,7 +121,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         String labelsText = standalonePackages.stream()
                 .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                         .label(labeler.label(packageIdentifier))
-                        .url(packageIdentifier, jigDocumentContext, JigDocument.DomainSummary).asText())
+                        .url(packageIdentifier, JigDocument.DomainSummary).asText())
                 .collect(joining("\n"));
         stringJoiner.add(labelsText);
 

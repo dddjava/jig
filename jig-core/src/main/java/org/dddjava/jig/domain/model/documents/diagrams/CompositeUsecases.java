@@ -29,7 +29,7 @@ class CompositeUsecases {
         String usecaseIdentifier = usecase.usecaseIdentifier();
 
         StringBuilder sb = new StringBuilder()
-                .append(Nodes.usecase(jigDocumentContext, usecase).asText());
+                .append(Nodes.usecase(usecase).asText());
 
         Set<TypeIdentifier> otherTypes = new HashSet<>();
 

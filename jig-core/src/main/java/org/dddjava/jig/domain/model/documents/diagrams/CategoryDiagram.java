@@ -64,7 +64,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
 
                     Node node = Node.typeOf(typeIdentifier)
                             .html(categoryName, "<table border=\"0\" cellspacing=\"0\"><tr><td>" + categoryName + "</td></tr>" + categoryValues + "</table>")
-                            .url(typeIdentifier, jigDocumentContext, JigDocument.EnumSummary);
+                            .url(typeIdentifier, JigDocument.EnumSummary);
                     return node.as(categoryType.hasBehaviour() ? NodeRole.主役 : NodeRole.準主役);
                 }
         );

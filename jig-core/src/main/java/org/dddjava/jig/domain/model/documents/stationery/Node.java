@@ -66,17 +66,13 @@ public class Node {
         return this;
     }
 
-    public Node url(PackageIdentifier packageIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
+    public Node url(PackageIdentifier packageIdentifier, JigDocument jigDocument) {
         String ref = jigDocument.fileName() + ".html";
         attributeMap.put("URL", "./" + ref + "#" + packageIdentifier.asText());
         return this;
     }
 
-    public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext) {
-        return this;
-    }
-
-    public Node url(TypeIdentifier typeIdentifier, JigDocumentContext jigDocumentContext, JigDocument jigDocument) {
+    public Node url(TypeIdentifier typeIdentifier, JigDocument jigDocument) {
         String ref = jigDocument.fileName() + ".html";
         attributeMap.put("URL", "./" + ref + "#" + typeIdentifier.fullQualifiedName());
         return this;

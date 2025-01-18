@@ -15,8 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -105,7 +104,31 @@ class PackageRelationDiagramTest {
     }
 
     @Test
-    void ClassRelationsからPackageRelationsへの変換とdepthの検証() {
+    void PackageIdentifiersのapplyDepth検証() {
+        PackageIdentifiers sut = new PackageIdentifiers(List.of(
+                PackageIdentifier.valueOf("a.a.a.a"),
+                PackageIdentifier.valueOf("a.a.b"),
+                PackageIdentifier.valueOf("a"),
+                PackageIdentifier.valueOf("a.b.c.d.e.f"),
+                PackageIdentifier.valueOf("a.b.c.d"),
+                PackageIdentifier.valueOf("x")
+        ));
+        assertEquals(6, sut.list().size());
+        assertEquals(6, sut.maxDepth().value());
+
+        PackageIdentifiers depth3 = sut.applyDepth(new PackageDepth(3));
+        assertEquals(5, depth3.list().size());
+        assertEquals(3, depth3.maxDepth().value());
+
+        PackageIdentifiers depth2 = sut.applyDepth(new PackageDepth(2));
+        assertEquals(4, depth2.list().size());
+
+        PackageIdentifiers depth1 = sut.applyDepth(new PackageDepth(1));
+        assertEquals(2, depth1.list().size());
+    }
+
+    @Test
+    void ClassRelationsからPackageRelationsへの変換とapplyDepthの検証() {
         ClassRelations classRelations = new ClassRelations(List.of(
                 new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.ab.aab.aaba.Bar")),
                 new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))

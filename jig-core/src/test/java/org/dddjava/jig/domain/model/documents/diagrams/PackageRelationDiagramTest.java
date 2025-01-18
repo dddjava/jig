@@ -8,10 +8,14 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,32 +26,31 @@ import static org.mockito.Mockito.when;
 class PackageRelationDiagramTest {
     private static final Logger logger = LoggerFactory.getLogger(PackageRelationDiagramTest.class);
 
-    @Test
-    void パッケージがなければ出力されずエラーにもならない() {
-        var packageIdentifiers = new PackageIdentifiers(List.of());
-        var classRelations = new ClassRelations(List.of());
-
-        var sut = new PackageRelationDiagram(packageIdentifiers, classRelations);
-
-        JigDocumentContext jigDocumentContext = null;
-        var actual = sut.dependencyDotText(jigDocumentContext);
-
-        assertTrue(actual.noValue());
+    public static Stream<Arguments> 出力されないパターン() {
+        return Stream.of(
+                Arguments.argumentSet(
+                        "パッケージも関連も空",
+                        new PackageIdentifiers(List.of()),
+                        new ClassRelations(List.of())
+                ),
+                Arguments.argumentSet(
+                        "パッケージはあるが関連はない",
+                        new PackageIdentifiers(List.of(
+                                PackageIdentifier.valueOf("a.aa"),
+                                PackageIdentifier.valueOf("a.aa.aaa"),
+                                PackageIdentifier.valueOf("a.ab")
+                        )),
+                        new ClassRelations(List.of())
+                )
+        );
     }
 
-    @Test
-    void パッケージがあっても関連がなければ出力されない() {
-        var packageIdentifiers = new PackageIdentifiers(List.of(
-                PackageIdentifier.valueOf("a.b.hoge"),
-                PackageIdentifier.valueOf("a.c.fuga")
-        ));
-        var classRelations = new ClassRelations(List.of());
-
+    @MethodSource
+    @ParameterizedTest
+    void 出力されないパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
         var sut = new PackageRelationDiagram(packageIdentifiers, classRelations);
 
-        JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
-        when(jigDocumentContext.packageComment(any())).thenReturn(PackageComment.empty(null));
-        var actual = sut.dependencyDotText(jigDocumentContext);
+        var actual = sut.dependencyDotText(null);
 
         assertTrue(actual.noValue());
     }

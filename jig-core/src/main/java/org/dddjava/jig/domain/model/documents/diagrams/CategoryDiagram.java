@@ -35,7 +35,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
         return categoryTypes.list();
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources() {
         if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }

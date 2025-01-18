@@ -35,7 +35,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
         this.domainCoreJigTypes = domainCoreJigTypes;
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources() {
         if (categoryTypes.isEmpty()) {
             return DiagramSource.empty();
         }

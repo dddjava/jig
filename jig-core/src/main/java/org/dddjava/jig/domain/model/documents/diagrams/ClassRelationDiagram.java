@@ -23,7 +23,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         this.businessRules = businessRules;
     }
 
-    public DiagramSources sources(JigDocumentContext jigDocumentContext) {
+    public DiagramSources sources() {
         return sources(businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 

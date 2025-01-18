@@ -29,7 +29,9 @@ public class Labeler {
 
     public String label(PackageIdentifier packageIdentifier) {
         String fqn = packageIdentifier.asText();
-        String labelText = commonPrefix.map(String::length).map(index -> trimDot(fqn.substring(index)))
+        String labelText = commonPrefix
+                .filter(fqn::startsWith)
+                .map(prefix -> trimDot(fqn.substring(prefix.length())))
                 .orElse(fqn);
 
         return addAliasIfExists(packageIdentifier, labelText);
@@ -61,8 +63,13 @@ public class Labeler {
         // 全てで共通する部分を抜き出す
         String commonPrefix = null;
         for (PackageIdentifier currentPackageIdentifier : contextPackages) {
-            PackageIdentifier currentParentPackageIdentifier = currentPackageIdentifier.parent();
-            String currentText = currentParentPackageIdentifier.asText();
+            Optional<PackageIdentifier> packageIdentifier = currentPackageIdentifier.parentIfExist();
+            if (packageIdentifier.isEmpty()) {
+                continue;
+            }
+            String currentText = packageIdentifier.orElseThrow().asText();
+
+            packageIdentifier.map(PackageIdentifier::asText);
             if (commonPrefix == null) {
                 commonPrefix = currentText;
                 continue;
@@ -80,7 +87,7 @@ public class Labeler {
 
             commonPrefix = commonPrefix.substring(0, commonPrefixLength);
         }
-        this.commonPrefix = Optional.of(trimDot(commonPrefix));
+        this.commonPrefix = Optional.ofNullable(commonPrefix).map(this::trimDot);
     }
 
     public String contextDescription() {

@@ -3,11 +3,9 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageComment;
-import org.dddjava.jig.domain.model.data.packages.PackageDepth;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.*;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -103,5 +102,28 @@ class PackageRelationDiagramTest {
         }
 
         logger.debug(actual.text());
+    }
+
+    @Test
+    void ClassRelationsからPackageRelationsへの変換とdepthの検証() {
+        ClassRelations classRelations = new ClassRelations(List.of(
+                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.ab.aab.aaba.Bar")),
+                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
+        ));
+
+        PackageRelations sut = classRelations.toPackageRelations();
+        assertTrue(sut.available());
+
+        PackageRelations depth3 = sut.applyDepth(new PackageDepth(3));
+        assertTrue(depth3.available());
+
+        PackageRelations depth2Relations = sut.applyDepth(new PackageDepth(2));
+        assertTrue(depth2Relations.available());
+
+        PackageRelations depth1Relations = sut.applyDepth(new PackageDepth(1));
+        assertTrue(depth1Relations.available());
+
+        PackageRelations depth0Relations = sut.applyDepth(new PackageDepth(0));
+        assertFalse(depth0Relations.available());
     }
 }

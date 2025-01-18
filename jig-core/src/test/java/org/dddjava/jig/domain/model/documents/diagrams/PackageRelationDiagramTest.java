@@ -4,10 +4,10 @@ import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -55,26 +54,43 @@ class PackageRelationDiagramTest {
         assertTrue(actual.noValue());
     }
 
-    @Test
-    void パッケージが2つあり関連があれば出力できる() {
-        var packageIdentifiers = new PackageIdentifiers(List.of(
-                PackageIdentifier.valueOf("a.b.hoge"),
-                PackageIdentifier.valueOf("a.c.fuga")
-        ));
-        var classRelations = new ClassRelations(List.of(
-                new ClassRelation(TypeIdentifier.valueOf("a.b.hoge.Foo"), TypeIdentifier.valueOf("a.c.fuga.Bar"))
-        ));
+    public static Stream<Arguments> 出力されるパターン() {
+        return Stream.of(
+                Arguments.argumentSet("直下の関連がある",
+                        new PackageIdentifiers(List.of(
+                                PackageIdentifier.valueOf("a.aa.aaa"),
+                                PackageIdentifier.valueOf("a.aa.aab")
+                        )),
+                        new ClassRelations(List.of(
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.Bar"))
+                        )),
+                        3,
+                        "\"a.aa.aaa\" -> \"a.aa.aab\";"
+                ),
+                Arguments.argumentSet("階層がずれた関連がある",
+                        new PackageIdentifiers(List.of(
+                                PackageIdentifier.valueOf("a.aa.aaa"),
+                                PackageIdentifier.valueOf("a.aa.aab.aaba")
+                        )),
+                        new ClassRelations(List.of(
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar"))
+                        )),
+                        3,
+                        "\"a.aa.aaa\" -> \"a.aa.aab\";"
+                )
+        );
+    }
 
-        var sut = new PackageRelationDiagram(packageIdentifiers, classRelations);
+    @MethodSource
+    @ParameterizedTest
+    void 出力されるパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations, int depth, String expectedContains) {
+        var sut = new PackageRelationDiagram(packageIdentifiers, classRelations).applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageComment(any())).thenReturn(PackageComment.empty(null));
         var actual = sut.dependencyDotText(jigDocumentContext);
 
-        assertFalse(actual.noValue());
-        assertTrue(actual.text().contains("""
-                "a.b.hoge" -> "a.c.fuga";
-                """), actual.text());
+        assertTrue(actual.text().contains(expectedContains), actual.text());
 
         logger.debug(actual.text());
     }

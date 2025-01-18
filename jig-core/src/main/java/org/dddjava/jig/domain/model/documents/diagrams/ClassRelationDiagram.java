@@ -24,10 +24,10 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        return sources(jigDocumentContext, businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
+        return sources(businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(JigDocumentContext jigDocumentContext, BusinessRules targetBusinessRules, DocumentName documentName) {
+    DiagramSources sources(BusinessRules targetBusinessRules, DocumentName documentName) {
         if (targetBusinessRules.empty()) {
             return DiagramSource.empty();
         }

@@ -80,13 +80,13 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
                 .add("rank=source;")
                 .add(useCaseText.toString())
                 .add("}")
-                .add(nonCategoryNodeTexts(categoryRelatedTypes, jigDocumentContext))
+                .add(nonCategoryNodeTexts(categoryRelatedTypes))
                 .add(RelationText.fromClassRelation(relations).asText())
                 .add(serviceRelationText.asText())
                 .toString());
     }
 
-    private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes, JigDocumentContext jigDocumentContext) {
+    private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes) {
         return domainCoreJigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))

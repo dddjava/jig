@@ -83,6 +83,21 @@ class PackageRelationDiagramTest {
                                 "\"a.aa.aaa\" -> \"b\";",
                                 "subgraph \"cluster_a.aa\""
                         )
+                ),
+                Arguments.argumentSet("階層がずれた関連を1階層切り詰める",
+                        new PackageIdentifiers(List.of(
+                                PackageIdentifier.valueOf("a.aa.aaa"),
+                                PackageIdentifier.valueOf("a.aa.aab.aaba"),
+                                PackageIdentifier.valueOf("b")
+                        )),
+                        new ClassRelations(List.of(
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
+                        )),
+                        2,
+                        List.of(
+                                "\"a.aa\" -> \"b\";"
+                        )
                 )
         );
     }

@@ -1,7 +1,6 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
@@ -137,9 +136,7 @@ public class JigService {
             return PackageRelationDiagram.empty();
         }
 
-        ClassRelations allClassRelations = jigSource.typeFacts().toClassRelations();
-
-        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), allClassRelations);
+        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), domainCoreTypes.internalClassRelations());
     }
 
     public JigTypes jigTypes(JigSource jigSource) {

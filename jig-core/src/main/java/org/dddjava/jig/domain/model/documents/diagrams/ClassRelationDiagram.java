@@ -13,25 +13,24 @@ import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTyp
 import java.util.StringJoiner;
 
 /**
- * ビジネスルールの関連
+ * JigTypeの関連図
  */
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
-    JigTypes businessRules;
+    JigTypes jigTypes;
 
-    public ClassRelationDiagram(JigTypes businessRules) {
-        this.businessRules = businessRules;
+    public ClassRelationDiagram(JigTypes jigTypes) {
+        this.jigTypes = jigTypes;
     }
 
     public DiagramSources sources() {
-        return sources(businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
+        return sources(jigTypes, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(JigTypes targetBusinessRules, DocumentName documentName) {
-        if (targetBusinessRules.empty()) {
+    DiagramSources sources(JigTypes jigTypes, DocumentName documentName) {
+        if (jigTypes.empty()) {
             return DiagramSource.empty();
         }
-        var jigTypes = targetBusinessRules.jigTypes();
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")

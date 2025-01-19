@@ -35,16 +35,6 @@ public class JigService {
     }
 
     /**
-     * ビジネスルール一覧を取得する
-     */
-    public JigTypes businessRules(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        JigTypes jigTypes = domainCoreTypes(jigSource);
-        JigTypes jigTypes1 = jigTypes;
-        return new JigTypes(jigTypes1.list());
-    }
-
-    /**
      * メソッドの不吉なにおい一覧を取得する
      */
     public MethodSmellList methodSmells(JigSource jigSource) {

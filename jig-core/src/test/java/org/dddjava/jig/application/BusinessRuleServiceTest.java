@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.smell.SmelledClass;
@@ -20,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void クラス可視性の判定(Sources sources, JigSourceReader jigSourceReader) throws Exception {
-        TypeFacts typeFacts = jigSourceReader.readProjectData(sources).typeFacts();
+    void クラス可視性の判定(JigSource jigsource) throws Exception {
+        TypeFacts typeFacts = jigsource.typeFacts();
         List<JigType> jigTypes = typeFacts.jigTypes().list();
 
         JigType publicType = jigTypes.stream()
@@ -46,8 +45,7 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void 注意メソッドの抽出(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        var jigSource = jigSourceReader.readProjectData(sources);
+    void 注意メソッドの抽出(JigService jigService, JigSource jigSource) {
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
@@ -77,8 +75,7 @@ class BusinessRuleServiceTest {
      * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
      */
     @Test
-    void 注意メソッドの抽出_record(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
-        var jigSource = jigSourceReader.readProjectData(sources);
+    void 注意メソッドの抽出_record(JigService jigService, JigSource jigSource) {
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
@@ -92,16 +89,14 @@ class BusinessRuleServiceTest {
      * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
      */
     @Test
-    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, Sources sources, JigSourceReader jigSourceReader) {
+    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigSource jigSource) {
         var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
 
-        var jigSource = jigSourceReader.readProjectData(sources);
         var jigTypes = jigService.jigTypes(jigSource);
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
         var domainCoreTypes = jigService.domainCoreTypes(jigSource);
         assertFalse(domainCoreTypes.contains(typeIdentifier), "domain coreには存在しない");
-
     }
 }

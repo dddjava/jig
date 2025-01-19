@@ -15,7 +15,6 @@ import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
@@ -29,12 +28,10 @@ public class ThymeleafSummaryWriter {
 
     protected final JigDocumentContext jigDocumentContext;
     private final TemplateEngine templateEngine;
-    private final Map<String, Object> contextMap;
 
     public ThymeleafSummaryWriter(TemplateEngine templateEngine, JigDocumentContext jigDocumentContext) {
         this.templateEngine = templateEngine;
         this.jigDocumentContext = jigDocumentContext;
-        this.contextMap = new ConcurrentHashMap<>();
     }
 
     public List<Path> write(JigDocument jigDocument, SummaryModel summaryModel) {
@@ -60,13 +57,15 @@ public class ThymeleafSummaryWriter {
                     .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
                     .map(CategoryType::new)
                     .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
-            putContext("baseComposite", baseComposite);
-            putContext("jigPackages", jigPackages);
-            putContext("jigTypes", jigTypes);
-            putContext("categoriesMap", categoriesMap);
-            putContext("enumModels", summaryModel.enumModels());
-            putContext("model", summaryModel);
-            write(jigDocumentWriter);
+
+            var contextMap = new HashMap<String, Object>();
+            contextMap.put("baseComposite", baseComposite);
+            contextMap.put("jigPackages", jigPackages);
+            contextMap.put("jigTypes", jigTypes);
+            contextMap.put("categoriesMap", categoriesMap);
+            contextMap.put("enumModels", summaryModel.enumModels());
+            contextMap.put("model", summaryModel);
+            write(jigDocumentWriter, contextMap);
         }
 
         return jigDocumentWriter.outputFilePaths();
@@ -87,16 +86,12 @@ public class ThymeleafSummaryWriter {
         }
     }
 
-    private void write(JigDocumentWriter jigDocumentWriter) {
+    private void write(JigDocumentWriter jigDocumentWriter, Map<String, Object> contextMap) {
         contextMap.put("title", jigDocumentWriter.jigDocument().label());
         Context context = new Context(Locale.ROOT, contextMap);
         String template = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",
                 writer -> templateEngine.process(template, context, writer));
-    }
-
-    private void putContext(String key, Object variable) {
-        contextMap.put(key, variable);
     }
 }

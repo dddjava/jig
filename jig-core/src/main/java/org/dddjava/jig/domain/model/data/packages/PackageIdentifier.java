@@ -67,6 +67,13 @@ public class PackageIdentifier {
         return value;
     }
 
+    public Optional<PackageIdentifier> parentIfExist() {
+        PackageIdentifier parent = parent();
+        if (parent.value.equals("(default)")) return Optional.empty();
+        return Optional.of(parent);
+    }
+
+    // TODO (default) がでてきた場合にを型で識別できないので、使わないようにした方が良さそう
     public PackageIdentifier parent() {
         String[] split = value.split("\\.");
 

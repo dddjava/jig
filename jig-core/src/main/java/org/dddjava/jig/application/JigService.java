@@ -41,7 +41,7 @@ public class JigService {
     public BusinessRules businessRules(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
         JigTypes jigTypes = domainCoreTypes(jigSource);
-        return new BusinessRules(jigTypes, typeFacts.toClassRelations());
+        return new BusinessRules(jigTypes);
     }
 
     /**

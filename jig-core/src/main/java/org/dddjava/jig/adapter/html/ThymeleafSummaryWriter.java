@@ -58,13 +58,14 @@ public class ThymeleafSummaryWriter {
                     .map(CategoryType::new)
                     .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
 
-            var contextMap = new HashMap<String, Object>();
-            contextMap.put("baseComposite", baseComposite);
-            contextMap.put("jigPackages", jigPackages);
-            contextMap.put("jigTypes", jigTypes);
-            contextMap.put("categoriesMap", categoriesMap);
-            contextMap.put("enumModels", summaryModel.enumModels());
-            contextMap.put("model", summaryModel);
+            var contextMap = Map.of(
+                    "baseComposite", baseComposite,
+                    "jigPackages", jigPackages,
+                    "jigTypes", jigTypes,
+                    "categoriesMap", categoriesMap,
+                    "enumModels", summaryModel.enumModels(),
+                    "model", summaryModel
+            );
             write(jigDocumentWriter, contextMap);
         }
 

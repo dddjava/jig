@@ -71,9 +71,7 @@ public class JigService {
         ServiceMethods serviceMethods = serviceMethods(jigSource);
         JigTypes domainCoreJigTypes = domainCoreTypes(jigSource);
 
-        BusinessRules businessRules = businessRules(jigSource);
-
-        return new CategoryUsageDiagram(serviceMethods, businessRules, categoryTypes, domainCoreJigTypes);
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, domainCoreJigTypes);
     }
 
     private ServiceMethods serviceMethods(JigSource jigSource) {

@@ -8,7 +8,6 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypeValueKind;
@@ -24,13 +23,11 @@ import static java.util.stream.Collectors.joining;
 public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     ServiceMethods serviceMethods;
-    BusinessRules businessRules;
     CategoryTypes categoryTypes;
     private final JigTypes domainCoreJigTypes;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, BusinessRules businessRules, CategoryTypes categoryTypes, JigTypes domainCoreJigTypes) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, JigTypes domainCoreJigTypes) {
         this.serviceMethods = serviceMethods;
-        this.businessRules = businessRules;
         this.categoryTypes = categoryTypes;
         this.domainCoreJigTypes = domainCoreJigTypes;
     }
@@ -40,7 +37,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        ClassRelations businessRuleRelations = businessRules.internalClassRelations();
+        ClassRelations businessRuleRelations = domainCoreJigTypes.internalClassRelations();
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 

@@ -38,36 +38,37 @@ public class ThymeleafSummaryWriter {
         JigDocumentWriter jigDocumentWriter = new JigDocumentWriter(jigDocument, jigDocumentContext.outputDirectory());
         if (summaryModel.empty()) {
             jigDocumentWriter.markSkip();
-        } else {
-            Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
-            Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
-                    .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
-                    .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
-            TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
-            createTree(jigTypeMap, packageMap, baseComposite);
-            List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
-                    .sorted(Comparator.comparing(JigType::fqn))
-                    .collect(toList());
-            List<JigPackage> jigPackages = packageMap.values().stream()
-                    .flatMap(Set::stream)
-                    .sorted(Comparator.comparing(PackageIdentifier::asText))
-                    .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
-                    .collect(toList());
-            Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
-                    .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
-                    .map(CategoryType::new)
-                    .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
-
-            var contextMap = Map.of(
-                    "baseComposite", baseComposite,
-                    "jigPackages", jigPackages,
-                    "jigTypes", jigTypes,
-                    "categoriesMap", categoriesMap,
-                    "enumModels", summaryModel.enumModels(),
-                    "model", summaryModel
-            );
-            write(jigDocumentWriter, contextMap);
+            return List.of();
         }
+
+        Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
+        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
+                .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
+                .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
+        TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
+        createTree(jigTypeMap, packageMap, baseComposite);
+        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
+                .sorted(Comparator.comparing(JigType::fqn))
+                .collect(toList());
+        List<JigPackage> jigPackages = packageMap.values().stream()
+                .flatMap(Set::stream)
+                .sorted(Comparator.comparing(PackageIdentifier::asText))
+                .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
+                .collect(toList());
+        Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
+                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
+                .map(CategoryType::new)
+                .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
+
+        var contextMap = Map.of(
+                "baseComposite", baseComposite,
+                "jigPackages", jigPackages,
+                "jigTypes", jigTypes,
+                "categoriesMap", categoriesMap,
+                "enumModels", summaryModel.enumModels(),
+                "model", summaryModel
+        );
+        write(jigDocumentWriter, contextMap);
 
         return jigDocumentWriter.outputFilePaths();
     }

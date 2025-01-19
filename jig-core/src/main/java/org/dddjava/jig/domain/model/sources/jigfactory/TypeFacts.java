@@ -2,8 +2,6 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelation;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
@@ -25,7 +23,6 @@ public class TypeFacts {
         this.enumModels = enumModels;
     }
 
-    private ClassRelations classRelations;
     private MethodRelations methodRelations;
 
     private JigTypes jigTypes;
@@ -47,20 +44,6 @@ public class TypeFacts {
             }
         }
         return methodRelations = new MethodRelations(collector);
-    }
-
-    public synchronized ClassRelations toClassRelations() {
-        if (classRelations != null) {
-            return classRelations;
-        }
-
-        this.classRelations = new ClassRelations(jigTypes().stream()
-                .flatMap(jigType ->
-                        jigType.usingTypes().list().stream().map(usingType ->
-                                new ClassRelation(jigType.identifier(), usingType)))
-                .filter(classRelation -> !classRelation.selfRelation())
-                .toList());
-        return this.classRelations;
     }
 
     public EnumModels enumModels() {

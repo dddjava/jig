@@ -41,9 +41,8 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         var internalClassRelations = jigTypes.internalClassRelations();
 
         // 関連のないものだけ抽出する
-        var relatedTypeIdentifiers = internalClassRelations.allTypeIdentifiers();
         TypeIdentifiers isolatedTypes = jigTypes
-                .filter(jigType -> !jigTypes.internalTypeRelationsFrom(jigType).isEmpty() || !jigTypes.internalTypeRelationsTo(jigType).isEmpty())
+                .filter(jigType -> jigTypes.internalTypeRelationsFrom(jigType).isEmpty() && jigTypes.internalTypeRelationsTo(jigType).isEmpty())
                 .typeIdentifiers();
 
         for (PackageJigTypes packageJigTypes : jigTypes.listPackages()) {

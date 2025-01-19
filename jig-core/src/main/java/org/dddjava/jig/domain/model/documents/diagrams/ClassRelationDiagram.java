@@ -31,14 +31,23 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         if (targetBusinessRules.empty()) {
             return DiagramSource.empty();
         }
+        var jigTypes = targetBusinessRules.jigTypes();
 
         StringJoiner graph = new StringJoiner("\n", "digraph \"" + documentName.label() + "\" {", "}")
                 .add("label=\"" + documentName.label() + "\";")
                 .add("newrank=true;")
                 .add(Node.DEFAULT);
 
-        TypeIdentifiers isolatedTypes = targetBusinessRules.isolatedTypes();
-        for (PackageJigTypes packageJigTypes : targetBusinessRules.listPackages()) {
+        // 出力対象の内部だけの関連
+        var internalClassRelations = targetBusinessRules.internalClassRelations();
+
+        // 関連のないものだけ抽出する
+        var relatedTypeIdentifiers = internalClassRelations.allTypeIdentifiers();
+        TypeIdentifiers isolatedTypes = jigTypes
+                .filter(jigType -> !jigTypes.internalTypeRelationsFrom(jigType).isEmpty() || !jigTypes.internalTypeRelationsTo(jigType).isEmpty())
+                .typeIdentifiers();
+
+        for (PackageJigTypes packageJigTypes : jigTypes.listPackages()) {
             PackageIdentifier packageIdentifier = packageJigTypes.packageIdentifier();
 
             String fqn = packageIdentifier.asText();
@@ -60,7 +69,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
             graph.add(subgraph.toString());
         }
 
-        for (ClassRelation classRelation : targetBusinessRules.internalClassRelations().list()) {
+        for (ClassRelation classRelation : internalClassRelations.list()) {
             graph.add(classRelation.dotText());
         }
 

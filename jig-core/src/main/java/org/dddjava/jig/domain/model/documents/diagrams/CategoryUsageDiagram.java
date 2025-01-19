@@ -40,7 +40,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        ClassRelations businessRuleRelations = businessRules.businessRuleRelations();
+        ClassRelations businessRuleRelations = businessRules.internalClassRelations();
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 

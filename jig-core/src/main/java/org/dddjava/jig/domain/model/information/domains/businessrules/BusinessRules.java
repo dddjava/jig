@@ -29,7 +29,8 @@ public class BusinessRules {
 
         this.internalClassRelations = classRelations.list().stream()
                 .filter(classRelation -> jigTypes.contains(classRelation.from()) && jigTypes.contains(classRelation.to()))
-                .collect(collectingAndThen(toList(), ClassRelations::new));
+                .collect(collectingAndThen(toList(), ClassRelations::new))
+                .distinct();
     }
 
     public List<JigType> list() {
@@ -55,10 +56,6 @@ public class BusinessRules {
                 .map(entity -> new PackageJigTypes(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(packageJigTypes -> packageJigTypes.packageIdentifier().asText()))
                 .collect(toList());
-    }
-
-    public ClassRelations businessRuleRelations() {
-        return internalClassRelations.distinct();
     }
 
     public ClassRelations internalClassRelations() {

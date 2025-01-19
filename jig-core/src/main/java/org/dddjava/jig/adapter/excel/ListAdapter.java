@@ -61,8 +61,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> businessRules.businessRuleRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
-                        Map.entry("関連先ビジネスルール数", item -> businessRules.businessRuleRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
+                        Map.entry("関連元ビジネスルール数", item -> businessRules.internalClassRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
+                        Map.entry("関連先ビジネスルール数", item -> businessRules.internalClassRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {

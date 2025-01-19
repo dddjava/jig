@@ -4,7 +4,9 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,5 +121,16 @@ public class JigTypes {
 
     public boolean contains(TypeIdentifier typeIdentifier) {
         return map.containsKey(typeIdentifier);
+    }
+
+    public List<PackageJigTypes> listPackages() {
+        Map<PackageIdentifier, List<JigType>> map = stream()
+                .collect(Collectors.groupingBy(
+                        businessRule -> businessRule.typeIdentifier().packageIdentifier()
+                ));
+        return map.entrySet().stream()
+                .map(entity -> new PackageJigTypes(entity.getKey(), entity.getValue()))
+                .sorted(Comparator.comparing(packageJigTypes -> packageJigTypes.packageIdentifier().asText()))
+                .collect(toList());
     }
 }

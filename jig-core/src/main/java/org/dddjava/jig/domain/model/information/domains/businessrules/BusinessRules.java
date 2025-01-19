@@ -2,15 +2,12 @@ package org.dddjava.jig.domain.model.information.domains.businessrules;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -48,14 +45,7 @@ public class BusinessRules {
     }
 
     public List<PackageJigTypes> listPackages() {
-        Map<PackageIdentifier, List<JigType>> map = jigTypes.stream()
-                .collect(Collectors.groupingBy(
-                        businessRule -> businessRule.typeIdentifier().packageIdentifier()
-                ));
-        return map.entrySet().stream()
-                .map(entity -> new PackageJigTypes(entity.getKey(), entity.getValue()))
-                .sorted(Comparator.comparing(packageJigTypes -> packageJigTypes.packageIdentifier().asText()))
-                .collect(toList());
+        return jigTypes.listPackages();
     }
 
     public ClassRelations internalClassRelations() {

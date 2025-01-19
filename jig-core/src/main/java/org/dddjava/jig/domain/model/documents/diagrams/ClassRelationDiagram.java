@@ -39,7 +39,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = targetBusinessRules.internalClassRelations();
+        var internalClassRelations = jigTypes.internalClassRelations();
 
         // 関連のないものだけ抽出する
         var relatedTypeIdentifiers = internalClassRelations.allTypeIdentifiers();

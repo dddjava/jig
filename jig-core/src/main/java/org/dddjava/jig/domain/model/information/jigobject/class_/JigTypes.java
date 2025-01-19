@@ -150,4 +150,12 @@ public class JigTypes {
                 .map(usingType -> new ClassRelation(targetJigType.typeIdentifier(), usingType))
                 .collect(Collectors.collectingAndThen(toList(), ClassRelations::new));
     }
+
+    public ClassRelations internalClassRelations() {
+        return list.stream()
+                .flatMap(jigType -> jigType.usingTypes().list().stream()
+                        .filter(typeIdentifier -> contains(typeIdentifier))
+                        .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
+                .collect(collectingAndThen(toList(), ClassRelations::new));
+    }
 }

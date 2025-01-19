@@ -58,7 +58,7 @@ public class BusinessRules {
     }
 
     public ClassRelations businessRuleRelations() {
-        return new ClassRelations(internalClassRelations.distinctList());
+        return internalClassRelations.distinct();
     }
 
     public ClassRelations internalClassRelations() {

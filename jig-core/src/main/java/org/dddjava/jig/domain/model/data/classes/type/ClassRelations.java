@@ -52,6 +52,10 @@ public class ClassRelations {
         return new ClassRelations(collect);
     }
 
+    public ClassRelations distinct() {
+        return new ClassRelations(distinctList());
+    }
+
     public List<ClassRelation> distinctList() {
         List<ClassRelation> results = new ArrayList<>();
         ADD:

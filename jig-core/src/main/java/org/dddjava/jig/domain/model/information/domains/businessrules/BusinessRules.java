@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -31,9 +30,7 @@ public class BusinessRules {
     }
 
     public List<JigType> list() {
-        return jigTypes.stream()
-                .sorted(Comparator.comparing(JigType::typeIdentifier))
-                .collect(toList());
+        return jigTypes.list();
     }
 
     public boolean empty() {

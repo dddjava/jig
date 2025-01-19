@@ -19,7 +19,6 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +40,11 @@ public class ListAdapter implements Adapter<ReportBook> {
 
     @HandleDocument(JigDocument.BusinessRuleList)
     public ReportBook businessRuleReports(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        var allClassRelations = typeFacts.toClassRelations();
 
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
         JigTypes jigTypes = jigService.jigTypes(jigSource);
+        var allClassRelations = jigTypes.classRelations();
+
         JigTypes domainCoreTypes = jigService.domainCoreTypes(jigSource);
 
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);

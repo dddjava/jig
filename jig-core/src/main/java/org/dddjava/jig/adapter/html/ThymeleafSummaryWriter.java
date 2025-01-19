@@ -87,7 +87,7 @@ public class ThymeleafSummaryWriter {
         }
     }
 
-    protected void write(JigDocumentWriter jigDocumentWriter) {
+    private void write(JigDocumentWriter jigDocumentWriter) {
         contextMap.put("title", jigDocumentWriter.jigDocument().label());
         Context context = new Context(Locale.ROOT, contextMap);
         String template = jigDocumentWriter.jigDocument().fileName();
@@ -96,7 +96,7 @@ public class ThymeleafSummaryWriter {
                 writer -> templateEngine.process(template, context, writer));
     }
 
-    protected void putContext(String key, Object variable) {
+    private void putContext(String key, Object variable) {
         contextMap.put(key, variable);
     }
 }

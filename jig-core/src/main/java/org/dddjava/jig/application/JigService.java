@@ -83,8 +83,7 @@ public class JigService {
             logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
         }
 
-        JigTypes jigTypes = jigSource.typeFacts().jigTypes();
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
 
         return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
     }
@@ -93,14 +92,13 @@ public class JigService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(typeFacts.jigTypes());
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
 
         if (datasourceMethods.empty()) {
             logger.warn(Warning.リポジトリが見つからないので出力されない通知.localizedMessage());
         }
 
-        MethodRelations methodRelations = typeFacts.toMethodRelations();
+        MethodRelations methodRelations = jigSource.typeFacts().toMethodRelations();
         return new DatasourceAngles(datasourceMethods, jigSource.sqls(), methodRelations);
     }
 
@@ -115,8 +113,7 @@ public class JigService {
     }
 
     public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
+        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigSource));
         return new ArchitectureDiagram(packageBasedArchitecture);
     }
 

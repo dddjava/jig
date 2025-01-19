@@ -158,4 +158,8 @@ public class JigTypes {
                         .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
                 .collect(collectingAndThen(toList(), ClassRelations::new));
     }
+
+    public JigTypes jigTypes() {
+        return this;
+    }
 }

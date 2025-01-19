@@ -25,6 +25,6 @@ public class BusinessRules {
     }
 
     public JigTypes jigTypes() {
-        return jigTypes;
+        return jigTypes.jigTypes();
     }
 }

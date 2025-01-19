@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;
@@ -38,10 +37,11 @@ public class JigService {
     /**
      * ビジネスルール一覧を取得する
      */
-    public BusinessRules businessRules(JigSource jigSource) {
+    public JigTypes businessRules(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
         JigTypes jigTypes = domainCoreTypes(jigSource);
-        return new BusinessRules(jigTypes);
+        JigTypes jigTypes1 = jigTypes;
+        return new JigTypes(jigTypes1.list());
     }
 
     /**

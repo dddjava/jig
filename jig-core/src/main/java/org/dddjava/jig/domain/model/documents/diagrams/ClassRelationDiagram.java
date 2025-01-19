@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
 
 import java.util.StringJoiner;
@@ -17,9 +17,9 @@ import java.util.StringJoiner;
  */
 public class ClassRelationDiagram implements DiagramSourceWriter {
 
-    BusinessRules businessRules;
+    JigTypes businessRules;
 
-    public ClassRelationDiagram(BusinessRules businessRules) {
+    public ClassRelationDiagram(JigTypes businessRules) {
         this.businessRules = businessRules;
     }
 
@@ -27,7 +27,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
         return sources(businessRules, DocumentName.of(JigDocument.BusinessRuleRelationDiagram));
     }
 
-    DiagramSources sources(BusinessRules targetBusinessRules, DocumentName documentName) {
+    DiagramSources sources(JigTypes targetBusinessRules, DocumentName documentName) {
         if (targetBusinessRules.empty()) {
             return DiagramSource.empty();
         }

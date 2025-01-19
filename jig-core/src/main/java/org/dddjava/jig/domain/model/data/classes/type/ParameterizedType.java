@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
  */
 public record ParameterizedType(TypeIdentifier typeIdentifier, List<ParameterizedType> _typeParameters) {
 
+    // こっちよりnoneGenericsのファクトリメソッドを使っていきたい
     public ParameterizedType(TypeIdentifier typeIdentifier) {
         // 非総称型
         this(typeIdentifier, Collections.emptyList());
@@ -21,6 +22,10 @@ public record ParameterizedType(TypeIdentifier typeIdentifier, List<Parameterize
 
     public static ParameterizedType convert(TypeIdentifier typeIdentifier, List<TypeIdentifier> list) {
         return new ParameterizedType(typeIdentifier, list.stream().map(ParameterizedType::new).toList());
+    }
+
+    public static ParameterizedType noneGenerics(TypeIdentifier typeIdentifier) {
+        return new ParameterizedType(typeIdentifier);
     }
 
     public TypeIdentifier typeIdentifier() {

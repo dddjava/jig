@@ -34,11 +34,6 @@ public final class MethodSignature {
         return new MethodSignature(methodName, arguments);
     }
 
-    @Deprecated(since = "これで生成されるものは絶対ジェネリクスがないものになっているので、MethodSignatureとは異なる型にする")
-    public static MethodSignature fromTypeIdentifier(String methodName, List<TypeIdentifier> arguments) {
-        return new MethodSignature(methodName, arguments.stream().map(ParameterizedType::new).toList());
-    }
-
     /**
      * メソッド文字列表現。引数型もFQNでになります。
      *

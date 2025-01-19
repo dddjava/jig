@@ -134,9 +134,17 @@ class AsmClassVisitor extends ClassVisitor {
                         AsmMethodSignatureVisitor.buildMethodDeclaration(this.api, name, this.jigTypeBuilder.typeIdentifier(), nonNullSignature)
                 ).orElseGet(() -> {
                     // signatureがないもしくは失敗した場合はdescriptorから構築する
-                    TypeIdentifier returnTypeIdentifier = methodDescriptorToReturnIdentifier(descriptor);
-                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(returnTypeIdentifier);
-                    return new MethodDeclaration(jigTypeBuilder.typeIdentifier(), toMethodSignature(name, descriptor), methodReturn);
+                    // signatureの解析失敗はともかく、descriptorしかない場合はこの生成で適切なMethodSignatureができる
+
+                    // descriptorから戻り値型を生成
+                    MethodReturn methodReturn = MethodReturn.fromTypeOnly(methodDescriptorToReturnIdentifier(descriptor));
+                    // descriptorから引数型を生成
+                    List<ParameterizedType> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
+                            .map(AsmClassVisitor::toTypeIdentifier)
+                            .map(ParameterizedType::noneGenerics)
+                            .collect(Collectors.toList());
+                    var methodSignature = MethodSignature.from(name, argumentTypes);
+                    return new MethodDeclaration(jigTypeBuilder.typeIdentifier(), methodSignature, methodReturn);
                 });
 
         List<TypeIdentifier> signatureContainedTypes = extractClassTypeFromGenericsSignature(signature);
@@ -322,13 +330,6 @@ class AsmClassVisitor extends ClassVisitor {
         if ((access & Opcodes.ACC_PROTECTED) != 0) return Visibility.PROTECTED;
         if ((access & Opcodes.ACC_PRIVATE) != 0) return Visibility.PRIVATE;
         return Visibility.PACKAGE;
-    }
-
-    private MethodSignature toMethodSignature(String name, String descriptor) {
-        List<TypeIdentifier> argumentTypes = Arrays.stream(Type.getArgumentTypes(descriptor))
-                .map(AsmClassVisitor::toTypeIdentifier)
-                .collect(Collectors.toList());
-        return MethodSignature.fromTypeIdentifier(name, argumentTypes);
     }
 
     private TypeIdentifier methodDescriptorToReturnIdentifier(String descriptor) {

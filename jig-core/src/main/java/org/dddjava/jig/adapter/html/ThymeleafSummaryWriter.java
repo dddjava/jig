@@ -66,9 +66,15 @@ public class ThymeleafSummaryWriter {
                 "jigTypes", jigTypes,
                 "categoriesMap", categoriesMap,
                 "enumModels", summaryModel.enumModels(),
-                "model", summaryModel
+                "model", summaryModel,
+                "title", jigDocumentWriter.jigDocument().label()
         );
-        write(jigDocumentWriter, contextMap);
+
+        Context context = new Context(Locale.ROOT, contextMap);
+        String template = jigDocumentWriter.jigDocument().fileName();
+
+        jigDocumentWriter.writeTextAs(".html",
+                writer -> templateEngine.process(template, context, writer));
 
         return jigDocumentWriter.outputFilePaths();
     }
@@ -86,14 +92,5 @@ public class ThymeleafSummaryWriter {
             }
             createTree(jigTypeMap, packageMap, composite);
         }
-    }
-
-    private void write(JigDocumentWriter jigDocumentWriter, Map<String, Object> contextMap) {
-        contextMap.put("title", jigDocumentWriter.jigDocument().label());
-        Context context = new Context(Locale.ROOT, contextMap);
-        String template = jigDocumentWriter.jigDocument().fileName();
-
-        jigDocumentWriter.writeTextAs(".html",
-                writer -> templateEngine.process(template, context, writer));
     }
 }

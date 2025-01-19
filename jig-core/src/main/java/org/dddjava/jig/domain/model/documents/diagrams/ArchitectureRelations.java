@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageRelation;
@@ -22,9 +21,9 @@ public class ArchitectureRelations {
         this.list = list;
     }
 
-    public static ArchitectureRelations from(PackageBasedArchitecture packageBasedArchitecture, ClassRelations classRelations) {
+    public static ArchitectureRelations from(PackageBasedArchitecture packageBasedArchitecture) {
         ArrayList<PackageRelation> list = new ArrayList<>();
-        for (ClassRelation classRelation : classRelations.list()) {
+        for (ClassRelation classRelation : packageBasedArchitecture.classRelations().list()) {
             TypeIdentifier from = classRelation.from();
             TypeIdentifier to = classRelation.to();
 

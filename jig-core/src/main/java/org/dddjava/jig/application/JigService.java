@@ -117,10 +117,8 @@ public class JigService {
 
     public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
         TypeFacts typeFacts = jigSource.typeFacts();
-        // TODO packageBasedArchitectureがjigTypeを受け取っているのでclassRelationを別に受け取らなくてもいけるはず
         PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(typeFacts.jigTypes());
-        ClassRelations classRelations = typeFacts.toClassRelations();
-        return new ArchitectureDiagram(packageBasedArchitecture, classRelations);
+        return new ArchitectureDiagram(packageBasedArchitecture);
     }
 
     public Entrypoint entrypoint(JigSource jigSource) {

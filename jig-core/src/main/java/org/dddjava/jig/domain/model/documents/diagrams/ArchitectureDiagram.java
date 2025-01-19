@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
@@ -17,15 +16,13 @@ import java.util.function.Function;
 public class ArchitectureDiagram implements DiagramSourceWriter {
 
     PackageBasedArchitecture packageBasedArchitecture;
-    ClassRelations classRelations;
 
-    public ArchitectureDiagram(PackageBasedArchitecture packageBasedArchitecture, ClassRelations classRelations) {
+    public ArchitectureDiagram(PackageBasedArchitecture packageBasedArchitecture) {
         this.packageBasedArchitecture = packageBasedArchitecture;
-        this.classRelations = classRelations;
     }
 
     public DiagramSources sources(JigDocumentContext jigDocumentContext) {
-        ArchitectureRelations architectureRelations = ArchitectureRelations.from(packageBasedArchitecture, classRelations);
+        ArchitectureRelations architectureRelations = ArchitectureRelations.from(packageBasedArchitecture);
         if (architectureRelations.worthless()) {
             return DiagramSource.empty();
         }

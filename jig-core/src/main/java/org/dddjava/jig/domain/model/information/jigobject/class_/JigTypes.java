@@ -161,4 +161,13 @@ public class JigTypes {
                 .filter(classRelation -> !classRelation.selfRelation())
                 .collect(collectingAndThen(toList(), ClassRelations::new));
     }
+
+    public ClassRelations classRelations() {
+        var classRelations = new ClassRelations(list.stream()
+                .flatMap(jigType -> jigType.usingTypes().list().stream()
+                        .map(usingType -> new ClassRelation(jigType.typeIdentifier(), usingType)))
+                .filter(classRelation -> !classRelation.selfRelation())
+                .toList());
+        return classRelations;
+    }
 }

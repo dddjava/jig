@@ -1,5 +1,6 @@
 package org.dddjava.jig.domain.model.knowledge.architecture;
 
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
@@ -16,13 +17,19 @@ import static java.util.stream.Collectors.groupingBy;
 public class PackageBasedArchitecture {
 
     List<PackageIdentifier> architecturePackages;
+    private final ClassRelations classRelations;
 
-    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages) {
+    PackageBasedArchitecture(List<PackageIdentifier> architecturePackages, ClassRelations classRelations) {
         this.architecturePackages = architecturePackages;
+        this.classRelations = classRelations;
+    }
+
+    public ClassRelations classRelations() {
+        return classRelations;
     }
 
     public static PackageBasedArchitecture from(JigTypes jigTypes) {
-        return new PackageBasedArchitecture(getArchitecturePackages(jigTypes));
+        return new PackageBasedArchitecture(getArchitecturePackages(jigTypes), jigTypes.classRelations());
     }
 
     private static List<PackageIdentifier> getArchitecturePackages(JigTypes jigTypes) {

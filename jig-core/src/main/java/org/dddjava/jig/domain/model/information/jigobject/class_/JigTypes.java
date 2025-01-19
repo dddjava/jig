@@ -2,6 +2,8 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
+import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
@@ -132,5 +134,20 @@ public class JigTypes {
                 .map(entity -> new PackageJigTypes(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(packageJigTypes -> packageJigTypes.packageIdentifier().asText()))
                 .collect(toList());
+    }
+
+    public ClassRelations internalTypeRelationsTo(JigType targetJigType) {
+        return list.parallelStream()
+                .filter(jigType -> jigType.usingTypes().contains(targetJigType.typeIdentifier()))
+                .map(jigType -> new ClassRelation(jigType.typeIdentifier(), targetJigType.typeIdentifier()))
+                .collect(Collectors.collectingAndThen(toList(), ClassRelations::new));
+    }
+
+    public ClassRelations internalTypeRelationsFrom(JigType targetJigType) {
+        return targetJigType.usingTypes().list()
+                .stream()
+                .filter(usingType -> contains(usingType))
+                .map(usingType -> new ClassRelation(targetJigType.typeIdentifier(), usingType))
+                .collect(Collectors.collectingAndThen(toList(), ClassRelations::new));
     }
 }

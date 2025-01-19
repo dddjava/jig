@@ -123,4 +123,8 @@ public class ClassRelations {
                 .distinct()
                 .collect(TypeIdentifiers.collector());
     }
+
+    public int size() {
+        return list.size();
+    }
 }

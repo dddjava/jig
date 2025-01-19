@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.documents.stationery.Warning;
-import org.dddjava.jig.domain.model.information.domains.businessrules.BusinessRules;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
@@ -47,9 +46,10 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
         JigTypes jigTypes = jigService.jigTypes(jigSource);
-        BusinessRules businessRules = jigService.businessRules(jigSource);
+        JigTypes domainCoreTypes = jigService.domainCoreTypes(jigSource);
+
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
-        List<PackageJigTypes> packageJigTypes = businessRules.listPackages();
+        List<PackageJigTypes> packageJigTypes = domainCoreTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
@@ -61,8 +61,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> businessRules.internalClassRelations().filterTo(item.typeIdentifier()).fromTypeIdentifiers().size()),
-                        Map.entry("関連先ビジネスルール数", item -> businessRules.internalClassRelations().filterFrom(item.typeIdentifier()).toTypeIdentifiers().size()),
+                        Map.entry("関連元ビジネスルール数", item -> domainCoreTypes.internalTypeRelationsTo(item).size()),
+                        Map.entry("関連先ビジネスルール数", item -> domainCoreTypes.internalTypeRelationsFrom(item).size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {
@@ -70,7 +70,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                             return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
                         }),
                         Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText())
-                ), businessRules.list()),
+                ), domainCoreTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
@@ -92,7 +92,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
                         Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
                         Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
-                ), businessRules.jigTypes().listCollectionType()),
+                ), domainCoreTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

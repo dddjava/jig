@@ -23,7 +23,7 @@ tasks.named('test') {
 tasks.named('jar') {
     metaInf { from(rootDir) { include 'LICENSE' } }
     manifest {
-        attributes "Implementation-Version": "hoge." + project.version
+        attributes "Implementation-Version": project.version
     }
 }
 

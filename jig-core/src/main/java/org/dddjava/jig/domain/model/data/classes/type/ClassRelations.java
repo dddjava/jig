@@ -131,4 +131,10 @@ public class ClassRelations {
     public boolean isEmpty() {
         return list.isEmpty();
     }
+
+    public String dotText() {
+        return list.stream()
+                .map(ClassRelation::dotText)
+                .collect(Collectors.joining("\n"));
+    }
 }

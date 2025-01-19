@@ -140,6 +140,7 @@ public class JigTypes {
         return list.parallelStream()
                 .filter(jigType -> jigType.usingTypes().contains(targetJigType.typeIdentifier()))
                 .map(jigType -> new ClassRelation(jigType.typeIdentifier(), targetJigType.typeIdentifier()))
+                .filter(classRelation -> !classRelation.selfRelation())
                 .collect(Collectors.collectingAndThen(toList(), ClassRelations::new));
     }
 
@@ -148,6 +149,7 @@ public class JigTypes {
                 .stream()
                 .filter(usingType -> contains(usingType))
                 .map(usingType -> new ClassRelation(targetJigType.typeIdentifier(), usingType))
+                .filter(classRelation -> !classRelation.selfRelation())
                 .collect(Collectors.collectingAndThen(toList(), ClassRelations::new));
     }
 
@@ -156,6 +158,7 @@ public class JigTypes {
                 .flatMap(jigType -> jigType.usingTypes().list().stream()
                         .filter(typeIdentifier -> contains(typeIdentifier))
                         .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
+                .filter(classRelation -> !classRelation.selfRelation())
                 .collect(collectingAndThen(toList(), ClassRelations::new));
     }
 }

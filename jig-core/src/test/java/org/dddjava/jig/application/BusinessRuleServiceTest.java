@@ -7,6 +7,7 @@ import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
+import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.smell.SmelledClass;
 import stub.domain.model.smell.SmelledRecord;
 import testing.JigServiceTest;
@@ -98,5 +99,20 @@ class BusinessRuleServiceTest {
 
         var domainCoreTypes = jigService.domainCoreTypes(jigSource);
         assertFalse(domainCoreTypes.contains(typeIdentifier), "domain coreには存在しない");
+    }
+
+    @Test
+    void 関連(JigService jigService, JigSource jigSource) {
+        var jigTypes = jigService.jigTypes(jigSource);
+
+        var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
+        var classRelations = jigTypes.internalTypeRelationsFrom(targetJigType);
+
+        assertEquals(classRelations.dotText(), """
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ClassAnnotation";
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.GenericsParameter";
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementA";
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ImplementB";
+                "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.SuperClass";""");
     }
 }

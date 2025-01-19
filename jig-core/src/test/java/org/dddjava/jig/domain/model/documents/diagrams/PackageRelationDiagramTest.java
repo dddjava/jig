@@ -27,25 +27,23 @@ class PackageRelationDiagramTest {
         return Stream.of(
                 Arguments.argumentSet(
                         "パッケージも関連も空",
-                        new PackageIdentifiers(List.of()),
-                        new ClassRelations(List.of())
+                        List.of(),
+                        List.of()
                 ),
                 Arguments.argumentSet(
                         "パッケージはあるが関連はない",
-                        new PackageIdentifiers(List.of(
-                                PackageIdentifier.valueOf("a.aa"),
+                        List.of(PackageIdentifier.valueOf("a.aa"),
                                 PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.ab")
-                        )),
-                        new ClassRelations(List.of())
+                                PackageIdentifier.valueOf("a.ab")),
+                        List.of()
                 )
         );
     }
 
     @MethodSource
     @ParameterizedTest
-    void 出力されないパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
-        var sut = new PackageRelationDiagram(packageIdentifiers, classRelations);
+    void 出力されないパターン(List<PackageIdentifier> packageIdentifiers, List<ClassRelation> classRelations) {
+        var sut = new PackageRelationDiagram(new PackageIdentifiers(packageIdentifiers), new ClassRelations(classRelations));
 
         var actual = sut.dependencyDotText(null);
 
@@ -55,73 +53,50 @@ class PackageRelationDiagramTest {
     public static Stream<Arguments> 出力されるパターン() {
         return Stream.of(
                 Arguments.argumentSet("直下の関連がある",
-                        new PackageIdentifiers(List.of(
-                                PackageIdentifier.valueOf("a.aa.aaa"),
-                                PackageIdentifier.valueOf("a.aa.aab")
-                        )),
-                        new ClassRelations(List.of(
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.Bar"))
-                        )),
+                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
+                                PackageIdentifier.valueOf("a.aa.aab")),
+                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.Bar"))),
                         3,
-                        List.of(
-                                "\"a.aa.aaa\" -> \"a.aa.aab\";"
-                        )
+                        List.of("\"a.aa.aaa\" -> \"a.aa.aab\";")
                 ),
                 Arguments.argumentSet("階層がずれた関連がある",
-                        new PackageIdentifiers(List.of(
-                                PackageIdentifier.valueOf("a.aa.aaa"),
+                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
                                 PackageIdentifier.valueOf("a.aa.aab.aaba"),
-                                PackageIdentifier.valueOf("b")
-                        )),
-                        new ClassRelations(List.of(
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
-                        )),
+                                PackageIdentifier.valueOf("b")),
+                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))),
                         3,
-                        List.of(
-                                "\"a.aa.aaa\" -> \"a.aa.aab\";",
+                        List.of("\"a.aa.aaa\" -> \"a.aa.aab\";",
                                 "\"a.aa.aaa\" -> \"b\";",
-                                "subgraph \"cluster_a.aa\""
-                        )
+                                "subgraph \"cluster_a.aa\"")
                 ),
                 Arguments.argumentSet("階層がずれた関連を1階層切り詰める",
-                        new PackageIdentifiers(List.of(
-                                PackageIdentifier.valueOf("a.aa.aaa"),
+                        List.of(PackageIdentifier.valueOf("a.aa.aaa"),
                                 PackageIdentifier.valueOf("a.aa.aab.aaba"),
-                                PackageIdentifier.valueOf("b")
-                        )),
-                        new ClassRelations(List.of(
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
-                        )),
+                                PackageIdentifier.valueOf("b")),
+                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("a.aa.aab.aaba.Bar")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))),
                         2,
-                        List.of(
-                                "\"a.aa\" -> \"b\";"
-                        )
+                        List.of("\"a.aa\" -> \"b\";")
                 ),
                 Arguments.argumentSet("デフォルトパッケージを扱える",
-                        new PackageIdentifiers(List.of(
-                                PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa"),
+                        List.of(PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa"),
                                 PackageIdentifier.valueOf("a.aa.aaa.aaaa.aaaab"),
                                 PackageIdentifier.defaultPackage(),
-                                PackageIdentifier.valueOf("a")
-                        )),
-                        new ClassRelations(List.of(
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaab.Fuga")),
-                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("DefaultPackageClass"))
-                        )),
+                                PackageIdentifier.valueOf("a")),
+                        List.of(new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaab.Fuga")),
+                                new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.aaaa.aaaaa.Hoge"), TypeIdentifier.valueOf("DefaultPackageClass"))),
                         4,
-                        List.of(
-                                "\"a.aa.aaa.aaaa\" -> \"(default)\";"
-                        )
+                        List.of("\"a.aa.aaa.aaaa\" -> \"(default)\";")
                 )
         );
     }
 
     @MethodSource
     @ParameterizedTest
-    void 出力されるパターン(PackageIdentifiers packageIdentifiers, ClassRelations classRelations, int depth, List<String> expectedContainsTexts) {
-        var sut = new PackageRelationDiagram(packageIdentifiers, classRelations).applyDepth(new PackageDepth(depth));
+    void 出力されるパターン(List<PackageIdentifier> packageIdentifiers, List<ClassRelation> classRelations, int depth, List<String> expectedContainsTexts) {
+        var sut = new PackageRelationDiagram(new PackageIdentifiers(packageIdentifiers), new ClassRelations(classRelations))
+                .applyDepth(new PackageDepth(depth));
 
         JigDocumentContext jigDocumentContext = mock(JigDocumentContext.class);
         when(jigDocumentContext.packageComment(any())).thenReturn(PackageComment.empty(null));

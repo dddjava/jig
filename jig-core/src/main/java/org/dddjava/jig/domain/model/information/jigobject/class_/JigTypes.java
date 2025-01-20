@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
+import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
@@ -24,7 +23,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public class JigTypes {
+public class JigTypes implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
 
     private final List<JigType> list;
@@ -169,5 +168,10 @@ public class JigTypes {
                 .filter(classRelation -> !classRelation.selfRelation())
                 .toList());
         return classRelations;
+    }
+
+    @Override
+    public CallerMethods create(MethodDeclaration methodDeclaration) {
+        return methodRelations().callerMethodsOf(methodDeclaration);
     }
 }

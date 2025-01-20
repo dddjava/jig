@@ -1,6 +1,5 @@
 package org.dddjava.jig.application;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
@@ -92,14 +91,14 @@ public class JigService {
      * データソースを分析する
      */
     public DatasourceAngles datasourceAngles(JigSource jigSource) {
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
+        JigTypes jigTypes = jigTypes(jigSource);
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
 
         if (datasourceMethods.empty()) {
             logger.warn(Warning.リポジトリが見つからないので出力されない通知.localizedMessage());
         }
 
-        MethodRelations methodRelations = jigSource.typeFacts().toMethodRelations();
-        return new DatasourceAngles(datasourceMethods, jigSource.sqls(), methodRelations::callerMethodsOf);
+        return new DatasourceAngles(datasourceMethods, jigSource.sqls(), jigTypes);
     }
 
     /**

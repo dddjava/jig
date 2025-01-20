@@ -57,13 +57,6 @@ public class JigMethodBuilder {
         return new MethodAnnotations(methodAnnotations);
     }
 
-    void collectUsingMethodRelations(List<MethodRelation> collector) {
-        for (MethodDeclaration usingMethod : instructions.instructMethods().list()) {
-            MethodRelation methodRelation = new MethodRelation(methodDeclaration, usingMethod);
-            collector.add(methodRelation);
-        }
-    }
-
     public MethodIdentifier methodIdentifier() {
         return methodDeclaration.identifier();
     }

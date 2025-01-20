@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.knowledge.adapter;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethodsFactory;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
@@ -19,10 +18,9 @@ public class DatasourceAngles {
 
     List<DatasourceAngle> list;
 
-    public DatasourceAngles(DatasourceMethods datasourceMethods, MyBatisStatements myBatisStatements, MethodRelations methodRelations) {
+    public DatasourceAngles(DatasourceMethods datasourceMethods, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
         List<DatasourceAngle> list = new ArrayList<>();
         for (DatasourceMethod datasourceMethod : datasourceMethods.list()) {
-            CallerMethodsFactory callerMethodsFactory = methodRelations::callerMethodsOf;
             CallerMethods callerMethods = callerMethodsFactory.create(datasourceMethod.repositoryMethod().declaration());
             list.add(new DatasourceAngle(datasourceMethod, myBatisStatements, callerMethods));
         }

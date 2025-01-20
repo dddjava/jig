@@ -12,12 +12,12 @@ import java.util.stream.Stream;
 
 public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
 
-    public static Entrypoint from(JigTypes jigTypes, MethodRelations methodRelations) {
+    public static Entrypoint from(JigTypes jigTypes) {
         return new Entrypoint(jigTypes.stream()
                 .map(jigType -> EntrypointGroup.from(jigType))
                 .filter(entrypointGroup -> entrypointGroup.hasEntrypoint())
                 .toList(),
-                methodRelations);
+                jigTypes.methodRelations());
     }
 
     public Map<String, String> mermaidMap(JigTypes jigTypes) {

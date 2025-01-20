@@ -17,7 +17,6 @@ import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitect
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -116,8 +115,7 @@ public class JigService {
     }
 
     public Entrypoint entrypoint(JigSource jigSource) {
-        TypeFacts typeFacts = jigSource.typeFacts();
-        return Entrypoint.from(typeFacts.jigTypes(), typeFacts.toMethodRelations());
+        return Entrypoint.from(jigTypes(jigSource));
     }
 
     /**

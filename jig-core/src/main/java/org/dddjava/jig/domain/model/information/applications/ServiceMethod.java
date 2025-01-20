@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
  */
 public record ServiceMethod(JigMethod method, CallerMethods callerMethods) {
 
-    public static ServiceMethod from(JigMethod jigMethod, MethodRelations methodRelations) {
+    public static ServiceMethod from(JigMethod jigMethod, CallerMethodsFactory callerMethodsFactory) {
         return new ServiceMethod(
                 jigMethod,
-                methodRelations.callerMethodsOf(jigMethod.declaration())
+                callerMethodsFactory.callerMethodsOf(jigMethod.declaration())
         );
     }
 

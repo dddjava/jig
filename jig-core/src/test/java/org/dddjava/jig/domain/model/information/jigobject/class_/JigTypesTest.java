@@ -26,7 +26,7 @@ class JigTypesTest {
     void 一件のJigTypesが作れる() {
         var fqn = "hoge.fuga.Foo";
         var jigTypes = new JigTypes(List.of(
-                createJigType(fqn)
+                callerMethodsOfJigType(fqn)
         ));
 
         assertTrue(jigTypes.resolveJigType(TypeIdentifier.valueOf(fqn)).isPresent());
@@ -36,8 +36,8 @@ class JigTypesTest {
     void 二件のJigTypesが作れる() {
         var fqn = "hoge.fuga.Foo";
         var jigTypes = new JigTypes(List.of(
-                createJigType(fqn),
-                createJigType("hoge.fuga.Bar")
+                callerMethodsOfJigType(fqn),
+                callerMethodsOfJigType("hoge.fuga.Bar")
         ));
 
         assertTrue(jigTypes.resolveJigType(TypeIdentifier.valueOf(fqn)).isPresent());
@@ -47,13 +47,13 @@ class JigTypesTest {
     void 同じのFQNのJigTypeでJigTypesが作れる() {
         assertDoesNotThrow(() -> {
             new JigTypes(List.of(
-                    createJigType("hoge.fuga.Foo"),
-                    createJigType("hoge.fuga.Foo")
+                    callerMethodsOfJigType("hoge.fuga.Foo"),
+                    callerMethodsOfJigType("hoge.fuga.Foo")
             ));
         });
     }
 
-    private static JigType createJigType(String fqn) {
+    private static JigType callerMethodsOfJigType(String fqn) {
         var typeIdentifier = TypeIdentifier.valueOf(fqn);
         return new JigType(
                 new TypeDeclaration(

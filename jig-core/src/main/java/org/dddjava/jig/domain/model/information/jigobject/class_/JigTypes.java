@@ -171,7 +171,7 @@ public class JigTypes implements CallerMethodsFactory {
     }
 
     @Override
-    public CallerMethods create(MethodDeclaration methodDeclaration) {
+    public CallerMethods callerMethodsOf(MethodDeclaration methodDeclaration) {
         return methodRelations().callerMethodsOf(methodDeclaration);
     }
 }

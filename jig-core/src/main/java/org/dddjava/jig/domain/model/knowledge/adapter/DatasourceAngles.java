@@ -21,7 +21,7 @@ public class DatasourceAngles {
     public DatasourceAngles(DatasourceMethods datasourceMethods, MyBatisStatements myBatisStatements, CallerMethodsFactory callerMethodsFactory) {
         List<DatasourceAngle> list = new ArrayList<>();
         for (DatasourceMethod datasourceMethod : datasourceMethods.list()) {
-            CallerMethods callerMethods = callerMethodsFactory.create(datasourceMethod.repositoryMethod().declaration());
+            CallerMethods callerMethods = callerMethodsFactory.callerMethodsOf(datasourceMethod.repositoryMethod().declaration());
             list.add(new DatasourceAngle(datasourceMethod, myBatisStatements, callerMethods));
         }
         this.list = list;

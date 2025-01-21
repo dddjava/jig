@@ -12,6 +12,7 @@ import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.architectures.Architecture;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeCategory;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
@@ -137,7 +138,7 @@ public class JigService {
     }
 
     public JigTypes serviceTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(architecture::isService);
+        return jigTypes(jigSource).filter(jigType -> jigType.typeCategory() == TypeCategory.Application);
     }
 
     public JigTypes domainCoreTypes(JigSource jigSource) {

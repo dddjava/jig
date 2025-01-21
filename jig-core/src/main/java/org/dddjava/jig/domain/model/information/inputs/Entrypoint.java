@@ -16,6 +16,7 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
         return new Entrypoint(jigTypes.stream()
                 .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
                 .toList(),
+                // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 jigTypes.methodRelations());
     }
 

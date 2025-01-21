@@ -26,9 +26,11 @@ public class JigService {
 
     static Logger logger = LoggerFactory.getLogger(JigService.class);
     private final Architecture architecture;
+    private final JigReporter jigReporter;
 
     public JigService(Architecture architecture) {
         this.architecture = architecture;
+        this.jigReporter = new JigReporter();
     }
 
     /**
@@ -115,7 +117,9 @@ public class JigService {
     }
 
     public Entrypoint entrypoint(JigSource jigSource) {
-        return Entrypoint.from(jigTypes(jigSource));
+        Entrypoint from = Entrypoint.from(jigTypes(jigSource));
+        if (from.isEmpty()) jigReporter.エントリーポイントが見つからないので一部の情報が出力されない();
+        return from;
     }
 
     /**
@@ -142,5 +146,9 @@ public class JigService {
 
     public JigTypes domainCoreTypes(JigSource jigSource) {
         return jigTypes(jigSource).filter(architecture::isDomainCore);
+    }
+
+    public void notifyReportInformation() {
+        jigReporter.notifyWithLogger();
     }
 }

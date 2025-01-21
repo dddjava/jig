@@ -25,6 +25,7 @@ public class ReportSheet<T> {
     }
 
     public void writeSheet(Workbook book, JigDocumentWriter jigDocumentWriter) {
+        // TODO この判定と通知はAdapterとかもっと手前でわかっている話なので移動する。itemsが空の状態でインスタンス作る必要がない。
         if (items.isEmpty()) {
             JigDocument jigDocument = jigDocumentWriter.jigDocument();
             logger.info("[{}] 出力する情報がないため、{}/{}の出力を抑止します。", jigDocument, jigDocument.label(), sheetName);

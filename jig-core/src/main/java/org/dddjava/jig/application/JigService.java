@@ -5,7 +5,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
-import org.dddjava.jig.domain.model.documents.stationery.Warning;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
@@ -65,7 +64,9 @@ public class JigService {
 
     private ServiceMethods serviceMethods(JigSource jigSource) {
         JigTypes serviceJigTypes = serviceTypes(jigSource);
-        return ServiceMethods.from(serviceJigTypes, jigTypes(jigSource));
+        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, jigTypes(jigSource));
+        if (serviceMethods.empty()) jigReporter.registerサービスが見つからない();
+        return serviceMethods;
     }
 
     public Terms terms(JigSource jigSource) {
@@ -77,13 +78,7 @@ public class JigService {
      */
     public ServiceAngles serviceAngles(JigSource jigSource) {
         ServiceMethods serviceMethods = serviceMethods(jigSource);
-
-        if (serviceMethods.empty()) {
-            logger.warn(Warning.サービスメソッドが見つからないので出力されない通知.localizedMessage());
-        }
-
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
-
         return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
     }
 
@@ -93,10 +88,7 @@ public class JigService {
     public DatasourceAngles datasourceAngles(JigSource jigSource) {
         JigTypes jigTypes = jigTypes(jigSource);
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
-
-        if (datasourceMethods.empty()) {
-            logger.warn(Warning.リポジトリが見つからないので出力されない通知.localizedMessage());
-        }
+        if (datasourceMethods.empty()) jigReporter.registerリポジトリが見つからない();
 
         return new DatasourceAngles(datasourceMethods, jigSource.sqls(), jigTypes);
     }
@@ -118,7 +110,7 @@ public class JigService {
 
     public Entrypoint entrypoint(JigSource jigSource) {
         Entrypoint from = Entrypoint.from(jigTypes(jigSource));
-        if (from.isEmpty()) jigReporter.エントリーポイントが見つからないので一部の情報が出力されない();
+        if (from.isEmpty()) jigReporter.registerエントリーポイントが見つからない();
         return from;
     }
 
@@ -129,7 +121,6 @@ public class JigService {
         JigTypes domainCoreTypes = domainCoreTypes(jigSource);
 
         if (domainCoreTypes.empty()) {
-            logger.warn(Warning.ビジネスルールが見つからないので出力されない通知.localizedMessage());
             return PackageRelationDiagram.empty();
         }
 
@@ -145,7 +136,9 @@ public class JigService {
     }
 
     public JigTypes domainCoreTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(architecture::isDomainCore);
+        JigTypes domainCoreTypes = jigTypes(jigSource).filter(architecture::isDomainCore);
+        jigReporter.registerドメインコアが見つからない();
+        return domainCoreTypes;
     }
 
     public void notifyReportInformation() {

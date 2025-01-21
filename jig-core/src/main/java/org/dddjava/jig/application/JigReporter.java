@@ -17,8 +17,20 @@ public class JigReporter {
 
     private final Set<Warning> warnings = new HashSet<>();
 
-    public void エントリーポイントが見つからないので一部の情報が出力されない() {
+    public void registerドメインコアが見つからない() {
+        warnings.add(Warning.ビジネスルールが見つからないので出力されない通知);
+    }
+
+    public void registerエントリーポイントが見つからない() {
         warnings.add(Warning.ハンドラメソッドが見つからないので出力されない通知);
+    }
+
+    public void registerリポジトリが見つからない() {
+        warnings.add(Warning.リポジトリが見つからないので出力されない通知);
+    }
+
+    public void registerサービスが見つからない() {
+        warnings.add(Warning.サービスメソッドが見つからないので出力されない通知);
     }
 
     public void notifyWithLogger() {

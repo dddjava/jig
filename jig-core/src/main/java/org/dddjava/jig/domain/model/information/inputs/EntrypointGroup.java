@@ -26,27 +26,23 @@ public record EntrypointGroup
         Others
     }
 
-    static EntrypointGroup from(JigType jigType) {
+    static Optional<EntrypointGroup> from(JigType jigType) {
         if (jigType.typeCategory() == TypeCategory.RequestHandler) {
-            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList());
+            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
+                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList()));
         } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
-            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList());
+            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
+                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList()));
         }
 
         // not entrypoint
-        return new EntrypointGroup(jigType, EntrypointKind.RequestHandler, List.of());
+        return Optional.empty();
     }
 
 
     private static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
         return jigType.instanceMember().instanceMethods().stream()
                 .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
-    }
-
-    public boolean hasEntrypoint() {
-        return !entrypointMethod().isEmpty();
     }
 
     String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {

@@ -14,8 +14,7 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
 
     public static Entrypoint from(JigTypes jigTypes) {
         return new Entrypoint(jigTypes.stream()
-                .map(jigType -> EntrypointGroup.from(jigType))
-                .filter(entrypointGroup -> entrypointGroup.hasEntrypoint())
+                .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
                 .toList(),
                 jigTypes.methodRelations());
     }

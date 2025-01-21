@@ -1,5 +1,6 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
@@ -19,7 +20,6 @@ import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMetho
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 @Service
 public class JigService {

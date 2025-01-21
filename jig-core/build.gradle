@@ -63,7 +63,6 @@ java {
 }
 
 dependencies {
-    api libs.spring.context
     api libs.slf4j.api
 
     // バイトコードの読み取り: infrastructure/asm

@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class JigService {
-
     static Logger logger = LoggerFactory.getLogger(JigService.class);
+
     private final Architecture architecture;
     private final JigReporter jigReporter;
 
@@ -32,34 +32,46 @@ public class JigService {
         this.jigReporter = new JigReporter();
     }
 
-    /**
-     * メソッドの不吉なにおい一覧を取得する
-     */
-    public MethodSmellList methodSmells(JigSource jigSource) {
-        return new MethodSmellList(domainCoreTypes(jigSource));
+    public JigTypes jigTypes(JigSource jigSource) {
+        return jigSource.typeFacts().jigTypes();
     }
 
-    /**
-     * 区分一覧を取得する
-     */
-    public CategoryDiagram categories(JigSource jigSource) {
-        CategoryTypes categoryTypes = categoryTypes(jigSource);
-        return CategoryDiagram.create(categoryTypes);
+    public Terms terms(JigSource jigSource) {
+        return jigSource.terms();
+    }
+
+    public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
+        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigSource));
+        return new ArchitectureDiagram(packageBasedArchitecture);
+    }
+
+    public JigTypes domainCoreTypes(JigSource jigSource) {
+        JigTypes domainCoreTypes = jigTypes(jigSource).filter(architecture::isDomainCore);
+        jigReporter.registerドメインコアが見つからない();
+        return domainCoreTypes;
+    }
+
+    public PackageRelationDiagram packageDependencies(JigSource jigSource) {
+        JigTypes domainCoreTypes = domainCoreTypes(jigSource);
+        if (domainCoreTypes.empty()) return PackageRelationDiagram.empty();
+        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), domainCoreTypes.internalClassRelations());
+    }
+
+    public MethodSmellList methodSmells(JigSource jigSource) {
+        return new MethodSmellList(domainCoreTypes(jigSource));
     }
 
     public CategoryTypes categoryTypes(JigSource jigSource) {
         return CategoryTypes.from(domainCoreTypes(jigSource));
     }
 
-    /**
-     * 区分使用図
-     */
-    public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
+    public CategoryDiagram categories(JigSource jigSource) {
         CategoryTypes categoryTypes = categoryTypes(jigSource);
-        ServiceMethods serviceMethods = serviceMethods(jigSource);
-        JigTypes domainCoreJigTypes = domainCoreTypes(jigSource);
+        return CategoryDiagram.create(categoryTypes);
+    }
 
-        return new CategoryUsageDiagram(serviceMethods, categoryTypes, domainCoreJigTypes);
+    public JigTypes serviceTypes(JigSource jigSource) {
+        return jigTypes(jigSource).filter(architecture::isService);
     }
 
     private ServiceMethods serviceMethods(JigSource jigSource) {
@@ -69,47 +81,10 @@ public class JigService {
         return serviceMethods;
     }
 
-    public Terms terms(JigSource jigSource) {
-        return jigSource.terms();
-    }
-
-    /**
-     * サービスを分析する
-     */
-    public ServiceAngles serviceAngles(JigSource jigSource) {
-        ServiceMethods serviceMethods = serviceMethods(jigSource);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
-        return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
-    }
-
-    /**
-     * データソースを分析する
-     */
-    public DatasourceAngles datasourceAngles(JigSource jigSource) {
-        JigTypes jigTypes = jigTypes(jigSource);
-        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
-        return new DatasourceAngles(datasourceMethods, jigSource.sqls(), jigTypes);
-    }
-
     private DatasourceMethods repositoryMethods(JigSource jigSource) {
         DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
         if (datasourceMethods.empty()) jigReporter.registerリポジトリが見つからない();
         return datasourceMethods;
-    }
-
-    /**
-     * 文字列比較を分析する
-     */
-    public StringComparingMethodList stringComparing(JigSource jigSource) {
-        Entrypoint entrypoint = entrypoint(jigSource);
-        ServiceMethods serviceMethods = serviceMethods(jigSource);
-
-        return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
-    }
-
-    public ArchitectureDiagram architectureDiagram(JigSource jigSource) {
-        PackageBasedArchitecture packageBasedArchitecture = PackageBasedArchitecture.from(jigTypes(jigSource));
-        return new ArchitectureDiagram(packageBasedArchitecture);
     }
 
     public Entrypoint entrypoint(JigSource jigSource) {
@@ -118,31 +93,30 @@ public class JigService {
         return from;
     }
 
-    /**
-     * パッケージの関連を取得する
-     */
-    public PackageRelationDiagram packageDependencies(JigSource jigSource) {
-        JigTypes domainCoreTypes = domainCoreTypes(jigSource);
-
-        if (domainCoreTypes.empty()) {
-            return PackageRelationDiagram.empty();
-        }
-
-        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), domainCoreTypes.internalClassRelations());
+    public ServiceAngles serviceAngles(JigSource jigSource) {
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
+        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
+        return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
     }
 
-    public JigTypes jigTypes(JigSource jigSource) {
-        return jigSource.typeFacts().jigTypes();
+    public DatasourceAngles datasourceAngles(JigSource jigSource) {
+        JigTypes jigTypes = jigTypes(jigSource);
+        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
+        return new DatasourceAngles(datasourceMethods, jigSource.sqls(), jigTypes);
     }
 
-    public JigTypes serviceTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(architecture::isService);
+    public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
+        CategoryTypes categoryTypes = categoryTypes(jigSource);
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
+        JigTypes domainCoreJigTypes = domainCoreTypes(jigSource);
+
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, domainCoreJigTypes);
     }
 
-    public JigTypes domainCoreTypes(JigSource jigSource) {
-        JigTypes domainCoreTypes = jigTypes(jigSource).filter(architecture::isDomainCore);
-        jigReporter.registerドメインコアが見つからない();
-        return domainCoreTypes;
+    public StringComparingMethodList stringComparing(JigSource jigSource) {
+        Entrypoint entrypoint = entrypoint(jigSource);
+        ServiceMethods serviceMethods = serviceMethods(jigSource);
+        return StringComparingMethodList.createFrom(entrypoint, serviceMethods);
     }
 
     public void notifyReportInformation() {

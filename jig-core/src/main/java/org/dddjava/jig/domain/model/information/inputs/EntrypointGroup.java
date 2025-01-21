@@ -31,12 +31,18 @@ public record EntrypointGroup
     }
 
     static Optional<EntrypointGroup> from(JigType jigType) {
-        if (jigType.typeCategory() == TypeCategory.RequestHandler) {
-            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList()));
-        } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
-            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList()));
+        List<EntrypointMethod> entrypointMethods = collectHandlerMethod(jigType)
+                .filter(entrypointMethod -> {
+                    if (jigType.typeCategory() == TypeCategory.RequestHandler) {
+                        return entrypointMethod.isRequestHandler();
+                    } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
+                        return entrypointMethod.isRabbitListener();
+                    }
+                    return false;
+                })
+                .toList();
+        if (!entrypointMethods.isEmpty()) {
+            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler, entrypointMethods));
         }
 
         // not entrypoint

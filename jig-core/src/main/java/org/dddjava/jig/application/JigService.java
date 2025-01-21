@@ -78,7 +78,7 @@ public class JigService {
      */
     public ServiceAngles serviceAngles(JigSource jigSource) {
         ServiceMethods serviceMethods = serviceMethods(jigSource);
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
+        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
         return ServiceAngles.from(serviceMethods, entrypoint(jigSource), datasourceMethods);
     }
 
@@ -87,10 +87,14 @@ public class JigService {
      */
     public DatasourceAngles datasourceAngles(JigSource jigSource) {
         JigTypes jigTypes = jigTypes(jigSource);
-        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes);
-        if (datasourceMethods.empty()) jigReporter.registerリポジトリが見つからない();
-
+        DatasourceMethods datasourceMethods = repositoryMethods(jigSource);
         return new DatasourceAngles(datasourceMethods, jigSource.sqls(), jigTypes);
+    }
+
+    private DatasourceMethods repositoryMethods(JigSource jigSource) {
+        DatasourceMethods datasourceMethods = DatasourceMethods.from(jigTypes(jigSource));
+        if (datasourceMethods.empty()) jigReporter.registerリポジトリが見つからない();
+        return datasourceMethods;
     }
 
     /**

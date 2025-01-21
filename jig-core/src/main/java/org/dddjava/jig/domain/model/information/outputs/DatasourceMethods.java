@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 /**
  * データソースメソッド一覧
+ *
+ * TODO Datasourceといいながら扱っているのはRepository全般っぽい？データソースとよんだりリポジトリと呼んだりの混乱がある
  */
 public class DatasourceMethods {
 

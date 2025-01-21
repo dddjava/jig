@@ -173,6 +173,9 @@ public class JigType {
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
             return TypeCategory.FrameworkComponent;
         }
+        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))) {
+            return TypeCategory.Infrastructure;
+        }
 
         return TypeCategory.Others;
     }

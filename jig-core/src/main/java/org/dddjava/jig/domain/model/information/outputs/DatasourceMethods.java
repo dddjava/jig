@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.outputs;
 
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.information.jigobject.class_.TypeCategory;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 
 import java.util.ArrayList;
@@ -37,9 +37,8 @@ public class DatasourceMethods {
 
     public static DatasourceMethods from(JigTypes jigTypes) {
         List<DatasourceMethod> list = new ArrayList<>();
-        TypeIdentifier repositoryAnnotation = TypeIdentifier.valueOf("org.springframework.stereotype.Repository");
         // backend実装となる@RepositoryのついているJigTypeを抽出
-        for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.hasAnnotation(repositoryAnnotation))) {
+        for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.typeCategory() == TypeCategory.Infrastructure)) {
             // インタフェースを抽出（通常1件）
             for (JigType interfaceJigType : jigTypes.listMatches(item -> implJigType.typeDeclaration().interfaceTypes().listTypeIdentifiers().contains(item.identifier()))) {
                 for (JigMethod interfaceJigMethod : interfaceJigType.instanceMember().instanceMethods().list()) {

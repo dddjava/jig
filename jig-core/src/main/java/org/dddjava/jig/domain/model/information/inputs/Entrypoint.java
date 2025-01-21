@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 import java.util.HashMap;
@@ -51,11 +50,4 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
     }
-
-    public List<TypeIdentifier> listTypeIdentifiers() {
-        return list.stream()
-                .map(entrypointGroup -> entrypointGroup.jigType().identifier())
-                .toList();
-    }
-
 }

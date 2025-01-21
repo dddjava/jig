@@ -73,10 +73,12 @@ public class JigDocumentGenerator {
     }
 
     public List<HandleResult> generateDocuments(JigSource jigSource) {
-        return jigDocuments
+        List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
                 .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigSource))
                 .collect(Collectors.toList());
+        jigService.notifyReportInformation();
+        return handleResults;
     }
 
     public void prepareOutputDirectory() {

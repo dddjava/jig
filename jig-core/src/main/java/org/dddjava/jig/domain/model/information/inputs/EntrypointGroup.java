@@ -21,32 +21,38 @@ import java.util.stream.Stream;
  */
 public record EntrypointGroup
         (JigType jigType, EntrypointKind entrypointKind, List<EntrypointMethod> entrypointMethod) {
+    public EntrypointGroup {
+        if (entrypointMethod.isEmpty()) throw new IllegalArgumentException("entrypointMethod is empty");
+    }
+
     enum EntrypointKind {
         RequestHandler,
         Others
     }
 
-    static EntrypointGroup from(JigType jigType) {
-        if (jigType.typeCategory() == TypeCategory.RequestHandler) {
-            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRequestHandler).toList());
-        } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
-            return new EntrypointGroup(jigType, EntrypointKind.RequestHandler,
-                    collectHandlerMethod(jigType).filter(EntrypointMethod::isRabbitListener).toList());
+    static Optional<EntrypointGroup> from(JigType jigType) {
+        List<EntrypointMethod> entrypointMethods = collectHandlerMethod(jigType)
+                .filter(entrypointMethod -> {
+                    if (jigType.typeCategory() == TypeCategory.RequestHandler) {
+                        return entrypointMethod.isRequestHandler();
+                    } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
+                        return entrypointMethod.isRabbitListener();
+                    }
+                    return false;
+                })
+                .toList();
+        if (!entrypointMethods.isEmpty()) {
+            return Optional.of(new EntrypointGroup(jigType, EntrypointKind.RequestHandler, entrypointMethods));
         }
 
         // not entrypoint
-        return new EntrypointGroup(jigType, EntrypointKind.RequestHandler, List.of());
+        return Optional.empty();
     }
 
 
     private static Stream<EntrypointMethod> collectHandlerMethod(JigType jigType) {
         return jigType.instanceMember().instanceMethods().stream()
                 .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
-    }
-
-    public boolean hasEntrypoint() {
-        return !entrypointMethod().isEmpty();
     }
 
     String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {

@@ -2,7 +2,6 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 import java.util.HashMap;
@@ -14,9 +13,9 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
 
     public static Entrypoint from(JigTypes jigTypes) {
         return new Entrypoint(jigTypes.stream()
-                .map(jigType -> EntrypointGroup.from(jigType))
-                .filter(entrypointGroup -> entrypointGroup.hasEntrypoint())
+                .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
                 .toList(),
+                // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 jigTypes.methodRelations());
     }
 
@@ -51,11 +50,4 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
     }
-
-    public List<TypeIdentifier> listTypeIdentifiers() {
-        return list.stream()
-                .map(entrypointGroup -> entrypointGroup.jigType().identifier())
-                .toList();
-    }
-
 }

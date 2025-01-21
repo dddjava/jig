@@ -16,13 +16,10 @@ import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitect
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class JigService {
-    static Logger logger = LoggerFactory.getLogger(JigService.class);
 
     private final Architecture architecture;
     private final JigReporter jigReporter;

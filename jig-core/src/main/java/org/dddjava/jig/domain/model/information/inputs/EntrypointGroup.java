@@ -21,6 +21,10 @@ import java.util.stream.Stream;
  */
 public record EntrypointGroup
         (JigType jigType, EntrypointKind entrypointKind, List<EntrypointMethod> entrypointMethod) {
+    public EntrypointGroup {
+        if (entrypointMethod.isEmpty()) throw new IllegalArgumentException("entrypointMethod is empty");
+    }
+
     enum EntrypointKind {
         RequestHandler,
         Others

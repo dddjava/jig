@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 public enum TypeCategory {
     Domain,
-    Application,
+    Service,
     Others,
     RequestHandler,
     FrameworkComponent,
@@ -10,7 +10,7 @@ public enum TypeCategory {
 
     public boolean isApplicationComponent() {
         return switch (this) {
-            case Application, RequestHandler, FrameworkComponent, Infrastructure -> true;
+            case Service, RequestHandler, FrameworkComponent, Infrastructure -> true;
             default -> false;
         };
     }

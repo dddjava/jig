@@ -163,7 +163,7 @@ public class JigType {
 
     public TypeCategory typeCategory() {
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))) {
-            return TypeCategory.Application;
+            return TypeCategory.Service;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))

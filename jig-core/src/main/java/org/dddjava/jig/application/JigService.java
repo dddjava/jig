@@ -69,7 +69,7 @@ public class JigService {
     }
 
     public JigTypes serviceTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(jigType -> jigType.typeCategory() == TypeCategory.Application);
+        return jigTypes(jigSource).filter(jigType -> jigType.typeCategory() == TypeCategory.Service);
     }
 
     private ServiceMethods serviceMethods(JigSource jigSource) {

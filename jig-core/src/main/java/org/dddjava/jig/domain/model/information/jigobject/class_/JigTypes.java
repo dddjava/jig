@@ -89,7 +89,7 @@ public class JigTypes implements CallerMethodsFactory {
 
     public boolean isApplication(MethodIdentifier methodIdentifier) {
         return resolveJigType(methodIdentifier.declaringType())
-                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Application);
+                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Service);
     }
 
     public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {

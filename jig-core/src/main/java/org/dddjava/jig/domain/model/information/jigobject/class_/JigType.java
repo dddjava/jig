@@ -21,13 +21,15 @@ import java.util.stream.Stream;
 public class JigType {
     private final TypeDeclaration typeDeclaration;
 
+    private final TypeCategory typeCategory;
     private final JigTypeAttribute jigTypeAttribute;
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(TypeDeclaration typeDeclaration, TypeCategory typeCategory, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.typeDeclaration = typeDeclaration;
+        this.typeCategory = typeCategory;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;
@@ -162,22 +164,7 @@ public class JigType {
     }
 
     public TypeCategory typeCategory() {
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))) {
-            return TypeCategory.Usecase;
-        }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
-            return TypeCategory.InputAdapter;
-        }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))) {
-            return TypeCategory.OutputAdapter;
-        }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
-            return TypeCategory.BoundaryComponent;
-        }
-
-        return TypeCategory.Others;
+        return typeCategory;
     }
 
     public TypeIdentifier typeIdentifier() {

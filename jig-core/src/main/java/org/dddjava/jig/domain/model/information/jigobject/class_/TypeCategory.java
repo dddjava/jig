@@ -1,16 +1,15 @@
 package org.dddjava.jig.domain.model.information.jigobject.class_;
 
 public enum TypeCategory {
-    Domain,
-    Service,
-    Others,
-    RequestHandler,
+    Usecase,
+    InputAdapter,
+    OutputAdapter,
     FrameworkComponent,
-    Infrastructure;
+    Others;
 
-    public boolean isApplicationComponent() {
+    public boolean isBoundary() {
         return switch (this) {
-            case Service, RequestHandler, FrameworkComponent, Infrastructure -> true;
+            case Usecase, InputAdapter, OutputAdapter, FrameworkComponent -> true;
             default -> false;
         };
     }

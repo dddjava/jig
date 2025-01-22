@@ -69,7 +69,7 @@ public class JigService {
     }
 
     public JigTypes serviceTypes(JigSource jigSource) {
-        return jigTypes(jigSource).filter(jigType -> jigType.typeCategory() == TypeCategory.Service);
+        return jigTypes(jigSource).filter(jigType -> jigType.typeCategory() == TypeCategory.Usecase);
     }
 
     private ServiceMethods serviceMethods(JigSource jigSource) {

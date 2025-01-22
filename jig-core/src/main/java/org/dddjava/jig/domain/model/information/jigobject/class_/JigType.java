@@ -163,18 +163,18 @@ public class JigType {
 
     public TypeCategory typeCategory() {
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))) {
-            return TypeCategory.Service;
+            return TypeCategory.Usecase;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
-            return TypeCategory.RequestHandler;
+            return TypeCategory.InputAdapter;
+        }
+        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))) {
+            return TypeCategory.OutputAdapter;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
             return TypeCategory.FrameworkComponent;
-        }
-        if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))) {
-            return TypeCategory.Infrastructure;
         }
 
         return TypeCategory.Others;

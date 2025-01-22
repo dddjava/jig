@@ -33,7 +33,7 @@ public record EntrypointGroup
     static Optional<EntrypointGroup> from(JigType jigType) {
         List<EntrypointMethod> entrypointMethods = collectHandlerMethod(jigType)
                 .filter(entrypointMethod -> {
-                    if (jigType.typeCategory() == TypeCategory.RequestHandler) {
+                    if (jigType.typeCategory() == TypeCategory.InputAdapter) {
                         return entrypointMethod.isRequestHandler();
                     } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
                         return entrypointMethod.isRabbitListener();
@@ -78,7 +78,7 @@ public record EntrypointGroup
             // apiMethod -> others...
             var decraleMethodRelations = springComponentMethodRelations.filterFromRecursive(entrypointMethod.declaration(),
                     // @Serviceのクラスについたら終了
-                    methodIdentifier -> jigTypes.isApplication(methodIdentifier)
+                    methodIdentifier -> jigTypes.isService(methodIdentifier)
             );
             decraleMethodRelations.list()
                     .stream()
@@ -91,7 +91,7 @@ public record EntrypointGroup
                     .map(MethodRelation::to)
                     .map(MethodDeclaration::identifier)
                     .forEach(methodIdentifier -> {
-                        if (jigTypes.isApplication(methodIdentifier)) {
+                        if (jigTypes.isService(methodIdentifier)) {
                             var key = methodIdentifier.declaringType();
                             serviceMethodMap.computeIfAbsent(key, k -> new HashSet<>());
                             serviceMethodMap.get(key).add(methodIdentifier);

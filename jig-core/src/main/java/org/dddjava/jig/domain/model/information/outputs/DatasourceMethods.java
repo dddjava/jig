@@ -38,7 +38,7 @@ public class DatasourceMethods {
     public static DatasourceMethods from(JigTypes jigTypes) {
         List<DatasourceMethod> list = new ArrayList<>();
         // backend実装となる@RepositoryのついているJigTypeを抽出
-        for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.typeCategory() == TypeCategory.Infrastructure)) {
+        for (JigType implJigType : jigTypes.listMatches(jigType -> jigType.typeCategory() == TypeCategory.OutputAdapter)) {
             // インタフェースを抽出（通常1件）
             for (JigType interfaceJigType : jigTypes.listMatches(item -> implJigType.typeDeclaration().interfaceTypes().listTypeIdentifiers().contains(item.identifier()))) {
                 for (JigMethod interfaceJigMethod : interfaceJigType.instanceMember().instanceMethods().list()) {

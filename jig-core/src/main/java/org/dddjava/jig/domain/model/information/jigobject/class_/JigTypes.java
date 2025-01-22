@@ -87,16 +87,15 @@ public class JigTypes implements CallerMethodsFactory {
         return Optional.ofNullable(map.get(typeIdentifier));
     }
 
-    public boolean isApplication(MethodIdentifier methodIdentifier) {
+    public boolean isService(MethodIdentifier methodIdentifier) {
         return resolveJigType(methodIdentifier.declaringType())
-                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Service);
+                .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Usecase);
     }
 
-    public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
-        var typeCategory = resolveJigType(typeIdentifier)
-                .map(jigType -> jigType.typeCategory())
-                .orElse(TypeCategory.Others);
-        return typeCategory.isApplicationComponent();
+    private boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
+        return resolveJigType(typeIdentifier)
+                .stream()
+                .anyMatch(jigType -> jigType.typeCategory().isBoundary());
     }
 
     public MethodRelations filterSpringComponent(MethodRelations methodRelations) {

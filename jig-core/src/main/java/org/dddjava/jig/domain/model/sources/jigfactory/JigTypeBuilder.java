@@ -105,7 +105,9 @@ public class JigTypeBuilder {
     }
 
     private TypeCategory resolveTypeCategory(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute) {
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))) {
+        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))
+                // TODO カスタムアノテーション対応
+                || jigTypeAttribute.hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Service.class))) {
             return TypeCategory.Usecase;
         }
         if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
@@ -113,7 +115,9 @@ public class JigTypeBuilder {
                 || jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
             return TypeCategory.InputAdapter;
         }
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))) {
+        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))
+                // TODO カスタムアノテーション対応
+                || jigTypeAttribute.hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Repository.class))) {
             return TypeCategory.OutputAdapter;
         }
         if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {

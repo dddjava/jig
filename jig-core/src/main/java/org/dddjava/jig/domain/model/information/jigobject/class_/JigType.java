@@ -174,7 +174,7 @@ public class JigType {
             return TypeCategory.OutputAdapter;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
-            return TypeCategory.FrameworkComponent;
+            return TypeCategory.BoundaryComponent;
         }
 
         return TypeCategory.Others;

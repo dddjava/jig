@@ -35,7 +35,7 @@ public record EntrypointGroup
                 .filter(entrypointMethod -> {
                     if (jigType.typeCategory() == TypeCategory.InputAdapter) {
                         return entrypointMethod.isRequestHandler();
-                    } else if (jigType.typeCategory() == TypeCategory.FrameworkComponent) {
+                    } else if (jigType.typeCategory() == TypeCategory.BoundaryComponent) {
                         return entrypointMethod.isRabbitListener();
                     }
                     return false;

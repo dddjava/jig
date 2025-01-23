@@ -5,16 +5,17 @@ import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public record DefaultJigDataProvider(TypeFacts typeFacts, Terms terms, Map<Class<?>, Object> map)
+public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel, Map<Class<?>, Object> map)
         implements JigDataProvider {
 
-    public DefaultJigDataProvider(TypeFacts typeFacts, Terms terms) {
-        this(typeFacts, terms, new HashMap<>());
+    public DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel) {
+        this(typeFacts, textSourceModel, new HashMap<>());
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {
@@ -38,6 +39,6 @@ public record DefaultJigDataProvider(TypeFacts typeFacts, Terms terms, Map<Class
 
     @Override
     public Terms fetchTerms() {
-        return terms;
+        return textSourceModel().toTerms();
     }
 }

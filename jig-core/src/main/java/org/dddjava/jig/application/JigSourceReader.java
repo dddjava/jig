@@ -95,7 +95,7 @@ public class JigSourceReader {
         ClassSources classSources = sources.classSources();
         TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources, textSourceModel);
 
-        return new DefaultJigDataProvider(typeFacts, textSourceModel.toTerms());
+        return new DefaultJigDataProvider(typeFacts, textSourceModel);
     }
 
     /**

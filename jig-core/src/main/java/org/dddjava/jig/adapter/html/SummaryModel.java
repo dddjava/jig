@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.documents.summaries;
+package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;

@@ -26,22 +26,21 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
 
     @HandleDocument(JigDocument.DomainSummary)
     public SummaryModel summaryModel(JigSource jigSource) {
-        JigTypes supportJigTypes = jigService.jigTypes(jigSource);
         JigTypes jigTypes = jigService.coreDomainJigTypes(jigSource);
-        return new SummaryModel(supportJigTypes, jigTypes);
+        return new SummaryModel(jigTypes);
     }
 
     @HandleDocument(JigDocument.ApplicationSummary)
     public SummaryModel applicationSummary(JigSource jigSource) {
         JigTypes jigTypes = jigService.serviceTypes(jigSource);
-        return new SummaryModel(jigTypes, jigTypes);
+        return new SummaryModel(jigTypes);
     }
 
     @HandleDocument(JigDocument.UsecaseSummary)
     public SummaryModel usecaseSummary(JigSource jigSource) {
         JigTypes jigTypes = jigService.serviceTypes(jigSource);
         var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, jigTypes.methodRelations().inlineLambda());
-        return new SummaryModel(jigTypes, jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
+        return new SummaryModel(jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)
@@ -49,16 +48,15 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
         JigTypes supportJigTypes = jigService.jigTypes(jigSource);
         Entrypoint entrypoint = jigService.entrypoint(jigSource);
         JigTypes jigTypes = entrypoint.jigTypes();
-        var summaryModel = new SummaryModel(supportJigTypes, jigTypes);
+        var summaryModel = new SummaryModel(jigTypes);
         summaryModel.mermaidMap = entrypoint.mermaidMap(supportJigTypes);
         return summaryModel;
     }
 
     @HandleDocument(JigDocument.EnumSummary)
     public SummaryModel inputSummary(JigSource jigSource) {
-        JigTypes supportJigTypes = jigService.jigTypes(jigSource);
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
-        return new SummaryModel(supportJigTypes, categoryTypes.jigTypes(), Map.of("enumModels", jigSource.enumModels()));
+        return new SummaryModel(categoryTypes.jigTypes(), Map.of("enumModels", jigSource.enumModels()));
     }
 
     @Override

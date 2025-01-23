@@ -7,19 +7,14 @@ import java.util.Map;
 public class SummaryModel {
     private final JigTypes jigTypes;
     private final Map<String, Object> additionalMap;
-    /**
-     * 補助に使用するJigType。メソッドの引数など、サマリ対象の外側にいるものの解決に使用する。
-     */
-    private final JigTypes supportJigTypes;
 
     Map<String, String> mermaidMap;
 
-    SummaryModel(JigTypes supportJigTypes, JigTypes jigTypes) {
-        this(supportJigTypes, jigTypes, Map.of());
+    SummaryModel(JigTypes jigTypes) {
+        this(jigTypes, Map.of());
     }
 
-    SummaryModel(JigTypes supportJigTypes, JigTypes jigTypes, Map<String, Object> additionalMap) {
-        this.supportJigTypes = supportJigTypes;
+    SummaryModel(JigTypes jigTypes, Map<String, Object> additionalMap) {
         this.jigTypes = jigTypes;
         this.additionalMap = additionalMap;
     }

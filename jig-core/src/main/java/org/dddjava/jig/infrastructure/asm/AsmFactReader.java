@@ -24,7 +24,7 @@ public class AsmFactReader implements FactReader {
                 .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)
                 .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(textSourceModel))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new TypeFacts(list, textSourceModel.enumModels())));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new TypeFacts(list)));
     }
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {

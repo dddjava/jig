@@ -29,7 +29,7 @@ public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSo
 
     @Override
     public EnumModels fetchEnumModels() {
-        return typeFacts().enumModels();
+        return textSourceModel().enumModels();
     }
 
     @Override

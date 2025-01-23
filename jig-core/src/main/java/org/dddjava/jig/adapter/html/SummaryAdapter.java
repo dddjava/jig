@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -30,10 +31,17 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
         return new SummaryModel(supportJigTypes, jigTypes);
     }
 
-    @HandleDocument({JigDocument.ApplicationSummary, JigDocument.UsecaseSummary})
-    public SummaryModel servicesSummary(JigSource jigSource) {
+    @HandleDocument(JigDocument.ApplicationSummary)
+    public SummaryModel applicationSummary(JigSource jigSource) {
         JigTypes jigTypes = jigService.serviceTypes(jigSource);
         return new SummaryModel(jigTypes, jigTypes);
+    }
+
+    @HandleDocument(JigDocument.UsecaseSummary)
+    public SummaryModel usecaseSummary(JigSource jigSource) {
+        JigTypes jigTypes = jigService.serviceTypes(jigSource);
+        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, jigTypes.methodRelations().inlineLambda());
+        return new SummaryModel(jigTypes, jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EntrypointSummary)

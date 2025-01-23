@@ -40,7 +40,7 @@
                         availableRoomList(OffsetDateTime):List
                     </div>
 
-                    <pre class="mermaid" th:utext="${model.mermaidDiagram(method)}">
+                    <pre class="mermaid" th:utext="${mermaidDiagram.textFor(method)}">
                             graph LR
                             a --> b
                             a --> c

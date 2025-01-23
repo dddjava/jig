@@ -60,7 +60,6 @@ class JigTypesTest {
                         new ParameterizedType(typeIdentifier),
                         new ParameterizedType(TypeIdentifier.from(Object.class)),
                         new ParameterizedTypes(List.of())),
-                TypeCategory.Others,
                 new JigTypeAttribute(
                         new ClassComment(
                                 typeIdentifier,

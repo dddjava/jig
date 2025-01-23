@@ -98,33 +98,8 @@ public class JigTypeBuilder {
         JigMethods instanceMethods = new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
         JigInstanceMember jigInstanceMember = new JigInstanceMember(new JigFields(instanceFields), instanceMethods);
 
-        TypeCategory typeCategory = resolveTypeCategory(typeDeclaration, jigTypeAttribute);
-
-        jigType = new JigType(typeDeclaration, typeCategory, jigTypeAttribute, jigStaticMember, jigInstanceMember);
+        jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
         return jigType;
-    }
-
-    private TypeCategory resolveTypeCategory(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute) {
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Service"))
-                // TODO カスタムアノテーション対応
-                || jigTypeAttribute.hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Service.class))) {
-            return TypeCategory.Usecase;
-        }
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
-                || jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
-            return TypeCategory.InputAdapter;
-        }
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))
-                // TODO カスタムアノテーション対応
-                || jigTypeAttribute.hasAnnotation(TypeIdentifier.from(org.dddjava.jig.annotation.Repository.class))) {
-            return TypeCategory.OutputAdapter;
-        }
-        if (jigTypeAttribute.hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Component"))) {
-            return TypeCategory.BoundaryComponent;
-        }
-
-        return TypeCategory.Others;
     }
 
     public JigTypeBuilder applyTextSource(TextSourceModel textSourceModel) {

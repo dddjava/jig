@@ -21,15 +21,13 @@ import java.util.stream.Stream;
 public class JigType {
     private final TypeDeclaration typeDeclaration;
 
-    private final TypeCategory typeCategory;
     private final JigTypeAttribute jigTypeAttribute;
 
     private final JigStaticMember jigStaticMember;
     private final JigInstanceMember jigInstanceMember;
 
-    public JigType(TypeDeclaration typeDeclaration, TypeCategory typeCategory, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
+    public JigType(TypeDeclaration typeDeclaration, JigTypeAttribute jigTypeAttribute, JigStaticMember jigStaticMember, JigInstanceMember jigInstanceMember) {
         this.typeDeclaration = typeDeclaration;
-        this.typeCategory = typeCategory;
         this.jigTypeAttribute = jigTypeAttribute;
         this.jigStaticMember = jigStaticMember;
         this.jigInstanceMember = jigInstanceMember;
@@ -164,7 +162,7 @@ public class JigType {
     }
 
     public TypeCategory typeCategory() {
-        return typeCategory;
+        return jigTypeAttribute.typeCategory();
     }
 
     public TypeIdentifier typeIdentifier() {

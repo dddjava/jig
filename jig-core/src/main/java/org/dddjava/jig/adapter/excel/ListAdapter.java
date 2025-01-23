@@ -44,10 +44,10 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes jigTypes = jigService.jigTypes(jigSource);
         var allClassRelations = jigTypes.classRelations();
 
-        JigTypes domainCoreTypes = jigService.coreDomainJigTypes(jigSource);
+        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigSource);
 
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
-        List<PackageJigTypes> packageJigTypes = domainCoreTypes.listPackages();
+        List<PackageJigTypes> packageJigTypes = coreDomainJigTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
@@ -59,8 +59,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> domainCoreTypes.internalTypeRelationsTo(item).size()),
-                        Map.entry("関連先ビジネスルール数", item -> domainCoreTypes.internalTypeRelationsFrom(item).size()),
+                        Map.entry("関連元ビジネスルール数", item -> coreDomainJigTypes.internalTypeRelationsTo(item).size()),
+                        Map.entry("関連先ビジネスルール数", item -> coreDomainJigTypes.internalTypeRelationsFrom(item).size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {
@@ -68,7 +68,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                             return list.size() == 1 && list.get(0).equals(item.typeIdentifier().packageIdentifier()) ? "◯" : "";
                         }),
                         Map.entry("関連元クラス", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText())
-                ), domainCoreTypes.list()),
+                ), coreDomainJigTypes.list()),
                 new ReportSheet<>("ENUM", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
@@ -90,7 +90,7 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.identifier()).asSimpleText()),
                         Map.entry("メソッド数", item -> item.instanceMember().instanceMethods().list().size()),
                         Map.entry("メソッド一覧", item -> item.instanceMember().instanceMethods().declarations().asSignatureAndReturnTypeSimpleText())
-                ), domainCoreTypes.listCollectionType()),
+                ), coreDomainJigTypes.listCollectionType()),
                 new ReportSheet<>("VALIDATION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

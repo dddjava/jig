@@ -7,7 +7,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
+import org.dddjava.jig.domain.model.information.jigobject.package_.JigTypesPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,14 +123,14 @@ public class JigTypes implements CallerMethodsFactory {
         return map.containsKey(typeIdentifier);
     }
 
-    public List<PackageJigTypes> listPackages() {
+    public List<JigTypesPackage> listPackages() {
         Map<PackageIdentifier, List<JigType>> map = stream()
                 .collect(Collectors.groupingBy(
                         businessRule -> businessRule.typeIdentifier().packageIdentifier()
                 ));
         return map.entrySet().stream()
-                .map(entity -> new PackageJigTypes(entity.getKey(), entity.getValue()))
-                .sorted(Comparator.comparing(packageJigTypes -> packageJigTypes.packageIdentifier().asText()))
+                .map(entity -> new JigTypesPackage(entity.getKey(), entity.getValue()))
+                .sorted(Comparator.comparing(jigTypesPackage -> jigTypesPackage.packageIdentifier().asText()))
                 .collect(toList());
     }
 

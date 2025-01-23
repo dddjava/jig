@@ -12,7 +12,7 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.information.jigobject.package_.PackageJigTypes;
+import org.dddjava.jig.domain.model.information.jigobject.package_.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
@@ -47,13 +47,13 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigSource);
 
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
-        List<PackageJigTypes> packageJigTypes = coreDomainJigTypes.listPackages();
+        List<JigTypesPackage> jigTypePackages = coreDomainJigTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),
                         Map.entry("パッケージ別名", item -> jigDocumentContext.packageComment(item.packageIdentifier()).asText()),
                         Map.entry("クラス数", item -> item.jigTypes().size())
-                ), packageJigTypes),
+                ), jigTypePackages),
                 new ReportSheet<>("ALL", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),

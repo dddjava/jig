@@ -8,5 +8,5 @@ import java.util.List;
 /**
  * パッケージ単位のJigTypeのグループ
  */
-public record PackageJigTypes(PackageIdentifier packageIdentifier, List<JigType> jigTypes) {
+public record JigTypesPackage(PackageIdentifier packageIdentifier, List<JigType> jigTypes) {
 }

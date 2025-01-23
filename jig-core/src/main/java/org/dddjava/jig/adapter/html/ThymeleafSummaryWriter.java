@@ -8,7 +8,9 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypeValueKind;
+import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.package_.JigPackage;
+import org.dddjava.jig.domain.model.information.jigobject.package_.JigTypesPackage;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -38,15 +40,14 @@ public class ThymeleafSummaryWriter {
             return List.of();
         }
 
-        Map<PackageIdentifier, List<JigType>> jigTypeMap = summaryModel.map();
-        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypeMap.keySet().stream()
+        JigTypes jigTypes = summaryModel.jigTypes();
+        List<JigTypesPackage> jigTypesPackages = jigTypes.listPackages();
+        Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypesPackages.stream()
+                .map(JigTypesPackage::packageIdentifier)
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())
                 .collect(groupingBy(packageIdentifier -> packageIdentifier.parent(), toSet()));
-        var baseComposite = createTreeBaseComposite(jigTypeMap, packageMap);
+        var baseComposite = createTreeBaseComposite(jigTypes, packageMap);
 
-        List<JigType> jigTypes = jigTypeMap.values().stream().flatMap(List::stream)
-                .sorted(Comparator.comparing(JigType::fqn))
-                .collect(toList());
         List<JigPackage> jigPackages = packageMap.values().stream()
                 .flatMap(Set::stream)
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
@@ -60,7 +61,7 @@ public class ThymeleafSummaryWriter {
         var contextMap = Map.of(
                 "baseComposite", baseComposite,
                 "jigPackages", jigPackages,
-                "jigTypes", jigTypes,
+                "jigTypes", jigTypes.list(),
                 "categoriesMap", categoriesMap,
                 "enumModels", summaryModel.enumModels(),
                 "model", summaryModel,
@@ -76,13 +77,13 @@ public class ThymeleafSummaryWriter {
         return jigDocumentWriter.outputFilePaths();
     }
 
-    private TreeComposite createTreeBaseComposite(Map<PackageIdentifier, List<JigType>> jigTypeMap, Map<PackageIdentifier, Set<PackageIdentifier>> packageMap) {
+    private TreeComposite createTreeBaseComposite(JigTypes jigTypes, Map<PackageIdentifier, Set<PackageIdentifier>> packageMap) {
         TreeComposite baseComposite = new TreeComposite(jigDocumentContext.jigPackage(PackageIdentifier.defaultPackage()));
-        createTree(jigTypeMap, packageMap, baseComposite);
+        createTree(jigTypes, packageMap, baseComposite);
         return baseComposite;
     }
 
-    private void createTree(Map<PackageIdentifier, List<JigType>> jigTypeMap,
+    private void createTree(JigTypes jigTypes,
                             Map<PackageIdentifier, Set<PackageIdentifier>> packageMap,
                             TreeComposite baseComposite) {
         for (PackageIdentifier current : packageMap.getOrDefault(baseComposite.packageIdentifier(), Collections.emptySet())) {
@@ -90,10 +91,10 @@ public class ThymeleafSummaryWriter {
             // add package
             baseComposite.addComponent(composite);
             // add class
-            for (JigType jigType : jigTypeMap.getOrDefault(current, Collections.emptyList())) {
+            for (JigType jigType : jigTypes.listMatches(jigType -> jigType.packageIdentifier().equals(current))) {
                 composite.addComponent(new TreeLeaf(jigType));
             }
-            createTree(jigTypeMap, packageMap, composite);
+            createTree(jigTypes, packageMap, composite);
         }
     }
 }

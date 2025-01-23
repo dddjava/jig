@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
+public record Entrypoint(JigTypes jIgTypes, List<EntrypointGroup> list, MethodRelations methodRelations) {
 
     public static Entrypoint from(JigTypes jigTypes) {
-        return new Entrypoint(jigTypes.stream()
-                .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
-                .toList(),
+        return new Entrypoint(
+                jigTypes,
+                jigTypes.stream()
+                        .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
+                        .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
                 jigTypes.methodRelations());
     }
@@ -49,5 +51,9 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
         return requetHandlerMethodStream()
                 .filter(entrypointMethod -> entrypointMethod.anyMatch(callerMethods))
                 .toList();
+    }
+
+    public JigTypes jigTypes() {
+        return jIgTypes;
     }
 }

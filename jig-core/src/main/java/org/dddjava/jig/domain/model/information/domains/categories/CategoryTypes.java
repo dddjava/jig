@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import static org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers.collector;
 
 /**
@@ -43,5 +44,10 @@ public class CategoryTypes {
         return list.stream()
                 .map(CategoryType::typeIdentifier)
                 .collect(collector());
+    }
+
+    public JigTypes jigTypes() {
+        // TODO CategoryTypesからJigTypesへの変換は逆な感じなのでなくしたい
+        return list.stream().map(categoryType -> categoryType.jigType()).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

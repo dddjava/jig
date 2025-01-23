@@ -6,6 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
 import java.util.*;
 import java.util.function.Function;

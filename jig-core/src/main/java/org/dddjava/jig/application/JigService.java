@@ -15,6 +15,7 @@ import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
@@ -76,7 +77,7 @@ public class JigService {
 
     private ServiceMethods serviceMethods(JigDataProvider jigDataProvider) {
         JigTypes serviceJigTypes = serviceTypes(jigDataProvider);
-        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, jigTypes(jigDataProvider));
+        ServiceMethods serviceMethods = ServiceMethods.from(serviceJigTypes, MethodRelations.from(jigTypes(jigDataProvider)));
         if (serviceMethods.empty()) jigReporter.registerサービスが見つからない();
         return serviceMethods;
     }
@@ -102,7 +103,7 @@ public class JigService {
     public DatasourceAngles datasourceAngles(JigDataProvider jigDataProvider) {
         JigTypes jigTypes = jigTypes(jigDataProvider);
         DatasourceMethods datasourceMethods = repositoryMethods(jigDataProvider);
-        return new DatasourceAngles(datasourceMethods, jigDataProvider.fetchMybatisStatements(), jigTypes);
+        return new DatasourceAngles(datasourceMethods, jigDataProvider.fetchMybatisStatements(), MethodRelations.from(jigTypes));
     }
 
     public CategoryUsageDiagram categoryUsages(JigDataProvider jigDataProvider) {

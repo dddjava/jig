@@ -1,5 +1,9 @@
-package org.dddjava.jig.domain.model.data.classes.method;
+package org.dddjava.jig.domain.model.information.relation;
 
+import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,13 +19,32 @@ import static java.util.stream.Collectors.toList;
 /**
  * メソッドの使用しているメソッド一覧
  */
-public class MethodRelations {
+public class MethodRelations implements CallerMethodsFactory {
     private static final Logger logger = LoggerFactory.getLogger(MethodRelations.class);
 
     private final List<MethodRelation> list;
 
     public MethodRelations(List<MethodRelation> list) {
         this.list = list;
+    }
+
+    public static MethodRelations from(JigTypes jigTypes) {
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.allJigMethodStream()
+                        .flatMap(jigMethod -> jigMethod.methodInstructions().stream()
+                                .filter(toMethod -> !toMethod.isJSL()) // JSLを除く
+                                .filter(toMethod -> !toMethod.isConstructor()) // コンストラクタ呼び出しを除く
+                                .map(toMethod -> new MethodRelation(jigMethod.declaration(), toMethod))))
+                .collect(collectingAndThen(toList(), MethodRelations::new));
+    }
+
+    public static MethodRelations filterSpringComponent(JigTypes jigTypes, MethodRelations methodRelations) {
+        return methodRelations.list().stream()
+                .filter(methodRelation ->
+                        jigTypes.isEndpointOrApplication(methodRelation.from().declaringType())
+                                && jigTypes.isEndpointOrApplication(methodRelation.to().declaringType())
+                )
+                .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
     /**

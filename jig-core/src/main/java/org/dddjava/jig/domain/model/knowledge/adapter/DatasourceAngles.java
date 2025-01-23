@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.knowledge.adapter;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
-import org.dddjava.jig.domain.model.data.classes.method.CallerMethodsFactory;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.information.relation.CallerMethodsFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;

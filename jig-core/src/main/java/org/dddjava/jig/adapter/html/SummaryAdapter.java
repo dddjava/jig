@@ -10,6 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -40,7 +41,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     @HandleDocument(JigDocument.UsecaseSummary)
     public SummaryModel usecaseSummary(JigDataProvider jigDataProvider) {
         JigTypes jigTypes = jigService.serviceTypes(jigDataProvider);
-        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, jigTypes.methodRelations().inlineLambda());
+        var usecaseMermaidDiagram = new UsecaseMermaidDiagram(jigTypes, MethodRelations.from(jigTypes).inlineLambda());
         return new SummaryModel(jigTypes, Map.of("mermaidDiagram", usecaseMermaidDiagram));
     }
 

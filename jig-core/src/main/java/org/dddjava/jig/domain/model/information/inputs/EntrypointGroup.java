@@ -2,12 +2,12 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelation;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.information.relation.MethodRelation;
+import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -62,7 +62,7 @@ public record EntrypointGroup
         Map<TypeIdentifier, Set<MethodIdentifier>> serviceMethodMap = new HashMap<>();
         Map<String, String> methodLabelMap = new HashMap<>();
 
-        MethodRelations springComponentMethodRelations = jigTypes.filterSpringComponent(methodRelations).inlineLambda();
+        MethodRelations springComponentMethodRelations = MethodRelations.filterSpringComponent(jigTypes, methodRelations).inlineLambda();
 
         entrypointMethod().forEach(entrypointMethod -> {
             // APIメソッドの名前と形

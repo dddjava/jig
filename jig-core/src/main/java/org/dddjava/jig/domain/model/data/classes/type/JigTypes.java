@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.data.classes.type;
 
-import org.dddjava.jig.domain.model.data.classes.method.*;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
+import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.slf4j.Logger;
@@ -15,10 +16,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
-public class JigTypes implements CallerMethodsFactory {
+public class JigTypes {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
 
     private final List<JigType> list;
@@ -34,17 +34,6 @@ public class JigTypes implements CallerMethodsFactory {
                             left.identifier().fullQualifiedName());
                     return left;
                 }));
-    }
-
-    private MethodRelations methodRelations;
-
-    public MethodRelations methodRelations() {
-        if (methodRelations == null) {
-            methodRelations = stream()
-                    .flatMap(JigType::methodRelationStream)
-                    .collect(collectingAndThen(toList(), MethodRelations::new));
-        }
-        return methodRelations;
     }
 
     public List<JigType> listCollectionType() {
@@ -87,19 +76,10 @@ public class JigTypes implements CallerMethodsFactory {
                 .stream().anyMatch(type -> type.typeCategory() == TypeCategory.Usecase);
     }
 
-    private boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
+    public boolean isEndpointOrApplication(TypeIdentifier typeIdentifier) {
         return resolveJigType(typeIdentifier)
                 .stream()
                 .anyMatch(jigType -> jigType.typeCategory().isBoundary());
-    }
-
-    public MethodRelations filterSpringComponent(MethodRelations methodRelations) {
-        return methodRelations.list().stream()
-                .filter(methodRelation ->
-                        isEndpointOrApplication(methodRelation.from().declaringType())
-                                && isEndpointOrApplication(methodRelation.to().declaringType())
-                )
-                .collect(collectingAndThen(toList(), MethodRelations::new));
     }
 
     public boolean empty() {
@@ -127,10 +107,5 @@ public class JigTypes implements CallerMethodsFactory {
                 .map(entity -> new JigTypesPackage(entity.getKey(), entity.getValue()))
                 .sorted(Comparator.comparing(jigTypesPackage -> jigTypesPackage.packageIdentifier().asText()))
                 .collect(toList());
-    }
-
-    @Override
-    public CallerMethods callerMethodsOf(MethodDeclaration methodDeclaration) {
-        return methodRelations().callerMethodsOf(methodDeclaration);
     }
 }

@@ -1,8 +1,8 @@
 package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
-import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelat
                         .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
                         .toList(),
                 // TODO 全MethodRelationsを入れているが、EntryPointからのRelationだけあればいいはず
-                jigTypes.methodRelations());
+                MethodRelations.from(jigTypes));
     }
 
     public Map<String, String> mermaidMap(JigTypes jigTypes) {

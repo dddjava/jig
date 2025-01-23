@@ -8,8 +8,6 @@ public class SummaryModel {
     private final JigTypes jigTypes;
     private final Map<String, Object> additionalMap;
 
-    Map<String, String> mermaidMap;
-
     SummaryModel(JigTypes jigTypes) {
         this(jigTypes, Map.of());
     }
@@ -25,14 +23,6 @@ public class SummaryModel {
 
     public boolean empty() {
         return jigTypes.empty();
-    }
-
-    /**
-     * htmlから使用
-     */
-    public Map<String, String> mermaidMap() {
-        if (mermaidMap != null) return mermaidMap;
-        return Map.of();
     }
 
     public Map<String, Object> getAdditionalMap() {

@@ -97,7 +97,7 @@ class BusinessRuleServiceTest {
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
-        var domainCoreTypes = jigService.domainCoreTypes(jigSource);
+        var domainCoreTypes = jigService.coreDomainJigTypes(jigSource);
         assertFalse(domainCoreTypes.contains(typeIdentifier), "domain coreには存在しない");
     }
 

@@ -25,7 +25,7 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
     public SummaryModel summaryModel(JigSource jigSource) {
         return SummaryModel.from(
                 jigService.jigTypes(jigSource),
-                jigService.domainCoreTypes(jigSource));
+                jigService.coreDomainJigTypes(jigSource));
     }
 
     @HandleDocument({JigDocument.ApplicationSummary, JigDocument.UsecaseSummary})

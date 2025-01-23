@@ -40,7 +40,7 @@ public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     @HandleDocument(JigDocument.BusinessRuleRelationDiagram)
     public DiagramSourceWriter businessRuleRelation(JigSource jigSource) {
-        return new ClassRelationDiagram(jigService.domainCoreTypes(jigSource));
+        return new ClassRelationDiagram(jigService.coreDomainJigTypes(jigSource));
     }
 
     @HandleDocument(JigDocument.CategoryDiagram)

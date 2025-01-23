@@ -44,7 +44,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         JigTypes jigTypes = jigService.jigTypes(jigSource);
         var allClassRelations = jigTypes.classRelations();
 
-        JigTypes domainCoreTypes = jigService.domainCoreTypes(jigSource);
+        JigTypes domainCoreTypes = jigService.coreDomainJigTypes(jigSource);
 
         CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
         List<PackageJigTypes> packageJigTypes = domainCoreTypes.listPackages();

@@ -20,7 +20,7 @@ public class PropertyArchitectureFactory {
         return new Architecture() {
 
             @Override
-            public boolean isDomainCore(JigType jigType) {
+            public boolean isCoreDomain(JigType jigType) {
                 String fqn = jigType.identifier().fullQualifiedName();
                 if (fqn.endsWith(".package-info")) return false;
                 return businessRulePattern.matcher(fqn).matches()

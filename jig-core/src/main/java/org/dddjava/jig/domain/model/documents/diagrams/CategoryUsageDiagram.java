@@ -24,12 +24,12 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
 
     ServiceMethods serviceMethods;
     CategoryTypes categoryTypes;
-    private final JigTypes domainCoreJigTypes;
+    private final JigTypes coreDomainJigTypes;
 
-    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, JigTypes domainCoreJigTypes) {
+    public CategoryUsageDiagram(ServiceMethods serviceMethods, CategoryTypes categoryTypes, JigTypes coreDomainJigTypes) {
         this.serviceMethods = serviceMethods;
         this.categoryTypes = categoryTypes;
-        this.domainCoreJigTypes = domainCoreJigTypes;
+        this.coreDomainJigTypes = coreDomainJigTypes;
     }
 
     public DiagramSources sources() {
@@ -37,7 +37,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        ClassRelations businessRuleRelations = domainCoreJigTypes.internalClassRelations();
+        ClassRelations businessRuleRelations = coreDomainJigTypes.internalClassRelations();
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 
@@ -84,7 +84,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
     }
 
     private String nonCategoryNodeTexts(TypeIdentifiers categoryRelatedTypes) {
-        return domainCoreJigTypes.stream()
+        return coreDomainJigTypes.stream()
                 .filter(jigType -> jigType.toValueKind() != JigTypeValueKind.区分)
                 .filter(jigType -> categoryRelatedTypes.contains(jigType.typeIdentifier()))
                 .map(jigType -> Nodes.businessRuleNodeOf(jigType))

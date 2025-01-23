@@ -17,7 +17,7 @@ public class JigReporter {
 
     private final Set<Warning> warnings = new HashSet<>();
 
-    public void registerドメインコアが見つからない() {
+    public void registerコアドメインが見つからない() {
         warnings.add(Warning.ビジネスルールが見つからないので出力されない通知);
     }
 

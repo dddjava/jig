@@ -44,15 +44,15 @@ public class JigService {
     }
 
     public JigTypes coreDomainJigTypes(JigSource jigSource) {
-        JigTypes domainCoreTypes = jigTypes(jigSource).filter(architecture::isDomainCore);
-        jigReporter.registerドメインコアが見つからない();
-        return domainCoreTypes;
+        JigTypes coreDomainJigTypes = jigTypes(jigSource).filter(architecture::isCoreDomain);
+        jigReporter.registerコアドメインが見つからない();
+        return coreDomainJigTypes;
     }
 
     public PackageRelationDiagram packageDependencies(JigSource jigSource) {
-        JigTypes domainCoreTypes = coreDomainJigTypes(jigSource);
-        if (domainCoreTypes.empty()) return PackageRelationDiagram.empty();
-        return new PackageRelationDiagram(domainCoreTypes.typeIdentifiers().packageIdentifiers(), domainCoreTypes.internalClassRelations());
+        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigSource);
+        if (coreDomainJigTypes.empty()) return PackageRelationDiagram.empty();
+        return new PackageRelationDiagram(coreDomainJigTypes.typeIdentifiers().packageIdentifiers(), coreDomainJigTypes.internalClassRelations());
     }
 
     public MethodSmellList methodSmells(JigSource jigSource) {
@@ -106,9 +106,9 @@ public class JigService {
     public CategoryUsageDiagram categoryUsages(JigSource jigSource) {
         CategoryTypes categoryTypes = categoryTypes(jigSource);
         ServiceMethods serviceMethods = serviceMethods(jigSource);
-        JigTypes domainCoreJigTypes = coreDomainJigTypes(jigSource);
+        JigTypes coreDomainJigTypes = coreDomainJigTypes(jigSource);
 
-        return new CategoryUsageDiagram(serviceMethods, categoryTypes, domainCoreJigTypes);
+        return new CategoryUsageDiagram(serviceMethods, categoryTypes, coreDomainJigTypes);
     }
 
     public StringComparingMethodList stringComparing(JigSource jigSource) {

@@ -7,5 +7,5 @@ import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
  */
 public interface Architecture {
 
-    boolean isDomainCore(JigType jigType);
+    boolean isCoreDomain(JigType jigType);
 }

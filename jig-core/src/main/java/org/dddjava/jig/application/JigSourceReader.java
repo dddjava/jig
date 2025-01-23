@@ -1,9 +1,11 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
 import org.dddjava.jig.domain.model.sources.file.SourcePaths;
 import org.dddjava.jig.domain.model.sources.file.SourceReader;
 import org.dddjava.jig.domain.model.sources.file.Sources;
@@ -46,7 +48,7 @@ public class JigSourceReader {
         this.sourceReader = sourceReader;
     }
 
-    public Optional<JigSource> readPathSource(SourcePaths sourcePaths) {
+    public Optional<JigDataProvider> readPathSource(SourcePaths sourcePaths) {
         List<ReadStatus> readEvents = new ArrayList<>();
 
         // ソースのチェック
@@ -56,7 +58,8 @@ public class JigSourceReader {
         // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない
 
         MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
-        if (myBatisStatements.status().not正常()) readEvents.add(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
+        if (myBatisStatements.status().not正常())
+            readEvents.add(ReadStatus.fromSqlReadStatus(myBatisStatements.status()));
 
         readEvents.forEach(readStatus -> {
             if (readStatus.isError()) {
@@ -78,7 +81,7 @@ public class JigSourceReader {
     /**
      * プロジェクト情報を読み取る
      */
-    public JigSource readProjectData(Sources sources) {
+    public DefaultJigDataProvider readProjectData(Sources sources) {
         TextSources textSources = sources.textSources();
 
         TextSourceModel textSourceModel = javaTextSourceReader.textSourceModel(textSources);
@@ -92,7 +95,7 @@ public class JigSourceReader {
         ClassSources classSources = sources.classSources();
         TypeFacts typeFacts = binarySourceReader.readTypeFacts(classSources, textSourceModel);
 
-        return new JigSource(typeFacts, textSourceModel.toTerms());
+        return new DefaultJigDataProvider(typeFacts, textSourceModel.toTerms());
     }
 
     /**

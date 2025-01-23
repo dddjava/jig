@@ -1,11 +1,11 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.smell.SmelledClass;
@@ -20,9 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BusinessRuleServiceTest {
 
     @Test
-    void クラス可視性の判定(JigSource jigsource) throws Exception {
-        TypeFacts typeFacts = jigsource.typeFacts();
-        List<JigType> jigTypes = typeFacts.jigTypes().list();
+    void クラス可視性の判定(JigDataProvider jigsource) throws Exception {
+        List<JigType> jigTypes = jigsource.fetchJigTypes().list();
 
         JigType publicType = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().fullQualifiedName().endsWith("PublicType"))
@@ -46,8 +45,8 @@ class BusinessRuleServiceTest {
     }
 
     @Test
-    void 注意メソッドの抽出(JigService jigService, JigSource jigSource) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
+    void 注意メソッドの抽出(JigService jigService, JigDataProvider jigDataProvider) {
+        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledClass.class));
 
@@ -76,8 +75,8 @@ class BusinessRuleServiceTest {
      * record componentの判別によりrecordで生成されるaccessorが注意メソッドから除外できている。
      */
     @Test
-    void 注意メソッドの抽出_record(JigService jigService, JigSource jigSource) {
-        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
+    void 注意メソッドの抽出_record(JigService jigService, JigDataProvider jigDataProvider) {
+        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
 
         var detectedSmells = methodSmellList.collectBy(TypeIdentifier.from(SmelledRecord.class));
 
@@ -90,20 +89,20 @@ class BusinessRuleServiceTest {
      * @see stub.domain.model.annotation の package-info.java にはアノテーションをつけている
      */
     @Test
-    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigSource jigSource) {
+    void アノテーションつきのpackage_infoをドメインとして扱わない(JigService jigService, JigDataProvider jigDataProvider) {
         var typeIdentifier = TypeIdentifier.valueOf("stub.domain.model.annotation.package-info");
 
-        var jigTypes = jigService.jigTypes(jigSource);
+        var jigTypes = jigService.jigTypes(jigDataProvider);
 
         assertTrue(jigTypes.resolveJigType(typeIdentifier).isPresent(), "JigTypeには存在する");
 
-        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigSource);
+        var coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
         assertFalse(coreDomainJigTypes.contains(typeIdentifier), "domain coreには存在しない");
     }
 
     @Test
-    void 関連(JigService jigService, JigSource jigSource) {
-        var jigTypes = jigService.jigTypes(jigSource);
+    void 関連(JigService jigService, JigDataProvider jigDataProvider) {
+        var jigTypes = jigService.jigTypes(jigDataProvider);
 
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
         var classRelations = jigTypes.internalTypeRelationsFrom(targetJigType);

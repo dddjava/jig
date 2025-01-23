@@ -3,7 +3,7 @@ package org.dddjava.jig.adapter.excel;
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
-import org.dddjava.jig.application.JigSource;
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
@@ -38,15 +38,15 @@ public class ListAdapter implements Adapter<ReportBook> {
     }
 
     @HandleDocument(JigDocument.BusinessRuleList)
-    public ReportBook businessRuleReports(JigSource jigSource) {
+    public ReportBook businessRuleReports(JigDataProvider jigDataProvider) {
 
-        MethodSmellList methodSmellList = jigService.methodSmells(jigSource);
-        JigTypes jigTypes = jigService.jigTypes(jigSource);
+        MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
+        JigTypes jigTypes = jigService.jigTypes(jigDataProvider);
         var allClassRelations = jigTypes.classRelations();
 
-        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigSource);
+        JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
 
-        CategoryTypes categoryTypes = jigService.categoryTypes(jigSource);
+        CategoryTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
         List<JigTypesPackage> jigTypePackages = coreDomainJigTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
@@ -117,11 +117,11 @@ public class ListAdapter implements Adapter<ReportBook> {
     }
 
     @HandleDocument(JigDocument.ApplicationList)
-    public ReportBook applicationReports(JigSource jigSource) {
-        ServiceAngles serviceAngles = jigService.serviceAngles(jigSource);
-        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigSource);
-        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigSource);
-        Entrypoint entrypoint = jigService.entrypoint(jigSource);
+    public ReportBook applicationReports(JigDataProvider jigDataProvider) {
+        ServiceAngles serviceAngles = jigService.serviceAngles(jigDataProvider);
+        DatasourceAngles datasourceAngles = jigService.datasourceAngles(jigDataProvider);
+        StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigDataProvider);
+        Entrypoint entrypoint = jigService.entrypoint(jigDataProvider);
 
         if (entrypoint.isEmpty()) {
         }

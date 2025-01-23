@@ -1,11 +1,13 @@
 package org.dddjava.jig.application;
 
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.term.Term;
 import org.dddjava.jig.domain.model.data.term.TermIdentifier;
 import org.dddjava.jig.domain.model.data.term.TermKind;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.sources.DefaultJigDataProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import testing.xlsx.XlsxAssertions;
@@ -29,15 +31,15 @@ class JigDocumentGeneratorTest {
                 new Term(new TermIdentifier("hoge.fuga.piyo.Fizz"), "ふぃず", "テスト説明", TermKind.クラス),
                 new Term(new TermIdentifier("hoge.fuga.piyo"), "PIYO", "package-description", TermKind.パッケージ)
         ));
-        JigSource jigSource = new JigSource(null, terms);
+        JigDataProvider jigDataProvider = new DefaultJigDataProvider(null, terms);
         // environment
         var jigDocumentContextMock = mock(JigDocumentContext.class);
         var jigServiceMock = mock(JigService.class);
-        when(jigServiceMock.terms(jigSource)).thenReturn(terms);
+        when(jigServiceMock.terms(jigDataProvider)).thenReturn(terms);
 
         var sut = new JigDocumentGenerator(jigDocumentContextMock, jigServiceMock);
 
-        var handleResult = sut.generateDocument(JigDocument.TermList, tempDir, jigSource);
+        var handleResult = sut.generateDocument(JigDocument.TermList, tempDir, jigDataProvider);
 
         assert handleResult.success();
 

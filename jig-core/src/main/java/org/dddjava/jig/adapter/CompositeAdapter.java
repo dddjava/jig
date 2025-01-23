@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter;
 
-import org.dddjava.jig.application.JigSource;
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 
 import java.lang.reflect.Method;
@@ -26,12 +26,12 @@ public class CompositeAdapter {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> List<Path> invoke(JigDocument jigDocument, JigSource jigSource) {
+    public <T> List<Path> invoke(JigDocument jigDocument, JigDataProvider jigDataProvider) {
         Adapter<T> adapter = (Adapter<T>) adapterInstanceMap.get(jigDocument);
         Method adapterMethod = adapterMethodMap.get(jigDocument);
 
         try {
-            T model = adapter.convertMethodResultToAdapterModel(adapterMethod.invoke(adapter, jigSource));
+            T model = adapter.convertMethodResultToAdapterModel(adapterMethod.invoke(adapter, jigDataProvider));
             return adapter.write(model, jigDocument);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);

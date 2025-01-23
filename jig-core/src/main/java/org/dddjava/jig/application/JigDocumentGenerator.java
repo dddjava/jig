@@ -8,6 +8,7 @@ import org.dddjava.jig.adapter.excel.ListAdapter;
 import org.dddjava.jig.adapter.excel.ReportBook;
 import org.dddjava.jig.adapter.excel.ReportSheet;
 import org.dddjava.jig.adapter.html.*;
+import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -72,10 +73,10 @@ public class JigDocumentGenerator {
         copyAssets(outputDirectory);
     }
 
-    public List<HandleResult> generateDocuments(JigSource jigSource) {
+    public List<HandleResult> generateDocuments(JigDataProvider jigDataProvider) {
         List<HandleResult> handleResults = jigDocuments
                 .parallelStream()
-                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigSource))
+                .map(jigDocument -> generateDocument(jigDocument, outputDirectory, jigDataProvider))
                 .collect(Collectors.toList());
         jigService.notifyReportInformation();
         return handleResults;
@@ -104,26 +105,26 @@ public class JigDocumentGenerator {
         }
     }
 
-    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigSource jigSource) {
+    HandleResult generateDocument(JigDocument jigDocument, Path outputDirectory, JigDataProvider jigDataProvider) {
         try {
             long startTime = System.currentTimeMillis();
 
             var outputFilePaths = switch (jigDocument) {
                 // テーブル
                 case TermTable -> {
-                    var terms = jigService.terms(jigSource);
+                    var terms = jigService.terms(jigDataProvider);
                     yield new TableView(jigDocument, thymeleafTemplateEngine).write(outputDirectory, terms);
                 }
                 // 一覧
                 case TermList -> {
-                    Terms terms = jigService.terms(jigSource);
+                    Terms terms = jigService.terms(jigDataProvider);
                     var modelReports = new ReportBook(new ReportSheet<>("TERM", Terms.reporter(), terms.list()));
                     yield modelReports.writeXlsx(jigDocument, outputDirectory);
                 }
                 case DomainSummary, ApplicationSummary, UsecaseSummary, EntrypointSummary, EnumSummary,
                      PackageRelationDiagram, BusinessRuleRelationDiagram, CategoryDiagram, CategoryUsageDiagram,
                      ServiceMethodCallHierarchyDiagram, CompositeUsecaseDiagram, ArchitectureDiagram,
-                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigSource);
+                     BusinessRuleList, ApplicationList -> compositeAdapter.invoke(jigDocument, jigDataProvider);
             };
 
             long takenTime = System.currentTimeMillis() - startTime;

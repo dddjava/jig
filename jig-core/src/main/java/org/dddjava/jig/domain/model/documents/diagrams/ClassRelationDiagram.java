@@ -2,13 +2,13 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.data.jigobject.package_.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.information.jigobject.package_.JigTypesPackage;
 
 import java.util.StringJoiner;
 

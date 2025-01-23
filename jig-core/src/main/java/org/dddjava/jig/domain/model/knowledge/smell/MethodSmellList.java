@@ -1,7 +1,7 @@
 package org.dddjava.jig.domain.model.knowledge.smell;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 
 import java.util.Comparator;
 import java.util.List;

@@ -1,21 +1,21 @@
-package org.dddjava.jig.domain.model.information.jigobject.package_;
+package org.dddjava.jig.domain.model.data.jigobject.member;
 
 import org.dddjava.jig.domain.model.data.comment.Comment;
 
-public class JigPackageDescription {
+public class JigMethodDescription {
 
     String subject;
     String content;
 
-    private JigPackageDescription(String subject, String content) {
+    private JigMethodDescription(String subject, String content) {
         this.subject = subject;
         this.content = content;
     }
 
-    public static JigPackageDescription from(Comment comment) {
+    public static JigMethodDescription from(Comment comment) {
         String subject = comment.summaryText();
         String content = comment.bodyText();
-        return new JigPackageDescription(subject, content);
+        return new JigMethodDescription(subject, content);
     }
 
     public String subject() {

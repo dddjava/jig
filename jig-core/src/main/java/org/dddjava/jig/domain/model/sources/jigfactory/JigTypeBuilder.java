@@ -9,10 +9,10 @@ import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.information.jigobject.class_.*;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigField;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.data.jigobject.class_.*;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigField;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigMethods;
 
 import java.util.ArrayList;
 import java.util.List;

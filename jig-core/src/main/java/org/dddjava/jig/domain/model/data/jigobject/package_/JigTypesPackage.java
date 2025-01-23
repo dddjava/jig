@@ -1,7 +1,7 @@
-package org.dddjava.jig.domain.model.information.jigobject.package_;
+package org.dddjava.jig.domain.model.data.jigobject.package_;
 
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
 
 import java.util.List;
 

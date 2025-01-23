@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.applications;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethodsFactory;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 
 import java.util.List;
 

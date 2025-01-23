@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.jigobject.package_;
+package org.dddjava.jig.domain.model.data.jigobject.package_;
 
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;

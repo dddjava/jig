@@ -3,7 +3,7 @@ package org.dddjava.jig.domain.model.knowledge.smell;
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
 
 import java.util.Optional;
 

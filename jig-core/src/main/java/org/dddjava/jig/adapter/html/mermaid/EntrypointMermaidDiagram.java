@@ -1,8 +1,8 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 public record EntrypointMermaidDiagram(Entrypoint entrypoint, JigTypes contextJigTypes) {
 

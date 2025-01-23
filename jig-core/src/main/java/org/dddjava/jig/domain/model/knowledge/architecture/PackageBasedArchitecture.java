@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.knowledge.architecture;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
+import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;

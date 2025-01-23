@@ -1,10 +1,10 @@
-package org.dddjava.jig.domain.model.information.jigobject.class_;
+package org.dddjava.jig.domain.model.data.jigobject.class_;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.information.jigobject.member.JigMethods;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigFields;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
+import org.dddjava.jig.domain.model.data.jigobject.member.JigMethods;
 
 import java.util.ArrayList;
 import java.util.List;

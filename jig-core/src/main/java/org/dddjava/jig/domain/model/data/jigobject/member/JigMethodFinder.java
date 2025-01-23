@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.information.jigobject.member;
+package org.dddjava.jig.domain.model.data.jigobject.member;
 
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 

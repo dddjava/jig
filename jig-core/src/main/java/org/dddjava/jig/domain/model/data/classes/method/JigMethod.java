@@ -6,10 +6,9 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -163,82 +162,6 @@ public class JigMethod {
 
     public List<MethodDeclaration> methodInstructions() {
         return instructions.instructMethods().list();
-    }
-
-    /**
-     * メソッド関連のダイアグラム
-     */
-    public String usecaseMermaidText(JigMethodFinder jigMethodFinder, MethodRelations methodRelations) {
-        var mermaidText = new StringJoiner("\n");
-        mermaidText.add("graph LR");
-
-        // 基点からの呼び出し全部 + 直近の呼び出し元
-        var filteredRelations = methodRelations.filterFromRecursive(this.declaration(), methodIdentifier -> false)
-                .merge(methodRelations.filterTo(this.declaration()));
-
-        Set<MethodIdentifier> resolved = new HashSet<>();
-
-        // メソッドのスタイル
-        filteredRelations.methodIdentifiers().forEach(methodIdentifier -> {
-            // 自分は太字にする
-            if (methodIdentifier.equals(declaration().identifier())) {
-                resolved.add(methodIdentifier);
-                mermaidText.add(usecaseMermaidNodeText());
-                mermaidText.add("style %s font-weight:bold".formatted(this.htmlIdText()));
-            } else {
-                jigMethodFinder.find(methodIdentifier)
-                        .ifPresent(jigMethod -> {
-                            resolved.add(methodIdentifier);
-                            if (jigMethod.remarkable()) {
-                                // 出力対象のメソッドはusecase型＆クリックできるように
-                                mermaidText.add(jigMethod.usecaseMermaidNodeText());
-                                mermaidText.add("click %s \"#%s\"".formatted(jigMethod.htmlIdText(), jigMethod.htmlIdText()));
-                            } else {
-                                // remarkableでないものは普通の。privateメソッドなど該当。　
-                                mermaidText.add(jigMethod.normalMermaidNodeText());
-                            }
-                        });
-            }
-        });
-
-        Set<TypeIdentifier> others = new HashSet<>();
-
-        Function<MethodDeclaration, Optional<String>> converter = methodDeclaration -> {
-            if (resolved.contains(methodDeclaration.identifier())) {
-                return Optional.of(methodDeclaration.htmlIdText());
-            }
-            // 解決できなかったものは関心が薄いとして、メソッドではなくクラスとして解釈し
-            var typeIdentifier = methodDeclaration.declaringType();
-            if (typeIdentifier.packageIdentifier().equals(declaration().declaringType().packageIdentifier())) {
-                // 暫定的に同じパッケージのもののみ出力する
-                // Serviceの場合に出力したいのはControllerやRepositoryになるので、気が向いたらなんとかする
-                others.add(typeIdentifier);
-                return Optional.of(typeIdentifier.htmlIdText());
-            } else {
-                return Optional.empty();
-            }
-        };
-        mermaidText.add(filteredRelations.mermaidEdgeText(converter));
-
-        // JigMethodにならないものはクラスノードとして出力する
-        others.forEach(typeIdentifier ->
-                mermaidText.add("%s[%s]:::others".formatted(typeIdentifier.htmlIdText(), typeIdentifier.asSimpleText())));
-
-        mermaidText.add("classDef others fill:#AAA,font-size:90%;");
-        mermaidText.add("classDef lambda fill:#999,font-size:80%;");
-
-        return mermaidText.toString();
-    }
-
-    private String normalMermaidNodeText() {
-        if (declaration().isLambda()) {
-            return "%s[\"%s\"]:::lambda".formatted(htmlIdText(), "(lambda)");
-        }
-        return "%s[\"%s\"]".formatted(htmlIdText(), labelText());
-    }
-
-    private String usecaseMermaidNodeText() {
-        return "%s([\"%s\"])".formatted(htmlIdText(), labelTextOrLambda());
     }
 
     public String name() {

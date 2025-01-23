@@ -1,6 +1,5 @@
 package org.dddjava.jig.adapter.html;
 
-import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.information.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.jigobject.member.JigMethodFinder;
@@ -9,19 +8,22 @@ import java.util.Map;
 
 public class SummaryModel {
     private final JigTypes jigTypes;
+    private final Map<String, Object> additionalMap;
     /**
      * 補助に使用するJigType。メソッドの引数など、サマリ対象の外側にいるものの解決に使用する。
      */
     private final JigTypes supportJigTypes;
 
-    // FIXME enumModelsの持ち方・・・
-    EnumModels enumModels;
     Map<String, String> mermaidMap;
 
-    SummaryModel(JigTypes supportJigTypes, JigTypes jigTypes, EnumModels enumModels) {
+    SummaryModel(JigTypes supportJigTypes, JigTypes jigTypes) {
+        this(supportJigTypes, jigTypes, Map.of());
+    }
+
+    SummaryModel(JigTypes supportJigTypes, JigTypes jigTypes, Map<String, Object> additionalMap) {
         this.supportJigTypes = supportJigTypes;
         this.jigTypes = jigTypes;
-        this.enumModels = enumModels;
+        this.additionalMap = additionalMap;
     }
 
     public JigTypes jigTypes() {
@@ -30,10 +32,6 @@ public class SummaryModel {
 
     public boolean empty() {
         return jigTypes.empty();
-    }
-
-    public EnumModels enumModels() {
-        return enumModels;
     }
 
     /**
@@ -51,5 +49,9 @@ public class SummaryModel {
         return supportJigTypes.resolveJigMethod(jigMethod.declaration().identifier())
                 .map(m -> m.usecaseMermaidText(jigMethodFinder, methodRelations))
                 .orElse("");
+    }
+
+    public Map<String, Object> getAdditionalMap() {
+        return additionalMap;
     }
 }

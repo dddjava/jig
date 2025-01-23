@@ -63,12 +63,12 @@ public class ThymeleafSummaryWriter {
                 "jigPackages", jigPackages,
                 "jigTypes", jigTypes.list(),
                 "categoriesMap", categoriesMap,
-                "enumModels", summaryModel.enumModels(),
                 "model", summaryModel,
                 "title", jigDocumentWriter.jigDocument().label()
         );
 
         Context context = new Context(Locale.ROOT, contextMap);
+        context.setVariables(summaryModel.getAdditionalMap());
         String template = jigDocumentWriter.jigDocument().fileName();
 
         jigDocumentWriter.writeTextAs(".html",

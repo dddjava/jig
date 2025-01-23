@@ -6,7 +6,7 @@ import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;

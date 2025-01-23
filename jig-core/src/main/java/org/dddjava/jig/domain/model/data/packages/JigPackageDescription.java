@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.data.jigobject.package_;
+package org.dddjava.jig.domain.model.data.packages;
 
 import org.dddjava.jig.domain.model.data.comment.Comment;
 

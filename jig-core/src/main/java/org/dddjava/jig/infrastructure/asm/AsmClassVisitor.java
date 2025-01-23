@@ -10,11 +10,7 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynamicInstruction;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
-import org.dddjava.jig.domain.model.data.jigobject.class_.TypeKind;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.objectweb.asm.*;

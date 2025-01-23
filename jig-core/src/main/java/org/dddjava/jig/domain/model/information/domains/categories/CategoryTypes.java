@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.information.domains.categories;
 
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 
 import java.util.Comparator;
 import java.util.List;

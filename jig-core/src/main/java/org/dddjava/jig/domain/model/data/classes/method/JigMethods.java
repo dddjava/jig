@@ -1,8 +1,5 @@
-package org.dddjava.jig.domain.model.data.jigobject.member;
+package org.dddjava.jig.domain.model.data.classes.method;
 
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDeclarations;
-import org.dddjava.jig.domain.model.data.classes.method.MethodDerivation;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.util.Comparator;

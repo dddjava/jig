@@ -1,10 +1,10 @@
 package org.dddjava.jig.application;
 
 import org.dddjava.jig.annotation.Service;
+import org.dddjava.jig.domain.model.data.Architecture;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.jigobject.architectures.Architecture;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.data.jigobject.class_.TypeCategory;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.documents.diagrams.ArchitectureDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;

@@ -1,9 +1,9 @@
 package org.dddjava.jig.adapter.html.mermaid;
 
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethodFinder;
 import org.dddjava.jig.domain.model.data.classes.method.MethodRelations;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethodFinder;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 
 public record UsecaseMermaidDiagram(
         JigTypes contextJigTypes,

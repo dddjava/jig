@@ -1,6 +1,6 @@
 package org.dddjava.jig.adapter.html;
 
-import org.dddjava.jig.domain.model.data.jigobject.package_.JigPackage;
+import org.dddjava.jig.domain.model.data.packages.JigPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.ArrayList;

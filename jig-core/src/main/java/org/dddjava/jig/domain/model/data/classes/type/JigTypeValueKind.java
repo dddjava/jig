@@ -1,7 +1,6 @@
-package org.dddjava.jig.domain.model.data.jigobject.class_;
+package org.dddjava.jig.domain.model.data.classes.type;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclarations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

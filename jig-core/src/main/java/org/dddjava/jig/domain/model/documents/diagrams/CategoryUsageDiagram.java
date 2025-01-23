@@ -1,10 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;

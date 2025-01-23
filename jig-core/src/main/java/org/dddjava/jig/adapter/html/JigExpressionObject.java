@@ -1,12 +1,12 @@
 package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.field.JigField;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigField;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.util.stream.Collectors;

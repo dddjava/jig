@@ -1,12 +1,12 @@
 package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypeValueKind;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
-import org.dddjava.jig.domain.model.data.jigobject.package_.JigPackage;
-import org.dddjava.jig.domain.model.data.jigobject.package_.JigTypesPackage;
+import org.dddjava.jig.domain.model.data.packages.JigPackage;
+import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;

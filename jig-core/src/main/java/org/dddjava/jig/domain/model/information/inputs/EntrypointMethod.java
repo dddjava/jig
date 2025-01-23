@@ -3,10 +3,10 @@ package org.dddjava.jig.domain.model.information.inputs;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotations;
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

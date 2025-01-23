@@ -2,17 +2,11 @@ package org.dddjava.jig.domain.model.sources.jigfactory;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.Annotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.FieldAnnotation;
-import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.field.FieldType;
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclarations;
+import org.dddjava.jig.domain.model.data.classes.field.*;
+import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.data.jigobject.class_.*;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigField;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigFields;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethods;
 
 import java.util.ArrayList;
 import java.util.List;

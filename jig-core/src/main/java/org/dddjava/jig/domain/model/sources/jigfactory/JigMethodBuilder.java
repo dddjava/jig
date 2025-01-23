@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
 import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
 
 import java.util.ArrayList;
 import java.util.List;

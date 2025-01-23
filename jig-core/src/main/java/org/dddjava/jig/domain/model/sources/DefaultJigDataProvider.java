@@ -2,8 +2,8 @@ package org.dddjava.jig.domain.model.sources;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.data.term.Terms;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;

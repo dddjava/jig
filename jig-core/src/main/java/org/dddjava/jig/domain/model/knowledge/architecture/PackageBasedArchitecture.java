@@ -1,9 +1,9 @@
 package org.dddjava.jig.domain.model.knowledge.architecture;
 
 import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigType;
-import org.dddjava.jig.domain.model.data.jigobject.class_.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.*;

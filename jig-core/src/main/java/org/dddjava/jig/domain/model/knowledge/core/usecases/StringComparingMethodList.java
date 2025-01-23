@@ -1,10 +1,10 @@
 package org.dddjava.jig.domain.model.knowledge.core.usecases;
 
+import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 

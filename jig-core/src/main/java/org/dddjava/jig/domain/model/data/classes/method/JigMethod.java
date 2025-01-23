@@ -1,8 +1,7 @@
-package org.dddjava.jig.domain.model.data.jigobject.member;
+package org.dddjava.jig.domain.model.data.classes.method;
 
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotation;
 import org.dddjava.jig.domain.model.data.classes.annotation.MethodAnnotations;
-import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.Instructions;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;

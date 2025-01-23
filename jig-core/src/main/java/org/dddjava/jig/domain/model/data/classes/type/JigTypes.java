@@ -1,12 +1,7 @@
-package org.dddjava.jig.domain.model.data.jigobject.class_;
+package org.dddjava.jig.domain.model.data.classes.type;
 
 import org.dddjava.jig.domain.model.data.classes.method.*;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelations;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.jigobject.member.JigMethod;
-import org.dddjava.jig.domain.model.data.jigobject.package_.JigTypesPackage;
+import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public record Entrypoint(JigTypes jIgTypes, List<EntrypointGroup> list, MethodRelations methodRelations) {
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
+public record Entrypoint(List<EntrypointGroup> list, MethodRelations methodRelations) {
 
     public static Entrypoint from(JigTypes jigTypes) {
         return new Entrypoint(
-                jigTypes,
                 jigTypes.stream()
                         .flatMap(jigType -> EntrypointGroup.from(jigType).stream())
                         .toList(),
@@ -54,6 +56,6 @@ public record Entrypoint(JigTypes jIgTypes, List<EntrypointGroup> list, MethodRe
     }
 
     public JigTypes jigTypes() {
-        return jIgTypes;
+        return list().stream().map(EntrypointGroup::jigType).collect(collectingAndThen(toList(), JigTypes::new));
     }
 }

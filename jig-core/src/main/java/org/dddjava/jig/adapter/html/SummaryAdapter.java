@@ -2,6 +2,7 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
+import org.dddjava.jig.adapter.html.mermaid.EntrypointMermaidDiagram;
 import org.dddjava.jig.adapter.html.mermaid.UsecaseMermaidDiagram;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.application.JigSource;
@@ -45,12 +46,11 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
 
     @HandleDocument(JigDocument.EntrypointSummary)
     public SummaryModel entrypointSummary(JigSource jigSource) {
-        JigTypes supportJigTypes = jigService.jigTypes(jigSource);
+        JigTypes contextJigTypes = jigService.jigTypes(jigSource);
         Entrypoint entrypoint = jigService.entrypoint(jigSource);
         JigTypes jigTypes = entrypoint.jigTypes();
-        var summaryModel = new SummaryModel(jigTypes);
-        summaryModel.mermaidMap = entrypoint.mermaidMap(supportJigTypes);
-        return summaryModel;
+        var entrypointMermaidDiagram = new EntrypointMermaidDiagram(entrypoint, contextJigTypes);
+        return new SummaryModel(jigTypes, Map.of("mermaidDiagram", entrypointMermaidDiagram));
     }
 
     @HandleDocument(JigDocument.EnumSummary)

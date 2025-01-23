@@ -27,7 +27,7 @@
                     </section>
                 </th:block>
 
-                <pre class="mermaid" th:if="${model.mermaidMap().containsKey(item.fqn())}" th:utext="${model.mermaidMap().get(item.fqn())}">
+                <pre class="mermaid" th:utext="${mermaidDiagram.textFor(item)}">
                     graph LR
                     a --> b
                     a --> c

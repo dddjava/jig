@@ -55,7 +55,7 @@ public record EntrypointGroup
                 .map(jigMethod -> new EntrypointMethod(jigType, jigMethod));
     }
 
-    String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {
+    public String mermaid(MethodRelations methodRelations, JigTypes jigTypes) {
 
         var apiMethodRelationText = new StringJoiner("\n");
 

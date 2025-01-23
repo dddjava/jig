@@ -13,15 +13,6 @@
     </nav>
 
     <main class="usecase">
-
-        <!--
-        <th:block th:each="item : ${jigPackages}">
-            <section th:replace="~{fragment-package :: item}">
-                パッケージ表示
-            </section>
-        </th:block>
-        -->
-
         <th:block th:each="item : ${jigTypes}">
             <section class="type">
                 <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>

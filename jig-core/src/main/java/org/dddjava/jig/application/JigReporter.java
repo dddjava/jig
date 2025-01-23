@@ -60,7 +60,7 @@ public class JigReporter {
         Warning(String japaneseMessage, String englishMessage) {
             Locale locale = Locale.getDefault();
             boolean isEnglish = locale.getLanguage().equals("en");
-            this.message = isEnglish ? japaneseMessage : englishMessage;
+            this.message = isEnglish ? englishMessage : japaneseMessage;
         }
 
         public String localizedMessage() {

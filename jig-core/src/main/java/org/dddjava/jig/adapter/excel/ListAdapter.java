@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
@@ -42,7 +43,7 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         MethodSmellList methodSmellList = jigService.methodSmells(jigDataProvider);
         JigTypes jigTypes = jigService.jigTypes(jigDataProvider);
-        var allClassRelations = jigTypes.classRelations();
+        var allClassRelations = ClassRelations.from(jigTypes);
 
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
 
@@ -59,8 +60,8 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
                         Map.entry("ビジネスルールの種類", item -> item.toValueKind().toString()),
-                        Map.entry("関連元ビジネスルール数", item -> coreDomainJigTypes.internalTypeRelationsTo(item).size()),
-                        Map.entry("関連先ビジネスルール数", item -> coreDomainJigTypes.internalTypeRelationsFrom(item).size()),
+                        Map.entry("関連元ビジネスルール数", item -> ClassRelations.internalTypeRelationsTo(coreDomainJigTypes, item).size()),
+                        Map.entry("関連先ビジネスルール数", item -> ClassRelations.internalTypeRelationsFrom(coreDomainJigTypes, item).size()),
                         Map.entry("関連元クラス数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("非PUBLIC", item -> item.visibility() != TypeVisibility.PUBLIC ? "◯" : ""),
                         Map.entry("同パッケージからのみ参照", item -> {

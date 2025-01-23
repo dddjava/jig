@@ -129,32 +129,6 @@ public class JigTypes implements CallerMethodsFactory {
                 .collect(toList());
     }
 
-    public ClassRelations internalTypeRelationsTo(JigType targetJigType) {
-        return internalClassRelations().filterTo(targetJigType.identifier());
-    }
-
-    public ClassRelations internalTypeRelationsFrom(JigType targetJigType) {
-        return internalClassRelations().filterFrom(targetJigType.typeIdentifier());
-    }
-
-    public ClassRelations internalClassRelations() {
-        return list.stream()
-                .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .filter(typeIdentifier -> contains(typeIdentifier))
-                        .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
-                .filter(classRelation -> !classRelation.selfRelation())
-                .collect(collectingAndThen(toList(), ClassRelations::new));
-    }
-
-    public ClassRelations classRelations() {
-        var classRelations = new ClassRelations(list.stream()
-                .flatMap(jigType -> jigType.usingTypes().list().stream()
-                        .map(usingType -> new ClassRelation(jigType.typeIdentifier(), usingType)))
-                .filter(classRelation -> !classRelation.selfRelation())
-                .toList());
-        return classRelations;
-    }
-
     @Override
     public CallerMethods callerMethodsOf(MethodDeclaration methodDeclaration) {
         return methodRelations().callerMethodsOf(methodDeclaration);

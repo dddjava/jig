@@ -14,6 +14,7 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
+import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
@@ -53,7 +54,7 @@ public class JigService {
     public PackageRelationDiagram packageDependencies(JigDataProvider jigDataProvider) {
         JigTypes coreDomainJigTypes = coreDomainJigTypes(jigDataProvider);
         if (coreDomainJigTypes.empty()) return PackageRelationDiagram.empty();
-        return new PackageRelationDiagram(coreDomainJigTypes.typeIdentifiers().packageIdentifiers(), coreDomainJigTypes.internalClassRelations());
+        return new PackageRelationDiagram(coreDomainJigTypes.typeIdentifiers().packageIdentifiers(), ClassRelations.internalRelation(coreDomainJigTypes));
     }
 
     public MethodSmellList methodSmells(JigDataProvider jigDataProvider) {

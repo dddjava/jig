@@ -1,5 +1,9 @@
-package org.dddjava.jig.domain.model.data.classes.type;
+package org.dddjava.jig.domain.model.information.relation;
 
+import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.PackageRelation;
 import org.dddjava.jig.domain.model.data.packages.PackageRelations;
 
@@ -11,7 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.*;
 
 /**
  * 型依存関係一覧
@@ -22,6 +26,31 @@ public class ClassRelations {
 
     public ClassRelations(List<ClassRelation> list) {
         this.list = list;
+    }
+
+    public static ClassRelations from(JigTypes jigTypes) {
+        return new ClassRelations(jigTypes.stream()
+                .flatMap(jigType -> jigType.usingTypes().list().stream()
+                        .map(usingType -> new ClassRelation(jigType.typeIdentifier(), usingType)))
+                .filter(classRelation -> !classRelation.selfRelation())
+                .toList());
+    }
+
+    public static ClassRelations internalRelation(JigTypes jigTypes) {
+        return jigTypes.stream()
+                .flatMap(jigType -> jigType.usingTypes().list().stream()
+                        .filter(typeIdentifier -> jigTypes.contains(typeIdentifier))
+                        .map(typeIdentifier -> new ClassRelation(jigType.typeIdentifier(), typeIdentifier)))
+                .filter(classRelation -> !classRelation.selfRelation())
+                .collect(collectingAndThen(toList(), ClassRelations::new));
+    }
+
+    public static ClassRelations internalTypeRelationsFrom(JigTypes jigTypes, JigType targetJigType) {
+        return internalRelation(jigTypes).filterFrom(targetJigType.typeIdentifier());
+    }
+
+    public static ClassRelations internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
+        return internalRelation(jigTypes).filterTo(targetJigType.identifier());
     }
 
     public PackageRelations toPackageRelations() {

@@ -1,6 +1,9 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.*;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
@@ -8,6 +11,7 @@ import org.dddjava.jig.domain.model.information.applications.ServiceMethod;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
+import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 
 import java.util.StringJoiner;
 
@@ -33,7 +37,7 @@ public class CategoryUsageDiagram implements DiagramSourceWriter {
             return DiagramSource.empty();
         }
 
-        ClassRelations businessRuleRelations = coreDomainJigTypes.internalClassRelations();
+        ClassRelations businessRuleRelations = ClassRelations.internalRelation(coreDomainJigTypes);
         ClassRelations relations = businessRuleRelations.relationsFromRootTo(categoryTypes.typeIdentifiers());
         TypeIdentifiers categoryRelatedTypes = relations.allTypeIdentifiers();
 

@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.classes.type.ClassRelation;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
@@ -9,6 +8,8 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.information.relation.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 
 import java.util.StringJoiner;
 
@@ -38,11 +39,11 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT);
 
         // 出力対象の内部だけの関連
-        var internalClassRelations = jigTypes.internalClassRelations();
+        var internalClassRelations = ClassRelations.internalRelation(jigTypes);
 
         // 関連のないものだけ抽出する
         TypeIdentifiers isolatedTypes = jigTypes
-                .filter(jigType -> jigTypes.internalTypeRelationsFrom(jigType).isEmpty() && jigTypes.internalTypeRelationsTo(jigType).isEmpty())
+                .filter(jigType -> ClassRelations.internalTypeRelationsFrom(jigTypes, jigType).isEmpty() && ClassRelations.internalTypeRelationsTo(jigTypes, jigType).isEmpty())
                 .typeIdentifiers();
 
         for (JigTypesPackage jigTypesPackage : jigTypes.listPackages()) {

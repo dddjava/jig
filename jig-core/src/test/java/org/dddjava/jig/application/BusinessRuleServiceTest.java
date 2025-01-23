@@ -4,6 +4,7 @@ import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
+import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmell;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,7 @@ class BusinessRuleServiceTest {
         var jigTypes = jigService.jigTypes(jigDataProvider);
 
         var targetJigType = jigTypes.resolveJigType(TypeIdentifier.from(ClassDefinition.class)).orElseThrow();
-        var classRelations = jigTypes.internalTypeRelationsFrom(targetJigType);
+        var classRelations = ClassRelations.internalTypeRelationsFrom(jigTypes, targetJigType);
 
         assertEquals(classRelations.dotText(), """
                 "stub.domain.model.relation.ClassDefinition" -> "stub.domain.model.relation.clz.ClassAnnotation";

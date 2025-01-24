@@ -4,14 +4,10 @@ import org.dddjava.jig.adapter.Adapter;
 import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
-import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeVisibility;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 import org.dddjava.jig.domain.model.information.validations.Validations;
@@ -47,7 +43,7 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
 
-        CategoryTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
+        var categoryTypes = jigService.categoryTypes(jigDataProvider).jigTypes();
         List<JigTypesPackage> jigTypePackages = coreDomainJigTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
@@ -74,13 +70,15 @@ public class ListAdapter implements Adapter<ReportBook> {
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),
                         Map.entry("クラス名", item -> item.typeIdentifier().asSimpleText()),
                         Map.entry("クラス別名", item -> jigDocumentContext.classComment(item.typeIdentifier()).asText()),
-                        Map.entry("定数宣言", item -> item.constantsDeclarationsName()),
-                        Map.entry("フィールド", item -> item.fieldDeclarations().toSignatureText()),
+                        Map.entry("定数宣言", item -> item.staticMember().staticFieldDeclarations()),
+                        Map.entry("フィールド", item -> item.instanceMember().fieldDeclarations().toSignatureText()),
                         Map.entry("使用箇所数", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).list().size()),
                         Map.entry("使用箇所", item -> allClassRelations.collectTypeIdentifierWhichRelationTo(item.typeIdentifier()).asSimpleText()),
-                        Map.entry("パラメーター有り", item -> item.hasParameter() ? "◯" : ""),
-                        Map.entry("振る舞い有り", item -> item.hasBehaviour() ? "◯" : ""),
-                        Map.entry("多態", item -> item.isPolymorphism() ? "◯" : "")
+                        // TODO: パラメータあり＝フィールドありは直接はつながらない
+                        Map.entry("パラメーター有り", item -> item.instanceMember().hasField() ? "◯" : ""),
+                        Map.entry("振る舞い有り", item -> item.instanceMember().hasMethod() ? "◯" : ""),
+                        // 抽象列挙型は継承クラスがコンパイラに作成されているもので、多態とみなすことにする
+                        Map.entry("多態", item -> item.typeKind() == TypeKind.抽象列挙型 ? "◯" : "")
                 ), categoryTypes.list()),
                 new ReportSheet<>("COLLECTION", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),

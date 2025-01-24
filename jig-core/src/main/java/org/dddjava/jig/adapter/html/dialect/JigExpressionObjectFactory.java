@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.thymeleaf.context.IExpressionContext;

@@ -1,4 +1,4 @@
-package org.dddjava.jig.adapter.html;
+package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
@@ -11,6 +11,9 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
 import java.util.stream.Collectors;
 
+/**
+ * Thymeleafで使用するカスタム
+ */
 class JigExpressionObject {
     private final JigDocumentContext jigDocumentContext;
 

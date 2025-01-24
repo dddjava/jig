@@ -107,11 +107,10 @@ public class JigService {
     }
 
     public CategoryUsageDiagram categoryUsages(JigDataProvider jigDataProvider) {
-        CategoryTypes categoryTypes = categoryTypes(jigDataProvider);
         ServiceMethods serviceMethods = serviceMethods(jigDataProvider);
         JigTypes coreDomainJigTypes = coreDomainJigTypes(jigDataProvider);
 
-        return new CategoryUsageDiagram(serviceMethods, categoryTypes, coreDomainJigTypes);
+        return new CategoryUsageDiagram(serviceMethods, coreDomainJigTypes);
     }
 
     public StringComparingMethodList stringComparing(JigDataProvider jigDataProvider) {

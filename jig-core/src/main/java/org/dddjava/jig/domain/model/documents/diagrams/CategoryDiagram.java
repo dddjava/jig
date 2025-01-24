@@ -1,11 +1,11 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -17,30 +17,26 @@ import static java.util.stream.Collectors.joining;
  */
 public class CategoryDiagram implements DiagramSourceWriter {
 
-    private final CategoryTypes categoryTypes;
+    private final JigTypes jigTypes;
 
-    CategoryDiagram(CategoryTypes categoryTypes) {
-        this.categoryTypes = categoryTypes;
+    CategoryDiagram(JigTypes jigTypes) {
+        this.jigTypes = jigTypes;
     }
 
-    public static CategoryDiagram create(CategoryTypes categoryTypes) {
-        return new CategoryDiagram(categoryTypes);
-    }
-
-    public List<CategoryType> list() {
-        return categoryTypes.list();
+    public static CategoryDiagram create(JigTypes jigTypes) {
+        return new CategoryDiagram(jigTypes.filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分));
     }
 
     public DiagramSources sources() {
-        if (categoryTypes.isEmpty()) {
+        if (jigTypes.empty()) {
             return DiagramSource.empty();
         }
 
-        String structureText = categoryTypes.list().stream()
+        String structureText = jigTypes.list().stream()
                 .map(categoryType -> {
                     StringJoiner categoryValues = new StringJoiner("</td></tr><tr><td border=\"1\">", "<tr><td border=\"1\">", "</td></tr>");
 
-                    List<StaticFieldDeclaration> list = categoryType.values().list();
+                    List<StaticFieldDeclaration> list = categoryType.staticMember().staticFieldDeclarations().selfDefineOnly().list();
                     for (int i = 0; i < list.size(); i++) {
                         if (i > 20) {
                             categoryValues.add("... more");

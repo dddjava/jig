@@ -10,7 +10,6 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethods;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +18,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import stub.domain.model.MemberAnnotatedClass;
 import stub.domain.model.annotation.RuntimeRetainedAnnotation;
-import stub.domain.model.category.*;
+import stub.domain.model.category.RichEnum;
+import stub.domain.model.category.SimpleEnum;
 import stub.domain.model.relation.ClassDefinition;
 import stub.domain.model.relation.EnumDefinition;
 import stub.domain.model.relation.FieldDefinition;
@@ -114,26 +114,6 @@ public class AsmFactReaderTest {
                             TypeIdentifier.from(ConstructorArgument.class),
                             TypeIdentifier.from(ClassReference.class)
                     );
-        }
-
-        @ParameterizedTest
-        @MethodSource
-        void enumの種類が識別できる(Class<?> clz, boolean parameter, boolean behavior, boolean polymorphism) throws Exception {
-            JigType jigType = JigType構築(clz);
-            CategoryType categoryType = new CategoryType(jigType);
-
-            assertEquals(categoryType.hasParameter(), parameter);
-            assertEquals(categoryType.hasBehaviour(), behavior);
-            assertEquals(categoryType.isPolymorphism(), polymorphism);
-        }
-
-        static Stream<Arguments> enumの種類が識別できる() {
-            return Stream.of(
-                    Arguments.of(SimpleEnum.class, false, false, false),
-                    Arguments.of(BehaviourEnum.class, false, true, false),
-                    Arguments.of(ParameterizedEnum.class, true, false, false),
-                    Arguments.of(PolymorphismEnum.class, false, false, true),
-                    Arguments.of(RichEnum.class, true, true, true));
         }
 
         @MethodSource

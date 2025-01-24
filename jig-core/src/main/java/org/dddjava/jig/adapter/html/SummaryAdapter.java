@@ -8,7 +8,6 @@ import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.relation.MethodRelations;
 
@@ -56,8 +55,8 @@ public class SummaryAdapter implements Adapter<SummaryModel> {
 
     @HandleDocument(JigDocument.EnumSummary)
     public SummaryModel inputSummary(JigDataProvider jigDataProvider) {
-        CategoryTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
-        return new SummaryModel(categoryTypes.jigTypes(), Map.of("enumModels", jigDataProvider.fetchEnumModels()));
+        JigTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
+        return new SummaryModel(categoryTypes, Map.of("enumModels", jigDataProvider.fetchEnumModels()));
     }
 
     @Override

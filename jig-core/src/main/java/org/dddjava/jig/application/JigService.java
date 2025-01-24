@@ -3,6 +3,7 @@ package org.dddjava.jig.application;
 import org.dddjava.jig.annotation.Service;
 import org.dddjava.jig.domain.model.data.Architecture;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.term.Terms;
@@ -11,7 +12,6 @@ import org.dddjava.jig.domain.model.documents.diagrams.CategoryDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.CategoryUsageDiagram;
 import org.dddjava.jig.domain.model.documents.diagrams.PackageRelationDiagram;
 import org.dddjava.jig.domain.model.information.applications.ServiceMethods;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryTypes;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
 import org.dddjava.jig.domain.model.information.relation.ClassRelations;
@@ -62,8 +62,8 @@ public class JigService {
         return new MethodSmellList(coreDomainJigTypes(jigDataProvider));
     }
 
-    public CategoryTypes categoryTypes(JigDataProvider jigDataProvider) {
-        return CategoryTypes.from(coreDomainJigTypes(jigDataProvider));
+    public JigTypes categoryTypes(JigDataProvider jigDataProvider) {
+        return coreDomainJigTypes(jigDataProvider).filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
     }
 
     public CategoryDiagram categories(JigDataProvider jigDataProvider) {

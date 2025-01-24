@@ -33,6 +33,10 @@ class JigExpressionObject {
         return "other";
     }
 
+    public boolean isEnum(JigType jigType) {
+        return jigType.toValueKind() == JigTypeValueKind.区分;
+    }
+
     /**
      * enumの定数名リストを作成する。
      */

@@ -19,7 +19,7 @@
                  th:with="category=${categoriesMap.get(item.identifier())}">
             <h3>列挙値 (<a th:href="${'./enum.html#' + item.fqn()}">区分概要</a>)</h3>
             <ul>
-                <li th:each="value : ${category.values().list()}" th:text="${value.nameText()}">xx</li>
+                <li th:each="name : ${#jig.enumConstantIdentifiers(item)}" th:text="${name}">xx</li>
             </ul>
         </section>
 

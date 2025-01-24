@@ -2,13 +2,12 @@ package org.dddjava.jig.adapter.html.dialect;
 
 import org.dddjava.jig.domain.model.data.classes.field.FieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.field.JigField;
+import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodReturn;
-import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
-import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
-import org.dddjava.jig.domain.model.data.classes.type.TypeArgumentList;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
+import org.dddjava.jig.domain.model.data.classes.type.*;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +31,19 @@ class JigExpressionObject {
             return "none";
         }
         return "other";
+    }
+
+    /**
+     * enumの定数名リストを作成する。
+     */
+    public List<String> enumConstantIdentifiers(JigType jigType) {
+        if (jigType.toValueKind() != JigTypeValueKind.区分) {
+            return List.of();
+        }
+
+        return jigType.staticMember().staticFieldDeclarations().selfDefineOnly().list().stream()
+                .map(StaticFieldDeclaration::nameText)
+                .toList();
     }
 
     public String methodReturnRawText(MethodReturn methodReturn) {

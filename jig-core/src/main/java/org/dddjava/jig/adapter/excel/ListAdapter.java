@@ -42,7 +42,7 @@ public class ListAdapter implements Adapter<ReportBook> {
         var allClassRelations = ClassRelations.from(jigTypes);
 
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
-        JigTypes categoryTypes = coreDomainJigTypes.filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分);
+        JigTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
         List<JigTypesPackage> jigTypePackages = coreDomainJigTypes.listPackages();
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(

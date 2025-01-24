@@ -67,7 +67,7 @@ public class JigService {
     }
 
     public CategoryDiagram categories(JigDataProvider jigDataProvider) {
-        return CategoryDiagram.create(coreDomainJigTypes(jigDataProvider));
+        return CategoryDiagram.create(categoryTypes(jigDataProvider));
     }
 
     public JigTypes serviceTypes(JigDataProvider jigDataProvider) {

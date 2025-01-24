@@ -1,7 +1,6 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.field.StaticFieldDeclaration;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
@@ -24,7 +23,7 @@ public class CategoryDiagram implements DiagramSourceWriter {
     }
 
     public static CategoryDiagram create(JigTypes jigTypes) {
-        return new CategoryDiagram(jigTypes.filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分));
+        return new CategoryDiagram(jigTypes);
     }
 
     public DiagramSources sources() {

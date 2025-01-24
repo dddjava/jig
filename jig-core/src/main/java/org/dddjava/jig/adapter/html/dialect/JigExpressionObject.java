@@ -10,9 +10,6 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Thymeleafで使用するカスタム
- */
 class JigExpressionObject {
     private final JigDocumentContext jigDocumentContext;
 

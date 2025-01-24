@@ -2,21 +2,17 @@ package org.dddjava.jig.adapter.html;
 
 import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
-import org.dddjava.jig.domain.model.data.classes.type.JigTypeValueKind;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
-import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.JigPackage;
 import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.domains.categories.CategoryType;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.*;
 
@@ -53,16 +49,11 @@ public class ThymeleafSummaryWriter {
                 .sorted(Comparator.comparing(PackageIdentifier::asText))
                 .map(packageIdentifier -> jigDocumentContext.jigPackage(packageIdentifier))
                 .collect(toList());
-        Map<TypeIdentifier, CategoryType> categoriesMap = jigTypes.stream()
-                .filter(jigType -> jigType.toValueKind() == JigTypeValueKind.区分)
-                .map(CategoryType::new)
-                .collect(toMap(CategoryType::typeIdentifier, Function.identity()));
 
         var contextMap = Map.of(
                 "baseComposite", baseComposite,
                 "jigPackages", jigPackages,
                 "jigTypes", jigTypes.list(),
-                "categoriesMap", categoriesMap,
                 "model", summaryModel,
                 "title", jigDocumentWriter.jigDocument().label()
         );

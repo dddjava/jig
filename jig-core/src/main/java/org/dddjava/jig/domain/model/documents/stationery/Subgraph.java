@@ -1,6 +1,7 @@
 package org.dddjava.jig.domain.model.documents.stationery;
 
 import java.util.StringJoiner;
+import java.util.stream.Stream;
 
 public class Subgraph {
     StringJoiner stringJoiner;
@@ -27,6 +28,12 @@ public class Subgraph {
 
     public Subgraph add(CharSequence charSequence) {
         stringJoiner.add(charSequence);
+        return this;
+    }
+
+    public Subgraph addNodes(Stream<Node> nodes) {
+        // うけとったStreamの終端操作しちゃうのはどうなのよと思いつつ
+        nodes.map(Node::asText).forEach(this::add);
         return this;
     }
 

@@ -103,20 +103,16 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         Labeler labeler = new Labeler(jigDocumentContext);
         labeler.applyContext(groupingPackages.keySet(), standalonePackages);
 
-        StringJoiner groupingSubgraphAndInternalNodeText = new StringJoiner("\n");
-        for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
-            PackageIdentifier parent = entry.getKey();
-            String compositeNodesText = entry.getValue().stream()
-                    .map(packageIdentifier -> Node.packageOf(packageIdentifier)
-                            .label(labeler.label(packageIdentifier, parent))
-                            .url(packageIdentifier, JigDocument.DomainSummary).asText())
-                    .collect(joining("\n"));
-            Subgraph subgraph = new Subgraph(parent.asText())
-                    .add(compositeNodesText)
-                    .label(labeler.label(parent))
-                    .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
-            groupingSubgraphAndInternalNodeText.add(subgraph.toString());
-        }
+        String groupingSubgraphAndInternalNodeText = groupingPackages.entrySet().stream()
+                .map(entry -> new Subgraph(entry.getKey().asText())
+                        .addNodes(entry.getValue().stream()
+                                .map(packageIdentifier -> Node.packageOf(packageIdentifier)
+                                        .label(labeler.label(packageIdentifier, entry.getKey()))
+                                        .url(packageIdentifier, JigDocument.DomainSummary)))
+                        .label(labeler.label(entry.getKey()))
+                        .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2))
+                .map(Subgraph::toString)
+                .collect(joining("\n"));
 
         String standalonePackageNodeText = standalonePackages.stream()
                 .map(packageIdentifier -> Node.packageOf(packageIdentifier)

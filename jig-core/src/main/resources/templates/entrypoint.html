@@ -18,8 +18,8 @@
             <section class="type">
                 <h2><a th:id="${item.fqn()}" th:text="${item.label()}">XXXクラス</a></h2>
                 <div class="fully-qualified-name" th:text="${item.fqn()}">org.dddjava.jig.package.Class</div>
-                <p th:if="${item.optTagDescription().isPresent()}" th:text="'Description: ' + ${item.optTagDescription().get()}"></p>
-                <p th:if="${item.optHandlePath().isPresent()}" th:text="'Path: ' + ${item.optHandlePath().get()}">/hoge/fuga</p>
+                <p th:if="${#jigEntrypoint.tagDescription(item)}" th:text="'Description: ' + ${#jigEntrypoint.tagDescription(item)}"></p>
+                <p th:if="${#jigEntrypoint.handlePath(item)}" th:text="'Path: ' + ${#jigEntrypoint.handlePath(item)}">/hoge/fuga</p>
 
                 <th:block th:with="description=${item.description()}">
                     <section class="markdown" th:if="${description.hasContent()}" th:utext="${description.content()}">

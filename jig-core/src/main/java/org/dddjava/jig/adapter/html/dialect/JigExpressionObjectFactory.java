@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.thymeleaf.context.IExpressionContext;
 import org.thymeleaf.expression.IExpressionObjectFactory;
 
-import java.util.Collections;
 import java.util.Set;
 
 class JigExpressionObjectFactory implements IExpressionObjectFactory {
@@ -16,11 +15,14 @@ class JigExpressionObjectFactory implements IExpressionObjectFactory {
 
     @Override
     public Set<String> getAllExpressionObjectNames() {
-        return Collections.singleton("jig");
+        return Set.of("jig", "jigEntrypoint");
     }
 
     @Override
     public Object buildObject(IExpressionContext context, String expressionObjectName) {
+        if (expressionObjectName.equals("jigEntrypoint")) {
+            return new JigEntrypointExpressionObject();
+        }
         return new JigExpressionObject(jigDocumentContext);
     }
 

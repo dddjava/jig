@@ -9,7 +9,6 @@ import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -121,28 +120,6 @@ public class JigType {
 
     public Annotations annotationsOf(TypeIdentifier typeIdentifier) {
         return jigTypeAttribute.annotationsOf(typeIdentifier);
-    }
-
-    /**
-     * TODO エントリーポイントでしか使えないものなのでどこかに移動する
-     */
-    public Optional<String> optHandlePath() {
-        var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RequestMapping"));
-        return annotations.list().stream()
-                // 複数はつけられないので一つで良い
-                .findFirst()
-                .map(annotation -> annotation.descriptionTextAnyOf("value", "path")
-                        // 空文字列や何も設定されていない場合は "/" として扱う
-                        .filter(value -> !value.isEmpty()).orElse("/"));
-    }
-
-    /**
-     * TODO エントリーポイントでしか使えないものなのでどこかに移動する
-     */
-    public Optional<String> optTagDescription() {
-        var annotations = jigTypeAttribute.annotationsOf(TypeIdentifier.valueOf("io.swagger.v3.oas.annotations.tags.Tag"));
-        return annotations.list().stream().findFirst()
-                .flatMap(annotation -> annotation.descriptionTextAnyOf("description"));
     }
 
     public Stream<JigMethod> allJigMethodStream() {

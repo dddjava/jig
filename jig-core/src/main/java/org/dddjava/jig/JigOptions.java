@@ -3,6 +3,10 @@ package org.dddjava.jig;
 import java.nio.file.Path;
 import java.util.Arrays;
 
+/**
+ * 実装中
+ */
+@Deprecated(since = "2025.1.1")
 public record JigOptions(
         String domainPattern,
         BuildTool buildTool,

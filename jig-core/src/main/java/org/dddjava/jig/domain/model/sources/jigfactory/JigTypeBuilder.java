@@ -84,13 +84,14 @@ public class JigTypeBuilder {
 
         JigTypeAttribute jigTypeAttribute = new JigTypeAttribute(classComment, typeKind, visibility, annotations);
 
-        JigMethods constructors = new JigMethods(constructorFacts.stream().map(JigMethodBuilder::build).collect(toList()));
-        JigMethods staticMethods = new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
-        StaticFieldDeclarations staticFieldDeclarations = new StaticFieldDeclarations(this.staticFieldDeclarations);
-        JigStaticMember jigStaticMember = new JigStaticMember(constructors, staticMethods, staticFieldDeclarations);
+        JigStaticMember jigStaticMember = new JigStaticMember(
+                new JigMethods(constructorFacts.stream().map(JigMethodBuilder::build).collect(toList())),
+                new JigMethods(staticJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())),
+                new StaticFieldDeclarations(this.staticFieldDeclarations));
 
-        JigMethods instanceMethods = new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList()));
-        JigInstanceMember jigInstanceMember = new JigInstanceMember(new JigFields(instanceFields), instanceMethods);
+        JigInstanceMember jigInstanceMember = new JigInstanceMember(
+                new JigFields(instanceFields),
+                new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
 
         jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
         return jigType;

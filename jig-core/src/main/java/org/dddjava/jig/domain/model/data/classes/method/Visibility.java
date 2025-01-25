@@ -7,8 +7,7 @@ public enum Visibility {
     PUBLIC("+"),
     PROTECTED("#"),
     PACKAGE("~"),
-    PRIVATE("-"),
-    NOT_PUBLIC("");
+    PRIVATE("-");
 
     final String symbol;
 

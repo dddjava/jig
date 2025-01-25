@@ -17,6 +17,10 @@ public class JigReportsTask extends DefaultTask {
     void outputReports() {
         Project project = getProject();
         JigConfig config = project.getExtensions().findByType(JigConfig.class);
+        if (config == null) {
+            getLogger().warn("jig-gradle-pluginの設定が取得できません。通常は起こらないはずで、疑われるのはプラグイン側の実装ミスです。続行できないため終了します。");
+            return;
+        }
 
         Configuration configuration = new Configuration(config.asProperties(getProject()));
 

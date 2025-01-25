@@ -8,5 +8,5 @@ import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
  */
 public interface ClassSourceReader {
 
-    ClassSourceModel byteSourceModel(ClassSources classSources);
+    ClassSourceModel classSourceModel(ClassSources classSources);
 }

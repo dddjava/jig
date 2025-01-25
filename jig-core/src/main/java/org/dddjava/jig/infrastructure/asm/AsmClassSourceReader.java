@@ -18,7 +18,7 @@ public class AsmClassSourceReader implements ClassSourceReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
     @Override
-    public ClassSourceModel byteSourceModel(ClassSources classSources) {
+    public ClassSourceModel classSourceModel(ClassSources classSources) {
         return classSources.list().stream()
                 .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)

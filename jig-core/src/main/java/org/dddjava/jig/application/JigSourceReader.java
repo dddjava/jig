@@ -93,7 +93,7 @@ public class JigSourceReader {
         }
 
         ClassSources classSources = sources.classSources();
-        ClassSourceModel classSourceModel = binarySourceReader.byteSourceModel(classSources);
+        ClassSourceModel classSourceModel = binarySourceReader.classSourceModel(classSources);
 
         return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
     }

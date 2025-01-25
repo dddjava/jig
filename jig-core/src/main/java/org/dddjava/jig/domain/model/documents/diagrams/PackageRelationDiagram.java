@@ -101,6 +101,17 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
             groupingPackages.clear();
         }
 
+        // groupingしたパッケージ直下にクラスがある場合、standalonePackageとgroupingPackageのkeyが一致する。
+        // これをgroupingの中に編入する。
+        Iterator<PackageIdentifier> iterator = standalonePackages.iterator();
+        while (iterator.hasNext()) {
+            PackageIdentifier packageIdentifier = iterator.next();
+            if (groupingPackages.containsKey(packageIdentifier)) {
+                groupingPackages.get(packageIdentifier).add(packageIdentifier);
+                iterator.remove();
+            }
+        }
+
         Labeler labeler = new Labeler(jigDocumentContext);
         labeler.applyContext(groupingPackages.keySet(), standalonePackages);
 

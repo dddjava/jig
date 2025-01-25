@@ -119,9 +119,6 @@ public class ListAdapter implements Adapter<ReportBook> {
         StringComparingMethodList stringComparingMethodList = jigService.stringComparing(jigDataProvider);
         Entrypoint entrypoint = jigService.entrypoint(jigDataProvider);
 
-        if (entrypoint.isEmpty()) {
-        }
-
         return new ReportBook(
                 new ReportSheet<>("CONTROLLER", List.of(
                         Map.entry("パッケージ名", item -> item.typeIdentifier().packageIdentifier().asText()),

@@ -9,7 +9,7 @@ import java.util.List;
  * {@link MethodDeclaration} や {@link MethodIdentifier}、 {@link MethodSignature} などは引数型のFQNを持つが、
  * javaソースコードはコンパイル時の環境によってFQNは変わりうるため、これらの型にすると誤用してしまうため別の型としている。
  *
- * https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4
+ * @see <a href="https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4">JLS/Chapter 8. Classes/8.4. Method Declarations</a>
  */
 public record JavaMethodDeclarator(
         String identifier,

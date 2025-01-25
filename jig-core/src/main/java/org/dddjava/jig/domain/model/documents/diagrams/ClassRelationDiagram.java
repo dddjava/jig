@@ -3,11 +3,11 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
+import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 
@@ -46,7 +46,7 @@ public class ClassRelationDiagram implements DiagramSourceWriter {
                 .filter(jigType -> ClassRelations.internalTypeRelationsFrom(jigTypes, jigType).isEmpty() && ClassRelations.internalTypeRelationsTo(jigTypes, jigType).isEmpty())
                 .typeIdentifiers();
 
-        for (JigTypesPackage jigTypesPackage : jigTypes.listPackages()) {
+        for (JigTypesPackage jigTypesPackage : JigTypesPackage.from(jigTypes)) {
             PackageIdentifier packageIdentifier = jigTypesPackage.packageIdentifier();
 
             String fqn = packageIdentifier.asText();

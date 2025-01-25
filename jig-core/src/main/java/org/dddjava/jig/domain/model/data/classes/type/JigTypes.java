@@ -2,8 +2,6 @@ package org.dddjava.jig.domain.model.data.classes.type;
 
 import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
-import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
-import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +13,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public class JigTypes {
     private static final Logger logger = LoggerFactory.getLogger(JigTypes.class);
@@ -98,14 +94,4 @@ public class JigTypes {
         return map.containsKey(typeIdentifier);
     }
 
-    public List<JigTypesPackage> listPackages() {
-        Map<PackageIdentifier, List<JigType>> map = stream()
-                .collect(Collectors.groupingBy(
-                        businessRule -> businessRule.typeIdentifier().packageIdentifier()
-                ));
-        return map.entrySet().stream()
-                .map(entity -> new JigTypesPackage(entity.getKey(), entity.getValue()))
-                .sorted(Comparator.comparing(jigTypesPackage -> jigTypesPackage.packageIdentifier().asText()))
-                .collect(toList());
-    }
 }

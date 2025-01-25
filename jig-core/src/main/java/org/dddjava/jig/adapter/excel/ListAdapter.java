@@ -5,10 +5,10 @@ import org.dddjava.jig.adapter.HandleDocument;
 import org.dddjava.jig.application.JigService;
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
+import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.dddjava.jig.domain.model.information.relation.ClassRelations;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
@@ -41,7 +41,7 @@ public class ListAdapter implements Adapter<ReportBook> {
 
         JigTypes coreDomainJigTypes = jigService.coreDomainJigTypes(jigDataProvider);
         JigTypes categoryTypes = jigService.categoryTypes(jigDataProvider);
-        List<JigTypesPackage> jigTypePackages = coreDomainJigTypes.listPackages();
+        List<JigTypesPackage> jigTypePackages = JigTypesPackage.from(coreDomainJigTypes);
         return new ReportBook(
                 new ReportSheet<>("PACKAGE", List.of(
                         Map.entry("パッケージ名", item -> item.packageIdentifier().asText()),

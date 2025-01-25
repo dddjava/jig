@@ -4,10 +4,10 @@ import org.dddjava.jig.application.JigDocumentWriter;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.packages.JigPackage;
-import org.dddjava.jig.domain.model.data.packages.JigTypesPackage;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
+import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -37,7 +37,7 @@ public class ThymeleafSummaryWriter {
         }
 
         JigTypes jigTypes = summaryModel.jigTypes();
-        List<JigTypesPackage> jigTypesPackages = jigTypes.listPackages();
+        List<JigTypesPackage> jigTypesPackages = JigTypesPackage.from(jigTypes);
         Map<PackageIdentifier, Set<PackageIdentifier>> packageMap = jigTypesPackages.stream()
                 .map(JigTypesPackage::packageIdentifier)
                 .flatMap(packageIdentifier -> packageIdentifier.genealogical().stream())

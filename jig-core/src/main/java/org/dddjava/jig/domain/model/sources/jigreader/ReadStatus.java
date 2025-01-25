@@ -24,7 +24,7 @@ public enum ReadStatus {
             "SQLの読み込みに失敗しました。CRUDは出力されません。",
             "SQL reading failed. CRUD is not output.");
 
-    public String message;
+    private final String message;
 
     ReadStatus(String... messages) {
         Locale locale = Locale.getDefault();

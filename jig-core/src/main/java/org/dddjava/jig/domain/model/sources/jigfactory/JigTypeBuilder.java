@@ -72,13 +72,9 @@ public class JigTypeBuilder {
 
     public void registerClassComment(ClassComment classComment) {
         this.classComment = classComment;
-        this.jigType = null;
     }
 
-    JigType jigType;
-
     public JigType build() {
-        if (jigType != null) return jigType;
 
         TypeDeclaration typeDeclaration = new TypeDeclaration(type, superType, new ParameterizedTypes(interfaceTypes));
 
@@ -93,8 +89,7 @@ public class JigTypeBuilder {
                 new JigFields(instanceFields),
                 new JigMethods(instanceJigMethodBuilders.stream().map(JigMethodBuilder::build).collect(toList())));
 
-        jigType = new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
-        return jigType;
+        return new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 
     public JigTypeBuilder applyTextSource(TextSourceModel textSourceModel) {

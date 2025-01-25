@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+@HandleDocument
 public class SummaryAdapter implements Adapter<SummaryModel> {
 
     private final JigService jigService;

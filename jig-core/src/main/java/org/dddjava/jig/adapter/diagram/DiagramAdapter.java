@@ -13,6 +13,7 @@ import org.dddjava.jig.domain.model.documents.stationery.DiagramSourceWriter;
 import java.nio.file.Path;
 import java.util.List;
 
+@HandleDocument
 public class DiagramAdapter implements Adapter<DiagramSourceWriter> {
 
     private final JigService jigService;

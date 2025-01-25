@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HandleDocument {
-    JigDocument[] value();
+    JigDocument[] value() default {};
 }

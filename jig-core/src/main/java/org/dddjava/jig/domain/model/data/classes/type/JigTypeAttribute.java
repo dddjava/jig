@@ -63,7 +63,9 @@ public class JigTypeAttribute {
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Controller"))
                 || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.RestController"))
-                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))) {
+                || hasAnnotation(TypeIdentifier.valueOf("org.springframework.web.bind.annotation.ControllerAdvice"))
+                // TODO カスタムアノテーション対応
+                || hasAnnotation(TypeIdentifier.from(org.dddjava.jig.adapter.HandleDocument.class))) {
             return TypeCategory.InputAdapter;
         }
         if (hasAnnotation(TypeIdentifier.valueOf("org.springframework.stereotype.Repository"))

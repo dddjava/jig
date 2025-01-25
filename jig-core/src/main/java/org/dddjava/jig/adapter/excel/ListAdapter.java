@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@HandleDocument
 public class ListAdapter implements Adapter<ReportBook> {
     private static final Logger logger = LoggerFactory.getLogger(ListAdapter.class);
 

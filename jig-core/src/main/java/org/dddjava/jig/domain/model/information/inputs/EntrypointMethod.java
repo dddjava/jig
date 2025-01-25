@@ -104,7 +104,9 @@ public class EntrypointMethod {
                             || annotationName.equals("org.springframework.web.bind.annotation.PostMapping")
                             || annotationName.equals("org.springframework.web.bind.annotation.PutMapping")
                             || annotationName.equals("org.springframework.web.bind.annotation.DeleteMapping")
-                            || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping");
+                            || annotationName.equals("org.springframework.web.bind.annotation.PatchMapping")
+                            // TODO カスタムアノテーション対応
+                            || annotationName.equals("org.dddjava.jig.adapter.HandleDocument");
                 });
     }
 

@@ -36,13 +36,13 @@ public class JigSourceReader {
 
     final SourceReader sourceReader;
 
-    final ClassSourceReader binarySourceReader;
+    final ClassSourceReader classSourceReader;
     final JavaTextSourceReader javaTextSourceReader;
     final SqlReader sqlReader;
 
-    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader binarySourceReader, JavaTextSourceReader javaTextSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader classSourceReader, JavaTextSourceReader javaTextSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.commentRepository = commentRepository;
-        this.binarySourceReader = binarySourceReader;
+        this.classSourceReader = classSourceReader;
         this.javaTextSourceReader = javaTextSourceReader;
         this.sqlReader = sqlReader;
         this.sourceReader = sourceReader;
@@ -93,7 +93,7 @@ public class JigSourceReader {
         }
 
         ClassSources classSources = sources.classSources();
-        ClassSourceModel classSourceModel = binarySourceReader.classSourceModel(classSources);
+        ClassSourceModel classSourceModel = classSourceReader.classSourceModel(classSources);
 
         return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
     }

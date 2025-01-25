@@ -14,7 +14,7 @@ import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.JavaSourceModel;
-import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
+import org.dddjava.jig.domain.model.sources.jigreader.ClassSourceReader;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
 import org.dddjava.jig.domain.model.sources.jigreader.SqlReader;
@@ -36,11 +36,11 @@ public class JigSourceReader {
 
     final SourceReader sourceReader;
 
-    final FactReader binarySourceReader;
+    final ClassSourceReader binarySourceReader;
     final JavaTextSourceReader javaTextSourceReader;
     final SqlReader sqlReader;
 
-    public JigSourceReader(CommentRepository commentRepository, FactReader binarySourceReader, JavaTextSourceReader javaTextSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
+    public JigSourceReader(CommentRepository commentRepository, ClassSourceReader binarySourceReader, JavaTextSourceReader javaTextSourceReader, SqlReader sqlReader, SourceReader sourceReader) {
         this.commentRepository = commentRepository;
         this.binarySourceReader = binarySourceReader;
         this.javaTextSourceReader = javaTextSourceReader;

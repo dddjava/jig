@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
 /**
  * 対象から実装を取得するファクトリ
  */
-public interface FactReader {
+public interface ClassSourceReader {
 
     ClassSourceModel byteSourceModel(ClassSources classSources);
 }

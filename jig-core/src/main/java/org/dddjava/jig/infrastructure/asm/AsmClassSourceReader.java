@@ -5,7 +5,7 @@ import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
-import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
+import org.dddjava.jig.domain.model.sources.jigreader.ClassSourceReader;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class AsmFactReader implements FactReader {
-    private static final Logger logger = LoggerFactory.getLogger(AsmFactReader.class);
+public class AsmClassSourceReader implements ClassSourceReader {
+    private static final Logger logger = LoggerFactory.getLogger(AsmClassSourceReader.class);
 
     @Override
     public ClassSourceModel byteSourceModel(ClassSources classSources) {

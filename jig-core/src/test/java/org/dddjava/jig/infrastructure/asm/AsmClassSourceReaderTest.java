@@ -48,8 +48,8 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-public class AsmFactReaderTest {
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AsmFactReaderTest.class);
+public class AsmClassSourceReaderTest {
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(AsmClassSourceReaderTest.class);
 
     @Nested
     class クラス {
@@ -268,7 +268,7 @@ public class AsmFactReaderTest {
             URL url = Objects.requireNonNull(clz.getResource('/' + resourcePath));
             Path path = Paths.get(url.toURI());
 
-            AsmFactReader sut = new AsmFactReader();
+            AsmClassSourceReader sut = new AsmClassSourceReader();
             return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
         } catch (Exception e) {
             throw new AssertionError(e);

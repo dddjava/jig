@@ -124,7 +124,7 @@ public class InstructionTest {
     private JigType buildJigType(Class<?> definitionClass) throws URISyntaxException, IOException {
         Path path = Paths.get(definitionClass.getResource(definitionClass.getSimpleName().concat(".class")).toURI());
 
-        AsmFactReader sut = new AsmFactReader();
+        AsmClassSourceReader sut = new AsmClassSourceReader();
         return sut.typeByteCode(TestSupport.newClassSource(path)).orElseThrow().build();
     }
 }

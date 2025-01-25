@@ -133,7 +133,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
                 .add(packageMutualDependencies.dotRelationText())
-                .add(groupingSubgraphAndInternalNodeText.toString())
+                .add(groupingSubgraphAndInternalNodeText)
                 .add(standalonePackageNodeText)
                 .toString();
 

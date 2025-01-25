@@ -17,6 +17,10 @@ public class Labeler {
     }
 
     public String label(PackageIdentifier packageIdentifier, PackageIdentifier parent) {
+        if (packageIdentifier.equals(parent)) {
+            // parentと同じパッケージ
+            return ".";
+        }
         if (!packageIdentifier.asText().startsWith(parent.asText() + '.')) {
             // 引数の食い違いがあった場合に予期しない編集を行わないための回避コード。
             // TODO 通常は起こらないけれど起こらない実装にできてないので保険の実装。無くしたい。

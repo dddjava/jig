@@ -15,8 +15,6 @@ import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.usecases.StringComparingMethodList;
 import org.dddjava.jig.domain.model.knowledge.smell.MethodSmellList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 
 @HandleDocument
 public class ListAdapter implements Adapter<ReportBook> {
-    private static final Logger logger = LoggerFactory.getLogger(ListAdapter.class);
 
     private final JigDocumentContext jigDocumentContext;
     private final JigService jigService;

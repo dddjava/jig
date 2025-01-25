@@ -4,11 +4,11 @@ import org.dddjava.jig.domain.model.data.classes.method.JigMethod;
 import org.dddjava.jig.domain.model.data.classes.method.MethodSignature;
 import org.dddjava.jig.domain.model.data.classes.type.ClassComment;
 import org.dddjava.jig.domain.model.data.classes.type.JigType;
+import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,8 +44,8 @@ class AliasServiceTest {
     @ParameterizedTest
     @MethodSource
     void クラス別名取得(TypeIdentifier typeIdentifier, String comment, Sources source) {
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
-        ClassComment classComment = typeFacts.jigTypes().stream()
+        var jigTypes = jigSourceReader.readProjectData(source).fetchJigTypes();
+        ClassComment classComment = jigTypes.stream()
                 .filter(jigType -> jigType.identifier().equals(typeIdentifier))
                 .map(jigType -> jigType.typeAlias())
                 .findAny().orElseThrow(AssertionError::new);
@@ -63,9 +63,9 @@ class AliasServiceTest {
 
     @Test
     void メソッド別名取得(Sources source) {
-        TypeFacts typeFacts = jigSourceReader.readProjectData(source).typeFacts();
+        JigTypes jigTypes = jigSourceReader.readProjectData(source).fetchJigTypes();
         TypeIdentifier テスト対象クラス = TypeIdentifier.from(MethodJavadocStub.class);
-        JigType jigType = typeFacts.jigTypes().listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
+        JigType jigType = jigTypes.listMatches(item -> item.identifier().equals(テスト対象クラス)).get(0);
 
         JigMethod method = resolveMethodBySignature(jigType, new MethodSignature("method"));
         assertEquals("メソッドのJavadoc", method.aliasTextOrBlank());

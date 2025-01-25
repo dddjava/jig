@@ -53,7 +53,7 @@ public class ThymeleafSummaryWriter {
         var contextMap = Map.of(
                 "baseComposite", baseComposite,
                 "jigPackages", jigPackages,
-                "jigTypes", jigTypes.list(),
+                "jigTypeBuilders", jigTypes.list(),
                 "model", summaryModel,
                 "title", jigDocumentWriter.jigDocument().label()
         );

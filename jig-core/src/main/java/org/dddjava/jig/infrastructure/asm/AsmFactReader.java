@@ -3,9 +3,8 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
+import org.dddjava.jig.domain.model.sources.jigfactory.ByteSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
-import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -19,12 +18,11 @@ public class AsmFactReader implements FactReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmFactReader.class);
 
     @Override
-    public TypeFacts readTypeFacts(ClassSources classSources, TextSourceModel textSourceModel) {
+    public ByteSourceModel byteSourceModel(ClassSources classSources) {
         return classSources.list().stream()
                 .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)
-                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(textSourceModel))
-                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> new TypeFacts(list)));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> ByteSourceModel.from(list)));
     }
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {

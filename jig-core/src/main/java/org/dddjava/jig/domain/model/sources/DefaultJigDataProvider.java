@@ -5,19 +5,22 @@ import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Terms;
+import org.dddjava.jig.domain.model.sources.jigfactory.ByteSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
-public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel, Map<Class<?>, Object> map,
+public record DefaultJigDataProvider(ByteSourceModel byteSourceModel,
+                                     TextSourceModel textSourceModel,
+                                     Map<Class<?>, Object> map,
                                      AtomicReference<JigTypes> jigTypesAtomicReference)
         implements JigDataProvider {
 
-    public DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel) {
-        this(typeFacts, textSourceModel, new HashMap<>(), new AtomicReference<>());
+    public DefaultJigDataProvider(ByteSourceModel byteSourceModel, TextSourceModel textSourceModel) {
+        this(byteSourceModel, textSourceModel, new HashMap<>(), new AtomicReference<>());
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {
@@ -37,12 +40,18 @@ public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSo
     @Override
     public JigTypes fetchJigTypes() {
         if (jigTypesAtomicReference().get() == null) {
-            JigTypes jigTypes = typeFacts().jigTypes();
+            JigTypes jigTypes = initJigTypes();
             if (jigTypesAtomicReference().compareAndSet(null, jigTypes)) {
                 return jigTypes;
             }
         }
         return jigTypesAtomicReference().get();
+    }
+
+    private JigTypes initJigTypes() {
+        return byteSourceModel.jigTypeBuilders().stream()
+                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(textSourceModel).build())
+                .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
     @Override

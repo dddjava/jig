@@ -89,7 +89,7 @@ public class TextSourceModel {
         return new Terms(list);
     }
 
-    Optional<ClassComment> optClassComment(TypeIdentifier typeIdentifier) {
+    public Optional<ClassComment> optClassComment(TypeIdentifier typeIdentifier) {
         return classCommentList().stream()
                 .filter(classComment -> classComment.typeIdentifier().equals(typeIdentifier))
                 .findAny();

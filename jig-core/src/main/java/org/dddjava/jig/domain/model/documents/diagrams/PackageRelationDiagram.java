@@ -103,7 +103,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
         Labeler labeler = new Labeler(jigDocumentContext);
         labeler.applyContext(groupingPackages.keySet(), standalonePackages);
 
-        StringJoiner stringJoiner = new StringJoiner("\n");
+        StringJoiner groupingSubgraphAndInternalNodeText = new StringJoiner("\n");
         for (Map.Entry<PackageIdentifier, List<PackageIdentifier>> entry : groupingPackages.entrySet()) {
             PackageIdentifier parent = entry.getKey();
             String compositeNodesText = entry.getValue().stream()
@@ -115,15 +115,14 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                     .add(compositeNodesText)
                     .label(labeler.label(parent))
                     .fillColor("lemonchiffon").color("lightgoldenrod").borderWidth(2);
-            stringJoiner.add(subgraph.toString());
+            groupingSubgraphAndInternalNodeText.add(subgraph.toString());
         }
 
-        String labelsText = standalonePackages.stream()
+        String standalonePackageNodeText = standalonePackages.stream()
                 .map(packageIdentifier -> Node.packageOf(packageIdentifier)
                         .label(labeler.label(packageIdentifier))
                         .url(packageIdentifier, JigDocument.DomainSummary).asText())
                 .collect(joining("\n"));
-        stringJoiner.add(labelsText);
 
         String summaryText = "summary[shape=note,label=\""
                 + labeler.contextDescription() + "\\l"
@@ -138,7 +137,8 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 .add(Node.DEFAULT)
                 .add(unidirectionalRelation.asText())
                 .add(packageMutualDependencies.dotRelationText())
-                .add(stringJoiner.toString())
+                .add(groupingSubgraphAndInternalNodeText.toString())
+                .add(standalonePackageNodeText)
                 .toString();
 
         return DiagramSource.createDiagramSourceUnit(documentName.withSuffix("-depth" + appliedDepth.value()), text, additionalText());

@@ -98,7 +98,7 @@ main table thead {
 }
 
 section.package > h2, section.type > h2, section.type {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 section.package, section.type {
     border-top: #000 solid 1px;
@@ -154,7 +154,7 @@ main table.fields thead {
     background-color: #ddd;
 }
 .usecase h3 {
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 .usecase .method > :not(:first-child) {
     margin-left: 2em;

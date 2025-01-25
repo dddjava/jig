@@ -5,22 +5,22 @@ import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.enums.EnumModels;
 import org.dddjava.jig.domain.model.data.term.Terms;
-import org.dddjava.jig.domain.model.sources.jigfactory.ByteSourceModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.JavaSourceModel;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public record DefaultJigDataProvider(ByteSourceModel byteSourceModel,
-                                     TextSourceModel textSourceModel,
+public record DefaultJigDataProvider(ClassSourceModel classSourceModel,
+                                     JavaSourceModel javaSourceModel,
                                      Map<Class<?>, Object> map,
                                      AtomicReference<JigTypes> jigTypesAtomicReference)
         implements JigDataProvider {
 
-    public DefaultJigDataProvider(ByteSourceModel byteSourceModel, TextSourceModel textSourceModel) {
-        this(byteSourceModel, textSourceModel, new HashMap<>(), new AtomicReference<>());
+    public DefaultJigDataProvider(ClassSourceModel classSourceModel, JavaSourceModel javaSourceModel) {
+        this(classSourceModel, javaSourceModel, new HashMap<>(), new AtomicReference<>());
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {
@@ -34,7 +34,7 @@ public record DefaultJigDataProvider(ByteSourceModel byteSourceModel,
 
     @Override
     public EnumModels fetchEnumModels() {
-        return textSourceModel().enumModels();
+        return javaSourceModel().enumModels();
     }
 
     @Override
@@ -49,13 +49,13 @@ public record DefaultJigDataProvider(ByteSourceModel byteSourceModel,
     }
 
     private JigTypes initJigTypes() {
-        return byteSourceModel.jigTypeBuilders().stream()
-                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(textSourceModel).build())
+        return classSourceModel.jigTypeBuilders().stream()
+                .map(jigTypeBuilder -> jigTypeBuilder.applyTextSource(javaSourceModel).build())
                 .collect(Collectors.collectingAndThen(Collectors.toList(), JigTypes::new));
     }
 
     @Override
     public Terms fetchTerms() {
-        return textSourceModel().toTerms();
+        return javaSourceModel().toTerms();
     }
 }

@@ -92,13 +92,13 @@ public class JigTypeBuilder {
         return new JigType(typeDeclaration, jigTypeAttribute, jigStaticMember, jigInstanceMember);
     }
 
-    public JigTypeBuilder applyTextSource(TextSourceModel textSourceModel) {
+    public JigTypeBuilder applyTextSource(JavaSourceModel javaSourceModel) {
         // クラスのコメントを適用
-        textSourceModel.optClassComment(typeIdentifier())
+        javaSourceModel.optClassComment(typeIdentifier())
                 .ifPresent(this::registerClassComment);
 
         for (JigMethodBuilder jigMethodBuilder : allMethodFacts()) {
-            textSourceModel.methodImplementations.stream()
+            javaSourceModel.methodImplementations.stream()
                     .filter(methodImplementation -> methodImplementation.possiblyMatches(jigMethodBuilder.methodIdentifier()))
                     .findAny()
                     .ifPresent(methodImplementation -> jigMethodBuilder.registerMethodImplementation(methodImplementation));

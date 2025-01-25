@@ -12,8 +12,8 @@ import org.dddjava.jig.domain.model.sources.file.Sources;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
 import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
-import org.dddjava.jig.domain.model.sources.jigfactory.ByteSourceModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.dddjava.jig.domain.model.sources.jigreader.ReadStatus;
@@ -84,18 +84,18 @@ public class JigSourceReader {
     public DefaultJigDataProvider readProjectData(Sources sources) {
         TextSources textSources = sources.textSources();
 
-        TextSourceModel textSourceModel = javaTextSourceReader.textSourceModel(textSources);
-        for (ClassComment classComment : textSourceModel.classCommentList()) {
+        JavaSourceModel javaSourceModel = javaTextSourceReader.textSourceModel(textSources);
+        for (ClassComment classComment : javaSourceModel.classCommentList()) {
             commentRepository.register(classComment);
         }
-        for (PackageComment packageComment : textSourceModel.packageComments()) {
+        for (PackageComment packageComment : javaSourceModel.packageComments()) {
             commentRepository.register(packageComment);
         }
 
         ClassSources classSources = sources.classSources();
-        ByteSourceModel byteSourceModel = binarySourceReader.byteSourceModel(classSources);
+        ClassSourceModel classSourceModel = binarySourceReader.byteSourceModel(classSources);
 
-        return new DefaultJigDataProvider(byteSourceModel, textSourceModel);
+        return new DefaultJigDataProvider(classSourceModel, javaSourceModel);
     }
 
     /**

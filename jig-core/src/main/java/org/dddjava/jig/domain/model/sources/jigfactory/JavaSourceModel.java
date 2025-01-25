@@ -15,36 +15,36 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * テキストソースから読み取れること
+ * javaファイル由来のソース
  */
-public class TextSourceModel {
+public class JavaSourceModel {
 
     List<ClassComment> classComments;
     List<MethodImplementation> methodImplementations;
     List<EnumModel> enumModels;
     private List<PackageComment> packageComments;
 
-    public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
+    public JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
         this(classComments, methodImplementations, enumModels, List.of());
     }
 
-    public TextSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
+    public JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
         this.classComments = classComments;
         this.methodImplementations = methodImplementations;
         this.enumModels = enumModels;
         this.packageComments = packageComments;
     }
 
-    public static TextSourceModel empty() {
-        return new TextSourceModel(List.of(), List.of(), List.of());
+    public static JavaSourceModel empty() {
+        return new JavaSourceModel(List.of(), List.of(), List.of());
     }
 
     public EnumModels enumModels() {
         return new EnumModels(enumModels);
     }
 
-    public TextSourceModel merge(TextSourceModel other) {
-        return new TextSourceModel(
+    public JavaSourceModel merge(JavaSourceModel other) {
+        return new JavaSourceModel(
                 Stream.concat(classComments.stream(), other.classComments.stream()).collect(Collectors.toList()),
                 Stream.concat(methodImplementations.stream(), other.methodImplementations.stream()).collect(Collectors.toList()),
                 Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList()),

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
 import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
 import org.dddjava.jig.domain.model.sources.file.text.TextSources;
-import org.dddjava.jig.domain.model.sources.jigfactory.TextSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.jigreader.JavaTextSourceReader;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
@@ -40,32 +40,32 @@ public class JavaparserReader implements JavaTextSourceReader {
     }
 
     @Override
-    public TextSourceModel textSourceModel(TextSources textSources) {
+    public JavaSourceModel textSourceModel(TextSources textSources) {
         ReadableTextSources readableTextSources = textSources.javaSources();
-        TextSourceModel javaTextSourceModel = readableTextSources.list().stream()
+        JavaSourceModel javaJavaSourceModel = readableTextSources.list().stream()
                 .map(readableTextSource -> {
                     try (InputStream inputStream = readableTextSource.toInputStream()) {
                         return read(inputStream);
                     } catch (Exception e) {
                         logger.warn("{} のソースコード読み取りに失敗しました [{}]（処理は続行します）", readableTextSource, e.toString());
                         logger.debug("{}読み取り失敗の詳細", readableTextSource, e);
-                        return TextSourceModel.empty();
+                        return JavaSourceModel.empty();
                     }
                 })
-                .reduce(TextSourceModel::merge)
-                .orElseGet(() -> TextSourceModel.empty());
+                .reduce(JavaSourceModel::merge)
+                .orElseGet(() -> JavaSourceModel.empty());
 
         List<PackageComment> names = new ArrayList<>();
         for (ReadableTextSource readableTextSource : textSources.packageInfoSources().list()) {
             packageInfoReader.read(readableTextSource)
                     .ifPresent(names::add);
         }
-        javaTextSourceModel.addPackageComment(names);
+        javaJavaSourceModel.addPackageComment(names);
 
-        return javaTextSourceModel;
+        return javaJavaSourceModel;
     }
 
-    TextSourceModel read(InputStream inputStream) {
+    JavaSourceModel read(InputStream inputStream) {
         CompilationUnit cu = StaticJavaParser.parse(inputStream);
 
         String packageName = cu.getPackageDeclaration()

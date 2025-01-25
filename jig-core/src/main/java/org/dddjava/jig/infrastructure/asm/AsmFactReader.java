@@ -3,7 +3,7 @@ package org.dddjava.jig.infrastructure.asm;
 import org.dddjava.jig.annotation.Repository;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
 import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.jigfactory.ByteSourceModel;
+import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
 import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
 import org.dddjava.jig.domain.model.sources.jigreader.FactReader;
 import org.objectweb.asm.ClassReader;
@@ -18,11 +18,11 @@ public class AsmFactReader implements FactReader {
     private static final Logger logger = LoggerFactory.getLogger(AsmFactReader.class);
 
     @Override
-    public ByteSourceModel byteSourceModel(ClassSources classSources) {
+    public ClassSourceModel byteSourceModel(ClassSources classSources) {
         return classSources.list().stream()
                 .map(classSource -> typeByteCode(classSource))
                 .flatMap(Optional::stream)
-                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> ByteSourceModel.from(list)));
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> ClassSourceModel.from(list)));
     }
 
     Optional<JigTypeBuilder> typeByteCode(ClassSource classSource) {

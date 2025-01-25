@@ -4,7 +4,8 @@ package org.dddjava.jig.domain.model.data.classes.method.instruction;
  * メソッドに対する操作
  *
  * オペコードに対するASMのまとめた単位と近似する
- * https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html
+ *
+ * @see <a href="https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-4.html">JVMS/Chapter 4. The class File Formata>
  */
 public enum MethodInstructionType {
     /**

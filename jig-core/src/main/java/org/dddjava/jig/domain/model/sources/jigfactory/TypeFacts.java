@@ -17,11 +17,7 @@ public class TypeFacts {
         this.list = list;
     }
 
-    private JigTypes jigTypes;
-
-    public synchronized JigTypes jigTypes() {
-        if (jigTypes != null) return jigTypes;
-        jigTypes = new JigTypes(list.stream().map(JigTypeBuilder::build).collect(toList()));
-        return jigTypes;
+    public JigTypes jigTypes() {
+        return new JigTypes(list.stream().map(JigTypeBuilder::build).collect(toList()));
     }
 }

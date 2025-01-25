@@ -10,12 +10,14 @@ import org.dddjava.jig.domain.model.sources.jigfactory.TypeFacts;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
-public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel, Map<Class<?>, Object> map)
+public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel, Map<Class<?>, Object> map,
+                                     AtomicReference<JigTypes> jigTypesAtomicReference)
         implements JigDataProvider {
 
     public DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSourceModel) {
-        this(typeFacts, textSourceModel, new HashMap<>());
+        this(typeFacts, textSourceModel, new HashMap<>(), new AtomicReference<>());
     }
 
     public void addSqls(MyBatisStatements myBatisStatements) {
@@ -34,7 +36,13 @@ public record DefaultJigDataProvider(TypeFacts typeFacts, TextSourceModel textSo
 
     @Override
     public JigTypes fetchJigTypes() {
-        return typeFacts().jigTypes();
+        if (jigTypesAtomicReference().get() == null) {
+            JigTypes jigTypes = typeFacts().jigTypes();
+            if (jigTypesAtomicReference().compareAndSet(null, jigTypes)) {
+                return jigTypes;
+            }
+        }
+        return jigTypesAtomicReference().get();
     }
 
     @Override

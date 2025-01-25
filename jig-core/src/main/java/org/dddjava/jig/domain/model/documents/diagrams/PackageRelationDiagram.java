@@ -92,8 +92,9 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
                 standalonePackages.add(packageIdentifier);
             }
         }
-        // グルーピングの中に1つのパッケージしかない場合は意味のない二重構造になるため、standaloneの方に移し替える
+        // 全体が1つにグルーピングされている場合、背景色が変わるだけの意味のない構造となるので、groupingPackagesはなくす
         if (standalonePackages.isEmpty() && groupingPackages.size() == 1) {
+            // 1件しかないけど全部移動するという意図でfor
             for (List<PackageIdentifier> value : groupingPackages.values()) {
                 standalonePackages.addAll(value);
             }

@@ -3,20 +3,16 @@ package org.dddjava.jig.infrastructure.filesystem;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.SourceReader;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.*;
+import org.dddjava.jig.domain.model.sources.classsources.BinarySources;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -31,46 +27,38 @@ public class ClassOrJavaSourceReader implements SourceReader {
     private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceReader.class);
 
     BinarySources collectClassSources(SourceBasePaths sourceBasePaths) {
-        List<BinarySource> list = new ArrayList<>();
-        for (Path path : sourceBasePaths.classSourceBasePaths()) {
-            try {
-                List<ClassSource> sources = new ArrayList<>();
-                Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        if (file.toString().endsWith(".class")) {
-                            try {
-                                byte[] bytes = Files.readAllBytes(file);
-                                ClassReader classReader = new ClassReader(bytes);
-                                String className = classReader.getClassName().replace('/', '.');
-                                ClassSource classSource = new ClassSource(bytes, className);
-                                sources.add(classSource);
-                            } catch (IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        }
-                        return FileVisitResult.CONTINUE;
+        var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
+                .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
+                .flatMap(List::stream)
+                .map(path -> {
+                    try {
+                        byte[] bytes = Files.readAllBytes(path);
+                        ClassReader classReader = new ClassReader(bytes);
+                        // TODO このクラス名の用途がMyBatisでロードするためだけなのでほとんどのクラスで意味がない。不要にしたい。
+                        String className = classReader.getClassName().replace('/', '.');
+                        return new ClassSource(bytes, className);
+                    } catch (IOException e) {
+                        // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
+                        logger.warn("skip class source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage(), e);
+                        return null;
                     }
-                });
-                list.add(new BinarySource(new BinarySourceLocation(path), new ClassSources(sources)));
-            } catch (IOException e) {
-                logger.warn("skip binary source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
-            }
-        }
-        return new BinarySources(list);
+                })
+                .filter(classSource -> classSource != null)
+                .toList();
+        return new BinarySources(classSourceList);
     }
 
     JavaSources collectJavaSources(SourceBasePaths sourceBasePaths) {
         return sourceBasePaths.javaSourceBasePaths().stream()
-                .map(this::collectJavaSource)
+                .map(basePath -> collectSourcePathList(basePath, ".java"))
                 .flatMap(List::stream)
                 .collect(collectingAndThen(toList(), JavaSources::new));
     }
 
-    private List<Path> collectJavaSource(Path basePath) {
+    private List<Path> collectSourcePathList(Path basePath, String suffix) {
         try (Stream<Path> pathStream = Files.walk(basePath)) {
             return pathStream
-                    .filter(path -> path.getFileName().toString().endsWith(".java"))
+                    .filter(path -> path.getFileName().toString().endsWith(suffix))
                     .toList();
         } catch (IOException e) {
             // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく

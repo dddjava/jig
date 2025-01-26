@@ -10,18 +10,10 @@ import static java.util.stream.Collectors.toList;
  */
 public class BinarySources {
 
-    List<BinarySource> list;
+    private final List<ClassSource> list;
 
-    public BinarySources(List<BinarySource> list) {
+    public BinarySources(List<ClassSource> list) {
         this.list = list;
-    }
-
-    public BinarySource toBinarySource() {
-        return list.stream().reduce(new BinarySource(), BinarySource::merge);
-    }
-
-    public List<BinarySource> list() {
-        return list;
     }
 
     public boolean nothing() {
@@ -30,9 +22,12 @@ public class BinarySources {
 
     public List<String> classNames(Predicate<String> nameMatcher) {
         return list.stream()
-                .flatMap(binarySource -> binarySource.classSources().list().stream())
                 .map(classSource -> classSource.className())
                 .filter(nameMatcher)
                 .collect(toList());
+    }
+
+    public ClassSources classSources() {
+        return new ClassSources(list);
     }
 }

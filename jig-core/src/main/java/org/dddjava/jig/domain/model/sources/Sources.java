@@ -52,6 +52,6 @@ public class Sources {
     }
 
     public ClassSources classSources() {
-        return binarySources.toBinarySource().classSources();
+        return binarySources.classSources();
     }
 }

@@ -52,7 +52,7 @@ public class JavaSourceModel {
                 Stream.concat(classComments.stream(), other.classComments.stream()).collect(Collectors.toList()),
                 Stream.concat(methodImplementations.stream(), other.methodImplementations.stream()).collect(Collectors.toList()),
                 Stream.concat(enumModels.stream(), other.enumModels.stream()).collect(Collectors.toList()),
-                this.packageComments
+                Stream.concat(packageComments.stream(), other.packageComments.stream()).collect(Collectors.toList())
         );
     }
 

@@ -49,9 +49,8 @@ public class JigSourceReader {
 
         // ソースのチェック
         Sources source = sourceReader.readSources(sourceBasePaths);
-        if (source.nothingBinarySource()) readEvents.add(ReadStatus.バイナリソースなし);
-        if (source.nothingTextSource()) readEvents.add(ReadStatus.テキストソースなし);
-        // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない
+        if (source.emptyClassSources()) readEvents.add(ReadStatus.バイナリソースなし);
+        if (source.emptyJavaSources()) readEvents.add(ReadStatus.テキストソースなし);
 
         MyBatisStatements myBatisStatements = readSqlSource(source.sqlSources());
         if (myBatisStatements.status().not正常())

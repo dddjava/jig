@@ -42,11 +42,11 @@ public class Sources {
         return new SqlSources(classLocationUrls, mapperClassNames);
     }
 
-    public boolean nothingBinarySource() {
+    public boolean emptyClassSources() {
         return classSources.nothing();
     }
 
-    public boolean nothingTextSource() {
+    public boolean emptyJavaSources() {
         return javaSources.nothing();
     }
 

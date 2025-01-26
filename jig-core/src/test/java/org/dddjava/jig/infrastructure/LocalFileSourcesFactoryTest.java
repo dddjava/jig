@@ -24,7 +24,7 @@ class LocalFileSourcesFactoryTest {
         ClassOrJavaSourceReader sut = new ClassOrJavaSourceReader();
         Sources source = sut.readSources(sourceBasePaths);
 
-        assertTrue(source.nothingBinarySource());
-        assertTrue(source.nothingTextSource());
+        assertTrue(source.emptyClassSources());
+        assertTrue(source.emptyJavaSources());
     }
 }

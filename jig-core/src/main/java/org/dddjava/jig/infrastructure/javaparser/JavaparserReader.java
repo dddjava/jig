@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Javaparserでテキストソースを読み取る
  */
-public class JavaparserReader implements JavaTextSourceReader {
+public class JavaparserReader implements JavaSourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
 

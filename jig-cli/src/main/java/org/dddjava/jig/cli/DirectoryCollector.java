@@ -1,8 +1,8 @@
 package org.dddjava.jig.cli;
 
-import org.dddjava.jig.domain.model.sources.file.SourcePaths;
-import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
+import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
+import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

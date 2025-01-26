@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
-import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSource;
-import org.dddjava.jig.domain.model.sources.file.text.ReadableTextSources;
+import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.sources.javasources.ReadableTextSource;
+import org.dddjava.jig.domain.model.sources.javasources.ReadableTextSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;

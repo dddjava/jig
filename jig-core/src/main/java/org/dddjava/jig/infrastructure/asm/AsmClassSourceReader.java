@@ -1,11 +1,11 @@
 package org.dddjava.jig.infrastructure.asm;
 
 import org.dddjava.jig.annotation.Repository;
-import org.dddjava.jig.domain.model.sources.file.binary.ClassSource;
-import org.dddjava.jig.domain.model.sources.file.binary.ClassSources;
-import org.dddjava.jig.domain.model.sources.jigfactory.ClassSourceModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
-import org.dddjava.jig.domain.model.sources.jigreader.ClassSourceReader;
+import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceModel;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

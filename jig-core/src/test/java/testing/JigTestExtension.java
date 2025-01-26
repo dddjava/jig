@@ -2,10 +2,10 @@ package testing;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.file.SourcePaths;
-import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.file.binary.BinarySourcePaths;
-import org.dddjava.jig.domain.model.sources.file.text.CodeSourcePaths;
+import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
+import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;

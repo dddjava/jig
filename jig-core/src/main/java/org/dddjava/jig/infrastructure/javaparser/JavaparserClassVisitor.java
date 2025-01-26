@@ -18,7 +18,7 @@ import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.enums.EnumConstant;
 import org.dddjava.jig.domain.model.data.enums.EnumModel;
-import org.dddjava.jig.domain.model.sources.jigfactory.JavaSourceModel;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

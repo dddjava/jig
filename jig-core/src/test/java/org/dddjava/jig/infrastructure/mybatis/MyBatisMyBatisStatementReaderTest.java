@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatement;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatementId;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.SqlType;
-import org.dddjava.jig.domain.model.sources.file.text.sqlcode.SqlSources;
+import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

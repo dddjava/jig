@@ -11,8 +11,8 @@ import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokeDynami
 import org.dddjava.jig.domain.model.data.classes.method.instruction.InvokedMethod;
 import org.dddjava.jig.domain.model.data.classes.method.instruction.MethodInstructionType;
 import org.dddjava.jig.domain.model.data.classes.type.*;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigMethodBuilder;
-import org.dddjava.jig.domain.model.sources.jigfactory.JigTypeBuilder;
+import org.dddjava.jig.domain.model.sources.JigMethodBuilder;
+import org.dddjava.jig.domain.model.sources.JigTypeBuilder;
 import org.objectweb.asm.*;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;

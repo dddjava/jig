@@ -1,12 +1,12 @@
 package org.dddjava.jig.infrastructure.filesystem;
 
-import org.dddjava.jig.domain.model.sources.file.SourcePaths;
-import org.dddjava.jig.domain.model.sources.file.SourceReader;
-import org.dddjava.jig.domain.model.sources.file.Sources;
-import org.dddjava.jig.domain.model.sources.file.binary.*;
-import org.dddjava.jig.domain.model.sources.file.text.TextSource;
-import org.dddjava.jig.domain.model.sources.file.text.TextSourceType;
-import org.dddjava.jig.domain.model.sources.file.text.TextSources;
+import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceReader;
+import org.dddjava.jig.domain.model.sources.Sources;
+import org.dddjava.jig.domain.model.sources.classsources.*;
+import org.dddjava.jig.domain.model.sources.javasources.TextSource;
+import org.dddjava.jig.domain.model.sources.javasources.TextSourceType;
+import org.dddjava.jig.domain.model.sources.javasources.TextSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

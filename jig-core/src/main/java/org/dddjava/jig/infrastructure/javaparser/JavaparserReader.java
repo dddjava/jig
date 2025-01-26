@@ -74,7 +74,7 @@ public class JavaparserReader implements JavaSourceReader {
                 JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
                 JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
                 cu.accept(typeVisitor, builder);
-                return typeVisitor.toTextSourceModel();
+                return typeVisitor.javaSourceModel();
             }
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);

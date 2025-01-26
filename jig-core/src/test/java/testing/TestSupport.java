@@ -1,6 +1,5 @@
 package testing;
 
-import org.dddjava.jig.domain.model.sources.classsources.BinarySourceLocation;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
 
 import java.io.IOException;
@@ -56,7 +55,7 @@ public class TestSupport {
     public static ClassSource newClassSource(Path path) {
         try {
             byte[] bytes = Files.readAllBytes(path);
-            return new ClassSource(new BinarySourceLocation(), bytes, "DUMMY");
+            return new ClassSource(bytes, "DUMMY");
         } catch (IOException e) {
             throw new AssertionError(e);
         }

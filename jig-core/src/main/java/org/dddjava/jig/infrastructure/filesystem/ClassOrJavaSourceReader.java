@@ -43,7 +43,7 @@ public class ClassOrJavaSourceReader implements SourceReader {
                                 byte[] bytes = Files.readAllBytes(file);
                                 ClassReader classReader = new ClassReader(bytes);
                                 String className = classReader.getClassName().replace('/', '.');
-                                ClassSource classSource = new ClassSource(new BinarySourceLocation(file), bytes, className);
+                                ClassSource classSource = new ClassSource(bytes, className);
                                 sources.add(classSource);
                             } catch (IOException e) {
                                 throw new UncheckedIOException(e);

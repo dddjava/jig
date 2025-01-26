@@ -5,12 +5,10 @@ package org.dddjava.jig.domain.model.sources.classsources;
  */
 public class ClassSource {
 
-    BinarySourceLocation binarySourceLocation;
     byte[] value;
     String className;
 
-    public ClassSource(BinarySourceLocation binarySourceLocation, byte[] value, String className) {
-        this.binarySourceLocation = binarySourceLocation;
+    public ClassSource(byte[] value, String className) {
         this.value = value;
         this.className = className;
     }
@@ -26,8 +24,7 @@ public class ClassSource {
     @Override
     public String toString() {
         return "ClassSource{" +
-                "binarySourceLocation=" + binarySourceLocation +
-                ", value(byte[] length)=" + value.length +
+                "value(byte[] length)=" + value.length +
                 ", className='" + className + '\'' +
                 '}';
     }

@@ -8,7 +8,7 @@ import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
-import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
+import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
@@ -73,7 +73,7 @@ public class JigTestExtension implements ParameterResolver {
 
     public Sources getTestRawSource() {
         SourcePaths sourcePaths = getRawSourceLocations();
-        LocalClassFileSourceReader localFileRawSourceFactory = new LocalClassFileSourceReader();
+        ClassOrJavaSourceReader localFileRawSourceFactory = new ClassOrJavaSourceReader();
         return localFileRawSourceFactory.readSources(sourcePaths);
     }
 

@@ -24,11 +24,11 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 /**
- * ローカルのclassファイルを読み取るSourceReader
+ * classやjavaファイルを対象とするSourceReader
  */
-public class LocalClassFileSourceReader implements SourceReader {
+public class ClassOrJavaSourceReader implements SourceReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalClassFileSourceReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceReader.class);
 
     BinarySources readBinarySources(SourcePaths sourcePaths) {
         List<BinarySource> list = new ArrayList<>();

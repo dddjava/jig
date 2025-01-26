@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
 import org.dddjava.jig.domain.model.sources.SourcePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
-import org.dddjava.jig.infrastructure.filesystem.LocalClassFileSourceReader;
+import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -21,7 +21,7 @@ class LocalFileSourcesFactoryTest {
                 new CodeSourcePaths(Collections.singletonList(Paths.get("invalid-text-path")))
         );
 
-        LocalClassFileSourceReader sut = new LocalClassFileSourceReader();
+        ClassOrJavaSourceReader sut = new ClassOrJavaSourceReader();
         Sources source = sut.readSources(sourcePaths);
 
         assertTrue(source.nothingBinarySource());

@@ -36,7 +36,7 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public JavaSourceModel textSourceModel(TextSources textSources) {
+    public JavaSourceModel javaSourceModel(TextSources textSources) {
         ReadableTextSources readableTextSources = textSources.javaSources();
         JavaSourceModel javaJavaSourceModel = readableTextSources.list().stream()
                 .map(readableTextSource -> {

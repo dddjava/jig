@@ -80,7 +80,7 @@ public class JigSourceReader {
     public DefaultJigDataProvider readProjectData(Sources sources) {
         TextSources textSources = sources.textSources();
 
-        JavaSourceModel javaSourceModel = javaSourceReader.textSourceModel(textSources);
+        JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(textSources);
         for (ClassComment classComment : javaSourceModel.classCommentList()) {
             commentRepository.register(classComment);
         }

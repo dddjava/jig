@@ -3,7 +3,6 @@ package org.dddjava.jig.domain.model.information.relation.packages;
 import org.dddjava.jig.domain.model.data.packages.PackageDepth;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.data.packages.RelationNumber;
-import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
 import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
 import java.util.ArrayList;
@@ -30,14 +29,11 @@ public class PackageRelations {
 
     public static PackageRelations from(ClassRelations classRelations) {
         Map<PackageRelation, List<PackageRelation>> map = classRelations.list().stream()
-                .map(PackageRelations::toPackageRelation)
+                .map(classRelation -> new PackageRelation(
+                        classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier()))
                 .filter(PackageRelation::notSelfRelation)
                 .collect(groupingBy(Function.identity()));
         return new PackageRelations(map);
-    }
-
-    private static PackageRelation toPackageRelation(ClassRelation classRelation) {
-        return new PackageRelation(classRelation.from().packageIdentifier(), classRelation.to().packageIdentifier());
     }
 
     public List<PackageRelation> list() {

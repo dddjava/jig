@@ -18,11 +18,11 @@ public class SourcePaths {
         this.codeSourcePaths = codeSourcePaths;
     }
 
-    public List<Path> binarySourcePaths() {
+    public List<Path> classSourceBasePaths() {
         return binarySourcePaths.paths();
     }
 
-    public List<Path> textSourcePaths() {
+    public List<Path> javaSourceBasePaths() {
         return codeSourcePaths.paths();
     }
 

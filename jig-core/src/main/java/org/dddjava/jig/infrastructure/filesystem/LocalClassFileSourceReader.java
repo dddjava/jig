@@ -6,7 +6,6 @@ import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.*;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSource;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
-import org.dddjava.jig.domain.model.sources.javasources.TextSourceType;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +19,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * ローカルのclassファイルを読み取るSourceReader
@@ -30,7 +33,7 @@ public class LocalClassFileSourceReader implements SourceReader {
 
     BinarySources readBinarySources(SourcePaths sourcePaths) {
         List<BinarySource> list = new ArrayList<>();
-        for (Path path : sourcePaths.binarySourcePaths()) {
+        for (Path path : sourcePaths.classSourceBasePaths()) {
             try {
                 List<ClassSource> sources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
@@ -58,32 +61,29 @@ public class LocalClassFileSourceReader implements SourceReader {
         return new BinarySources(list);
     }
 
-    JavaSources readTextSources(SourcePaths sourcePaths) {
-        List<JavaSource> list = new ArrayList<>();
-        for (Path path : sourcePaths.textSourcePaths()) {
-            try {
-                Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
-                        JavaSource javaSource = new JavaSource(path);
-                        TextSourceType textSourceType = javaSource.textSourceType();
-                        if (textSourceType != TextSourceType.UNSUPPORTED) {
-                            list.add(javaSource);
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            } catch (IOException e) {
-                logger.warn("skip text source '{}'. (type={}, message={})", path, e.getClass().getName(), e.getMessage());
-            }
-        }
+    JavaSources collectJavaSources(SourcePaths sourcePaths) {
+        return sourcePaths.javaSourceBasePaths().stream()
+                .map(this::collectJavaSource)
+                .flatMap(List::stream)
+                .collect(collectingAndThen(toList(), JavaSources::new));
+    }
 
-        return new JavaSources(list);
+    private List<JavaSource> collectJavaSource(Path basePath) {
+        try (Stream<Path> pathStream = Files.walk(basePath)) {
+            return pathStream
+                    .filter(path -> path.getFileName().toString().endsWith(".java"))
+                    .map(JavaSource::new)
+                    .toList();
+        } catch (IOException e) {
+            // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく
+            logger.warn("skip collect java source '{}'. (type={}, message={})", basePath, e.getClass().getName(), e.getMessage(), e);
+            return List.of();
+        }
     }
 
     @Override
     public Sources readSources(SourcePaths sourcePaths) {
-        logger.info("read paths: binary={}, text={}", sourcePaths.binarySourcePaths(), sourcePaths.textSourcePaths());
-        return new Sources(readTextSources(sourcePaths), readBinarySources(sourcePaths));
+        logger.info("read paths: binary={}, text={}", sourcePaths.classSourceBasePaths(), sourcePaths.javaSourceBasePaths());
+        return new Sources(collectJavaSources(sourcePaths), readBinarySources(sourcePaths));
     }
 }

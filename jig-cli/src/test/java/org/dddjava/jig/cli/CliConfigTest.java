@@ -29,8 +29,8 @@ class CliConfigTest {
 
             var sourcePaths = sut.rawSourceLocations();
 
-            assertTrue(sourcePaths.binarySourcePaths().isEmpty());
-            assertTrue(sourcePaths.textSourcePaths().isEmpty());
+            assertTrue(sourcePaths.classSourceBasePaths().isEmpty());
+            assertTrue(sourcePaths.javaSourceBasePaths().isEmpty());
         }
 
         @Test
@@ -53,10 +53,10 @@ class CliConfigTest {
 
             var sourcePaths = sut.rawSourceLocations();
 
-            assertPaths(sourcePaths.binarySourcePaths(),
+            assertPaths(sourcePaths.classSourceBasePaths(),
                     tempDir.resolve("build/classes/java/main"),
                     tempDir.resolve("build/resources/main"));
-            assertPaths(sourcePaths.textSourcePaths(),
+            assertPaths(sourcePaths.javaSourceBasePaths(),
                     tempDir.resolve("src/main/java"));
         }
 
@@ -81,12 +81,12 @@ class CliConfigTest {
 
             var sourcePaths = sut.rawSourceLocations();
 
-            assertPaths(sourcePaths.binarySourcePaths(),
+            assertPaths(sourcePaths.classSourceBasePaths(),
                     tempDir.resolve("a/build/classes/java/main"),
                     tempDir.resolve("a/build/resources/main"),
                     tempDir.resolve("b/build/classes/java/main"),
                     tempDir.resolve("b/build/resources/main"));
-            assertPaths(sourcePaths.textSourcePaths(),
+            assertPaths(sourcePaths.javaSourceBasePaths(),
                     tempDir.resolve("a/src/main/java"),
                     tempDir.resolve("b/src/main/java"));
         }
@@ -120,10 +120,10 @@ class CliConfigTest {
 
             var sourcePaths = sut.rawSourceLocations();
 
-            assertPaths(sourcePaths.binarySourcePaths(),
+            assertPaths(sourcePaths.classSourceBasePaths(),
                     tempDir.resolve("build/classes"),
                     tempDir.resolve("build/resources"));
-            assertPaths(sourcePaths.textSourcePaths(),
+            assertPaths(sourcePaths.javaSourceBasePaths(),
                     tempDir.resolve("src"));
         }
     }

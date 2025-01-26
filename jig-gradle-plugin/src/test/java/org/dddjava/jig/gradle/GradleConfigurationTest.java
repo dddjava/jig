@@ -37,8 +37,8 @@ class GradleConfigurationTest {
         SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
 
         assertAll(
-                () -> assertPath(sourcePaths.binarySourcePaths(), fixture.classPathSuffixes),
-                () -> assertPath(sourcePaths.textSourcePaths(), fixture.sourcePathSuffixes)
+                () -> assertPath(sourcePaths.classSourceBasePaths(), fixture.classPathSuffixes),
+                () -> assertPath(sourcePaths.javaSourceBasePaths(), fixture.sourcePathSuffixes)
         );
     }
 

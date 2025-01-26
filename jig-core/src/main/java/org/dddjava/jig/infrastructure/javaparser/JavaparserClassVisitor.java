@@ -110,7 +110,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
     }
 
     public JavaSourceModel toTextSourceModel() {
-        return new JavaSourceModel(
+        return JavaSourceModel.from(
                 classComment != null ? List.of(classComment) : List.of(),
                 methods,
                 enumModel != null ? List.of(enumModel) : List.of());

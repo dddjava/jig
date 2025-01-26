@@ -24,10 +24,6 @@ public class JavaSourceModel {
     List<EnumModel> enumModels;
     private List<PackageComment> packageComments;
 
-    public JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
-        this(classComments, methodImplementations, enumModels, List.of());
-    }
-
     public JavaSourceModel(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels, List<PackageComment> packageComments) {
         this.classComments = classComments;
         this.methodImplementations = methodImplementations;
@@ -35,12 +31,16 @@ public class JavaSourceModel {
         this.packageComments = packageComments;
     }
 
+    public static JavaSourceModel from(List<ClassComment> classComments, List<MethodImplementation> methodImplementations, List<EnumModel> enumModels) {
+        return new JavaSourceModel(classComments, methodImplementations, enumModels, List.of());
+    }
+
     public static JavaSourceModel from(PackageComment packageComment) {
         return new JavaSourceModel(List.of(), List.of(), List.of(), List.of(packageComment));
     }
 
     public static JavaSourceModel empty() {
-        return new JavaSourceModel(List.of(), List.of(), List.of());
+        return new JavaSourceModel(List.of(), List.of(), List.of(), List.of());
     }
 
     public EnumModels enumModels() {

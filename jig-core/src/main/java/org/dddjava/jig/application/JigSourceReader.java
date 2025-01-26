@@ -11,7 +11,7 @@ import org.dddjava.jig.domain.model.sources.classsources.ClassSourceReader;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
-import org.dddjava.jig.domain.model.sources.javasources.TextSources;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlReader;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 import org.slf4j.Logger;
@@ -78,9 +78,9 @@ public class JigSourceReader {
      * プロジェクト情報を読み取る
      */
     public DefaultJigDataProvider readProjectData(Sources sources) {
-        TextSources textSources = sources.textSources();
+        JavaSources javaSources = sources.javaSources();
 
-        JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(textSources);
+        JavaSourceModel javaSourceModel = javaSourceReader.javaSourceModel(javaSources);
         for (ClassComment classComment : javaSourceModel.classCommentList()) {
             commentRepository.register(classComment);
         }

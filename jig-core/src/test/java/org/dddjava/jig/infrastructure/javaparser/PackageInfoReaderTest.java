@@ -19,7 +19,7 @@ class PackageInfoReaderTest {
 
     @Test
     void test(Sources sources) throws Exception {
-        ReadableTextSources readableTextSources = sources.textSources().packageInfoSources();
+        ReadableTextSources readableTextSources = sources.javaSources().packageInfoSources();
         List<ReadableTextSource> list = readableTextSources.list();
         assertFalse(list.isEmpty(), "0件だったら " + JigTestExtension.class + " がおかしい");
         ReadableTextSource readableTextSource = list.stream()

@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 /**
  * テキストソース一覧
  */
-public class TextSources {
+public class JavaSources {
 
-    Map<TextSourceType, List<TextSource>> map;
+    Map<TextSourceType, List<JavaSource>> map;
 
-    public TextSources(List<TextSource> list) {
-        this.map = list.stream().collect(Collectors.groupingBy(TextSource::textSourceType));
+    public JavaSources(List<JavaSource> list) {
+        this.map = list.stream().collect(Collectors.groupingBy(JavaSource::textSourceType));
     }
 
     public boolean nothing() {
@@ -29,7 +29,7 @@ public class TextSources {
     }
 
     private ReadableTextSources toReadableSources(TextSourceType javaPackageInfo) {
-        List<TextSource> textSources = map.getOrDefault(javaPackageInfo, Collections.emptyList());
-        return new ReadableTextSources(textSources);
+        List<JavaSource> javaSources = map.getOrDefault(javaPackageInfo, Collections.emptyList());
+        return new ReadableTextSources(javaSources);
     }
 }

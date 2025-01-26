@@ -26,7 +26,7 @@ class JavaparserEnumTest {
 
     @Test
     void test(Sources sources) throws Exception {
-        ReadableTextSource source = sources.textSources().javaSources().list().stream().filter(s -> s.path().endsWith("RichEnum.java")).findAny().orElseThrow();
+        ReadableTextSource source = sources.javaSources().javaSources().list().stream().filter(s -> s.path().endsWith("RichEnum.java")).findAny().orElseThrow();
 
         CompilationUnit cu = StaticJavaParser.parse(source.toInputStream());
         // ここで出力されるものは読める

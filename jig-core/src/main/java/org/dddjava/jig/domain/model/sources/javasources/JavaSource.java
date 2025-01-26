@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class TextSource {
+public class JavaSource {
 
     private final Path location;
 
-    public TextSource(Path location) {
+    public JavaSource(Path location) {
         this.location = location;
     }
 

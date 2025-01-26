@@ -36,8 +36,8 @@ public class JavaparserReader implements JavaSourceReader {
     }
 
     @Override
-    public JavaSourceModel javaSourceModel(TextSources textSources) {
-        ReadableTextSources readableTextSources = textSources.javaSources();
+    public JavaSourceModel javaSourceModel(JavaSources javaSources) {
+        ReadableTextSources readableTextSources = javaSources.javaSources();
         JavaSourceModel javaJavaSourceModel = readableTextSources.list().stream()
                 .map(readableTextSource -> {
                     try (InputStream inputStream = readableTextSource.toInputStream()) {
@@ -52,7 +52,7 @@ public class JavaparserReader implements JavaSourceReader {
                 .orElseGet(() -> JavaSourceModel.empty());
 
         List<PackageComment> names = new ArrayList<>();
-        for (ReadableTextSource readableTextSource : textSources.packageInfoSources().list()) {
+        for (ReadableTextSource readableTextSource : javaSources.packageInfoSources().list()) {
             packageInfoReader.read(readableTextSource)
                     .ifPresent(names::add);
         }

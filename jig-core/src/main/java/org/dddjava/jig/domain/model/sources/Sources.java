@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.sources;
 
 import org.dddjava.jig.domain.model.sources.classsources.BinarySources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
-import org.dddjava.jig.domain.model.sources.javasources.TextSources;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
 
 import java.io.UncheckedIOException;
@@ -15,16 +15,16 @@ import java.util.List;
  */
 public class Sources {
 
-    TextSources textSources;
+    JavaSources javaSources;
     BinarySources binarySources;
 
-    public Sources(TextSources textSources, BinarySources binarySources) {
-        this.textSources = textSources;
+    public Sources(JavaSources javaSources, BinarySources binarySources) {
+        this.javaSources = javaSources;
         this.binarySources = binarySources;
     }
 
-    public TextSources textSources() {
-        return textSources;
+    public JavaSources javaSources() {
+        return javaSources;
     }
 
     public SqlSources sqlSources() {
@@ -47,7 +47,7 @@ public class Sources {
     }
 
     public boolean nothingTextSource() {
-        return textSources.nothing();
+        return javaSources.nothing();
     }
 
     public ClassSources classSources() {

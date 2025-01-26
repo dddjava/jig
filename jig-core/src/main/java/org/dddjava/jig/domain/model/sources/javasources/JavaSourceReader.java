@@ -5,5 +5,5 @@ package org.dddjava.jig.domain.model.sources.javasources;
  */
 public interface JavaSourceReader {
 
-    JavaSourceModel javaSourceModel(TextSources textSources);
+    JavaSourceModel javaSourceModel(JavaSources javaSources);
 }

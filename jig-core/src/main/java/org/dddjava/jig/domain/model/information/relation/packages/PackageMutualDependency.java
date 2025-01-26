@@ -12,8 +12,11 @@ public record PackageMutualDependency(PackageIdentifier left, PackageIdentifier 
     }
 
     public boolean matches(PackageRelation packageRelation) {
-        return (left.contains(packageRelation.from()) && right.contains(packageRelation.to())) ||
-                (left.contains(packageRelation.to()) && right.contains(packageRelation.from()));
+        PackageIdentifier fromPackage = packageRelation.from();
+        PackageIdentifier toPackage = packageRelation.to();
+        if (fromPackage.equals(toPackage)) return false; // 上位との相互依存の場合、containsが一致してしまうので回避
+        return (left.contains(fromPackage) && right.contains(toPackage)) ||
+                (left.contains(toPackage) && right.contains(fromPackage));
     }
 
     @Override

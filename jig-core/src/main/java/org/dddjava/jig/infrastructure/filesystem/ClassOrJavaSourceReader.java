@@ -33,8 +33,8 @@ public class ClassOrJavaSourceReader implements SourceReader {
                 .map(path -> {
                     try {
                         byte[] bytes = Files.readAllBytes(path);
+                        // TODO このクラス名の用途がMyBatisでロードするためだけなのでほとんどのクラスで意味がない。不要にしたい。こんなところでASM使いたくないし。
                         ClassReader classReader = new ClassReader(bytes);
-                        // TODO このクラス名の用途がMyBatisでロードするためだけなのでほとんどのクラスで意味がない。不要にしたい。
                         String className = classReader.getClassName().replace('/', '.');
                         return new ClassSource(bytes, className);
                     } catch (IOException e) {

@@ -1,4 +1,4 @@
-package org.dddjava.jig.domain.model.sources;
+package org.dddjava.jig.domain.model.sources.javasources;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 /**
  * コードのパス
  */
-public class CodeSourcePaths {
+public class JavaSourceBasePaths {
 
     List<Path> list;
 
-    public CodeSourcePaths(Collection<Path> collection) {
+    public JavaSourceBasePaths(Collection<Path> collection) {
         this.list = new ArrayList<>(collection);
     }
 
@@ -24,7 +24,7 @@ public class CodeSourcePaths {
                 .collect(Collectors.toList());
     }
 
-    public CodeSourcePaths merge(CodeSourcePaths other) {
-        return new CodeSourcePaths(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
+    public JavaSourceBasePaths merge(JavaSourceBasePaths other) {
+        return new JavaSourceBasePaths(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
     }
 }

@@ -1,9 +1,9 @@
 package org.dddjava.jig.infrastructure;
 
-import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
 import org.junit.jupiter.api.Test;
 
@@ -16,13 +16,13 @@ class LocalFileSourcesFactoryTest {
 
     @Test
     void 読み取れないパスが指定されていてもエラーにならない() {
-        SourcePaths sourcePaths = new SourcePaths(
-                new BinarySourcePaths(Collections.singletonList(Paths.get("invalid-binary-path"))),
-                new CodeSourcePaths(Collections.singletonList(Paths.get("invalid-text-path")))
+        SourceBasePaths sourceBasePaths = new SourceBasePaths(
+                new ClassSourceBasePaths(Collections.singletonList(Paths.get("invalid-binary-path"))),
+                new JavaSourceBasePaths(Collections.singletonList(Paths.get("invalid-text-path")))
         );
 
         ClassOrJavaSourceReader sut = new ClassOrJavaSourceReader();
-        Sources source = sut.readSources(sourcePaths);
+        Sources source = sut.readSources(sourceBasePaths);
 
         assertTrue(source.nothingBinarySource());
         assertTrue(source.nothingTextSource());

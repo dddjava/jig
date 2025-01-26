@@ -1,6 +1,6 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.plugins.JavaPlugin;
@@ -34,11 +34,11 @@ class GradleConfigurationTest {
     @MethodSource("fixtures")
     public void 依存関係にあるすべてのJavaPluginが適用されたプロジェクトのクラスパスとソースパスが取得できること(Fixture fixture) {
         Project project = fixture.createProject(tempDir);
-        SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
+        SourceBasePaths sourceBasePaths = new GradleProject(project).rawSourceLocations();
 
         assertAll(
-                () -> assertPath(sourcePaths.classSourceBasePaths(), fixture.classPathSuffixes),
-                () -> assertPath(sourcePaths.javaSourceBasePaths(), fixture.sourcePathSuffixes)
+                () -> assertPath(sourceBasePaths.classSourceBasePaths(), fixture.classPathSuffixes),
+                () -> assertPath(sourceBasePaths.javaSourceBasePaths(), fixture.sourcePathSuffixes)
         );
     }
 

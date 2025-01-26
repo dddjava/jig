@@ -2,7 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +30,9 @@ class CliRunner {
         logger.info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", cliConfig.propertiesText());
 
         long startTime = System.currentTimeMillis();
-        SourcePaths sourcePaths = cliConfig.rawSourceLocations();
+        SourceBasePaths sourceBasePaths = cliConfig.rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths);
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourceBasePaths);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

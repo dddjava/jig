@@ -44,11 +44,11 @@ public class JigSourceReader {
         this.sourceReader = sourceReader;
     }
 
-    public Optional<JigDataProvider> readPathSource(SourcePaths sourcePaths) {
+    public Optional<JigDataProvider> readPathSource(SourceBasePaths sourceBasePaths) {
         List<ReadStatus> readEvents = new ArrayList<>();
 
         // ソースのチェック
-        Sources source = sourceReader.readSources(sourcePaths);
+        Sources source = sourceReader.readSources(sourceBasePaths);
         if (source.nothingBinarySource()) readEvents.add(ReadStatus.バイナリソースなし);
         if (source.nothingTextSource()) readEvents.add(ReadStatus.テキストソースなし);
         // binarySourceがあってtypeByteCodesがない（ASMの解析で失敗する）のは現状実行時エラーになるのでここでは考慮しない

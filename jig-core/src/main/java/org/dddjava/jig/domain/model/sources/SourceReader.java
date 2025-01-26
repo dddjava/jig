@@ -5,5 +5,5 @@ package org.dddjava.jig.domain.model.sources;
  */
 public interface SourceReader {
 
-    Sources readSources(SourcePaths sourcePaths);
+    Sources readSources(SourceBasePaths sourceBasePaths);
 }

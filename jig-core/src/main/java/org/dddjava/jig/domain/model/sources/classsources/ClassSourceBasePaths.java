@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 /**
  * バイナリソースの場所
  */
-public class BinarySourcePaths {
+public class ClassSourceBasePaths {
 
     List<Path> list;
 
-    public BinarySourcePaths(Collection<Path> collection) {
+    public ClassSourceBasePaths(Collection<Path> collection) {
         this.list = new ArrayList<>(collection);
     }
 
@@ -24,7 +24,7 @@ public class BinarySourcePaths {
                 .collect(Collectors.toList());
     }
 
-    public BinarySourcePaths merge(BinarySourcePaths other) {
-        return new BinarySourcePaths(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
+    public ClassSourceBasePaths merge(ClassSourceBasePaths other) {
+        return new ClassSourceBasePaths(Stream.concat(list.stream(), other.list.stream()).collect(Collectors.toList()));
     }
 }

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CliConfigTest {
 
     @Nested
-    class SourcePathsの解析 {
+    class SourceBasePathsの解析 {
         @TempDir
         Path tempDir;
 

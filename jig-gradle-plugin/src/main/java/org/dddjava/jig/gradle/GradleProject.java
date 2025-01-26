@@ -1,8 +1,8 @@
 package org.dddjava.jig.gradle;
 
-import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
-import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencySet;
@@ -70,17 +70,17 @@ public class GradleProject {
         return sourceSets;
     }
 
-    public SourcePaths rawSourceLocations() {
-        SourcePaths sourcePaths = allDependencyProjectsFrom(project)
+    public SourceBasePaths rawSourceLocations() {
+        SourceBasePaths sourceBasePaths = allDependencyProjectsFrom(project)
                 .map(GradleProject::new)
                 .map(gradleProject ->
-                        new SourcePaths(
-                                new BinarySourcePaths(gradleProject.classPaths()),
-                                new CodeSourcePaths(gradleProject.sourcePaths())
+                        new SourceBasePaths(
+                                new ClassSourceBasePaths(gradleProject.classPaths()),
+                                new JavaSourceBasePaths(gradleProject.sourcePaths())
                         ))
-                .reduce(SourcePaths::merge)
+                .reduce(SourceBasePaths::merge)
                 .orElseThrow(() -> new IllegalStateException("対象プロジェクトが見つかりません。"));
-        return sourcePaths;
+        return sourceBasePaths;
     }
 
     private Stream<Project> allDependencyProjectsFrom(Project root) {

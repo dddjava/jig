@@ -2,7 +2,7 @@ package org.dddjava.jig.cli;
 
 import org.dddjava.jig.domain.model.documents.documentformat.JigDiagramFormat;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.springframework.beans.factory.annotation.Value;
@@ -78,7 +78,7 @@ class CliConfig {
                 ));
     }
 
-    SourcePaths rawSourceLocations() {
+    SourceBasePaths rawSourceLocations() {
         try {
             Path projectRoot = Paths.get(projectPath).toAbsolutePath().normalize();
 

@@ -2,10 +2,10 @@ package testing;
 
 import org.dddjava.jig.domain.model.data.JigDataProvider;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.dddjava.jig.infrastructure.filesystem.ClassOrJavaSourceReader;
@@ -35,7 +35,7 @@ public class JigTestExtension implements ParameterResolver {
         Class<?> parameterType = parameterContext.getParameter().getType();
         if (parameterType == Configuration.class
                 || parameterType == Sources.class
-                || parameterType == SourcePaths.class
+                || parameterType == SourceBasePaths.class
         || parameterType == JigDataProvider.class) {
             return true;
         }
@@ -53,7 +53,7 @@ public class JigTestExtension implements ParameterResolver {
         Class<?> parameterType = parameterContext.getParameter().getType();
         if (parameterType == Configuration.class) return configuration;
         if (parameterType == Sources.class) return getTestRawSource();
-        if (parameterType == SourcePaths.class) return getRawSourceLocations();
+        if (parameterType == SourceBasePaths.class) return getRawSourceLocations();
         if (parameterType == JigDataProvider.class) return configuration.sourceReader().readProjectData(getTestRawSource());
 
         for (Field field : Configuration.class.getDeclaredFields()) {
@@ -72,15 +72,15 @@ public class JigTestExtension implements ParameterResolver {
     }
 
     public Sources getTestRawSource() {
-        SourcePaths sourcePaths = getRawSourceLocations();
+        SourceBasePaths sourceBasePaths = getRawSourceLocations();
         ClassOrJavaSourceReader localFileRawSourceFactory = new ClassOrJavaSourceReader();
-        return localFileRawSourceFactory.readSources(sourcePaths);
+        return localFileRawSourceFactory.readSources(sourceBasePaths);
     }
 
-    public SourcePaths getRawSourceLocations() {
-        return new SourcePaths(
-                new BinarySourcePaths(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()).resolve("stub"))),
-                new CodeSourcePaths(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
+    public SourceBasePaths getRawSourceLocations() {
+        return new SourceBasePaths(
+                new ClassSourceBasePaths(Collections.singletonList(Paths.get(TestSupport.defaultPackageClassURI()).resolve("stub"))),
+                new JavaSourceBasePaths(Collections.singletonList(TestSupport.getModuleRootPath().resolve("src").resolve("test").resolve("java").resolve("stub")))
         );
     }
 }

@@ -3,9 +3,9 @@ package org.dddjava.jig;
 import org.dddjava.jig.application.JigDocumentGenerator;
 import org.dddjava.jig.application.JigSourceReader;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
-import org.dddjava.jig.domain.model.sources.CodeSourcePaths;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
-import org.dddjava.jig.domain.model.sources.classsources.BinarySourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSourceBasePaths;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
@@ -18,15 +18,15 @@ public class JigExecutor {
     private static final Logger logger = LoggerFactory.getLogger(JigExecutor.class);
 
     private final Configuration configuration;
-    private final SourcePaths sourcePaths;
+    private final SourceBasePaths sourceBasePaths;
 
-    public JigExecutor(Configuration configuration, SourcePaths sourcePaths) {
+    public JigExecutor(Configuration configuration, SourceBasePaths sourceBasePaths) {
         this.configuration = configuration;
-        this.sourcePaths = sourcePaths;
+        this.sourceBasePaths = sourceBasePaths;
     }
 
-    public static List<HandleResult> execute(Configuration configuration, SourcePaths sourcePaths) {
-        return new JigExecutor(configuration, sourcePaths).execute();
+    public static List<HandleResult> execute(Configuration configuration, SourceBasePaths sourceBasePaths) {
+        return new JigExecutor(configuration, sourceBasePaths).execute();
     }
 
     private List<HandleResult> execute() {
@@ -36,7 +36,7 @@ public class JigExecutor {
         JigDocumentGenerator jigDocumentGenerator = configuration.documentGenerator();
 
         jigDocumentGenerator.prepareOutputDirectory();
-        var results = jigSourceReader.readPathSource(sourcePaths)
+        var results = jigSourceReader.readPathSource(sourceBasePaths)
                 .map(jigDocumentGenerator::generateDocuments)
                 .orElseGet(List::of);
 
@@ -54,9 +54,9 @@ public class JigExecutor {
         var targetRootPath = jigOptions.workingDirectory().toAbsolutePath();
 
         var binarySourcePaths = switch (jigOptions.resolveBuildTool()) {
-            case MAVEN -> new BinarySourcePaths(List.of(
+            case MAVEN -> new ClassSourceBasePaths(List.of(
                     targetRootPath.resolve(Path.of("target", "classes"))));
-            case GRADLE -> new BinarySourcePaths(List.of(
+            case GRADLE -> new ClassSourceBasePaths(List.of(
                     targetRootPath.resolve(Path.of("build", "classes", "java", "main")),
                     targetRootPath.resolve(Path.of("build", "resources", "main"))
             ));
@@ -68,9 +68,9 @@ public class JigExecutor {
                         jigOptions.domainPattern(),
                         jigOptions.outputDirectory()
                 )),
-                new SourcePaths(
+                new SourceBasePaths(
                         binarySourcePaths,
-                        new CodeSourcePaths(List.of(
+                        new JavaSourceBasePaths(List.of(
                                 targetRootPath.resolve(Path.of("src", "main", "java")),
                                 targetRootPath.resolve(Path.of("src", "main", "resources"))
                         ))
@@ -82,7 +82,7 @@ public class JigExecutor {
      * 実装中
      */
     @Deprecated(since = "2025.1.1")
-    public JigExecutor withSourcePaths(SourcePaths sourcePaths) {
-        return new JigExecutor(configuration, sourcePaths);
+    public JigExecutor withSourcePaths(SourceBasePaths sourceBasePaths) {
+        return new JigExecutor(configuration, sourceBasePaths);
     }
 }

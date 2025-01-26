@@ -1,6 +1,6 @@
 package org.dddjava.jig.infrastructure.filesystem;
 
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.SourceReader;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.*;
@@ -30,9 +30,9 @@ public class ClassOrJavaSourceReader implements SourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceReader.class);
 
-    BinarySources readBinarySources(SourcePaths sourcePaths) {
+    BinarySources collectClassSources(SourceBasePaths sourceBasePaths) {
         List<BinarySource> list = new ArrayList<>();
-        for (Path path : sourcePaths.classSourceBasePaths()) {
+        for (Path path : sourceBasePaths.classSourceBasePaths()) {
             try {
                 List<ClassSource> sources = new ArrayList<>();
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
@@ -60,8 +60,8 @@ public class ClassOrJavaSourceReader implements SourceReader {
         return new BinarySources(list);
     }
 
-    JavaSources collectJavaSources(SourcePaths sourcePaths) {
-        return sourcePaths.javaSourceBasePaths().stream()
+    JavaSources collectJavaSources(SourceBasePaths sourceBasePaths) {
+        return sourceBasePaths.javaSourceBasePaths().stream()
                 .map(this::collectJavaSource)
                 .flatMap(List::stream)
                 .collect(collectingAndThen(toList(), JavaSources::new));
@@ -80,8 +80,8 @@ public class ClassOrJavaSourceReader implements SourceReader {
     }
 
     @Override
-    public Sources readSources(SourcePaths sourcePaths) {
-        logger.info("read paths: binary={}, text={}", sourcePaths.classSourceBasePaths(), sourcePaths.javaSourceBasePaths());
-        return new Sources(collectJavaSources(sourcePaths), readBinarySources(sourcePaths));
+    public Sources readSources(SourceBasePaths sourceBasePaths) {
+        logger.info("read paths: binary={}, text={}", sourceBasePaths.classSourceBasePaths(), sourceBasePaths.javaSourceBasePaths());
+        return new Sources(collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }

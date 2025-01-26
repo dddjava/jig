@@ -2,7 +2,7 @@ package org.dddjava.jig.gradle;
 
 import org.dddjava.jig.HandleResult;
 import org.dddjava.jig.JigExecutor;
-import org.dddjava.jig.domain.model.sources.SourcePaths;
+import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.infrastructure.configuration.Configuration;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
@@ -27,9 +27,9 @@ public class JigReportsTask extends DefaultTask {
         getLogger().info("-- configuration -------------------------------------------\n{}\n------------------------------------------------------------", config.propertiesText());
 
         long startTime = System.currentTimeMillis();
-        SourcePaths sourcePaths = new GradleProject(project).rawSourceLocations();
+        SourceBasePaths sourceBasePaths = new GradleProject(project).rawSourceLocations();
 
-        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourcePaths);
+        List<HandleResult> handleResultList = JigExecutor.execute(configuration, sourceBasePaths);
 
         String resultLog = handleResultList.stream()
                 .filter(HandleResult::success)

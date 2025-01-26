@@ -7,13 +7,13 @@ import com.github.javaparser.ast.body.EnumConstantDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.javasources.ReadableTextSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import testing.JigTestExtension;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +26,9 @@ class JavaparserEnumTest {
 
     @Test
     void test(Sources sources) throws Exception {
-        ReadableTextSource source = sources.javaSources().javaSources().list().stream().filter(s -> s.path().endsWith("RichEnum.java")).findAny().orElseThrow();
+        Path sutPath = sources.javaSources().paths().stream().filter(path -> path.endsWith("RichEnum.java")).findAny().orElseThrow();
 
-        CompilationUnit cu = StaticJavaParser.parse(source.toInputStream());
+        CompilationUnit cu = StaticJavaParser.parse(sutPath);
         // ここで出力されるものは読める
         logger.info("{}", cu.toString());
 

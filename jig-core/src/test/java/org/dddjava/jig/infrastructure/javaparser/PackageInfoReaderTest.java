@@ -2,12 +2,11 @@ package org.dddjava.jig.infrastructure.javaparser;
 
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.javasources.ReadableTextSource;
-import org.dddjava.jig.domain.model.sources.javasources.ReadableTextSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import testing.JigTestExtension;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -19,15 +18,14 @@ class PackageInfoReaderTest {
 
     @Test
     void test(Sources sources) throws Exception {
-        ReadableTextSources readableTextSources = sources.javaSources().packageInfoSources();
-        List<ReadableTextSource> list = readableTextSources.list();
+        List<Path> list = sources.javaSources().paths();
         assertFalse(list.isEmpty(), "0件だったら " + JigTestExtension.class + " がおかしい");
-        ReadableTextSource readableTextSource = list.stream()
-                .filter(e -> e.path().endsWith(Paths.get("domain", "model", "package-info.java"))).findAny()
+        Path targetPath = list.stream()
+                .filter(e -> e.endsWith(Paths.get("domain", "model", "package-info.java"))).findAny()
                 .orElseThrow(AssertionError::new);
 
-        PackageInfoReader sut = new PackageInfoReader();
-        PackageComment packageComment = sut.read(readableTextSource)
+        JavaparserReader sut = new JavaparserReader(null);
+        PackageComment packageComment = sut.readPackage(targetPath)
                 .orElseThrow(AssertionError::new);
 
         assertEquals("スタブドメインモデル", packageComment.asText());

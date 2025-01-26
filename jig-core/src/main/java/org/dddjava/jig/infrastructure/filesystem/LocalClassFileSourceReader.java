@@ -4,7 +4,6 @@ import org.dddjava.jig.domain.model.sources.SourcePaths;
 import org.dddjava.jig.domain.model.sources.SourceReader;
 import org.dddjava.jig.domain.model.sources.Sources;
 import org.dddjava.jig.domain.model.sources.classsources.*;
-import org.dddjava.jig.domain.model.sources.javasources.JavaSource;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -68,11 +67,10 @@ public class LocalClassFileSourceReader implements SourceReader {
                 .collect(collectingAndThen(toList(), JavaSources::new));
     }
 
-    private List<JavaSource> collectJavaSource(Path basePath) {
+    private List<Path> collectJavaSource(Path basePath) {
         try (Stream<Path> pathStream = Files.walk(basePath)) {
             return pathStream
                     .filter(path -> path.getFileName().toString().endsWith(".java"))
-                    .map(JavaSource::new)
                     .toList();
         } catch (IOException e) {
             // スタックトレースが出ない環境での実行を考慮して、例外型とメッセージは出すようにしておく

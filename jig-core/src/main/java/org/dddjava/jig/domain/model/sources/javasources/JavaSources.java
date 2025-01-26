@@ -1,35 +1,14 @@
 package org.dddjava.jig.domain.model.sources.javasources;
 
-import java.util.Collections;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * テキストソース一覧
  */
-public class JavaSources {
-
-    Map<TextSourceType, List<JavaSource>> map;
-
-    public JavaSources(List<JavaSource> list) {
-        this.map = list.stream().collect(Collectors.groupingBy(JavaSource::textSourceType));
-    }
+public record JavaSources(List<Path> paths) {
 
     public boolean nothing() {
-        return map.isEmpty();
-    }
-
-    public ReadableTextSources packageInfoSources() {
-        return toReadableSources(TextSourceType.JAVA_PACKAGE_INFO);
-    }
-
-    public ReadableTextSources javaSources() {
-        return toReadableSources(TextSourceType.JAVA);
-    }
-
-    private ReadableTextSources toReadableSources(TextSourceType javaPackageInfo) {
-        List<JavaSource> javaSources = map.getOrDefault(javaPackageInfo, Collections.emptyList());
-        return new ReadableTextSources(javaSources);
+        return paths.isEmpty();
     }
 }

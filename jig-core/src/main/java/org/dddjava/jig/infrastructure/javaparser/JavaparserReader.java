@@ -4,15 +4,23 @@ import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.PackageDeclaration;
+import com.github.javaparser.ast.comments.JavadocComment;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
+import com.github.javaparser.javadoc.Javadoc;
+import com.github.javaparser.javadoc.description.JavadocDescription;
+import org.dddjava.jig.domain.model.data.comment.Comment;
 import org.dddjava.jig.domain.model.data.packages.PackageComment;
-import org.dddjava.jig.domain.model.sources.javasources.*;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceModel;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSourceReader;
+import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.infrastructure.configuration.JigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Javaparserでテキストソースを読み取る
@@ -20,8 +28,6 @@ import java.util.List;
 public class JavaparserReader implements JavaSourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaparserReader.class);
-
-    PackageInfoReader packageInfoReader = new PackageInfoReader();
 
     public JavaparserReader(JigProperties properties) {
         ParserConfiguration configuration = StaticJavaParser.getParserConfiguration();
@@ -37,41 +43,68 @@ public class JavaparserReader implements JavaSourceReader {
 
     @Override
     public JavaSourceModel javaSourceModel(JavaSources javaSources) {
-        ReadableTextSources readableTextSources = javaSources.javaSources();
-        JavaSourceModel javaJavaSourceModel = readableTextSources.list().stream()
-                .map(readableTextSource -> {
-                    try (InputStream inputStream = readableTextSource.toInputStream()) {
-                        return read(inputStream);
-                    } catch (Exception e) {
-                        logger.warn("{} のソースコード読み取りに失敗しました [{}]（処理は続行します）", readableTextSource, e.toString());
-                        logger.debug("{}読み取り失敗の詳細", readableTextSource, e);
-                        return JavaSourceModel.empty();
-                    }
-                })
+        JavaSourceModel javaSourceModel = javaSources.paths().stream()
+                // package-info以外
+                .filter(path -> !path.getFileName().toString().equals("package-info.java"))
+                .map(path -> readJava(path))
                 .reduce(JavaSourceModel::merge)
-                .orElseGet(() -> JavaSourceModel.empty());
+                .orElseGet(JavaSourceModel::empty);
 
-        List<PackageComment> names = new ArrayList<>();
-        for (ReadableTextSource readableTextSource : javaSources.packageInfoSources().list()) {
-            packageInfoReader.read(readableTextSource)
-                    .ifPresent(names::add);
-        }
-        javaJavaSourceModel.addPackageComment(names);
+        List<PackageComment> packageComments = javaSources.paths().stream()
+                .filter(path -> path.getFileName().toString().equals("package-info.java"))
+                .map(path -> readPackage(path))
+                .flatMap(Optional::stream)
+                .toList();
 
-        return javaJavaSourceModel;
+        javaSourceModel.addPackageComment(packageComments);
+        return javaSourceModel;
     }
 
-    JavaSourceModel read(InputStream inputStream) {
-        CompilationUnit cu = StaticJavaParser.parse(inputStream);
+    JavaSourceModel readJava(Path path) {
+        try {
+            CompilationUnit cu = StaticJavaParser.parse(path);
+            String packageName = cu.getPackageDeclaration()
+                    .map(PackageDeclaration::getNameAsString)
+                    .map(name -> name + ".")
+                    .orElse("");
+            JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
+            JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
+            cu.accept(typeVisitor, builder);
+            return typeVisitor.toTextSourceModel();
+        } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
+            logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
+            return JavaSourceModel.empty();
+        }
+    }
 
-        String packageName = cu.getPackageDeclaration()
-                .map(PackageDeclaration::getNameAsString)
-                .map(name -> name + ".")
-                .orElse("");
 
-        JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
-        JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
-        cu.accept(typeVisitor, builder);
-        return typeVisitor.toTextSourceModel();
+    Optional<PackageComment> readPackage(Path path) {
+        try {
+            CompilationUnit cu = StaticJavaParser.parse(path);
+
+            Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
+                    .map(NodeWithName::getNameAsString)
+                    .map(PackageIdentifier::valueOf);
+
+            Optional<Comment> optAlias = getJavadoc(cu)
+                    .map(Javadoc::getDescription)
+                    .map(JavadocDescription::toText)
+                    .map(Comment::fromCodeComment);
+
+            return optPackageIdentifier
+                    .flatMap(packageIdentifier -> optAlias
+                            .map(alias -> new PackageComment(packageIdentifier, alias)));
+        } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
+            logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<Javadoc> getJavadoc(CompilationUnit cu) {
+        // NodeWithJavadoc#getJavadocでやってることと同じことをする
+        return cu.getComment()
+                .filter(comment -> comment instanceof JavadocComment)
+                .map(comment -> (JavadocComment) comment)
+                .map(JavadocComment::parse);
     }
 }

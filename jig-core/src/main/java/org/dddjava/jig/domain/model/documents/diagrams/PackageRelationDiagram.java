@@ -1,11 +1,17 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
-import org.dddjava.jig.domain.model.data.packages.*;
+import org.dddjava.jig.domain.model.data.packages.PackageDepth;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
-import org.dddjava.jig.domain.model.information.relation.ClassRelation;
-import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependencies;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageMutualDependency;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 
 import java.util.*;
 

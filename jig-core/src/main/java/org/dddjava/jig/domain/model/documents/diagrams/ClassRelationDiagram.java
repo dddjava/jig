@@ -8,8 +8,8 @@ import org.dddjava.jig.domain.model.documents.documentformat.DocumentName;
 import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.*;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
-import org.dddjava.jig.domain.model.information.relation.ClassRelation;
-import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
 import java.util.StringJoiner;
 

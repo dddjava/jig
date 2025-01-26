@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.method.*;
 import org.dddjava.jig.domain.model.data.classes.type.ParameterizedType;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.information.relation.CallerMethodsFactory;
+import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
 import java.util.List;
 import java.util.Optional;

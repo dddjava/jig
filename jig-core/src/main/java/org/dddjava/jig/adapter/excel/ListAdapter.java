@@ -9,7 +9,7 @@ import org.dddjava.jig.domain.model.documents.documentformat.JigDocument;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
 import org.dddjava.jig.domain.model.information.inputs.Entrypoint;
 import org.dddjava.jig.domain.model.information.module.JigTypesPackage;
-import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 import org.dddjava.jig.domain.model.information.validations.Validations;
 import org.dddjava.jig.domain.model.knowledge.adapter.DatasourceAngles;
 import org.dddjava.jig.domain.model.knowledge.core.ServiceAngles;

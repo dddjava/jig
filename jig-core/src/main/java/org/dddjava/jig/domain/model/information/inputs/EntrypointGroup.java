@@ -6,8 +6,8 @@ import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeCategory;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.MethodRelation;
-import org.dddjava.jig.domain.model.information.relation.MethodRelations;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelation;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
 import java.util.*;
 import java.util.stream.Stream;

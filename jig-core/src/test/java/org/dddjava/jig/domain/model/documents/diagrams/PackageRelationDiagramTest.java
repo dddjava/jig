@@ -1,10 +1,14 @@
 package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.packages.*;
+import org.dddjava.jig.domain.model.data.packages.PackageComment;
+import org.dddjava.jig.domain.model.data.packages.PackageDepth;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifiers;
 import org.dddjava.jig.domain.model.documents.stationery.JigDocumentContext;
-import org.dddjava.jig.domain.model.information.relation.ClassRelation;
-import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

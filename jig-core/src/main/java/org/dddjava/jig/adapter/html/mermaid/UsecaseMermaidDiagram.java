@@ -6,7 +6,7 @@ import org.dddjava.jig.domain.model.data.classes.method.MethodDeclaration;
 import org.dddjava.jig.domain.model.data.classes.method.MethodIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.information.relation.MethodRelations;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
 import java.util.HashSet;
 import java.util.Optional;

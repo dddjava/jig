@@ -1,7 +1,7 @@
-package org.dddjava.jig.domain.model.information.relation;
+package org.dddjava.jig.domain.model.information.relation.classes;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageRelation;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
 
 import java.util.Objects;
 

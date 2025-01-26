@@ -1,4 +1,6 @@
-package org.dddjava.jig.domain.model.data.packages;
+package org.dddjava.jig.domain.model.information.relation.packages;
+
+import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
 
 /**
  * パッケージの相互依存
@@ -6,7 +8,7 @@ package org.dddjava.jig.domain.model.data.packages;
 public record PackageMutualDependency(PackageIdentifier left, PackageIdentifier right) {
 
     public static PackageMutualDependency from(PackageRelation packageRelation) {
-        return new PackageMutualDependency(packageRelation.from, packageRelation.to);
+        return new PackageMutualDependency(packageRelation.from(), packageRelation.to());
     }
 
     public boolean matches(PackageRelation packageRelation) {

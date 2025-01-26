@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.rdbaccess.MyBatisStatements;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethod;
 import org.dddjava.jig.domain.model.information.outputs.DatasourceMethods;
-import org.dddjava.jig.domain.model.information.relation.CallerMethodsFactory;
+import org.dddjava.jig.domain.model.information.relation.methods.CallerMethodsFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;

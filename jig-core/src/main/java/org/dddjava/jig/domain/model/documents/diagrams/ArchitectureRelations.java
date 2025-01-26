@@ -2,9 +2,9 @@ package org.dddjava.jig.domain.model.documents.diagrams;
 
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.data.packages.PackageRelation;
-import org.dddjava.jig.domain.model.data.packages.PackageRelations;
-import org.dddjava.jig.domain.model.information.relation.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelation;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
+import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 import org.dddjava.jig.domain.model.knowledge.architecture.PackageBasedArchitecture;
 
 import java.util.ArrayList;

@@ -2,7 +2,7 @@ package org.dddjava.jig.domain.model.information.inputs;
 
 import org.dddjava.jig.domain.model.data.classes.method.CallerMethods;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
-import org.dddjava.jig.domain.model.information.relation.MethodRelations;
+import org.dddjava.jig.domain.model.information.relation.methods.MethodRelations;
 
 import java.util.HashMap;
 import java.util.List;

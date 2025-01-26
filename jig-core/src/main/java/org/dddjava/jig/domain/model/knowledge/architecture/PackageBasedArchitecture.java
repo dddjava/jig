@@ -4,7 +4,7 @@ import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.packages.PackageIdentifier;
-import org.dddjava.jig.domain.model.information.relation.ClassRelations;
+import org.dddjava.jig.domain.model.information.relation.classes.ClassRelations;
 
 import java.util.*;
 import java.util.stream.Collectors;

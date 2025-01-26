@@ -1,19 +1,23 @@
 package org.dddjava.jig.domain.model.sources.classsources;
 
 import java.util.List;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 /**
- * classソース一覧
+ * バイナリソース一覧
  */
-public class ClassSources {
+public record ClassSources(List<ClassSource> list) {
 
-    List<ClassSource> sources;
-
-    public ClassSources(List<ClassSource> sources) {
-        this.sources = sources;
+    public boolean nothing() {
+        return list.isEmpty();
     }
 
-    public List<ClassSource> list() {
-        return sources;
+    public List<String> classNames(Predicate<String> nameMatcher) {
+        return list.stream()
+                .map(classSource -> classSource.className())
+                .filter(nameMatcher)
+                .collect(toList());
     }
 }

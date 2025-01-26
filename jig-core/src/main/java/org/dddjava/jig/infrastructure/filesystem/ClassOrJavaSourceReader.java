@@ -3,8 +3,8 @@ package org.dddjava.jig.infrastructure.filesystem;
 import org.dddjava.jig.domain.model.sources.SourceBasePaths;
 import org.dddjava.jig.domain.model.sources.SourceReader;
 import org.dddjava.jig.domain.model.sources.Sources;
-import org.dddjava.jig.domain.model.sources.classsources.BinarySources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSource;
+import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class ClassOrJavaSourceReader implements SourceReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassOrJavaSourceReader.class);
 
-    BinarySources collectClassSources(SourceBasePaths sourceBasePaths) {
+    ClassSources collectClassSources(SourceBasePaths sourceBasePaths) {
         var classSourceList = sourceBasePaths.classSourceBasePaths().stream()
                 .map(sourceBasePath -> collectSourcePathList(sourceBasePath, ".class"))
                 .flatMap(List::stream)
@@ -45,7 +45,7 @@ public class ClassOrJavaSourceReader implements SourceReader {
                 })
                 .filter(classSource -> classSource != null)
                 .toList();
-        return new BinarySources(classSourceList);
+        return new ClassSources(classSourceList);
     }
 
     JavaSources collectJavaSources(SourceBasePaths sourceBasePaths) {

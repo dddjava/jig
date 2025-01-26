@@ -1,6 +1,5 @@
 package org.dddjava.jig.domain.model.sources;
 
-import org.dddjava.jig.domain.model.sources.classsources.BinarySources;
 import org.dddjava.jig.domain.model.sources.classsources.ClassSources;
 import org.dddjava.jig.domain.model.sources.javasources.JavaSources;
 import org.dddjava.jig.domain.model.sources.mybatis.SqlSources;
@@ -17,12 +16,12 @@ public class Sources {
 
     private final SourceBasePaths sourceBasePaths;
     private final JavaSources javaSources;
-    private final BinarySources binarySources;
+    private final ClassSources classSources;
 
-    public Sources(SourceBasePaths sourceBasePaths, JavaSources javaSources, BinarySources binarySources) {
+    public Sources(SourceBasePaths sourceBasePaths, JavaSources javaSources, ClassSources classSources) {
         this.sourceBasePaths = sourceBasePaths;
         this.javaSources = javaSources;
-        this.binarySources = binarySources;
+        this.classSources = classSources;
     }
 
     public JavaSources javaSources() {
@@ -38,13 +37,13 @@ public class Sources {
                         throw new UncheckedIOException(e);
                     }
                 }).toArray(URL[]::new);
-        List<String> mapperClassNames = binarySources.classNames(name -> name.endsWith("Mapper"));
+        List<String> mapperClassNames = classSources.classNames(name -> name.endsWith("Mapper"));
         // クラスのURLとクラス名を別のリストで渡しているけれど、クラスごとにURL明確なのでMapで渡したほうがよさそう
         return new SqlSources(classLocationUrls, mapperClassNames);
     }
 
     public boolean nothingBinarySource() {
-        return binarySources.nothing();
+        return classSources.nothing();
     }
 
     public boolean nothingTextSource() {
@@ -52,6 +51,6 @@ public class Sources {
     }
 
     public ClassSources classSources() {
-        return binarySources.classSources();
+        return classSources;
     }
 }

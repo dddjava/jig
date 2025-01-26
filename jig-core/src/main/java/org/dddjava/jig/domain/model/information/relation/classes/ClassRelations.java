@@ -4,18 +4,15 @@ import org.dddjava.jig.domain.model.data.classes.type.JigType;
 import org.dddjava.jig.domain.model.data.classes.type.JigTypes;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifier;
 import org.dddjava.jig.domain.model.data.classes.type.TypeIdentifiers;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelation;
-import org.dddjava.jig.domain.model.information.relation.packages.PackageRelations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * 型依存関係一覧
@@ -51,14 +48,6 @@ public class ClassRelations {
 
     public static ClassRelations internalTypeRelationsTo(JigTypes jigTypes, JigType targetJigType) {
         return internalRelation(jigTypes).filterTo(targetJigType.identifier());
-    }
-
-    public PackageRelations toPackageRelations() {
-        Map<PackageRelation, List<PackageRelation>> map = list().stream()
-                .map(ClassRelation::toPackageRelation)
-                .filter(PackageRelation::notSelfRelation)
-                .collect(groupingBy(Function.identity()));
-        return new PackageRelations(map);
     }
 
     public TypeIdentifiers collectTypeIdentifierWhichRelationTo(TypeIdentifier typeIdentifier) {

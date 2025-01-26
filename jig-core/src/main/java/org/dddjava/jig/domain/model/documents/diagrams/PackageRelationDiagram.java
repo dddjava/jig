@@ -32,7 +32,7 @@ public class PackageRelationDiagram implements DiagramSourceWriter {
     PackageMutualDependencies packageMutualDependencies;
 
     public PackageRelationDiagram(PackageIdentifiers packageIdentifiers, ClassRelations classRelations) {
-        this(packageIdentifiers, classRelations.toPackageRelations(), classRelations, new PackageDepth(-1));
+        this(packageIdentifiers, PackageRelations.from(classRelations), classRelations, new PackageDepth(-1));
     }
 
     private PackageRelationDiagram(PackageIdentifiers packageIdentifiers, PackageRelations packageRelations, ClassRelations classRelations, PackageDepth appliedDepth) {

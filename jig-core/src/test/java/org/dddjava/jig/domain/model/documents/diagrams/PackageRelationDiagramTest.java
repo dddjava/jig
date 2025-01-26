@@ -144,7 +144,7 @@ class PackageRelationDiagramTest {
                 new ClassRelation(TypeIdentifier.valueOf("a.aa.aaa.Foo"), TypeIdentifier.valueOf("b.Bbb"))
         ));
 
-        PackageRelations sut = classRelations.toPackageRelations();
+        PackageRelations sut = PackageRelations.from(classRelations);
         assertTrue(sut.available());
 
         PackageRelations depth3 = sut.applyDepth(new PackageDepth(3));

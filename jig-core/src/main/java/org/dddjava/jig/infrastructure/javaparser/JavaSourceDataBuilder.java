@@ -5,8 +5,13 @@ import com.github.javaparser.ast.PackageDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AdditionalSourceModelBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(AdditionalSourceModelBuilder.class);
+/**
+ * Java由来の情報を組み立てる
+ *
+ * 現時点では特に何もしていません。
+ */
+class JavaSourceDataBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(JavaSourceDataBuilder.class);
 
     private PackageDeclaration packageDeclaration;
 

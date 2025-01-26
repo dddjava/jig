@@ -70,7 +70,7 @@ public class JavaparserReader implements JavaTextSourceReader {
                 .orElse("");
 
         JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
-        AdditionalSourceModelBuilder builder = new AdditionalSourceModelBuilder();
+        JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
         cu.accept(typeVisitor, builder);
         return typeVisitor.toTextSourceModel();
     }

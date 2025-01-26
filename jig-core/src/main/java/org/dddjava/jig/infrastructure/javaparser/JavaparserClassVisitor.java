@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class JavaparserClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBuilder> {
+class JavaparserClassVisitor extends VoidVisitorAdapter<JavaSourceDataBuilder> {
     static Logger logger = LoggerFactory.getLogger(JavaparserClassVisitor.class);
 
     private final String packageName;
@@ -40,22 +40,22 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBui
     }
 
     @Override
-    public void visit(PackageDeclaration packageDeclaration, AdditionalSourceModelBuilder arg) {
+    public void visit(PackageDeclaration packageDeclaration, JavaSourceDataBuilder arg) {
         arg.setPackage(packageDeclaration);
     }
 
     @Override
-    public void visit(ImportDeclaration importDeclaration, AdditionalSourceModelBuilder arg) {
+    public void visit(ImportDeclaration importDeclaration, JavaSourceDataBuilder arg) {
         arg.addImport(importDeclaration);
     }
 
     @Override
-    public void visit(ClassOrInterfaceDeclaration node, AdditionalSourceModelBuilder arg) {
+    public void visit(ClassOrInterfaceDeclaration node, JavaSourceDataBuilder arg) {
         visitClassOrInterfaceOrEnumOrRecord(node, arg);
     }
 
     @Override
-    public void visit(EnumDeclaration node, AdditionalSourceModelBuilder arg) {
+    public void visit(EnumDeclaration node, JavaSourceDataBuilder arg) {
         TypeIdentifier typeIdentifier = visitClassOrInterfaceOrEnumOrRecord(node, arg);
 
         List<EnumConstant> constants = node.getEntries().stream()
@@ -66,7 +66,7 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBui
     }
 
     @Override
-    public void visit(ConstructorDeclaration n, AdditionalSourceModelBuilder arg) {
+    public void visit(ConstructorDeclaration n, JavaSourceDataBuilder arg) {
         // enumの時だけコンストラクタの引数名を取る
         if (enumModel != null) {
             enumModel.addConstructorArgumentNames(n.getParameters().stream().map(e -> e.getName().asString()).collect(Collectors.toList()));
@@ -75,23 +75,23 @@ class JavaparserClassVisitor extends VoidVisitorAdapter<AdditionalSourceModelBui
     }
 
     @Override
-    public void visit(RecordDeclaration n, AdditionalSourceModelBuilder arg) {
+    public void visit(RecordDeclaration n, JavaSourceDataBuilder arg) {
         visitClassOrInterfaceOrEnumOrRecord(n, arg);
     }
 
     @Override
-    public void visit(LocalRecordDeclarationStmt n, AdditionalSourceModelBuilder arg) {
+    public void visit(LocalRecordDeclarationStmt n, JavaSourceDataBuilder arg) {
         // メソッド内のRecordに対応する必要がある場合
         super.visit(n, arg);
     }
 
     @Override
-    public void visit(LocalClassDeclarationStmt n, AdditionalSourceModelBuilder arg) {
+    public void visit(LocalClassDeclarationStmt n, JavaSourceDataBuilder arg) {
         // メソッド内のclassに対応する必要がある場合
         super.visit(n, arg);
     }
 
-    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, AdditionalSourceModelBuilder arg) {
+    private <T extends Node & NodeWithSimpleName<?> & NodeWithJavadoc<?>> TypeIdentifier visitClassOrInterfaceOrEnumOrRecord(T node, JavaSourceDataBuilder arg) {
         if (typeIdentifier != null) {
             logger.warn("1つの *.java ファイルの2つ目以降の class/interface/enum には現在対応していません。対応が必要な場合は読ませたい構造のサンプルを添えてIssueを作成してください。");
             return typeIdentifier;

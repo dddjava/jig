@@ -35,6 +35,9 @@ public class MyBatisSqlReader implements SqlReader {
 
     @Override
     public MyBatisStatements readFrom(SqlSources sqlSources) {
+        // 該当なしの場合に余計なClassLoader生成やMyBatisの初期化を行わない
+        if (sqlSources.classNames().isEmpty()) return new MyBatisStatements(SqlReadStatus.成功);
+
         try (URLClassLoader classLoader = new URLClassLoader(sqlSources.urls(), Configuration.class.getClassLoader())) {
             Resources.setDefaultClassLoader(classLoader);
 

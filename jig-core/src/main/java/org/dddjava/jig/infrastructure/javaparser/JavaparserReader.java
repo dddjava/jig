@@ -19,11 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 /**
- * Javaparserでテキストソースを読み取る
+ * Javaparserで読み取る
  */
 public class JavaparserReader implements JavaSourceReader {
 
@@ -43,60 +42,43 @@ public class JavaparserReader implements JavaSourceReader {
 
     @Override
     public JavaSourceModel javaSourceModel(JavaSources javaSources) {
-        JavaSourceModel javaSourceModel = javaSources.paths().stream()
-                // package-info以外
-                .filter(path -> !path.getFileName().toString().equals("package-info.java"))
+        return javaSources.paths().stream()
                 .map(path -> readJava(path))
                 .reduce(JavaSourceModel::merge)
                 .orElseGet(JavaSourceModel::empty);
-
-        List<PackageComment> packageComments = javaSources.paths().stream()
-                .filter(path -> path.getFileName().toString().equals("package-info.java"))
-                .map(path -> readPackage(path))
-                .flatMap(Optional::stream)
-                .toList();
-
-        javaSourceModel.addPackageComment(packageComments);
-        return javaSourceModel;
     }
 
     JavaSourceModel readJava(Path path) {
         try {
             CompilationUnit cu = StaticJavaParser.parse(path);
-            String packageName = cu.getPackageDeclaration()
-                    .map(PackageDeclaration::getNameAsString)
-                    .map(name -> name + ".")
-                    .orElse("");
-            JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
-            JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
-            cu.accept(typeVisitor, builder);
-            return typeVisitor.toTextSourceModel();
+
+            if (path.endsWith("package-info.java")) {
+                Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
+                        .map(NodeWithName::getNameAsString)
+                        .map(PackageIdentifier::valueOf);
+
+                Optional<Comment> optAlias = getJavadoc(cu)
+                        .map(Javadoc::getDescription)
+                        .map(JavadocDescription::toText)
+                        .map(Comment::fromCodeComment);
+
+                Optional<PackageComment> packageComment = optPackageIdentifier
+                        .flatMap(packageIdentifier -> optAlias
+                                .map(alias -> new PackageComment(packageIdentifier, alias)));
+                return packageComment.map(JavaSourceModel::from).orElseGet(JavaSourceModel::empty);
+            } else {
+                String packageName = cu.getPackageDeclaration()
+                        .map(PackageDeclaration::getNameAsString)
+                        .map(name -> name + ".")
+                        .orElse("");
+                JavaparserClassVisitor typeVisitor = new JavaparserClassVisitor(packageName);
+                JavaSourceDataBuilder builder = new JavaSourceDataBuilder();
+                cu.accept(typeVisitor, builder);
+                return typeVisitor.toTextSourceModel();
+            }
         } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
             logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
             return JavaSourceModel.empty();
-        }
-    }
-
-
-    Optional<PackageComment> readPackage(Path path) {
-        try {
-            CompilationUnit cu = StaticJavaParser.parse(path);
-
-            Optional<PackageIdentifier> optPackageIdentifier = cu.getPackageDeclaration()
-                    .map(NodeWithName::getNameAsString)
-                    .map(PackageIdentifier::valueOf);
-
-            Optional<Comment> optAlias = getJavadoc(cu)
-                    .map(Javadoc::getDescription)
-                    .map(JavadocDescription::toText)
-                    .map(Comment::fromCodeComment);
-
-            return optPackageIdentifier
-                    .flatMap(packageIdentifier -> optAlias
-                            .map(alias -> new PackageComment(packageIdentifier, alias)));
-        } catch (Exception e) { // IOException以外にJavaparserの例外もキャッチする
-            logger.warn("{} の読み取りに失敗しました。このファイルに必要な情報がある場合は欠落します。処理は続行します。", path, e);
-            return Optional.empty();
         }
     }
 

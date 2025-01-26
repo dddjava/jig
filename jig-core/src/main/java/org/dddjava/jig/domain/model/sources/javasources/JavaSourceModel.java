@@ -35,6 +35,10 @@ public class JavaSourceModel {
         this.packageComments = packageComments;
     }
 
+    public static JavaSourceModel from(PackageComment packageComment) {
+        return new JavaSourceModel(List.of(), List.of(), List.of(), List.of(packageComment));
+    }
+
     public static JavaSourceModel empty() {
         return new JavaSourceModel(List.of(), List.of(), List.of());
     }

@@ -15,10 +15,12 @@ import java.util.List;
  */
 public class Sources {
 
-    JavaSources javaSources;
-    BinarySources binarySources;
+    private final SourceBasePaths sourceBasePaths;
+    private final JavaSources javaSources;
+    private final BinarySources binarySources;
 
-    public Sources(JavaSources javaSources, BinarySources binarySources) {
+    public Sources(SourceBasePaths sourceBasePaths, JavaSources javaSources, BinarySources binarySources) {
+        this.sourceBasePaths = sourceBasePaths;
         this.javaSources = javaSources;
         this.binarySources = binarySources;
     }
@@ -28,15 +30,14 @@ public class Sources {
     }
 
     public SqlSources sqlSources() {
-        URL[] classLocationUrls = binarySources.list().stream()
-                .map(binarySource -> {
+        URL[] classLocationUrls = sourceBasePaths.classSourceBasePaths().stream()
+                .map(path -> {
                     try {
-                        return binarySource.sourceLocation().uri().toURL();
+                        return path.toUri().toURL();
                     } catch (MalformedURLException e) {
                         throw new UncheckedIOException(e);
                     }
-                })
-                .toArray(URL[]::new);
+                }).toArray(URL[]::new);
         List<String> mapperClassNames = binarySources.classNames(name -> name.endsWith("Mapper"));
         // クラスのURLとクラス名を別のリストで渡しているけれど、クラスごとにURL明確なのでMapで渡したほうがよさそう
         return new SqlSources(classLocationUrls, mapperClassNames);

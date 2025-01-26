@@ -82,6 +82,6 @@ public class ClassOrJavaSourceReader implements SourceReader {
     @Override
     public Sources readSources(SourceBasePaths sourceBasePaths) {
         logger.info("read paths: binary={}, text={}", sourceBasePaths.classSourceBasePaths(), sourceBasePaths.javaSourceBasePaths());
-        return new Sources(collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
+        return new Sources(sourceBasePaths, collectJavaSources(sourceBasePaths), collectClassSources(sourceBasePaths));
     }
 }
